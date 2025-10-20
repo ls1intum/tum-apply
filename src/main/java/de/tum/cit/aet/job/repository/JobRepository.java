@@ -84,8 +84,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * Sorting is applied manually for the computed professor name field.
      *
      * @param state          the job state (typically PUBLISHED)
-     * @param titles         a partial match filter for multiple job title
-     *                       (nullable)
      * @param fieldOfStudies a partial match filter for multiple field of studies
      *                       (nullable)
      * @param locations      the campus locations filter (nullable)
@@ -128,7 +126,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                  ))
         WHERE j.state = :state
           AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-          AND (:titles IS NULL OR j.title IN :titles)
           AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
           AND (:locations IS NULL OR j.location IN :locations)
           AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
@@ -151,7 +148,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     )
     Page<JobCardDTO> findAllJobCardsByState(
         @Param("state") JobState state,
-        @Param("titles") List<String> titles,
         @Param("fieldOfStudies") List<String> fieldOfStudies,
         @Param("locations") List<Campus> locations,
         @Param("professorNames") List<String> professorNames,
@@ -169,8 +165,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * professor name.
      *
      * @param state          the job state (typically PUBLISHED)
-     * @param titles         a partial match filter for multiple job title
-     *                       (nullable)
      * @param fieldOfStudies a partial match filter for multiple field of studies
      *                       (nullable)
      * @param locations      the campus locations filter (nullable)
@@ -209,7 +203,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
                    ))
           WHERE j.state = :state
             AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-            AND (:titles IS NULL OR j.title IN :titles)
             AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
             AND (:locations IS NULL OR j.location IN :locations)
             AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
@@ -222,7 +215,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     )
     Page<JobCardDTO> findAllJobCardsByState(
         @Param("state") JobState state,
-        @Param("titles") List<String> titles,
         @Param("fieldOfStudies") List<String> fieldOfStudies,
         @Param("locations") List<Campus> locations,
         @Param("professorNames") List<String> professorNames,
@@ -230,23 +222,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         @Param("searchQuery") String searchQuery,
         Pageable pageable
     );
-
-    /**
-     * Finds all available job names
-     *
-     * @param state the job state (typically PUBLISHED)
-     * @return a List of String with all unique, available job names
-     */
-    @Query(
-        """
-        SELECT DISTINCT j.title
-        FROM Job j
-        WHERE j.state = :state
-          AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-        ORDER BY j.title ASC
-        """
-    )
-    List<String> findAllUniqueJobNames(@Param("state") JobState state);
 
     /**
      * Finds all available fields of study

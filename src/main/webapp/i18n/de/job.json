@@ -108,8 +108,6 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "job": "Stelle",
-        "jobSearchPlaceholder": "Stellen suchen...",
         "fieldOfStudies": "Studienrichtung",
         "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
         "location": "Standort",

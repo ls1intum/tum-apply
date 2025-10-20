@@ -68,7 +68,7 @@ public class JobResource {
      *
      * This endpoint provides all unique filter values that can be used in the job
      * filters
-     * It returns job names, fields of study, and supervisor names from all
+     * It returns fields of study and supervisor names from all
      * published jobs
      * to populate dropdown menus and filter components on the client side.
      *
@@ -78,11 +78,7 @@ public class JobResource {
     @Public
     @GetMapping("/filters")
     public ResponseEntity<JobFiltersDTO> getAllFilters() {
-        JobFiltersDTO dto = new JobFiltersDTO(
-            jobService.getAllJobNames(),
-            jobService.getAllFieldOfStudies(),
-            jobService.getAllSupervisorNames()
-        );
+        JobFiltersDTO dto = new JobFiltersDTO(jobService.getAllFieldOfStudies(), jobService.getAllSupervisorNames());
         return ResponseEntity.ok(dto);
     }
 
