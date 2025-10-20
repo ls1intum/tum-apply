@@ -29,9 +29,7 @@ import ApplicationCreationPage3Component, {
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
-  bachelorGradingScale,
   getPage2FromApplication,
-  masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
@@ -91,12 +89,14 @@ export default class ApplicationCreationFormComponent {
   educationData = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
-    bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: undefined,
+    bachelorGradeUpperLimit: '',
+    bachelorGradeLowerLimit: '',
+    bachelorGrade: '',
     masterDegreeName: '',
     masterDegreeUniversity: '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: undefined,
+    masterGradeUpperLimit: '',
+    masterGradeLowerLimit: '',
+    masterGrade: '',
   });
 
   applicationDetailsData = signal<ApplicationCreationPage3Data>({
@@ -150,10 +150,17 @@ export default class ApplicationCreationFormComponent {
     privacyAccepted: this.formbuilder.nonNullable.control(false, {
       validators: Validators.requiredTrue,
     }),
+    doctoralRequirementsAccepted: this.formbuilder.nonNullable.control(false, {
+      validators: Validators.requiredTrue,
+    }),
   });
 
   readonly privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls.privacyAccepted.valueChanges, {
     initialValue: this.additionalInfoForm.controls.privacyAccepted.value,
+  });
+
+  readonly doctoralRequirementsAcceptedSignal = toSignal(this.additionalInfoForm.controls.doctoralRequirementsAccepted.valueChanges, {
+    initialValue: this.additionalInfoForm.controls.doctoralRequirementsAccepted.value,
   });
 
   submitAttempted = signal(false);
@@ -465,6 +472,10 @@ export default class ApplicationCreationFormComponent {
       this.toastService.showErrorKey('privacy.privacyConsent.toastError');
       return;
     }
+    if (!this.doctoralRequirementsAcceptedSignal()) {
+      this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
+      return;
+    }
     void this.sendCreateApplicationData('SENT', true);
   }
 
@@ -645,11 +656,13 @@ export default class ApplicationCreationFormComponent {
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
-        bachelorGradingScale: p2.bachelorGradingScale.value,
+        bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
+        bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
         masterDegreeName: p2.masterDegreeName,
         masterUniversity: p2.masterDegreeUniversity,
         masterGrade: p2.masterGrade,
-        masterGradingScale: p2.masterGradingScale.value,
+        masterGradeUpperLimit: p2.masterGradeUpperLimit,
+        masterGradeLowerLimit: p2.masterGradeLowerLimit,
       },
       motivation: p3.motivation,
       specialSkills: p3.skills,
@@ -675,8 +688,6 @@ export default class ApplicationCreationFormComponent {
             phoneNumber: p1.phoneNumber,
             preferredLanguage: p1.language?.value,
           },
-          bachelorGradingScale: 'ONE_TO_FOUR',
-          masterGradingScale: 'ONE_TO_FOUR',
         },
       } as UpdateApplicationDTO;
     }

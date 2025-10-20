@@ -1125,24 +1125,6 @@ paths:
           content:
             application/json:
               schema: {type: integer, format: int64}
-  /api/applications/job/{jobId}:
-    get:
-      tags: [application-resource]
-      operationId: getAllApplicationsOfJob
-      parameters:
-      - name: jobId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-                uniqueItems: true
   /api/applications/getDocumentIds/{applicationId}:
     get:
       tags: [application-resource]
@@ -1158,24 +1140,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
-  /api/applications/applicant/{applicantId}:
-    get:
-      tags: [application-resource]
-      operationId: getAllApplicationsOfApplicant
-      parameters:
-      - name: applicantId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationForApplicantDTO'}
-                uniqueItems: true
   /api/research-groups/members/{userId}:
     delete:
       tags: [research-group-resource]
@@ -1196,23 +1160,6 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
-  /api/applications/batch-delete-document/{applicationId}/{documentType}:
-    delete:
-      tags: [application-resource]
-      operationId: deleteDocumentBatchByTypeFromApplication
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      - name: documentType
-        in: path
-        required: true
-        schema:
-          type: string
-          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
       responses:
         '200': {description: OK}
 components:
@@ -1320,15 +1267,13 @@ components:
         city: {type: string}
         country: {type: string}
         bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        bachelorGradeUpperLimit: {type: string}
+        bachelorGradeLowerLimit: {type: string}
         bachelorGrade: {type: string}
         bachelorUniversity: {type: string}
         masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        masterGradeUpperLimit: {type: string}
+        masterGradeLowerLimit: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
       required: [user]
@@ -1527,15 +1472,13 @@ components:
         city: {type: string}
         country: {type: string}
         bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        bachelorGradeUpperLimit: {type: string}
+        bachelorGradeLowerLimit: {type: string}
         bachelorGrade: {type: string}
         bachelorUniversity: {type: string}
         masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        masterGradeUpperLimit: {type: string}
+        masterGradeLowerLimit: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
     Application:
@@ -1801,34 +1744,34 @@ components:
     PageCreatedJobDTO:
       type: object
       properties:
-        totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
+        totalElements: {type: integer, format: int64}
+        first: {type: boolean}
+        last: {type: boolean}
         size: {type: integer, format: int32}
         content:
           type: array
           items: {$ref: '#/components/schemas/CreatedJobDTO'}
         number: {type: integer, format: int32}
-        sort: {$ref: '#/components/schemas/SortObject'}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
         numberOfElements: {type: integer, format: int32}
-        first: {type: boolean}
-        last: {type: boolean}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        sort: {$ref: '#/components/schemas/SortObject'}
         empty: {type: boolean}
     PageableObject:
       type: object
       properties:
         offset: {type: integer, format: int64}
-        sort: {$ref: '#/components/schemas/SortObject'}
+        unpaged: {type: boolean}
         paged: {type: boolean}
         pageNumber: {type: integer, format: int32}
         pageSize: {type: integer, format: int32}
-        unpaged: {type: boolean}
+        sort: {$ref: '#/components/schemas/SortObject'}
     SortObject:
       type: object
       properties:
         empty: {type: boolean}
-        sorted: {type: boolean}
         unsorted: {type: boolean}
+        sorted: {type: boolean}
     JobFiltersDTO:
       type: object
       properties:
@@ -1873,18 +1816,18 @@ components:
     PageJobCardDTO:
       type: object
       properties:
-        totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
+        totalElements: {type: integer, format: int64}
+        first: {type: boolean}
+        last: {type: boolean}
         size: {type: integer, format: int32}
         content:
           type: array
           items: {$ref: '#/components/schemas/JobCardDTO'}
         number: {type: integer, format: int32}
-        sort: {$ref: '#/components/schemas/SortObject'}
-        pageable: {$ref: '#/components/schemas/PageableObject'}
         numberOfElements: {type: integer, format: int32}
-        first: {type: boolean}
-        last: {type: boolean}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        sort: {$ref: '#/components/schemas/SortObject'}
         empty: {type: boolean}
     JobFilterOptionDTO:
       type: object
@@ -1914,15 +1857,13 @@ components:
       properties:
         user: {$ref: '#/components/schemas/UserForApplicationDetailDTO'}
         bachelorDegreeName: {type: string}
-        bachelorGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        bachelorGradeUpperLimit: {type: string}
+        bachelorGradeLowerLimit: {type: string}
         bachelorGrade: {type: string}
         bachelorUniversity: {type: string}
         masterDegreeName: {type: string}
-        masterGradingScale:
-          type: string
-          enum: [ONE_TO_FOUR]
+        masterGradeUpperLimit: {type: string}
+        masterGradeLowerLimit: {type: string}
         masterGrade: {type: string}
         masterUniversity: {type: string}
       required: [user]

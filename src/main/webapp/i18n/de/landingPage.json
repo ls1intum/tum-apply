@@ -1,34 +1,38 @@
 {
   "landingPage": {
     "hero": {
-      "headline": "Beginne deine Promotion an der TUM",
-      "subline": "Die TUM bietet ein weltweit führendes Umfeld für deine Promotion.",
-      "button": "Offene Stellen"
+      "headline": "Bewirb dich für deine Promotion an der TUM CIT",
+      "subline": "TUMapply ist dein Zugang zur Promotion an der School of Computation, Information and Technology",
+      "button": "Stellen durchsuchen"
     },
     "doctoralJourney": {
-      "headline": "Deine Promotionsreise an der TUM",
-      "text": "Die Technische Universität München (TUM) ist fest davon überzeugt, dass Talent die Grundlage für exzellente akademische Ausbildung in der Promotion ist. Die TUM blickt auf eine lange Tradition in der Förderung von exzellenten Promovierenden zurück, die sich der Lösung gesellschaftlicher Herausforderungen widmen. Unterstützt von führenden Forschenden investiert die TUM umfassend in die Förderung junger Wissenschaftler, um selbstständig arbeiten und ihre Karriere starten zu können.",
+      "headline": "Starte deine Promotionsreise an der TUM CIT",
+      "text": "TUMapply ist dein Einstiegspunkt in die Promotion an der Technischen Universität München. Hier kannst du offene Stellen in allen Fachbereichen der TUM School of Computation, Information and Technology entdecken, passende Möglichkeiten finden und deine Bewerbung direkt online einreichen. <br> Fragst du dich, warum die TUM der richtige Ort für deine Promotion ist? Mit unserem lebendigen Forschungsumfeld, globalen Netzwerken und starken Unterstützungsstrukturen bietet die TUM ideale Bedingungen, um deine akademischen Ziele zu verfolgen. Die {{startLink}}TUM Graduate School{{endLink}} begleitet dich während des gesamten Prozesses – von den Voraussetzungen und Anforderungen bis hin zur Entwicklung deines Forschungsprofils.",
       "button1": "Warum TUM?",
-      "button2": "Mehr erfahren"
+      "button2": "Promotion an der TUM"
     },
     "applicationSteps": {
-      "headline": "Deine Bewerbung in 4 Schritten",
+      "headline": "Deine Bewerbung in 5 Schritten",
       "steps": {
-        "1": {
-          "title": "1. Offene Stellen finden",
+        "checkPrerequisites": {
+          "title": "Voraussetzungen prüfen",
+          "description": "Stelle sicher, dass du die {{startLink}}Zulassungskriterien{{endLink}} erfüllst, um eine Promotion an der TUM zu beginnen."
+        },
+        "browsePositions": {
+          "title": "Stellen finden",
           "description": "Nutze Filter, um passende Stellen in verschiedenen Forschungsgruppen zu finden."
         },
-        "2": {
-          "title": "2. Details prüfen",
+        "checkDetails": {
+          "title": "Details prüfen",
           "description": "Lies die Stellenbeschreibung, prüfe die Voraussetzungen und sieh nach, welche Dokumente benötigt werden."
         },
-        "3": {
-          "title": "3. Bewerbung einreichen",
+        "submitApplication": {
+          "title": "Bewerbung einreichen",
           "description": "Erstelle ein Konto, lade deine Dokumente hoch und reiche deine Bewerbung ein."
         },
-        "4": {
-          "title": "4. Status verfolgen",
-          "description": "Bleib informiert. Du erhältst Benachrichtigungen, wenn deine Bewerbung geprüft wurde, neue Stellen verfügbar sind oder gespeicherte Stellen entfernt werden."
+        "trackStatus": {
+          "title": "Status verfolgen",
+          "description": "Erhalte Benachrichtigungen zu deinem Bewerbungsstatus, neuen Stellen und gespeicherten Anzeigen."
         }
       },
       "button": "Prozess ansehen"

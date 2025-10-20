@@ -18,3 +18,10 @@
 .saving_color {
   color: var(--p-warn-color);
 }
+
+.external-link {
+  color: var(--p-primary-color);
+  text-decoration: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
