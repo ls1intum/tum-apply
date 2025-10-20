@@ -85,10 +85,10 @@ export class ApplicationCarouselComponent {
 
   private readonly bp = inject(BreakpointObserver);
 
-  private readonly breakpoint = toSignal<BreakpointState | null>(
+  private readonly breakpoint = toSignal<BreakpointState | undefined>(
     this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]),
     {
-      initialValue: null,
+      initialValue: undefined,
     },
   );
 
