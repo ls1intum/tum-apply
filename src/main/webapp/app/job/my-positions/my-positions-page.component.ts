@@ -11,6 +11,7 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
+import { emptyToUndef } from 'app/core/util/array-util.service';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
@@ -218,13 +219,12 @@ export class MyPositionsPageComponent {
         return;
       }
       const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
-      const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getJobsByProfessor(
           this.pageSize(),
           this.page(),
           jobNameFilters.length ? jobNameFilters : undefined,
-          statusFilters.length ? statusFilters : undefined,
+          emptyToUndef(this.selectedStatusFilters()),
           this.sortBy(),
           this.sortDirection(),
           this.searchQuery(),
