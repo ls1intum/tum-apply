@@ -21,7 +21,6 @@ import de.tum.cit.aet.notification.dto.EmailTemplateTranslationDTO;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -417,7 +416,7 @@ public class EmailTemplateService {
             return new String(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("templates/" + templatePath)).readAllBytes()
             );
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new TemplateProcessingException("Failed to read template file: " + templatePath, e);
         }
     }

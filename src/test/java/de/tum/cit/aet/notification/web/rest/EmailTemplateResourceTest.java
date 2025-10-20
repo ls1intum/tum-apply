@@ -164,13 +164,13 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getTemplate_nonExistingId_returns404() {
+    void getTemplateNonExistingIdReturns404() {
         asProfessor(professor).getAndRead(templateUrl(UUID.randomUUID()), Map.of(), Void.class, 404);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void createTemplate_withNullTranslations_succeeds() {
+    void createTemplateWithNullTranslationsSucceeds() {
         EmailTemplateDTO payload = dto(null, "NoTrans", EmailType.APPLICATION_ACCEPTED, null, null, false);
 
         EmailTemplateDTO created = asProfessor(professor).postAndRead(BASE_URL, payload, EmailTemplateDTO.class, 201);
@@ -181,7 +181,7 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void createTemplate_whenTypeNotMultiple_returns400() {
+    void createTemplateWhenTypeNotMultipleReturns400() {
         EmailTemplateDTO payload = dto(null, "SingleType", EmailType.APPLICATION_REJECTED, tr("s", "<p>b</p>"), null, false);
 
         asProfessor(professor).postAndRead(BASE_URL, payload, Void.class, 400);
@@ -189,7 +189,7 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void createTemplate_duplicate_returns409() {
+    void createTemplateDuplicateReturns409() {
         EmailTemplateDTO payload = dto(
             null,
             existingTemplate.getTemplateName(),
@@ -204,7 +204,7 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void updateTemplate_createsTranslationWhenMissing() {
+    void updateTemplateCreatesTranslationWhenMissing() {
         EmailTemplate templateNoTrans = new EmailTemplate();
         templateNoTrans.setResearchGroup(researchGroup);
         templateNoTrans.setCreatedBy(professor);
@@ -233,7 +233,7 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void updateTemplate_nonExistingId_returns404() {
+    void updateTemplateNonExistingIdReturns404() {
         EmailTemplateDTO payload = dto(UUID.randomUUID(), "Nope", EmailType.APPLICATION_ACCEPTED, null, null, false);
 
         asProfessor(professor).putAndRead(BASE_URL, payload, Void.class, 404);
@@ -241,7 +241,7 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void updateTemplate_nonEditableType_returns400() {
+    void updateTemplateNonEditableTypeReturns400() {
         Optional<EmailType> nonEditable = firstNonEditableType();
         Assumptions.assumeTrue(nonEditable.isPresent());
 
@@ -255,7 +255,7 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void updateTemplate_withNullTranslations_succeeds() {
+    void updateTemplateWithNullTranslationsSucceeds() {
         EmailTemplateDTO payload = dto(
             existingTemplate.getEmailTemplateId(),
             "NoTransUpdate",
@@ -272,7 +272,7 @@ public class EmailTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void deleteTemplate_default_returns400() {
+    void deleteTemplateDefaultReturns400() {
         existingTemplate.setDefault(true);
         emailTemplateRepository.save(existingTemplate);
 
