@@ -964,6 +964,17 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupDTO'}
+  /api/research-groups/employee-request:
+    post:
+      tags: [research-group-resource]
+      operationId: createEmployeeResearchGroupRequest
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EmployeeResearchGroupRequestDTO'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/research-groups/members:
     get:
       tags: [research-group-resource]
@@ -1447,6 +1458,11 @@ components:
       properties:
         body: {type: string}
         subject: {type: string}
+    EmployeeResearchGroupRequestDTO:
+      type: object
+      properties:
+        professorName: {type: string, minLength: 1}
+      required: [professorName]
     InternalComment:
       type: object
       properties:
