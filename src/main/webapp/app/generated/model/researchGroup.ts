@@ -11,23 +11,23 @@ import { UserResearchGroupRole } from './userResearchGroupRole';
 
 
 export interface ResearchGroup { 
-    createdAt?: string;
-    lastModifiedAt?: string;
-    researchGroupId?: string;
-    head?: string;
-    name?: string;
     abbreviation?: string;
-    email?: string;
-    website?: string;
-    school?: string;
-    description?: string;
-    defaultFieldOfStudies?: string;
-    street?: string;
-    postalCode?: string;
     city?: string;
-    universityId?: string;
+    createdAt?: string;
+    defaultFieldOfStudies?: string;
+    description?: string;
+    email?: string;
+    head?: string;
+    lastModifiedAt?: string;
+    name?: string;
+    postalCode?: string;
+    researchGroupId?: string;
+    school?: string;
     state?: ResearchGroup.StateEnum;
+    street?: string;
+    universityId?: string;
     userRoles?: Array<UserResearchGroupRole>;
+    website?: string;
 }
 export namespace ResearchGroup {
     export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
