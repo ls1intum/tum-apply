@@ -9,19 +9,10 @@ export function isNumeric(val: string): boolean {
 }
 
 /**
- * Checks if a value is a valid upper limit letter grade.
- * Allows base letter or letter with + or * modifier (e.g., "A", "A+", "A*")
+ * Checks if a value is a letter grade (e.g., "A", "A*", "B+", "C-")
  */
-export function isUpperLimitLetter(val: string): boolean {
-  return /^[A-Za-z][+*]?$/.test(val.trim());
-}
-
-/**
- * Checks if a value is a valid lower limit or grade letter.
- * Only allows base letters without modifiers (e.g., "D", "E")
- */
-export function isLowerLimitOrGradeLetter(val: string): boolean {
-  return /^[A-Za-z]$/.test(val.trim());
+export function isLetter(val: string): boolean {
+  return /^[A-Za-z][+*-]?$/.test(val.trim());
 }
 
 /**
@@ -36,7 +27,7 @@ export function isPercentage(val: string): boolean {
  * Removes +/* modifiers from letter grades and converts to uppercase
  */
 export function cleanLetter(val: string): string {
-  return val.replace(/[+*]/g, '').toUpperCase().trim();
+  return val.replace(/[+*-]/g, '').toUpperCase().trim();
 }
 
 /**
@@ -75,69 +66,22 @@ export function toggleError(ctrl: AbstractControl | null | undefined, key: strin
 /**
  * Validates the format of grade controls with specific rules for upper/lower limits
  */
-export function validateFormat(upper: AbstractControl | null, lower: AbstractControl | null, grade: AbstractControl | null): string | null {
-  const upperVal = upper?.value;
-  const lowerVal = lower?.value;
-  const gradeVal = grade?.value;
+export function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: string) => boolean)[]): string | null {
+  for (const ctrl of ctrls) {
+    const val = ctrl?.value;
+    if (!val) continue;
 
-  // Check upper limit
-  if (upperVal) {
-    if (hasTooManyDecimals(upperVal)) {
-      toggleError(upper, 'tooManyDecimals', true);
+    if (hasTooManyDecimals(val)) {
+      toggleError(ctrl, 'tooManyDecimals', true);
       return 'tooManyDecimals';
     }
 
-    const isValidUpper = isNumeric(upperVal) || isPercentage(upperVal) || isUpperLimitLetter(upperVal);
-    toggleError(upper, 'invalidGrade', !isValidUpper);
-    toggleError(upper, 'tooManyDecimals', false);
+    const isValid = formats.some(fn => fn(val));
+    toggleError(ctrl, 'invalidGrade', !isValid);
+    toggleError(ctrl, 'tooManyDecimals', false);
 
-    if (!isValidUpper) return 'invalidGrade';
+    if (!isValid) return 'invalidGrade';
   }
-
-  // Check lower limit (no modifiers allowed for letters)
-  if (lowerVal) {
-    if (hasTooManyDecimals(lowerVal)) {
-      toggleError(lower, 'tooManyDecimals', true);
-      return 'tooManyDecimals';
-    }
-
-    const isValidLower = isNumeric(lowerVal) || isPercentage(lowerVal) || isLowerLimitOrGradeLetter(lowerVal);
-    toggleError(lower, 'invalidGrade', !isValidLower);
-    toggleError(lower, 'tooManyDecimals', false);
-
-    if (!isValidLower) return 'invalidGrade';
-  }
-
-  // Check grade (modifiers only allowed if grade equals upper limit)
-  if (gradeVal) {
-    if (hasTooManyDecimals(gradeVal)) {
-      toggleError(grade, 'tooManyDecimals', true);
-      return 'tooManyDecimals';
-    }
-
-    // Check if grade has modifiers
-    const gradeHasModifier = /[+*]/.test(gradeVal);
-    const gradeEqualsUpper = upperVal && gradeVal.trim() === upperVal.trim();
-
-    // If grade has modifier but doesn't equal upper limit, that's invalid
-    if (gradeHasModifier && !gradeEqualsUpper) {
-      toggleError(grade, 'invalidModifierUsage', true);
-      return 'invalidModifierUsage';
-    } else {
-      toggleError(grade, 'invalidModifierUsage', false);
-    }
-
-    const isValidGrade =
-      isNumeric(gradeVal) ||
-      isPercentage(gradeVal) ||
-      (gradeEqualsUpper ? isUpperLimitLetter(gradeVal) : isLowerLimitOrGradeLetter(gradeVal));
-
-    toggleError(grade, 'invalidGrade', !isValidGrade);
-    toggleError(grade, 'tooManyDecimals', false);
-
-    if (!isValidGrade) return 'invalidGrade';
-  }
-
   return null;
 }
 
@@ -146,7 +90,7 @@ export function validateFormat(upper: AbstractControl | null, lower: AbstractCon
  */
 export function validateSameFormat(values: string[]): 'numeric' | 'letter' | 'percentage' | null {
   if (values.every(isNumeric)) return 'numeric';
-  if (values.every(v => isUpperLimitLetter(v) || isLowerLimitOrGradeLetter(v))) return 'letter';
+  if (values.every(isLetter)) return 'letter';
   if (values.every(isPercentage)) return 'percentage';
   return null;
 }
@@ -162,9 +106,14 @@ export function validateBoundaryMismatch(format: string, upper: string, lower: s
   const upperClean = cleanLetter(upper);
   const lowerClean = cleanLetter(lower);
 
-  // Upper must be "better" (earlier in alphabet) than or equal to lower
-  // A < B < C, so A is better than B
   if (upperClean > lowerClean) return true;
+
+  if (upperClean === lowerClean) {
+    const upperSign = upper.slice(-1);
+    const lowerSign = lower.slice(-1);
+
+    return (!/[+-]/.test(upperSign) && lowerSign === '+') || (upperSign === '-' && (lowerSign === '+' || !/[+-]/.test(lowerSign)));
+  }
 
   return false;
 }
@@ -192,7 +141,22 @@ export function validateGradeRange(format: string, upper: string, lower: string,
   const gradeClean = cleanLetter(grade);
   const outside = gradeClean < upperClean || gradeClean > lowerClean;
 
-  return outside;
+  const sameAsUpper = gradeClean === upperClean;
+  const sameAsLower = gradeClean === lowerClean;
+
+  let forbidden = false;
+
+  if (sameAsUpper) {
+    if (upper.endsWith('-') && (!/[+-]$/.test(grade) || grade.endsWith('+'))) forbidden = true;
+    else if (!/[+-]$/.test(upper) && grade.endsWith('+')) forbidden = true;
+  }
+
+  if (sameAsLower) {
+    if (lower.endsWith('+') && (!/[+-]$/.test(grade) || grade.endsWith('-'))) forbidden = true;
+    else if (!/[+-]$/.test(lower) && grade.endsWith('-')) forbidden = true;
+  }
+
+  return outside || forbidden;
 }
 
 /**
@@ -209,7 +173,7 @@ export function gradeFormatValidator(upperLimitKey: string, lowerLimitKey: strin
     if (values.some(v => !v)) return null;
 
     // Check individual format validity
-    const formatErr = validateFormat(upper, lower, grade);
+    const formatErr = validateFormat([upper, lower, grade], [isNumeric, isLetter, isPercentage]);
     if (formatErr) return { [formatErr]: true };
 
     // Check if all three values have the same format

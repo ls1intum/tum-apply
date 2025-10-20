@@ -111,7 +111,6 @@
         "max": "Dieses Feld darf max. {{max}} sein.",
         "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
         "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
-        "invalidModifierUsage": "Verwende '+' oder '*' nur, wenn deine Note der höchstmöglichen Note entspricht.",
         "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
         "boundaryMismatch": "Die höchstmögliche Note muss besser sein als die niedrigste Note zum Bestehen.",
         "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
