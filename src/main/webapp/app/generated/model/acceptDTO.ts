@@ -10,8 +10,8 @@
 
 
 export interface AcceptDTO { 
+    closeJob?: boolean;
     message?: string;
     notifyApplicant?: boolean;
-    closeJob?: boolean;
 }
 

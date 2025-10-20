@@ -28,7 +28,7 @@ jobs:
           java-version: '25'
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
 
@@ -71,7 +71,7 @@ jobs:
       - name: Check for Changes
         id: check_changes
         run: |
-          git add openapi/openapi.yaml src/main/webapp/app/generated
+          git add openapi/openapi.yaml src/main/webapp/app/generated -f
           if git diff --cached --quiet; then
             echo "no_changes_detected=true" >> $GITHUB_OUTPUT
           else

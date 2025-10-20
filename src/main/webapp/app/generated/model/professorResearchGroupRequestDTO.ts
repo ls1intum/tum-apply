@@ -10,20 +10,20 @@
 
 
 export interface ProfessorResearchGroupRequestDTO { 
-    title?: string;
+    abbreviation?: string;
+    city?: string;
+    contactEmail?: string;
+    defaultFieldOfStudies?: string;
+    description?: string;
     firstName?: string;
     lastName?: string;
-    universityId?: string;
+    postalCode?: string;
     researchGroupHead?: string;
     researchGroupName?: string;
-    abbreviation?: string;
-    contactEmail?: string;
-    website?: string;
     school?: string;
-    description?: string;
-    defaultFieldOfStudies?: string;
     street?: string;
-    postalCode?: string;
-    city?: string;
+    title?: string;
+    universityId?: string;
+    website?: string;
 }
 

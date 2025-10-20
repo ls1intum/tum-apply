@@ -16,7 +16,7 @@
       "steps": {
         "checkPrerequisites": {
           "title": "Voraussetzungen prüfen",
-          "description": "Stelle sicher, dass du die Zulassungskriterien erfüllst, um eine Promotion an der TUM zu beginnen."
+          "description": "Stelle sicher, dass du die {{startLink}}Zulassungskriterien{{endLink}} erfüllst, um eine Promotion an der TUM zu beginnen."
         },
         "browsePositions": {
           "title": "Stellen finden",
