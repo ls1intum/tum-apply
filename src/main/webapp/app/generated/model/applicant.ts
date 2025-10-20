@@ -12,22 +12,22 @@ import { Application } from './application';
 
 
 export interface Applicant { 
-    userId?: string;
-    user?: User;
-    submittedApplications?: Array<Application>;
-    street?: string;
-    postalCode?: string;
+    bachelorDegreeName?: string;
+    bachelorGrade?: string;
+    bachelorGradeLowerLimit?: string;
+    bachelorGradeUpperLimit?: string;
+    bachelorUniversity?: string;
     city?: string;
     country?: string;
-    bachelorDegreeName?: string;
-    bachelorGradeUpperLimit?: string;
-    bachelorGradeLowerLimit?: string;
-    bachelorGrade?: string;
-    bachelorUniversity?: string;
     masterDegreeName?: string;
-    masterGradeUpperLimit?: string;
-    masterGradeLowerLimit?: string;
     masterGrade?: string;
+    masterGradeLowerLimit?: string;
+    masterGradeUpperLimit?: string;
     masterUniversity?: string;
+    postalCode?: string;
+    street?: string;
+    submittedApplications?: Array<Application>;
+    user?: User;
+    userId?: string;
 }
 
