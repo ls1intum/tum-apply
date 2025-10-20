@@ -20,7 +20,7 @@
       "notice": "Your request will be sent to the administrators. They will assign you to the research group of the professor you entered and contact you.",
       "confirmDialog": {
         "header": "Confirm Request Submission",
-        "message": "Your request will be sent to the administrators for review. They will assign you to your research group and contact you. Do you want to proceed?",
+        "message": "Your request will be sent to the administrators for review. They will assign you to the research group of the specified professor and then contact you. Would you like to continue?",
         "confirm": "Send Request"
       },
       "success": {

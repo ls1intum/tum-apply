@@ -20,7 +20,7 @@
       "notice": "Deine Anfrage wird an die Administratoren gesendet. Sie werden dich der Forschungsgruppe des angegebenen Professors zuweisen und dich kontaktieren.",
       "confirmDialog": {
         "header": "Bestätige die Anfrage",
-        "message": "Deine Anfrage wird zur Überprüfung an die Administratoren gesendet, die dir deine Forschungsgruppe zuweisen und dich kontaktieren werden. Möchtest du fortfahren?",
+        "message": "Deine Anfrage wird zur Überprüfung an die Administratoren gesendet. Sie werden dich der Forschungsgruppe des angegebenen Professors zuweisen und dich anschließend kontaktieren. Möchtest du fortfahren?",
         "confirm": "Anfrage senden"
       },
       "success": {

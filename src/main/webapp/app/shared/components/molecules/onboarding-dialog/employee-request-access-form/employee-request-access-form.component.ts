@@ -1,21 +1,21 @@
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ButtonComponent } from 'app/shared/components//atoms/button/button.component';
+import { ConfirmDialog } from 'app/shared/components//atoms/confirm-dialog/confirm-dialog';
+import TranslateDirective from 'app/shared/language/translate.directive';
+import { ToastService } from 'app/service/toast-service';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 
-import { StringInputComponent } from '../../../atoms/string-input/string-input.component';
-import { ButtonComponent } from '../../../atoms/button/button.component';
-import { ConfirmDialog } from '../../../atoms/confirm-dialog/confirm-dialog';
-import TranslateDirective from '../../../../language/translate.directive';
-import { ToastService } from '../../../../../service/toast-service';
-import { ResearchGroupResourceApiService } from '../../../../../generated/api/researchGroupResourceApi.service';
-import { ProfOnboardingResourceApiService } from '../../../../../generated/api/profOnboardingResourceApi.service';
+import { OnboardingDialog } from '../onboarding-dialog';
 
 @Component({
   selector: 'jhi-employee-request-access-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, StringInputComponent, ButtonComponent, TranslateModule, TranslateDirective, ConfirmDialog],
   templateUrl: './employee-request-access-form.component.html',
 })
@@ -32,6 +32,8 @@ export class EmployeeRequestAccessFormComponent {
   // Services
   private readonly fb = inject(FormBuilder);
   private readonly ref = inject(DynamicDialogRef, { optional: true });
+  private readonly dialogService = inject(DialogService);
+  private readonly translate = inject(TranslateService);
   private readonly researchGroupService = inject(ResearchGroupResourceApiService);
   private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
   private readonly toastService = inject(ToastService);
@@ -54,6 +56,25 @@ export class EmployeeRequestAccessFormComponent {
 
   onCancel(): void {
     this.ref?.close();
+  }
+
+  onBack(): void {
+    this.ref?.close();
+
+    // Reopen the main onboarding dialog
+    this.dialogService.open(OnboardingDialog, {
+      header: this.translate.instant('onboarding.dialog.title'),
+      modal: true,
+      closable: true,
+      dismissableMask: false,
+      width: '56.25rem',
+      style: {
+        'max-width': '95vw',
+        'background-color': 'white',
+        'border-radius': '0.5rem',
+      },
+      focusOnShow: false,
+    });
   }
 
   private createEmployeeForm(): FormGroup {

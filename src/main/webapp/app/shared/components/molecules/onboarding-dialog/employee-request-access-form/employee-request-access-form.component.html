@@ -21,34 +21,44 @@
       [model]="employeeForm.get('professorName')?.value"
       [control]="employeeForm.get('professorName') ?? undefined"
       [shouldTranslate]="true"
-      icon="user"
     />
   </div>
 
   <!-- Information Notice -->
-  <div class="flex items-start gap-3 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg mt-2">
+  <div class="flex items-start gap-3 p-4 bg-blue-50 border-l-4 border-[var(--p-primary-color)] rounded-r-lg mt-2">
     <div class="flex-1">
-      <p class="m-0 text-sm text-gray-700" jhiTranslate="onboarding.employeeRequest.notice"></p>
+      <p class="m-0 text-sm" jhiTranslate="onboarding.employeeRequest.notice"></p>
     </div>
   </div>
 
   <!-- Form Actions -->
-  <div class="flex justify-end gap-4 mt-6 pt-4 border-t border-gray-200">
+  <div class="flex justify-between gap-4 mt-6 pt-4 border-t border-gray-200">
     <jhi-button
       type="button"
-      (click)="onCancel()"
+      (click)="onBack()"
       [shouldTranslate]="true"
-      label="entity.action.cancel"
+      label="entity.action.back"
       variant="outlined"
+      icon="arrow-left"
       [disabled]="isSubmitting()"
     />
-    <jhi-button
-      type="submit"
-      [disabled]="employeeForm.invalid || isSubmitting()"
-      [shouldTranslate]="true"
-      [label]="isSubmitting() ? 'onboarding.employeeRequest.submitting' : 'onboarding.employeeRequest.submit'"
-      severity="primary"
-      [icon]="isSubmitting() ? 'spinner' : 'paper-plane'"
-    />
+    <div class="flex gap-4">
+      <jhi-button
+        type="button"
+        (click)="onCancel()"
+        [shouldTranslate]="true"
+        label="entity.action.cancel"
+        variant="outlined"
+        [disabled]="isSubmitting()"
+      />
+      <jhi-button
+        type="submit"
+        [disabled]="employeeForm.invalid || isSubmitting()"
+        [shouldTranslate]="true"
+        [label]="isSubmitting() ? 'onboarding.employeeRequest.submitting' : 'onboarding.employeeRequest.submit'"
+        severity="primary"
+        [icon]="isSubmitting() ? 'spinner' : 'paper-plane'"
+      />
+    </div>
   </div>
 </form>
