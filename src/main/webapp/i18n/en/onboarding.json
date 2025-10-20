@@ -1,15 +1,129 @@
 {
   "onboarding": {
     "title": "You are a professor or staff?",
-    "body": "You are logged in but do not have any rights yet. If you are a professor or staff, please send us an email so that we can assign you to your research group and grant the appropriate rights. Please click the button below to do so.",
-    "disclaimer": "We will send you an email when your account has been activated. This may take a few days.",
+    "body": "You are logged in but do not have any rights yet. If you are a professor or staff, please fill out the form so that we can assign you to your research group and grant the appropriate rights. Please click the button below to do so.",
     "actions": {
-      "sendEmail": "Request access",
-      "imApplicant": "I'm an applicant"
+      "openForm": "Open Research Group Form",
+      "imApplicant": "I'm an applicant",
+      "imEmployee": "I'm an employee"
     },
     "email": {
       "subject": "Request: Access to research group in TUMApply",
       "body": "=== IMPORTANT NOTES ===\n- Please do not change the subject of this email.\n- Please fill out all required fields below.\n- The optional fields do not have to be filled out.\n- Please send this email from your official TUM email address.\n=== IMPORTANT NOTES ===\n\n\n\n=== Required ===\n\nPersonal information:\n- Title (Prof./Dr./…): \n- First name: \n- Last name: \n- TUM ID (e.g. ab12cde): \n\nInformation about the research group:\n- Head (title, first and last name): \n- Name: \n\n\n=== Optional ===\n\nInformation about the research group:\n- Abbreviation: \n- Contact email: \n- Website: \n- School: \n- Description: \n- Default field of studies: \n- Address:\n  - Street and number: \n  - Postal code: \n  - City: "
+    },
+    "employeeRequest": {
+      "dialogTitle": "Request Access as Employee",
+      "professorName": {
+        "label": "Professor Name",
+        "placeholder": "e.g. Prof. Dr. Max Mustermann"
+      },
+      "notice": "Your request will be sent to the administrators. They will assign you to the research group of the professor you entered and contact you.",
+      "confirmDialog": {
+        "header": "Confirm Request Submission",
+        "message": "Your request will be sent to the administrators for review. They will assign you to the research group of the specified professor and then contact you. Would you like to continue?",
+        "confirm": "Send Request"
+      },
+      "success": {
+        "summary": "Request Sent Successfully",
+        "detail": "Your employee access request has been submitted. Administrators will review it and contact you soon."
+      },
+      "error": {
+        "summary": "Submission Failed",
+        "detail": "Failed to submit your request. Please try again or contact support."
+      },
+      "submit": "Send Request",
+      "submitting": "Sending Request"
+    },
+    "professorRequest": {
+      "dialogTitle": "Request Access",
+      "approvalNotice": "Please note: The approval process for your research group may take a few days. Our administrators will review your request and contact you once it has been approved.",
+      "sections": {
+        "personalInfo": "Personal Information",
+        "researchGroupInfo": "Research Group Information",
+        "optionalInfo": "Optional Information",
+        "address": "Address"
+      },
+      "optionalHint": "The following fields are optional and can be filled in later.",
+      "title": {
+        "label": "Title",
+        "placeholder": "e.g. Prof., Dr., ..."
+      },
+      "firstName": {
+        "label": "First Name",
+        "placeholder": "Your first name"
+      },
+      "lastName": {
+        "label": "Last Name",
+        "placeholder": "Your last name"
+      },
+      "tumID": {
+        "label": "TUM ID",
+        "placeholder": "e.g. ab12cde"
+      },
+      "researchGroupHead": {
+        "label": "Head",
+        "placeholder": "e.g. Prof. Dr. Max Mustermann"
+      },
+      "researchGroupName": {
+        "label": "Name",
+        "placeholder": "e.g. Research Group for Artificial Intelligence"
+      },
+      "researchGroupAbbreviation": {
+        "label": "Abbreviation",
+        "placeholder": "e.g. AI"
+      },
+      "researchGroupContactEmail": {
+        "label": "Email",
+        "placeholder": "e.g. kontakt@forschung.de"
+      },
+      "researchGroupWebsite": {
+        "label": "Website",
+        "placeholder": "e.g. https://www.forschung.de/gruppe"
+      },
+      "researchGroupSchool": {
+        "label": "School",
+        "placeholder": "e.g. Informatics"
+      },
+      "researchGroupDescription": {
+        "label": "Description",
+        "placeholder": "Describe briefly your group's research focus, goals, and key areas."
+      },
+      "researchGroupFieldOfStudies": {
+        "label": "Field of Studies",
+        "placeholder": "e.g. Computer Science"
+      },
+      "researchGroupStreetAndNumber": {
+        "label": "Street and House Number",
+        "placeholder": "e.g. Musterstraße 123"
+      },
+      "researchGroupPostalCode": {
+        "label": "Postal Code",
+        "placeholder": "e.g. 12345"
+      },
+      "researchGroupCity": {
+        "label": "City",
+        "placeholder": "e.g. Berlin"
+      },
+      "additionalNotes": {
+        "label": "Additional Notes",
+        "placeholder": "Any additional information or comments..."
+      },
+      "confirmDialog": {
+        "header": "Confirm Request Submission",
+        "message": "Your request will be sent to the administrators for review. They will create your research group and contact you once it's approved. Do you want to proceed?",
+        "confirm": "Send Request"
+      },
+      "success": {
+        "summary": "Request Sent Successfully",
+        "detail": "Your research group request has been submitted. Administrators will review it and contact you soon."
+      },
+      "error": {
+        "summary": "Submission Failed",
+        "detail": "Failed to submit your request. Please try again or contact support."
+      },
+      "cancel": "Cancel",
+      "submit": "Send Request",
+      "submitting": "Sending Request"
     }
   }
 }
