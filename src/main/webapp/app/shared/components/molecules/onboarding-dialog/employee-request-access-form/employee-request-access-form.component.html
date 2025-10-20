@@ -1,0 +1,64 @@
+<!-- Confirmation Dialog -->
+<jhi-confirm-dialog
+  #confirmDialog
+  [header]="'onboarding.employeeRequest.confirmDialog.header' | translate"
+  [message]="'onboarding.employeeRequest.confirmDialog.message' | translate"
+  [label]="'onboarding.employeeRequest.confirmDialog.confirm' | translate"
+  severity="primary"
+  confirmIcon="paper-plane"
+  [showOpenButton]="false"
+  (confirmed)="onConfirmSubmit()"
+/>
+
+<form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
+  <!-- Professor Name Input -->
+  <div class="form-field">
+    <jhi-string-input
+      #firstInput
+      label="onboarding.employeeRequest.professorName.label"
+      placeholder="onboarding.employeeRequest.professorName.placeholder"
+      [required]="true"
+      [model]="employeeForm.get('professorName')?.value"
+      [control]="employeeForm.get('professorName') ?? undefined"
+      [shouldTranslate]="true"
+    />
+  </div>
+
+  <!-- Information Notice -->
+  <div class="flex items-start gap-3 p-4 bg-blue-50 border-l-4 border-[var(--p-primary-color)] rounded-r-lg mt-2">
+    <div class="flex-1">
+      <p class="m-0 text-sm" jhiTranslate="onboarding.employeeRequest.notice"></p>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex justify-between gap-4 mt-6 pt-4 border-t border-gray-200">
+    <jhi-button
+      type="button"
+      (click)="onBack()"
+      [shouldTranslate]="true"
+      label="entity.action.back"
+      variant="outlined"
+      icon="arrow-left"
+      [disabled]="isSubmitting()"
+    />
+    <div class="flex gap-4">
+      <jhi-button
+        type="button"
+        (click)="onCancel()"
+        [shouldTranslate]="true"
+        label="entity.action.cancel"
+        variant="outlined"
+        [disabled]="isSubmitting()"
+      />
+      <jhi-button
+        type="submit"
+        [disabled]="employeeForm.invalid || isSubmitting()"
+        [shouldTranslate]="true"
+        [label]="isSubmitting() ? 'onboarding.employeeRequest.submitting' : 'onboarding.employeeRequest.submit'"
+        severity="primary"
+        [icon]="isSubmitting() ? 'spinner' : 'paper-plane'"
+      />
+    </div>
+  </div>
+</form>
