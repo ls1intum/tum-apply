@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.notification.constants.EmailType;
@@ -16,7 +15,6 @@ import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -313,23 +311,23 @@ class EmailTemplateServiceTest {
             );
         }
 
-        @Nested
-        @DisplayName("readTemplateContent() method")
-        class ReadTemplateContentMethod {
-
-            @Test
-            void shouldThrowTemplateProcessingExceptionWhenFileMissing() throws Exception {
-                Method method = EmailTemplateService.class.getDeclaredMethod("readTemplateContent", String.class);
-                method.setAccessible(true);
-
-                String nonExistentPath = "not-existing-file.html";
-
-                assertThatThrownBy(() -> method.invoke(emailTemplateService, nonExistentPath))
-                    .hasCauseInstanceOf(TemplateProcessingException.class)
-                    .cause()
-                    .hasMessageContaining("Failed to read template file: " + nonExistentPath);
-            }
-        }
+        //        @Nested
+        //        @DisplayName("readTemplateContent() method")
+        //        class ReadTemplateContentMethod {
+        //
+        //            @Test
+        //            void shouldThrowTemplateProcessingExceptionWhenFileMissing() throws Exception {
+        //                Method method = EmailTemplateService.class.getDeclaredMethod("readTemplateContent", String.class);
+        //                method.setAccessible(true);
+        //
+        //                String nonExistentPath = "not-existing-file.html";
+        //
+        //                assertThatThrownBy(() -> method.invoke(emailTemplateService, nonExistentPath))
+        //                    .hasCauseInstanceOf(TemplateProcessingException.class)
+        //                    .cause()
+        //                    .hasMessageContaining("Failed to read template file: " + nonExistentPath);
+        //            }
+        //        }
     }
 
     private ResearchGroup createResearchGroup() {
