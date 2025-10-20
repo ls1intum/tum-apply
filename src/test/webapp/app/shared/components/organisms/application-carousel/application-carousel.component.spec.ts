@@ -42,6 +42,10 @@ describe('ApplicationCarouselComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   // ---------------- BREAKPOINT EFFECT ----------------
 
   it('should default cardsVisible to 3 on desktop breakpoints', () => {
@@ -82,6 +86,17 @@ describe('ApplicationCarouselComponent', () => {
     fixture.detectChanges();
 
     expect(component.cardsVisible()).toBe(3);
+  });
+
+  it('should handle empty applications array', () => {
+    fixture.componentRef.setInput('applications', []);
+    fixture.componentRef.setInput('windowIndex', 0);
+    component.cardsVisible.set(3);
+    fixture.detectChanges();
+
+    const result = component.visibleApps();
+    expect(result.length).toBe(3);
+    expect(result.every(app => app === undefined)).toBe(true);
   });
 
   it('should ignore effect when result is null', () => {
@@ -183,6 +198,14 @@ describe('ApplicationCarouselComponent', () => {
 
     component.cardsVisible.set(1);
     expect(component.middle()).toBe(0);
+  });
+
+  it('should compute middle correctly for even cardsVisible', () => {
+    component.cardsVisible.set(4);
+    expect(component.middle()).toBe(2);
+
+    component.cardsVisible.set(6);
+    expect(component.middle()).toBe(3);
   });
 
   // ---------------- OUTPUT EVENTS ----------------
