@@ -13,15 +13,15 @@ import { ApplicantDTO } from './applicantDTO';
 
 
 export interface ApplicationForApplicantDTO { 
-    applicationId?: string;
     applicant?: ApplicantDTO;
-    job: JobCardDTO;
+    applicationId?: string;
     applicationState: ApplicationForApplicantDTO.ApplicationStateEnum;
+    customFields?: Array<CustomFieldAnswerDTO>;
     desiredDate?: string;
+    job: JobCardDTO;
+    motivation?: string;
     projects?: string;
     specialSkills?: string;
-    motivation?: string;
-    customFields?: Array<CustomFieldAnswerDTO>;
 }
 export namespace ApplicationForApplicantDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
