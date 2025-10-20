@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -56,7 +57,7 @@ public class ApplicationResource {
      * @param applicationId the UUID of the application
      * @return the ApplicationForApplicantDTO if found, otherwise 404 Not Found
      */
-    @ApplicantOrAdmin
+    @Authenticated
     @GetMapping("/{applicationId}")
     public ResponseEntity<ApplicationForApplicantDTO> getApplicationById(@PathVariable UUID applicationId) {
         ApplicationForApplicantDTO application = applicationService.getApplicationById(applicationId);
@@ -209,7 +210,7 @@ public class ApplicationResource {
      * @param applicationId the UUID of the application
      * @return the document ID mappings for the application
      */
-    @ApplicantOrAdmin
+    @Authenticated
     @GetMapping("/getDocumentIds/{applicationId}")
     public ResponseEntity<ApplicationDocumentIdsDTO> getDocumentDictionaryIds(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(applicationService.getDocumentDictionaryIdsOfApplication(applicationId));
