@@ -21,140 +21,126 @@
   [showOpenButton]="false"
   (confirmed)="onDeleteJob()"
 />
+
 @if (dataLoaded()) {
   <div [class]="isSummaryPage() ? '' : 'page-container'">
     <!-- Header Section -->
-    <div class="header-container">
+    <div class="header-container mb-8 border-b border-gray-200">
       <div class="flex flex-col gap-4">
         <h1 class="page-header">{{ jobDetails()?.title }}</h1>
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
-          <div class="flex items-center gap-2 text-secondary text-sm">
-            <fa-icon [icon]="['fas', 'user-tie']" class="w-4 h-4 text-primary shrink-0" />
-            <span><strong>Supervisor: </strong>{{ jobDetails()?.supervisingProfessor || noData() }}</span>
+          <div class="flex items-center gap-2 text-sm">
+            <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
+            <span
+              ><strong>{{ 'jobDetailPage.header.supervisor' | translate }}</strong> {{ jobDetails()?.supervisingProfessor || '-' }}</span
+            >
           </div>
-          <div class="flex items-center gap-2 text-secondary text-sm">
-            <fa-icon [icon]="['fas', 'location-dot']" class="w-4 h-4 text-primary shrink-0" />
-            <span><strong>Location: </strong>{{ jobDetails()?.location || noData() }}</span>
+          <div class="flex items-center gap-2 text-sm">
+            <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
+            <span
+              ><strong>{{ 'jobDetailPage.header.location' | translate }}</strong> {{ jobDetails()?.location || '-' }}</span
+            >
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-end gap-4 md:flex-col md:items-end sm:flex-row sm:justify-between sm:items-stretch">
+      <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
         @if (rightActionButtons()) {
           <jhi-button-group [data]="rightActionButtons()!" [shouldTranslate]="true" />
         }
         <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
         @if (previewData()) {
-          <jhi-tag class="mt-2" [text]="'jobState.preview' | translate" [color]="'info'" />
+          <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
         } @else if (jobDetails()?.belongsToResearchGroup) {
-          <jhi-tag class="mt-2" [text]="jobStateText | translate" [color]="jobStateColor" />
+          <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
         }
       </div>
     </div>
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 xl:grid-cols-[1fr_25rem] gap-8 mb-8">
+    <div class="grid grid-cols-1 xl:grid-cols-[1fr_25rem] gap-8">
       <!-- Left Column: Text Sections -->
       <div class="flex flex-col gap-8">
         <section>
-          <h2 class="text-2xl font-semibold text-primary mb-4">Job Description</h2>
-          @if (jobDetails()?.description !== '') {
-            <div class="prose prose-sm text-secondary leading-relaxed" [innerHTML]="jobDetails()?.description"></div>
-          } @else {
-            <div class="prose prose-sm text-secondary leading-relaxed">{{ noData() }}</div>
-          }
+          <h2 class="section-title">{{ 'jobDetailPage.sections.jobDescription' | translate }}</h2>
+          <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.description || '-'"></div>
         </section>
 
         <section>
-          <h2 class="text-2xl font-semibold text-primary mb-4">Tasks & Responsibilities</h2>
-          @if (jobDetails()?.tasks !== '') {
-            <div class="prose prose-sm text-secondary leading-relaxed" [innerHTML]="jobDetails()?.tasks"></div>
-          } @else {
-            <div class="prose prose-sm text-secondary leading-relaxed">{{ noData() }}</div>
-          }
+          <h2 class="section-title">{{ 'jobDetailPage.sections.tasksResponsibilities' | translate }}</h2>
+          <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.tasks || '-'"></div>
         </section>
 
         <section>
-          <h2 class="text-2xl font-semibold text-primary mb-4">Eligibility Criteria</h2>
-          @if (jobDetails()?.requirements !== '') {
-            <div class="prose prose-sm text-secondary leading-relaxed" [innerHTML]="jobDetails()?.requirements"></div>
-          } @else {
-            <div class="prose prose-sm text-secondary leading-relaxed">{{ noData() }}</div>
-          }
+          <h2 class="section-title">{{ 'jobDetailPage.sections.eligibilityCriteria' | translate }}</h2>
+          <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.requirements || '-'"></div>
         </section>
       </div>
 
       <!-- Right Column: Cards -->
-      <div class="flex flex-col gap-6">
-        <div class="border border-gray-200 rounded-lg p-6 bg-white">
-          <div class="flex items-center gap-3 border-b border-gray-200 mb-4 pb-4">
-            <fa-icon [icon]="['fas', 'briefcase']" class="w-4 h-4 text-primary" />
-            <h3 class="font-semibold text-base m-0">Position Overview</h3>
+      <div class="flex flex-col">
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'briefcase']" class="icon" />
+            <h3 class="card-title">{{ 'jobDetailPage.cards.positionOverview' | translate }}</h3>
           </div>
-          <div class="text-sm">
-            <div class="flex flex-col gap-2">
-              <div class="flex justify-between items-center text-sm">
-                <span class="font-semibold text-secondary">Field of Studies</span>
-                <span class="text-right text-primary">{{ jobDetails()?.fieldOfStudies || noData() }}</span>
+          <div class="card-body">
+            <div class="info-list">
+              <div class="info-row">
+                <span class="label">{{ 'jobDetailPage.labels.fieldOfStudies' | translate }}</span>
+                <span class="value">{{ jobDetails()?.fieldOfStudies || '-' }}</span>
               </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="font-semibold text-secondary">Research Area</span>
-                <span class="text-right text-primary">{{ jobDetails()?.researchArea || noData() }}</span>
+              <div class="info-row">
+                <span class="label">{{ 'jobDetailPage.labels.researchArea' | translate }}</span>
+                <span class="value">{{ jobDetails()?.researchArea || '-' }}</span>
               </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="font-semibold text-secondary">Workload</span>
+              <div class="info-row">
+                <span class="label">{{ 'jobDetailPage.labels.workload' | translate }}</span>
                 @if (jobDetails()?.workload !== '') {
-                  <span class="text-right text-primary">{{ jobDetails()?.workload }} hours/week</span>
+                  <span class="value">{{ jobDetails()?.workload }} {{ 'jobDetailPage.units.hoursPerWeek' | translate }}</span>
                 } @else {
-                  <span class="text-right text-primary">{{ noData() }}</span>
+                  <span class="value">-</span>
                 }
               </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="font-semibold text-secondary">Contract Duration</span>
+              <div class="info-row">
+                <span class="label">{{ 'jobDetailPage.labels.contractDuration' | translate }}</span>
                 @if (jobDetails()?.contractDuration !== '') {
-                  <span class="text-right text-primary">{{ jobDetails()?.contractDuration }} years</span>
+                  <span class="value">{{ jobDetails()?.contractDuration }} {{ 'jobDetailPage.units.years' | translate }}</span>
                 } @else {
-                  <span class="text-right text-primary">{{ noData() }}</span>
+                  <span class="value">-</span>
                 }
               </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="font-semibold text-secondary">Funding Type</span>
-                <span class="text-right text-primary">{{ jobDetails()?.fundingType || noData() }}</span>
+              <div class="info-row">
+                <span class="label">{{ 'jobDetailPage.labels.fundingType' | translate }}</span>
+                <span class="value">{{ jobDetails()?.fundingType || '-' }}</span>
               </div>
-              <div class="flex justify-between items-center text-sm">
-                <span class="font-semibold text-secondary">Start Date</span>
-                <span class="text-right text-primary">{{ jobDetails()?.startDate || noData() }}</span>
+              <div class="info-row">
+                <span class="label">{{ 'jobDetailPage.labels.startDate' | translate }}</span>
+                <span class="value">{{ jobDetails()?.startDate || '-' }}</span>
               </div>
               @if (jobDetails()?.endDate) {
-                <div class="flex justify-between items-center text-sm">
-                  <span class="font-semibold text-secondary">Application End Date</span>
-                  <span class="text-right text-red-600 font-semibold">{{ jobDetails()?.endDate }}</span>
+                <div class="info-row">
+                  <span class="label">{{ 'jobDetailPage.labels.applicationEndDate' | translate }}</span>
+                  <span class="value text-danger">{{ jobDetails()?.endDate }}</span>
                 </div>
               }
             </div>
           </div>
         </div>
 
-        <div class="border border-gray-200 rounded-lg p-6 bg-white">
-          <div class="flex items-center gap-3 border-b border-gray-200 mb-4 pb-4">
-            <fa-icon [icon]="['fas', 'users']" class="w-4 h-4 text-primary" />
-            <h3 class="font-semibold text-base m-0">Research Group</h3>
+        <div class="detail-card">
+          <div class="card-header">
+            <fa-icon [icon]="['fas', 'users']" class="icon" />
+            <h3 class="card-title">{{ 'jobDetailPage.cards.researchGroup' | translate }}</h3>
           </div>
-          <div class="text-sm">
-            <h4 class="text-base font-semibold text-primary mb-4">{{ jobDetails()?.researchGroup || noData() }}</h4>
-            @if (jobDetails()?.researchGroupDescription !== '') {
-              <div
-                class="text-secondary leading-relaxed mb-4 text-sm prose prose-sm"
-                [innerHTML]="jobDetails()?.researchGroupDescription"
-              ></div>
-            } @else {
-              <div class="text-secondary leading-relaxed mb-4 text-sm">{{ noData() }}</div>
-            }
+          <div class="card-body">
+            <h4 class="text-base font-semibold mb-4">{{ jobDetails()?.researchGroup || '-' }}</h4>
+            <div class="leading-relaxed mb-4 text-sm prose prose-sm" [innerHTML]="jobDetails()?.researchGroupDescription || '-'"></div>
 
             @if (jobDetails()?.researchGroupEmail || jobDetails()?.researchGroupWebsite || jobDetails()?.researchGroupStreet) {
               <div class="mt-4">
                 @if (jobDetails()?.researchGroupStreet) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
-                    <fa-icon [icon]="['fas', 'location-dot']" class="w-4 h-4 text-primary" />
+                    <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
                     <div>
                       <div>{{ jobDetails()?.researchGroupStreet }}</div>
                       <div>{{ jobDetails()?.researchGroupPostalCode }} {{ jobDetails()?.researchGroupCity }}</div>
@@ -163,22 +149,16 @@
                 }
                 @if (jobDetails()?.researchGroupEmail) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
-                    <fa-icon [icon]="['fas', 'envelope']" class="w-4 h-4 text-primary" />
-                    <a class="text-primary hover:underline" [href]="'mailto:' + jobDetails()?.researchGroupEmail">{{
-                      jobDetails()?.researchGroupEmail
-                    }}</a>
+                    <fa-icon [icon]="['fas', 'envelope']" class="icon" />
+                    <a class="link" [href]="'mailto:' + jobDetails()?.researchGroupEmail">{{ jobDetails()?.researchGroupEmail }}</a>
                   </div>
                 }
                 @if (jobDetails()?.researchGroupWebsite) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
-                    <fa-icon [icon]="['fas', 'globe']" class="w-4 h-4 text-primary" />
-                    <a
-                      class="text-primary hover:underline"
-                      [href]="jobDetails()?.researchGroupWebsite"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      >{{ jobDetails()?.researchGroupWebsite }}</a
-                    >
+                    <fa-icon [icon]="['fas', 'globe']" class="icon" />
+                    <a class="link" [href]="jobDetails()?.researchGroupWebsite" target="_blank" rel="noopener noreferrer">{{
+                      jobDetails()?.researchGroupWebsite
+                    }}</a>
                   </div>
                 }
               </div>
@@ -190,15 +170,15 @@
 
     <!-- Data Protection Information -->
     <section class="mb-8">
-      <h2 class="text-2xl font-semibold text-primary mb-4">Data Protection Information</h2>
+      <h2 class="section-title">{{ 'jobDetailPage.sections.dataProtection' | translate }}</h2>
       <div
-        class="text-secondary leading-relaxed text-sm p-4 bg-gray-50 border-l-4 border-primary rounded prose prose-sm"
+        class="leading-relaxed text-sm p-4 bg-gray-50 border-l-4 border-primary rounded prose prose-sm"
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
       ></div>
     </section>
 
     @if (!previewData()) {
-      <section class="mt-8">
+      <section class="mt-8 pt-8 border-t border-gray-200">
         <div class="flex justify-start">
           <jhi-button label="jobActionButton.back" severity="info" variant="outlined" (click)="onBack()" [shouldTranslate]="true" />
         </div>

@@ -1,74 +1,15 @@
-@use '../../../content/scss/breakpoints' as bp;
-
-// Hide confirm dialogs by default
+// Hide confirm dialogs by default and ensure they don't affect layout
 .confirm-dialog {
-  display: none;
+  display: none !important;
 }
 
-// Header divider - only custom style needed for header
-.header-container {
-  border-bottom: 0.05rem solid var(--p-border-default);
-  margin-bottom: 2rem;
+.text-danger {
+  color: var(--p-danger-color);
 }
 
-// Responsive adjustments for mobile header
-@media (max-width: 768px) {
-  .header-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-// Rich text content styling for prose elements
+// Ensure proper text wrapping for job content
 .prose {
-  p {
-    margin-bottom: 1rem;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  ul,
-  ol {
-    margin: 1rem 0;
-    padding-left: 1.5rem;
-
-    li {
-      margin-bottom: 0.5rem;
-    }
-  }
-
-  strong {
-    font-weight: 600;
-    color: var(--p-text-primary);
-  }
-}
-
-// Mobile responsive adjustments for info rows
-@media (max-width: 768px) {
-  .flex.justify-between.items-center.text-sm {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-
-    span:last-child {
-      text-align: left !important;
-    }
-  }
-}
-
-// Very small screen adjustments
-@media (max-width: 480px) {
-  .border.border-gray-200.rounded-lg {
-    padding: 1rem;
-  }
-
-  .text-2xl {
-    font-size: 1.25rem;
-  }
-
-  .gap-6 {
-    gap: 1rem;
-  }
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
