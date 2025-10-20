@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Signal, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { BREAKPOINT_QUERIES } from '../../../constants/breakpoints';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO';
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;
@@ -85,7 +85,7 @@ export class ApplicationCarouselComponent {
 
   private readonly bp = inject(BreakpointObserver);
 
-  private readonly breakpoint = toSignal<BreakpointState | undefined>(
+  private readonly breakpoint: Signal<BreakpointState | undefined> = toSignal(
     this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]),
     {
       initialValue: undefined,
