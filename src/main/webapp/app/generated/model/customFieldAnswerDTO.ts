@@ -10,9 +10,9 @@
 
 
 export interface CustomFieldAnswerDTO { 
-    customFieldAnswerId?: string;
-    customField?: any | null;
     answers?: Array<string>;
+    customField?: any | null;
+    customFieldAnswerId?: string;
     documents?: Array<any>;
 }
 
