@@ -674,18 +674,6 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/JobFilterOptionDTO'}
                 uniqueItems: true
-  /api/jobs/allNames:
-    get:
-      tags: [job-resource]
-      operationId: getAllJobNamesByProfessor
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {type: string}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -699,12 +687,6 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32, minimum: 0}
-      - name: titles
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
       - name: fieldOfStudies
         in: query
         required: false
@@ -824,12 +806,6 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32, minimum: 0}
-      - name: titles
-        in: query
-        required: false
-        schema:
-          type: array
-          items: {type: string}
       - name: states
         in: query
         required: false
@@ -1611,9 +1587,6 @@ components:
       type: object
       properties:
         fieldsOfStudy:
-          type: array
-          items: {type: string}
-        jobNames:
           type: array
           items: {type: string}
         supervisorNames:

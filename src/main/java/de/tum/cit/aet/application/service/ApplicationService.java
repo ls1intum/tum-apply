@@ -446,14 +446,16 @@ public class ApplicationService {
         if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
-        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         if (currentUserService.isProfessor()) {
             return application;
         }
         currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
         return application;
     }
-    
+
     /**
      * Asserts that the current user can view the application with the given ID.
      * Allows access to:
@@ -468,17 +470,17 @@ public class ApplicationService {
         if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
-        
+
         ApplicationForApplicantDTO application = applicationRepository.findDtoById(applicationId);
         if (application == null) {
             throw EntityNotFoundException.forId("Application", applicationId);
         }
-        
+
         // Allow any professor to view applications
         if (currentUserService.isProfessor()) {
             return application;
         }
-        
+
         currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
         return application;
     }
