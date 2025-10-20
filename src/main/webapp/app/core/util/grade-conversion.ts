@@ -1,4 +1,4 @@
-import { isLowerLimitOrGradeLetter, isNumeric, isPercentage, isUpperLimitLetter, parseNumeric } from './grade-format.validator';
+import { isLetter, isNumeric, isPercentage, parseNumeric } from './grade-format.validator';
 
 /**
  * Converts a grade to the German grading system (1.0 - 4.0) using the modified Bavarian formula.
@@ -35,11 +35,7 @@ export function convertToGermanGrade(upperLimit: string, lowerLimit: string, gra
     nMax = parseNumeric(upperLimit);
     nMin = parseNumeric(lowerLimit);
     nd = parseNumeric(grade);
-  } else if (
-    (isUpperLimitLetter(upperLimit) || isLowerLimitOrGradeLetter(upperLimit)) &&
-    (isUpperLimitLetter(lowerLimit) || isLowerLimitOrGradeLetter(lowerLimit)) &&
-    (isUpperLimitLetter(grade) || isLowerLimitOrGradeLetter(grade))
-  ) {
+  } else if (isLetter(grade)) {
     // Letter format (e.g., A+, A, B)
     // Convert letters to numerical values
     const letterValues = convertLettersToNumerical(upperLimit, lowerLimit, grade);
@@ -112,21 +108,57 @@ function generateLetterScale(upperLimit: string, lowerLimit: string): Map<string
   const upper = normalizeLetter(upperLimit);
   const lower = normalizeLetter(lowerLimit);
 
-  const start = upper.charCodeAt(0);
-  const end = lower.charCodeAt(0);
+  const upperLetter = upper.charAt(0);
+  const lowerLetter = lower.charAt(0);
+  const upperModifier = upper.length > 1 ? upper.charAt(1) : '';
+
+  const start = upperLetter.charCodeAt(0);
+  const end = lowerLetter.charCodeAt(0);
 
   const map = new Map<string, number>();
-  let counter = 1;
+  let currentValue = 1;
 
-  for (let code = start; code <= end; code++) {
+  // Handle the first letter (upper limit) specially
+  const firstLetter = String.fromCharCode(start);
+
+  if (upperModifier === '+') {
+    // Upper limit has +: A+ = 1, A = 2, A- = 2.3
+    map.set(`${firstLetter}+`, currentValue);
+    currentValue = 2;
+    map.set(firstLetter, currentValue);
+    currentValue = 2.3;
+    map.set(`${firstLetter}-`, currentValue);
+    currentValue = 2.7;
+  } else if (upperModifier === '-') {
+    // Upper limit has -: A- = 1, B+ = 1.5
+    map.set(`${firstLetter}-`, currentValue);
+    currentValue = 1.5;
+  } else {
+    // Upper limit has no modifier: A = 1, A- = 1.3
+    map.set(firstLetter, currentValue);
+    currentValue = 1.3;
+    map.set(`${firstLetter}-`, currentValue);
+    currentValue = 1.7;
+  }
+
+  // Handle remaining letters
+  for (let code = start + 1; code <= end; code++) {
     const letter = String.fromCharCode(code);
 
-    // If A+ or A* exists, treat it as a separate level before the base letter
-    if (code === start && upper.endsWith('+')) {
-      map.set(`${letter}+`, counter++);
+    // Special case: if upper limit was -, add 0.5 for the first B+
+    if (code === start + 1 && upperModifier === '-') {
+      map.set(`${letter}+`, currentValue);
+      currentValue = 2;
+    } else {
+      map.set(`${letter}+`, currentValue);
+      currentValue = Math.round((currentValue + 0.3) * 10) / 10;
     }
 
-    map.set(letter, counter++);
+    map.set(letter, currentValue);
+    currentValue = Math.round((currentValue + 0.3) * 10) / 10;
+
+    map.set(`${letter}-`, currentValue);
+    currentValue = Math.round((currentValue + 0.4) * 10) / 10;
   }
 
   return map;
