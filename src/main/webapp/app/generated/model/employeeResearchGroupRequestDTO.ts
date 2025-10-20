@@ -9,12 +9,7 @@
  */
 
 
-export interface ResearchGroupLargeDTO { 
-    city?: string;
-    description?: string;
-    email?: string;
-    postalCode?: string;
-    street?: string;
-    website?: string;
+export interface EmployeeResearchGroupRequestDTO { 
+    professorName: string;
 }
 
