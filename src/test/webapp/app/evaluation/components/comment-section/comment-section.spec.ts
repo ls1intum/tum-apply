@@ -6,7 +6,6 @@ import { CommentSection } from 'app/evaluation/components/comment-section/commen
 import { InternalCommentResourceApiService } from 'app/generated/api/internalCommentResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
 import { AccountService } from 'app/core/auth/account.service';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 type CommentDTO = {
   commentId: string;
@@ -48,13 +47,16 @@ describe('CommentSection', () => {
         { provide: ToastService, useValue: mockToast },
         { provide: AccountService, useValue: { user: () => ({ name: 'Alice Reviewer' }) } },
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(CommentSection, { set: { template: '' } })
       .compileComponents();
 
     fixture = TestBed.createComponent(CommentSection);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should create component and set current user', () => {
@@ -189,6 +191,25 @@ describe('CommentSection', () => {
     expect(component['comments']()).toEqual([
       { commentId: 'c1', message: 'first' },
       { commentId: 'c2', message: 'second' },
+    ]);
+  });
+
+  it('should preserve comment order when updating', async () => {
+    component['comments'].set([
+      { commentId: 'c1', message: 'first' },
+      { commentId: 'c2', message: 'second' },
+      { commentId: 'c3', message: 'third' },
+    ]);
+
+    const updated: CommentDTO = { commentId: 'c2', message: 'UPDATED' };
+    mockCommentApi.updateComment.mockReturnValueOnce(of(updated));
+
+    await component.updateComment('c2', 'UPDATED');
+
+    expect(component['comments']()).toEqual([
+      { commentId: 'c1', message: 'first' },
+      { commentId: 'c2', message: 'UPDATED' },
+      { commentId: 'c3', message: 'third' },
     ]);
   });
 

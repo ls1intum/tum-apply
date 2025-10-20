@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
@@ -42,7 +41,6 @@ describe('DocumentSection', () => {
         { provide: ToastService, useValue: mockToast },
         { provide: TranslateService, useValue: mockTranslate },
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(DocumentSection, { set: { template: '' } })
       .compileComponents();
@@ -83,14 +81,14 @@ describe('DocumentSection', () => {
 
     it('should compute hasDocuments correctly', () => {
       expect(component.hasDocuments()).toBe(false);
-      component.documents.set([{ label: 'lbl', id: { id: 'd1' } as any }]);
+      component.documents.set([{ label: 'lbl', document: { id: 'd1' } as any }]);
       expect(component.hasDocuments()).toBe(true);
     });
 
     it('should compute allDocumentsTooltip using translate.instant', () => {
       component.extraDocuments.set([
-        { label: 'lbl1', id: { id: '1' } as any },
-        { label: 'lbl2', id: { id: '2' } as any },
+        { label: 'lbl1', document: { id: '1' } as any },
+        { label: 'lbl2', document: { id: '2' } as any },
       ]);
       const tooltip = component.allDocumentsTooltip();
       expect(tooltip).toBe('t:lbl1, t:lbl2');

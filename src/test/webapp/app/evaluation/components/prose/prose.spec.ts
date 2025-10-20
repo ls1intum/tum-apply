@@ -2,10 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Prose } from 'app/evaluation/components/prose/prose';
-
-enum MockSecurityContext {
-  HTML = 1,
-}
+import { SecurityContext } from '@angular/core';
 
 describe('Prose', () => {
   let fixture: ComponentFixture<Prose>;
@@ -13,13 +10,13 @@ describe('Prose', () => {
   let mockSanitizer: { sanitize: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    mockSanitizer = { sanitize: vi.fn((ctx: MockSecurityContext, val: string) => val) };
+    mockSanitizer = { sanitize: vi.fn((ctx: SecurityContext, val: string) => val) };
 
     await TestBed.configureTestingModule({
       imports: [Prose],
       providers: [{ provide: DomSanitizer, useValue: mockSanitizer }],
     })
-      .overrideComponent(Prose, { set: { template: '' } }) // don’t render HTML
+      .overrideComponent(Prose, { set: { template: '' } })
       .compileComponents();
 
     fixture = TestBed.createComponent(Prose);
@@ -40,7 +37,7 @@ describe('Prose', () => {
     fixture.detectChanges();
 
     expect(comp.safeHtml()).toBe('<b>ok</b>');
-    expect(mockSanitizer.sanitize).toHaveBeenCalledWith(MockSecurityContext.HTML, '<b>ok</b>');
+    expect(mockSanitizer.sanitize).toHaveBeenCalledWith(SecurityContext.HTML, '<b>ok</b>');
   });
 
   it('returns "—" if sanitizer returns null', () => {

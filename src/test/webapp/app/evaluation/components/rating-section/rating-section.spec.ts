@@ -6,7 +6,6 @@ import { RatingSection } from 'app/evaluation/components/rating-section/rating-s
 import { RatingResourceApiService } from 'app/generated/api/ratingResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
 import { AccountService } from 'app/core/auth/account.service';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RatingOverviewDTO } from 'app/generated/model/ratingOverviewDTO';
 
 describe('RatingSection', () => {
@@ -35,7 +34,6 @@ describe('RatingSection', () => {
         { provide: ToastService, useValue: mockToast },
         { provide: AccountService, useValue: { user: () => ({ name: 'Prof X' }) } },
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     })
       .overrideComponent(RatingSection, { set: { template: '' } })
       .compileComponents();
@@ -193,6 +191,28 @@ describe('RatingSection', () => {
     await new Promise(r => setTimeout(r, 0));
 
     expect(mockRatingApi.updateRating).not.toHaveBeenCalled();
+  });
+
+  it('should reload ratings when applicationId changes', async () => {
+    const response1: RatingOverviewDTO = { currentUserRating: 3, otherRatings: [1, 2] } as any;
+    const response2: RatingOverviewDTO = { currentUserRating: 5, otherRatings: [4] } as any;
+
+    mockRatingApi.getRatings.mockReturnValueOnce(of(response1));
+    fixture.componentRef.setInput('applicationId', 'app-11');
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    expect(component.myRating()).toBe(3);
+    expect(component.otherRatings()).toEqual([1, 2]);
+
+    mockRatingApi.getRatings.mockReturnValueOnce(of(response2));
+    fixture.componentRef.setInput('applicationId', 'app-12');
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    expect(component.myRating()).toBe(5);
+    expect(component.otherRatings()).toEqual([4]);
+    expect(mockRatingApi.getRatings).toHaveBeenCalledTimes(2);
   });
 
   it('should return [] for otherRatings when ratings is undefined', () => {
