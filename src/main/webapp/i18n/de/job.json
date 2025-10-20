@@ -151,7 +151,6 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "jobSearchPlaceholder": "Suche Stellen...",
         "stateSearchPlaceholder": "Suche Status..."
       }
     },
@@ -170,10 +169,6 @@
       "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
     },
     "errors": {
-      "loadJobNames": {
-        "summary": "Fehler",
-        "detail": "Laden der Jobnamen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
-      },
       "loadJobs": {
         "summary": "Fehler",
         "detail": "Laden der Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."

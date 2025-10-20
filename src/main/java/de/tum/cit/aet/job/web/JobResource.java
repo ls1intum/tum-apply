@@ -8,7 +8,6 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.service.JobService;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -177,20 +176,6 @@ public class JobResource {
         @RequestParam(required = false) String searchQuery
     ) {
         return ResponseEntity.ok(jobService.getJobsByProfessor(pageDTO, professorJobsFilterDTO, sortDTO, searchQuery));
-    }
-
-    /**
-     * {@code GET /api/jobs/allNames} : Returns all unique job names created by the
-     * current professor.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
-     *         {@link List} of {@link String} job names
-     */
-    @ProfessorOrAdmin
-    @GetMapping("/allNames")
-    public ResponseEntity<List<String>> getAllJobNamesByProfessor() {
-        List<String> jobNames = jobService.getAllJobNamesByProfessor();
-        return ResponseEntity.ok(jobNames);
     }
 
     /**

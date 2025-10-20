@@ -313,20 +313,7 @@ public class JobService {
             enumStates = professorJobsFilterDTO.states().stream().map(JobState::fromValue).filter(Objects::nonNull).toList();
         }
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
-        return jobRepository.findAllJobsByProfessor(userId, professorJobsFilterDTO.titles(), enumStates, normalizedSearchQuery, pageable);
-    }
-
-    /**
-     * Retrieves all unique job names for the current professor.
-     * This is used for filter dropdown options and should not be affected by
-     * current filters.
-     *
-     * @return a list of all unique job names by current professor sorted
-     *         alphabetically
-     */
-    public List<String> getAllJobNamesByProfessor() {
-        UUID userId = currentUserService.getUserId();
-        return jobRepository.findAllUniqueJobNamesByProfessor(userId);
+        return jobRepository.findAllJobsByProfessor(userId, enumStates, normalizedSearchQuery, pageable);
     }
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {

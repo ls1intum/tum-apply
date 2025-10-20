@@ -25,7 +25,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * Results are paginated.
      *
      * @param userId      the ID of the professor (user)
-     * @param titles      a list of job titles to filter by (nullable)
      * @param states      a list of job states to filter by (nullable)
      * @param searchQuery general search term for job title (nullable, whitespace
      *                    will be trimmed)
@@ -46,7 +45,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             )
             FROM Job j
             WHERE j.supervisingProfessor.userId = :userId
-            AND (:titles IS NULL OR j.title IN :titles)
             AND (:states IS NULL OR j.state IN :states)
             AND (:searchQuery IS NULL OR
                  j.title LIKE CONCAT('%', :searchQuery, '%') OR
@@ -56,27 +54,10 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     )
     Page<CreatedJobDTO> findAllJobsByProfessor(
         @Param("userId") UUID userId,
-        @Param("titles") List<String> titles,
         @Param("states") List<JobState> states,
         @Param("searchQuery") String searchQuery,
         Pageable pageable
     );
-
-    /**
-     * Finds all unique job titles created by a specific professor.
-     *
-     * @param userId the ID of the professor (user)
-     * @return a list of unique job titles
-     */
-    @Query(
-        """
-        SELECT DISTINCT j.title
-        FROM Job j
-        WHERE j.supervisingProfessor.userId = :userId
-        ORDER BY j.title ASC
-        """
-    )
-    List<String> findAllUniqueJobNamesByProfessor(@Param("userId") UUID userId);
 
     /**
      * Finds all available job postings with optional filtering and custom sorting

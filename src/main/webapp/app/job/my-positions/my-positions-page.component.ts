@@ -70,10 +70,7 @@ export class MyPositionsPageComponent {
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
-  readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedStatusFilters = signal<string[]>([]);
-
-  readonly allJobNames = signal<string[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
@@ -111,10 +108,6 @@ export class MyPositionsPageComponent {
   private router = inject(Router);
   private toastService = inject(ToastService);
 
-  constructor() {
-    void this.loadAllJobNames();
-  }
-
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
     const size = event.rows ?? this.pageSize();
@@ -136,11 +129,7 @@ export class MyPositionsPageComponent {
   }
 
   onFilterEmit(filterChange: FilterChange): void {
-    if (filterChange.filterId === 'job') {
-      this.page.set(0);
-      this.selectedJobFilters.set(filterChange.selectedValues);
-      void this.loadJobs();
-    } else if (filterChange.filterId === 'status') {
+    if (filterChange.filterId === 'status') {
       this.page.set(0);
       const enumValues = this.mapTranslationKeysToEnumValues(filterChange.selectedValues);
       this.selectedStatusFilters.set(enumValues);
@@ -171,16 +160,6 @@ export class MyPositionsPageComponent {
       console.error('Unable to view job with job id:', jobId);
     }
     this.router.navigate([`/job/detail/${jobId}`]);
-  }
-
-  async loadAllJobNames(): Promise<void> {
-    try {
-      const jobNames = await firstValueFrom(this.jobService.getAllJobNamesByProfessor());
-      this.allJobNames.set(jobNames.sort());
-    } catch {
-      this.allJobNames.set([]);
-      this.toastService.showErrorKey('myPositionsPage.errors.loadJobNames');
-    }
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
@@ -218,12 +197,10 @@ export class MyPositionsPageComponent {
       if (this.userId() === '') {
         return;
       }
-      const jobNameFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
       const pageData = await firstValueFrom(
         this.jobService.getJobsByProfessor(
           this.pageSize(),
           this.page(),
-          jobNameFilters.length ? jobNameFilters : undefined,
           emptyToUndef(this.selectedStatusFilters()),
           this.sortBy(),
           this.sortDirection(),
