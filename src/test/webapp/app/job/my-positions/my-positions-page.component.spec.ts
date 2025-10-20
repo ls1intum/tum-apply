@@ -19,7 +19,6 @@ describe('MyPositionsPageComponent', () => {
   let router: Mocked<Router>;
 
   let mockJobService: {
-    getAllJobNamesByProfessor: ReturnType<typeof vi.fn>;
     getJobsByProfessor: ReturnType<typeof vi.fn>;
     deleteJob: ReturnType<typeof vi.fn>;
     changeJobState: ReturnType<typeof vi.fn>;
@@ -29,7 +28,6 @@ describe('MyPositionsPageComponent', () => {
 
   beforeEach(async () => {
     mockJobService = {
-      getAllJobNamesByProfessor: vi.fn().mockReturnValue(of(['A', 'B'])),
       getJobsByProfessor: vi.fn().mockReturnValue(
         of({
           content: [{ jobId: '1', title: 'Job A', state: 'DRAFT' }],
@@ -75,12 +73,6 @@ describe('MyPositionsPageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load all job names on init', async () => {
-    await component.loadAllJobNames();
-    expect(mockJobService.getAllJobNamesByProfessor).toHaveBeenCalled();
-    expect(component.allJobNames()).toEqual(['A', 'B']);
-  });
-
   it('should assign templates to correct columns', () => {
     fixture.detectChanges();
 
@@ -95,13 +87,6 @@ describe('MyPositionsPageComponent', () => {
     expect(columns.find(c => c.field === 'startDate')?.template).toBeUndefined();
     expect(columns.find(c => c.field === 'createdAt')?.template).toBeUndefined();
     expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeUndefined();
-  });
-
-  it('should handle error when loading job names', async () => {
-    mockJobService.getAllJobNamesByProfessor.mockReturnValueOnce(throwError(() => new Error('fail')));
-    await component.loadAllJobNames();
-    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('myPositionsPage.errors.loadJobNames');
-    expect(component.allJobNames()).toEqual([]);
   });
 
   it('should navigate to create job', () => {
@@ -151,13 +136,6 @@ describe('MyPositionsPageComponent', () => {
     const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
     component.onSearchEmit(' test multiple spaces here ');
     expect(component.searchQuery()).toBe('test multiple spaces here');
-    expect(loadSpy).toHaveBeenCalled();
-  });
-
-  it('should handle filterEmit for job', async () => {
-    const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
-    component.onFilterEmit({ filterId: 'job', selectedValues: ['AI'] });
-    expect(component.selectedJobFilters()).toEqual(['AI']);
     expect(loadSpy).toHaveBeenCalled();
   });
 
@@ -295,8 +273,6 @@ describe('MyPositionsPageComponent', () => {
       name: 'User',
       email: '',
     });
-
-    component.selectedJobFilters.set(['FilterJob']);
     component.selectedStatusFilters.set(['PUBLISHED']);
 
     const mockResponse = {
@@ -313,7 +289,6 @@ describe('MyPositionsPageComponent', () => {
     expect(spy).toHaveBeenCalledWith(
       component.pageSize(),
       component.page(),
-      ['FilterJob'],
       ['PUBLISHED'],
       component.sortBy(),
       component.sortDirection(),
