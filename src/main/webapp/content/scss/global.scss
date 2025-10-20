@@ -25,6 +25,18 @@
     color: var(--p-primary-color);
   }
 
+  .fa-globe {
+    color: var(--p-primary-color);
+  }
+
+  .fa-envelope {
+    color: var(--p-primary-color);
+  }
+
+  .fa-id-card {
+    color: var(--p-primary-color);
+  }
+
   .p-inputtext:enabled:focus {
     box-shadow: none;
     border: 0.1rem solid var(--p-primary-color);
@@ -421,10 +433,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   padding: 1rem;
   z-index: 2;
   pointer-events: none; // Disable pointer events for the carousel indicators
-
-  .pointer-event-button {
-    pointer-events: auto; // Enable pointer events for the button
-  }
 }
 
 /* -------------------------------
