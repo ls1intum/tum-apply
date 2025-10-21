@@ -20,6 +20,7 @@ import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import de.tum.cit.aet.core.exception.PDFGenerationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -157,7 +158,7 @@ public class PDFBuilder {
             document.close();
             return new ByteArrayResource(baos.toByteArray());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to generate PDF", e);
+            throw new PDFGenerationException("Failed to generate PDF", e);
         }
     }
 
