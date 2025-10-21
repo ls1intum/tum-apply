@@ -16,7 +16,7 @@ import { ApplicationResourceApiService } from '../../generated/api/applicationRe
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
-import { PDFLabels } from '../pdf-labels';
+import { getApplicationPDFLabels } from '../pdf-labels';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
@@ -107,7 +107,7 @@ export default class ApplicationDetailForApplicantComponent {
   onDownloadPDF(): void {
     const applicationId = this.applicationId();
 
-    const labels = PDFLabels.getApplicationLabels(this.translate);
+    const labels = getApplicationPDFLabels(this.translate);
 
     this.pdfExportService.exportApplicationToPDF(applicationId, labels, 'response').subscribe(response => {
       const contentDisposition = response.headers.get('Content-Disposition');
