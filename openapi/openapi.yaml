@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info: {title: OpenAPI definition, version: v0}
 servers:
-  - {url: 'http://localhost:8080', description: Generated server url}
+- {url: 'http://localhost:8080', description: Generated server url}
 paths:
   /api/admin/research-groups/provision:
     post:
@@ -38,10 +38,10 @@ paths:
       tags: [application-resource]
       operationId: createApplication
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: jobId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -53,10 +53,10 @@ paths:
       tags: [application-resource]
       operationId: deleteDocumentFromApplication
       parameters:
-        - name: documentDictionaryId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/applications/getDocumentIds/{applicationId}:
@@ -64,10 +64,10 @@ paths:
       tags: [application-resource]
       operationId: getDocumentDictionaryIds
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -79,14 +79,14 @@ paths:
       tags: [application-resource]
       operationId: getApplicationPages
       parameters:
-        - name: pageSize
-          in: query
-          required: false
-          schema: {type: integer, format: int32, default: 25, minimum: 1}
-        - name: pageNumber
-          in: query
-          required: false
-          schema: {type: integer, format: int32, default: 0, minimum: 0}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 25, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 0, minimum: 0}
       responses:
         '200':
           description: OK
@@ -100,10 +100,10 @@ paths:
       tags: [application-resource]
       operationId: getApplicationPagesLength
       parameters:
-        - name: applicantId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicantId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -115,14 +115,14 @@ paths:
       tags: [application-resource]
       operationId: renameDocument
       parameters:
-        - name: documentDictionaryId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
-        - name: newName
-          in: query
-          required: true
-          schema: {type: string}
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: newName
+        in: query
+        required: true
+        schema: {type: string}
       responses:
         '200': {description: OK}
   /api/applications/upload-documents/{applicationId}/{documentType}:
@@ -131,16 +131,16 @@ paths:
       summary: Upload documents
       operationId: uploadDocuments
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
-        - name: documentType
-          in: path
-          required: true
-          schema:
-            type: string
-            enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: documentType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
       requestBody:
         content:
           multipart/form-data:
@@ -167,10 +167,10 @@ paths:
       tags: [application-resource]
       operationId: withdrawApplication
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/applications/{applicationId}:
@@ -178,10 +178,10 @@ paths:
       tags: [application-resource]
       operationId: getApplicationById
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -192,10 +192,10 @@ paths:
       tags: [application-resource]
       operationId: deleteApplication
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/applications/{applicationId}/comments:
@@ -203,10 +203,10 @@ paths:
       tags: [internal-comment-resource]
       operationId: listComments
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -219,10 +219,10 @@ paths:
       tags: [internal-comment-resource]
       operationId: createComment
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -239,10 +239,10 @@ paths:
       tags: [application-resource]
       operationId: getApplicationForDetailPage
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -254,10 +254,10 @@ paths:
       tags: [rating-resource]
       operationId: getRatings
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -268,14 +268,14 @@ paths:
       tags: [rating-resource]
       operationId: updateRating
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
-        - name: rating
-          in: query
-          required: false
-          schema: {type: integer, format: int32, maximum: 2, minimum: -2}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: rating
+        in: query
+        required: false
+        schema: {type: integer, format: int32, maximum: 2, minimum: -2}
       responses:
         '200':
           description: OK
@@ -344,10 +344,10 @@ paths:
       tags: [internal-comment-resource]
       operationId: updateComment
       parameters:
-        - name: commentId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: commentId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -363,10 +363,10 @@ paths:
       tags: [internal-comment-resource]
       operationId: deleteComment
       parameters:
-        - name: commentId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: commentId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/documents/{documentDictionaryId}:
@@ -374,10 +374,10 @@ paths:
       tags: [document-resource]
       operationId: downloadDocument
       parameters:
-        - name: documentDictionaryId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: documentDictionaryId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -389,14 +389,14 @@ paths:
       tags: [email-template-resource]
       operationId: getTemplates
       parameters:
-        - name: pageSize
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: pageNumber
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
       responses:
         '200':
           description: OK
@@ -436,10 +436,10 @@ paths:
       tags: [email-template-resource]
       operationId: getTemplate
       parameters:
-        - name: templateId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: templateId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -450,10 +450,10 @@ paths:
       tags: [email-template-resource]
       operationId: deleteTemplate
       parameters:
-        - name: templateId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: templateId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/evaluation/application-details:
@@ -461,40 +461,40 @@ paths:
       tags: [application-evaluation-resource]
       operationId: getApplicationsDetails
       parameters:
-        - name: offset
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
-        - name: limit
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: sortBy
-          in: query
-          required: false
-          schema: {type: string}
-        - name: direction
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [ASC, DESC]
-        - name: status
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: job
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: search
-          in: query
-          required: false
-          schema: {type: string}
+      - name: offset
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: limit
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: job
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: search
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK
@@ -506,40 +506,40 @@ paths:
       tags: [application-evaluation-resource]
       operationId: getApplicationsDetailsWindow
       parameters:
-        - name: applicationId
-          in: query
-          required: true
-          schema: {type: string, format: uuid}
-        - name: windowSize
-          in: query
-          required: true
-          schema: {type: integer, format: int32}
-        - name: sortBy
-          in: query
-          required: false
-          schema: {type: string}
-        - name: direction
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [ASC, DESC]
-        - name: status
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: job
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: search
-          in: query
-          required: false
-          schema: {type: string}
+      - name: applicationId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
+      - name: windowSize
+        in: query
+        required: true
+        schema: {type: integer, format: int32}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: job
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: search
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK
@@ -551,40 +551,40 @@ paths:
       tags: [application-evaluation-resource]
       operationId: getApplicationsOverviews
       parameters:
-        - name: offset
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
-        - name: limit
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: sortBy
-          in: query
-          required: false
-          schema: {type: string}
-        - name: direction
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [ASC, DESC]
-        - name: status
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: job
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: search
-          in: query
-          required: false
-          schema: {type: string}
+      - name: offset
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: limit
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: job
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: search
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK
@@ -596,10 +596,10 @@ paths:
       tags: [application-evaluation-resource]
       operationId: acceptApplication
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -612,10 +612,10 @@ paths:
       tags: [application-evaluation-resource]
       operationId: downloadAll
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: ZIP file containing all documents
@@ -627,10 +627,10 @@ paths:
       tags: [application-evaluation-resource]
       operationId: markApplicationAsInReview
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/evaluation/applications/{applicationId}/reject:
@@ -638,10 +638,10 @@ paths:
       tags: [application-evaluation-resource]
       operationId: rejectApplication
       parameters:
-        - name: applicationId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: applicationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -679,49 +679,49 @@ paths:
       tags: [job-resource]
       operationId: getAvailableJobs
       parameters:
-        - name: pageSize
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: pageNumber
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
-        - name: fieldOfStudies
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: locations
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-                     SINGAPORE]
-        - name: professorNames
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: sortBy
-          in: query
-          required: false
-          schema: {type: string}
-        - name: direction
-          in: query
-          required: false
-          schema:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: fieldOfStudies
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: locations
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
             type: string
-            enum: [ASC, DESC]
-        - name: searchQuery
-          in: query
-          required: false
-          schema: {type: string}
+            enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
+              SINGAPORE]
+      - name: professorNames
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK
@@ -733,20 +733,20 @@ paths:
       tags: [job-resource]
       operationId: changeJobState
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
-        - name: jobState
-          in: query
-          required: true
-          schema:
-            type: string
-            enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
-        - name: shouldRejectRemainingApplications
-          in: query
-          required: false
-          schema: {type: boolean}
+      - name: jobId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: jobState
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+      - name: shouldRejectRemainingApplications
+        in: query
+        required: false
+        schema: {type: boolean}
       responses:
         '200':
           description: OK
@@ -773,10 +773,10 @@ paths:
       tags: [job-resource]
       operationId: getJobDetails
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: jobId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -798,34 +798,34 @@ paths:
       tags: [job-resource]
       operationId: getJobsByProfessor
       parameters:
-        - name: pageSize
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: pageNumber
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
-        - name: states
-          in: query
-          required: false
-          schema:
-            type: array
-            items: {type: string}
-        - name: sortBy
-          in: query
-          required: false
-          schema: {type: string}
-        - name: direction
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [ASC, DESC]
-        - name: searchQuery
-          in: query
-          required: false
-          schema: {type: string}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: states
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK
@@ -837,10 +837,10 @@ paths:
       tags: [job-resource]
       operationId: updateJob
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: jobId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -857,10 +857,10 @@ paths:
       tags: [job-resource]
       operationId: getJobById
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: jobId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -871,10 +871,10 @@ paths:
       tags: [job-resource]
       operationId: deleteJob
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: jobId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/me/prof-onboarding:
@@ -916,14 +916,14 @@ paths:
       tags: [research-group-resource]
       operationId: getAllResearchGroups
       parameters:
-        - name: pageSize
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: pageNumber
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
       responses:
         '200':
           description: OK
@@ -935,10 +935,10 @@ paths:
       tags: [research-group-resource]
       operationId: getResourceGroupDetails
       parameters:
-        - name: researchGroupId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: researchGroupId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -950,14 +950,14 @@ paths:
       tags: [research-group-resource]
       operationId: getDraftResearchGroups
       parameters:
-        - name: pageSize
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: pageNumber
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
       responses:
         '200':
           description: OK
@@ -980,14 +980,14 @@ paths:
       tags: [research-group-resource]
       operationId: getResearchGroupMembers
       parameters:
-        - name: pageSize
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 1}
-        - name: pageNumber
-          in: query
-          required: false
-          schema: {type: integer, format: int32, minimum: 0}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
       responses:
         '200':
           description: OK
@@ -999,10 +999,10 @@ paths:
       tags: [research-group-resource]
       operationId: removeMemberFromResearchGroup
       parameters:
-        - name: userId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: userId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
   /api/research-groups/professor-request:
@@ -1025,10 +1025,10 @@ paths:
       tags: [research-group-resource]
       operationId: getResearchGroup
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -1039,10 +1039,10 @@ paths:
       tags: [research-group-resource]
       operationId: updateResearchGroup
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -1059,10 +1059,10 @@ paths:
       tags: [research-group-resource]
       operationId: activateResearchGroup
       parameters:
-        - name: researchGroupId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: researchGroupId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -1074,10 +1074,10 @@ paths:
       tags: [research-group-resource]
       operationId: denyResearchGroup
       parameters:
-        - name: researchGroupId
-          in: path
-          required: true
-          schema: {type: string, format: uuid}
+      - name: researchGroupId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -1418,7 +1418,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-                 APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -1427,7 +1427,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-                 APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -1436,7 +1436,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-                 APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -1448,7 +1448,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-                 APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -1503,13 +1503,13 @@ components:
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-                 GOVERNMENT_FUNDED, RESEARCH_GRANT]
+            GOVERNMENT_FUNDED, RESEARCH_GRANT]
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-                 SINGAPORE]
+            SINGAPORE]
         requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
@@ -1548,12 +1548,12 @@ components:
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-                 GOVERNMENT_FUNDED, RESEARCH_GRANT]
+            GOVERNMENT_FUNDED, RESEARCH_GRANT]
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-                 SINGAPORE]
+            SINGAPORE]
         requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
@@ -1593,7 +1593,7 @@ components:
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
-                 title]
+        title]
     JobFilterOptionDTO:
       type: object
       properties:
@@ -1618,12 +1618,12 @@ components:
         fundingType:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-                 GOVERNMENT_FUNDED, RESEARCH_GRANT]
+            GOVERNMENT_FUNDED, RESEARCH_GRANT]
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-                 SINGAPORE]
+            SINGAPORE]
         requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
