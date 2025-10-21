@@ -110,18 +110,15 @@ export class UploadButtonComponent {
     const documentId = documentInfo.id;
     try {
       await firstValueFrom(this.applicationService.renameDocument(documentId, newName));
-      console.log("here 1")
       const updatedDocs =
         this.documentIds()?.map(doc =>
           doc.id === documentId
             ? {
-              ...doc,
-              name: newName,
-            }
+                ...doc,
+                name: newName,
+              }
             : doc,
         ) ?? [];
-      console.log("here 2")
-      console.log(updatedDocs)
       this.documentIds.set(updatedDocs);
     } catch (err) {
       console.error('Failed to rename document', err);
