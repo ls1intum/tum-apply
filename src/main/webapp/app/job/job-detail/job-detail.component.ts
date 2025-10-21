@@ -19,6 +19,7 @@ import { ResearchGroupResourceApiService } from '../../generated/api/researchGro
 import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
 import { JobDetailDTO } from '../../generated/model/jobDetailDTO';
+import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -56,7 +57,7 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateModule, ButtonGroupComponent, TagComponent, ConfirmDialog],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateModule, TranslateDirective, ButtonGroupComponent, TagComponent, ConfirmDialog],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })

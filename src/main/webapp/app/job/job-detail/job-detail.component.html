@@ -31,15 +31,11 @@
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
-            <span
-              ><strong>{{ 'jobDetailPage.header.supervisor' | translate }}</strong> {{ jobDetails()?.supervisingProfessor || '-' }}</span
-            >
+            <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong> {{ jobDetails()?.supervisingProfessor || '-' }}</span>
           </div>
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-            <span
-              ><strong>{{ 'jobDetailPage.header.location' | translate }}</strong> {{ jobDetails()?.location || '-' }}</span
-            >
+            <span><strong jhiTranslate="jobDetailPage.header.location"></strong> {{ jobDetails()?.location || '-' }}</span>
           </div>
         </div>
       </div>
@@ -59,19 +55,19 @@
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_25rem] gap-8">
       <!-- Left Column: Text Sections -->
-      <div class="flex flex-col gap-8">
+      <div class="flex flex-col">
         <section>
-          <div class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></div>
+          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
           <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.description || '-'"></div>
         </section>
 
         <section>
-          <h2 class="section-title">{{ 'jobDetailPage.sections.tasksResponsibilities' | translate }}</h2>
+          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.tasksResponsibilities"></h2>
           <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.tasks || '-'"></div>
         </section>
 
         <section>
-          <h2 class="section-title">{{ 'jobDetailPage.sections.eligibilityCriteria' | translate }}</h2>
+          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.eligibilityCriteria"></h2>
           <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.requirements || '-'"></div>
         </section>
       </div>
@@ -81,45 +77,45 @@
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'briefcase']" class="icon" />
-            <h3 class="card-title">{{ 'jobDetailPage.cards.positionOverview' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="jobDetailPage.cards.positionOverview"></h3>
           </div>
           <div class="card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label">{{ 'jobDetailPage.labels.fieldOfStudies' | translate }}</span>
+                <span class="label" jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
                 <span class="value">{{ jobDetails()?.fieldOfStudies || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'jobDetailPage.labels.researchArea' | translate }}</span>
+                <span class="label" jhiTranslate="jobDetailPage.labels.researchArea"></span>
                 <span class="value">{{ jobDetails()?.researchArea || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'jobDetailPage.labels.workload' | translate }}</span>
+                <span class="label" jhiTranslate="jobDetailPage.labels.workload"></span>
                 @if (jobDetails()?.workload !== '') {
-                  <span class="value">{{ jobDetails()?.workload }} {{ 'jobDetailPage.units.hoursPerWeek' | translate }}</span>
+                  <span class="value">{{ jobDetails()?.workload }} <span jhiTranslate="jobDetailPage.units.hoursPerWeek"></span></span>
                 } @else {
                   <span class="value">-</span>
                 }
               </div>
               <div class="info-row">
-                <span class="label">{{ 'jobDetailPage.labels.contractDuration' | translate }}</span>
+                <span class="label" jhiTranslate="jobDetailPage.labels.contractDuration"></span>
                 @if (jobDetails()?.contractDuration !== '') {
-                  <span class="value">{{ jobDetails()?.contractDuration }} {{ 'jobDetailPage.units.years' | translate }}</span>
+                  <span class="value">{{ jobDetails()?.contractDuration }} <span jhiTranslate="jobDetailPage.units.years"></span></span>
                 } @else {
                   <span class="value">-</span>
                 }
               </div>
               <div class="info-row">
-                <span class="label">{{ 'jobDetailPage.labels.fundingType' | translate }}</span>
+                <span class="label" jhiTranslate="jobDetailPage.labels.fundingType"></span>
                 <span class="value">{{ jobDetails()?.fundingType || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label">{{ 'jobDetailPage.labels.startDate' | translate }}</span>
+                <span class="label" jhiTranslate="jobDetailPage.labels.startDate"></span>
                 <span class="value">{{ jobDetails()?.startDate || '-' }}</span>
               </div>
               @if (jobDetails()?.endDate) {
                 <div class="info-row">
-                  <span class="label">{{ 'jobDetailPage.labels.applicationEndDate' | translate }}</span>
+                  <span class="label" jhiTranslate="jobDetailPage.labels.applicationEndDate"></span>
                   <span class="value text-danger">{{ jobDetails()?.endDate }}</span>
                 </div>
               }
@@ -130,7 +126,7 @@
         <div class="detail-card">
           <div class="card-header">
             <fa-icon [icon]="['fas', 'users']" class="icon" />
-            <h3 class="card-title">{{ 'jobDetailPage.cards.researchGroup' | translate }}</h3>
+            <h3 class="card-title" jhiTranslate="jobDetailPage.cards.researchGroup"></h3>
           </div>
           <div class="card-body">
             <h4 class="text-base font-semibold mb-4">{{ jobDetails()?.researchGroup || '-' }}</h4>
@@ -170,7 +166,7 @@
 
     <!-- Data Protection Information -->
     <section class="mb-8">
-      <h2 class="section-title">{{ 'jobDetailPage.sections.dataProtection' | translate }}</h2>
+      <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
       <div
         class="leading-relaxed text-sm p-4 bg-gray-50 border-l-4 border-primary rounded prose prose-sm"
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
