@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class PDFLabels {
   static getApplicationLabels(translate: TranslateService): Record<string, string> {
     return {
-      headline: translate.instant('jobDetailPage.headline'),
+      headline: translate.instant('entity.application_detail.headline'),
       overview: translate.instant('entity.application_detail.position_overview'),
       supervisor: translate.instant('jobDetailPage.header.supervisor'),
       researchGroup: translate.instant('jobDetailPage.header.researchGroup'),

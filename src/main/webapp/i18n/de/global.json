@@ -235,6 +235,7 @@
       }
     },
     "application_detail": {
+      "headline": "Bewerbung für ",
       "applicant": {
         "header": "Bewerbung für '{{jobTitle}}'",
         "title_prefix": "Bewerbung für"
