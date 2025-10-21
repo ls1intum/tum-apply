@@ -138,6 +138,10 @@ public class GlobalExceptionHandler {
             log.warn("Handled mailing exception: {} - Path: {}", me.getClass().getSimpleName(), request.getRequestURI(), ex);
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR, ex, request.getRequestURI(), null);
         }
+        if (ex instanceof EmailSettingException ese) {
+            log.warn("Handled mailing exception: {} - Path: {}", ese.getClass().getSimpleName(), request.getRequestURI(), ex);
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_SETTING_ERROR, ex, request.getRequestURI(), null);
+        }
         if (ex instanceof EmailTemplateException ete) {
             log.warn("Handled email template exception: {} - Path: {}", ete.getClass().getSimpleName(), request.getRequestURI(), ex);
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.EMAIL_TEMPLATE_ERROR, ex, request.getRequestURI(), null);
