@@ -4,14 +4,39 @@
     "body": "Du bist eingeloggt, hast aber noch keine Rechte. Wenn du Professor:in oder Mitarbeiter:in bist, fülle das Formular aus, damit wir dir deine Forschungsgruppe zuteilen und die richtigen Rechte vergeben können. Klicke dafür bitte auf den Button unten.",
     "actions": {
       "openForm": "Öffne Forschungsgruppen-Formular",
-      "imApplicant": "Ich bin Bewerber:in"
+      "imApplicant": "Ich bin Bewerber:in",
+      "imEmployee": "Ich bin Mitarbeiter:in"
     },
     "email": {
       "subject": "Anfrage: Zugriff zu Lehrstuhl / Professur in TUMApply",
       "body": "=== WICHTIGE HINWEISE ===\n- Bitte ändere den Betreff dieser E-Mail nicht.\n- Fülle bitte alle notwendigen Felder unten aus.\n- Die optionalen Felder müssen nicht zwingend ausgefüllt werden.\n- Bitte sende diese E-Mail von deiner offiziellen TUM E-Mail-Adresse aus.\n=== WICHTIGE HINWEISE ===\n\n\n\n=== Notwendig ===\n\nPersönliche Informationen:\n- Titel (Prof./Dr./…): \n- Vorname: \n- Nachname: \n- TUM-ID (z. B. ab12cde): \n\nAngaben zum Lehrstuhl / zur Professur:\n- Leitung (Titel, Vor- und Nachname): \n- Name: \n\n\n=== Optional ===\n\nAngaben zum Lehrstuhl / zur Professur:\n- Abkürzung: \n- Kontakt E-Mail: \n- Webseite: \n- School: \n- Beschreibung: \n- Standard-Studienfach: \n- Adresse:\n  - Straße und Hausnummer: \n  - Postleitzahl: \n  - Stadt: "
     },
+    "employeeRequest": {
+      "dialogTitle": "Zugang als Mitarbeiter:in anfragen",
+      "professorName": {
+        "label": "Professor:in Name",
+        "placeholder": "z.B. Prof. Dr. Max Mustermann"
+      },
+      "notice": "Deine Anfrage wird an die Administratoren gesendet. Sie werden dich der Forschungsgruppe des angegebenen Professors zuweisen und dich kontaktieren.",
+      "confirmDialog": {
+        "header": "Bestätige die Anfrage",
+        "message": "Deine Anfrage wird zur Überprüfung an die Administratoren gesendet. Sie werden dich der Forschungsgruppe des angegebenen Professors zuweisen und dich anschließend kontaktieren. Möchtest du fortfahren?",
+        "confirm": "Anfrage senden"
+      },
+      "success": {
+        "summary": "Anfrage erfolgreich gesendet",
+        "detail": "Deine Mitarbeiter-Zugangsanfrage wurde eingereicht. Die Administratoren werden sie prüfen und dich bald kontaktieren."
+      },
+      "error": {
+        "summary": "Übermittlung fehlgeschlagen",
+        "detail": "Fehler beim Senden der Anfrage. Bitte versuche es erneut oder kontaktiere den Support."
+      },
+      "submit": "Anfrage senden",
+      "submitting": "Anfrage wird gesendet"
+    },
     "professorRequest": {
       "dialogTitle": "Zugang anfragen",
+      "approvalNotice": "Bitte beachte: Die Genehmigung deiner Forschungsgruppe kann einige Tage dauern. Unsere Administratoren werden deine Anfrage prüfen und dich kontaktieren, sobald sie genehmigt wurde.",
       "sections": {
         "personalInfo": "Persönliche Informationen",
         "researchGroupInfo": "Forschungsgruppen-Informationen",

@@ -3,18 +3,19 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ProfessorResearchGroupRequestDTO } from 'app/generated/model/professorResearchGroupRequestDTO';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { firstValueFrom } from 'rxjs';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 
-import { StringInputComponent } from '../../../../atoms/string-input/string-input.component';
-import { ButtonComponent } from '../../../../atoms/button/button.component';
-import { ConfirmDialog } from '../../../../atoms/confirm-dialog/confirm-dialog';
-import { EditorComponent } from '../../../../atoms/editor/editor.component';
-import { ToastService } from '../../../../../../service/toast-service';
-import { tumIdValidator } from '../../../../../validators/custom-validators';
-import TranslateDirective from '../../../../../language/translate.directive';
+import { StringInputComponent } from '../../../atoms/string-input/string-input.component';
+import { ButtonComponent } from '../../../atoms/button/button.component';
+import { ConfirmDialog } from '../../../atoms/confirm-dialog/confirm-dialog';
+import { ToastService } from '../../../../../service/toast-service';
+import { tumIdValidator } from '../../../../validators/custom-validators';
+import TranslateDirective from '../../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-request-access-form',
@@ -28,9 +29,9 @@ import TranslateDirective from '../../../../../language/translate.directive';
     TranslateDirective,
     ConfirmDialog,
     EditorComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './professor-request-access-form.component.html',
-  styleUrl: './professor-request-access-form.component.scss',
 })
 export class ProfessorRequestAccessFormComponent {
   // Form
