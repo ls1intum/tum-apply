@@ -11,10 +11,10 @@ import { UserProfileDTO } from './userProfileDTO';
 
 
 export interface OtpCompleteDTO { 
-    email: string;
     code: string;
-    purpose: OtpCompleteDTO.PurposeEnum;
+    email: string;
     profile?: UserProfileDTO;
+    purpose: OtpCompleteDTO.PurposeEnum;
 }
 export namespace OtpCompleteDTO {
     export type PurposeEnum = 'LOGIN' | 'REGISTER';

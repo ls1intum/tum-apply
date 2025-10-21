@@ -28,7 +28,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.0.3"
+version = "1.0.4"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 

@@ -108,8 +108,6 @@
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
       "filterOptions": {
-        "job": "Position",
-        "jobSearchPlaceholder": "Search Positions...",
         "fieldOfStudies": "Field of Studies",
         "fieldOfStudiesPlaceholder": "Search Field of Studies...",
         "location": "Location",
@@ -153,7 +151,6 @@
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
       "filterOptions": {
-        "jobSearchPlaceholder": "Search Jobs...",
         "stateSearchPlaceholder": "Search Status..."
       }
     },
@@ -172,10 +169,6 @@
       "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!"
     },
     "errors": {
-      "loadJobNames": {
-        "summary": "Error",
-        "detail": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
-      },
       "loadJobs": {
         "summary": "Error",
         "detail": "Failed to load jobs. Please try refreshing the page, or contact us if the problem continues."
