@@ -17,7 +17,7 @@ public class PDFExportService {
 
     private final ApplicationService applicationService;
 
-    public PDFExportService(ApplicationService applicationService, JobService jobService) {
+    public PDFExportService(ApplicationService applicationService) {
         this.applicationService = applicationService;
     }
 
