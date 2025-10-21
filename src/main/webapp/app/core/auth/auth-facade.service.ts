@@ -211,11 +211,6 @@ export class AuthFacadeService {
    * Navigate to the stored redirect URL or home after logout.
    */
   private navigateAfterLogin(): void {
-    let route = this.router.routerState.snapshot.root;
-    while (route.firstChild) route = route.firstChild;
-    const data = route.data;
-    if (data.authorities?.length > 0) {
-      void this.router.navigate(['/']);
-    }
+    void this.router.navigate(['/']);
   }
 }
