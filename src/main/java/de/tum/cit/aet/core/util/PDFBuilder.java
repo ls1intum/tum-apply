@@ -217,7 +217,7 @@ public class PDFBuilder {
 
         Paragraph inlineParagraph = new Paragraph();
         for (OverviewItem item : overviewItems) {
-            inlineParagraph.add(new Text(item.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT));
+            inlineParagraph.add(new Text(item.label).setFont(boldFont).setFontSize(FONT_SIZE_TEXT));
             inlineParagraph.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
             inlineParagraph.add(new Text("    "));
         }
