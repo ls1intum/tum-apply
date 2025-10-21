@@ -40,6 +40,9 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class InternalCommentResourceTest extends AbstractResourceTest {
 
+    private static final String APPLICATION_COMMENTS_URL = "/api/applications/%s/comments";
+    private static final String COMMENT_URL = "/api/comments/%s";
+
     @Autowired
     UserRepository userRepository;
 
@@ -102,137 +105,117 @@ class InternalCommentResourceTest extends AbstractResourceTest {
         internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "first"));
         internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "second"));
 
-        String url = "/api/applications/" + application.getApplicationId() + "/comments";
-
         List<InternalCommentDTO> list = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(url, Map.of(), new TypeReference<>() {}, 200);
+            .getAndRead(applicationCommentsUrl(), Map.of(), new TypeReference<>() {}, 200);
 
         assertThat(list).isNotEmpty();
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void listCommentsNonexistentApplicationReturns404() {
-        UUID fakeAppId = UUID.randomUUID();
-        String url = "/api/applications/" + fakeAppId + "/comments";
-
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).getAndRead(url, Map.of(), Void.class, 404);
-    }
-
-    @Test
-    @WithMockUser(roles = "PROFESSOR")
     void createCommentReturns201() {
         InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("hello world");
-        String url = "/api/applications/" + application.getApplicationId() + "/comments";
 
         InternalCommentDTO created = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(url, payload, InternalCommentDTO.class, 201);
+            .postAndRead(applicationCommentsUrl(), payload, InternalCommentDTO.class, 201);
 
         assertThat(created.message()).isEqualTo("hello world");
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void createCommentNonexistentApplicationReturns404() {
+    void nonExistentApplicationReturns404() {
         UUID fakeAppId = UUID.randomUUID();
-        String url = "/api/applications/" + fakeAppId + "/comments";
 
-        InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("ghost");
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(applicationCommentsUrl(fakeAppId), Map.of(), Void.class, 404);
 
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).postAndRead(url, payload, Void.class, 404);
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(applicationCommentsUrl(fakeAppId), new InternalCommentUpdateDTO("ghost"), Void.class, 404);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void updateCommentOwnCommentReturns200() {
         InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("updated");
-        String url = "/api/comments/" + existingComment.getInternalCommentId();
 
         InternalCommentDTO updated = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(url, payload, InternalCommentDTO.class, 200);
+            .putAndRead(commentUrl(), payload, InternalCommentDTO.class, 200);
 
         assertThat(updated.message()).isEqualTo("updated");
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void updateNonexistentCommentReturns404() {
-        UUID fakeId = UUID.randomUUID();
-        String url = "/api/comments/" + fakeId;
-
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(url, new InternalCommentUpdateDTO("does not exist"), Void.class, 404);
-    }
-
-    @Test
-    @WithMockUser(roles = "PROFESSOR")
-    void deleteComment_ownComment_returns204() {
-        String url = "/api/comments/" + existingComment.getInternalCommentId();
-
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).deleteAndRead(url, null, Void.class, 204);
+    void deleteCommentOwnCommentReturns204() {
+        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).deleteAndRead(commentUrl(), null, Void.class, 204);
 
         assertThat(internalCommentRepository.findById(existingComment.getInternalCommentId())).isEmpty();
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void deleteNonexistentCommentReturns404() {
+    void nonexistentCommentReturns404() {
         UUID fakeId = UUID.randomUUID();
-        String url = "/api/comments/" + fakeId;
 
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).deleteAndRead(url, null, Void.class, 404);
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead(commentUrl(fakeId), new InternalCommentUpdateDTO("does not exist"), Void.class, 404);
+
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .deleteAndRead(commentUrl(fakeId), null, Void.class, 404);
     }
 
     @Test
-    void listCommentsUnauthenticatedReturns401() {
-        String url = "/api/applications/" + application.getApplicationId() + "/comments";
-        api.withoutPostProcessors().getAndRead(url, Map.of(), Void.class, 401);
-    }
+    void allEndpointsUnauthenticatedReturn401() {
+        api.withoutPostProcessors().getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 401);
 
-    @Test
-    void createCommentUnauthenticatedReturns401() {
-        String url = "/api/applications/" + application.getApplicationId() + "/comments";
-        api.withoutPostProcessors().postAndRead(url, new InternalCommentUpdateDTO("x"), Void.class, 401);
-    }
+        api.withoutPostProcessors().postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401);
 
-    @Test
-    void updateCommentUnauthenticatedReturns401() {
-        String url = "/api/comments/" + existingComment.getInternalCommentId();
-        api.withoutPostProcessors().putAndRead(url, new InternalCommentUpdateDTO("x"), Void.class, 401);
-    }
+        api.withoutPostProcessors().putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401);
 
-    @Test
-    void deleteCommentUnauthenticatedReturns401() {
-        String url = "/api/comments/" + existingComment.getInternalCommentId();
-        api.withoutPostProcessors().deleteAndRead(url, null, Void.class, 401);
+        api.withoutPostProcessors().deleteAndRead(commentUrl(), null, Void.class, 401);
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void updateComment_asDifferentProfessor_returns403() {
-        String url = "/api/comments/" + existingComment.getInternalCommentId();
-
+    void updateCommentAsDifferentProfessorReturns403() {
         api
             .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(url, new InternalCommentUpdateDTO("illegal"), Void.class, 403);
+            .putAndRead(commentUrl(), new InternalCommentUpdateDTO("illegal"), Void.class, 403);
     }
 
     @Test
     @WithMockUser
-    void allEndpoints_withoutProfessorRole_return403() {
-        String createPostUrl = "/api/applications/" + application.getApplicationId() + "/comments";
-        String updateDeleteUrl = "/api/comments/" + existingComment.getInternalCommentId();
+    void allEndpointsWithoutProfessorRoleReturn403() {
+        api.getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 403);
 
-        api.getAndRead(createPostUrl, Map.of(), Void.class, 403);
+        api.postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403);
 
-        api.postAndRead(createPostUrl, new InternalCommentUpdateDTO("x"), Void.class, 403);
+        api.putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403);
 
-        api.putAndRead(updateDeleteUrl, new InternalCommentUpdateDTO("x"), Void.class, 403);
+        api.deleteAndRead(commentUrl(), null, Void.class, 403);
+    }
 
-        api.deleteAndRead(updateDeleteUrl, null, Void.class, 403);
+    private String applicationCommentsUrl() {
+        return applicationCommentsUrl(application.getApplicationId());
+    }
+
+    private String applicationCommentsUrl(UUID applicationId) {
+        return String.format(APPLICATION_COMMENTS_URL, applicationId);
+    }
+
+    private String commentUrl() {
+        return commentUrl(existingComment.getInternalCommentId());
+    }
+
+    private String commentUrl(UUID commentId) {
+        return String.format(COMMENT_URL, commentId);
     }
 }
