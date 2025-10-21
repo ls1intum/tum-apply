@@ -127,7 +127,7 @@
     "prettier-plugin-java": "2.7.5",
     "prettier-plugin-packagejson": "2.5.19",
     "rollup": "4.52.4",
-    "swagger-ui-dist": "5.29.0",
+    "swagger-ui-dist": "5.29.5",
     "tailwindcss": "4.1.13",
     "tailwindcss-primeui": "0.6.1",
     "typescript": "5.9.3",
