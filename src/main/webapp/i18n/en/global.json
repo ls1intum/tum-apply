@@ -147,7 +147,8 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}"
+      "show": "Show {{otherEntity}}",
+      "pdf": "Export PDF"
     },
     "detail": {
       "field": "Field",

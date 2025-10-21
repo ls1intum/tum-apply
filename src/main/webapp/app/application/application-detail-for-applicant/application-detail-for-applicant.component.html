@@ -11,6 +11,13 @@
           ></h1>
           <jhi-application-state-for-applicants [state]="application.applicationState" />
         </div>
+        <jhi-button
+          [label]="'entity.action.pdf'"
+          [shouldTranslate]="true"
+          severity="secondary"
+          [variant]="'outlined'"
+          (click)="onDownloadPDF()"
+        />
         @if (['SAVED'].includes(application.applicationState)) {
           <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
         }
