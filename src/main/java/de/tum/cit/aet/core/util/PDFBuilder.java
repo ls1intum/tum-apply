@@ -54,15 +54,16 @@ public class PDFBuilder {
     private static final float FONT_SIZE_TEXT = 10f;
 
     // ----------------- Spacing -----------------
-    private static final float PADDING_CONTAINER = 12f;
+    private static final float PADDING_CONTAINER = 8f;
     private static final float MARGIN_TITLE_BOTTOM = 8f;
     private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 20f;
     private static final float MARGIN_OVERVIEW_TITLE_BOTTOM = 12f;
-    private static final float MARGIN_DATA_ROW_BOTTOM = 8f;
+    private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
     private static final float DIVIDER_HEIGHT = 1f;
     private static final float HEADER_SPACING = 5f;
     private static final float HEADER_MARGIN_TOP = 20f;
     private static final float HEADER_MARGIN_BOTTOM = 16f;
+    private static final float LINE_LEADING = 1.0f;
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
@@ -243,15 +244,23 @@ public class PDFBuilder {
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             String plainText = section.htmlContent.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
-            Paragraph content = new Paragraph(plainText).setFont(normalFont).setFontSize(FONT_SIZE_TEXT);
+            Paragraph content = new Paragraph(plainText)
+                .setFont(normalFont)
+                .setFontSize(FONT_SIZE_TEXT)
+                .setMargin(0)
+                .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+                .setMultipliedLeading(LINE_LEADING);
             container.add(content);
         }
 
         for (DataRow row : section.dataRows) {
             Paragraph dataRow = new Paragraph()
-                .add(new Paragraph(row.label + ": ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT).setMarginBottom(2))
-                .add(new Paragraph(row.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT))
-                .setMarginBottom(MARGIN_DATA_ROW_BOTTOM);
+                .add(new Text(row.label + ": ").setFont(boldFont))
+                .add(new Text(row.value).setFont(normalFont))
+                .setFontSize(FONT_SIZE_TEXT)
+                .setMargin(0)
+                .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+                .setMultipliedLeading(LINE_LEADING);
             container.add(dataRow);
         }
 
