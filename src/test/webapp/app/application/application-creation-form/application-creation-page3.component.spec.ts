@@ -293,7 +293,7 @@ describe('ApplicationPage3Component', () => {
 
   it('should set desiredStartDate to empty string when desiredStartDateEvent is undefined', () => {
     comp.setDesiredStartDate(undefined);
-    expect(comp.data().desiredStartDate).toBe('');
+    expect(comp.data()?.desiredStartDate).toBe('');
   });
 
   it('should not patch form if data is undefined in initializeFormEffect', () => {
