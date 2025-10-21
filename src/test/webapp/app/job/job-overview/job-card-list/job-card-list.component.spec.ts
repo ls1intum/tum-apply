@@ -28,7 +28,6 @@ describe('JobCardListComponent', () => {
     jobService = {
       getAllFilters: vi.fn().mockReturnValue(
         of({
-          jobNames: ['Job A', 'Job B'],
           fieldsOfStudy: ['AI', 'ML'],
           supervisorNames: ['Prof. X'],
         }),
@@ -75,7 +74,6 @@ describe('JobCardListComponent', () => {
     await component.loadAllFilter();
 
     expect(jobService.getAllFilters).toHaveBeenCalled();
-    expect(component.allJobNames()).toEqual(['Job A', 'Job B']);
     expect(component.allFieldOfStudies()).toEqual(['AI', 'ML']);
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
     expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
@@ -87,7 +85,6 @@ describe('JobCardListComponent', () => {
     await component.loadAllFilter();
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobOverviewPage.errors.loadFilter');
-    expect(component.allJobNames()).toEqual([]);
   });
 
   it('should load jobs successfully', async () => {
@@ -126,14 +123,6 @@ describe('JobCardListComponent', () => {
     component.onSearchEmit('   Same   query   ');
 
     expect(spy).not.toHaveBeenCalled();
-  });
-
-  it('should handle filter changes for jobTitle', async () => {
-    const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
-
-    component.onFilterEmit({ filterId: 'jobTitle', selectedValues: ['Test Job'] });
-    expect(component.selectedJobFilters()).toEqual(['Test Job']);
-    expect(spy).toHaveBeenCalled();
   });
 
   it('should handle filter changes for fieldOfStudies', async () => {
@@ -193,7 +182,6 @@ describe('JobCardListComponent', () => {
 
     await component.loadAllFilter();
 
-    expect(component.allJobNames()).toEqual([]);
     expect(component.allFieldOfStudies()).toEqual([]);
     expect(component.allSupervisorNames()).toEqual([]);
   });
@@ -203,7 +191,6 @@ describe('JobCardListComponent', () => {
 
     component.onFilterEmit({ filterId: 'unknown', selectedValues: ['x'] });
 
-    expect(component.selectedJobFilters()).toEqual([]);
     expect(spy).not.toHaveBeenCalled();
   });
 

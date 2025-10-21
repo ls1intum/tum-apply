@@ -10,17 +10,17 @@
 
 
 export interface JobCardDTO { 
-    jobId: string;
-    title: string;
-    fieldOfStudies: string;
-    location: string;
-    professorName: string;
     applicationId?: string;
     applicationState?: JobCardDTO.ApplicationStateEnum;
-    workload?: number;
-    startDate?: string;
+    fieldOfStudies: string;
+    jobId: string;
+    location: string;
+    professorName: string;
     relativeTimeEnglish?: string;
     relativeTimeGerman?: string;
+    startDate?: string;
+    title: string;
+    workload?: number;
 }
 export namespace JobCardDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
