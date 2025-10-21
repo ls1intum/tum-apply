@@ -220,6 +220,52 @@ describe('ApplicationPage2Component', () => {
     expect(uploadButtons.length).toBe(2); // Bachelor + Master
   });
 
+  it('should not emit if form value has not changed (distinctUntilChanged)', async () => {
+    const { fixture, componentInstance } = createApplicationPage2Fixture();
+
+    componentInstance.page2Form.patchValue({
+      bachelorDegreeName: 'BSc',
+      bachelorDegreeUniversity: 'Uni',
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    fixture.detectChanges();
+
+    const changedSpy = vi.fn();
+    componentInstance.changed.subscribe(changedSpy);
+
+    componentInstance.page2Form.patchValue({
+      bachelorDegreeName: 'BSc',
+      bachelorDegreeUniversity: 'Uni',
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 150));
+    fixture.detectChanges();
+
+    expect(changedSpy).not.toHaveBeenCalled();
+  });
+
+  it('should debounce form value changes', async () => {
+    const { fixture, componentInstance } = createApplicationPage2Fixture();
+    const changedSpy = vi.fn();
+    componentInstance.changed.subscribe(changedSpy);
+    componentInstance.hasInitialized.set(true);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    changedSpy.mockReset();
+
+    componentInstance.page2Form.patchValue({ bachelorDegreeName: 'A' });
+    componentInstance.page2Form.patchValue({ bachelorDegreeName: 'AB' });
+    componentInstance.page2Form.patchValue({ bachelorDegreeName: 'ABC' });
+
+    expect(changedSpy).not.toHaveBeenCalled();
+
+    // Wait longer than debounceTime and allow signal effect to run
+    await new Promise(resolve => setTimeout(resolve, 100));
+    fixture.detectChanges();
+
+    expect(changedSpy).toHaveBeenCalledTimes(1);
+  });
+
   describe('getPage2FromApplication', () => {
     const createEmptyApplicationForApplicantDTO = (): ApplicationForApplicantDTO => ({
       applicant: {
