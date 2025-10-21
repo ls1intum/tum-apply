@@ -20,6 +20,7 @@
       "createposition": "Position erstellen"
     },
     "researchgroup": {
+      "adminview": "Forschungsgruppen verwalten",
       "emailtemplates": "Meine E-Mail-Vorlagen",
       "researchgroup": "Forschungsgruppe",
       "yourgroup": "Meine Gruppe",
