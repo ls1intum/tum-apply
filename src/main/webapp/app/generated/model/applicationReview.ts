@@ -12,10 +12,10 @@ import { Application } from './application';
 
 
 export interface ApplicationReview { 
-    applicationReviewId?: string;
     application?: Application;
-    reviewedBy?: User;
+    applicationReviewId?: string;
     reason?: string;
     reviewedAt?: string;
+    reviewedBy?: User;
 }
 
