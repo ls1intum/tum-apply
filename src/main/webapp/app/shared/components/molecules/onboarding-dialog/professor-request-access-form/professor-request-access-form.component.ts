@@ -10,12 +10,12 @@ import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardi
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 
-import { StringInputComponent } from '../../../../atoms/string-input/string-input.component';
-import { ButtonComponent } from '../../../../atoms/button/button.component';
-import { ConfirmDialog } from '../../../../atoms/confirm-dialog/confirm-dialog';
-import { ToastService } from '../../../../../../service/toast-service';
-import { tumIdValidator } from '../../../../../validators/custom-validators';
-import TranslateDirective from '../../../../../language/translate.directive';
+import { StringInputComponent } from '../../../atoms/string-input/string-input.component';
+import { ButtonComponent } from '../../../atoms/button/button.component';
+import { ConfirmDialog } from '../../../atoms/confirm-dialog/confirm-dialog';
+import { ToastService } from '../../../../../service/toast-service';
+import { tumIdValidator } from '../../../../validators/custom-validators';
+import TranslateDirective from '../../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-request-access-form',
