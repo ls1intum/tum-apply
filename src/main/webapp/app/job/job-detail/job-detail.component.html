@@ -58,17 +58,17 @@
       <div class="flex flex-col gap-6">
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-          <div class="wrap-anywhere description-text" [innerHTML]="jobDetails()?.description || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDetails()?.description || '-'"></div>
         </section>
 
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.tasksResponsibilities"></h2>
-          <div class="wrap-anywhere description-text" [innerHTML]="jobDetails()?.tasks || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDetails()?.tasks || '-'"></div>
         </section>
 
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.eligibilityCriteria"></h2>
-          <div class="wrap-anywhere description-text" [innerHTML]="jobDetails()?.requirements || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDetails()?.requirements || '-'"></div>
         </section>
       </div>
 
@@ -130,7 +130,7 @@
           </div>
           <div class="card-body">
             <h4 class="text-base font-semibold mb-4">{{ jobDetails()?.researchGroup || '-' }}</h4>
-            <div class="leading-relaxed mb-4 text-sm prose prose-sm" [innerHTML]="jobDetails()?.researchGroupDescription || '-'"></div>
+            <div class="leading-relaxed mb-4 text-sm wrap-anywhere" [innerHTML]="jobDetails()?.researchGroupDescription || '-'"></div>
 
             @if (jobDetails()?.researchGroupEmail || jobDetails()?.researchGroupWebsite || jobDetails()?.researchGroupStreet) {
               <div class="mt-4">
@@ -168,7 +168,7 @@
     <section class="mb-8">
       <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
       <div
-        class="leading-relaxed text-sm p-4 bg-gray-50 border-l-4 border-primary rounded prose prose-sm"
+        class="leading-relaxed text-sm p-4 bg-gray-50 border-l-4 border-primary rounded wrap-anywhere"
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
       ></div>
     </section>
