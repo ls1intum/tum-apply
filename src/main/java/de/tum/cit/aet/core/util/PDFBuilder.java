@@ -82,12 +82,25 @@ public class PDFBuilder {
     }
 
     // ----------------- Section Groups -----------------
+
+    /**
+     * Starts a new section group with the given title
+     *
+     * @param title the section group title
+     * @return this builder for method chaining
+     */
     public PDFBuilder startSectionGroup(String title) {
         currentGroup = new SectionGroup(title);
         sectionGroups.add(currentGroup);
         return this;
     }
 
+    /**
+     * Starts a new info section with the given title
+     *
+     * @param title the section title
+     * @return this builder for method chaining
+     */
     public PDFBuilder startInfoSection(String title) {
         InfoSection section = new InfoSection(title);
         if (currentGroup == null) {
@@ -98,6 +111,12 @@ public class PDFBuilder {
         return this;
     }
 
+    /**
+     * Adds HTML content to the current section
+     *
+     * @param htmlContent the HTML content to add
+     * @return this builder for method chaining
+     */
     public PDFBuilder addSectionContent(String htmlContent) {
         if (currentGroup == null || currentGroup.sections.isEmpty()) {
             throw new IllegalStateException("Call startInfoSection first");
@@ -106,6 +125,13 @@ public class PDFBuilder {
         return this;
     }
 
+    /**
+     * Adds a data row (label-value pair) to the current section
+     *
+     * @param label the label text
+     * @param value the value text
+     * @return this builder for method chaining
+     */
     public PDFBuilder addSectionData(String label, String value) {
         if (currentGroup == null || currentGroup.sections.isEmpty()) {
             throw new IllegalStateException("Call startInfoSection first");

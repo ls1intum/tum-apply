@@ -23,6 +23,10 @@ public class PDFExportService {
 
     /**
      * Exports application details to PDF
+     *
+     * @param applicationId the application ID
+     * @param labels        translation labels for PDF content
+     * @return the PDF file as Resource
      */
     public Resource exportApplicationToPDF(UUID applicationId, Map<String, String> labels) {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
@@ -87,6 +91,9 @@ public class PDFExportService {
 
     /**
      * Generates filename for application PDF
+     *
+     * @param applicationId the application ID
+     * @return sanitized filename for the PDF
      */
     public String generateApplicationFilename(UUID applicationId) {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);

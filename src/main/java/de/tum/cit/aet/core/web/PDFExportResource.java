@@ -26,7 +26,8 @@ public class PDFExportResource {
     /**
      * GET /api/export/application/{id}/pdf : Export application details as PDF
      *
-     * @param id the application ID
+     * @param id     the application ID
+     * @param labels translation labels for PDF content
      * @return the PDF file as downloadable attachment
      */
     @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
