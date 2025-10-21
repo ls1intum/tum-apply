@@ -1,6 +1,5 @@
 package de.tum.cit.aet.core.service;
 
-import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.util.PDFBuilder;
@@ -35,7 +34,7 @@ public class PDFExportService {
 
         // Overview Section
         builder
-            .setOverviewTitle(labels.get("overview")) // Oder "Job Overview"
+            .setOverviewTitle(labels.get("overview"))
             .addOverviewItem(labels.get("supervisor"), getValue(job.supervisingProfessorName()))
             .addOverviewItem(labels.get("researchGroup"), getValue(job.researchGroup().getName()))
             .addOverviewItem(labels.get("location"), getValue(job.location()))
@@ -89,61 +88,59 @@ public class PDFExportService {
     public Resource exportApplicationToPDF(UUID applicationId, Map<String, String> labels) {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
 
-        PDFBuilder builder = new PDFBuilder("Application for " + app.jobTitle());
+        PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
         // Overview Section
         builder
-            .setOverviewTitle(labels.getOrDefault("overview", "Job Overview"))
-            .addOverviewItem("Supervisor", getValue(app.supervisingProfessorName()))
-            .addOverviewItem("Research Group", getValue(app.researchGroup()))
-            .addOverviewItem("Location", getValue(app.jobLocation()));
+            .setOverviewTitle(labels.get("overview"))
+            .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
+            .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
+            .addOverviewItem(labels.get("location"), getValue(app.jobLocation()));
 
         // Personal Statements Group
-        builder.startSectionGroup("Personal Statements");
+        builder.startSectionGroup(labels.get("personalStatements"));
 
-        if (app.motivation() != null && !app.motivation().isEmpty()) {
-            builder.startInfoSection("Motivation").addSectionContent(app.motivation());
-        }
+        builder.startInfoSection(labels.get("motivation")).addSectionContent(getValue(app.motivation()));
 
-        if (app.specialSkills() != null && !app.specialSkills().isEmpty()) {
-            builder.startInfoSection("Special Skills").addSectionContent(app.specialSkills());
-        }
+        builder.startInfoSection(labels.get("skills")).addSectionContent(getValue(app.specialSkills()));
 
-        if (app.projects() != null && !app.projects().isEmpty()) {
-            builder.startInfoSection("Research Experience").addSectionContent(app.projects());
-        }
+        builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
 
         // Personal Information Group
-        builder.startSectionGroup("Personal Information");
+        builder.startSectionGroup(labels.get("entity.application_detail.personal_information"));
 
         builder
-            .startInfoSection("Applicant Information")
-            .addSectionData("Preferred Language", getValue(app.applicant().user().preferredLanguage()))
-            .addSectionData("Desired Start Date", formatDate(app.desiredDate()))
-            .addSectionData("Gender", getValue(app.applicant().user().gender()))
-            .addSectionData("Nationality", getValue(app.applicant().user().nationality()));
+            .startInfoSection(labels.get("applicantInfo"))
+            .addSectionData(labels.get("preferredLanguage"), getValue(app.applicant().user().preferredLanguage()))
+            .addSectionData(labels.get("desiredStartDate"), formatDate(app.desiredDate()))
+            .addSectionData(labels.get("gender"), getValue(app.applicant().user().gender()))
+            .addSectionData(labels.get("nationality"), getValue(app.applicant().user().nationality()));
 
         if (app.applicant().user().website() != null) {
-            builder.addSectionData("Website", app.applicant().user().website());
+            builder.addSectionData(labels.get("website"), getValue(app.applicant().user().website()));
         }
         if (app.applicant().user().linkedinUrl() != null) {
-            builder.addSectionData("LinkedIn", app.applicant().user().linkedinUrl());
+            builder.addSectionData(labels.get("linkedIn"), getValue(app.applicant().user().linkedinUrl()));
         }
 
         // Bachelor Section
         builder
-            .startInfoSection("Bachelor Degree Information")
-            .addSectionData("Degree Name", getValue(app.applicant().bachelorDegreeName()))
-            .addSectionData("University", getValue(app.applicant().bachelorUniversity()))
-            .addSectionData("Grade", getValue(app.applicant().bachelorGrade()));
+            .startInfoSection(labels.get("bachelorInfo"))
+            .addSectionData(labels.get("degreeName"), getValue(app.applicant().bachelorDegreeName()))
+            .addSectionData(labels.get("university"), getValue(app.applicant().bachelorUniversity()))
+            .addSectionData(labels.get("upperGradeLimit"), getValue(app.applicant().bachelorGradeUpperLimit()))
+            .addSectionData(labels.get("lowerGradeLimit"), getValue(app.applicant().bachelorGradeLowerLimit()))
+            .addSectionData(labels.get("grade"), getValue(app.applicant().bachelorGrade()));
 
         // Master Section
         if (app.applicant().masterDegreeName() != null) {
             builder
-                .startInfoSection("Master Degree Information")
-                .addSectionData("Degree Name", getValue(app.applicant().masterDegreeName()))
-                .addSectionData("University", getValue(app.applicant().masterUniversity()))
-                .addSectionData("Grade", getValue(app.applicant().masterGrade()));
+                .startInfoSection(labels.get("masterInfo"))
+                .addSectionData(labels.get("degreeName"), getValue(app.applicant().masterDegreeName()))
+                .addSectionData(labels.get("university"), getValue(app.applicant().masterUniversity()))
+                .addSectionData(labels.get("upperGradeLimit"), getValue(app.applicant().masterGradeUpperLimit()))
+                .addSectionData(labels.get("lowerGradeLimit"), getValue(app.applicant().masterGradeLowerLimit()))
+                .addSectionData(labels.get("grade"), getValue(app.applicant().masterGrade()));
         }
 
         return builder.build();
@@ -185,20 +182,6 @@ public class PDFExportService {
 
     private String formatContractDuration(Integer duration) {
         return duration != null ? duration + " years" : "-";
-    }
-
-    private String formatApplicationState(ApplicationState state) {
-        if (state == null) return "-";
-        return switch (state) {
-            case SAVED -> "Saved";
-            case SENT -> "Sent";
-            case ACCEPTED -> "Accepted";
-            case IN_REVIEW -> "In Review";
-            case REJECTED -> "Rejected";
-            case WITHDRAWN -> "Withdrawn";
-            case JOB_CLOSED -> "Job Closed";
-            default -> "-";
-        };
     }
 
     private String formatAddress(String street, String postalCode, String city) {
