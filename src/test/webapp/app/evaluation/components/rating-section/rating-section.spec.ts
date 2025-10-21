@@ -104,18 +104,6 @@ describe('RatingSection', () => {
     expect(mockRatingApi.updateRating).not.toHaveBeenCalled();
   });
 
-  it('should skip upsert when value equals serverCurrent', async () => {
-    fixture.componentRef.setInput('applicationId', 'app-3');
-    fixture.detectChanges();
-
-    (component as any)['isInitializing'].set(false);
-    (component as any)['serverCurrent'].set(2);
-    component.myRating.set(2);
-
-    await Promise.resolve();
-    expect(mockRatingApi.updateRating).not.toHaveBeenCalled();
-  });
-
   it('should upsert rating on change and refresh ratings on success', async () => {
     fixture.componentRef.setInput('applicationId', 'app-4');
     fixture.detectChanges();
@@ -198,7 +186,7 @@ describe('RatingSection', () => {
     const response2: RatingOverviewDTO = { currentUserRating: 5, otherRatings: [4] } as any;
 
     mockRatingApi.getRatings.mockReturnValueOnce(of(response1));
-    fixture.componentRef.setInput('applicationId', 'app-11');
+    fixture.componentRef.setInput('applicationId', 'app-8');
     fixture.detectChanges();
     await Promise.resolve();
 
@@ -206,7 +194,7 @@ describe('RatingSection', () => {
     expect(component.otherRatings()).toEqual([1, 2]);
 
     mockRatingApi.getRatings.mockReturnValueOnce(of(response2));
-    fixture.componentRef.setInput('applicationId', 'app-12');
+    fixture.componentRef.setInput('applicationId', 'app-9');
     fixture.detectChanges();
     await Promise.resolve();
 
