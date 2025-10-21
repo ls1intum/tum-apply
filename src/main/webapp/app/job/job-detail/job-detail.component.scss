@@ -6,10 +6,3 @@
 .text-danger {
   color: var(--p-danger-color);
 }
-
-// Ensure proper text wrapping for job content
-.prose {
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
-  hyphens: auto;
-}

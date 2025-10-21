@@ -58,17 +58,17 @@
       <div class="flex flex-col">
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-          <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.description || '-'"></div>
+          <div class="wrap-anywhere description-text" [innerHTML]="jobDetails()?.description || '-'"></div>
         </section>
 
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.tasksResponsibilities"></h2>
-          <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.tasks || '-'"></div>
+          <div class="wrap-anywhere description-text" [innerHTML]="jobDetails()?.tasks || '-'"></div>
         </section>
 
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.eligibilityCriteria"></h2>
-          <div class="prose prose-sm leading-relaxed description-text" [innerHTML]="jobDetails()?.requirements || '-'"></div>
+          <div class="wrap-anywhere description-text" [innerHTML]="jobDetails()?.requirements || '-'"></div>
         </section>
       </div>
 
