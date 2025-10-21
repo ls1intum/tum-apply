@@ -141,6 +141,13 @@ public class PDFBuilder {
     }
 
     // ----------------- Build PDF -----------------
+
+    /**
+     * Builds and generates the PDF document with all configured content
+     *
+     * @return the generated PDF as a Resource
+     * @throws PDFGenerationException if PDF generation fails
+     */
     public Resource build() {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(baos);
