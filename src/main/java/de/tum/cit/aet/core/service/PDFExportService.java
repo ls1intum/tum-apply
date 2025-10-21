@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.util.PDFBuilder;
-import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -17,69 +16,9 @@ public class PDFExportService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private final ApplicationService applicationService;
-    private final JobService jobService;
 
     public PDFExportService(ApplicationService applicationService, JobService jobService) {
         this.applicationService = applicationService;
-        this.jobService = jobService;
-    }
-
-    /**
-     * Exports job details to PDF
-     */
-    public Resource exportJobToPDF(UUID jobId, Map<String, String> labels) {
-        JobDetailDTO job = jobService.getJobDetails(jobId);
-
-        PDFBuilder builder = new PDFBuilder(job.title());
-
-        // Overview Section
-        builder
-            .setOverviewTitle(labels.get("overview"))
-            .addOverviewItem(labels.get("supervisor"), getValue(job.supervisingProfessorName()))
-            .addOverviewItem(labels.get("researchGroup"), getValue(job.researchGroup().getName()))
-            .addOverviewItem(labels.get("location"), getValue(job.location()))
-            .addOverviewItem("Field of Studies", getValue(job.fieldOfStudies()))
-            .addOverviewItem("Research Area", getValue(job.researchArea()))
-            .addOverviewItem("Workload", formatWorkload(job.workload()))
-            .addOverviewItem("Contract Duration", formatContractDuration(job.contractDuration()))
-            .addOverviewItem("Funding Type", getValue(job.fundingType()))
-            .addOverviewItem("Start Date", formatDate(job.startDate()));
-
-        if (job.endDate() != null) {
-            builder.addOverviewItem("Application Deadline", formatDate(job.endDate()));
-        }
-
-        // Description Section
-        if (job.description() != null && !job.description().isEmpty()) {
-            builder.startInfoSection("Description").addSectionContent(job.description());
-        }
-
-        // Tasks Section
-        if (job.tasks() != null && !job.tasks().isEmpty()) {
-            builder.startInfoSection("Tasks").addSectionContent(job.tasks());
-        }
-
-        // Requirements Section
-        if (job.requirements() != null && !job.requirements().isEmpty()) {
-            builder.startInfoSection("Requirements").addSectionContent(job.requirements());
-        }
-
-        // Research Group Section
-        if (job.researchGroup().getDescription() != null && !job.researchGroup().getDescription().isEmpty()) {
-            builder.startInfoSection("About " + job.researchGroup().getName()).addSectionContent(job.researchGroup().getDescription());
-        }
-
-        // Research Group Contact Info
-        builder
-            .startInfoSection("Contact Information")
-            .addSectionData("Email", getValue(job.researchGroup().getEmail()))
-            .addSectionData("Website", getValue(job.researchGroup().getWebsite()))
-            .addSectionData(
-                "Address",
-                formatAddress(job.researchGroup().getStreet(), job.researchGroup().getPostalCode(), job.researchGroup().getCity())
-            );
-
-        return builder.build();
     }
 
     /**
@@ -147,14 +86,6 @@ public class PDFExportService {
     }
 
     /**
-     * Generates filename for job PDF
-     */
-    public String generateJobFilename(UUID jobId) {
-        JobDetailDTO job = jobService.getJobDetails(jobId);
-        return sanitizeFilename(job.title()) + "_job.pdf";
-    }
-
-    /**
      * Generates filename for application PDF
      */
     public String generateApplicationFilename(UUID applicationId) {
@@ -174,30 +105,6 @@ public class PDFExportService {
             return localDate.format(DATE_FORMATTER);
         }
         return date.toString();
-    }
-
-    private String formatWorkload(Integer workload) {
-        return workload != null ? workload + " hours/week" : "-";
-    }
-
-    private String formatContractDuration(Integer duration) {
-        return duration != null ? duration + " years" : "-";
-    }
-
-    private String formatAddress(String street, String postalCode, String city) {
-        StringBuilder address = new StringBuilder();
-        if (street != null && !street.isEmpty()) {
-            address.append(street);
-        }
-        if (postalCode != null && !postalCode.isEmpty()) {
-            if (address.length() > 0) address.append(", ");
-            address.append(postalCode);
-        }
-        if (city != null && !city.isEmpty()) {
-            if (address.length() > 0) address.append(" ");
-            address.append(city);
-        }
-        return address.length() > 0 ? address.toString() : "-";
     }
 
     private String sanitizeFilename(String filename) {
