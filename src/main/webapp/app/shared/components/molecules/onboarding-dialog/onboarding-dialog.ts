@@ -11,7 +11,8 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ProfOnboardingResourceApiService } from '../../../../generated/api/profOnboardingResourceApi.service';
 
-import { ProfessorRequestAccessFormComponent } from './professor-request-access-form-component.ts/professor-request-access-form/professor-request-access-form.component';
+import { ProfessorRequestAccessFormComponent } from './professor-request-access-form/professor-request-access-form.component';
+import { EmployeeRequestAccessFormComponent } from './employee-request-access-form/employee-request-access-form.component';
 
 /**
  * Professor onboarding dialog.
@@ -50,5 +51,23 @@ export class OnboardingDialog {
       void firstValueFrom(this.api.confirmOnboarding()).catch();
       this.ref?.close();
     }
+  }
+
+  openEmployeeForm(): void {
+    this.ref?.close();
+
+    this.dialogService.open(EmployeeRequestAccessFormComponent, {
+      header: this.translate.instant('onboarding.employeeRequest.dialogTitle'),
+      modal: true,
+      closable: true,
+      dismissableMask: false,
+      width: '56.25rem',
+      style: {
+        'max-width': '95vw',
+        'background-color': 'white',
+        'border-radius': '0.5rem',
+      },
+      focusOnShow: false,
+    });
   }
 }

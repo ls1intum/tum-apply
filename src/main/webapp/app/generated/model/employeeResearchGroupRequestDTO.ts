@@ -9,8 +9,7 @@
  */
 
 
-export interface JobFiltersDTO { 
-    fieldsOfStudy?: Array<string>;
-    supervisorNames?: Array<string>;
+export interface EmployeeResearchGroupRequestDTO { 
+    professorName: string;
 }
 
