@@ -33,18 +33,14 @@ describe('UploadButtonComponent', () => {
   let applicationService: Pick<ApplicationResourceApiService, 'uploadDocuments' | 'deleteDocumentFromApplication' | 'renameDocument'>;
   let toastService: Pick<ToastService, 'showError'>;
 
-  function createUploadButtonFixture(inputs: {
-    documentType: DocumentType,
-    applicationId: string,
-    markAsRequired?: boolean,
-  }) {
+  function createUploadButtonFixture(inputs: { documentType: DocumentType; applicationId: string; markAsRequired?: boolean }) {
     const fixture = TestBed.createComponent(UploadButtonComponent);
     Object.entries(inputs).forEach(([key, value]) => {
       fixture.componentRef.setInput(key, value);
     });
     fixture.detectChanges();
     return fixture;
-  };
+  }
 
   beforeEach(async () => {
     applicationService = new MockApplicationResourceApiService();
@@ -57,7 +53,8 @@ describe('UploadButtonComponent', () => {
         { provide: HttpClient, useClass: MockHttpClient },
         provideFontAwesomeTesting(),
         provideTranslateMock(),
-        provideFontAwesomeTesting()],
+        provideFontAwesomeTesting(),
+      ],
     }).compileComponents();
   });
 
@@ -135,8 +132,10 @@ describe('UploadButtonComponent', () => {
 
     const error = new Error('Delete failed');
     (applicationService.deleteDocumentFromApplication as any).mockReturnValue({
-      subscribe: () => { throw error; }
-    })
+      subscribe: () => {
+        throw error;
+      },
+    });
 
     const document = { id: '1', name: 'doc1', size: 1234 };
     component.documentIds.set([document]);
@@ -215,7 +214,7 @@ describe('UploadButtonComponent', () => {
 
     const newFile = new File([''], 'new.pdf');
 
-    const uploadSpy = vi.spyOn(component, 'onUpload').mockImplementation(async () => { });
+    const uploadSpy = vi.spyOn(component, 'onUpload').mockImplementation(async () => {});
 
     await component.onFileSelected({ currentFiles: [newFile] });
 
@@ -286,7 +285,6 @@ describe('UploadButtonComponent', () => {
       { id: 'doc-2', name: 'OtherDoc', size: 2000 },
     ]);
 
-
     await component.renameDocument({ id: docId, name: newName, size: 3 });
 
     const updatedDocs = component.documentIds();
@@ -316,7 +314,5 @@ describe('UploadButtonComponent', () => {
 
     const updatedDocs = component.documentIds();
     expect(updatedDocs?.length).toBe(0);
-  })
-
-
+  });
 });
