@@ -1,1 +1,15 @@
-<p>research-group-admin-view works!</p>
+<div class="page-container">
+  <div class="page-header">
+    <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
+  </div>
+  <div class="body">
+    <jhi-search-filter-sort-bar
+      [searchText]="'researchGroup.adminView.searchFilterSortBar.searchText' | translate"
+      [totalRecords]="totalRecords()"
+      [singleEntity]="'researchGroup.adminView.group' | translate"
+      [multipleEntities]="'researchGroup.adminView.groups' | translate"
+      [filters]="filters"
+      [sortableFields]="sortableFields"
+    />
+  </div>
+</div>

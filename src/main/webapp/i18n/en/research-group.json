@@ -127,6 +127,29 @@
       },
 
       "noRole": "No Role"
+    },
+    "adminView": {
+      "filter": {
+        "status": "Status",
+        "stateSearchPlaceholder": "Search status..."
+      },
+      "group": "Research Group",
+      "groups": "Research Groups",
+      "groupState": {
+        "draft": "Pending",
+        "active": "Accepted",
+        "denied": "Rejected"
+      },
+      "searchFilterSortBar": {
+        "searchText": "Search Research Groups..."
+      },
+      "tableColumn": {
+        "professor": "Professor",
+        "status": "Status",
+        "researchGroup": "Research Group",
+        "createdAt": "Created at"
+      },
+      "title": "Manage Research Groups"
     }
   }
 }

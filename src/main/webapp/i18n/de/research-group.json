@@ -127,6 +127,29 @@
       },
 
       "noRole": "Keine Rolle"
+    },
+    "adminView": {
+      "filter": {
+        "status": "Status",
+        "stateSearchPlaceholder": "Status suchen..."
+      },
+      "group": "Forschungsgruppe",
+      "groups": "Forschungsgruppen",
+      "groupState": {
+        "draft": "Ausstehend",
+        "active": "Genehmigt",
+        "denied": "Abgelehnt"
+      },
+      "searchFilterSortBar": {
+        "searchText": "Forschungsgruppen suchen..."
+      },
+      "tableColumn": {
+        "professor": "Professor",
+        "status": "Status",
+        "researchGroup": "Forschungsgruppe",
+        "createdAt": "Erstellt am"
+      },
+      "title": "Verwalte Forschungsgruppen"
     }
   }
 }
