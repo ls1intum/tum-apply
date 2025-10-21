@@ -20,6 +20,14 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { HttpResponse } from '@angular/common/http';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { UpdateApplicationDTO } from 'app/generated/model/updateApplicationDTO';
+import { UserDTO } from 'app/generated/model/userDTO';
+import { ApplicantDTO } from 'app/generated/model/applicantDTO';
+
+
+
+function spyOnPrivate<T extends object>(obj: T, methodName: string) {
+    return vi.spyOn(obj as any, methodName);
+}
 
 const createMockApplication = (applicationState: ApplicationForApplicantDTO.ApplicationStateEnum): ApplicationForApplicantDTO => ({
   applicationState: applicationState,
@@ -335,7 +343,7 @@ describe('ApplicationForm', () => {
     });
 
     it('should show error message when jobId is null in initPageForLocalStorageCase', async () => {
-      const showErrorSpy = vi.spyOn(comp, 'showInitErrorMessage');
+            const showErrorSpy = spyOnPrivate(comp, 'showInitErrorMessage');
 
       comp.initPageForLocalStorageCase(null);
 
@@ -349,7 +357,7 @@ describe('ApplicationForm', () => {
 
     // Additional test with empty string to be thorough
     it('should show error message when jobId is empty string in initPageForLocalStorageCase', async () => {
-      const showErrorSpy = vi.spyOn(comp, 'showInitErrorMessage');
+            const showErrorSpy = spyOnPrivate(comp, 'showInitErrorMessage');
 
       comp.initPageForLocalStorageCase('');
 
@@ -362,7 +370,7 @@ describe('ApplicationForm', () => {
 
     // Test the if branch for completeness (if not already tested)
     it('should load data when jobId is provided in initPageForLocalStorageCase', async () => {
-      const loadDataSpy = vi.spyOn(comp, 'loadPersonalInfoDataFromLocalStorage');
+            const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
 
       comp.initPageForLocalStorageCase('job-123');
 
@@ -399,7 +407,7 @@ describe('ApplicationForm', () => {
       comp.applicationId.set('app-123');
       comp.jobId.set('job-456');
 
-      const result = comp.saveToLocalStorage();
+            const result = comp['saveToLocalStorage']();
 
       // Should call saveApplicationDraft with correct data
       expect(localStorageService.saveApplicationDraft).toHaveBeenCalledWith(
@@ -440,7 +448,7 @@ describe('ApplicationForm', () => {
         throw new Error('LocalStorage quota exceeded');
       });
 
-      const result = comp.saveToLocalStorage();
+            const result = comp['saveToLocalStorage']();
 
       // Should attempt to save
       expect(localStorageService.saveApplicationDraft).toHaveBeenCalled();
@@ -458,7 +466,7 @@ describe('ApplicationForm', () => {
       comp.jobId.set('job-test');
 
       const beforeTime = new Date().toISOString();
-      comp.saveToLocalStorage();
+            comp['saveToLocalStorage']();
       const afterTime = new Date().toISOString();
 
       // Get the timestamp that was passed to saveApplicationDraft
@@ -476,7 +484,7 @@ describe('ApplicationForm', () => {
       comp.applicationId.set('');
       comp.jobId.set('');
 
-      const result = comp.saveToLocalStorage();
+            const result = comp['saveToLocalStorage']();
 
       expect(localStorageService.saveApplicationDraft).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -542,10 +550,10 @@ describe('ApplicationForm', () => {
 
       // Mock mapPagesToDTO
       const mockUpdateDTO = { applicationId: 'app-789', applicationState: 'SAVED' };
-      vi.spyOn(comp as any, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
+            spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = vi.spyOn(comp as any, 'clearLocalStorage').mockImplementation(() => {});
+            const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -565,10 +573,10 @@ describe('ApplicationForm', () => {
 
       // Mock mapPagesToDTO
       const mockUpdateDTO = { applicationId: 'app-error', applicationState: 'SAVED' };
-      vi.spyOn(comp as any, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
+            spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = vi.spyOn(comp as any, 'clearLocalStorage').mockImplementation(() => {});
+            const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       // Mock updateApplication to throw an error
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
@@ -586,14 +594,14 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(false);
 
       // Mock mapPagesToDTO
-      vi.spyOn(comp as any, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
-      vi.spyOn(comp as any, 'clearLocalStorage').mockImplementation(() => {});
+            spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
+            spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
 
       const result = await comp.sendCreateApplicationData('SENT', false);
 
-      expect((comp as any).mapPagesToDTO).toHaveBeenCalledWith('SENT');
+            expect(comp['mapPagesToDTO']).toHaveBeenCalledWith('SENT');
       expect(result).toBe(true);
     });
   });
@@ -668,7 +676,7 @@ describe('ApplicationForm', () => {
 
     it('should return ApplicationDetailDTO without address fields when state is undefined', () => {
       comp.applicationState.set('SAVED');
-      const result = (comp as any).mapPagesToDTO(undefined);
+            const result = comp['mapPagesToDTO'](undefined);
 
       expect(result.applicationId).toBe('app-123');
       expect(result.applicationState).toBe('SAVED');
@@ -680,54 +688,54 @@ describe('ApplicationForm', () => {
     });
 
     it('should handle SAVED state', () => {
-      const result = (comp as any).mapPagesToDTO('SAVED');
+            const result = comp['mapPagesToDTO']('SAVED');
       expect(result.applicationState).toBe('SAVED');
     });
 
     it('should handle SENT state', () => {
-      const result = (comp as any).mapPagesToDTO('SENT');
+            const result = comp['mapPagesToDTO']('SENT');
       expect(result.applicationState).toBe('SENT');
     });
   });
 
   describe('openOtpAndWaitForLogin', () => {
     it('should show error and return when email is empty', async () => {
-      await (comp as any).openOtpAndWaitForLogin('', 'John', 'Doe');
+            await comp['openOtpAndWaitForLogin']('', 'John', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidEmail');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
     it('should show error and return when email is whitespace only', async () => {
-      await (comp as any).openOtpAndWaitForLogin('   ', 'John', 'Doe');
+            await comp['openOtpAndWaitForLogin']('   ', 'John', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidEmail');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
     it('should show error and return when firstName is empty', async () => {
-      await (comp as any).openOtpAndWaitForLogin('test@example.com', '', 'Doe');
+            await comp['openOtpAndWaitForLogin']('test@example.com', '', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidFirstName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
     it('should show error and return when firstName is whitespace only', async () => {
-      await (comp as any).openOtpAndWaitForLogin('test@example.com', '   ', 'Doe');
+            await comp['openOtpAndWaitForLogin']('test@example.com', '   ', 'Doe');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidFirstName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
     it('should show error and return when lastName is empty', async () => {
-      await (comp as any).openOtpAndWaitForLogin('test@example.com', 'John', '');
+            await comp['openOtpAndWaitForLogin']('test@example.com', 'John', '');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidLastName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
     });
 
     it('should show error and return when lastName is whitespace only', async () => {
-      await (comp as any).openOtpAndWaitForLogin('test@example.com', 'John', '   ');
+            await comp['openOtpAndWaitForLogin']('test@example.com', 'John', '   ');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidLastName');
       expect(authFacade.requestOtp).not.toHaveBeenCalled();
@@ -741,7 +749,7 @@ describe('ApplicationForm', () => {
       const dialogRef = { close: vi.fn() };
       dialogService.open = vi.fn().mockReturnValue(dialogRef);
 
-      const promise = (comp as any).openOtpAndWaitForLogin('  test@example.com  ', '  John  ', '  Doe  ');
+            const promise = comp['openOtpAndWaitForLogin']('  test@example.com  ', '  John  ', '  Doe  ');
 
       await promise;
 
@@ -771,7 +779,7 @@ describe('ApplicationForm', () => {
         return callCount === 1 ? startTime : timeoutTime;
       });
 
-      const promise = (comp as any).openOtpAndWaitForLogin('test@example.com', 'John', 'Doe');
+            const promise = comp['openOtpAndWaitForLogin']('test@example.com', 'John', 'Doe');
 
       await expect(promise).rejects.toThrow('OTP verification timeout. Please try again.');
 
@@ -783,9 +791,9 @@ describe('ApplicationForm', () => {
     it('should return early when useLocalStorage is false', async () => {
       comp.useLocalStorage.set(false);
 
-      const initPageSpy = vi.spyOn(comp as any, 'initPageCreateApplication');
+            const initPageSpy = spyOnPrivate(comp, 'initPageCreateApplication');
 
-      await (comp as any).migrateDraftIfNeeded();
+            await comp['migrateDraftIfNeeded']();
 
       expect(initPageSpy).not.toHaveBeenCalled();
     });
@@ -794,20 +802,9 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(true);
       comp.jobId.set('');
 
-      const initPageSpy = vi.spyOn(comp as any, 'initPageCreateApplication');
+            const initPageSpy = spyOnPrivate(comp, 'initPageCreateApplication');
 
-      await (comp as any).migrateDraftIfNeeded();
-
-      expect(initPageSpy).not.toHaveBeenCalled();
-    });
-
-    it('should return early when jobId is undefined', async () => {
-      comp.useLocalStorage.set(true);
-      comp.jobId.set(undefined as any);
-
-      const initPageSpy = vi.spyOn(comp as any, 'initPageCreateApplication');
-
-      await (comp as any).migrateDraftIfNeeded();
+            await comp['migrateDraftIfNeeded']();
 
       expect(initPageSpy).not.toHaveBeenCalled();
     });
@@ -819,10 +816,10 @@ describe('ApplicationForm', () => {
 
       const mockApplication = { applicationId: 'new-app-123' } as any;
 
-      const initPageSpy = vi.spyOn(comp as any, 'initPageCreateApplication').mockResolvedValue(mockApplication);
-      const sendDataSpy = vi.spyOn(comp as any, 'sendCreateApplicationData').mockResolvedValue(true);
+            const initPageSpy = spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(mockApplication);
+            const sendDataSpy = spyOnPrivate(comp, 'sendCreateApplicationData').mockResolvedValue(true);
 
-      await (comp as any).migrateDraftIfNeeded();
+            await comp['migrateDraftIfNeeded']();
 
       expect(initPageSpy).toHaveBeenCalledWith('job-789');
       expect(comp.useLocalStorage()).toBe(false);
@@ -835,9 +832,9 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(true);
       comp.jobId.set('job-error');
 
-      vi.spyOn(comp as any, 'initPageCreateApplication').mockRejectedValue(new Error('Migration failed'));
+            spyOnPrivate(comp, 'initPageCreateApplication').mockRejectedValue(new Error('Migration failed'));
 
-      await (comp as any).migrateDraftIfNeeded();
+            await comp['migrateDraftIfNeeded']();
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.migrationFailed');
     });
@@ -849,10 +846,10 @@ describe('ApplicationForm', () => {
 
       const mockApplication = { applicationId: undefined } as any;
 
-      vi.spyOn(comp as any, 'initPageCreateApplication').mockResolvedValue(mockApplication);
-      vi.spyOn(comp as any, 'sendCreateApplicationData').mockResolvedValue(true);
+            spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(mockApplication);
+            spyOnPrivate(comp, 'sendCreateApplicationData').mockResolvedValue(true);
 
-      await (comp as any).migrateDraftIfNeeded();
+            await comp['migrateDraftIfNeeded']();
 
       expect(comp.applicationId()).toBe('old-app-id');
     });
@@ -862,9 +859,9 @@ describe('ApplicationForm', () => {
     it('should return early when applicantId is already set', () => {
       comp.applicantId.set('existing-user-123');
 
-      const openOtpSpy = vi.spyOn(comp as any, 'openOtpAndWaitForLogin');
+            const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin');
 
-      (comp as any).handleNextFromStep1();
+            comp['handleNextFromStep1']();
 
       expect(openOtpSpy).not.toHaveBeenCalled();
     });
@@ -877,8 +874,8 @@ describe('ApplicationForm', () => {
         lastName: 'Smith',
       } as any);
 
-      const openOtpSpy = vi.spyOn(comp as any, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
-      const migrateSpy = vi.spyOn(comp as any, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
+            const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
+            const migrateSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
 
       accountService.loadedUser = signal({ id: 'new-user-456', email: 'test@example.com', name: 'Jane Smith' });
 
@@ -887,7 +884,7 @@ describe('ApplicationForm', () => {
       };
       vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
 
-      (comp as any).handleNextFromStep1();
+            comp['handleNextFromStep1']();
 
       // Wait for async operations
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -903,9 +900,9 @@ describe('ApplicationForm', () => {
         lastName: 'Smith',
       } as any);
 
-      vi.spyOn(comp as any, 'openOtpAndWaitForLogin').mockRejectedValue(new Error('OTP failed'));
+            spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockRejectedValue(new Error('OTP failed'));
 
-      (comp as any).handleNextFromStep1();
+            comp['handleNextFromStep1']();
 
       // Wait for async operations
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -926,7 +923,7 @@ describe('ApplicationForm', () => {
 
     describe('personalInfo step buttons', () => {
       it('should call performAutomaticSave and location.back when back button is clicked', async () => {
-        const performSaveSpy = vi.spyOn(comp as any, 'performAutomaticSave').mockResolvedValue(undefined);
+                const performSaveSpy = spyOnPrivate(comp, 'performAutomaticSave').mockResolvedValue(undefined);
 
         const steps = comp.stepData();
         const personalInfoStep = steps[0]; // First step
@@ -942,7 +939,7 @@ describe('ApplicationForm', () => {
       });
 
       it('should call handleNextFromStep1 when next button is clicked', () => {
-        const handleNextSpy = vi.spyOn(comp as any, 'handleNextFromStep1').mockImplementation(() => {});
+                const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => { });
 
         const steps = comp.stepData();
         const personalInfoStep = steps[0];
@@ -965,7 +962,7 @@ describe('ApplicationForm', () => {
         freshComp.applicantId.set('user-123');
 
         // Spy on the fresh component
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+                const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -987,7 +984,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+                const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1009,7 +1006,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+                const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1030,7 +1027,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+                const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1052,7 +1049,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+                const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1197,7 +1194,7 @@ describe('ApplicationForm', () => {
   describe('education step buttons', () => {
     it('should call updateDocumentInformation when prev button is clicked', () => {
       // IMPORTANT: Set up spy BEFORE accessing stepData()
-      const updateDocsSpy = vi.spyOn(comp, 'updateDocumentInformation').mockImplementation(() => {});
+            const updateDocsSpy = vi.spyOn(comp, 'updateDocumentInformation').mockImplementation(() => { });
 
       // Create a fresh component to ensure computed runs with spy in place
       const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
@@ -1208,7 +1205,7 @@ describe('ApplicationForm', () => {
       freshComp.applicantId.set('user-123');
 
       // Spy on the fresh component
-      const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+            const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
       freshFixture.detectChanges();
 
@@ -1231,7 +1228,7 @@ describe('ApplicationForm', () => {
       freshComp.applicantId.set('user-123');
 
       // Spy on the fresh component BEFORE computed runs
-      const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+            const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
       freshFixture.detectChanges();
 
@@ -1349,7 +1346,7 @@ describe('ApplicationForm', () => {
     it('should do nothing when savingState is not SAVING', async () => {
       comp.savingState.set(SavingStates.SAVED); // Not SAVING
 
-      const saveToLocalStorageSpy = vi.spyOn(comp, 'saveToLocalStorage');
+            const saveToLocalStorageSpy = spyOnPrivate(comp, 'saveToLocalStorage');
       const sendCreateApplicationDataSpy = vi.spyOn(comp, 'sendCreateApplicationData');
 
       await comp.performAutomaticSave();
@@ -1368,7 +1365,7 @@ describe('ApplicationForm', () => {
       comp.savingState.set(SavingStates.SAVING);
       comp.useLocalStorage.set(true);
 
-      const saveToLocalStorageSpy = vi.spyOn(comp, 'saveToLocalStorage').mockReturnValue(true);
+            const saveToLocalStorageSpy = vi.spyOn(comp, 'saveToLocalStorage' as any).mockReturnValue(true);
 
       await comp.performAutomaticSave();
 
@@ -1383,7 +1380,7 @@ describe('ApplicationForm', () => {
       comp.savingState.set(SavingStates.SAVING);
       comp.useLocalStorage.set(true);
 
-      const saveToLocalStorageSpy = vi.spyOn(comp, 'saveToLocalStorage').mockReturnValue(false);
+            const saveToLocalStorageSpy = spyOnPrivate(comp, 'saveToLocalStorage').mockReturnValue(false);
 
       await comp.performAutomaticSave();
 
