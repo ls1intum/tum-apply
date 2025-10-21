@@ -24,24 +24,6 @@ public class PDFExportResource {
     }
 
     /**
-     * GET /api/export/job/{id}/pdf : Export job details as PDF
-     *
-     * @param id the job ID
-     * @return the PDF file as downloadable attachment
-     */
-    @PostMapping(value = "/job/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    @Public
-    public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
-        Resource pdf = pdfExportService.exportJobToPDF(id, labels);
-        String filename = pdfExportService.generateJobFilename(id);
-
-        return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-            .contentType(MediaType.APPLICATION_PDF)
-            .body(pdf);
-    }
-
-    /**
      * GET /api/export/application/{id}/pdf : Export application details as PDF
      *
      * @param id the application ID
