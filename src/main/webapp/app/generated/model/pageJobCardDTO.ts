@@ -12,7 +12,7 @@ import { JobCardDTO } from './jobCardDTO';
 import { SortObject } from './sortObject';
 
 
-export interface PageJobCardDTO {
+export interface PageJobCardDTO { 
     content?: Array<JobCardDTO>;
     empty?: boolean;
     first?: boolean;

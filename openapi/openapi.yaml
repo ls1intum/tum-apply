@@ -674,6 +674,28 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/JobFilterOptionDTO'}
                 uniqueItems: true
+  /api/export/application/{id}/pdf:
+    post:
+      tags: [pdf-export-resource]
+      operationId: exportApplicationToPDF
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {type: string}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema: {type: string, format: binary}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -875,36 +897,6 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
-  /api/export/job/{id}/pdf:
-    get:
-      tags: [pdf-export-resource]
-      operationId: exportJobToPDF
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/pdf:
-              schema: {type: string, format: binary}
-  /api/export/application/{id}/pdf:
-    get:
-      tags: [pdf-export-resource]
-      operationId: exportApplicationToPDF
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/pdf:
-              schema: {type: string, format: binary}
       responses:
         '200': {description: OK}
   /api/me/prof-onboarding:

@@ -12,7 +12,7 @@ import { CreatedJobDTO } from './createdJobDTO';
 import { SortObject } from './sortObject';
 
 
-export interface PageCreatedJobDTO {
+export interface PageCreatedJobDTO { 
     content?: Array<CreatedJobDTO>;
     empty?: boolean;
     first?: boolean;
