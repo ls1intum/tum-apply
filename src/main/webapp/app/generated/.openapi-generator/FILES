@@ -43,6 +43,7 @@ model/emailSettingDTO.ts
 model/emailTemplateDTO.ts
 model/emailTemplateOverviewDTO.ts
 model/emailTemplateTranslationDTO.ts
+model/employeeResearchGroupRequestDTO.ts
 model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
