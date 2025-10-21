@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
@@ -8,6 +9,8 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -22,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +46,10 @@ public class ResearchGroupService {
     private final ResearchGroupRepository researchGroupRepository;
 
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final AsyncEmailSender emailSender;
+
+    @Value("${aet.contact-email:tum-apply.aet@xcit.tum.de}")
+    private String supportEmail;
 
     /**
      * Get all members of the current user's research group.
@@ -359,5 +367,65 @@ public class ResearchGroupService {
         userResearchGroupRoleRepository.save(role);
 
         return saved;
+    }
+
+    /**
+     * Creates an employee research group access request.
+     * Sends an email to support/administrators with user information and professor name.
+     * This is a temporary solution until the employee role is implemented.
+     *
+     * @param request the employee's research group request containing professor name
+     */
+    @Transactional
+    public void createEmployeeResearchGroupRequest(EmployeeResearchGroupRequestDTO request) {
+        User currentUser = currentUserService.getUser();
+
+        // Create a dummy admin user for sending the email to support
+        User supportUser = new User();
+        supportUser.setEmail(supportEmail);
+        supportUser.setSelectedLanguage(Language.ENGLISH.getCode());
+
+        String emailBody = String.format(
+            """
+            <html>
+            <body>
+                <h2>Employee Research Group Access Request</h2>
+                <p>A user has requested access to a research group as an employee.</p>
+
+                <h3>User Information:</h3>
+                <ul>
+                    <li><strong>Name:</strong> %s %s</li>
+                    <li><strong>Email:</strong> %s</li>
+                    <li><strong>User ID:</strong> %s</li>
+                    <li><strong>University ID:</strong> %s</li>
+                </ul>
+
+                <h3>Professor Information:</h3>
+                <ul>
+                    <li><strong>Professor Name:</strong> %s</li>
+                </ul>
+
+                <p>Please assign this user to the appropriate research group.</p>
+            </body>
+            </html>
+            """,
+            currentUser.getFirstName() != null ? currentUser.getFirstName() : "N/A",
+            currentUser.getLastName() != null ? currentUser.getLastName() : "N/A",
+            currentUser.getEmail(),
+            currentUser.getUserId(),
+            currentUser.getUniversityId() != null ? currentUser.getUniversityId() : "Not provided",
+            request.professorName()
+        );
+
+        Email email = Email.builder()
+            .to(supportUser)
+            .customSubject("Employee Research Group Access Request - " + currentUser.getEmail())
+            .customBody(emailBody)
+            .sendAlways(true)
+            .language(Language.ENGLISH)
+            .build();
+
+        emailSender.sendAsync(email);
+        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
 }
