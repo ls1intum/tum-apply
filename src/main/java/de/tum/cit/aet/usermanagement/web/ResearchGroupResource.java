@@ -2,18 +2,24 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.dto.SortDTO.Direction;
 import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -149,6 +155,53 @@ public class ResearchGroupResource {
         log.info("POST /api/research-groups/employee-request professorName={}", request.professorName());
         researchGroupService.createEmployeeResearchGroupRequest(request);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Returns a paginated list of research groups for admin review.
+     *
+     * @param page                       the page number (zero-based)
+     * @param size                       the page size
+     * @param status                     optional list of research group states to filter by
+     * @param sortBy                     optional sort field
+     * @param direction                  optional sort direction
+     * @param searchQuery                optional search query
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link Page} of {@link ResearchGroupAdminDTO}
+     */
+    @GetMapping("/admin")
+    @Admin
+    public ResponseEntity<PageResponseDTO<ResearchGroupAdminDTO>> getResearchGroupsForAdmin(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) List<String> status,
+        @RequestParam(required = false) String sortBy,
+        @RequestParam(required = false) String direction,
+        @RequestParam(required = false) String searchQuery
+    ) {
+        log.info(
+            "GET /api/research-groups/admin called with page={}, size={}, status={}, sortBy={}, direction={}, searchQuery={}",
+            page,
+            size,
+            status,
+            sortBy,
+            direction,
+            searchQuery
+        );
+        PageDTO pageDTO = new PageDTO(size, page);
+        AdminResearchGroupFilterDTO filterDTO = new AdminResearchGroupFilterDTO();
+        if (status != null && !status.isEmpty()) {
+            filterDTO.setStatus(status.stream().map(ResearchGroupState::valueOf).toList());
+        }
+        SortDTO sortDTO = new SortDTO(sortBy, direction != null ? Direction.valueOf(direction) : null);
+        PageResponseDTO<ResearchGroupAdminDTO> response = researchGroupService.getResearchGroupsForAdmin(
+            pageDTO,
+            filterDTO,
+            sortDTO,
+            searchQuery
+        );
+        return ResponseEntity.ok(response);
     }
 
     /**

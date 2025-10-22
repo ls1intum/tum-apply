@@ -9,7 +9,22 @@
       [singleEntity]="'researchGroup.adminView.group' | translate"
       [multipleEntities]="'researchGroup.adminView.groups' | translate"
       [filters]="filters"
+      (searchOutput)="onSearchEmit($event)"
+      (filterOutput)="onFilterEmit($event)"
+      (sortOutput)="loadOnSortEmit($event)"
       [sortableFields]="sortableFields"
     />
+
+    <div class="table-wrapper">
+      <jhi-dynamic-table
+        [columns]="columns()"
+        [data]="researchGroups()"
+        [totalRecords]="totalRecords()"
+        [page]="page()"
+        [rows]="pageSize()"
+        [selectable]="true"
+        (lazyLoad)="loadOnTableEmit($event)"
+      />
+    </div>
   </div>
 </div>

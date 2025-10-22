@@ -18,6 +18,8 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { EmployeeResearchGroupRequestDTO } from '../model/employeeResearchGroupRequestDTO';
 // @ts-ignore
+import { PageResponseDTOResearchGroupAdminDTO } from '../model/pageResponseDTOResearchGroupAdminDTO';
+// @ts-ignore
 import { PageResponseDTOResearchGroupDTO } from '../model/pageResponseDTOResearchGroupDTO';
 // @ts-ignore
 import { PageResponseDTOUserShortDTO } from '../model/pageResponseDTOUserShortDTO';
@@ -481,6 +483,79 @@ export class ResearchGroupResourceApiService extends BaseService {
 
         let localVarPath = `/api/research-groups/members`;
         return this.httpClient.request<PageResponseDTOUserShortDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param page 
+     * @param size 
+     * @param status 
+     * @param sortBy 
+     * @param direction 
+     * @param searchQuery 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOResearchGroupAdminDTO>;
+    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOResearchGroupAdminDTO>>;
+    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOResearchGroupAdminDTO>>;
+    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>page, 'page');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>size, 'size');
+        if (status) {
+            status.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'status');
+            })
+        }
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>sortBy, 'sortBy');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>direction, 'direction');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>searchQuery, 'searchQuery');
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/research-groups/admin`;
+        return this.httpClient.request<PageResponseDTOResearchGroupAdminDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

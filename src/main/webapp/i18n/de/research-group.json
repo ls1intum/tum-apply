@@ -129,6 +129,16 @@
       "noRole": "Keine Rolle"
     },
     "adminView": {
+      "errors": {
+        "loadFilter": {
+          "summary": "Fehler",
+          "detail": "Laden der Filteroptionen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        },
+        "loadJobs": {
+          "summary": "Fehler",
+          "detail": "Laden der Forschungsgruppen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        }
+      },
       "filter": {
         "status": "Status",
         "stateSearchPlaceholder": "Status suchen..."

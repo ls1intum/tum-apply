@@ -3,11 +3,13 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -17,6 +19,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.*;
+import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
@@ -297,6 +300,27 @@ public class ResearchGroupService {
         ResearchGroup saved = researchGroupRepository.save(group);
 
         return saved;
+    }
+
+    /**
+     * Retrieves research groups for admin view with filtering, sorting, and pagination.
+     *
+     * @param pageDTO       the pagination information (page number and size)
+     * @param filterDTO     the filtering criteria for research groups
+     * @param sortDTO       the sorting configuration (field and direction)
+     * @param searchQuery   optional search query to filter research groups by name or head
+     * @return a paginated response containing research groups matching the criteria
+     */
+    public PageResponseDTO<ResearchGroupAdminDTO> getResearchGroupsForAdmin(
+        PageDTO pageDTO,
+        AdminResearchGroupFilterDTO filterDTO,
+        SortDTO sortDTO,
+        String searchQuery
+    ) {
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.RESEARCH_GROUPS_ADMIN, true);
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+        Page<ResearchGroupAdminDTO> page = researchGroupRepository.findAllForAdmin(filterDTO.getStatus(), normalizedSearchQuery, pageable);
+        return new PageResponseDTO<>(page.getContent(), page.getTotalElements());
     }
 
     /**

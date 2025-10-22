@@ -129,6 +129,16 @@
       "noRole": "No Role"
     },
     "adminView": {
+      "errors": {
+        "loadFilter": {
+          "summary": "Error",
+          "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "loadResearchGroups": {
+          "summary": "Error",
+          "detail": "Failed to load research groups. Please try refreshing the page, or contact us if the problem continues."
+        }
+      },
       "filter": {
         "status": "Status",
         "stateSearchPlaceholder": "Search status..."
