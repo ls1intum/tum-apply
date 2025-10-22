@@ -227,6 +227,14 @@ export class JobDetailComponent {
     this.location.back();
   }
 
+  isProfessor(): boolean {
+    return this.accountService.hasAnyAuthority(['PROFESSOR']);
+  }
+
+  onEditResearchGroup(): void {
+    this.router.navigate(['/research-group/info']);
+  }
+
   onApply(): void {
     this.router.navigate(['/application/form'], {
       queryParams: {

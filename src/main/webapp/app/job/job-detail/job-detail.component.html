@@ -74,12 +74,12 @@
 
       <!-- Right Column: Cards -->
       <div class="flex flex-col">
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'briefcase']" class="icon" />
-            <h3 class="card-title" jhiTranslate="jobDetailPage.cards.positionOverview"></h3>
+            <h3 class="section-card-title" jhiTranslate="jobDetailPage.cards.positionOverview"></h3>
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
                 <span class="label" jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
@@ -123,12 +123,20 @@
           </div>
         </div>
 
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'users']" class="icon" />
-            <h3 class="card-title" jhiTranslate="jobDetailPage.cards.researchGroup"></h3>
+            <h3 class="section-card-title" jhiTranslate="jobDetailPage.cards.researchGroup"></h3>
+            @if (isProfessor()) {
+              <fa-icon
+                [icon]="['fas', 'edit']"
+                class="icon edit-icon cursor-pointer ml-auto"
+                (click)="onEditResearchGroup()"
+                title="{{ 'jobDetailPage.editResearchGroup' | translate }}"
+              />
+            }
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <h4 class="text-base font-semibold mb-4">{{ jobDetails()?.researchGroup || '-' }}</h4>
             <div class="leading-relaxed mb-4 text-sm wrap-anywhere" [innerHTML]="jobDetails()?.researchGroupDescription || '-'"></div>
 
