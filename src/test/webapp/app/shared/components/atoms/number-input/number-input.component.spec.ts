@@ -30,11 +30,6 @@ describe('NumberInputComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
-    const fixture = createFixture();
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-
   it('should render label and required indicator', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
