@@ -421,7 +421,9 @@ export default class ApplicationCreationFormComponent {
             this.title.set(jobDetails.title);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          // Silently ignore errors when fetching job title - this is non-critical for the application flow
+        });
     } else {
       this.showInitErrorMessage(`${applyflow}.missingJobIdUnauthenticated`);
     }
