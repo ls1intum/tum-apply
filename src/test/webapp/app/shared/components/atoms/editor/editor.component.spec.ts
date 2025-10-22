@@ -5,6 +5,21 @@ import { EditorComponent } from 'app/shared/components/atoms/editor/editor.compo
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { extractTextFromHtml } from 'app/shared/util/text.util';
+
+function makeEditorEvent(html: string, overrides: Partial<unknown> = {}) {
+  return {
+    source: 'user',
+    oldDelta: { ops: [] },
+    editor: {
+      root: { innerHTML: html },
+      getSelection: () => ({ index: 0, length: 0 }),
+      setContents: vi.fn(),
+      setSelection: vi.fn(),
+      ...overrides,
+    },
+  };
+}
 
 describe('EditorComponent', () => {
   function createFixture() {
@@ -51,7 +66,7 @@ describe('EditorComponent', () => {
     const comp = fixture.componentInstance;
 
     const text = '<p>Hello World</p>';
-    const extracted = (comp as unknown as { extractTextFromHtml: (html: string) => string }).extractTextFromHtml(text);
+    const extracted = extractTextFromHtml(text);
     expect(extracted).toBe('Hello World');
 
     const htmlSignal = (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue;
@@ -130,16 +145,7 @@ describe('EditorComponent', () => {
     vi.spyOn(comp, 'formControl').mockReturnValue(ctrl);
     vi.spyOn(comp as unknown as { hasFormControl: () => boolean }, 'hasFormControl').mockReturnValue(true);
 
-    const event = {
-      source: 'user',
-      oldDelta: {},
-      editor: {
-        root: { innerHTML: '<p>Updated</p>' },
-        getSelection: () => null,
-        setContents: vi.fn(),
-        setSelection: vi.fn(),
-      },
-    };
+    const event = makeEditorEvent('<p>Updated</p>');
 
     (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
     expect(ctrl.value).toBe('<p>Updated</p>');
@@ -164,23 +170,12 @@ describe('EditorComponent', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
 
-    const setContents = vi.fn();
-    const setSelection = vi.fn();
-
-    const event = {
-      source: 'user',
-      oldDelta: { ops: [] },
-      editor: {
-        root: { innerHTML: '<p>' + 'x'.repeat(1000) + '</p>' },
-        getSelection: () => ({ index: 0, length: 0 }),
-        setContents,
-        setSelection,
-      },
-    };
+    const event = makeEditorEvent('<p>' + 'x'.repeat(1000) + '</p>');
 
     (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
-    expect(setContents).toHaveBeenCalled();
-    expect(setSelection).toHaveBeenCalled();
+
+    expect(event.editor.setContents).toHaveBeenCalled();
+    expect(event.editor.setSelection).toHaveBeenCalled();
   });
 
   it('should handle focus and blur correctly', () => {
@@ -211,42 +206,12 @@ describe('EditorComponent', () => {
     const fixture = TestBed.createComponent(EditorComponent);
     const comp = fixture.componentInstance;
 
-    const setContents = vi.fn();
-    const setSelection = vi.fn();
-
-    const event = {
-      source: 'user',
-      oldDelta: { ops: [] },
-      editor: {
-        root: { innerHTML: '<p>' + 'x'.repeat(700) + '</p>' },
-        getSelection: () => ({ index: 0, length: 0 }),
-        setContents,
-        setSelection,
-      },
-    };
+    const event = makeEditorEvent('<p>' + 'x'.repeat(700) + '</p>');
 
     (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
 
-    expect(setContents).toHaveBeenCalled();
-    expect(setSelection).toHaveBeenCalled();
-  });
-
-  it('extractTextFromHtml falls back to final ?? "" when textContent is null and innerText.trim() returns undefined', () => {
-    const fixture = TestBed.createComponent(EditorComponent);
-    const comp = fixture.componentInstance;
-
-    const mockElem = {
-      innerHTML: '',
-      textContent: null as unknown as string,
-      innerText: { trim: (() => undefined) as unknown as () => string },
-    };
-
-    const createSpy = vi.spyOn(document, 'createElement').mockReturnValue(mockElem as HTMLElement);
-
-    const result = (comp as unknown as { extractTextFromHtml: (html: string) => string }).extractTextFromHtml('<p>ignored</p>');
-    expect(result).toBe('');
-
-    createSpy.mockRestore();
+    expect(event.editor.setContents).toHaveBeenCalled();
+    expect(event.editor.setSelection).toHaveBeenCalled();
   });
 
   it('should return model() when no formControl is present (else branch)', () => {
@@ -268,16 +233,7 @@ describe('EditorComponent', () => {
     vi.spyOn(comp as unknown as { hasFormControl: () => boolean }, 'hasFormControl').mockReturnValue(false);
     const emitSpy = vi.spyOn(comp.modelChange, 'emit');
 
-    const event = {
-      source: 'user',
-      oldDelta: {},
-      editor: {
-        root: { innerHTML: '<p>Standalone test</p>' },
-        getSelection: () => null,
-        setContents: vi.fn(),
-        setSelection: vi.fn(),
-      },
-    };
+    const event = makeEditorEvent('<p>Standalone test</p>');
 
     (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
 
@@ -327,23 +283,11 @@ describe('EditorComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    const setContents = vi.fn();
-    const setSelection = vi.fn();
-
-    const event = {
-      source: 'user',
-      oldDelta: { ops: [] },
-      editor: {
-        root: { innerHTML: '<p>' + 'x'.repeat(560) + '</p>' },
-        getSelection: () => ({ index: 0, length: 0 }),
-        setContents,
-        setSelection,
-      },
-    };
+    const event = makeEditorEvent('<p>' + 'x'.repeat(560) + '</p>');
 
     (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
 
-    expect(setContents).toHaveBeenCalledTimes(1);
-    expect(setSelection).toHaveBeenCalledTimes(1);
+    expect(event.editor.setContents).toHaveBeenCalledTimes(1);
+    expect(event.editor.setSelection).toHaveBeenCalledTimes(1);
   });
 });
