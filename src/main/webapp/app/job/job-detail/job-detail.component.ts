@@ -235,6 +235,15 @@ export class JobDetailComponent {
     this.router.navigate(['/research-group/info']);
   }
 
+  hasResearchGroupDescription(): boolean {
+    const description = this.jobDetails()?.researchGroupDescription;
+    if (!description) return false;
+
+    // Strip HTML tags and check if there's meaningful text content
+    const textContent = description.replace(/<[^>]*>/g, '').trim();
+    return textContent.length > 0;
+  }
+
   onApply(): void {
     this.router.navigate(['/application/form'], {
       queryParams: {
