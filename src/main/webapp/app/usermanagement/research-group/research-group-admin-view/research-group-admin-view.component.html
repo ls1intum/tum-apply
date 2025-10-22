@@ -34,7 +34,7 @@
           label="researchGroup.adminView.viewButton"
           severity="primary"
           data-testid="view"
-          (click)="onViewResearchGroup(researchGroup.researchGroupId)"
+          (click)="onViewResearchGroup(researchGroup.id)"
           [shouldTranslate]="true"
         /> -->
         @if (researchGroup.status === 'ACTIVE') {
@@ -45,7 +45,7 @@
             variant="outlined"
             severity="danger"
             confirmIcon="times"
-            (confirmed)="onWithdrawResearchGroup(researchGroup.researchGroupId)"
+            (confirmed)="onWithdrawResearchGroup(researchGroup.id)"
           />
         }
         @if (researchGroup.status === 'DRAFT') {
@@ -55,7 +55,7 @@
             [label]="'researchGroup.adminView.confirmDialog.confirm' | translate"
             severity="success"
             confirmIcon="check"
-            (confirmed)="onApproveResearchGroup(researchGroup.researchGroupId)"
+            (confirmed)="onApproveResearchGroup(researchGroup.id)"
           />
           <jhi-confirm-dialog
             [header]="'researchGroup.adminView.denyConfirmDialog.header' | translate"
@@ -63,7 +63,7 @@
             [label]="'researchGroup.adminView.denyConfirmDialog.confirm' | translate"
             severity="danger"
             confirmIcon="times"
-            (confirmed)="onDenyResearchGroup(researchGroup.researchGroupId)"
+            (confirmed)="onDenyResearchGroup(researchGroup.id)"
           />
         }
         @if (researchGroup.status === 'DENIED') {
@@ -74,7 +74,7 @@
             variant="outlined"
             severity="success"
             confirmIcon="check"
-            (confirmed)="onApproveResearchGroup(researchGroup.researchGroupId)"
+            (confirmed)="onApproveResearchGroup(researchGroup.id)"
           />
         }
       </div>

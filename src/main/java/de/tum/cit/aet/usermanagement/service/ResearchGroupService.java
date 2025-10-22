@@ -256,8 +256,8 @@ public class ResearchGroupService {
     @Transactional
     public ResearchGroup activateResearchGroup(UUID researchGroupId) {
         ResearchGroup group = researchGroupRepository.findByIdElseThrow(researchGroupId);
-        if (group.getState() != ResearchGroupState.DRAFT) {
-            throw new IllegalStateException("Only DRAFT groups can be activated");
+        if (group.getState() != ResearchGroupState.DRAFT && group.getState() != ResearchGroupState.DENIED) {
+            throw new IllegalStateException("Only DRAFT or DENIED groups can be activated");
         }
         group.setState(ResearchGroupState.ACTIVE);
         ResearchGroup saved = researchGroupRepository.save(group);
@@ -293,8 +293,8 @@ public class ResearchGroupService {
     @Transactional
     public ResearchGroup denyResearchGroup(UUID researchGroupId) {
         ResearchGroup group = researchGroupRepository.findByIdElseThrow(researchGroupId);
-        if (group.getState() != ResearchGroupState.DRAFT) {
-            throw new IllegalStateException("Only DRAFT groups can be denied");
+        if (group.getState() != ResearchGroupState.DRAFT && group.getState() != ResearchGroupState.ACTIVE) {
+            throw new IllegalStateException("Only DRAFT or ACTIVE groups can be denied");
         }
         group.setState(ResearchGroupState.DENIED);
         ResearchGroup saved = researchGroupRepository.save(group);
