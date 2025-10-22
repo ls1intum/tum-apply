@@ -29,9 +29,7 @@ import ApplicationCreationPage3Component, {
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
-  bachelorGradingScale,
   getPage2FromApplication,
-  masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
@@ -91,12 +89,14 @@ export default class ApplicationCreationFormComponent {
   educationData = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
-    bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: undefined,
+    bachelorGradeUpperLimit: '',
+    bachelorGradeLowerLimit: '',
+    bachelorGrade: '',
     masterDegreeName: '',
     masterDegreeUniversity: '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: undefined,
+    masterGradeUpperLimit: '',
+    masterGradeLowerLimit: '',
+    masterGrade: '',
   });
 
   applicationDetailsData = signal<ApplicationCreationPage3Data>({
@@ -150,10 +150,17 @@ export default class ApplicationCreationFormComponent {
     privacyAccepted: this.formbuilder.nonNullable.control(false, {
       validators: Validators.requiredTrue,
     }),
+    doctoralRequirementsAccepted: this.formbuilder.nonNullable.control(false, {
+      validators: Validators.requiredTrue,
+    }),
   });
 
   readonly privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls.privacyAccepted.valueChanges, {
     initialValue: this.additionalInfoForm.controls.privacyAccepted.value,
+  });
+
+  readonly doctoralRequirementsAcceptedSignal = toSignal(this.additionalInfoForm.controls.doctoralRequirementsAccepted.valueChanges, {
+    initialValue: this.additionalInfoForm.controls.doctoralRequirementsAccepted.value,
   });
 
   submitAttempted = signal(false);
@@ -392,7 +399,7 @@ export default class ApplicationCreationFormComponent {
         this.updateDocumentInformation();
       } catch (error: unknown) {
         const httpError = error as HttpErrorResponse;
-        this.showInitErrorMessage(`${applyflow}.initLoadFailed`);
+        this.showInitErrorMessage(`${applyflow}.loadFailed`);
         throw new Error(`Init failed with HTTP ${httpError.status} ${httpError.statusText}: ${httpError.message}`);
       }
     }
@@ -462,10 +469,11 @@ export default class ApplicationCreationFormComponent {
   onConfirmSend(): void {
     this.submitAttempted.set(true);
     if (!this.privacyAcceptedSignal()) {
-      this.toastService.showError({
-        summary: this.translateService.instant('privacy.privacyConsent.toastError.summary'),
-        detail: this.translateService.instant('privacy.privacyConsent.toastError.detail'),
-      });
+      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
+      return;
+    }
+    if (!this.doctoralRequirementsAcceptedSignal()) {
+      this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
     void this.sendCreateApplicationData('SENT', true);
@@ -497,9 +505,8 @@ export default class ApplicationCreationFormComponent {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
         await this.router.navigate(['/application/overview']);
       }
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      this.toastService.showErrorKey(`${applyflow}.saveFailedWithStatus`, { status: httpError.statusText });
+    } catch {
+      this.toastService.showErrorKey(`${applyflow}.saveFailed`);
       return false;
     }
     return true;
@@ -550,11 +557,8 @@ export default class ApplicationCreationFormComponent {
         this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
         void this.migrateDraftIfNeeded();
         this.progressStepper()?.goToStep(2);
-      } catch (err) {
-        this.toastService.showError({
-          summary: 'Error',
-          detail: (err as Error).message || 'Email verification failed. Please try again.',
-        });
+      } catch {
+        this.toastService.showErrorKey(`${applyflow}.otpVerificationFailed`);
       }
     })();
   }
@@ -563,17 +567,17 @@ export default class ApplicationCreationFormComponent {
   private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
     const normalizedEmail = email.trim();
     if (!normalizedEmail) {
-      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid email address.' });
+      this.toastService.showErrorKey(`${applyflow}.invalidEmail`);
       return;
     }
     const normalizedFirstName = firstName.trim();
     if (!normalizedFirstName) {
-      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid first name.' });
+      this.toastService.showErrorKey(`${applyflow}.invalidFirstName`);
       return;
     }
     const normalizedLastName = lastName.trim();
     if (!normalizedLastName) {
-      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid last name.' });
+      this.toastService.showErrorKey(`${applyflow}.invalidLastName`);
       return;
     }
 
@@ -627,7 +631,7 @@ export default class ApplicationCreationFormComponent {
       await this.sendCreateApplicationData(this.applicationState(), false);
       // TODO: remove application from local storage
     } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to migrate local draft to server.' });
+      this.toastService.showErrorKey(`${applyflow}.migrationFailed`);
     }
   }
 
@@ -652,11 +656,13 @@ export default class ApplicationCreationFormComponent {
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
-        bachelorGradingScale: p2.bachelorGradingScale.value,
+        bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
+        bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
         masterDegreeName: p2.masterDegreeName,
         masterUniversity: p2.masterDegreeUniversity,
         masterGrade: p2.masterGrade,
-        masterGradingScale: p2.masterGradingScale.value,
+        masterGradeUpperLimit: p2.masterGradeUpperLimit,
+        masterGradeLowerLimit: p2.masterGradeLowerLimit,
       },
       motivation: p3.motivation,
       specialSkills: p3.skills,
@@ -682,8 +688,6 @@ export default class ApplicationCreationFormComponent {
             phoneNumber: p1.phoneNumber,
             preferredLanguage: p1.language?.value,
           },
-          bachelorGradingScale: 'ONE_TO_FOUR',
-          masterGradingScale: 'ONE_TO_FOUR',
         },
       } as UpdateApplicationDTO;
     }

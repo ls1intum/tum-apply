@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, model, signal } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -14,18 +14,28 @@ import { ToastService } from '../../../service/toast-service';
 import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
 import { ApplicationEvaluationResourceApiService } from '../../../generated/api/applicationEvaluationResourceApi.service';
+import { DocumentDialog } from '../document-dialog/document-dialog';
+
+export interface DocumentHolder {
+  label: string;
+  document: DocumentInformationHolderDTO;
+}
 
 @Component({
   selector: 'jhi-document-section',
-  imports: [DocumentViewerComponent, SubSection, FontAwesomeModule, ButtonComponent, TranslateDirective, TooltipModule],
+  imports: [DocumentViewerComponent, SubSection, FontAwesomeModule, ButtonComponent, TranslateDirective, TooltipModule, DocumentDialog],
   templateUrl: './document-section.html',
 })
 export class DocumentSection {
   idsDTO = input<ApplicationDocumentIdsDTO | undefined>(undefined);
   applicationId = input.required<string | undefined>();
 
-  documents = signal<{ label: string; id: DocumentInformationHolderDTO }[]>([]);
-  extraDocuments = signal<{ label: string; id: DocumentInformationHolderDTO }[]>([]);
+  documents = signal<DocumentHolder[]>([]);
+  extraDocuments = signal<DocumentHolder[]>([]);
+
+  allDocuments = computed(() => [...this.documents(), ...this.extraDocuments()]);
+
+  dialogVisible = model<boolean>(false);
 
   documentsCount = signal<number>(0);
 
@@ -57,17 +67,17 @@ export class DocumentSection {
       return;
     }
 
-    const result: { label: string; id: DocumentInformationHolderDTO }[] = [];
+    const result: { label: string; document: DocumentInformationHolderDTO }[] = [];
 
-    dto.masterDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', id: d }));
+    dto.masterDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeMaster', document: d }));
 
     if (dto.cvDocumentDictionaryId) {
-      result.push({ label: 'evaluation.details.documentTypeCV', id: dto.cvDocumentDictionaryId });
+      result.push({ label: 'evaluation.details.documentTypeCV', document: dto.cvDocumentDictionaryId });
     }
 
-    dto.bachelorDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', id: d }));
+    dto.bachelorDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeBachelor', document: d }));
 
-    dto.referenceDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', id: d }));
+    dto.referenceDocumentDictionaryIds?.forEach(d => result.push({ label: 'evaluation.details.documentTypeReference', document: d }));
 
     this.documentsCount.set(result.length);
 

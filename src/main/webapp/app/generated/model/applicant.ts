@@ -12,31 +12,22 @@ import { Application } from './application';
 
 
 export interface Applicant { 
-    userId?: string;
-    user?: User;
-    submittedApplications?: Array<Application>;
-    street?: string;
-    postalCode?: string;
+    bachelorDegreeName?: string;
+    bachelorGrade?: string;
+    bachelorGradeLowerLimit?: string;
+    bachelorGradeUpperLimit?: string;
+    bachelorUniversity?: string;
     city?: string;
     country?: string;
-    bachelorDegreeName?: string;
-    bachelorGradingScale?: Applicant.BachelorGradingScaleEnum;
-    bachelorGrade?: string;
-    bachelorUniversity?: string;
     masterDegreeName?: string;
-    masterGradingScale?: Applicant.MasterGradingScaleEnum;
     masterGrade?: string;
+    masterGradeLowerLimit?: string;
+    masterGradeUpperLimit?: string;
     masterUniversity?: string;
+    postalCode?: string;
+    street?: string;
+    submittedApplications?: Array<Application>;
+    user?: User;
+    userId?: string;
 }
-export namespace Applicant {
-    export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
-    export const BachelorGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
-    };
-    export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
-    export const MasterGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
-    };
-}
-
 

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, model, output } from '@angular/core';
+import { Component, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
@@ -9,73 +8,63 @@ import { NumberInputComponent } from 'app/shared/components/atoms/number-input/n
 import { TooltipModule } from 'primeng/tooltip';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { deepEqual } from 'app/core/util/deepequal-util';
+import { gradeFormatValidator } from 'app/core/util/grade-format.validator';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ApplicantDTO } from '../../../generated/model/applicantDTO';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradingScale: SelectOption;
-  bachelorGrade?: number;
+  bachelorGradeUpperLimit: string;
+  bachelorGradeLowerLimit: string;
+  bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
-  masterGradingScale: SelectOption;
-  masterGrade?: number;
+  masterGradeUpperLimit: string;
+  masterGradeLowerLimit: string;
+  masterGrade: string;
 };
 
-export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
-  value: v,
-  name: `entity.applicationSteps.gradingScale.${v}`,
-}));
-export const masterGradingScale: SelectOption[] = Object.values(ApplicantDTO.MasterGradingScaleEnum).map(v => ({
-  value: v,
-  name: `entity.applicationSteps.gradingScale.${v}`,
-}));
-
 export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
-  const bachelorGradeApplicant = application.applicant?.bachelorGrade;
-  const masterGradeApplicant = application.applicant?.masterGrade;
   return {
     bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
     bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-    bachelorGradingScale: bachelorGradingScale[0], // TODO
-    bachelorGrade: bachelorGradeApplicant !== undefined ? Number.parseFloat(bachelorGradeApplicant) : undefined,
+    bachelorGradeUpperLimit: application.applicant?.bachelorGradeUpperLimit ?? '',
+    bachelorGradeLowerLimit: application.applicant?.bachelorGradeLowerLimit ?? '',
+    bachelorGrade: application.applicant?.bachelorGrade ?? '',
     masterDegreeName: application.applicant?.masterDegreeName ?? '',
     masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: masterGradeApplicant !== undefined ? Number.parseFloat(masterGradeApplicant) : undefined,
+    masterGradeUpperLimit: application.applicant?.masterGradeUpperLimit ?? '',
+    masterGradeLowerLimit: application.applicant?.masterGradeLowerLimit ?? '',
+    masterGrade: application.applicant?.masterGrade ?? '',
   };
 };
 
 @Component({
   selector: 'jhi-application-creation-page2',
+  standalone: true,
+  templateUrl: './application-creation-page2.component.html',
+  styleUrl: './application-creation-page2.component.scss',
   imports: [
     CommonModule,
     DividerModule,
-    SelectComponent,
     UploadButtonComponent,
     ReactiveFormsModule,
     StringInputComponent,
     TranslateModule,
-    NumberInputComponent,
     TooltipModule,
     FontAwesomeModule,
     TranslateDirective,
+    NumberInputComponent,
   ],
-  templateUrl: './application-creation-page2.component.html',
-  styleUrl: './application-creation-page2.component.scss',
-  standalone: true,
 })
 export default class ApplicationCreationPage2Component {
-  BachelorGradingScaleEnumLocal = ApplicantDTO.BachelorGradingScaleEnum;
-  MasterGradingScaleEnumLocal = ApplicantDTO.MasterGradingScaleEnum;
-  bachelorGradingScaleLocal = bachelorGradingScale;
-  masterGradingScaleLocal = masterGradingScale;
-
-  data = model.required<ApplicationCreationPage2Data>();
+  data = model<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
   documentIdsBachelorTranscript = input<DocumentInformationHolderDTO[] | undefined>(undefined);
@@ -85,56 +74,94 @@ export default class ApplicationCreationPage2Component {
   changed = output<boolean>();
 
   formbuilder = inject(FormBuilder);
-  page2Form = computed(() => {
-    const currentData = this.data();
-    return this.formbuilder.group({
-      bachelorDegreeName: [currentData.bachelorDegreeName, Validators.required],
-      bachelorDegreeUniversity: [currentData.bachelorDegreeUniversity, Validators.required],
-      bachelorGrade: [currentData.bachelorGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
-      masterDegreeName: [currentData.masterDegreeName, Validators.required],
-      masterDegreeUniversity: [currentData.masterDegreeUniversity, Validators.required],
-      masterGrade: [currentData.masterGrade, [Validators.required, Validators.min(1), Validators.max(4)]],
-    });
+
+  page2Form = this.formbuilder.group(
+    {
+      bachelorDegreeName: ['', Validators.required],
+      bachelorDegreeUniversity: ['', Validators.required],
+      bachelorGradeUpperLimit: ['', Validators.required],
+      bachelorGradeLowerLimit: ['', Validators.required],
+      bachelorGrade: ['', Validators.required],
+      masterDegreeName: ['', Validators.required],
+      masterDegreeUniversity: ['', Validators.required],
+      masterGradeUpperLimit: ['', Validators.required],
+      masterGradeLowerLimit: ['', Validators.required],
+      masterGrade: ['', Validators.required],
+    },
+    {
+      validators: [
+        gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
+        gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
+      ],
+    },
+  );
+
+  private hasInitialized = signal(false);
+
+  private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
+    initialValue: this.page2Form.value,
   });
 
-  constructor() {
-    effect(onCleanup => {
-      const form = this.page2Form();
-      const valueSubscription = form.valueChanges.subscribe(value => {
-        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-        this.data.set({
-          ...this.data(),
-          ...normalizedValue,
-        });
+  private formStatus = toSignal(this.page2Form.statusChanges, {
+    initialValue: this.page2Form.status,
+  });
 
-        this.valid.emit(form.valid);
-        this.changed.emit(true);
-      });
+  private initializeFormEffect = effect(() => {
+    if (this.hasInitialized()) return;
+    const data = this.data();
+    if (!data) return;
 
-      const statusSubscription = form.statusChanges.subscribe(() => {
-        this.valid.emit(form.valid);
-      });
-
-      this.valid.emit(form.valid);
-
-      onCleanup(() => {
-        valueSubscription.unsubscribe();
-        statusSubscription.unsubscribe();
-      });
+    this.page2Form.patchValue({
+      bachelorDegreeName: data.bachelorDegreeName,
+      bachelorDegreeUniversity: data.bachelorDegreeUniversity,
+      bachelorGradeUpperLimit: data.bachelorGradeUpperLimit,
+      bachelorGradeLowerLimit: data.bachelorGradeLowerLimit,
+      bachelorGrade: data.bachelorGrade,
+      masterDegreeName: data.masterDegreeName,
+      masterDegreeUniversity: data.masterDegreeUniversity,
+      masterGradeUpperLimit: data.masterGradeUpperLimit,
+      masterGradeLowerLimit: data.masterGradeLowerLimit,
+      masterGrade: data.masterGrade,
     });
-  }
 
-  setBachelorGradeAsNumber = (gradeInputValue: number | undefined): void => {
-    this.data.set({
+    this.hasInitialized.set(true);
+
+    // mark prefilled grade fields as touched to show validation errors right away
+    const gradeFields = [
+      'bachelorGradeUpperLimit',
+      'bachelorGradeLowerLimit',
+      'bachelorGrade',
+      'masterGradeUpperLimit',
+      'masterGradeLowerLimit',
+      'masterGrade',
+    ];
+
+    gradeFields.forEach(fieldName => {
+      const control = this.page2Form.get(fieldName);
+      if (control?.value) {
+        control.markAsTouched();
+      }
+    });
+
+    this.page2Form.updateValueAndValidity();
+  });
+
+  private updateEffect = effect(() => {
+    if (!this.hasInitialized()) return;
+
+    const formData = this.formValue() as Partial<ApplicationCreationPage2Data>;
+    const normalized = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v])) as ApplicationCreationPage2Data;
+
+    const updatedData = {
       ...this.data(),
-      bachelorGrade: gradeInputValue,
-    });
-  };
+      ...normalized,
+    };
 
-  setMasterGradeAsNumber = (gradeInputValue: number | undefined): void => {
-    this.data.set({
-      ...this.data(),
-      masterGrade: gradeInputValue,
-    });
-  };
+    if (!deepEqual(updatedData, this.data())) {
+      this.data.set(updatedData);
+      this.changed.emit(true);
+    }
+
+    this.valid.emit(this.page2Form.valid);
+  });
 }

@@ -66,7 +66,7 @@
 
     @if (currentApplication(); as application) {
       <div class="w-full">
-        <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
+        <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
           <div>
             <jhi-section titleKey="evaluation.details.applicantTitle" icon="user">
               <div class="grid gap-8 md:grid-cols-2">
@@ -181,6 +181,9 @@
               </jhi-sub-section>
             </jhi-section>
           </div>
+
+          <p-divider class="block xl:hidden" />
+
           <div>
             <jhi-section titleKey="evaluation.details.documentTitle" icon="folder">
               <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />

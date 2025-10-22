@@ -10,7 +10,7 @@
 
 
 export interface ResearchGroupProvisionDTO { 
-    universityId: string;
     researchGroupId?: string;
+    universityId: string;
 }
 

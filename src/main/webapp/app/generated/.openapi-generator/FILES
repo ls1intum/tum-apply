@@ -42,6 +42,7 @@ model/emailSettingDTO.ts
 model/emailTemplateDTO.ts
 model/emailTemplateOverviewDTO.ts
 model/emailTemplateTranslationDTO.ts
+model/employeeResearchGroupRequestDTO.ts
 model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
@@ -62,11 +63,11 @@ model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
 model/profOnboardingDTO.ts
 model/professorDTO.ts
+model/professorResearchGroupRequestDTO.ts
 model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
-model/researchGroupCreationDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts

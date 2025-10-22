@@ -12,9 +12,9 @@ plugins {
   id "idea"
   id "java"
   id "jacoco"
-  id "com.diffplug.spotless" version "7.2.1"
+  id "com.diffplug.spotless" version "8.0.0"
   id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
-  id "com.github.ben-manes.versions" version "0.52.0"
+  id "com.github.ben-manes.versions" version "0.53.0"
   id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
   id "com.google.cloud.tools.jib" version "3.4.5"
   id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
@@ -28,13 +28,13 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.0.2"
+version = "1.0.4"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 // Remove this once we have a way to run the dependency submission job with Java 25
 def isAutoDepJob = System.getenv("GITHUB_ACTIONS") == "true" &&
-                   System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
+  System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
 
 if (isAutoDepJob) {
   println "Auto dependency submission detected, using Java 21 toolchain for this run"
@@ -196,7 +196,7 @@ dependencies {
   testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
-  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.3"
+  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.4"
   implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
   implementation "org.apache.commons:commons-lang3:3.18.0"
   annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -275,7 +275,7 @@ dependencies {
       // needed to reduce the number of vulnerabilities, also see https://mvnrepository.com/artifact/org.yaml/snakeyaml
     }
   }
-  runtimeOnly "com.h2database:h2:2.3.232"
+  runtimeOnly "com.h2database:h2:2.4.240"
 
 
   testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
