@@ -137,6 +137,32 @@
         "loadResearchGroups": {
           "summary": "Error",
           "detail": "Failed to load research groups. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "approve": {
+          "summary": "Error",
+          "detail": "Failed to approve research group. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "deny": {
+          "summary": "Error",
+          "detail": "Failed to deny research group. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "withdraw": {
+          "summary": "Error",
+          "detail": "Error withdrawing approval. Please try refreshing the page, or contact us if the problem continues."
+        }
+      },
+      "success": {
+        "approve": {
+          "summary": "Success",
+          "detail": "Research group approved successfully"
+        },
+        "deny": {
+          "summary": "Success",
+          "detail": "Research group denied successfully"
+        },
+        "withdraw": {
+          "summary": "Success",
+          "detail": "Approval withdrawn successfully"
         }
       },
       "filter": {
@@ -148,7 +174,8 @@
       "groupState": {
         "draft": "Pending",
         "active": "Accepted",
-        "denied": "Rejected"
+        "denied": "Rejected",
+        "unknown": "Unknown"
       },
       "searchFilterSortBar": {
         "searchText": "Search Research Groups..."
@@ -158,6 +185,22 @@
         "status": "Status",
         "researchGroup": "Research Group",
         "createdAt": "Created at"
+      },
+      "viewButton": "View",
+      "confirmDialog": {
+        "header": "Approve Research Group",
+        "message": "Are you sure you want to approve this research group?",
+        "confirm": "Approve"
+      },
+      "denyConfirmDialog": {
+        "header": "Deny Research Group",
+        "message": "Are you sure you want to deny this research group?",
+        "confirm": "Deny"
+      },
+      "withdrawConfirmDialog": {
+        "header": "Withdraw Approval",
+        "message": "Are you sure you want to withdraw approval for this research group?",
+        "confirm": "Withdraw"
       },
       "title": "Manage Research Groups"
     }
