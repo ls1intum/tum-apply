@@ -28,13 +28,13 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.0.2"
+version = "1.0.4"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 // Remove this once we have a way to run the dependency submission job with Java 25
 def isAutoDepJob = System.getenv("GITHUB_ACTIONS") == "true" &&
-                   System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
+  System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
 
 if (isAutoDepJob) {
   println "Auto dependency submission detected, using Java 21 toolchain for this run"

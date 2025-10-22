@@ -103,7 +103,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     } else {
       this.modelChange.emit(html);
     }
-    this.isTouched.set(true);
+    this.markAsTouchedManually();
   }
 }
 

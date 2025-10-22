@@ -108,8 +108,6 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "job": "Stelle",
-        "jobSearchPlaceholder": "Stellen suchen...",
         "fieldOfStudies": "Studienrichtung",
         "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
         "location": "Standort",
@@ -136,12 +134,12 @@
     "hoursPerWeek": "{{workload}} h/Woche",
     "errors": {
       "loadFilter": {
-        "summary": "Laden der Filteroptionen fehlgeschlagen",
-        "detail": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der Filteroptionen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       },
       "loadJobs": {
-        "summary": "Laden der Stellen fehlgeschlagen",
-        "detail": "Fehler beim Laden der verfügbaren Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der verfügbaren Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   },
@@ -153,7 +151,6 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "jobSearchPlaceholder": "Suche Stellen...",
         "stateSearchPlaceholder": "Suche Status..."
       }
     },
@@ -172,8 +169,10 @@
       "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
     },
     "errors": {
-      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
-      "loadJobs": "Fehler beim Laden der Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      "loadJobs": {
+        "summary": "Fehler",
+        "detail": "Laden der Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      }
     }
   },
   "jobDetailPage": {

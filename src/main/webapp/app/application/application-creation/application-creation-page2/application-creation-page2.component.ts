@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule } from '@ngx-translate/core';
@@ -12,44 +11,37 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
+import { gradeFormatValidator } from 'app/core/util/grade-format.validator';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ApplicantDTO } from '../../../generated/model/applicantDTO';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradingScale: SelectOption;
-  bachelorGrade?: number;
+  bachelorGradeUpperLimit: string;
+  bachelorGradeLowerLimit: string;
+  bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
-  masterGradingScale: SelectOption;
-  masterGrade?: number;
+  masterGradeUpperLimit: string;
+  masterGradeLowerLimit: string;
+  masterGrade: string;
 };
 
-export const bachelorGradingScale: SelectOption[] = Object.values(ApplicantDTO.BachelorGradingScaleEnum).map(v => ({
-  value: v,
-  name: `entity.applicationSteps.gradingScale.${v}`,
-}));
-export const masterGradingScale: SelectOption[] = Object.values(ApplicantDTO.MasterGradingScaleEnum).map(v => ({
-  value: v,
-  name: `entity.applicationSteps.gradingScale.${v}`,
-}));
-
 export const getPage2FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage2Data => {
-  const bachelorGradeApplicant = application.applicant?.bachelorGrade;
-  const masterGradeApplicant = application.applicant?.masterGrade;
   return {
     bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
     bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-    bachelorGradingScale: bachelorGradingScale[0], // TODO: set from data
-    bachelorGrade: bachelorGradeApplicant !== undefined ? Number.parseFloat(bachelorGradeApplicant) : undefined,
+    bachelorGradeUpperLimit: application.applicant?.bachelorGradeUpperLimit ?? '',
+    bachelorGradeLowerLimit: application.applicant?.bachelorGradeLowerLimit ?? '',
+    bachelorGrade: application.applicant?.bachelorGrade ?? '',
     masterDegreeName: application.applicant?.masterDegreeName ?? '',
     masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: masterGradeApplicant !== undefined ? Number.parseFloat(masterGradeApplicant) : undefined,
+    masterGradeUpperLimit: application.applicant?.masterGradeUpperLimit ?? '',
+    masterGradeLowerLimit: application.applicant?.masterGradeLowerLimit ?? '',
+    masterGrade: application.applicant?.masterGrade ?? '',
   };
 };
 
@@ -61,23 +53,17 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   imports: [
     CommonModule,
     DividerModule,
-    SelectComponent,
     UploadButtonComponent,
     ReactiveFormsModule,
     StringInputComponent,
     TranslateModule,
-    NumberInputComponent,
     TooltipModule,
     FontAwesomeModule,
     TranslateDirective,
+    NumberInputComponent,
   ],
 })
 export default class ApplicationCreationPage2Component {
-  BachelorGradingScaleEnumLocal = ApplicantDTO.BachelorGradingScaleEnum;
-  MasterGradingScaleEnumLocal = ApplicantDTO.MasterGradingScaleEnum;
-  bachelorGradingScaleLocal = bachelorGradingScale;
-  masterGradingScaleLocal = masterGradingScale;
-
   data = model<ApplicationCreationPage2Data>();
 
   applicationIdForDocuments = input<string | undefined>(undefined);
@@ -89,14 +75,26 @@ export default class ApplicationCreationPage2Component {
 
   formbuilder = inject(FormBuilder);
 
-  page2Form = this.formbuilder.group({
-    bachelorDegreeName: ['', Validators.required],
-    bachelorDegreeUniversity: ['', Validators.required],
-    bachelorGrade: [0, [Validators.required, Validators.min(1), Validators.max(4)]],
-    masterDegreeName: ['', Validators.required],
-    masterDegreeUniversity: ['', Validators.required],
-    masterGrade: [0, [Validators.required, Validators.min(1), Validators.max(4)]],
-  });
+  page2Form = this.formbuilder.group(
+    {
+      bachelorDegreeName: ['', Validators.required],
+      bachelorDegreeUniversity: ['', Validators.required],
+      bachelorGradeUpperLimit: ['', Validators.required],
+      bachelorGradeLowerLimit: ['', Validators.required],
+      bachelorGrade: ['', Validators.required],
+      masterDegreeName: ['', Validators.required],
+      masterDegreeUniversity: ['', Validators.required],
+      masterGradeUpperLimit: ['', Validators.required],
+      masterGradeLowerLimit: ['', Validators.required],
+      masterGrade: ['', Validators.required],
+    },
+    {
+      validators: [
+        gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
+        gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
+      ],
+    },
+  );
 
   private hasInitialized = signal(false);
 
@@ -116,13 +114,36 @@ export default class ApplicationCreationPage2Component {
     this.page2Form.patchValue({
       bachelorDegreeName: data.bachelorDegreeName,
       bachelorDegreeUniversity: data.bachelorDegreeUniversity,
-      bachelorGrade: data.bachelorGrade ?? null,
+      bachelorGradeUpperLimit: data.bachelorGradeUpperLimit,
+      bachelorGradeLowerLimit: data.bachelorGradeLowerLimit,
+      bachelorGrade: data.bachelorGrade,
       masterDegreeName: data.masterDegreeName,
       masterDegreeUniversity: data.masterDegreeUniversity,
-      masterGrade: data.masterGrade ?? null,
+      masterGradeUpperLimit: data.masterGradeUpperLimit,
+      masterGradeLowerLimit: data.masterGradeLowerLimit,
+      masterGrade: data.masterGrade,
     });
 
     this.hasInitialized.set(true);
+
+    // mark prefilled grade fields as touched to show validation errors right away
+    const gradeFields = [
+      'bachelorGradeUpperLimit',
+      'bachelorGradeLowerLimit',
+      'bachelorGrade',
+      'masterGradeUpperLimit',
+      'masterGradeLowerLimit',
+      'masterGrade',
+    ];
+
+    gradeFields.forEach(fieldName => {
+      const control = this.page2Form.get(fieldName);
+      if (control?.value) {
+        control.markAsTouched();
+      }
+    });
+
+    this.page2Form.updateValueAndValidity();
   });
 
   private updateEffect = effect(() => {
@@ -143,32 +164,4 @@ export default class ApplicationCreationPage2Component {
 
     this.valid.emit(this.page2Form.valid);
   });
-
-  setBachelorGradeAsNumber = (gradeInputValue: number | undefined): void => {
-    const currentData = this.data();
-    if (!currentData) return;
-
-    this.data.set({
-      ...currentData,
-      bachelorGrade: gradeInputValue,
-    });
-
-    this.page2Form.patchValue({
-      bachelorGrade: gradeInputValue ?? null,
-    });
-  };
-
-  setMasterGradeAsNumber = (gradeInputValue: number | undefined): void => {
-    const currentData = this.data();
-    if (!currentData) return;
-
-    this.data.set({
-      ...currentData,
-      masterGrade: gradeInputValue,
-    });
-
-    this.page2Form.patchValue({
-      masterGrade: gradeInputValue ?? null,
-    });
-  };
 }
