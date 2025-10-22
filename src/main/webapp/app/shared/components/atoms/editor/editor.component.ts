@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
+import { extractTextFromHtml } from 'app/shared/util/text.util';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -18,7 +19,7 @@ const STANDARD_CHARACTER_BUFFER = 50;
   styleUrl: './editor.component.scss',
 })
 export class EditorComponent extends BaseInputDirective<string> {
-  characterCount = computed(() => this.extractTextFromHtml(this.htmlValue()).length);
+  characterCount = computed(() => extractTextFromHtml(this.htmlValue()).length);
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   // Check if error message should be displayed
@@ -28,7 +29,7 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     return count - limit >= STANDARD_CHARACTER_BUFFER;
   });
-  isEmpty = computed(() => this.extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
+  isEmpty = computed(() => extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
 
   errorMessage = computed(() => {
     this.langChange();
@@ -79,7 +80,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
 
     if (source !== 'user') return;
-    const newTextLength = this.extractTextFromHtml(editor.root.innerHTML).length;
+    const newTextLength = extractTextFromHtml(editor.root.innerHTML).length;
     if (newTextLength > maxChars) {
       const range = editor.getSelection();
       editor.setContents(oldDelta, 'silent');
@@ -103,15 +104,6 @@ export class EditorComponent extends BaseInputDirective<string> {
       this.modelChange.emit(html);
     }
     this.isTouched.set(true);
-  }
-
-  // Extract plain text from HTML
-  private extractTextFromHtml(htmlText: string): string {
-    const temp = document.createElement('div');
-    temp.innerHTML = htmlText;
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    return temp.textContent?.trim() ?? temp.innerText.trim() ?? '';
   }
 }
 
