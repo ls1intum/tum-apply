@@ -22,20 +22,20 @@
   (confirmed)="onDeleteJob()"
 />
 
-@if (dataLoaded()) {
+@if (jobDetails(); as job) {
   <div [class]="isSummaryPage() ? '' : 'page-container'">
     <!-- Header Section -->
     <div class="header-container mb-8 border-b border-gray-300">
       <div class="flex flex-col gap-4">
-        <h1 class="page-header">{{ jobDetails()?.title }}</h1>
+        <h1 class="page-header">{{ job.title }}</h1>
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
-            <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong> {{ jobDetails()?.supervisingProfessor || '-' }}</span>
+            <span><strong jhiTranslate="jobDetailPage.header.supervisor"></strong> {{ job.supervisingProfessor || '-' }}</span>
           </div>
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-            <span><strong jhiTranslate="jobDetailPage.header.location"></strong> {{ jobDetails()?.location || '-' }}</span>
+            <span><strong jhiTranslate="jobDetailPage.header.location"></strong> {{ job.location || '-' }}</span>
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@
         <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
         @if (previewData()) {
           <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
-        } @else if (jobDetails()?.belongsToResearchGroup) {
+        } @else if (job.belongsToResearchGroup) {
           <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
         }
       </div>
@@ -58,17 +58,17 @@
       <div class="flex flex-col gap-6">
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDetails()?.description || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.description || '-'"></div>
         </section>
 
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.tasksResponsibilities"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDetails()?.tasks || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.tasks || '-'"></div>
         </section>
 
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.eligibilityCriteria"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDetails()?.requirements || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.requirements || '-'"></div>
         </section>
       </div>
 
@@ -83,40 +83,40 @@
             <div class="info-list">
               <div class="info-row">
                 <span class="label" jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
-                <span class="value">{{ jobDetails()?.fieldOfStudies || '-' }}</span>
+                <span class="value">{{ job.fieldOfStudies || '-' }}</span>
               </div>
               <div class="info-row">
                 <span class="label" jhiTranslate="jobDetailPage.labels.researchArea"></span>
-                <span class="value">{{ jobDetails()?.researchArea || '-' }}</span>
+                <span class="value">{{ job.researchArea || '-' }}</span>
               </div>
               <div class="info-row">
                 <span class="label" jhiTranslate="jobDetailPage.labels.workload"></span>
-                @if (jobDetails()?.workload !== '') {
-                  <span class="value">{{ jobDetails()?.workload }} <span jhiTranslate="jobDetailPage.units.hoursPerWeek"></span></span>
+                @if (job.workload !== '') {
+                  <span class="value">{{ job.workload }} <span jhiTranslate="jobDetailPage.units.hoursPerWeek"></span></span>
                 } @else {
                   <span class="value">-</span>
                 }
               </div>
               <div class="info-row">
                 <span class="label" jhiTranslate="jobDetailPage.labels.contractDuration"></span>
-                @if (jobDetails()?.contractDuration !== '') {
-                  <span class="value">{{ jobDetails()?.contractDuration }} <span jhiTranslate="jobDetailPage.units.years"></span></span>
+                @if (job.contractDuration !== '') {
+                  <span class="value">{{ job.contractDuration }} <span jhiTranslate="jobDetailPage.units.years"></span></span>
                 } @else {
                   <span class="value">-</span>
                 }
               </div>
               <div class="info-row">
                 <span class="label" jhiTranslate="jobDetailPage.labels.fundingType"></span>
-                <span class="value">{{ jobDetails()?.fundingType || '-' }}</span>
+                <span class="value">{{ job.fundingType || '-' }}</span>
               </div>
               <div class="info-row">
                 <span class="label" jhiTranslate="jobDetailPage.labels.startDate"></span>
-                <span class="value">{{ jobDetails()?.startDate || '-' }}</span>
+                <span class="value">{{ job.startDate || '-' }}</span>
               </div>
-              @if (jobDetails()?.endDate) {
+              @if (job.endDate) {
                 <div class="info-row">
                   <span class="label" jhiTranslate="jobDetailPage.labels.applicationEndDate"></span>
-                  <span class="value text-danger">{{ jobDetails()?.endDate }}</span>
+                  <span class="value text-danger">{{ job.endDate }}</span>
                 </div>
               }
             </div>
@@ -137,40 +137,40 @@
             }
           </div>
           <div class="section-card-body">
-            <h4 class="text-base font-semibold mb-4">{{ jobDetails()?.researchGroup || '-' }}</h4>
+            <h4 class="text-base font-semibold mb-4">{{ job.researchGroup || '-' }}</h4>
             @if (hasResearchGroupDescription()) {
-              <div class="leading-relaxed mb-4 text-sm wrap-anywhere" [innerHTML]="jobDetails()?.researchGroupDescription"></div>
+              <div class="leading-relaxed mb-4 text-sm wrap-anywhere" [innerHTML]="job.researchGroupDescription"></div>
             } @else {
               <div class="leading-relaxed mb-4 text-sm wrap-anywhere">{{ noData() }}</div>
             }
 
-            @if (jobDetails()?.researchGroupEmail || jobDetails()?.researchGroupWebsite || jobDetails()?.researchGroupStreet) {
+            @if (job.researchGroupEmail || job.researchGroupWebsite || job.researchGroupStreet) {
               <div class="mt-4">
-                @if (jobDetails()?.researchGroupStreet) {
+                @if (job.researchGroupStreet) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
                     <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
                     <div>
-                      <div>{{ jobDetails()?.researchGroupStreet }}</div>
-                      <div>{{ jobDetails()?.researchGroupPostalCode }} {{ jobDetails()?.researchGroupCity }}</div>
+                      <div>{{ job.researchGroupStreet }}</div>
+                      <div>{{ job.researchGroupPostalCode }} {{ job.researchGroupCity }}</div>
                     </div>
                   </div>
                 }
-                @if (jobDetails()?.researchGroupEmail) {
+                @if (job.researchGroupEmail) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
                     <fa-icon [icon]="['fas', 'envelope']" class="icon" />
-                    <a class="link" [href]="'mailto:' + jobDetails()?.researchGroupEmail">{{ jobDetails()?.researchGroupEmail }}</a>
+                    <a class="link" [href]="'mailto:' + job.researchGroupEmail">{{ job.researchGroupEmail }}</a>
                   </div>
                 }
-                @if (jobDetails()?.researchGroupWebsite) {
+                @if (job.researchGroupWebsite) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
                     <fa-icon [icon]="['fas', 'globe']" class="icon" />
                     <a
                       class="link"
-                      [href]="jobDetails()?.researchGroupWebsite"
-                      [title]="jobDetails()?.researchGroupWebsite"
+                      [href]="job.researchGroupWebsite"
+                      [title]="job.researchGroupWebsite"
                       target="_blank"
                       rel="noopener noreferrer"
-                      >{{ this.trimWebsiteUrl(jobDetails()?.researchGroupWebsite!) }}</a
+                      >{{ this.trimWebsiteUrl(job.researchGroupWebsite) }}</a
                     >
                   </div>
                 }
