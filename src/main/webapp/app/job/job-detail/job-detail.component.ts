@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { trimWebsiteUrl } from 'app/shared/util/util';
 
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
@@ -242,6 +243,10 @@ export class JobDetailComponent {
     // Strip HTML tags and check if there's meaningful text content
     const textContent = description.replace(/<[^>]*>/g, '').trim();
     return textContent.length > 0;
+  }
+
+  trimWebsiteUrl(url: string): string {
+    return trimWebsiteUrl(url);
   }
 
   onApply(): void {

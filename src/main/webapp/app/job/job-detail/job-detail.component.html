@@ -164,9 +164,14 @@
                 @if (jobDetails()?.researchGroupWebsite) {
                   <div class="flex items-start gap-3 mb-3 text-sm">
                     <fa-icon [icon]="['fas', 'globe']" class="icon" />
-                    <a class="link" [href]="jobDetails()?.researchGroupWebsite" target="_blank" rel="noopener noreferrer">{{
-                      jobDetails()?.researchGroupWebsite
-                    }}</a>
+                    <a
+                      class="link"
+                      [href]="jobDetails()?.researchGroupWebsite"
+                      [title]="jobDetails()?.researchGroupWebsite"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >{{ this.trimWebsiteUrl(jobDetails()?.researchGroupWebsite!) }}</a
+                    >
                   </div>
                 }
               </div>
