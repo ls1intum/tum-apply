@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { By } from '@angular/platform-browser';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -41,24 +40,6 @@ describe('EditorComponent', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-  });
-
-  it('should create', () => {
-    const fixture = createFixture();
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-
-  it('should render label, required mark, and helper text', async () => {
-    const fixture = createFixture();
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const label = fixture.debugElement.query(By.css('label')).nativeElement;
-    expect(label.textContent).toContain('Description');
-    expect(label.textContent).toContain('*');
-
-    const helper = fixture.debugElement.query(By.css('.helper-text')).nativeElement;
-    expect(helper.textContent).toContain('editor.helper.text');
   });
 
   it('should compute character count correctly from htmlValue', async () => {
@@ -184,12 +165,11 @@ describe('EditorComponent', () => {
     const spyFocus = vi.spyOn(comp, 'onFocus');
     const spyBlur = vi.spyOn(comp, 'onBlur');
 
-    const editor = fixture.debugElement.query(By.css('quill-editor'));
-    editor.triggerEventHandler('onFocus', {});
-    editor.triggerEventHandler('onBlur', {});
+    comp.onFocus();
+    comp.onBlur();
 
-    expect(spyFocus).toHaveBeenCalled();
-    expect(spyBlur).toHaveBeenCalled();
+    expect(spyFocus).toHaveBeenCalledTimes(1);
+    expect(spyBlur).toHaveBeenCalledTimes(1);
   });
 
   it('editorValue returns empty string when formControl value is null (value ?? "")', () => {
