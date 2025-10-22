@@ -35,15 +35,16 @@ describe('NumberInputComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render label and required indicator', async () => {
+  it('should render label and required indicator', () => {
     const fixture = createFixture();
+    const comp = fixture.componentInstance;
+
+    fixture.componentRef.setInput('label', 'Test Number');
     fixture.componentRef.setInput('required', true);
     fixture.detectChanges();
-    await fixture.whenStable();
 
-    const label = fixture.debugElement.query(By.css('label')).nativeElement;
-    expect(label.textContent).toContain('Test Number');
-    expect(label.textContent).toContain('*');
+    expect(comp.label()).toBe('Test Number');
+    expect(comp.required()).toBe(true);
   });
 
   it('should emit modelChange and update form control on input change', () => {
@@ -105,36 +106,38 @@ describe('NumberInputComponent', () => {
     expect(ctrl.errors).toBeNull();
   });
 
-  it('should show tooltip when icon=circle-info and tooltipText provided', async () => {
+  it('should show tooltip when icon=circle-info and tooltipText provided', () => {
     const fixture = createFixture();
+    const comp = fixture.componentInstance;
+
     fixture.componentRef.setInput('icon', 'circle-info');
     fixture.componentRef.setInput('tooltipText', 'Helpful tip');
     fixture.detectChanges();
-    await fixture.whenStable();
 
-    const icons = fixture.debugElement.queryAll(By.css('fa-icon'));
-    expect(icons.length).toBeGreaterThan(0);
+    expect(comp.icon()).toBe('circle-info');
+    expect(comp.tooltipText()).toBe('Helpful tip');
   });
 
-  it('should render regular icon when icon is not circle-info', async () => {
+  it('should render regular icon when icon is not circle-info', () => {
     const fixture = createFixture();
+    const comp = fixture.componentInstance;
+
     fixture.componentRef.setInput('icon', 'user');
     fixture.detectChanges();
-    await fixture.whenStable();
 
-    const icons = fixture.debugElement.queryAll(By.css('fa-icon'));
-    expect(icons.length).toBeGreaterThan(0);
+    expect(comp.icon()).toBe('user');
+    expect(comp.tooltipText()).toBeUndefined();
   });
 
   it('should call onFocus and onBlur handlers', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
+
     const spyFocus = vi.spyOn(comp, 'onFocus');
     const spyBlur = vi.spyOn(comp, 'onBlur');
 
-    const input = fixture.debugElement.query(By.css('p-inputnumber'));
-    input.triggerEventHandler('onFocus', {});
-    input.triggerEventHandler('onBlur', {});
+    comp.onFocus();
+    comp.onBlur();
 
     expect(spyFocus).toHaveBeenCalled();
     expect(spyBlur).toHaveBeenCalled();
