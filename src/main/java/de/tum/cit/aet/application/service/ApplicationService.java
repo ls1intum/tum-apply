@@ -21,7 +21,6 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
-import de.tum.cit.aet.usermanagement.constants.GradingScale;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
@@ -111,7 +110,7 @@ public class ApplicationService {
      * @return the ApplicationForApplicantDTO with the given ID
      */
     public ApplicationForApplicantDTO getApplicationById(UUID applicationId) {
-        return assertCanManageApplicationDTO(applicationId);
+        return assertCanViewApplicationDTO(applicationId);
     }
 
     /**
@@ -150,11 +149,13 @@ public class ApplicationService {
         applicant.setCity(applicantDTO.city());
         applicant.setCountry(applicantDTO.country());
         applicant.setBachelorDegreeName(applicantDTO.bachelorDegreeName());
-        applicant.setBachelorGradingScale(applicantDTO.bachelorGradingScale());
+        applicant.setBachelorGradeUpperLimit(applicantDTO.bachelorGradeUpperLimit());
+        applicant.setBachelorGradeLowerLimit(applicantDTO.bachelorGradeLowerLimit());
         applicant.setBachelorGrade(applicantDTO.bachelorGrade());
         applicant.setBachelorUniversity(applicantDTO.bachelorUniversity());
         applicant.setMasterDegreeName(applicantDTO.masterDegreeName());
-        applicant.setMasterGradingScale(applicantDTO.masterGradingScale());
+        applicant.setMasterGradeUpperLimit(applicantDTO.masterGradeUpperLimit());
+        applicant.setMasterGradeLowerLimit(applicantDTO.masterGradeLowerLimit());
         applicant.setMasterGrade(applicantDTO.masterGrade());
         applicant.setMasterUniversity(applicantDTO.masterUniversity());
         applicantRepository.save(applicant);
@@ -383,7 +384,7 @@ public class ApplicationService {
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
-        Application application = assertCanManageApplication(applicationId);
+        Application application = assertCanViewApplication(applicationId);
         return documentDictionaryService.getDocumentIdsDTO(application);
     }
 
@@ -421,8 +422,6 @@ public class ApplicationService {
         User user = userRepository.findById(userId).orElseThrow();
         Applicant applicant = new Applicant();
         applicant.setUser(user);
-        applicant.setBachelorGradingScale(GradingScale.ONE_TO_FOUR);
-        applicant.setMasterGradingScale(GradingScale.ONE_TO_FOUR);
         return applicantRepository.save(applicant);
     }
 
@@ -443,17 +442,45 @@ public class ApplicationService {
         return application;
     }
 
-    /**
-     * Asserts that the current user can manage the application with the given ID.
-     *
-     * @param applicationId the ID of the application to check
-     * @return the applicationForApplicantDTO entity if the user can manage it
-     */
-    private ApplicationForApplicantDTO assertCanManageApplicationDTO(UUID applicationId) {
+    private Application assertCanViewApplication(UUID applicationId) {
         if (applicationId == null) {
             throw new InvalidParameterException("The applicationId may not be null.");
         }
+        Application application = applicationRepository
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+        if (currentUserService.isProfessor()) {
+            return application;
+        }
+        currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
+        return application;
+    }
+
+    /**
+     * Asserts that the current user can view the application with the given ID.
+     * Allows access to:
+     * - Application owner (applicant)
+     * - Admins
+     * - Any professor
+     *
+     * @param applicationId the ID of the application to check
+     * @return the applicationForApplicantDTO entity if the user can view it
+     */
+    private ApplicationForApplicantDTO assertCanViewApplicationDTO(UUID applicationId) {
+        if (applicationId == null) {
+            throw new InvalidParameterException("The applicationId may not be null.");
+        }
+
         ApplicationForApplicantDTO application = applicationRepository.findDtoById(applicationId);
+        if (application == null) {
+            throw EntityNotFoundException.forId("Application", applicationId);
+        }
+
+        // Allow any professor to view applications
+        if (currentUserService.isProfessor()) {
+            return application;
+        }
+
         currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
         return application;
     }
