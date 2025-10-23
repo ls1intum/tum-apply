@@ -49,7 +49,7 @@ public class PDFExportService {
         builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
 
         // Personal Information Group
-        builder.startSectionGroup(labels.get("entity.application_detail.personal_information"));
+        builder.startSectionGroup(labels.get("personalInformation"));
 
         builder
             .startInfoSection(labels.get("applicantInfo"))
