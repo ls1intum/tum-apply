@@ -184,7 +184,7 @@
         "professor": "Professor",
         "status": "Status",
         "researchGroup": "Research Group",
-        "createdAt": "Created at"
+        "requestedAt": "Requested at"
       },
       "viewButton": "View",
       "confirmDialog": {

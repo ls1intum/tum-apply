@@ -293,10 +293,32 @@ public class ResearchGroupService {
     @Transactional
     public ResearchGroup denyResearchGroup(UUID researchGroupId) {
         ResearchGroup group = researchGroupRepository.findByIdElseThrow(researchGroupId);
-        if (group.getState() != ResearchGroupState.DRAFT && group.getState() != ResearchGroupState.ACTIVE) {
-            throw new IllegalStateException("Only DRAFT or ACTIVE groups can be denied");
+        if (group.getState() != ResearchGroupState.DRAFT) {
+            throw new IllegalStateException("Only DRAFT groups can be denied");
         }
         group.setState(ResearchGroupState.DENIED);
+        ResearchGroup saved = researchGroupRepository.save(group);
+
+        return saved;
+    }
+
+    /**
+     * Withdraws an ACTIVE research group back to DRAFT state (admin only).
+     * Changes the state from ACTIVE to DRAFT, allowing the research group to be reviewed again.
+     * This operation can only be performed on research groups in ACTIVE state.
+     *
+     * @param researchGroupId the unique identifier of the research group to withdraw
+     * @return the withdrawn research group with updated state
+     * @throws EntityNotFoundException if the research group does not exist
+     * @throws IllegalStateException if the research group is not in ACTIVE state
+     */
+    @Transactional
+    public ResearchGroup withdrawResearchGroup(UUID researchGroupId) {
+        ResearchGroup group = researchGroupRepository.findByIdElseThrow(researchGroupId);
+        if (group.getState() != ResearchGroupState.ACTIVE) {
+            throw new IllegalStateException("Only ACTIVE groups can be withdrawn");
+        }
+        group.setState(ResearchGroupState.DRAFT);
         ResearchGroup saved = researchGroupRepository.save(group);
 
         return saved;

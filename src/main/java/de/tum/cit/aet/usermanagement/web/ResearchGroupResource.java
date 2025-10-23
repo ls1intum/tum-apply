@@ -230,4 +230,18 @@ public class ResearchGroupResource {
         ResearchGroup denied = researchGroupService.denyResearchGroup(researchGroupId);
         return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(denied));
     }
+
+    /**
+     * Withdraws an ACTIVE research group back to DRAFT state (admin only).
+     *
+     * @param researchGroupId the ID of the research group to withdraw
+     * @return the withdrawn research group
+     */
+    @PostMapping("/{researchGroupId}/withdraw")
+    @Admin
+    public ResponseEntity<ResearchGroupDTO> withdrawResearchGroup(@PathVariable UUID researchGroupId) {
+        log.info("POST /api/research-groups/{}/withdraw", researchGroupId);
+        ResearchGroup withdrawn = researchGroupService.withdrawResearchGroup(researchGroupId);
+        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(withdrawn));
+    }
 }

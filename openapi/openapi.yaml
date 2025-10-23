@@ -1125,6 +1125,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/{researchGroupId}/withdraw:
+    post:
+      tags: [research-group-resource]
+      operationId: withdrawResearchGroup
+      parameters:
+      - name: researchGroupId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
   /api/settings/emails:
     get:
       tags: [email-setting-resource]

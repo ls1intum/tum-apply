@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO';
 import { ToastService } from 'app/service/toast-service';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
@@ -19,16 +19,7 @@ const I18N_BASE = 'researchGroup.adminView';
 
 @Component({
   selector: 'jhi-research-group-admin-view',
-  imports: [
-    CommonModule,
-    TagComponent,
-    ButtonComponent,
-    TranslateModule,
-    TranslateDirective,
-    SearchFilterSortBar,
-    DynamicTableComponent,
-    ConfirmDialog,
-  ],
+  imports: [CommonModule, TagComponent, TranslateModule, TranslateDirective, SearchFilterSortBar, DynamicTableComponent, ConfirmDialog],
   templateUrl: './research-group-admin-view.component.html',
 })
 export class ResearchGroupAdminView {
@@ -56,7 +47,7 @@ export class ResearchGroupAdminView {
 
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
-  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'contrast'>>({
+  readonly stateSeverityMap = signal<Record<string, ButtonColor>>({
     DRAFT: 'contrast',
     ACTIVE: 'success',
     DENIED: 'danger',
@@ -81,7 +72,7 @@ export class ResearchGroupAdminView {
         template: stateTpl,
       },
       { field: 'researchGroup', header: `${I18N_BASE}.tableColumn.researchGroup`, width: '26rem' },
-      { field: 'createdAt', header: `${I18N_BASE}.tableColumn.createdAt`, type: 'date', width: '10rem' },
+      { field: 'createdAt', header: `${I18N_BASE}.tableColumn.requestedAt`, type: 'date', width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: buttonTpl },
     ];
   });
@@ -98,7 +89,7 @@ export class ResearchGroupAdminView {
 
   readonly sortableFields: SortOption[] = [
     { displayName: `${I18N_BASE}.tableColumn.status`, fieldName: 'state', type: 'TEXT' },
-    { displayName: `${I18N_BASE}.tableColumn.createdAt`, fieldName: 'createdAt', type: 'NUMBER' },
+    { displayName: `${I18N_BASE}.tableColumn.requestedAt`, fieldName: 'createdAt', type: 'NUMBER' },
   ];
 
   private toastService = inject(ToastService);
@@ -114,12 +105,9 @@ export class ResearchGroupAdminView {
   }
 
   onSearchEmit(searchQuery: string): void {
-    const normalizedQuery = searchQuery.trim().replace(/\s+/g, ' ');
-    const currentQuery = this.searchQuery().trim().replace(/\s+/g, ' ');
-
-    if (normalizedQuery !== currentQuery) {
+    if (searchQuery !== this.searchQuery()) {
       this.page.set(0);
-      this.searchQuery.set(normalizedQuery);
+      this.searchQuery.set(searchQuery);
       void this.loadResearchGroups();
     }
   }
@@ -168,7 +156,7 @@ export class ResearchGroupAdminView {
 
   async onWithdrawResearchGroup(researchGroupId: string): Promise<void> {
     try {
-      await firstValueFrom(this.researchGroupService.denyResearchGroup(researchGroupId));
+      await firstValueFrom(this.researchGroupService.withdrawResearchGroup(researchGroupId));
       this.toastService.showSuccessKey(`${I18N_BASE}.success.withdraw`);
       await this.loadResearchGroups();
     } catch {
