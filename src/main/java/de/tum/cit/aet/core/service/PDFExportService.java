@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.util.PDFBuilder;
-import de.tum.cit.aet.job.service.JobService;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
