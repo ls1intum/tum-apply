@@ -1,6 +1,6 @@
 package de.tum.cit.aet.core.web;
 
-import de.tum.cit.aet.core.security.annotations.Public;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.service.PDFExportService;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +31,7 @@ public class PDFExportResource {
      * @return the PDF file as downloadable attachment
      */
     @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    @Public
+    @Authenticated
     public ResponseEntity<Resource> exportApplicationToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
         Resource pdf = pdfExportService.exportApplicationToPDF(id, labels);
         String filename = pdfExportService.generateApplicationFilename(id);
