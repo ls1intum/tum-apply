@@ -13,7 +13,6 @@ import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroup
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 
 import { OnboardingDialog } from '../onboarding-dialog';
-import { ONBOARDING_FORM_DIALOG_CONFIG } from '../onboarding-dialog.constants';
 
 @Component({
   selector: 'jhi-employee-request-access-form',
@@ -64,8 +63,17 @@ export class EmployeeRequestAccessFormComponent {
 
     // Reopen the main onboarding dialog
     this.dialogService.open(OnboardingDialog, {
-      ...ONBOARDING_FORM_DIALOG_CONFIG,
-      header: this.translate.instant('onboarding.title'),
+      header: this.translate.instant('onboarding.dialog.title'),
+      modal: true,
+      closable: true,
+      dismissableMask: false,
+      width: '56.25rem',
+      style: {
+        'max-width': '95vw',
+        'background-color': 'white',
+        'border-radius': '0.5rem',
+      },
+      focusOnShow: false,
     });
   }
 
