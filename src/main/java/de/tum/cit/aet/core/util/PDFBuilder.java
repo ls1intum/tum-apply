@@ -277,14 +277,10 @@ public class PDFBuilder {
         container.add(divider);
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
-            String plainText = section.htmlContent.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
-            Paragraph content = new Paragraph(plainText)
-                .setFont(normalFont)
-                .setFontSize(FONT_SIZE_TEXT)
-                .setMargin(0)
-                .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
-                .setMultipliedLeading(LINE_LEADING);
-            container.add(content);
+            List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont, boldFont);
+            for (IBlockElement element : elements) {
+                container.add(element);
+            }
         }
 
         for (DataRow row : section.dataRows) {
@@ -299,6 +295,62 @@ public class PDFBuilder {
         }
 
         document.add(container);
+    }
+
+    private List<IBlockElement> parseHtmlContent(String html, PdfFont normalFont, PdfFont boldFont) {
+        List<IBlockElement> elements = new ArrayList<>();
+
+        try {
+            String processedHtml = html.replaceAll("<ol>", "<ul>").replaceAll("</ol>", "</ul>");
+
+            ConverterProperties props = new ConverterProperties();
+
+            List<IElement> pdfElements = HtmlConverter.convertToElements(processedHtml, props);
+
+            for (IElement element : pdfElements) {
+                if (element instanceof IBlockElement) {
+                    IBlockElement blockElement = (IBlockElement) element;
+
+                    if (blockElement instanceof Paragraph) {
+                        ((Paragraph) blockElement).setFont(normalFont)
+                            .setFontSize(FONT_SIZE_TEXT)
+                            .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+                            .setMultipliedLeading(LINE_LEADING);
+                        // A direct import of iText's List class is required to distinguish it from
+                        // Java's List.
+                    } else if (blockElement instanceof com.itextpdf.layout.element.List) {
+                        com.itextpdf.layout.element.List list = (com.itextpdf.layout.element.List) blockElement;
+
+                        list
+                            .setListSymbol(BULLET_POINT_SYMBOL)
+                            .setFont(normalFont)
+                            .setFontSize(FONT_SIZE_TEXT)
+                            .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+                            .setSymbolIndent(LIST_SYMBOL_INDENT)
+                            .setMarginLeft(LIST_MARGIN_LEFT);
+
+                        for (IElement item : list.getChildren()) {
+                            if (item instanceof ListItem) {
+                                ((ListItem) item).setFont(normalFont).setFontSize(FONT_SIZE_TEXT);
+                            }
+                        }
+                    }
+
+                    elements.add(blockElement);
+                }
+            }
+        } catch (Exception e) {
+            String plainText = html.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
+            elements.add(
+                new Paragraph(plainText)
+                    .setFont(normalFont)
+                    .setFontSize(FONT_SIZE_TEXT)
+                    .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+                    .setMultipliedLeading(LINE_LEADING)
+            );
+        }
+
+        return elements;
     }
 
     // ----------------- Inner Classes -----------------
