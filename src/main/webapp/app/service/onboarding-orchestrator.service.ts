@@ -7,6 +7,7 @@ import { filter, map, startWith, switchMap, take } from 'rxjs/operators';
 import { NavigationEnd, Router } from '@angular/router';
 
 import { OnboardingDialog } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog';
+import { ONBOARDING_FORM_DIALOG_CONFIG } from '../shared/components/molecules/onboarding-dialog/onboarding-dialog.constants';
 import { AccountService } from '../core/auth/account.service';
 import { ProfOnboardingResourceApiService } from '../generated/api/profOnboardingResourceApi.service';
 import { ProfOnboardingDTO } from '../generated/model/profOnboardingDTO';
@@ -70,10 +71,8 @@ export class OnboardingOrchestratorService {
         this.opened = true;
 
         this.dialog.open(OnboardingDialog, {
+          ...ONBOARDING_FORM_DIALOG_CONFIG,
           header: this.translate.instant('onboarding.title'),
-          modal: true,
-          closable: true,
-          width: '80vw',
         });
       },
       { injector: this.injector },

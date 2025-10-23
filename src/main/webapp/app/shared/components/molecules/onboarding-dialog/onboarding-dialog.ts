@@ -13,6 +13,7 @@ import { ProfOnboardingResourceApiService } from '../../../../generated/api/prof
 
 import { ProfessorRequestAccessFormComponent } from './professor-request-access-form/professor-request-access-form.component';
 import { EmployeeRequestAccessFormComponent } from './employee-request-access-form/employee-request-access-form.component';
+import { ONBOARDING_FORM_DIALOG_CONFIG } from './onboarding-dialog.constants';
 
 /**
  * Professor onboarding dialog.
@@ -35,17 +36,8 @@ export class OnboardingDialog {
       this.ref?.close();
 
       this.dialogService.open(ProfessorRequestAccessFormComponent, {
+        ...ONBOARDING_FORM_DIALOG_CONFIG,
         header: this.translate.instant('onboarding.professorRequest.dialogTitle'),
-        modal: true,
-        closable: true,
-        dismissableMask: false,
-        width: '56.25rem',
-        style: {
-          'max-width': '95vw',
-          'background-color': 'white',
-          'border-radius': '0.5rem',
-        },
-        focusOnShow: false,
       });
     } else {
       void firstValueFrom(this.api.confirmOnboarding()).catch();
@@ -57,17 +49,8 @@ export class OnboardingDialog {
     this.ref?.close();
 
     this.dialogService.open(EmployeeRequestAccessFormComponent, {
+      ...ONBOARDING_FORM_DIALOG_CONFIG,
       header: this.translate.instant('onboarding.employeeRequest.dialogTitle'),
-      modal: true,
-      closable: true,
-      dismissableMask: false,
-      width: '56.25rem',
-      style: {
-        'max-width': '95vw',
-        'background-color': 'white',
-        'border-radius': '0.5rem',
-      },
-      focusOnShow: false,
     });
   }
 }
