@@ -18,6 +18,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -344,6 +345,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
+  private readonly jobResourceService = inject(JobResourceApiService);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -374,9 +376,9 @@ export default class ApplicationCreationFormComponent {
       try {
         let application: ApplicationForApplicantDTO;
 
-        if (applicationId) {
+        if (applicationId !== null) {
           application = await this.initPageLoadExistingApplication(applicationId);
-        } else if (jobId) {
+        } else if (jobId !== null) {
           application = await this.initPageCreateApplication(jobId);
         } else {
           throw new Error('Either job ID or application ID must be provided in the URL.');
@@ -407,11 +409,21 @@ export default class ApplicationCreationFormComponent {
 
   initPageForLocalStorageCase(jobId: string | null): void {
     this.useLocalStorage.set(true);
-    if (jobId) {
-      // TODO fetch jobData for lateron displaying jobDetails
+    if (jobId !== null) {
       this.jobId.set(jobId);
       this.loadPersonalInfoDataFromLocalStorage(jobId);
       this.applicationState.set('SAVED');
+
+      // Fetch job title for display
+      firstValueFrom(this.jobResourceService.getJobDetails(jobId))
+        .then(jobDetails => {
+          if (jobDetails.title) {
+            this.title.set(jobDetails.title);
+          }
+        })
+        .catch(() => {
+          // Silently ignore errors when fetching job title - this is non-critical for the application flow
+        });
     } else {
       this.showInitErrorMessage(`${applyflow}.missingJobIdUnauthenticated`);
     }
