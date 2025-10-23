@@ -1,6 +1,7 @@
 @use 'tailwindcss' as *;
 @use './_header.scss';
 @use './_layout.scss';
+@use './breakpoints' as bp;
 
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
@@ -402,6 +403,101 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 }
 .basic-tab {
   background: var(--p-background-default);
+}
+
+/* ---------------------------
+   Reusable Detail Card Components
+------------------------------- */
+// Base card styles - shared between all card types
+.section-card {
+  border: 0.05rem solid var(--p-border-default);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+// Detail card extends base card with additional structure
+.section-detail-card {
+  @extend .section-card;
+
+  .section-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 0.05rem solid var(--p-border-default);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .section-card-title {
+    font-weight: 600;
+    margin: 0;
+    color: var(--p-text-primary);
+  }
+
+  .section-card-body {
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+}
+
+// Generic info item (used for overview and other info displays)
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+// Info list for structured data display
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+
+  .label {
+    font-weight: 600;
+  }
+
+  .value {
+    text-align: right;
+  }
+}
+
+@media (max-width: bp.$md) {
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+
+    .value {
+      text-align: left !important;
+    }
+  }
+}
+
+.icon {
+  color: var(--p-primary-color);
 }
 
 /* ---------------------------
