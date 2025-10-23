@@ -303,12 +303,12 @@
           <div class="right-buttons">
             @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
               <jhi-confirm-dialog
+                [label]="'entity.applicationOverview.actions.withdraw' | translate"
                 [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
                 [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-                confirmIcon="withdraw"
                 (confirmed)="onWithdrawApplication()"
                 severity="danger"
-                variant="text"
+                variant="outlined"
               />
             }
 
