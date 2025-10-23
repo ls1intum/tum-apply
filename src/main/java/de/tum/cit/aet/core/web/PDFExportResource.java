@@ -24,7 +24,7 @@ public class PDFExportResource {
     }
 
     /**
-     * GET /api/export/application/{id}/pdf : Export application details as PDF
+     * POST /api/export/application/{id}/pdf : Export application details as PDF
      *
      * @param id     the application ID
      * @param labels translation labels for PDF content
