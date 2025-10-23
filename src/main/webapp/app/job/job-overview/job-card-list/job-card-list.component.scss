@@ -1,14 +1,12 @@
 .job-card-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
   gap: 1rem;
-  padding: 1rem 2rem;
-  justify-content: center;
 }
 
 .job-card-grid > * {
-  flex: 0 0 auto;
-  width: clamp(16.5rem, 20vw, 20rem);
+  width: 100%;
+  max-width: 25rem;
 }
 
 .no-jobs-text {

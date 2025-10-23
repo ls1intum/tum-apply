@@ -31,7 +31,7 @@ export class JobCardListComponent {
   jobs = signal<JobCardDTO[]>([]);
   totalRecords = signal<number>(0);
   page = signal<number>(0);
-  pageSize = signal<number>(8);
+  pageSize = signal<number>(12);
   searchQuery = signal<string>('');
 
   sortBy = signal<string>('startDate');
