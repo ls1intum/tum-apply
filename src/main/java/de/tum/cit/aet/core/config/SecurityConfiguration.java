@@ -110,7 +110,7 @@ public class SecurityConfiguration {
                     .permitAll()
                     // Admin area requires specific authority.
                     .requestMatchers("/api/*/admin/**")
-                    .hasAuthority("ADMIN")
+                    .hasRole("ADMIN")
                     // Publicly accessible API endpoints (allowed for everyone).
                     .requestMatchers("/api/*/public/**")
                     .permitAll()

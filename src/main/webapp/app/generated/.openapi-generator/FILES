@@ -58,6 +58,7 @@ model/otpCompleteDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
+model/pageResponseDTOResearchGroupAdminDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
 model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
@@ -68,6 +69,7 @@ model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
+model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts
