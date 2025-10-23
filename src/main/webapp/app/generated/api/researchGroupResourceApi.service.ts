@@ -10,9 +10,10 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
-import { HttpClient, HttpParams,
-         HttpResponse, HttpEvent, HttpContext 
+import { HttpClient, HttpHeaders, HttpParams,
+         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
         }       from '@angular/common/http';
+import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
@@ -31,7 +32,7 @@ import { ResearchGroupDTO } from '../model/researchGroupDTO';
 import { ResearchGroupLargeDTO } from '../model/researchGroupLargeDTO';
 
 // @ts-ignore
-import { BASE_PATH }                     from '../variables';
+import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
 
@@ -497,25 +498,25 @@ export class ResearchGroupResourceApiService extends BaseService {
     }
 
     /**
-     * @param page 
-     * @param size 
+     * @param pageSize 
+     * @param pageNumber 
      * @param status 
+     * @param searchQuery 
      * @param sortBy 
      * @param direction 
-     * @param searchQuery 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOResearchGroupAdminDTO>;
-    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOResearchGroupAdminDTO>>;
-    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOResearchGroupAdminDTO>>;
-    public getResearchGroupsForAdmin(page?: number, size?: number, status?: Array<string>, sortBy?: string, direction?: string, searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getResearchGroupsForAdmin(pageSize?: number, pageNumber?: number, status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOResearchGroupAdminDTO>;
+    public getResearchGroupsForAdmin(pageSize?: number, pageNumber?: number, status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOResearchGroupAdminDTO>>;
+    public getResearchGroupsForAdmin(pageSize?: number, pageNumber?: number, status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOResearchGroupAdminDTO>>;
+    public getResearchGroupsForAdmin(pageSize?: number, pageNumber?: number, status?: Array<'DRAFT' | 'ACTIVE' | 'DENIED'>, searchQuery?: string, sortBy?: string, direction?: 'ASC' | 'DESC', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>page, 'page');
+          <any>pageSize, 'pageSize');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>size, 'size');
+          <any>pageNumber, 'pageNumber');
         if (status) {
             status.forEach((element) => {
                 localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
@@ -523,11 +524,11 @@ export class ResearchGroupResourceApiService extends BaseService {
             })
         }
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>searchQuery, 'searchQuery');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>sortBy, 'sortBy');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>direction, 'direction');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>searchQuery, 'searchQuery');
 
         let localVarHeaders = this.defaultHeaders;
 

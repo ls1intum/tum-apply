@@ -65,7 +65,7 @@ export class ResearchGroupAdminView {
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
-  readonly selectedStatusFilters = signal<string[]>([]);
+  readonly selectedStatusFilters = signal<('DRAFT' | 'ACTIVE' | 'DENIED')[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const stateTpl = this.stateTemplate();
@@ -176,21 +176,21 @@ export class ResearchGroupAdminView {
     }
   }
 
-  private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
+  private mapTranslationKeysToEnumValues(translationKeys: string[]): ('DRAFT' | 'ACTIVE' | 'DENIED')[] {
     const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
-    return translationKeys.map(key => keyMap.get(key) ?? key);
+    return translationKeys.map(key => (keyMap.get(key) ?? key) as 'DRAFT' | 'ACTIVE' | 'DENIED');
   }
 
   private async loadResearchGroups(): Promise<void> {
     try {
       const pageData = await firstValueFrom(
         this.researchGroupService.getResearchGroupsForAdmin(
-          this.page(),
           this.pageSize(),
+          this.page(),
           this.selectedStatusFilters(),
+          this.searchQuery(),
           this.sortBy(),
           this.sortDirection(),
-          this.searchQuery(),
         ),
       );
       this.researchGroups.set(pageData.content ?? []);

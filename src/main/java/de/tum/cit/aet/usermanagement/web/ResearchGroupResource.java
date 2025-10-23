@@ -160,12 +160,9 @@ public class ResearchGroupResource {
     /**
      * Returns a paginated list of research groups for admin review.
      *
-     * @param page                       the page number (zero-based)
-     * @param size                       the page size
-     * @param status                     optional list of research group states to filter by
-     * @param sortBy                     optional sort field
-     * @param direction                  optional sort direction
-     * @param searchQuery                optional search query
+     * @param pageDTO the pagination parameters
+     * @param filterDTO the filter parameters including status and search query
+     * @param sortDTO the sorting parameters
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link Page} of {@link ResearchGroupAdminDTO}
@@ -173,34 +170,20 @@ public class ResearchGroupResource {
     @GetMapping("/admin")
     @Admin
     public ResponseEntity<PageResponseDTO<ResearchGroupAdminDTO>> getResearchGroupsForAdmin(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size,
-        @RequestParam(required = false) List<String> status,
-        @RequestParam(required = false) String sortBy,
-        @RequestParam(required = false) String direction,
-        @RequestParam(required = false) String searchQuery
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute AdminResearchGroupFilterDTO filterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
         log.info(
-            "GET /api/research-groups/admin called with page={}, size={}, status={}, sortBy={}, direction={}, searchQuery={}",
-            page,
-            size,
-            status,
-            sortBy,
-            direction,
-            searchQuery
+            "GET /api/research-groups/admin called with pageNumber={}, pageSize={}, status={}, sortBy={}, direction={}, searchQuery={}",
+            pageDTO.pageNumber(),
+            pageDTO.pageSize(),
+            filterDTO.getStatus(),
+            sortDTO.sortBy(),
+            sortDTO.direction(),
+            filterDTO.getSearchQuery()
         );
-        PageDTO pageDTO = new PageDTO(size, page);
-        AdminResearchGroupFilterDTO filterDTO = new AdminResearchGroupFilterDTO();
-        if (status != null && !status.isEmpty()) {
-            filterDTO.setStatus(status.stream().map(ResearchGroupState::valueOf).toList());
-        }
-        SortDTO sortDTO = new SortDTO(sortBy, direction != null ? Direction.valueOf(direction) : null);
-        PageResponseDTO<ResearchGroupAdminDTO> response = researchGroupService.getResearchGroupsForAdmin(
-            pageDTO,
-            filterDTO,
-            sortDTO,
-            searchQuery
-        );
+        PageResponseDTO<ResearchGroupAdminDTO> response = researchGroupService.getResearchGroupsForAdmin(pageDTO, filterDTO, sortDTO);
         return ResponseEntity.ok(response);
     }
 
