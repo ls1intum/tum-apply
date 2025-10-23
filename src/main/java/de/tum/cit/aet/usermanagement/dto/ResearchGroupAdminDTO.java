@@ -32,6 +32,12 @@ public record ResearchGroupAdminDTO(
     ResearchGroupState status,
     LocalDateTime createdAt
 ) {
+    /**
+     * Converts a {@link ResearchGroup} entity to a {@link ResearchGroupAdminDTO}.
+     *
+     * @param researchGroup the research group entity to convert
+     * @return the corresponding {@link ResearchGroupAdminDTO}
+     */
     public static ResearchGroupAdminDTO fromEntity(ResearchGroup researchGroup) {
         return new ResearchGroupAdminDTO(
             researchGroup.getResearchGroupId(),
