@@ -141,7 +141,7 @@ export class SidebarComponent {
           title: 'sidebar.content.content',
           buttons: [
             { icon: 'folder', text: 'sidebar.content.allpositions', link: '/all-positions' },
-            { icon: 'microscope', text: 'sidebar.content.researchgroups', link: '/research-groups' },
+            { icon: 'microscope', text: 'sidebar.content.researchgroups', link: '/research-group/admin-view' },
           ],
         },
         {
