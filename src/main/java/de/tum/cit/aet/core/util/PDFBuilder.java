@@ -1,5 +1,7 @@
 package de.tum.cit.aet.core.util;
 
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -12,7 +14,10 @@ import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Div;
+import com.itextpdf.layout.element.IBlockElement;
+import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
@@ -65,6 +70,11 @@ public class PDFBuilder {
     private static final float HEADER_MARGIN_TOP = 20f;
     private static final float HEADER_MARGIN_BOTTOM = 16f;
     private static final float LINE_LEADING = 1.0f;
+
+    // ----------------- List & Text Layout -----------------
+    private static final String BULLET_POINT_SYMBOL = "\u2022";
+    private static final float LIST_SYMBOL_INDENT = 12f;
+    private static final float LIST_MARGIN_LEFT = 8f;
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
