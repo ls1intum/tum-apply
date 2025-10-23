@@ -81,6 +81,9 @@ export class ApplicationDetailComponent {
 
   allAvailableJobNames = signal<string[]>([]);
 
+  bachelorItems = signal<DescItem[]>([]);
+  masterItems = signal<DescItem[]>([]);
+
   // accept/reject dialog
   reviewDialogVisible = signal<boolean>(false);
   reviewDialogMode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
@@ -95,6 +98,10 @@ export class ApplicationDetailComponent {
     const state = currentApplication.applicationDetailDTO.applicationState;
     return state !== 'ACCEPTED' && state !== 'REJECTED';
   });
+
+  currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
+  bachelorItemsComputed = computed(() => this.getBachelorItems(this.currentApplicationApplicant()));
+  masterItemsComputed = computed(() => this.getMasterItems(this.currentApplicationApplicant()));
 
   protected currentApplicationId = computed(() => {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
