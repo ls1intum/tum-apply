@@ -4,12 +4,10 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
-
+import de.tum.cit.aet.job.domain.Job;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import de.tum.cit.aet.job.domain.Job;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

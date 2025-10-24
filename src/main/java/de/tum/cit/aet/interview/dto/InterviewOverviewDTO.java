@@ -13,5 +13,4 @@ public record InterviewOverviewDTO(
     @NotNull Long invitedCount,
     @NotNull Long uncontactedCount,
     @NotNull Long totalInterviews
-)
-{}
+) {}
