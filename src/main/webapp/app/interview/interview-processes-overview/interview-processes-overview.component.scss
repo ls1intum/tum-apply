@@ -1,44 +1,82 @@
 .interview-overview-page {
-  padding: 2rem 3rem; /* gleiches Padding wie Positions-Seite */
+  padding: 2rem 3rem;
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 
-  /* HEADER mit Titel + Button */
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* Titel & Button auf gleicher Höhe */
-    margin-bottom: 1.5rem;
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--text-color);
-      margin: 0;
-    }
-
-    ::ng-deep .p-button {
-      padding: 0.6rem 1.25rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border-radius: 6px;
-    }
-
-    ::ng-deep .p-button-label {
-      font-weight: 500;
-    }
+  /* Page title ("Interviews") */
+  .page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2563eb; /* TUMApply-blau wie im Screenshot */
+    margin-bottom: 1rem;
   }
 
-  /* CONTENT-BEREICH – zwei Spalten */
+  /* Two-column layout */
   .content-container {
     display: flex;
-    gap: 2rem;
     flex: 1;
-    align-items: stretch; /* sorgt dafür, dass beide Spalten gleich hoch sind */
-    min-height: 100%; /* verhindert, dass Cards verschwinden */
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  /* Left Section */
+  .processes-section {
+    flex: 0 0 70%;
+    display: flex;
+    flex-direction: column;
+
+    /* Header ("Positions" + Button) */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color, #1f2937);
+        margin: 0;
+      }
+
+      ::ng-deep .p-button {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 6px;
+      }
+    }
+
+    /* Card containers (error, empty, etc.) */
+    .error-container,
+    .cards-container,
+    .empty-state {
+      background: white;
+      border: 1px solid var(--surface-border, #e5e7eb);
+      border-radius: 8px;
+      padding: 2rem;
+    }
+
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      i {
+        color: var(--red-500, #ef4444);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        color: var(--text-color-secondary, #6b7280);
+        font-size: 0.875rem;
+      }
+    }
   }
 
   /* Divider */
@@ -49,210 +87,16 @@
     border-left: 1px solid var(--surface-border, #e5e7eb);
   }
 
-  /* LINKE SEITE – Interview Processes */
-  .processes-section {
-    flex: 0 0 70%;
-    min-width: 0;
-    min-height: 100%; /* wichtig für Sichtbarkeit der Card */
-    display: flex;
-    flex-direction: column;
-
-    .loading-container,
-    .error-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem;
-      text-align: center;
-      background: white;
-      border: 1px solid var(--surface-border, #e5e7eb);
-      border-radius: 8px;
-
-      i {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--surface-400, #9ca3af);
-      }
-
-      p {
-        color: var(--text-color-secondary, #6b7280);
-        font-size: 0.875rem;
-      }
-    }
-
-    .error-container i {
-      color: var(--red-500, #ef4444);
-    }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 4rem 2rem;
-      text-align: center;
-      background: white;
-      border: 1px solid var(--surface-border, #e5e7eb);
-      border-radius: 8px;
-
-      i {
-        font-size: 3rem;
-        color: var(--surface-400, #9ca3af);
-        margin-bottom: 1.5rem;
-      }
-
-      h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text-color, #1f2937);
-        margin: 0 0 0.5rem 0;
-      }
-
-      p {
-        color: var(--text-color-secondary, #6b7280);
-        font-size: 0.875rem;
-        max-width: 400px;
-        line-height: 1.6;
-      }
-    }
-
-    .cards-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-
-      .interview-card {
-        background: white;
-        border: 1px solid var(--surface-border, #e5e7eb);
-        border-radius: 8px;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.2s;
-
-        &:hover {
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .job-title {
-          font-size: 1.125rem;
-          font-weight: 600;
-          color: var(--text-color, #1f2937);
-          margin: 0 0 1.5rem 0;
-        }
-
-        .stats-labels {
-          display: flex;
-          gap: 2rem;
-          margin-bottom: 0.75rem;
-
-          .stat-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-
-            .stat-indicator {
-              width: 12px;
-              height: 12px;
-              border-radius: 2px;
-
-              &.completed {
-                background-color: #1e40af;
-              }
-              &.scheduled {
-                background-color: #3b82f6;
-              }
-              &.invited {
-                background-color: #60a5fa;
-              }
-              &.uncontacted {
-                background-color: #bfdbfe;
-              }
-            }
-
-            .stat-text {
-              display: flex;
-              flex-direction: column;
-
-              .stat-number {
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: var(--text-color, #1f2937);
-                line-height: 1.2;
-              }
-
-              .stat-name {
-                font-size: 0.75rem;
-                color: var(--text-color-secondary, #6b7280);
-                line-height: 1.2;
-              }
-            }
-          }
-        }
-
-        .progress-bar {
-          display: flex;
-          width: 100%;
-          height: 32px;
-          background-color: var(--surface-100, #f3f4f6);
-          border-radius: 4px;
-          overflow: hidden;
-          margin-bottom: 1rem;
-
-          .progress-segment {
-            height: 100%;
-            transition: width 0.3s ease;
-
-            &.completed {
-              background-color: #1e40af;
-            }
-            &.scheduled {
-              background-color: #3b82f6;
-            }
-            &.invited {
-              background-color: #60a5fa;
-            }
-            &.uncontacted {
-              background-color: #bfdbfe;
-            }
-          }
-        }
-
-        .total-section {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-top: 0.75rem;
-          border-top: 1px solid var(--surface-border, #e5e7eb);
-
-          .total-label {
-            font-size: 0.875rem;
-            color: var(--text-color-secondary, #6b7280);
-          }
-
-          .total-number {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-color, #1f2937);
-          }
-        }
-      }
-    }
-  }
-
-  /* RECHTE SEITE – Upcoming */
+  /* Right Section (Upcoming) */
   .upcoming-section {
     flex: 0 0 25%;
     min-width: 250px;
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
 
     h2 {
       font-size: 1.25rem;
       font-weight: 600;
       color: var(--text-color, #1f2937);
-      margin: 0 0 1.5rem 0;
+      margin: 0 0 1rem 0;
     }
 
     .upcoming-empty {
@@ -260,16 +104,16 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem 1.5rem;
-      text-align: center;
       background: var(--surface-50, #f9fafb);
       border: 1px dashed var(--surface-border, #e5e7eb);
       border-radius: 8px;
+      padding: 3rem 1.5rem;
+      text-align: center;
 
       i {
-        font-size: 2.5rem;
+        font-size: 2rem;
         color: var(--surface-400, #9ca3af);
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
       }
 
       p {

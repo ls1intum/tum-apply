@@ -1,128 +1,43 @@
 <div class="interview-overview-page">
-  <!-- Header with Title and Button -->
-  <div class="page-header">
-    <h1 jhiTranslate="interview.overview.title">Interviews</h1>
-    <p-button
-      [label]="'interview.overview.actions.newProcess' | translate"
-      icon="pi pi-plus"
-      (onClick)="createNewInterviewProcess()"
-      styleClass="p-button-primary"
-    ></p-button>
-  </div>
+  <!-- Page Title -->
+  <h1 class="page-title" jhiTranslate="interview.overview.title">Interviews</h1>
 
-  <!-- Main Content Area with Two Columns -->
   <div class="content-container">
-    <!-- Left Section: Interview Processes -->
+    <!-- Left Section -->
     <div class="processes-section">
-      <!-- Loading State -->
-      <div *ngIf="loading()" class="loading-container">
-        <i class="pi pi-spin pi-spinner"></i>
-        <p jhiTranslate="interview.overview.loading">Loading interview processes...</p>
+      <!-- Section Header -->
+      <div class="section-header">
+        <h2 jhiTranslate="interview.overview.positions.title">Positions</h2>
+        <p-button
+          [label]="'interview.overview.actions.newProcess' | translate"
+          icon="pi pi-plus"
+          (onClick)="createNewInterviewProcess()"
+          styleClass="p-button-primary"
+        ></p-button>
       </div>
 
-      <!-- Error State -->
-      <div *ngIf="error() && !loading()" class="error-container">
+      <!-- Example Error/Empty/Loaded Cards -->
+      <div *ngIf="error()" class="error-container">
         <i class="pi pi-exclamation-triangle"></i>
         <p>{{ error() }}</p>
       </div>
 
-      <!-- Empty State -->
-      <div *ngIf="!loading() && !error() && interviewProcesses().length === 0" class="empty-state">
-        <i class="pi pi-inbox"></i>
-        <h3 jhiTranslate="interview.overview.empty.title">No Interview Processes</h3>
-        <p jhiTranslate="interview.overview.empty.description">
-          You haven't created any interview processes yet. Click "New Interview Process" to get started.
-        </p>
-      </div>
-
-      <!-- Interview Process Cards -->
-      <div *ngIf="!loading() && !error() && interviewProcesses().length > 0" class="cards-container">
-        <div *ngFor="let process of interviewProcesses()" class="interview-card">
-          <!-- Job Title -->
-          <h2 class="job-title">{{ process.jobTitle }}</h2>
-
-          <!-- Stats Labels Above Bar -->
-          <div class="stats-labels">
-            <div class="stat-label">
-              <div class="stat-indicator completed"></div>
-              <div class="stat-text">
-                <span class="stat-number">{{ process.completedCount }}</span>
-                <span class="stat-name" jhiTranslate="interview.overview.stats.completed">Completed</span>
-              </div>
-            </div>
-
-            <div class="stat-label">
-              <div class="stat-indicator scheduled"></div>
-              <div class="stat-text">
-                <span class="stat-number">{{ process.scheduledCount }}</span>
-                <span class="stat-name" jhiTranslate="interview.overview.stats.scheduled">Scheduled</span>
-              </div>
-            </div>
-
-            <div class="stat-label">
-              <div class="stat-indicator invited"></div>
-              <div class="stat-text">
-                <span class="stat-number">{{ process.invitedCount }}</span>
-                <span class="stat-name" jhiTranslate="interview.overview.stats.invited">Invited</span>
-              </div>
-            </div>
-
-            <div class="stat-label">
-              <div class="stat-indicator uncontacted"></div>
-              <div class="stat-text">
-                <span class="stat-number">{{ process.uncontactedCount }}</span>
-                <span class="stat-name" jhiTranslate="interview.overview.stats.uncontacted">Uncontacted</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Progress Bar -->
-          <div class="progress-bar">
-            <div
-              *ngIf="process.completedCount > 0"
-              class="progress-segment completed"
-              [style.width.%]="calculateWidth(process.completedCount, process.totalInterviews)"
-            ></div>
-            <div
-              *ngIf="process.scheduledCount > 0"
-              class="progress-segment scheduled"
-              [style.width.%]="calculateWidth(process.scheduledCount, process.totalInterviews)"
-            ></div>
-            <div
-              *ngIf="process.invitedCount > 0"
-              class="progress-segment invited"
-              [style.width.%]="calculateWidth(process.invitedCount, process.totalInterviews)"
-            ></div>
-            <div
-              *ngIf="process.uncontactedCount > 0"
-              class="progress-segment uncontacted"
-              [style.width.%]="calculateWidth(process.uncontactedCount, process.totalInterviews)"
-            ></div>
-          </div>
-
-          <!-- Total Section -->
-          <div class="total-section">
-            <span class="total-label" jhiTranslate="interview.overview.stats.totalInterviews">Total interviews</span>
-            <span class="total-number">{{ process.totalInterviews }}</span>
-          </div>
-        </div>
+      <div *ngIf="!error()" class="cards-container">
+        <!-- cards here -->
       </div>
     </div>
 
-    <!-- Vertical Divider -->
+    <!-- Divider -->
     <p-divider layout="vertical"></p-divider>
 
-    <!-- Right Section: Upcoming -->
+    <!-- Right Section -->
     <div class="upcoming-section">
       <h2 jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
 
-      <!-- Upcoming Empty State -->
       <div class="upcoming-empty">
         <i class="pi pi-calendar"></i>
         <p jhiTranslate="interview.overview.upcoming.empty">No upcoming interviews scheduled</p>
       </div>
-
-      <!-- TODO: Add upcoming interviews list when backend is ready -->
     </div>
   </div>
 </div>

@@ -2,6 +2,9 @@
   "interview": {
     "overview": {
       "title": "Interviews",
+      "positions": {
+        "title": "Positionen"
+      },
       "loading": "Loading interview processes...",
       "empty": {
         "title": "No Interview Processes",
