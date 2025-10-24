@@ -26,7 +26,7 @@
       </div>
 
       <!-- Position Overview Section -->
-      <section class="card">
+      <section class="section-card">
         <div class="section-header">
           <h2 class="section-title" jhiTranslate="entity.application_detail.position_overview"></h2>
           <jhi-button
@@ -65,32 +65,32 @@
           <h2 class="section-title" jhiTranslate="entity.application_detail.personal_statements"></h2>
         }
 
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'rocket']" class="icon" />
-            <h3 class="card-title" jhiTranslate="entity.applicationDetail.motivation"></h3>
+            <h3 class="section-card-title" jhiTranslate="entity.applicationDetail.motivation"></h3>
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <div class="content" [innerHTML]="application.motivation"></div>
           </div>
         </div>
 
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'brain']" class="icon" />
-            <h3 class="card-title" jhiTranslate="entity.applicationDetail.skills"></h3>
+            <h3 class="section-card-title" jhiTranslate="entity.applicationDetail.skills"></h3>
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <div class="content" [innerHTML]="application.specialSkills"></div>
           </div>
         </div>
 
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'flask']" class="icon" />
-            <h3 class="card-title" jhiTranslate="entity.applicationDetail.researchExperience"></h3>
+            <h3 class="section-card-title" jhiTranslate="entity.applicationDetail.researchExperience"></h3>
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <div class="content" [innerHTML]="application.projects"></div>
           </div>
         </div>
@@ -102,12 +102,12 @@
           <h2 class="section-title" jhiTranslate="entity.application_detail.personal_information"></h2>
         }
 
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'circle-user']" class="icon" />
-            <h3 class="card-title" jhiTranslate="entity.detail_card.applicant_info"></h3>
+            <h3 class="section-card-title" jhiTranslate="entity.detail_card.applicant_info"></h3>
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
                 <span class="label" jhiTranslate="entity.detail_card.preferred_language"></span>
@@ -149,12 +149,12 @@
           </div>
         </div>
 
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
-            <h3 class="card-title" jhiTranslate="entity.detail_card.bachelor_info"></h3>
+            <h3 class="section-card-title" jhiTranslate="entity.detail_card.bachelor_info"></h3>
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
                 <span class="label" jhiTranslate="entity.detail_card.name"></span>
@@ -180,12 +180,12 @@
           </div>
         </div>
 
-        <div class="detail-card">
-          <div class="card-header">
+        <div class="section-detail-card">
+          <div class="section-card-header">
             <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
-            <h3 class="card-title" jhiTranslate="entity.detail_card.master_info"></h3>
+            <h3 class="section-card-title" jhiTranslate="entity.detail_card.master_info"></h3>
           </div>
-          <div class="card-body">
+          <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
                 <span class="label" jhiTranslate="entity.detail_card.name"></span>
@@ -230,12 +230,12 @@
         <div class="document-container">
           @if (documentIds.bachelorDocumentDictionaryIds; as bachelorDocs) {
             @for (doc of bachelorDocs; track $index) {
-              <div class="detail-card">
-                <div class="card-header">
+              <div class="section-detail-card">
+                <div class="section-card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
+                  <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.BACHELOR_TRANSCRIPT"></h3>
                 </div>
-                <div class="card-body">
+                <div class="section-card-body">
                   <div class="document-viewer">
                     <jhi-document-viewer [documentDictionaryId]="doc" />
                   </div>
@@ -246,12 +246,12 @@
 
           @if (documentIds.masterDocumentDictionaryIds; as masterDocs) {
             @for (doc of masterDocs; track $index) {
-              <div class="detail-card">
-                <div class="card-header">
+              <div class="section-detail-card">
+                <div class="section-card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
+                  <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.MASTER_TRANSCRIPT"></h3>
                 </div>
-                <div class="card-body">
+                <div class="section-card-body">
                   <div class="document-viewer">
                     <jhi-document-viewer [documentDictionaryId]="doc" />
                   </div>
@@ -261,12 +261,12 @@
           }
 
           @if (documentIds.cvDocumentDictionaryId; as cvDoc) {
-            <div class="detail-card">
-              <div class="card-header">
+            <div class="section-detail-card">
+              <div class="section-card-header">
                 <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                <h3 class="card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
+                <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.CV"></h3>
               </div>
-              <div class="card-body">
+              <div class="section-card-body">
                 <div class="document-viewer">
                   <jhi-document-viewer [documentDictionaryId]="cvDoc" />
                 </div>
@@ -276,12 +276,12 @@
 
           @if (documentIds.referenceDocumentDictionaryIds; as referenceDocs) {
             @for (doc of referenceDocs; track $index) {
-              <div class="detail-card">
-                <div class="card-header">
+              <div class="section-detail-card">
+                <div class="section-card-header">
                   <fa-icon [icon]="['fas', 'file-lines']" class="icon" />
-                  <h3 class="card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
+                  <h3 class="section-card-title" jhiTranslate="entity.upload.document_type.REFERENCES"></h3>
                 </div>
-                <div class="card-body">
+                <div class="section-card-body">
                   <div class="document-viewer">
                     <jhi-document-viewer [documentDictionaryId]="doc" />
                   </div>
