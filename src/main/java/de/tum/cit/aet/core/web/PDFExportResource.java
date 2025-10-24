@@ -34,7 +34,7 @@ public class PDFExportResource {
     @Authenticated
     public ResponseEntity<Resource> exportApplicationToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
         Resource pdf = pdfExportService.exportApplicationToPDF(id, labels);
-        String filename = pdfExportService.generateApplicationFilename(id);
+        String filename = pdfExportService.generateApplicationFilename(id, labels.get("application"));
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")

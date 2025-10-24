@@ -94,9 +94,9 @@ public class PDFExportService {
      * @param applicationId the application ID
      * @return sanitized filename for the PDF
      */
-    public String generateApplicationFilename(UUID applicationId) {
+    public String generateApplicationFilename(UUID applicationId, String applicationLabel) {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
-        return sanitizeFilename(app.jobTitle()) + "_Application.pdf";
+        return sanitizeFilename(app.jobTitle()) + "_" + applicationLabel + ".pdf";
     }
 
     // Helper methods
