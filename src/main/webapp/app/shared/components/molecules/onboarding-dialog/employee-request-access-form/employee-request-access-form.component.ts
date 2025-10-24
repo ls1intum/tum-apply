@@ -11,6 +11,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { ToastService } from 'app/service/toast-service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 
 import { OnboardingDialog } from '../onboarding-dialog';
 
@@ -63,17 +64,8 @@ export class EmployeeRequestAccessFormComponent {
 
     // Reopen the main onboarding dialog
     this.dialogService.open(OnboardingDialog, {
-      header: this.translate.instant('onboarding.dialog.title'),
-      modal: true,
-      closable: true,
-      dismissableMask: false,
-      width: '56.25rem',
-      style: {
-        'max-width': '95vw',
-        'background-color': 'white',
-        'border-radius': '0.5rem',
-      },
-      focusOnShow: false,
+      ...ONBOARDING_FORM_DIALOG_CONFIG,
+      header: this.translate.instant('onboarding.title'),
     });
   }
 
