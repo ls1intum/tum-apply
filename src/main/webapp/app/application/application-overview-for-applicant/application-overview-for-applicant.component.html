@@ -19,16 +19,16 @@
   <ng-template #actionTemplate let-row>
     <div class="flex space-x-2">
       <jhi-button
-        [ariaLabel]="'entity.applicationOverview.actions.view' | translate"
+        [ariaLabel]="'button.view' | translate"
         [icon]="'eye'"
         variant="text"
         severity="primary"
-        [tooltip]="'entity.applicationOverview.actions.view' | translate"
+        [tooltip]="'button.view' | translate"
         (click)="onViewApplication(row.applicationId)"
       />
       @if (['SENT', 'IN_REVIEW'].includes(row.applicationState)) {
         <jhi-confirm-dialog
-          [label]="'entity.applicationOverview.actions.withdraw' | translate"
+          [label]="'button.withdraw' | translate"
           [iconOnly]="true"
           [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
           [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
@@ -36,24 +36,24 @@
           confirmIcon="withdraw"
           (confirmed)="onWithdrawApplication(row.applicationId)"
           severity="danger"
-          [tooltip]="'entity.applicationOverview.actions.withdraw' | translate"
+          [tooltip]="'button.withdraw' | translate"
         />
       }
 
       @if (['SAVED'].includes(row.applicationState)) {
         <jhi-button
-          [ariaLabel]="'entity.applicationOverview.actions.update' | translate"
+          [ariaLabel]="'button.update' | translate"
           [icon]="'pencil'"
           severity="primary"
           variant="text"
-          [tooltip]="'entity.applicationOverview.actions.update' | translate"
+          [tooltip]="'button.update' | translate"
           (click)="onUpdateApplication(row.applicationId)"
         />
       }
 
       @if (['SAVED'].includes(row.applicationState)) {
         <jhi-confirm-dialog
-          [label]="'entity.applicationOverview.actions.delete' | translate"
+          [label]="'button.delete' | translate"
           [iconOnly]="true"
           [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
           [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
@@ -61,7 +61,7 @@
           confirmIcon="trash"
           (confirmed)="onDeleteApplication(row.applicationId)"
           severity="danger"
-          [tooltip]="'entity.applicationOverview.actions.delete' | translate"
+          [tooltip]="'button.delete' | translate"
         />
       }
     </div>

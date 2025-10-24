@@ -43,7 +43,7 @@
           <jhi-button
             icon="eye"
             variant="text"
-            [tooltip]="'jobActionButton.view' | translate"
+            [tooltip]="'button.view' | translate"
             severity="primary"
             data-testid="view"
             (click)="onViewJob(job.jobId)"
@@ -52,7 +52,7 @@
           <jhi-button
             icon="pencil"
             variant="text"
-            [tooltip]="'jobActionButton.edit' | translate"
+            [tooltip]="'button.edit' | translate"
             severity="primary"
             variant="text"
             (click)="onEditJob(job.jobId)"
@@ -62,9 +62,9 @@
           />
           @if (job.state === 'DRAFT') {
             <jhi-confirm-dialog
-              [label]="'jobActionButton.delete' | translate"
+              [label]="'button.delete' | translate"
               [iconOnly]="true"
-              [tooltip]="'jobActionButton.delete' | translate"
+              [tooltip]="'button.delete' | translate"
               severity="danger"
               [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
               [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
@@ -75,9 +75,9 @@
           }
           @if (job.state === 'PUBLISHED') {
             <jhi-confirm-dialog
-              [label]="'jobActionButton.close' | translate"
+              [label]="'button.close' | translate"
               [iconOnly]="true"
-              [tooltip]="'jobActionButton.close' | translate"
+              [tooltip]="'button.close' | translate"
               severity="danger"
               [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
               [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
