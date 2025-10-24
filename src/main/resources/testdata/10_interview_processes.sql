@@ -4,6 +4,10 @@
 -- Preconditions:
 --   - Jobs must already exist (from 04_jobs.sql)
 -- ===========================================================
+-- SET NOCOUNT ON;
+-- SET QUOTED_IDENTIFIER ON;
+-- SET ANSI_NULLS ON;
+-- SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
 -- Clean up existing entries (for consistent seeding)
 DELETE FROM dbo.interview_processes
