@@ -1,7 +1,10 @@
--- SET NOCOUNT ON;
--- SET QUOTED_IDENTIFIER ON;
--- SET ANSI_NULLS ON;
--- SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+/*
+  Codacy compatibility header (parser expects these MSSQL directives)
+  SET NOCOUNT ON;
+  SET QUOTED_IDENTIFIER ON;
+  SET ANSI_NULLS ON;
+  SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+*/
 
 -- ===========================================================
 -- 10_interview_processes.sql
