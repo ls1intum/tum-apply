@@ -14,13 +14,11 @@ import java.util.Set;
  */
 public final class EmailTemplateTestData {
 
-    private EmailTemplateTestData() {}
-
-    // --- Defaults --------------------------------------------------------------------------------
-
     private static final String DEFAULT_TEMPLATE_NAME = "Default Template";
     private static final String DEFAULT_SUBJECT = "Test Subject";
     private static final String DEFAULT_BODY = "<p>This is a test email body.</p>";
+
+    private EmailTemplateTestData() {}
 
     // --- Unsaved variants ------------------------------------------------------------------------
 

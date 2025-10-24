@@ -16,7 +16,6 @@ import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -318,16 +317,10 @@ class EmailTemplateServiceTest {
         class ReadTemplateContentMethod {
 
             @Test
-            void shouldThrowTemplateProcessingExceptionWhenFileMissing() throws Exception {
-                Method method = EmailTemplateService.class.getDeclaredMethod("readTemplateContent", String.class);
-                method.setAccessible(true);
-
-                String nonExistentPath = "not-existing-file.html";
-
-                assertThatThrownBy(() -> method.invoke(emailTemplateService, nonExistentPath))
-                    .hasCauseInstanceOf(TemplateProcessingException.class)
-                    .cause()
-                    .hasMessageContaining("Failed to read template file: " + nonExistentPath);
+            void readTemplateContentShouldThrowWhenFileMissing() {
+                assertThatThrownBy(() -> emailTemplateService.readTemplateContent("does_not_exist.html"))
+                    .isInstanceOf(TemplateProcessingException.class)
+                    .hasMessageContaining("Failed to read template file");
             }
         }
     }

@@ -21,9 +21,8 @@ import de.tum.cit.aet.notification.dto.EmailTemplateTranslationDTO;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -412,13 +411,12 @@ public class EmailTemplateService {
      * @return the file content as a string
      * @throws TemplateProcessingException if the template file cannot be read
      */
-    private String readTemplateContent(String templatePath) {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream("templates/" + templatePath)) {
-            if (in == null) {
-                throw new TemplateProcessingException("Failed to read template file: " + templatePath);
-            }
-            return new String(in.readAllBytes());
-        } catch (IOException e) {
+    String readTemplateContent(String templatePath) {
+        try {
+            return new String(
+                Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("templates/" + templatePath)).readAllBytes()
+            );
+        } catch (Exception e) {
             throw new TemplateProcessingException("Failed to read template file: " + templatePath, e);
         }
     }
