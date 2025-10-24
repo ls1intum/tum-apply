@@ -10,6 +10,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSortOptions';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { provideToastServiceMock } from '../../../util/toast-service.mock';
+import { provideRouterMock } from '../../../util/router.mock';
 
 type GetOverviewsArgs = Parameters<ApplicationEvaluationResourceApiService['getApplicationsOverviews']>;
 
@@ -28,12 +29,12 @@ function makeOverview(id: string, partial?: Partial<ApplicationEvaluationOvervie
 describe('ApplicationOverviewComponent', () => {
   let fixture: ComponentFixture<ApplicationOverviewComponent>;
   let component: ApplicationOverviewComponent;
+  let router: Router;
 
   let api: {
     getAllJobNames: ReturnType<typeof vi.fn>;
     getApplicationsOverviews: ReturnType<typeof vi.fn>;
   };
-  let router: Pick<Router, 'navigate'>;
 
   let q$: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
 
@@ -47,17 +48,13 @@ describe('ApplicationOverviewComponent', () => {
       getApplicationsOverviews: vi.fn().mockReturnValue(of({ applications: [makeOverview('1')], totalRecords: 1 })),
     };
 
-    router = {
-      navigate: vi.fn().mockResolvedValue(true),
-    };
-
     q$ = new BehaviorSubject(convertToParamMap({}));
 
     await TestBed.configureTestingModule({
       imports: [ApplicationOverviewComponent],
       providers: [
+        provideRouterMock(),
         { provide: ApplicationEvaluationResourceApiService, useValue: api },
-        { provide: Router, useValue: router },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -73,6 +70,8 @@ describe('ApplicationOverviewComponent', () => {
 
     fixture = TestBed.createComponent(ApplicationOverviewComponent);
     component = fixture.componentInstance;
+
+    router = TestBed.inject(Router);
 
     fixture.detectChanges();
     await fixture.whenStable();
