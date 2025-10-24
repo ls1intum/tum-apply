@@ -57,7 +57,7 @@ describe('RatingSection', () => {
     const response: RatingOverviewDTO = {
       currentUserRating: 4,
       otherRatings: [1, 2, 3],
-    } as any;
+    } as RatingOverviewDTO;
     mockRatingApi.getRatings.mockReturnValueOnce(of(response));
 
     fixture.componentRef.setInput('applicationId', 'app-1');
@@ -98,7 +98,7 @@ describe('RatingSection', () => {
     fixture.componentRef.setInput('applicationId', 'app-3');
     fixture.detectChanges();
 
-    (component as any)['isInitializing'].set(true);
+    component['isInitializing'].set(true);
     component.myRating.set(5);
     await Promise.resolve();
     expect(mockRatingApi.updateRating).not.toHaveBeenCalled();
@@ -108,12 +108,12 @@ describe('RatingSection', () => {
     fixture.componentRef.setInput('applicationId', 'app-4');
     fixture.detectChanges();
 
-    const refreshed: RatingOverviewDTO = { currentUserRating: 5, otherRatings: [3, 4] } as any;
+    const refreshed: RatingOverviewDTO = { currentUserRating: 5, otherRatings: [3, 4] } as RatingOverviewDTO;
     mockRatingApi.updateRating.mockReturnValueOnce(of(void 0));
     mockRatingApi.getRatings.mockReturnValueOnce(of(refreshed));
 
-    (component as any)['isInitializing'].set(false);
-    (component as any)['serverCurrent'].set(1);
+    component['isInitializing'].set(false);
+    component['serverCurrent'].set(1);
 
     component.myRating.set(5);
     fixture.detectChanges();
@@ -128,13 +128,13 @@ describe('RatingSection', () => {
   it('should show toast and revert myRating on upsert error', async () => {
     fixture.componentRef.setInput('applicationId', 'app-5');
 
-    mockRatingApi.getRatings.mockReturnValue(of({ currentUserRating: 3, otherRatings: [] } as any));
+    mockRatingApi.getRatings.mockReturnValue(of({ currentUserRating: 3, otherRatings: [] } as RatingOverviewDTO));
     mockRatingApi.updateRating.mockReturnValueOnce(throwError(() => new Error('fail')));
 
     fixture.detectChanges();
 
-    (component as any)['isInitializing'].set(false);
-    (component as any)['serverCurrent'].set(3);
+    component['isInitializing'].set(false);
+    component['serverCurrent'].set(3);
 
     component.myRating.set(4);
     fixture.detectChanges();
@@ -152,7 +152,7 @@ describe('RatingSection', () => {
     const response = {
       currentUserRating: undefined,
       otherRatings: [1, 2],
-    } as any;
+    } as RatingOverviewDTO;
 
     mockRatingApi.getRatings.mockReturnValueOnce(of(response));
 
@@ -170,8 +170,8 @@ describe('RatingSection', () => {
     fixture.componentRef.setInput('applicationId', 'app-7');
     fixture.detectChanges();
 
-    (component as any)['isInitializing'].set(false);
-    (component as any)['serverCurrent'].set(3);
+    component['isInitializing'].set(false);
+    component['serverCurrent'].set(3);
 
     component.myRating.set(3);
     fixture.detectChanges();
@@ -182,8 +182,8 @@ describe('RatingSection', () => {
   });
 
   it('should reload ratings when applicationId changes', async () => {
-    const response1: RatingOverviewDTO = { currentUserRating: 3, otherRatings: [1, 2] } as any;
-    const response2: RatingOverviewDTO = { currentUserRating: 5, otherRatings: [4] } as any;
+    const response1: RatingOverviewDTO = { currentUserRating: 3, otherRatings: [1, 2] } as RatingOverviewDTO;
+    const response2: RatingOverviewDTO = { currentUserRating: 5, otherRatings: [4] } as RatingOverviewDTO;
 
     mockRatingApi.getRatings.mockReturnValueOnce(of(response1));
     fixture.componentRef.setInput('applicationId', 'app-8');
@@ -209,7 +209,7 @@ describe('RatingSection', () => {
   });
 
   it('should return [] for otherRatings when ratings has no otherRatings property', () => {
-    component.ratings.set({ currentUserRating: 2 } as any);
+    component.ratings.set({ currentUserRating: 2 } as RatingOverviewDTO);
     expect(component.otherRatings()).toEqual([]);
   });
 });

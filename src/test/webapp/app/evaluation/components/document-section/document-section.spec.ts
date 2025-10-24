@@ -8,6 +8,7 @@ import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { DocumentSection } from 'app/evaluation/components/document-section/document-section';
+import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 
 describe('DocumentSection', () => {
   let fixture: ComponentFixture<DocumentSection>;
@@ -65,10 +66,10 @@ describe('DocumentSection', () => {
 
     it('should populate documents and extraDocuments correctly', () => {
       const dto: ApplicationDocumentIdsDTO = {
-        masterDocumentDictionaryIds: [{ id: 'm1' } as any, { id: 'm2' } as any],
-        cvDocumentDictionaryId: { id: 'cv' } as any,
-        bachelorDocumentDictionaryIds: [{ id: 'b1' } as any],
-        referenceDocumentDictionaryIds: [{ id: 'r1' } as any, { id: 'r2' } as any],
+        masterDocumentDictionaryIds: [{ id: 'm1' } as DocumentInformationHolderDTO, { id: 'm2' } as DocumentInformationHolderDTO],
+        cvDocumentDictionaryId: { id: 'cv' } as DocumentInformationHolderDTO,
+        bachelorDocumentDictionaryIds: [{ id: 'b1' } as DocumentInformationHolderDTO],
+        referenceDocumentDictionaryIds: [{ id: 'r1' } as DocumentInformationHolderDTO, { id: 'r2' } as DocumentInformationHolderDTO],
       };
       fixture.componentRef.setInput('idsDTO', dto);
       fixture.detectChanges();
@@ -81,14 +82,14 @@ describe('DocumentSection', () => {
 
     it('should compute hasDocuments correctly', () => {
       expect(component.hasDocuments()).toBe(false);
-      component.documents.set([{ label: 'lbl', document: { id: 'd1' } as any }]);
+      component.documents.set([{ label: 'lbl', document: { id: 'd1' } as DocumentInformationHolderDTO }]);
       expect(component.hasDocuments()).toBe(true);
     });
 
     it('should compute allDocumentsTooltip using translate.instant', () => {
       component.extraDocuments.set([
-        { label: 'lbl1', document: { id: '1' } as any },
-        { label: 'lbl2', document: { id: '2' } as any },
+        { label: 'lbl1', document: { id: '1' } as DocumentInformationHolderDTO },
+        { label: 'lbl2', document: { id: '2' } as DocumentInformationHolderDTO },
       ]);
       const tooltip = component.allDocumentsTooltip();
       expect(tooltip).toBe('t:lbl1, t:lbl2');

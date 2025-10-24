@@ -248,4 +248,28 @@ describe('CommentSection', () => {
     await component.refresh();
     expect(spy).toHaveBeenCalled();
   });
+
+  it('should set currentUser to empty string when user is null', () => {
+    TestBed.resetTestingModule();
+
+    const accountServiceWithNoUser = {
+      user: () => null,
+    };
+
+    TestBed.configureTestingModule({
+      imports: [CommentSection],
+      providers: [
+        { provide: InternalCommentResourceApiService, useValue: mockCommentApi },
+        { provide: ToastService, useValue: mockToast },
+        { provide: AccountService, useValue: accountServiceWithNoUser },
+      ],
+    })
+      .overrideComponent(CommentSection, { set: { template: '' } })
+      .compileComponents();
+
+    const fixture2 = TestBed.createComponent(CommentSection);
+    const component2 = fixture2.componentInstance;
+
+    expect(component2['currentUser']).toBe('');
+  });
 });
