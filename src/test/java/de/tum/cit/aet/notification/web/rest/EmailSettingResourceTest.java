@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -67,7 +66,6 @@ class EmailSettingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getEmailSettingsCreatesDefaultsIfMissing() {
         assertThat(emailSettingRepository.findAllByUser(professor)).isEmpty();
 
@@ -78,7 +76,6 @@ class EmailSettingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateEmailSettingsUpdatesExistingSettings() {
         asProfessor(professor).getAndRead(BASE_URL, null, new TypeReference<Set<EmailSettingDTO>>() {}, 200);
 
@@ -94,7 +91,6 @@ class EmailSettingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateEmailSettingsWithInvalidTypeThrowsIllegalState() {
         asProfessor(professor).getAndRead(BASE_URL, null, new TypeReference<Set<EmailSettingDTO>>() {}, 200);
 
