@@ -1,0 +1,14 @@
+{
+    "button": {
+        "close": "Close",
+        "confirm": "Confirm",
+        "delete": "Delete",
+        "edit": "Edit",
+        "save": "Save",
+        "send": "Send",
+        "submit": "Submit",
+        "update": "Update",
+        "view": "View",
+        "withdraw": "Withdraw"
+    }
+}

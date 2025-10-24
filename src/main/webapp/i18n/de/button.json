@@ -1,0 +1,14 @@
+{
+    "button": {
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen",
+        "delete": "Löschen",
+        "edit": "Bearbeiten",
+        "save": "Speichern",
+        "send": "Senden",
+        "submit": "Absenden",
+        "update": "Aktualisieren",
+        "view": "Ansehen",
+        "withdraw": "Zurückziehen"
+    }
+}
