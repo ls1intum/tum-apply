@@ -287,6 +287,22 @@ const routes: Routes = [
     loadComponent: () => import('./shared/pages/about-us-page/about-us-page.component').then(m => m.AboutUsPageComponent),
     title: 'global.routes.about-us',
   },
+  {
+    path: 'interviews',
+    children: [
+      {
+        path: 'overview',
+        loadComponent: () =>
+          import('./interview/interview-processes-overview/interview-processes-overview.component').then(
+            m => m.InterviewProcessesOverviewComponent
+          ),
+        title: 'Interview Processes Overview',
+        data: {
+          authorities: ['PROFESSOR', 'ADMIN'],
+        },
+      },
+    ],
+  },
 
   // ======================================================================================
   // Error Handling
