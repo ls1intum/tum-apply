@@ -24,28 +24,29 @@ describe('Comment', () => {
     fixture.componentRef.setInput('isCreate', true);
     fixture.detectChanges();
 
-    component.onInput({ target: { value: 'hi' } } as any);
-    expect((component as any).canSave()).toBe(true);
+    const event = { target: { value: 'hi' } } as unknown as InputEvent;
+    component.onInput(event);
+    expect(component['canSave']()).toBe(true);
   });
 
   it('canSave false when not edit and not create', () => {
     fixture.componentRef.setInput('isCreate', false);
-    (component as any).draft.set('something');
+    component['draft'].set('something');
     component.text.set('something');
     fixture.detectChanges();
 
-    expect((component as any).canSave()).toBe(false);
+    expect(component['canSave']()).toBe(false);
   });
 
   it('canSave true in edit mode when draft differs from text', () => {
     fixture.componentRef.setInput('commentId', '1');
     fixture.componentRef.setInput('editingId', '1');
     component.text.set('old');
-    (component as any).draft.set('new');
+    component['draft'].set('new');
     fixture.detectChanges();
 
-    expect((component as any).isEdit()).toBe(true);
-    expect((component as any).canSave()).toBe(true);
+    expect(component['isEdit']()).toBe(true);
+    expect(component['canSave']()).toBe(true);
   });
 
   // ---------------- UPDATE DRAFT EFFECT ----------------
@@ -54,7 +55,7 @@ describe('Comment', () => {
     component.text.set('draftText');
     fixture.detectChanges();
 
-    expect((component as any).draft()).toBe('draftText');
+    expect(component['draft']()).toBe('draftText');
   });
 
   it('updates draft when not editing', () => {
@@ -64,8 +65,8 @@ describe('Comment', () => {
     component.text.set('abc');
     fixture.detectChanges();
 
-    expect((component as any).isEdit()).toBe(false);
-    expect((component as any).draft()).toBe('abc');
+    expect(component['isEdit']()).toBe(false);
+    expect(component['draft']()).toBe('abc');
   });
 
   // ---------------- ONINPUT ----------------
@@ -73,10 +74,10 @@ describe('Comment', () => {
     fixture.componentRef.setInput('isCreate', true);
     fixture.detectChanges();
 
-    const event = { target: { value: 'hello' } } as any;
+    const event = { target: { value: 'hello' } } as unknown as InputEvent;
     component.onInput(event);
 
-    expect((component as any).draft()).toBe('hello');
+    expect(component['draft']()).toBe('hello');
     expect(component.text()).toBe('hello');
   });
 
@@ -84,10 +85,10 @@ describe('Comment', () => {
     fixture.componentRef.setInput('isCreate', false);
     fixture.detectChanges();
 
-    const event = { target: { value: 'world' } } as any;
+    const event = { target: { value: 'world' } } as unknown as InputEvent;
     component.onInput(event);
 
-    expect((component as any).draft()).toBe('world');
+    expect(component['draft']()).toBe('world');
     expect(component.text()).toBe('');
   });
 
@@ -99,7 +100,7 @@ describe('Comment', () => {
 
     component.startEdit();
 
-    expect((component as any).draft()).toBe('copyMe');
+    expect(component['draft']()).toBe('copyMe');
     expect(spy).toHaveBeenCalled();
   });
 
@@ -118,10 +119,28 @@ describe('Comment', () => {
     component.saved.subscribe(savedSpy);
     component.exitEdit.subscribe(exitSpy);
 
-    (component as any).draft.set('final');
+    component['draft'].set('final');
     component.onSave();
 
     expect(savedSpy).toHaveBeenCalledWith('final');
     expect(exitSpy).toHaveBeenCalled();
+  });
+
+  it('should emit deleted when delete button is clicked', () => {
+    const spy = vi.fn();
+    component.deleted.subscribe(spy);
+
+    fixture.componentRef.setInput('canEdit', true);
+    fixture.componentRef.setInput('isCreate', false);
+    fixture.detectChanges();
+
+    const buttons = fixture.nativeElement.querySelectorAll('jhi-button');
+    const deleteButton = Array.from(buttons).find((btn: any) => btn.getAttribute('icon') === 'trash-alt');
+
+    expect(deleteButton).toBeTruthy();
+    (deleteButton as HTMLElement).click();
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalled();
   });
 });
