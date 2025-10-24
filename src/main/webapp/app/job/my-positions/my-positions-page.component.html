@@ -41,16 +41,20 @@
       <ng-template #actionTemplate let-job>
         <div class="flex space-x-2">
           <jhi-button
-            label="jobActionButton.view"
+            icon="eye"
+            variant="text"
+            [tooltip]="'jobActionButton.view' | translate"
             severity="primary"
             data-testid="view"
             (click)="onViewJob(job.jobId)"
             [shouldTranslate]="true"
           />
           <jhi-button
-            label="jobActionButton.edit"
+            icon="pencil"
+            variant="text"
+            [tooltip]="'jobActionButton.edit' | translate"
             severity="primary"
-            variant="outlined"
+            variant="text"
             (click)="onEditJob(job.jobId)"
             data-testid="edit"
             [disabled]="job.state !== 'DRAFT'"
@@ -59,6 +63,8 @@
           @if (job.state === 'DRAFT') {
             <jhi-confirm-dialog
               [label]="'jobActionButton.delete' | translate"
+              [iconOnly]="true"
+              [tooltip]="'jobActionButton.delete' | translate"
               severity="danger"
               [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
               [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
@@ -70,8 +76,9 @@
           @if (job.state === 'PUBLISHED') {
             <jhi-confirm-dialog
               [label]="'jobActionButton.close' | translate"
+              [iconOnly]="true"
+              [tooltip]="'jobActionButton.close' | translate"
               severity="danger"
-              variant="outlined"
               [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
               [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
               (confirmed)="onCloseJob(job.jobId)"
