@@ -66,9 +66,8 @@ public class RatingService {
                 Rating newRating = new Rating();
                 newRating.setFrom(user);
                 newRating.setRating(rating);
-                Application application = applicationEvaluationRepository
-                    .findById(applicationId)
-                    .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+                @SuppressWarnings("OptionalGetWithoutIsPresent") // existence is already checked in checkReviewRights()
+                Application application = applicationEvaluationRepository.findById(applicationId).get();
                 newRating.setApplication(application);
                 ratingRepository.save(newRating);
             }
