@@ -158,7 +158,7 @@ export class AuthFacadeService {
    */
   async logout(): Promise<void> {
     if (this.authMethod === 'none') {
-      this.navigateAfterLogin();
+      void this.router.navigate(['/']);
       return;
     }
     this.documentCache.clear();
@@ -166,7 +166,7 @@ export class AuthFacadeService {
       if (this.authMethod === 'server') {
         this.authMethod = 'none';
         await this.serverAuthenticationService.logout();
-        this.navigateAfterLogin();
+        void this.router.navigate(['/']);
       } else if (this.authMethod === 'keycloak') {
         this.authMethod = 'none';
         await this.keycloakAuthenticationService.logout(window.location.href);
@@ -205,12 +205,5 @@ export class AuthFacadeService {
     } finally {
       this.authOrchestrator.isBusy.set(false);
     }
-  }
-
-  /**
-   * Navigate to the stored redirect URL or home after logout.
-   */
-  private navigateAfterLogin(): void {
-    void this.router.navigate(['/']);
   }
 }
