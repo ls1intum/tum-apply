@@ -92,6 +92,7 @@ public class PDFExportService {
      * Generates filename for application PDF
      *
      * @param applicationId the application ID
+     * @param applicationLabel label for application used as ending of the filename
      * @return sanitized filename for the PDF
      */
     public String generateApplicationFilename(UUID applicationId, String applicationLabel) {
