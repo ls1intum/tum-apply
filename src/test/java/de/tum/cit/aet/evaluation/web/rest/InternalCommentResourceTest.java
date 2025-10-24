@@ -100,7 +100,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void listCommentsReturnsOrderedList() {
         internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "first"));
         internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "second"));
@@ -113,7 +112,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void createCommentReturns201() {
         InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("hello world");
 
@@ -125,7 +123,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void nonExistentApplicationReturns404() {
         UUID fakeAppId = UUID.randomUUID();
 
@@ -139,7 +136,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateCommentOwnCommentReturns200() {
         InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("updated");
 
@@ -151,7 +147,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void deleteCommentOwnCommentReturns204() {
         api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).deleteAndRead(commentUrl(), null, Void.class, 204);
 
@@ -159,7 +154,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void nonexistentCommentReturns404() {
         UUID fakeId = UUID.randomUUID();
 
@@ -184,7 +178,6 @@ class InternalCommentResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateCommentAsDifferentProfessorReturns403() {
         api
             .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
