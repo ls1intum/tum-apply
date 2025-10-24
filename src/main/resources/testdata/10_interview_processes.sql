@@ -1,13 +1,14 @@
+-- SET NOCOUNT ON;
+-- SET QUOTED_IDENTIFIER ON;
+-- SET ANSI_NULLS ON;
+-- SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
 -- ===========================================================
 -- 10_interview_processes.sql
 -- Inserts example interview processes for test jobs
 -- Preconditions:
 --   - Jobs must already exist (from 04_jobs.sql)
 -- ===========================================================
--- SET NOCOUNT ON;
--- SET QUOTED_IDENTIFIER ON;
--- SET ANSI_NULLS ON;
--- SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
 -- Clean up existing entries (for consistent seeding)
 DELETE FROM dbo.interview_processes
