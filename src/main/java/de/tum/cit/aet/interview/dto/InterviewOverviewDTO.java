@@ -8,10 +8,10 @@ import java.util.UUID;
 public record InterviewOverviewDTO(
     @NotNull UUID jobId,
     @NotNull String jobTitle,
-    @NotNull Integer completedCount,
-    @NotNull Integer scheduledCount,
-    @NotNull Integer invitedCount,
-    @NotNull Integer uncontactedCount,
-    @NotNull Integer totalInterviews
+    @NotNull Long completedCount,
+    @NotNull Long scheduledCount,
+    @NotNull Long invitedCount,
+    @NotNull Long uncontactedCount,
+    @NotNull Long totalInterviews
 )
 {}
