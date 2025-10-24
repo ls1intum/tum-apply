@@ -1,4 +1,4 @@
-<p-card class="job-card">
+<p-card class="job-card cursor-pointer transition-all duration-200 ease-in-out hover:scale-102 hover:!bg-blue-50" (click)="onViewDetails()">
   <ng-template #header>
     <div [style.--header-color]="headerColor()" class="card-header">
       <div class="card-icon">
@@ -66,49 +66,5 @@
         [ngTemplateOutlet]="infoItem"
       />
     </ul>
-
-    <div class="card-actions">
-      <jhi-button
-        (click)="onViewDetails()"
-        [shouldTranslate]="true"
-        class="view-button"
-        label="jobActionButton.view"
-        severity="primary"
-        variant="outlined"
-      />
-      @switch (applicationState()) {
-        @case ('NOT_YET_APPLIED') {
-          <jhi-button
-            (click)="onApply()"
-            [shouldTranslate]="true"
-            class="apply-button"
-            label="jobActionButton.apply"
-            severity="primary"
-            icon="plus"
-          />
-        }
-        @case (ApplicationStateEnumLocal.Saved) {
-          <jhi-button
-            (click)="onEdit()"
-            [shouldTranslate]="true"
-            class="apply-button"
-            label="jobActionButton.edit"
-            severity="primary"
-            variant="outlined"
-            icon="file-import"
-          />
-        }
-        @default {
-          <jhi-button
-            (click)="onView()"
-            [shouldTranslate]="true"
-            class="apply-button"
-            label="jobActionButton.viewApplication"
-            severity="secondary"
-            variant="outlined"
-          />
-        }
-      }
-    </div>
   </div>
 </p-card>

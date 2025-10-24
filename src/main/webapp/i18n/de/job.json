@@ -177,38 +177,38 @@
   },
   "jobDetailPage": {
     "header": {
-      "supervisor": "Betreuer:in: ",
-      "researchGroup": "Forschungsgruppe: ",
-      "location": "Standort: "
+      "supervisor": "Betreuer:in:",
+      "researchGroup": "Forschungsgruppe:",
+      "location": "Standort:"
     },
-    "positionOverview": {
+    "sections": {
+      "jobDescription": "Stellenbeschreibung",
+      "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
+      "eligibilityCriteria": "Zulassungsvoraussetzungen",
+      "dataProtection": "Hinweis zum Datenschutz"
+    },
+    "cards": {
       "positionOverview": "Stellenübersicht",
-      "fieldOfStudies": "Studienrichtung:",
-      "researchArea": "Forschungsbereich:",
-      "workload": "Arbeitsaufwand:",
-      "hoursPerWeek": "{{workload}} Stunden/Woche",
-      "contractDuration": "Vertragslaufzeit:",
-      "years": "{{years}} Jahre",
-      "fundingType": "Finanzierungsart:",
-      "startDate": "Startdatum:",
-      "endDate": "Bewerbungsfrist:",
-      "created": "Erstellt am:",
-      "lastModified": "Zuletzt geändert:"
-    },
-    "researchGroupDetails": {
       "researchGroup": "Forschungsgruppe"
     },
-    "positionDetails": {
-      "positionDetails": "Stellendetails",
-      "description": "Stellenbeschreibung",
-      "tasks": "Aufgaben & Verantwortlichkeiten",
-      "requirements": "Zulassungsvoraussetzungen"
+    "labels": {
+      "fieldOfStudies": "Studienrichtung",
+      "researchArea": "Forschungsbereich",
+      "workload": "Arbeitsaufwand",
+      "contractDuration": "Vertragslaufzeit",
+      "fundingType": "Finanzierungsart",
+      "startDate": "Startdatum",
+      "applicationEndDate": "Bewerbungsfrist"
+    },
+    "units": {
+      "hoursPerWeek": "Stunden/Woche",
+      "years": "Jahre"
     },
     "dataPrivacy": {
-      "dataProtectionInformation": "Hinweis zum Datenschutz:",
       "dataProtectionText": "Im Rahmen Ihrer Bewerbung um eine Stelle an der Technischen Universität München (TUM) übermitteln Sie personenbezogene Daten. Beachten Sie bitte hierzu unsere <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise gemäß Art. 13 Datenschutz-Grundverordnung (DSGVO) zur Erhebung und Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung. </a> Durch die Übermittlung Ihrer Bewerbung bestätigen Sie, dass Sie die Datenschutzhinweise der TUM zur Kenntnis genommen haben."
     },
-    "noData": "Nicht Angegeben"
+    "editResearchGroup": "Forschungsgruppen-Informationen bearbeiten",
+    "noData": "Keine Daten verfügbar"
   },
   "jobActionButton": {
     "apply": "Bewerben",
