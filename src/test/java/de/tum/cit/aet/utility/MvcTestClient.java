@@ -245,7 +245,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level GET that asserts 400 Bad Request and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult getInvalid(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -255,7 +256,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level GET that asserts 401 Unauthorized and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 401 Unauthorized and returns the MvcResult.
      */
     private MvcResult getUnauthorized(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -265,7 +267,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level GET that asserts 403 Forbidden and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 403 Forbidden and returns the MvcResult.
      */
     private MvcResult getForbidden(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -275,7 +278,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level GET that asserts 404 Not Found and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 404 Not Found and returns the MvcResult.
      */
     private MvcResult getNotFound(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -285,7 +289,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level GET that asserts 500 Internal Server Error and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 500 Internal Server Error and returns the MvcResult.
      */
     private MvcResult getInternalServerError(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -394,7 +399,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level PUT that asserts 400 Bad Request and returns the MvcResult.
+    /**
+     * Low-level PUT that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult putInvalid(String url, Object body, MediaType... accepts) {
         try {
@@ -448,7 +454,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level DELETE that asserts 204 No Content and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 204 No Content and returns the MvcResult.
      */
     private MvcResult deleteNoContent(String url, Object body, MediaType... accepts) {
         try {
@@ -458,7 +465,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level DELETE that asserts 400 Bad Request and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult deleteInvalid(String url, Object body, MediaType... accepts) {
         try {
@@ -468,7 +476,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level DELETE that asserts 401 Unauthorized and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 401 Unauthorized and returns the MvcResult.
      */
     private MvcResult deleteUnauthorized(String url, Object body, MediaType... accepts) {
         try {
@@ -478,7 +487,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
+    /**
+     *  Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
      */
     private MvcResult deleteForbidden(String url, Object body, MediaType... accepts) {
         try {
@@ -488,7 +498,8 @@ public class MvcTestClient {
         }
     }
 
-    /*     * Low-level DELETE that asserts 404 Not Found and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 404 Not Found and returns the MvcResult.
      */
     private MvcResult deleteNotFound(String url, Object body, MediaType... accepts) {
         try {

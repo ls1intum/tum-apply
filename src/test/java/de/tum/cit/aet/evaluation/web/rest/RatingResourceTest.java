@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.evaluation.domain.Rating;
 import de.tum.cit.aet.evaluation.dto.RatingOverviewDTO;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.job.constants.JobState;
@@ -91,7 +90,6 @@ class RatingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getRatingsReturnsEmptyOverview() {
         String url = "/api/applications/" + application.getApplicationId() + "/ratings";
 
@@ -104,7 +102,6 @@ class RatingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getRatingsNonexistentApplicationReturns404() {
         UUID fakeAppId = UUID.randomUUID();
         String url = "/api/applications/" + fakeAppId + "/ratings";
@@ -113,7 +110,6 @@ class RatingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateRatingCreateAndUpdateAndDelete() {
         String url = "/api/applications/" + application.getApplicationId() + "/ratings";
 
@@ -137,7 +133,6 @@ class RatingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateRatingNonexistentApplicationReturns404() {
         UUID fakeAppId = UUID.randomUUID();
         String url = "/api/applications/" + fakeAppId + "/ratings";
@@ -159,7 +154,7 @@ class RatingResourceTest extends AbstractResourceTest {
 
     @Test
     @WithMockUser
-    void allEndpoints_withoutProfessorRole_return403() {
+    void allEndpointsWithoutProfessorRoleReturn403() {
         String url = "/api/applications/" + application.getApplicationId() + "/ratings";
 
         api.getAndRead(url, Map.of(), Void.class, 403);
@@ -168,9 +163,8 @@ class RatingResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getRatingsIncludesOtherProfessorRatings() {
-        Rating otherRating = RatingTestData.saved(ratingRepository, application, otherProfessor, -1);
+        RatingTestData.saved(ratingRepository, application, otherProfessor, -1);
 
         String url = "/api/applications/" + application.getApplicationId() + "/ratings";
 

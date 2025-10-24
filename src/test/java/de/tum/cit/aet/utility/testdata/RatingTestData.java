@@ -12,9 +12,9 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
  */
 public final class RatingTestData {
 
-    private RatingTestData() {}
-
     private static final int DEFAULT_RATING = 0;
+
+    private RatingTestData() {}
 
     /** Unsaved Rating with defaults (application + professor, rating=0). */
     public static Rating newRating(Application application, User professor) {
