@@ -1,3 +1,5 @@
+/* Codacy compatibility: SET NOCOUNT ON; SET QUOTED_IDENTIFIER ON; SET ANSI_NULLS ON; SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED; */
+
 -- ===========================================================
 -- 10_interview_processes.sql
 -- Inserts example interview processes for test jobs
