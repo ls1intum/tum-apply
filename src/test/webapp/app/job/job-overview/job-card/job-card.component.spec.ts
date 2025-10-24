@@ -39,24 +39,15 @@ describe('JobCardComponent', () => {
     expect(routerNavigateSpy).toHaveBeenCalledWith(['/job/detail/abc-123']);
   });
 
-  it('should navigate correctly for apply/edit/view actions', () => {
+  it('should navigate to the job detail page on onViewJob()', () => {
     const jobCardFixture = TestBed.createComponent(JobCardComponent);
     const router = TestBed.inject(Router);
     const routerNavigateSpy = vi.spyOn(router, 'navigate');
 
     jobCardFixture.componentRef.setInput('jobId', 'abc-123');
-    jobCardFixture.componentRef.setInput('applicationId', 'app-42');
     jobCardFixture.detectChanges();
 
-    jobCardFixture.componentInstance.onApply();
-    expect(routerNavigateSpy).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'abc-123' } });
-
-    jobCardFixture.componentInstance.onEdit();
-    expect(routerNavigateSpy).toHaveBeenCalledWith(['/application/form'], {
-      queryParams: { job: 'abc-123', application: 'app-42' },
-    });
-
-    jobCardFixture.componentInstance.onView();
-    expect(routerNavigateSpy).toHaveBeenCalledWith(['/application/detail/app-42']);
+    jobCardFixture.componentInstance.onViewDetails();
+    expect(routerNavigateSpy).toHaveBeenCalledWith(['/job/detail/abc-123']);
   });
 });
