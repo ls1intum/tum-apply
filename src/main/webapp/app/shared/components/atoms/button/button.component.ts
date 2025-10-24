@@ -5,6 +5,7 @@ import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import SharedModule from 'app/shared/shared.module';
 import { ButtonModule } from 'primeng/button';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { TooltipModule } from 'primeng/tooltip';
 
 export type ButtonColor = 'primary' | 'secondary' | 'contrast' | 'success' | 'warn' | 'danger' | 'info';
 
@@ -30,7 +31,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
   standalone: true,
-  imports: [CommonModule, SharedModule, ButtonModule, FontAwesomeModule, OverlayBadgeModule, NgTemplateOutlet],
+  imports: [CommonModule, SharedModule, ButtonModule, FontAwesomeModule, OverlayBadgeModule, NgTemplateOutlet, TooltipModule],
   encapsulation: ViewEncapsulation.None,
 })
 export class ButtonComponent {
@@ -46,6 +47,8 @@ export class ButtonComponent {
   type = input<'button' | 'submit' | 'reset'>('button');
   loading = input<boolean>(false);
   size = input<ButtonSize>('lg');
+  tooltip = input<string | undefined>(undefined);
+  tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 
@@ -59,7 +62,7 @@ export class ButtonComponent {
   buttonClass(): string {
     let sizeClass = '';
     if (this.label() === undefined) {
-      sizeClass = `rounded-full ${this.size() === 'sm' ? 'w-8 h-8' : this.size() === 'md' ? 'w-10 h-10' : 'w-14 h-14'}`;
+      sizeClass = `rounded-xl ${this.size() === 'sm' ? 'w-8 h-8' : this.size() === 'md' ? 'w-10 h-10' : 'w-14 h-14'}`;
     }
     return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''}`;
   }

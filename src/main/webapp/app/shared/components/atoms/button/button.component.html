@@ -12,11 +12,12 @@
     [ariaLabel]="label() === undefined ? icon() : undefined"
     [disabled]="disabled()"
     [loading]="loading()"
-    [rounded]="label() === undefined"
     [severity]="severity()"
     [styleClass]="buttonClass()"
     [type]="type()"
     [variant]="variant()"
+    [pTooltip]="tooltip()"
+    [tooltipPosition]="tooltipPosition()"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
