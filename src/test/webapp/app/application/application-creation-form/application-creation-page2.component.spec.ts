@@ -82,176 +82,185 @@ describe('ApplicationPage2Component', () => {
       ],
     }).compileComponents();
   });
-  it('should create the component', () => {
-    const { componentInstance } = createApplicationPage2Fixture();
-    expect(componentInstance).toBeTruthy();
+
+  describe('Component Initialization', () => {
+    it('should create the component', () => {
+      const { componentInstance } = createApplicationPage2Fixture();
+      expect(componentInstance).toBeTruthy();
+    });
+
+    it('should populate the form with initial data', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: {
+          bachelorGradeUpperLimit: '4.0',
+          bachelorGradeLowerLimit: '1.0',
+          masterGradeUpperLimit: '4.0',
+          masterGradeLowerLimit: '1.0',
+        }
+      });
+      const formValues = componentInstance.page2Form.value;
+      expect(formValues.bachelorDegreeName).toBe('');
+      expect(formValues.bachelorDegreeUniversity).toBe('');
+      expect(formValues.masterDegreeName).toBe('');
+      expect(formValues.masterDegreeUniversity).toBe('');
+      expect(formValues.bachelorGrade).toBe('');
+      expect(formValues.masterGrade).toBe('');
+    });
+
+    it('should mark fields as touched and invalid when initialized with incomplete data', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: {
+          bachelorGradeUpperLimit: '4.0',
+          bachelorGradeLowerLimit: '1.0',
+          masterGradeUpperLimit: '4.0',
+          masterGradeLowerLimit: '1.0',
+        }
+      });
+
+      const bachelorGradeControl = componentInstance.page2Form.get('bachelorGrade');
+      expect(bachelorGradeControl?.touched).toBe(false); // Empty → not marked
+      expect(bachelorGradeControl?.valid).toBe(false); // Invalid because required
+
+      const upperLimitControl = componentInstance.page2Form.get('bachelorGradeUpperLimit');
+      expect(upperLimitControl?.touched).toBe(true); // Marked as touched
+    });
   });
 
-  it('should populate the form with initial data', () => {
-    const { componentInstance } = createApplicationPage2Fixture({
-      data: {
-        bachelorGradeUpperLimit: '4.0',
+  describe('Form Validation', () => {
+    it('should have an invalid form when required fields are missing', () => {
+      const { componentInstance } = createApplicationPage2Fixture();
+      expect(componentInstance.page2Form.valid).toBe(false);
+    });
+
+    it('should validate the form with correct data', () => {
+      const { componentInstance } = createApplicationPage2Fixture({
+        data: {
+          bachelorDegreeName: 'BSc Computer Science',
+          bachelorDegreeUniversity: 'Test University',
+          bachelorGrade: '3.5',
+          masterDegreeName: 'MSc Computer Science',
+          masterDegreeUniversity: 'Test University',
+          masterGrade: '3.8',
+          bachelorGradeLowerLimit: '4.0',
+          bachelorGradeUpperLimit: '1.0',
+          masterGradeLowerLimit: '4.0',
+          masterGradeUpperLimit: '1.0'
+        }
+      });
+
+      expect(componentInstance.page2Form.valid).toBe(true);
+    });
+
+    it('should have invalid form if bachelor grade is out of range', () => {
+      const { componentInstance } = createApplicationPage2Fixture();
+
+      componentInstance.page2Form.setValue({
+        bachelorDegreeName: 'BSc',
+        bachelorDegreeUniversity: 'Uni',
+        bachelorGrade: '4.5', // Invalid
         bachelorGradeLowerLimit: '1.0',
-        masterGradeUpperLimit: '4.0',
-        masterGradeLowerLimit: '1.0',
-      }
-    });
-    const formValues = componentInstance.page2Form.value;
-    expect(formValues.bachelorDegreeName).toBe('');
-    expect(formValues.bachelorDegreeUniversity).toBe('');
-    expect(formValues.masterDegreeName).toBe('');
-    expect(formValues.masterDegreeUniversity).toBe('');
-    expect(formValues.bachelorGrade).toBe('');
-    expect(formValues.masterGrade).toBe('');
-  });
-
-  it('should have an invalid form when required fields are missing', () => {
-    const { componentInstance } = createApplicationPage2Fixture();
-    expect(componentInstance.page2Form.valid).toBe(false);
-  });
-
-  it('should validate the form with correct data', () => {
-    const { componentInstance } = createApplicationPage2Fixture({
-      data: {
-        bachelorDegreeName: 'BSc Computer Science',
-        bachelorDegreeUniversity: 'Test University',
-        bachelorGrade: '3.5',
-        masterDegreeName: 'MSc Computer Science',
-        masterDegreeUniversity: 'Test University',
-        masterGrade: '3.8',
-        bachelorGradeLowerLimit: '4.0',
-        bachelorGradeUpperLimit: '1.0',
-        masterGradeLowerLimit: '4.0',
-        masterGradeUpperLimit: '1.0'
-      }
-    });
-
-    expect(componentInstance.page2Form.valid).toBe(true);
-  });
-
-  it('should mark fields as touched and invalid when initialized with incomplete data', () => {
-    const { componentInstance } = createApplicationPage2Fixture({
-      data: {
         bachelorGradeUpperLimit: '4.0',
-        bachelorGradeLowerLimit: '1.0',
-        masterGradeUpperLimit: '4.0',
+        masterDegreeName: 'MSc',
+        masterDegreeUniversity: 'Uni',
+        masterGrade: '3.5',
         masterGradeLowerLimit: '1.0',
-      }
+        masterGradeUpperLimit: '4.0',
+      });
+
+      expect(componentInstance.page2Form.valid).toBe(false);
     });
 
-    const bachelorGradeControl = componentInstance.page2Form.get('bachelorGrade');
-    expect(bachelorGradeControl?.touched).toBe(false); // Empty → not marked
-    expect(bachelorGradeControl?.valid).toBe(false); // Invalid because required
+    it('should validate grade correctly when within limits', () => {
+      const { componentInstance } = createApplicationPage2Fixture();
 
-    const upperLimitControl = componentInstance.page2Form.get('bachelorGradeUpperLimit');
-    expect(upperLimitControl?.touched).toBe(true); // Marked as touched
+      componentInstance.page2Form.setValue({
+        bachelorDegreeName: 'BSc',
+        bachelorDegreeUniversity: 'Uni',
+        bachelorGrade: '2.5',
+        bachelorGradeLowerLimit: '1.0',
+        bachelorGradeUpperLimit: '4.0',
+        masterDegreeName: 'MSc',
+        masterDegreeUniversity: 'Uni',
+        masterGrade: '2.7',
+        masterGradeLowerLimit: '1.0',
+        masterGradeUpperLimit: '4.0',
+      });
+
+      expect(componentInstance.page2Form.valid).toBe(true);
+    });
   });
 
-  it('should have invalid form if bachelor grade is out of range', () => {
-    const { componentInstance } = createApplicationPage2Fixture();
+  describe('Form Behavior', () => {
+    it('should not emit if form value has not changed (distinctUntilChanged)', async () => {
+      const { fixture, componentInstance } = createApplicationPage2Fixture();
 
-    componentInstance.page2Form.setValue({
-      bachelorDegreeName: 'BSc',
-      bachelorDegreeUniversity: 'Uni',
-      bachelorGrade: '4.5', // Invalid
-      bachelorGradeLowerLimit: '1.0',
-      bachelorGradeUpperLimit: '4.0',
-      masterDegreeName: 'MSc',
-      masterDegreeUniversity: 'Uni',
-      masterGrade: '3.5',
-      masterGradeLowerLimit: '1.0',
-      masterGradeUpperLimit: '4.0',
+      componentInstance.page2Form.patchValue({
+        bachelorDegreeName: 'BSc',
+        bachelorDegreeUniversity: 'Uni',
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      fixture.detectChanges();
+
+      const changedSpy = vi.fn();
+      componentInstance.changed.subscribe(changedSpy);
+
+      componentInstance.page2Form.patchValue({
+        bachelorDegreeName: 'BSc',
+        bachelorDegreeUniversity: 'Uni',
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+      fixture.detectChanges();
+
+      expect(changedSpy).not.toHaveBeenCalled();
     });
 
-    expect(componentInstance.page2Form.valid).toBe(false);
+    it('should debounce form value changes', async () => {
+      const { fixture, componentInstance } = createApplicationPage2Fixture();
+      const changedSpy = vi.fn();
+      componentInstance.changed.subscribe(changedSpy);
+      componentInstance.hasInitialized.set(true);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      changedSpy.mockReset();
+
+      componentInstance.page2Form.patchValue({ bachelorDegreeName: 'A' });
+      componentInstance.page2Form.patchValue({ bachelorDegreeName: 'AB' });
+      componentInstance.page2Form.patchValue({ bachelorDegreeName: 'ABC' });
+
+      expect(changedSpy).not.toHaveBeenCalled();
+
+      // Wait longer than debounceTime and allow signal effect to run
+      await new Promise(resolve => setTimeout(resolve, 100));
+      fixture.detectChanges();
+
+      expect(changedSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it('should validate grade correctly when within limits', () => {
-    const { componentInstance } = createApplicationPage2Fixture();
+  describe('Rendering', () => {
+    it('should render upload buttons when applicationIdForDocuments is set', () => {
+      const { fixture } = createApplicationPage2Fixture({
+        applicationIdForDocuments: '12345',
+        documentIdsBachelorTranscript: [{ id: 'id-1', size: 1 }],
+        documentIdsMasterTranscript: [{ id: 'id-2', size: 2 }],
+        data: {
+          bachelorDegreeName: '',
+          bachelorDegreeUniversity: '',
+          bachelorGrade: '',
+          bachelorGradeLowerLimit: '',
+          bachelorGradeUpperLimit: '',
+          masterDegreeName: '',
+          masterDegreeUniversity: '',
+          masterGrade: '',
+          masterGradeLowerLimit: '',
+          masterGradeUpperLimit: '',
+        },
+      });
 
-    componentInstance.page2Form.setValue({
-      bachelorDegreeName: 'BSc',
-      bachelorDegreeUniversity: 'Uni',
-      bachelorGrade: '2.5',
-      bachelorGradeLowerLimit: '1.0',
-      bachelorGradeUpperLimit: '4.0',
-      masterDegreeName: 'MSc',
-      masterDegreeUniversity: 'Uni',
-      masterGrade: '2.7',
-      masterGradeLowerLimit: '1.0',
-      masterGradeUpperLimit: '4.0',
+      const uploadButtons = fixture.nativeElement.querySelectorAll('jhi-upload-button');
+      expect(uploadButtons.length).toBe(2); // Bachelor + Master
     });
-
-    expect(componentInstance.page2Form.valid).toBe(true);
-  });
-
-  it('should render upload buttons when applicationIdForDocuments is set', () => {
-    const { fixture } = createApplicationPage2Fixture({
-      applicationIdForDocuments: '12345',
-      documentIdsBachelorTranscript: [{ id: 'id-1', size: 1 }],
-      documentIdsMasterTranscript: [{ id: 'id-2', size: 2 }],
-      data: {
-        bachelorDegreeName: '',
-        bachelorDegreeUniversity: '',
-        bachelorGrade: '',
-        bachelorGradeLowerLimit: '',
-        bachelorGradeUpperLimit: '',
-        masterDegreeName: '',
-        masterDegreeUniversity: '',
-        masterGrade: '',
-        masterGradeLowerLimit: '',
-        masterGradeUpperLimit: '',
-      },
-    });
-
-    const uploadButtons = fixture.nativeElement.querySelectorAll('jhi-upload-button');
-    expect(uploadButtons.length).toBe(2); // Bachelor + Master
-  });
-
-  it('should not emit if form value has not changed (distinctUntilChanged)', async () => {
-    const { fixture, componentInstance } = createApplicationPage2Fixture();
-
-    componentInstance.page2Form.patchValue({
-      bachelorDegreeName: 'BSc',
-      bachelorDegreeUniversity: 'Uni',
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-    fixture.detectChanges();
-
-    const changedSpy = vi.fn();
-    componentInstance.changed.subscribe(changedSpy);
-
-    componentInstance.page2Form.patchValue({
-      bachelorDegreeName: 'BSc',
-      bachelorDegreeUniversity: 'Uni',
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 150));
-    fixture.detectChanges();
-
-    expect(changedSpy).not.toHaveBeenCalled();
-  });
-
-  it('should debounce form value changes', async () => {
-    const { fixture, componentInstance } = createApplicationPage2Fixture();
-    const changedSpy = vi.fn();
-    componentInstance.changed.subscribe(changedSpy);
-    componentInstance.hasInitialized.set(true);
-    await new Promise(resolve => setTimeout(resolve, 0));
-    changedSpy.mockReset();
-
-    componentInstance.page2Form.patchValue({ bachelorDegreeName: 'A' });
-    componentInstance.page2Form.patchValue({ bachelorDegreeName: 'AB' });
-    componentInstance.page2Form.patchValue({ bachelorDegreeName: 'ABC' });
-
-    expect(changedSpy).not.toHaveBeenCalled();
-
-    // Wait longer than debounceTime and allow signal effect to run
-    await new Promise(resolve => setTimeout(resolve, 100));
-    fixture.detectChanges();
-
-    expect(changedSpy).toHaveBeenCalledTimes(1);
   });
 
   describe('getPage2FromApplication', () => {
