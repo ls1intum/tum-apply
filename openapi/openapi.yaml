@@ -1263,6 +1263,7 @@ components:
         applicant: {$ref: '#/components/schemas/Applicant'}
         applicationId: {type: string, format: uuid}
         applicationReview: {$ref: '#/components/schemas/ApplicationReview'}
+        appliedAt: {type: string, format: date-time}
         createdAt: {type: string, format: date-time}
         customFieldAnswers:
           type: array
