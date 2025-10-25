@@ -5,37 +5,41 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
+type ButtonForTest = {
+
+  label: string;
+  icon: string;
+  disabled: boolean;
+  isExternalLink: boolean;
+  numberOfFavorites: number;
+  severity: 'primary' | 'secondary' | 'contrast' | 'success' | 'warn' | 'danger' | 'info';
+  variant: 'outlined' | 'text';
+  fullWidth: boolean;
+  shouldTranslate: boolean;
+  size: 'sm' | 'md' | 'lg';
+  loading: boolean;
+  type: 'button' | 'submit' | 'reset';
+};
+
+
 describe('ButtonComponent', () => {
   function createButtonFixture(
-    overrideInputs?: Partial<{
-      label: string;
-      icon: string;
-      disabled: boolean;
-      isExternalLink: boolean;
-      numberOfFavorites: number;
-      severity: 'primary' | 'secondary' | 'contrast' | 'success' | 'warn' | 'danger' | 'info';
-      variant: 'outlined' | 'text';
-      fullWidth: boolean;
-      shouldTranslate: boolean;
-      size: 'sm' | 'md' | 'lg';
-      loading: boolean;
-      type: 'button' | 'submit' | 'reset';
-    }>,
+    overrideInputs: Partial<ButtonForTest>,
   ) {
     const fixture = TestBed.createComponent(ButtonComponent);
 
-    fixture.componentRef.setInput('label', overrideInputs?.label ?? 'Click Me');
-    fixture.componentRef.setInput('icon', overrideInputs?.icon);
-    fixture.componentRef.setInput('disabled', overrideInputs?.disabled ?? false);
-    fixture.componentRef.setInput('isExternalLink', overrideInputs?.isExternalLink ?? false);
-    fixture.componentRef.setInput('numberOfFavorites', overrideInputs?.numberOfFavorites);
-    fixture.componentRef.setInput('severity', overrideInputs?.severity ?? 'primary');
-    fixture.componentRef.setInput('variant', overrideInputs?.variant);
-    fixture.componentRef.setInput('fullWidth', overrideInputs?.fullWidth ?? false);
-    fixture.componentRef.setInput('shouldTranslate', overrideInputs?.shouldTranslate ?? false);
-    fixture.componentRef.setInput('size', overrideInputs?.size ?? 'lg');
-    fixture.componentRef.setInput('loading', overrideInputs?.loading ?? false);
-    fixture.componentRef.setInput('type', overrideInputs?.type ?? 'button');
+    fixture.componentRef.setInput('label', overrideInputs.label ?? 'Click Me');
+    fixture.componentRef.setInput('icon', overrideInputs.icon);
+    fixture.componentRef.setInput('disabled', overrideInputs.disabled ?? false);
+    fixture.componentRef.setInput('isExternalLink', overrideInputs.isExternalLink ?? false);
+    fixture.componentRef.setInput('numberOfFavorites', overrideInputs.numberOfFavorites);
+    fixture.componentRef.setInput('severity', overrideInputs.severity ?? 'primary');
+    fixture.componentRef.setInput('variant', overrideInputs.variant);
+    fixture.componentRef.setInput('fullWidth', overrideInputs.fullWidth ?? false);
+    fixture.componentRef.setInput('shouldTranslate', overrideInputs.shouldTranslate ?? false);
+    fixture.componentRef.setInput('size', overrideInputs.size ?? 'lg');
+    fixture.componentRef.setInput('loading', overrideInputs.loading ?? false);
+    fixture.componentRef.setInput('type', overrideInputs.type ?? 'button');
 
     fixture.detectChanges();
     return fixture;
@@ -44,12 +48,12 @@ describe('ButtonComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ButtonComponent],
-      providers: [provideFontAwesomeTesting(), provideTranslateMock(), provideFontAwesomeTesting()],
+      providers: [provideFontAwesomeTesting(), provideTranslateMock()],
     }).compileComponents();
   });
 
   it('should render with default inputs', () => {
-    const fixture = createButtonFixture();
+    const fixture = createButtonFixture({});
 
     const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
     expect(buttonElement).toBeTruthy();

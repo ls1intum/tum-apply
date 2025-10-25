@@ -53,9 +53,12 @@ describe('UploadButtonComponent', () => {
         { provide: HttpClient, useClass: MockHttpClient },
         provideFontAwesomeTesting(),
         provideTranslateMock(),
-        provideFontAwesomeTesting(),
       ],
     }).compileComponents();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should create an uploadbutton', () => {
@@ -214,7 +217,7 @@ describe('UploadButtonComponent', () => {
 
     const newFile = new File([''], 'new.pdf');
 
-    const uploadSpy = vi.spyOn(component, 'onUpload').mockImplementation(async () => {});
+    const uploadSpy = vi.spyOn(component, 'onUpload').mockImplementation(async () => { });
 
     await component.onFileSelected({ currentFiles: [newFile] });
 
