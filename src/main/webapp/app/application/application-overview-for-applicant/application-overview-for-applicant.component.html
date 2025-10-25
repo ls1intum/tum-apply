@@ -42,11 +42,11 @@
 
       @if (['SAVED'].includes(row.applicationState)) {
         <jhi-button
-          [ariaLabel]="'button.update' | translate"
+          [ariaLabel]="'button.edit' | translate"
           [icon]="'pencil'"
           severity="primary"
           variant="text"
-          [tooltip]="'button.update' | translate"
+          [tooltip]="'button.edit' | translate"
           (click)="onUpdateApplication(row.applicationId)"
         />
       }
