@@ -130,6 +130,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
@@ -151,6 +152,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
@@ -213,6 +215,7 @@ public class MvcTestClient {
             case 400 -> result = deleteInvalid(url, body, accepts);
             case 403 -> result = deleteForbidden(url, body, accepts);
             case 401 -> result = deleteUnauthorized(url, body, accepts);
+            case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -302,6 +305,17 @@ public class MvcTestClient {
             return postJson(url, body, accepts).andExpect(status().isOk()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("POST " + url + " failed with 200", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 201 Created and returns the MvcResult.
+     */
+    private MvcResult postCreated(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isCreated()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 201", e);
         }
     }
 

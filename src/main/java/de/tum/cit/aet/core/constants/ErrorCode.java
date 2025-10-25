@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.constants;
 public enum ErrorCode {
     ACCESS_DENIED,
     EMAIL_TEMPLATE_ERROR,
+    EMAIL_SETTING_ERROR,
     ENTITY_NOT_FOUND,
     INTERNAL_ERROR,
     INVALID_PARAMETER,
