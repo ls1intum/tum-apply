@@ -130,11 +130,13 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
+            case 409 -> result = postConflict(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -151,11 +153,13 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
+            case 409 -> result = postConflict(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
         return read(result, typeRef);
@@ -307,6 +311,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 201 Created and returns the MvcResult.
+     */
+    private MvcResult postCreated(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isCreated()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 201", e);
+        }
+    }
+
+    /**
      * Low-level POST that asserts 204 No Content and returns the MvcResult.
      */
     private MvcResult postNoContent(String url, Object body, MediaType... accepts) {
@@ -358,6 +373,17 @@ public class MvcTestClient {
             return postJson(url, body, accepts).andExpect(status().isNotFound()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("POST " + url + " failed with 404", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 409 Conflict and returns the MvcResult.
+     */
+    private MvcResult postConflict(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isConflict()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 409", e);
         }
     }
 

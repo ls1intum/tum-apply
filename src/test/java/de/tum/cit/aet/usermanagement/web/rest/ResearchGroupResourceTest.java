@@ -8,6 +8,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
@@ -28,6 +29,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     UserRepository userRepository;
 
     @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @Autowired
     MvcTestClient api;
 
     ResearchGroup researchGroup;
@@ -37,8 +41,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     public void setup() {
-        userRepository.deleteAll();
-        researchGroupRepository.deleteAll();
+        databaseCleaner.clean();
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Machine Learning Lab",
