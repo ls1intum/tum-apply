@@ -3,11 +3,14 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.dto.SortDTO.Direction;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
@@ -253,8 +256,8 @@ public class ResearchGroupService {
     @Transactional
     public ResearchGroup activateResearchGroup(UUID researchGroupId) {
         ResearchGroup group = researchGroupRepository.findByIdElseThrow(researchGroupId);
-        if (group.getState() != ResearchGroupState.DRAFT) {
-            throw new IllegalStateException("Only DRAFT groups can be activated");
+        if (group.getState() != ResearchGroupState.DRAFT && group.getState() != ResearchGroupState.DENIED) {
+            throw new IllegalStateException("Only DRAFT or DENIED groups can be activated");
         }
         group.setState(ResearchGroupState.ACTIVE);
         ResearchGroup saved = researchGroupRepository.save(group);
@@ -297,6 +300,53 @@ public class ResearchGroupService {
         ResearchGroup saved = researchGroupRepository.save(group);
 
         return saved;
+    }
+
+    /**
+     * Withdraws an ACTIVE research group back to DRAFT state (admin only).
+     * Changes the state from ACTIVE to DRAFT, allowing the research group to be reviewed again.
+     * This operation can only be performed on research groups in ACTIVE state.
+     *
+     * @param researchGroupId the unique identifier of the research group to withdraw
+     * @return the withdrawn research group with updated state
+     * @throws EntityNotFoundException if the research group does not exist
+     * @throws IllegalStateException if the research group is not in ACTIVE state
+     */
+    @Transactional
+    public ResearchGroup withdrawResearchGroup(UUID researchGroupId) {
+        ResearchGroup group = researchGroupRepository.findByIdElseThrow(researchGroupId);
+        if (group.getState() != ResearchGroupState.ACTIVE) {
+            throw new IllegalStateException("Only ACTIVE groups can be withdrawn");
+        }
+        group.setState(ResearchGroupState.DRAFT);
+        ResearchGroup saved = researchGroupRepository.save(group);
+
+        return saved;
+    }
+
+    /**
+     * Retrieves research groups for admin view with filtering, sorting, and pagination.
+     *
+     * @param pageDTO the pagination parameters
+     * @param filterDTO the filter parameters including status and search query
+     * @param sortDTO the sorting parameters
+     *
+     * @return a paginated response containing research groups matching the criteria
+     */
+    public PageResponseDTO<ResearchGroupAdminDTO> getResearchGroupsForAdmin(
+        PageDTO pageDTO,
+        AdminResearchGroupFilterDTO filterDTO,
+        SortDTO sortDTO
+    ) {
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.RESEARCH_GROUPS_ADMIN, true);
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(filterDTO.getSearchQuery());
+
+        Page<ResearchGroupAdminDTO> pageResult = researchGroupRepository.findAllForAdmin(
+            filterDTO.getStatus(),
+            normalizedSearchQuery,
+            pageable
+        );
+        return new PageResponseDTO<>(pageResult.getContent(), pageResult.getTotalElements());
     }
 
     /**
