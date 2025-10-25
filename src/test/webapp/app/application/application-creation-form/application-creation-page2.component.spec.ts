@@ -30,7 +30,6 @@ function createApplicationPage2Fixture(
 ) {
   const fixture = TestBed.createComponent(ApplicationCreationPage2Component);
   const componentRef = fixture.componentRef;
-
   if (inputs) {
     if (inputs.applicationIdForDocuments !== undefined) {
       componentRef.setInput('applicationIdForDocuments', inputs.applicationIdForDocuments);
@@ -41,34 +40,19 @@ function createApplicationPage2Fixture(
     if (inputs.documentIdsMasterTranscript !== undefined) {
       componentRef.setInput('documentIdsMasterTranscript', inputs.documentIdsMasterTranscript);
     }
-    if (inputs.data !== undefined) {
-      componentRef.setInput('data', {
-        bachelorDegreeName: '',
-        bachelorDegreeUniversity: '',
-        bachelorGrade: '',
-        bachelorGradeLowerLimit: '',
-        bachelorGradeUpperLimit: '',
-        masterDegreeName: '',
-        masterDegreeUniversity: '',
-        masterGrade: '',
-        masterGradeLowerLimit: '',
-        masterGradeUpperLimit: '',
-        ...inputs.data,
-      });
-    } else {
-      componentRef.setInput('data', {
-        bachelorDegreeName: '',
-        bachelorDegreeUniversity: '',
-        bachelorGrade: '',
-        bachelorGradeLowerLimit: '',
-        bachelorGradeUpperLimit: '',
-        masterDegreeName: '',
-        masterDegreeUniversity: '',
-        masterGrade: '',
-        masterGradeLowerLimit: '',
-        masterGradeUpperLimit: '',
-      });
-    }
+    componentRef.setInput('data', {
+      bachelorDegreeName: '',
+      bachelorDegreeUniversity: '',
+      bachelorGrade: '',
+      bachelorGradeLowerLimit: '',
+      bachelorGradeUpperLimit: '',
+      masterDegreeName: '',
+      masterDegreeUniversity: '',
+      masterGrade: '',
+      masterGradeLowerLimit: '',
+      masterGradeUpperLimit: '',
+      ...(inputs ? inputs.data : []),
+    });
   }
   fixture.detectChanges();
 
