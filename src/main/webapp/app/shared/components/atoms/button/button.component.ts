@@ -46,6 +46,7 @@ export class ButtonComponent {
   fullWidth = input<boolean>(false);
   type = input<'button' | 'submit' | 'reset'>('button');
   loading = input<boolean>(false);
+  autofocus = input<boolean>(false);
   size = input<ButtonSize>('lg');
   tooltip = input<string | undefined>(undefined);
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
