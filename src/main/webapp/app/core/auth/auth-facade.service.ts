@@ -158,7 +158,6 @@ export class AuthFacadeService {
    */
   async logout(): Promise<void> {
     if (this.authMethod === 'none') {
-      void this.router.navigate(['/']);
       return;
     }
     this.documentCache.clear();
