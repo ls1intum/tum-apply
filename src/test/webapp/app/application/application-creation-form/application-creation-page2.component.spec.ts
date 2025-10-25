@@ -2,7 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
-import ApplicationCreationPage2Component, { ApplicationCreationPage2Data, getPage2FromApplication } from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
+import ApplicationCreationPage2Component, {
+  ApplicationCreationPage2Data,
+  getPage2FromApplication,
+} from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +20,14 @@ class MockHttpClient {
   delete = vi.fn();
 }
 
-function createApplicationPage2Fixture(inputs?: Partial<{ data: Partial<ApplicationCreationPage2Data>, applicationIdForDocuments: string, documentIdsBachelorTranscript: DocumentInformationHolderDTO[], documentIdsMasterTranscript: DocumentInformationHolderDTO[] }>) {
+function createApplicationPage2Fixture(
+  inputs?: Partial<{
+    data: Partial<ApplicationCreationPage2Data>;
+    applicationIdForDocuments: string;
+    documentIdsBachelorTranscript: DocumentInformationHolderDTO[];
+    documentIdsMasterTranscript: DocumentInformationHolderDTO[];
+  }>,
+) {
   const fixture = TestBed.createComponent(ApplicationCreationPage2Component);
   const componentRef = fixture.componentRef;
 
@@ -56,9 +66,8 @@ function createApplicationPage2Fixture(inputs?: Partial<{ data: Partial<Applicat
         masterDegreeUniversity: '',
         masterGrade: '',
         masterGradeLowerLimit: '',
-        masterGradeUpperLimit: ''
-      }
-      )
+        masterGradeUpperLimit: '',
+      });
     }
   }
   fixture.detectChanges();
@@ -67,9 +76,7 @@ function createApplicationPage2Fixture(inputs?: Partial<{ data: Partial<Applicat
 }
 
 describe('ApplicationPage2Component', () => {
-
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationPage2Component],
       providers: [
@@ -78,7 +85,7 @@ describe('ApplicationPage2Component', () => {
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideToastServiceMock(),
-        provideAccountServiceMock()
+        provideAccountServiceMock(),
       ],
     }).compileComponents();
   });
@@ -96,7 +103,7 @@ describe('ApplicationPage2Component', () => {
           bachelorGradeLowerLimit: '1.0',
           masterGradeUpperLimit: '4.0',
           masterGradeLowerLimit: '1.0',
-        }
+        },
       });
       const formValues = componentInstance.page2Form.value;
       expect(formValues.bachelorDegreeName).toBe('');
@@ -114,7 +121,7 @@ describe('ApplicationPage2Component', () => {
           bachelorGradeLowerLimit: '1.0',
           masterGradeUpperLimit: '4.0',
           masterGradeLowerLimit: '1.0',
-        }
+        },
       });
 
       const bachelorGradeControl = componentInstance.page2Form.get('bachelorGrade');
@@ -144,8 +151,8 @@ describe('ApplicationPage2Component', () => {
           bachelorGradeLowerLimit: '4.0',
           bachelorGradeUpperLimit: '1.0',
           masterGradeLowerLimit: '4.0',
-          masterGradeUpperLimit: '1.0'
-        }
+          masterGradeUpperLimit: '1.0',
+        },
       });
 
       expect(componentInstance.page2Form.valid).toBe(true);
@@ -276,17 +283,16 @@ describe('ApplicationPage2Component', () => {
         masterGradeUpperLimit: '4.0',
         masterGradeLowerLimit: '1.0',
         masterGrade: '3.8',
-        user: {
-        },
+        user: {},
       },
       job: {
         fieldOfStudies: '',
         jobId: '',
         location: '',
         professorName: '',
-        title: ''
+        title: '',
       },
-      applicationState: 'SAVED'
+      applicationState: 'SAVED',
     });
 
     it('should map all applicant fields correctly when provided', () => {
@@ -311,7 +317,7 @@ describe('ApplicationPage2Component', () => {
     it('should return empty strings for all fields if applicant is undefined', () => {
       const application: ApplicationForApplicantDTO = {
         ...createEmptyApplicationForApplicantDTO(),
-        applicant: undefined
+        applicant: undefined,
       };
 
       const result = getPage2FromApplication(application);
@@ -336,7 +342,7 @@ describe('ApplicationPage2Component', () => {
         applicant: {
           bachelorDegreeName: 'BSc Biology',
           // all other fields are missing
-          user: {}
+          user: {},
         },
       };
 
