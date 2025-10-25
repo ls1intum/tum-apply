@@ -6,7 +6,6 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 type ButtonForTest = {
-
   label: string;
   icon: string;
   disabled: boolean;
@@ -21,11 +20,8 @@ type ButtonForTest = {
   type: 'button' | 'submit' | 'reset';
 };
 
-
 describe('ButtonComponent', () => {
-  function createButtonFixture(
-    overrideInputs: Partial<ButtonForTest>,
-  ) {
+  function createButtonFixture(overrideInputs: Partial<ButtonForTest>) {
     const fixture = TestBed.createComponent(ButtonComponent);
 
     fixture.componentRef.setInput('label', overrideInputs.label ?? 'Click Me');
