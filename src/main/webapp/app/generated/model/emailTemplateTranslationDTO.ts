@@ -10,7 +10,7 @@
 
 
 export interface EmailTemplateTranslationDTO { 
-    subject?: string;
     body?: string;
+    subject?: string;
 }
 

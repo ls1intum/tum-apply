@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
-
-import TranslateDirective from '../../../language/translate.directive';
 
 import { ApplicationStepComponent } from './application-step/application-step/application-step.component';
 
 @Component({
   selector: 'jhi-application-steps-section',
-  imports: [ApplicationStepComponent, TranslateModule, TranslateDirective],
+  imports: [ApplicationStepComponent],
   templateUrl: './application-steps-section.component.html',
   styleUrl: './application-steps-section.component.scss',
 })
