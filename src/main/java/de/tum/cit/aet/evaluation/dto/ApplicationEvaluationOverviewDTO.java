@@ -32,7 +32,7 @@ public record ApplicationEvaluationOverviewDTO(
             applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName(),
             application.getState(),
             job.getTitle(),
-            application.getCreatedAt()
+            application.getAppliedAt()
         );
     }
 }

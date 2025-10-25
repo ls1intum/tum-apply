@@ -17,6 +17,7 @@ export interface Application {
     applicant?: Applicant;
     applicationId?: string;
     applicationReview?: ApplicationReview;
+    appliedAt?: string;
     createdAt?: string;
     customFieldAnswers?: Array<CustomFieldAnswer>;
     desiredStartDate?: string;
