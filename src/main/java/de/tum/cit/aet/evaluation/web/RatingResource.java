@@ -1,5 +1,6 @@
 package de.tum.cit.aet.evaluation.web;
 
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.evaluation.dto.RatingOverviewDTO;
 import de.tum.cit.aet.evaluation.service.RatingService;
 import jakarta.validation.constraints.Max;
@@ -7,7 +8,6 @@ import jakarta.validation.constraints.Min;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +24,7 @@ public class RatingResource {
      * @return a {@link ResponseEntity} containing the {@link RatingOverviewDTO} for the specified application
      */
     @GetMapping
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<RatingOverviewDTO> getRatings(@PathVariable("applicationId") UUID applicationId) {
         return ResponseEntity.ok(ratingService.getRatingOverview(applicationId));
     }
@@ -37,7 +37,7 @@ public class RatingResource {
      * @return a {@link ResponseEntity} containing the updated {@link RatingOverviewDTO} for the specified application
      */
     @PutMapping
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<RatingOverviewDTO> updateRating(
         @PathVariable("applicationId") UUID applicationId,
         @RequestParam(required = false) @Min(-2) @Max(2) Integer rating
