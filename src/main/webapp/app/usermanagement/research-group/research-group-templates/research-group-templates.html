@@ -21,10 +21,17 @@
     />
 
     <ng-template #editTemplate let-template>
-      <jhi-button variant="text" icon="pen" (click)="navigateToEdit(template.emailTemplateId)" />
+      <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
     </ng-template>
     <ng-template #deleteTemplate let-template>
-      <jhi-button variant="text" icon="trash-alt" [disabled]="template.isDefault" (click)="delete(template.emailTemplateId)" />
+      <jhi-button
+        variant="text"
+        icon="trash-alt"
+        severity="danger"
+        [tooltip]="'button.delete' | translate"
+        [disabled]="template.isDefault"
+        (click)="delete(template.emailTemplateId)"
+      />
     </ng-template>
   </div>
 </div>
