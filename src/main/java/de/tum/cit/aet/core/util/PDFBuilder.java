@@ -287,7 +287,7 @@ public class PDFBuilder {
         container.add(divider);
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
-            List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont, boldFont);
+            List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont);
             for (IBlockElement element : elements) {
                 container.add(element);
             }
@@ -307,7 +307,7 @@ public class PDFBuilder {
         document.add(container);
     }
 
-    private List<IBlockElement> parseHtmlContent(String html, PdfFont normalFont, PdfFont boldFont) {
+    private List<IBlockElement> parseHtmlContent(String html, PdfFont normalFont) {
         List<IBlockElement> elements = new ArrayList<>();
 
         try {
