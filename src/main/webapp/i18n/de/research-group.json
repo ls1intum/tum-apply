@@ -127,6 +127,82 @@
       },
 
       "noRole": "Keine Rolle"
+    },
+    "adminView": {
+      "errors": {
+        "loadFilter": {
+          "summary": "Fehler",
+          "detail": "Laden der Filteroptionen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        },
+        "loadResearchGroups": {
+          "summary": "Fehler",
+          "detail": "Laden der Forschungsgruppen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        },
+        "approve": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Genehmigen der Forschungsgruppe. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        },
+        "deny": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Ablehnen der Forschungsgruppe. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        },
+        "withdraw": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Zurückziehen der Genehmigung. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        }
+      },
+      "success": {
+        "approve": {
+          "summary": "Erfolg",
+          "detail": "Forschungsgruppe erfolgreich genehmigt"
+        },
+        "deny": {
+          "summary": "Erfolg",
+          "detail": "Forschungsgruppe erfolgreich abgelehnt"
+        },
+        "withdraw": {
+          "summary": "Erfolg",
+          "detail": "Genehmigung erfolgreich zurückgezogen"
+        }
+      },
+      "filter": {
+        "status": "Status",
+        "stateSearchPlaceholder": "Status suchen..."
+      },
+      "group": "Forschungsgruppe",
+      "groups": "Forschungsgruppen",
+      "groupState": {
+        "draft": "Ausstehend",
+        "active": "Genehmigt",
+        "denied": "Abgelehnt",
+        "unknown": "Unbekannt"
+      },
+      "searchFilterSortBar": {
+        "searchText": "Forschungsgruppen suchen..."
+      },
+      "tableColumn": {
+        "professor": "Professor",
+        "status": "Status",
+        "researchGroup": "Forschungsgruppe",
+        "requestedAt": "Angefordert am"
+      },
+      "viewButton": "Anzeigen",
+      "confirmDialog": {
+        "header": "Forschungsgruppe genehmigen",
+        "message": "Bist du sicher, dass du diese Forschungsgruppe genehmigen möchtest?",
+        "confirm": "Genehmigen"
+      },
+      "denyConfirmDialog": {
+        "header": "Forschungsgruppe ablehnen",
+        "message": "Bist du sicher, dass du diese Forschungsgruppe ablehnen möchtest?",
+        "confirm": "Ablehnen"
+      },
+      "withdrawConfirmDialog": {
+        "header": "Genehmigung zurückziehen",
+        "message": "Bist du sicher, dass du die Genehmigung für diese Forschungsgruppe zurückziehen möchtest?",
+        "confirm": "Zurückziehen"
+      },
+      "title": "Verwalte Forschungsgruppen"
     }
   }
 }
