@@ -1,25 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { signal } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationPage2Component, { ApplicationCreationPage2Data, getPage2FromApplication } from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { AccountService } from 'app/core/auth/account.service';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { HttpClient } from '@angular/common/http';
-import { ToastService } from 'app/service/toast-service';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { provideToastServiceMock } from 'util/toast-service.mock';
+import { provideAccountServiceMock } from 'util/account.service.mock';
 
 class MockHttpClient {
   get = vi.fn();
   post = vi.fn();
   put = vi.fn();
   delete = vi.fn();
-}
-
-class MockToastService {
-  showError = vi.fn();
 }
 
 function createApplicationPage2Fixture(inputs?: Partial<{ data: Partial<ApplicationCreationPage2Data>, applicationIdForDocuments: string, documentIdsBachelorTranscript: DocumentInformationHolderDTO[], documentIdsMasterTranscript: DocumentInformationHolderDTO[] }>) {
@@ -72,25 +67,18 @@ function createApplicationPage2Fixture(inputs?: Partial<{ data: Partial<Applicat
 }
 
 describe('ApplicationPage2Component', () => {
-  let accountService: Pick<AccountService, 'signedIn'>;
-  let toastService: Pick<ToastService, 'showError'>;
 
   beforeEach(async () => {
-    accountService = {
-      signedIn: signal<boolean>(true),
-    };
-
-    toastService = new MockToastService();
 
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationPage2Component],
       providers: [
-        { provide: AccountService, useValue: accountService },
-        { provide: ToastService, useValue: toastService },
         { provide: HttpClient, useClass: MockHttpClient },
         provideRouter([]),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideToastServiceMock(),
+        provideAccountServiceMock()
       ],
     }).compileComponents();
   });
