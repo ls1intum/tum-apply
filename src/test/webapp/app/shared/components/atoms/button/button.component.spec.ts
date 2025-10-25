@@ -24,18 +24,26 @@ describe('ButtonComponent', () => {
   function createButtonFixture(overrideInputs: Partial<ButtonForTest>) {
     const fixture = TestBed.createComponent(ButtonComponent);
 
-    fixture.componentRef.setInput('label', overrideInputs.label ?? 'Click Me');
-    fixture.componentRef.setInput('icon', overrideInputs.icon);
-    fixture.componentRef.setInput('disabled', overrideInputs.disabled ?? false);
-    fixture.componentRef.setInput('isExternalLink', overrideInputs.isExternalLink ?? false);
-    fixture.componentRef.setInput('numberOfFavorites', overrideInputs.numberOfFavorites);
-    fixture.componentRef.setInput('severity', overrideInputs.severity ?? 'primary');
-    fixture.componentRef.setInput('variant', overrideInputs.variant);
-    fixture.componentRef.setInput('fullWidth', overrideInputs.fullWidth ?? false);
-    fixture.componentRef.setInput('shouldTranslate', overrideInputs.shouldTranslate ?? false);
-    fixture.componentRef.setInput('size', overrideInputs.size ?? 'lg');
-    fixture.componentRef.setInput('loading', overrideInputs.loading ?? false);
-    fixture.componentRef.setInput('type', overrideInputs.type ?? 'button');
+    const defaults: ButtonForTest = {
+      label: 'Click Me',
+      icon: '',
+      disabled: false,
+      isExternalLink: false,
+      numberOfFavorites: 0,
+      severity: 'primary',
+      variant: 'text',
+      fullWidth: false,
+      shouldTranslate: false,
+      size: 'lg',
+      loading: false,
+      type: 'button',
+    };
+
+    const inputs = { ...defaults, ...overrideInputs };
+
+    Object.entries(inputs).forEach(([key, value]) => {
+      fixture.componentRef.setInput(key as keyof ButtonForTest, value);
+    });
 
     fixture.detectChanges();
     return fixture;
