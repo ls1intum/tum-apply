@@ -19,11 +19,13 @@ import { RejectDTO } from 'app/generated/model/rejectDTO';
 import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicationEvaluationDetailListDTO';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
+import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../components/section/section';
 import { SubSection } from '../components/sub-section/sub-section';
-import { DescriptionList } from '../components/description-list/description-list';
+import { DescItem, DescriptionList } from '../components/description-list/description-list';
 import { LinkList } from '../components/link-list/link-list';
 import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
@@ -78,6 +80,9 @@ export class ApplicationDetailComponent {
 
   allAvailableJobNames = signal<string[]>([]);
 
+  bachelorItems = signal<DescItem[]>([]);
+  masterItems = signal<DescItem[]>([]);
+
   // accept/reject dialog
   reviewDialogVisible = signal<boolean>(false);
   reviewDialogMode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
@@ -92,6 +97,10 @@ export class ApplicationDetailComponent {
     const state = currentApplication.applicationDetailDTO.applicationState;
     return state !== 'ACCEPTED' && state !== 'REJECTED';
   });
+
+  currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
+  bachelorItemsComputed = computed(() => this.getBachelorItems(this.currentApplicationApplicant()));
+  masterItemsComputed = computed(() => this.getMasterItems(this.currentApplicationApplicant()));
 
   protected currentApplicationId = computed(() => {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
@@ -152,6 +161,73 @@ export class ApplicationDetailComponent {
       this.allAvailableJobNames.set([]);
       this.toastService.showErrorKey('evaluation.errors.loadJobNames');
     }
+  }
+
+  getDisplayGrade(upperLimit: string | undefined, lowerLimit: string | undefined, grade: string | undefined): string | undefined {
+    return displayGradeWithConversion(upperLimit, lowerLimit, grade);
+  }
+
+  getBachelorItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
+    if (!applicant) return [];
+    const items: DescItem[] = [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.bachelorDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.bachelorUniversity },
+      { labelKey: 'evaluation.details.educationGrade', value: applicant.bachelorGrade },
+    ];
+
+    const converted = this.getGradeItem(
+      applicant.bachelorGrade,
+      applicant.bachelorGradeUpperLimit,
+      applicant.bachelorGradeLowerLimit,
+      'evaluation.details.educationGradeConverted',
+      'evaluation.details.converterTooltip',
+    );
+
+    items.push(...converted);
+    return items;
+  }
+
+  getMasterItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
+    if (!applicant) return [];
+    const items: DescItem[] = [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.masterDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.masterUniversity },
+      { labelKey: 'evaluation.details.educationGrade', value: applicant.masterGrade },
+    ];
+
+    const converted = this.getGradeItem(
+      applicant.masterGrade,
+      applicant.masterGradeUpperLimit,
+      applicant.masterGradeLowerLimit,
+      'evaluation.details.educationGradeConverted',
+      'evaluation.details.converterTooltip',
+    );
+
+    items.push(...converted);
+    return items;
+  }
+
+  getGradeItem(
+    grade: string | undefined,
+    upperLimit: string | undefined,
+    lowerLimit: string | undefined,
+    convertedLabel: string,
+    tooltipText?: string,
+  ): DescItem[] {
+    const originalGrade = grade ?? '';
+    const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
+
+    const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
+    const roundedOriginal = Math.floor(numericOriginal * 10) / 10;
+
+    const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
+    const roundedConverted = Math.floor(numericConverted * 10) / 10;
+
+    if (!convertedGrade || roundedOriginal === roundedConverted) {
+      return [];
+    }
+
+    return [{ labelKey: convertedLabel, value: convertedGrade, tooltipText }];
   }
 
   onSearchEmit(searchQuery: string): void {
