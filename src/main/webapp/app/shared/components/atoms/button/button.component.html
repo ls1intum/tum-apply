@@ -17,6 +17,7 @@
     [styleClass]="buttonClass()"
     [type]="type()"
     [variant]="variant()"
+    [buttonProps]="{ autofocus: autofocus() }"
   >
     @if (icon() !== undefined) {
       <fa-icon [icon]="[iconPrefix(), icon() ?? '']" />
