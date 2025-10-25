@@ -661,19 +661,6 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/evaluation/jobs:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getJobFilterOptions
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/JobFilterOptionDTO'}
-                uniqueItems: true
   /api/export/application/{id}/pdf:
     post:
       tags: [pdf-export-resource]
@@ -1672,11 +1659,6 @@ components:
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
         title]
-    JobFilterOptionDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        jobName: {type: string}
     JobFiltersDTO:
       type: object
       properties:

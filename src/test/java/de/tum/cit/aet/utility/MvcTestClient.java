@@ -213,6 +213,7 @@ public class MvcTestClient {
             case 400 -> result = deleteInvalid(url, body, accepts);
             case 403 -> result = deleteForbidden(url, body, accepts);
             case 401 -> result = deleteUnauthorized(url, body, accepts);
+            case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
