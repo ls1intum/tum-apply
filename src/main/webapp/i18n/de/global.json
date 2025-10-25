@@ -29,6 +29,7 @@
       },
       "settings": "TUMApply - Einstellungen",
       "researchGroup": {
+        "adminView": "TUMApply - Admin Ansicht",
         "templates": "TUMApply - Meine Vorlagen",
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",

@@ -6,6 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MessageModule } from 'primeng/message';
 import { firstValueFrom } from 'rxjs';
 import { DialogService } from 'primeng/dynamicdialog';
+import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
@@ -35,17 +36,8 @@ export class OnboardingDialog {
       this.ref?.close();
 
       this.dialogService.open(ProfessorRequestAccessFormComponent, {
+        ...ONBOARDING_FORM_DIALOG_CONFIG,
         header: this.translate.instant('onboarding.professorRequest.dialogTitle'),
-        modal: true,
-        closable: true,
-        dismissableMask: false,
-        width: '56.25rem',
-        style: {
-          'max-width': '95vw',
-          'background-color': 'white',
-          'border-radius': '0.5rem',
-        },
-        focusOnShow: false,
       });
     } else {
       void firstValueFrom(this.api.confirmOnboarding()).catch();
@@ -57,17 +49,8 @@ export class OnboardingDialog {
     this.ref?.close();
 
     this.dialogService.open(EmployeeRequestAccessFormComponent, {
+      ...ONBOARDING_FORM_DIALOG_CONFIG,
       header: this.translate.instant('onboarding.employeeRequest.dialogTitle'),
-      modal: true,
-      closable: true,
-      dismissableMask: false,
-      width: '56.25rem',
-      style: {
-        'max-width': '95vw',
-        'background-color': 'white',
-        'border-radius': '0.5rem',
-      },
-      focusOnShow: false,
     });
   }
 }

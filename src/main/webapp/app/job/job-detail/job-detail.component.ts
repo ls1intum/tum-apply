@@ -10,8 +10,8 @@ import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { trimWebsiteUrl } from 'app/shared/util/util';
 
-import TranslateDirective from '../../shared/language/translate.directive';
 import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
@@ -20,6 +20,7 @@ import { ResearchGroupResourceApiService } from '../../generated/api/researchGro
 import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
 import { JobDetailDTO } from '../../generated/model/jobDetailDTO';
+import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -57,7 +58,7 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ConfirmDialog],
+  imports: [ButtonComponent, FontAwesomeModule, TranslateModule, TranslateDirective, ButtonGroupComponent, TagComponent, ConfirmDialog],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
@@ -225,6 +226,27 @@ export class JobDetailComponent {
 
   onBack(): void {
     this.location.back();
+  }
+
+  isProfessor(): boolean {
+    return this.accountService.hasAnyAuthority(['PROFESSOR']);
+  }
+
+  onEditResearchGroup(): void {
+    this.router.navigate(['/research-group/info']);
+  }
+
+  hasResearchGroupDescription(): boolean {
+    const description = this.jobDetails()?.researchGroupDescription;
+    if (!description) return false;
+
+    // Strip HTML tags and check if there's meaningful text content
+    const textContent = description.replace(/<[^>]*>/g, '').trim();
+    return textContent.length > 0;
+  }
+
+  trimWebsiteUrl(url: string): string {
+    return trimWebsiteUrl(url);
   }
 
   onApply(): void {
