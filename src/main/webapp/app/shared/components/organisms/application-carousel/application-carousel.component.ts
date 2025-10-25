@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Signal, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { BREAKPOINT_QUERIES } from '../../../constants/breakpoints';
-import { ApplicationEvaluationDetailDTO } from '../../../../generated/model/applicationEvaluationDetailDTO';
 
 // Constants defining the default visible slots and application window size
 const VISIBLE_DESKTOP = 3;
@@ -85,23 +85,24 @@ export class ApplicationCarouselComponent {
 
   private readonly bp = inject(BreakpointObserver);
 
-  constructor() {
-    const breakpoint = toSignal<BreakpointState | null>(this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]), {
-      initialValue: null,
-    });
+  private readonly breakpoint: Signal<BreakpointState | undefined> = toSignal(
+    this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]),
+    {
+      initialValue: undefined,
+    },
+  );
 
-    effect(() => {
-      const result = breakpoint();
-      if (!result) return;
-      if (result.breakpoints[BREAKPOINT_QUERIES.onlyMobile]) {
-        this.cardsVisible.set(1);
-      } else if (result.breakpoints[BREAKPOINT_QUERIES.ultraWide]) {
-        this.cardsVisible.set(5);
-      } else {
-        this.cardsVisible.set(VISIBLE_DESKTOP);
-      }
-    });
-  }
+  private readonly _breakPointEffect = effect(() => {
+    const result = this.breakpoint();
+    if (!result) return;
+    if (result.breakpoints[BREAKPOINT_QUERIES.onlyMobile]) {
+      this.cardsVisible.set(1);
+    } else if (result.breakpoints[BREAKPOINT_QUERIES.ultraWide]) {
+      this.cardsVisible.set(5);
+    } else {
+      this.cardsVisible.set(VISIBLE_DESKTOP);
+    }
+  });
 
   // Listen to arrow keys for navigation
   @HostListener('document:keydown', ['$event'])
