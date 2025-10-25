@@ -4,6 +4,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { By } from '@angular/platform-browser';
 
 type ButtonForTest = {
   label: string;
@@ -24,15 +25,11 @@ describe('ButtonComponent', () => {
   function createButtonFixture(overrideInputs: Partial<ButtonForTest>) {
     const fixture = TestBed.createComponent(ButtonComponent);
 
-    const defaults: ButtonForTest = {
-      label: 'Click Me',
-      icon: '',
+    const defaults: Partial<ButtonForTest> = {
       disabled: false,
       isExternalLink: false,
-      numberOfFavorites: 0,
       severity: 'primary',
       variant: 'text',
-      fullWidth: false,
       shouldTranslate: false,
       size: 'lg',
       loading: false,
@@ -57,7 +54,7 @@ describe('ButtonComponent', () => {
   });
 
   it('should render with default inputs', () => {
-    const fixture = createButtonFixture({});
+    const fixture = createButtonFixture({ label: "Click Me" });
 
     const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
     expect(buttonElement).toBeTruthy();
@@ -73,16 +70,23 @@ describe('ButtonComponent', () => {
     expect(iconEl).toBeTruthy();
   });
 
-  it('should use "fab" prefix for brand icons', () => {
+  it('should render brand icons with the "fab" prefix', () => {
     const fixture = createButtonFixture({ icon: 'google' });
+    const iconEl: HTMLElement = fixture.nativeElement.querySelector('fa-icon');
 
-    expect(fixture.componentInstance.iconPrefix()).toBe('fab');
+    expect(iconEl).toBeTruthy();
+    const faIconInstance = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
+    fixture.detectChanges();
+    expect(faIconInstance.icon()).toEqual(['fab', 'google']);
   });
 
-  it('should use "fas" prefix for solid icons', () => {
+  it('should render brand icons with the "fab" prefix', () => {
     const fixture = createButtonFixture({ icon: 'download' });
-
-    expect(fixture.componentInstance.iconPrefix()).toBe('fas');
+    const iconEl: HTMLElement = fixture.nativeElement.querySelector('fa-icon');
+    expect(iconEl).toBeTruthy();
+    const faIconInstance = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
+    fixture.detectChanges();
+    expect(faIconInstance.icon()).toEqual(['fas', 'download']);
   });
 
   it('should show external link icon if isExternalLink is true', () => {
@@ -100,10 +104,10 @@ describe('ButtonComponent', () => {
   });
 
   it('should apply rounded icon button class when label is not set', () => {
-    const fixture = createButtonFixture({ label: undefined, size: 'sm' });
+    const fixture = createButtonFixture({ size: 'sm' });
 
     const buttonEl: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-    expect(buttonEl.className).toContain('p-ripple p-button p-button-primary p-component');
+    expect(Array.from(buttonEl.classList)).toContain('rounded-full');
   });
 
   it('should show badge if numberOfFavorites is set', () => {
@@ -115,7 +119,6 @@ describe('ButtonComponent', () => {
 
   it('should show badge if size is set', () => {
     const fixture = createButtonFixture({ size: 'sm' });
-    fixture.componentRef.setInput('label', undefined);
     expect(fixture.componentInstance.buttonClass()).contain('w-8 h-8');
   });
 });
