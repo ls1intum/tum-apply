@@ -97,677 +97,706 @@ describe('ApplicationDetailComponent', () => {
   });
 
   // ---------------- FILTER / SEARCH / SORT ----------------
-  it.each([
-    {
-      name: 'search change',
-      call: () => component.onSearchEmit('test'),
-      assert: () => expect(component.searchQuery()).toBe('test'),
-    },
-    {
-      name: 'job filter change',
-      call: () =>
-        component.onFilterEmit({
-          filterId: 'jobTitle',
-          selectedValues: ['Job A'],
-        } as any),
-      assert: () => expect(component.selectedJobFilters()).toEqual(['Job A']),
-    },
-    {
-      name: 'status filter change',
-      call: () => {
-        const label = availableStatusOptions[0].label;
-        component.onFilterEmit({ filterId: 'status', selectedValues: [label] } as any);
+  describe('Filter / Search / Sort', () => {
+    it.each([
+      {
+        name: 'search change',
+        call: () => component.onSearchEmit('test'),
+        assert: () => expect(component.searchQuery()).toBe('test'),
       },
-      assert: () => expect(component.selectedStatusFilters()).toContain(availableStatusOptions[0].key),
-    },
-  ])('should trigger loadInitialPage on $name', async ({ call, assert }) => {
-    const spy = vi.spyOn(component as unknown as { loadInitialPage: () => Promise<void> }, 'loadInitialPage').mockResolvedValue(undefined);
+      {
+        name: 'job filter change',
+        call: () =>
+          component.onFilterEmit({
+            filterId: 'jobTitle',
+            selectedValues: ['Job A'],
+          } as any),
+        assert: () => expect(component.selectedJobFilters()).toEqual(['Job A']),
+      },
+      {
+        name: 'status filter change',
+        call: () => {
+          const label = availableStatusOptions[0].label;
+          component.onFilterEmit({ filterId: 'status', selectedValues: [label] } as any);
+        },
+        assert: () => expect(component.selectedStatusFilters()).toContain(availableStatusOptions[0].key),
+      },
+    ])('should trigger loadInitialPage on $name', async ({ call, assert }) => {
+      const spy = vi
+        .spyOn(component as unknown as { loadInitialPage: () => Promise<void> }, 'loadInitialPage')
+        .mockResolvedValue(undefined);
 
-    call();
-    assert();
-    expect(spy).toHaveBeenCalled();
-  });
+      call();
+      assert();
+      expect(spy).toHaveBeenCalled();
+    });
 
-  it('should handle sort change correctly', async () => {
-    const spy = vi.spyOn(component as unknown as { loadInitialPage: () => Promise<void> }, 'loadInitialPage').mockResolvedValue(undefined);
+    it('should handle sort change correctly', async () => {
+      const spy = vi
+        .spyOn(component as unknown as { loadInitialPage: () => Promise<void> }, 'loadInitialPage')
+        .mockResolvedValue(undefined);
 
-    component.loadOnSortEmit({ field: 'name', direction: 'ASC' } as any);
-    expect(component.sortBy()).toBe('name');
-    expect(component.sortDirection()).toBe('ASC');
-    expect(spy).toHaveBeenCalled();
-  });
+      component.loadOnSortEmit({ field: 'name', direction: 'ASC' } as any);
+      expect(component.sortBy()).toBe('name');
+      expect(component.sortDirection()).toBe('ASC');
+      expect(spy).toHaveBeenCalled();
+    });
 
-  it('should reset isSortInitiatedByUser flag after query param effect when sort was user-initiated', async () => {
-    fixture.destroy();
+    it('should reset isSortInitiatedByUser flag after query param effect when sort was user-initiated', async () => {
+      fixture.destroy();
 
-    q$.next(convertToParamMap({ sortBy: 'initialField', sortDir: 'DESC' }));
+      q$.next(convertToParamMap({ sortBy: 'initialField', sortDir: 'DESC' }));
 
-    fixture = TestBed.createComponent(ApplicationDetailComponent);
-    component = fixture.componentInstance;
+      fixture = TestBed.createComponent(ApplicationDetailComponent);
+      component = fixture.componentInstance;
 
-    const spy = vi.spyOn(component as unknown as { loadInitialPage: () => Promise<void> }, 'loadInitialPage').mockResolvedValue(undefined);
+      const spy = vi
+        .spyOn(component as unknown as { loadInitialPage: () => Promise<void> }, 'loadInitialPage')
+        .mockResolvedValue(undefined);
 
-    fixture.detectChanges();
-    await fixture.whenStable();
-    vi.runOnlyPendingTimers();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      vi.runOnlyPendingTimers();
 
-    // cast to unknown + proper type instead of "any"
-    (component as unknown as { isSortInitiatedByUser: boolean }).isSortInitiatedByUser = true;
-    component.sortBy.set('customField');
+      (component as unknown as { isSortInitiatedByUser: boolean }).isSortInitiatedByUser = true;
+      component.sortBy.set('customField');
 
-    expect((component as unknown as { isSortInitiatedByUser: boolean }).isSortInitiatedByUser).toBe(true);
-    expect(component.sortBy()).toBe('customField');
+      expect((component as unknown as { isSortInitiatedByUser: boolean }).isSortInitiatedByUser).toBe(true);
+      expect(component.sortBy()).toBe('customField');
 
-    q$.next(convertToParamMap({ sortBy: 'ignoredField', sortDir: 'ASC' }));
-    fixture.detectChanges();
-    await fixture.whenStable();
-    vi.runOnlyPendingTimers();
+      q$.next(convertToParamMap({ sortBy: 'ignoredField', sortDir: 'ASC' }));
+      fixture.detectChanges();
+      await fixture.whenStable();
+      vi.runOnlyPendingTimers();
 
-    expect(component.sortBy()).toBe('customField');
-    expect(component.sortDirection()).toBe('ASC');
-    expect((component as unknown as { isSortInitiatedByUser: boolean }).isSortInitiatedByUser).toBe(false);
+      expect(component.sortBy()).toBe('customField');
+      expect(component.sortDirection()).toBe('ASC');
+      expect((component as unknown as { isSortInitiatedByUser: boolean }).isSortInitiatedByUser).toBe(false);
 
-    expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
+    });
   });
 
   // ---------------- ACCEPT / REJECT ----------------
-  it.each([
-    {
-      name: 'accept application and close dialog',
-      seed: () => component.currentApplication.set(makeDetailApp('1')),
-      act: () => component.acceptApplication({ closeJob: false }),
-      expectState: 'ACCEPTED',
-      apiSpy: () => evaluationApi.acceptApplication,
-    },
-    {
-      name: 'reject application and close dialog',
-      seed: () => component.currentApplication.set(makeDetailApp('2')),
-      act: () => component.rejectApplication({ reason: 'FAILED_REQUIREMENTS' }),
-      expectState: 'REJECTED',
-      apiSpy: () => evaluationApi.rejectApplication,
-    },
-  ])('should $name', async ({ seed, act, expectState, apiSpy }: any) => {
-    seed();
-    await act();
-    expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe(expectState);
-    expect(component.reviewDialogVisible()).toBe(false);
-    expect(apiSpy()).toHaveBeenCalled();
-  });
+  describe('Accept / Reject Applications', () => {
+    it.each([
+      {
+        name: 'accept application and close dialog',
+        seed: () => component.currentApplication.set(makeDetailApp('1')),
+        act: () => component.acceptApplication({ closeJob: false }),
+        expectState: 'ACCEPTED',
+        apiSpy: () => evaluationApi.acceptApplication,
+      },
+      {
+        name: 'reject application and close dialog',
+        seed: () => component.currentApplication.set(makeDetailApp('2')),
+        act: () => component.rejectApplication({ reason: 'FAILED_REQUIREMENTS' }),
+        expectState: 'REJECTED',
+        apiSpy: () => evaluationApi.rejectApplication,
+      },
+    ])('should $name', async ({ seed, act, expectState, apiSpy }: any) => {
+      seed();
+      await act();
+      expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe(expectState);
+      expect(component.reviewDialogVisible()).toBe(false);
+      expect(apiSpy()).toHaveBeenCalled();
+    });
 
-  it('should open accept and reject dialogs', () => {
-    component.openAcceptDialog();
-    expect(component.reviewDialogVisible()).toBe(true);
-    expect(component.reviewDialogMode()).toBe('ACCEPT');
-    component.openRejectDialog();
-    expect(component.reviewDialogVisible()).toBe(true);
-    expect(component.reviewDialogMode()).toBe('REJECT');
-  });
+    it('should open accept and reject dialogs', () => {
+      component.openAcceptDialog();
+      expect(component.reviewDialogVisible()).toBe(true);
+      expect(component.reviewDialogMode()).toBe('ACCEPT');
+      component.openRejectDialog();
+      expect(component.reviewDialogVisible()).toBe(true);
+      expect(component.reviewDialogMode()).toBe('REJECT');
+    });
 
-  it('should reject other applications when closing job', async () => {
-    component.applications.set([
-      makeDetailApp('1', 'SENT'),
-      makeDetailApp('2', 'IN_REVIEW'),
-      makeDetailApp('3', 'ACCEPTED'),
-      makeDetailApp('4', 'REJECTED'),
-    ]);
-    component.currentApplication.set(component.applications()[0]);
-    await component.acceptApplication({ closeJob: true });
-    const apps = component.applications();
-    expect(apps[1].applicationDetailDTO.applicationState).toBe('REJECTED');
-    expect(apps[3].applicationDetailDTO.applicationState).toBe('REJECTED');
+    it('should reject other applications when closing job', async () => {
+      component.applications.set([
+        makeDetailApp('1', 'SENT'),
+        makeDetailApp('2', 'IN_REVIEW'),
+        makeDetailApp('3', 'ACCEPTED'),
+        makeDetailApp('4', 'REJECTED'),
+      ]);
+      component.currentApplication.set(component.applications()[0]);
+      await component.acceptApplication({ closeJob: true });
+      const apps = component.applications();
+      expect(apps[1].applicationDetailDTO.applicationState).toBe('REJECTED');
+      expect(apps[3].applicationDetailDTO.applicationState).toBe('REJECTED');
+    });
   });
 
   // ---------------- REVIEW ENABLE / DISABLE ----------------
-  it.each([
-    ['ACCEPTED', false],
-    ['REJECTED', false],
-    ['SENT', true],
-    ['IN_REVIEW', true],
-  ])('canReview for %s', (state, expected) => {
-    component.currentApplication.set(makeDetailApp('x', state as any));
-    expect(component.canReview()).toBe(expected);
+  describe('Review Enable / Disable', () => {
+    it.each([
+      ['ACCEPTED', false],
+      ['REJECTED', false],
+      ['SENT', true],
+      ['IN_REVIEW', true],
+    ])('canReview for %s', (state, expected) => {
+      component.currentApplication.set(makeDetailApp('x', state as any));
+      expect(component.canReview()).toBe(expected);
+    });
   });
 
   // ---------------- STATE MANAGEMENT ----------------
-  it('should update currentApplicationState properly', () => {
-    const app = makeDetailApp('1', 'SENT');
-    component.applications.set([app]);
-    component.currentApplication.set(app);
-    component.updateCurrentApplicationState('ACCEPTED');
-    expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe('ACCEPTED');
-  });
+  describe('State Management', () => {
+    it('should update currentApplicationState properly', () => {
+      const app = makeDetailApp('1', 'SENT');
+      component.applications.set([app]);
+      component.currentApplication.set(app);
+      component.updateCurrentApplicationState('ACCEPTED');
+      expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe('ACCEPTED');
+    });
 
-  it('should handle undefined currentApplication safely', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    component.currentApplication.set(undefined);
-    component.updateCurrentApplicationState('REJECTED');
-    expect(consoleSpy).toHaveBeenCalledWith('Current application is undefined');
-    consoleSpy.mockRestore();
+    it('should handle undefined currentApplication safely', () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      component.currentApplication.set(undefined);
+      component.updateCurrentApplicationState('REJECTED');
+      expect(consoleSpy).toHaveBeenCalledWith('Current application is undefined');
+      consoleSpy.mockRestore();
+    });
   });
 
   // ---------------- NAVIGATION ----------------
-  it('should navigate next and prev correctly', async () => {
-    component.applications.set([makeDetailApp('1'), makeDetailApp('2'), makeDetailApp('3')]);
-    component.totalRecords.set(3);
-    component.currentApplication.set(component.applications()[0]);
-    component.onNext();
-    expect(component.currentIndex()).toBe(1);
-    component.onPrev();
-    expect(component.currentIndex()).toBe(0);
-  });
+  describe('Navigation', () => {
+    it('should navigate next and prev correctly', async () => {
+      component.applications.set([makeDetailApp('1'), makeDetailApp('2'), makeDetailApp('3')]);
+      component.totalRecords.set(3);
+      component.currentApplication.set(component.applications()[0]);
+      component.onNext();
+      expect(component.currentIndex()).toBe(1);
+      component.onPrev();
+      expect(component.currentIndex()).toBe(0);
+    });
 
-  it('should not navigate beyond boundaries', () => {
-    component.totalRecords.set(1);
-    component.currentIndex.set(0);
-    component.onPrev();
-    component.onNext();
-    expect(component.currentIndex()).toBe(0);
-  });
+    it('should not navigate beyond boundaries', () => {
+      component.totalRecords.set(1);
+      component.currentIndex.set(0);
+      component.onPrev();
+      component.onNext();
+      expect(component.currentIndex()).toBe(0);
+    });
 
-  it('should call loadNext when currentIndex + half < totalRecords', () => {
-    const spy = vi.spyOn(component as unknown as { loadNext: (index: number) => Promise<void> }, 'loadNext').mockResolvedValue(undefined);
+    it('should call loadNext when currentIndex + half < totalRecords', () => {
+      const spy = vi.spyOn(component as unknown as { loadNext: (index: number) => Promise<void> }, 'loadNext').mockResolvedValue(undefined);
 
-    component.applications.set([makeDetailApp('1'), makeDetailApp('2'), makeDetailApp('3')]);
-    component.totalRecords.set(10);
-    component.currentIndex.set(0);
-    component.windowIndex.set(0);
-    component.currentApplication.set(component.applications()[0]);
-    component.onNext();
-    expect(spy).toHaveBeenCalledWith(component.currentIndex() + component.half);
-  });
+      component.applications.set([makeDetailApp('1'), makeDetailApp('2'), makeDetailApp('3')]);
+      component.totalRecords.set(10);
+      component.currentIndex.set(0);
+      component.windowIndex.set(0);
+      component.currentApplication.set(component.applications()[0]);
+      component.onNext();
+      expect(spy).toHaveBeenCalledWith(component.currentIndex() + component.half);
+    });
 
-  it('should call loadPrev when currentIndex - half >= 0', () => {
-    const spy = vi.spyOn(component as unknown as { loadPrev: (index: number) => Promise<void> }, 'loadPrev').mockResolvedValue(undefined);
+    it('should call loadPrev when currentIndex - half >= 0', () => {
+      const spy = vi.spyOn(component as unknown as { loadPrev: (index: number) => Promise<void> }, 'loadPrev').mockResolvedValue(undefined);
 
-    component.applications.set([
-      makeDetailApp('0'),
-      makeDetailApp('1'),
-      makeDetailApp('2'),
-      makeDetailApp('3'),
-      makeDetailApp('4'),
-      makeDetailApp('5'),
-      makeDetailApp('6'),
-    ]);
-    component.totalRecords.set(7);
-    component.currentIndex.set(4);
-    component.windowIndex.set(4);
-    component.currentApplication.set(component.applications()[4]);
-    component.onPrev();
-    expect(spy).toHaveBeenCalledWith(component.currentIndex() - component.half);
+      component.applications.set([
+        makeDetailApp('0'),
+        makeDetailApp('1'),
+        makeDetailApp('2'),
+        makeDetailApp('3'),
+        makeDetailApp('4'),
+        makeDetailApp('5'),
+        makeDetailApp('6'),
+      ]);
+      component.totalRecords.set(7);
+      component.currentIndex.set(4);
+      component.windowIndex.set(4);
+      component.currentApplication.set(component.applications()[4]);
+      component.onPrev();
+      expect(spy).toHaveBeenCalledWith(component.currentIndex() - component.half);
+    });
   });
 
   // ---------------- ERROR HANDLING ----------------
-  it('should show toast on loadAllJobNames failure', async () => {
-    evaluationApi.getAllJobNames.mockReturnValueOnce(throwError(() => new Error('fail')));
-    await component.loadAllJobNames();
-    expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadJobNames');
-  });
+  describe('Error Handling', () => {
+    it('should show toast on loadAllJobNames failure', async () => {
+      evaluationApi.getAllJobNames.mockReturnValueOnce(throwError(() => new Error('fail')));
+      await component.loadAllJobNames();
+      expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadJobNames');
+    });
 
-  it('should show toast error when loadPage throws', async () => {
-    evaluationApi.getApplicationsDetails.mockReturnValueOnce(throwError(() => new Error('fail')));
+    it('should show toast error when loadPage throws', async () => {
+      evaluationApi.getApplicationsDetails.mockReturnValueOnce(throwError(() => new Error('fail')));
 
-    const result = await (component as unknown as { loadPage: (page: number, size: number) => Promise<unknown> }).loadPage(0, 1);
+      const result = await (component as unknown as { loadPage: (page: number, size: number) => Promise<unknown> }).loadPage(0, 1);
 
-    expect(result).toBeUndefined();
-    expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadApplications');
+      expect(result).toBeUndefined();
+      expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadApplications');
+    });
   });
 
   // ---------------- CONSTANTS ----------------
-  it('should expose constants and derived values', () => {
-    const testComp = component as unknown as {
-      WINDOW_SIZE: number;
-      sortableFields: typeof sortableFields;
-      half: number;
-    };
+  describe('Constants', () => {
+    it('should expose constants and derived values', () => {
+      const testComp = component as unknown as {
+        WINDOW_SIZE: number;
+        sortableFields: typeof sortableFields;
+        half: number;
+      };
 
-    expect(testComp.WINDOW_SIZE).toBe(7);
-    expect(testComp.sortableFields).toEqual(sortableFields);
-    expect(testComp.half).toBe(3);
-  });
+      expect(testComp.WINDOW_SIZE).toBe(7);
+      expect(testComp.sortableFields).toEqual(sortableFields);
+      expect(testComp.half).toBe(3);
+    });
 
-  it('should compute currentApplicationId correctly', () => {
-    component.currentApplication.set(makeDetailApp('abc'));
-    const testComp = component as unknown as {
-      currentApplicationId: () => string;
-    };
-    expect(testComp.currentApplicationId()).toBe('abc');
+    it('should compute currentApplicationId correctly', () => {
+      component.currentApplication.set(makeDetailApp('abc'));
+      const testComp = component as unknown as {
+        currentApplicationId: () => string;
+      };
+      expect(testComp.currentApplicationId()).toBe('abc');
+    });
   });
 
   // ---------------- WINDOW AND PAGE LOADING ----------------
-  it('should loadWindow correctly and set state', async () => {
-    const mockRes = {
-      applications: [makeDetailApp('1'), makeDetailApp('2')],
-      totalRecords: 10,
-      currentIndex: 1,
-      windowIndex: 1,
-    };
-    evaluationApi.getApplicationsDetailsWindow.mockReturnValue(of(mockRes));
+  describe('Window and Page Loading', () => {
+    it('should loadWindow correctly and set state', async () => {
+      const mockRes = {
+        applications: [makeDetailApp('1'), makeDetailApp('2')],
+        totalRecords: 10,
+        currentIndex: 1,
+        windowIndex: 1,
+      };
+      evaluationApi.getApplicationsDetailsWindow.mockReturnValue(of(mockRes));
 
-    const testComp = component as unknown as {
-      updateDocumentInformation: (appId: string) => void;
-      markCurrentApplicationAsInReview: () => Promise<void>;
-      loadWindow: (appId: string) => Promise<void>;
-    };
+      const testComp = component as unknown as {
+        updateDocumentInformation: (appId: string) => void;
+        markCurrentApplicationAsInReview: () => Promise<void>;
+        loadWindow: (appId: string) => Promise<void>;
+      };
 
-    const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
-    const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue();
+      const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
+      const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue();
 
-    await testComp.loadWindow('app-1');
+      await testComp.loadWindow('app-1');
 
-    expect(evaluationApi.getApplicationsDetailsWindow).toHaveBeenCalledWith(
-      'app-1',
-      7,
-      component.sortBy(),
-      component.sortDirection(),
-      undefined,
-      undefined,
-      undefined,
-    );
-    expect(component.totalRecords()).toBe(10);
-    expect(component.applications().length).toBe(2);
-    expect(component.windowIndex()).toBe(1);
-    expect(component.currentIndex()).toBe(1);
-    expect(component.currentApplication()?.applicationDetailDTO.applicationId).toBe('2');
-    expect(updateDocSpy).toHaveBeenCalledWith('2');
-    expect(markSpy).toHaveBeenCalled();
-  });
+      expect(evaluationApi.getApplicationsDetailsWindow).toHaveBeenCalledWith(
+        'app-1',
+        7,
+        component.sortBy(),
+        component.sortDirection(),
+        undefined,
+        undefined,
+        undefined,
+      );
+      expect(component.totalRecords()).toBe(10);
+      expect(component.applications().length).toBe(2);
+      expect(component.windowIndex()).toBe(1);
+      expect(component.currentIndex()).toBe(1);
+      expect(component.currentApplication()?.applicationDetailDTO.applicationId).toBe('2');
+      expect(updateDocSpy).toHaveBeenCalledWith('2');
+      expect(markSpy).toHaveBeenCalled();
+    });
 
-  it('should handle error in loadWindow gracefully', async () => {
-    evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(throwError(() => new Error('fail')));
+    it('should handle error in loadWindow gracefully', async () => {
+      evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(throwError(() => new Error('fail')));
 
-    const testComp = component as unknown as {
-      loadWindow: (appId: string) => Promise<void>;
-    };
+      const testComp = component as unknown as {
+        loadWindow: (appId: string) => Promise<void>;
+      };
 
-    await testComp.loadWindow('app-1');
+      await testComp.loadWindow('app-1');
 
-    expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadApplications');
-  });
+      expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadApplications');
+    });
 
-  it.each([
-    {
-      op: 'next' as const,
-      method: 'loadNext',
-      pageResult: [makeDetailApp('new')],
-      expectTrim: true,
-      expectUpdate: true,
-    },
-    {
-      op: 'next' as const,
-      method: 'loadNext',
-      pageResult: undefined,
-      expectTrim: false,
-      expectUpdate: false,
-    },
-    {
-      op: 'prev' as const,
-      method: 'loadPrev',
-      pageResult: [makeDetailApp('1')],
-      expectTrim: false,
-      expectUpdate: true,
-    },
-  ])('should handle $method window maintenance', async ({ op, method, pageResult, expectUpdate }) => {
-    const testComp = component as unknown as {
-      updateDocumentInformation: (id: string) => void;
-      loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[] | undefined>;
-      loadNext: (index: number) => Promise<void>;
-      loadPrev: (index: number) => Promise<void>;
-    };
+    it.each([
+      {
+        op: 'next' as const,
+        method: 'loadNext',
+        pageResult: [makeDetailApp('new')],
+        expectTrim: true,
+        expectUpdate: true,
+      },
+      {
+        op: 'next' as const,
+        method: 'loadNext',
+        pageResult: undefined,
+        expectTrim: false,
+        expectUpdate: false,
+      },
+      {
+        op: 'prev' as const,
+        method: 'loadPrev',
+        pageResult: [makeDetailApp('1')],
+        expectTrim: false,
+        expectUpdate: true,
+      },
+    ])('should handle $method window maintenance', async ({ op, method, pageResult, expectUpdate }) => {
+      const testComp = component as unknown as {
+        updateDocumentInformation: (id: string) => void;
+        loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[] | undefined>;
+        loadNext: (index: number) => Promise<void>;
+        loadPrev: (index: number) => Promise<void>;
+      };
 
-    const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
+      const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
 
-    if (op === 'next') {
-      const initialApps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
-      component.applications.set(initialApps);
-      component.windowIndex.set(6);
+      if (op === 'next') {
+        const initialApps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
+        component.applications.set(initialApps);
+        component.windowIndex.set(6);
 
-      vi.spyOn(testComp, 'loadPage').mockResolvedValue(pageResult);
+        vi.spyOn(testComp, 'loadPage').mockResolvedValue(pageResult);
 
-      await testComp.loadNext(8);
+        await testComp.loadNext(8);
 
-      if (pageResult) {
-        const apps = component.applications();
-        expect(apps.length).toBe(7);
-        expect(updateDocSpy).toHaveBeenCalledWith(apps[component.windowIndex()].applicationDetailDTO.applicationId);
+        if (pageResult) {
+          const apps = component.applications();
+          expect(apps.length).toBe(7);
+          expect(updateDocSpy).toHaveBeenCalledWith(apps[component.windowIndex()].applicationDetailDTO.applicationId);
+        } else {
+          expect(updateDocSpy).not.toHaveBeenCalled();
+        }
       } else {
-        expect(updateDocSpy).not.toHaveBeenCalled();
-      }
-    } else {
-      component.applications.set([makeDetailApp('2'), makeDetailApp('3')]);
-      component.windowIndex.set(0);
+        component.applications.set([makeDetailApp('2'), makeDetailApp('3')]);
+        component.windowIndex.set(0);
 
-      vi.spyOn(testComp, 'loadPage').mockResolvedValue(pageResult);
+        vi.spyOn(testComp, 'loadPage').mockResolvedValue(pageResult);
+
+        await testComp.loadPrev(0);
+
+        if (expectUpdate) expect(updateDocSpy).toHaveBeenCalled();
+      }
+    });
+
+    it('should trim window on loadPrev when exceeding size', async () => {
+      const apps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
+      component.applications.set(apps);
+
+      const testComp = component as unknown as {
+        loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[]>;
+        updateDocumentInformation: (id: string) => void;
+        loadPrev: (index: number) => Promise<void>;
+      };
+
+      vi.spyOn(testComp, 'loadPage').mockResolvedValue([makeDetailApp('new')]);
+      const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
 
       await testComp.loadPrev(0);
 
-      if (expectUpdate) expect(updateDocSpy).toHaveBeenCalled();
-    }
-  });
+      expect(component.applications().length).toBe(7);
+      expect(updateDocSpy).toHaveBeenCalled();
+    });
 
-  it('should trim window on loadPrev when exceeding size', async () => {
-    const apps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
-    component.applications.set(apps);
+    it('should updateApplications trim front when windowIndex > half', () => {
+      const apps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
+      component.applications.set(apps);
+      component.windowIndex.set(5);
 
-    const testComp = component as unknown as {
-      loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[]>;
-      updateDocumentInformation: (id: string) => void;
-      loadPrev: (index: number) => Promise<void>;
-    };
-
-    vi.spyOn(testComp, 'loadPage').mockResolvedValue([makeDetailApp('new')]);
-    const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
-
-    await testComp.loadPrev(0);
-
-    expect(component.applications().length).toBe(7);
-    expect(updateDocSpy).toHaveBeenCalled();
-  });
-
-  it('should updateApplications trim front when windowIndex > half', () => {
-    const apps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
-    component.applications.set(apps);
-    component.windowIndex.set(5);
-
-    const testComp = component as unknown as {
-      updateApplications: () => void;
-      updateDocumentInformation: (id: string) => void;
-    };
-
-    const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
-
-    testComp.updateApplications();
-
-    expect(component.applications().length).toBeLessThanOrEqual(7);
-    expect(component.windowIndex()).toBeLessThan(5);
-    expect(updateDocSpy).toHaveBeenCalled();
-  });
-
-  it('should updateApplications trim end when right side too large', () => {
-    const apps = Array.from({ length: 10 }, (_, i) => makeDetailApp(`${i}`));
-    component.applications.set(apps);
-    component.windowIndex.set(1);
-
-    const testComp = component as unknown as {
-      updateApplications: () => void;
-      updateDocumentInformation: (id: string) => void;
-    };
-
-    const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
-
-    testComp.updateApplications();
-
-    expect(component.applications().length).toBeLessThan(10);
-    expect(updateDocSpy).toHaveBeenCalled();
-  });
-
-  it('should build query params with and without search', () => {
-    component.sortBy.set('name');
-    component.sortDirection.set('ASC');
-    component.currentApplication.set(makeDetailApp('1'));
-
-    const testComp = component as unknown as {
-      buildQueryParams: () => {
-        sortBy: string;
-        sortDir: string;
-        applicationId?: string;
-        search?: string;
+      const testComp = component as unknown as {
+        updateApplications: () => void;
+        updateDocumentInformation: (id: string) => void;
       };
-    };
 
-    let qp = testComp.buildQueryParams();
-    expect(qp.sortBy).toBe('name');
-    expect(qp.sortDir).toBe('ASC');
-    expect(qp.applicationId).toBe('1');
-    component.searchQuery.set('test');
-    qp = testComp.buildQueryParams();
-    expect(qp.search).toBe('test');
-  });
+      const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
 
-  it('should updateUrlQueryParams call router.navigate', async () => {
-    const spy = vi.spyOn(router, 'navigate');
+      testComp.updateApplications();
 
-    const testComp = component as unknown as {
-      updateUrlQueryParams: () => Promise<void>;
-    };
+      expect(component.applications().length).toBeLessThanOrEqual(7);
+      expect(component.windowIndex()).toBeLessThan(5);
+      expect(updateDocSpy).toHaveBeenCalled();
+    });
 
-    await testComp.updateUrlQueryParams();
+    it('should updateApplications trim end when right side too large', () => {
+      const apps = Array.from({ length: 10 }, (_, i) => makeDetailApp(`${i}`));
+      component.applications.set(apps);
+      component.windowIndex.set(1);
 
-    expect(spy).toHaveBeenCalledWith(
-      [],
-      expect.objectContaining({
-        replaceUrl: true,
-        queryParams: expect.any(Object),
-      }),
-    );
-  });
+      const testComp = component as unknown as {
+        updateApplications: () => void;
+        updateDocumentInformation: (id: string) => void;
+      };
 
-  it('should updateDocumentInformation set currentDocumentIds', async () => {
-    const ids = makeDocumentIds();
-    applicationApi.getDocumentDictionaryIds.mockReturnValueOnce(of(ids));
+      const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
 
-    const testComp = component as unknown as {
-      updateDocumentInformation: (appId: string) => Promise<void>;
-    };
+      testComp.updateApplications();
 
-    await testComp.updateDocumentInformation('app-1');
+      expect(component.applications().length).toBeLessThan(10);
+      expect(updateDocSpy).toHaveBeenCalled();
+    });
 
-    expect(component.currentDocumentIds()).toEqual(ids);
+    it('should build query params with and without search', () => {
+      component.sortBy.set('name');
+      component.sortDirection.set('ASC');
+      component.currentApplication.set(makeDetailApp('1'));
+
+      const testComp = component as unknown as {
+        buildQueryParams: () => {
+          sortBy: string;
+          sortDir: string;
+          applicationId?: string;
+          search?: string;
+        };
+      };
+
+      let qp = testComp.buildQueryParams();
+      expect(qp.sortBy).toBe('name');
+      expect(qp.sortDir).toBe('ASC');
+      expect(qp.applicationId).toBe('1');
+      component.searchQuery.set('test');
+      qp = testComp.buildQueryParams();
+      expect(qp.search).toBe('test');
+    });
+
+    it('should updateUrlQueryParams call router.navigate', async () => {
+      const spy = vi.spyOn(router, 'navigate');
+
+      const testComp = component as unknown as {
+        updateUrlQueryParams: () => Promise<void>;
+      };
+
+      await testComp.updateUrlQueryParams();
+
+      expect(spy).toHaveBeenCalledWith(
+        [],
+        expect.objectContaining({
+          replaceUrl: true,
+          queryParams: expect.any(Object),
+        }),
+      );
+    });
+
+    it('should updateDocumentInformation set currentDocumentIds', async () => {
+      const ids = makeDocumentIds();
+      applicationApi.getDocumentDictionaryIds.mockReturnValueOnce(of(ids));
+
+      const testComp = component as unknown as {
+        updateDocumentInformation: (appId: string) => Promise<void>;
+      };
+
+      await testComp.updateDocumentInformation('app-1');
+
+      expect(component.currentDocumentIds()).toEqual(ids);
+    });
   });
 
   // ---------------- INIT ----------------
-  it.each([
-    {
-      qp: { sortDir: 'INVALID' },
-      pre: {},
-      expect: (c: ApplicationDetailComponent, s: any, w: any) => {
-        expect(c.sortDirection()).toBe('DESC');
-        expect(s).toHaveBeenCalled();
-        expect(w).not.toHaveBeenCalled();
+  describe('Initialization from Query Params', () => {
+    it.each([
+      {
+        qp: { sortDir: 'INVALID' },
+        pre: {},
+        expect: (c: ApplicationDetailComponent, s: any, w: any) => {
+          expect(c.sortDirection()).toBe('DESC');
+          expect(s).toHaveBeenCalled();
+          expect(w).not.toHaveBeenCalled();
+        },
       },
-    },
-    {
-      qp: { sortBy: 'otherField', sortDir: 'ASC' },
-      pre: { sortBy: 'manualField', isSortInitiatedByUser: true },
-      expect: (c: ApplicationDetailComponent, s: any) => {
-        expect(c.sortBy()).toBe('manualField');
-        expect(s).toHaveBeenCalled();
+      {
+        qp: { sortBy: 'otherField', sortDir: 'ASC' },
+        pre: { sortBy: 'manualField', isSortInitiatedByUser: true },
+        expect: (c: ApplicationDetailComponent, s: any) => {
+          expect(c.sortBy()).toBe('manualField');
+          expect(s).toHaveBeenCalled();
+        },
       },
-    },
-    {
-      qp: { search: 'fromQuery' },
-      pre: { search: 'manualSearch', isSearchInitiatedByUser: true },
-      expect: (c: ApplicationDetailComponent, s: any) => {
-        expect(c.searchQuery()).toBe('manualSearch');
-        expect(s).toHaveBeenCalled();
+      {
+        qp: { search: 'fromQuery' },
+        pre: { search: 'manualSearch', isSearchInitiatedByUser: true },
+        expect: (c: ApplicationDetailComponent, s: any) => {
+          expect(c.searchQuery()).toBe('manualSearch');
+          expect(s).toHaveBeenCalled();
+        },
       },
-    },
-    {
-      qp: { applicationId: 'app-123' },
-      pre: {},
-      expect: (_: ApplicationDetailComponent, s: any, w: any) => {
-        expect(w).toHaveBeenCalledWith('app-123');
-        expect(s).not.toHaveBeenCalled();
+      {
+        qp: { applicationId: 'app-123' },
+        pre: {},
+        expect: (_: ApplicationDetailComponent, s: any, w: any) => {
+          expect(w).toHaveBeenCalledWith('app-123');
+          expect(s).not.toHaveBeenCalled();
+        },
       },
-    },
-  ])('should initialize from query params', async ({ qp, pre, expect: assertFn }) => {
-    const testComp = component as unknown as {
-      loadInitialPage: () => Promise<void>;
-      loadWindow: (id: string) => Promise<void>;
-      isSortInitiatedByUser: boolean;
-      isSearchInitiatedByUser: boolean;
-    };
+    ])('should initialize from query params', async ({ qp, pre, expect: assertFn }) => {
+      const testComp = component as unknown as {
+        loadInitialPage: () => Promise<void>;
+        loadWindow: (id: string) => Promise<void>;
+        isSortInitiatedByUser: boolean;
+        isSearchInitiatedByUser: boolean;
+      };
 
-    const spyInit = vi.spyOn(testComp, 'loadInitialPage').mockResolvedValue(undefined);
-    const spyWindow = vi.spyOn(testComp, 'loadWindow').mockResolvedValue(undefined);
+      const spyInit = vi.spyOn(testComp, 'loadInitialPage').mockResolvedValue(undefined);
+      const spyWindow = vi.spyOn(testComp, 'loadWindow').mockResolvedValue(undefined);
 
-    if (pre.sortBy) component.sortBy.set(pre.sortBy);
-    if (pre.search) component.searchQuery.set(pre.search);
-    testComp.isSortInitiatedByUser = !!pre.isSortInitiatedByUser;
-    testComp.isSearchInitiatedByUser = !!pre.isSearchInitiatedByUser;
+      if (pre.sortBy) component.sortBy.set(pre.sortBy);
+      if (pre.search) component.searchQuery.set(pre.search);
+      testComp.isSortInitiatedByUser = !!pre.isSortInitiatedByUser;
+      testComp.isSearchInitiatedByUser = !!pre.isSearchInitiatedByUser;
 
-    q$.next(convertToParamMap(qp));
-    await component.init();
-    assertFn(component, spyInit, spyWindow);
+      q$.next(convertToParamMap(qp));
+      await component.init();
+      assertFn(component, spyInit, spyWindow);
+    });
   });
 
   // ---------------- MISC ----------------
-  it('should call rejectOtherApplicationsOfJob with empty string when jobId is undefined', async () => {
-    const testComp = component as unknown as {
-      rejectOtherApplicationsOfJob: (jobId: string) => Promise<void>;
-    };
+  describe('Miscellaneous', () => {
+    it('should call rejectOtherApplicationsOfJob with empty string when jobId is undefined', async () => {
+      const testComp = component as unknown as {
+        rejectOtherApplicationsOfJob: (jobId: string) => Promise<void>;
+      };
 
-    const spyRejectOthers = vi.spyOn(testComp, 'rejectOtherApplicationsOfJob');
+      const spyRejectOthers = vi.spyOn(testComp, 'rejectOtherApplicationsOfJob');
 
-    const base = makeDetailApp('1', 'SENT');
-    const app = {
-      ...base,
-      jobId: undefined,
-      applicationDetailDTO: { ...base.applicationDetailDTO, jobId: undefined },
-    } as unknown as ApplicationEvaluationDetailDTO;
+      const base = makeDetailApp('1', 'SENT');
+      const app = {
+        ...base,
+        jobId: undefined,
+        applicationDetailDTO: { ...base.applicationDetailDTO, jobId: undefined },
+      } as unknown as ApplicationEvaluationDetailDTO;
 
-    component.currentApplication.set(app);
-    component.applications.set([app, makeDetailApp('2', 'SENT')]);
-    await component.acceptApplication({ closeJob: true });
-    expect(spyRejectOthers).toHaveBeenCalledWith('');
-    expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe('ACCEPTED');
-  });
+      component.currentApplication.set(app);
+      component.applications.set([app, makeDetailApp('2', 'SENT')]);
+      await component.acceptApplication({ closeJob: true });
+      expect(spyRejectOthers).toHaveBeenCalledWith('');
+      expect(component.currentApplication()?.applicationDetailDTO.applicationState).toBe('ACCEPTED');
+    });
 
-  it('should map translation keys to enum values, falling back when key not found', () => {
-    const knownLabel = availableStatusOptions[0].label;
-    const knownKey = availableStatusOptions[0].key;
+    it('should map translation keys to enum values, falling back when key not found', () => {
+      const knownLabel = availableStatusOptions[0].label;
+      const knownKey = availableStatusOptions[0].key;
 
-    const testComp = component as unknown as {
-      mapTranslationKeysToEnumValues: (labels: string[]) => string[];
-    };
+      const testComp = component as unknown as {
+        mapTranslationKeysToEnumValues: (labels: string[]) => string[];
+      };
 
-    let result = testComp.mapTranslationKeysToEnumValues([knownLabel]);
-    expect(result).toEqual([knownKey]);
+      let result = testComp.mapTranslationKeysToEnumValues([knownLabel]);
+      expect(result).toEqual([knownKey]);
 
-    result = testComp.mapTranslationKeysToEnumValues(['UNKNOWN_LABEL']);
-    expect(result).toEqual(['UNKNOWN_LABEL']);
+      result = testComp.mapTranslationKeysToEnumValues(['UNKNOWN_LABEL']);
+      expect(result).toEqual(['UNKNOWN_LABEL']);
+    });
   });
 
   // ---------------- LOAD PAGE ----------------
-  it('should load applications with filters and search set', async () => {
-    const mockRes = { applications: [makeDetailApp('1')], totalRecords: 5 };
-    evaluationApi.getApplicationsDetails.mockReturnValueOnce(of(mockRes));
-    component.selectedStatusFilters.set(['SENT']);
-    component.selectedJobFilters.set(['AI Lab']);
-    component.searchQuery.set('test-search');
+  describe('Load Page', () => {
+    it('should load applications with filters and search set', async () => {
+      const mockRes = { applications: [makeDetailApp('1')], totalRecords: 5 };
+      evaluationApi.getApplicationsDetails.mockReturnValueOnce(of(mockRes));
+      component.selectedStatusFilters.set(['SENT']);
+      component.selectedJobFilters.set(['AI Lab']);
+      component.searchQuery.set('test-search');
 
-    const testComp = component as unknown as {
-      loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[]>;
-    };
+      const testComp = component as unknown as {
+        loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[]>;
+      };
 
-    const result = await testComp.loadPage(0, 10);
+      const result = await testComp.loadPage(0, 10);
 
-    expect(result).toEqual(mockRes.applications);
-    expect(component.totalRecords()).toBe(5);
-    expect(evaluationApi.getApplicationsDetails).toHaveBeenLastCalledWith(
-      0,
-      10,
-      component.sortBy(),
-      component.sortDirection(),
-      ['SENT'],
-      ['AI Lab'],
-      'test-search',
-    );
-  });
+      expect(result).toEqual(mockRes.applications);
+      expect(component.totalRecords()).toBe(5);
+      expect(evaluationApi.getApplicationsDetails).toHaveBeenLastCalledWith(
+        0,
+        10,
+        component.sortBy(),
+        component.sortDirection(),
+        ['SENT'],
+        ['AI Lab'],
+        'test-search',
+      );
+    });
 
-  it('should handle undefined totalRecords and applications gracefully', async () => {
-    const mockRes = { applications: undefined, totalRecords: undefined };
-    evaluationApi.getApplicationsDetails.mockReturnValueOnce(of(mockRes));
-    component.selectedStatusFilters.set([]);
-    component.selectedJobFilters.set([]);
-    component.searchQuery.set('');
+    it('should handle undefined totalRecords and applications gracefully', async () => {
+      const mockRes = { applications: undefined, totalRecords: undefined };
+      evaluationApi.getApplicationsDetails.mockReturnValueOnce(of(mockRes));
+      component.selectedStatusFilters.set([]);
+      component.selectedJobFilters.set([]);
+      component.searchQuery.set('');
 
-    const testComp = component as unknown as {
-      loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[] | undefined>;
-    };
+      const testComp = component as unknown as {
+        loadPage: (page: number, size: number) => Promise<ReturnType<typeof makeDetailApp>[] | undefined>;
+      };
 
-    const result = await testComp.loadPage(5, 5);
+      const result = await testComp.loadPage(5, 5);
 
-    expect(result).toBeUndefined();
-    expect(component.totalRecords()).toBe(0);
-    expect(evaluationApi.getApplicationsDetails).toHaveBeenLastCalledWith(
-      5,
-      5,
-      component.sortBy(),
-      component.sortDirection(),
-      undefined,
-      undefined,
-      undefined,
-    );
+      expect(result).toBeUndefined();
+      expect(component.totalRecords()).toBe(0);
+      expect(evaluationApi.getApplicationsDetails).toHaveBeenLastCalledWith(
+        5,
+        5,
+        component.sortBy(),
+        component.sortDirection(),
+        undefined,
+        undefined,
+        undefined,
+      );
+    });
   });
 
   // ---------------- LOAD WINDOW WITH FILTERS ----------------
-  it('should load applications window with filters and search set', async () => {
-    const mockRes = {
-      applications: [makeDetailApp('1'), makeDetailApp('2')],
-      totalRecords: 5,
-      currentIndex: 1,
-      windowIndex: 1,
-    };
-    evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(of(mockRes));
-    component.selectedStatusFilters.set(['SENT']);
-    component.selectedJobFilters.set(['AI Lab']);
-    component.searchQuery.set('test-search');
+  describe('Load Window with Filters', () => {
+    it('should load applications window with filters and search set', async () => {
+      const mockRes = {
+        applications: [makeDetailApp('1'), makeDetailApp('2')],
+        totalRecords: 5,
+        currentIndex: 1,
+        windowIndex: 1,
+      };
+      evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(of(mockRes));
+      component.selectedStatusFilters.set(['SENT']);
+      component.selectedJobFilters.set(['AI Lab']);
+      component.searchQuery.set('test-search');
 
-    const testComp = component as unknown as {
-      updateDocumentInformation: (id: string) => void;
-      markCurrentApplicationAsInReview: () => Promise<void>;
-      loadWindow: (appId: string) => Promise<void>;
-    };
+      const testComp = component as unknown as {
+        updateDocumentInformation: (id: string) => void;
+        markCurrentApplicationAsInReview: () => Promise<void>;
+        loadWindow: (appId: string) => Promise<void>;
+      };
 
-    const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
-    const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue(undefined);
+      const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
+      const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue(undefined);
 
-    await testComp.loadWindow('app-123');
+      await testComp.loadWindow('app-123');
 
-    expect(component.totalRecords()).toBe(5);
-    expect(component.applications().length).toBe(2);
-    expect(component.windowIndex()).toBe(1);
-    expect(component.currentIndex()).toBe(1);
-    expect(component.currentApplication()?.applicationDetailDTO.applicationId).toBe('2');
-    expect(evaluationApi.getApplicationsDetailsWindow).toHaveBeenCalledWith(
-      'app-123',
-      7,
-      component.sortBy(),
-      component.sortDirection(),
-      ['SENT'],
-      ['AI Lab'],
-      'test-search',
-    );
-    expect(updateDocSpy).toHaveBeenCalledWith('2');
-    expect(markSpy).toHaveBeenCalled();
-  });
+      expect(component.totalRecords()).toBe(5);
+      expect(component.applications().length).toBe(2);
+      expect(component.windowIndex()).toBe(1);
+      expect(component.currentIndex()).toBe(1);
+      expect(component.currentApplication()?.applicationDetailDTO.applicationId).toBe('2');
+      expect(evaluationApi.getApplicationsDetailsWindow).toHaveBeenCalledWith(
+        'app-123',
+        7,
+        component.sortBy(),
+        component.sortDirection(),
+        ['SENT'],
+        ['AI Lab'],
+        'test-search',
+      );
+      expect(updateDocSpy).toHaveBeenCalledWith('2');
+      expect(markSpy).toHaveBeenCalled();
+    });
 
-  it('should handle undefined values gracefully in loadWindow', async () => {
-    const mockRes = {
-      applications: undefined,
-      totalRecords: undefined,
-      currentIndex: undefined,
-      windowIndex: undefined,
-    };
-    evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(of(mockRes));
+    it('should handle undefined values gracefully in loadWindow', async () => {
+      const mockRes = {
+        applications: undefined,
+        totalRecords: undefined,
+        currentIndex: undefined,
+        windowIndex: undefined,
+      };
+      evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(of(mockRes));
 
-    const testComp = component as unknown as {
-      updateDocumentInformation: (id: string) => void;
-      markCurrentApplicationAsInReview: () => Promise<void>;
-      loadWindow: (appId: string) => Promise<void>;
-    };
+      const testComp = component as unknown as {
+        updateDocumentInformation: (id: string) => void;
+        markCurrentApplicationAsInReview: () => Promise<void>;
+        loadWindow: (appId: string) => Promise<void>;
+      };
 
-    const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
-    const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue(undefined);
+      const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
+      const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue(undefined);
 
-    await testComp.loadWindow('app-456');
+      await testComp.loadWindow('app-456');
 
-    expect(component.totalRecords()).toBe(0);
-    expect(component.applications()).toEqual([]);
-    expect(component.windowIndex()).toBe(0);
-    expect(component.currentIndex()).toBe(0);
-    expect(component.currentApplication()).toBeUndefined();
-    expect(updateDocSpy).not.toHaveBeenCalled();
-    expect(markSpy).not.toHaveBeenCalled();
+      expect(component.totalRecords()).toBe(0);
+      expect(component.applications()).toEqual([]);
+      expect(component.windowIndex()).toBe(0);
+      expect(component.currentIndex()).toBe(0);
+      expect(component.currentApplication()).toBeUndefined();
+      expect(updateDocSpy).not.toHaveBeenCalled();
+      expect(markSpy).not.toHaveBeenCalled();
+    });
   });
 });
