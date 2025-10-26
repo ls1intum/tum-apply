@@ -1,15 +1,15 @@
 {
-    "button": {
-        "close": "Close",
-        "confirm": "Confirm",
-        "delete": "Delete",
-        "remove": "Remove",
-        "edit": "Edit",
-        "save": "Save",
-        "send": "Send",
-        "submit": "Submit",
-        "view": "View",
-        "update": "Update",
-        "withdraw": "Withdraw"
-    }
+  "button": {
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "remove": "Remove",
+    "edit": "Edit",
+    "save": "Save",
+    "send": "Send",
+    "submit": "Submit",
+    "view": "View",
+    "update": "Update",
+    "withdraw": "Withdraw"
+  }
 }

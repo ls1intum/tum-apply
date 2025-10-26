@@ -1,15 +1,15 @@
 {
-    "button": {
-        "cancel": "Abbrechen",
-        "confirm": "Bestätigen",
-        "delete": "Löschen",
-        "remove": "Entfernen",
-        "edit": "Bearbeiten",
-        "save": "Speichern",
-        "send": "Senden",
-        "submit": "Absenden",
-        "update": "Aktualisieren",
-        "view": "Anzeigen",
-        "withdraw": "Zurückziehen"
-    }
+  "button": {
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "remove": "Entfernen",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "send": "Senden",
+    "submit": "Absenden",
+    "update": "Aktualisieren",
+    "view": "Anzeigen",
+    "withdraw": "Zurückziehen"
+  }
 }
