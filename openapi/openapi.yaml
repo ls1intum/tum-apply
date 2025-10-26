@@ -661,31 +661,6 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/evaluation/jobs:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getJobFilterOptions
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/JobFilterOptionDTO'}
-                uniqueItems: true
-  /api/interviews/overview:
-    get:
-      tags: [interview-resource]
-      operationId: getInterviewOverview
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -1288,6 +1263,7 @@ components:
         applicant: {$ref: '#/components/schemas/Applicant'}
         applicationId: {type: string, format: uuid}
         applicationReview: {$ref: '#/components/schemas/ApplicationReview'}
+        appliedAt: {type: string, format: date-time}
         createdAt: {type: string, format: date-time}
         customFieldAnswers:
           type: array
@@ -1305,8 +1281,7 @@ components:
         specialSkills: {type: string}
         state:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
     ApplicationDetailDTO:
       type: object
       properties:
@@ -1314,8 +1289,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation: {type: string}
@@ -1369,8 +1343,7 @@ components:
         name: {type: string}
         state:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -1385,8 +1358,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
@@ -1403,8 +1375,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         researchGroup: {type: string}
@@ -1558,18 +1529,6 @@ components:
       properties:
         message: {type: string, maxLength: 500, minLength: 0}
       required: [message]
-    InterviewOverviewDTO:
-      type: object
-      properties:
-        completedCount: {type: integer, format: int64}
-        invitedCount: {type: integer, format: int64}
-        jobId: {type: string, format: uuid}
-        jobTitle: {type: string}
-        scheduledCount: {type: integer, format: int64}
-        totalInterviews: {type: integer, format: int64}
-        uncontactedCount: {type: integer, format: int64}
-      required: [completedCount, invitedCount, jobId, jobTitle, scheduledCount, totalInterviews,
-        uncontactedCount]
     Job:
       type: object
       properties:
@@ -1612,8 +1571,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         fieldOfStudies: {type: string}
         jobId: {type: string, format: uuid}
         location: {type: string}
@@ -1657,8 +1615,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
         description: {type: string}
@@ -1681,11 +1638,6 @@ components:
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
         title]
-    JobFilterOptionDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        jobName: {type: string}
     JobFiltersDTO:
       type: object
       properties:
@@ -1958,8 +1910,7 @@ components:
         applicationId: {type: string, format: uuid}
         applicationState:
           type: string
-          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}

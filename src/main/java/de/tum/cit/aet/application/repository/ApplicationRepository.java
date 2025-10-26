@@ -149,11 +149,13 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     void withdrawApplicationById(UUID applicationId);
 
     /**
-     * Finds all applicants for a specific job that are in the 'SENT' or 'IN_REVIEW' state.
+     * Finds all applicants for a specific job that are in the 'SENT' or 'IN_REVIEW'
+     * state.
      * This is used to notify applicants about the job status update.
      *
      * @param jobId the ID of the job for which to find applicants
-     * @return a set of {@link Application} containing all important applicant details
+     * @return a set of {@link Application} containing all important applicant
+     *         details
      */
     @Query(
         """
@@ -206,4 +208,26 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
      * @return count of applications matching the criteria
      */
     long countByJobAndStateIn(Job job, List<ApplicationState> states);
+
+    /**
+     * Counts applications grouped by job and state for jobs with interview processes
+     * belonging to a specific professor.
+     * This is optimized to fetch all counts in a single query instead of N×M queries.
+     * Used by the interview overview to efficiently get statistics across all jobs.
+     *
+     * @param professorId the ID of the professor whose jobs to count applications for
+     * @return List of Object arrays containing [Job, ApplicationState, Count]
+     */
+    @Query(
+        """
+            SELECT a.job, a.state, COUNT(a)
+            FROM Application a
+            WHERE a.job IN (
+                SELECT ip.job FROM InterviewProcess ip
+                WHERE ip.job.supervisingProfessor.userId = :professorId
+            )
+            GROUP BY a.job, a.state
+        """
+    )
+    List<Object[]> countApplicationsByJobAndStateForInterviewProcesses(@Param("professorId") UUID professorId);
 }
