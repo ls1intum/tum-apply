@@ -8,12 +8,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
-import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { ButtonComponent } from '../button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 @Component({
   selector: 'jhi-otp-input',
@@ -72,10 +72,6 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
   }
 
   // Localized instruction including TTL
-  get instructionText(): string {
-    return this.translateService.instant('auth.common.otp.instructions', { minutes: this.ttlMinutes });
-  }
-
   get resendLabel(): string {
     return this.onCooldown()
       ? this.translateService.instant('auth.common.otp.resendCooldown', { seconds: this.cooldownSeconds() })
@@ -90,7 +86,7 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     }
 
     // Block any non-alphanumeric character keys (allows navigation keys, backspace, etc.)
-    if (event.key && event.key.length === 1 && !/[a-zA-Z0-9]/.test(event.key)) {
+    if (event.key.length === 1 && !/[a-zA-Z0-9]/.test(event.key)) {
       event.preventDefault();
     }
   }
