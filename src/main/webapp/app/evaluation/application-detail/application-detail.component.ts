@@ -260,7 +260,7 @@ export class ApplicationDetailComponent {
   async markCurrentApplicationAsInReview(): Promise<void> {
     const application = this.currentApplication();
 
-    if (application && application.applicationDetailDTO.applicationState === 'SENT') {
+    if (application?.applicationDetailDTO.applicationState === 'SENT') {
       this.updateCurrentApplicationState('IN_REVIEW');
       await firstValueFrom(this.evaluationResourceService.markApplicationAsInReview(application.applicationDetailDTO.applicationId));
     }

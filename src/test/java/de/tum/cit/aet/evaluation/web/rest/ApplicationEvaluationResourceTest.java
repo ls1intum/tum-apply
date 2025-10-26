@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -65,6 +65,8 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
     User professor;
     ResearchGroup researchGroup;
+    User professorUnauthorized;
+    ResearchGroup researchGroupUnauthorized;
     Applicant applicant;
     Job publishedJob;
     Application sentApp;
@@ -76,6 +78,9 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
+
+        researchGroupUnauthorized = ResearchGroupTestData.saved(researchGroupRepository);
+        professorUnauthorized = UserTestData.savedProfessor(userRepository, researchGroupUnauthorized);
 
         applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
 
@@ -93,7 +98,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsOverviewsOnlyViewableStates() {
         ApplicationEvaluationOverviewListDTO dto = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -109,7 +113,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetailsReturnsDetails() {
         ApplicationEvaluationDetailListDTO details = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -125,7 +128,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetailsWindowValidOddSize() {
         ApplicationEvaluationDetailListDTO win = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -139,7 +141,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsDetailsLimitIsApplied() {
         ApplicationEvaluationDetailListDTO details = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -154,7 +155,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void markApplicationAsInReviewSentBecomesInReview() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -165,7 +165,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void acceptApplicationSentBecomesAcceptedAndMayCloseJob() {
         String message = "Accepted!";
         AcceptDTO payload = new AcceptDTO(message, true, true);
@@ -184,7 +183,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void rejectApplicationInReviewBecomesRejectedAndStoresReason() {
         RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
 
@@ -199,30 +197,6 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void acceptApplicationUnauthenticatedReturns401() {
-        AcceptDTO payload = new AcceptDTO("msg", false, false);
-        api
-            .withoutPostProcessors()
-            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 401);
-    }
-
-    @Test
-    void rejectApplicationUnauthenticatedReturns401() {
-        RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
-        api
-            .withoutPostProcessors()
-            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 401);
-    }
-
-    @Test
-    void markApplicationAsInReviewUnauthenticatedReturns401() {
-        api
-            .withoutPostProcessors()
-            .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
-    }
-
-    @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getApplicationsOverviewsWithSortingParamsOk() {
         SortDTO sort = new SortDTO("appliedAt", SortDTO.Direction.DESC);
         OffsetPageDTO page = new OffsetPageDTO(0, 10);
@@ -247,5 +221,104 @@ public class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
         assertThat(dto.totalRecords()).isGreaterThan(0);
         assertThat(dto.applications()).isNotEmpty();
+    }
+
+    /**
+     * Authorization Tests
+     */
+
+    @Test
+    void acceptApplicationUnauthenticatedReturns401() {
+        AcceptDTO payload = new AcceptDTO("msg", false, false);
+        api
+            .withoutPostProcessors()
+            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 401);
+    }
+
+    @Test
+    void acceptApplicationForbiddenReturns403() {
+        AcceptDTO payload = new AcceptDTO("msg", false, false);
+        api
+            .with(JwtPostProcessors.jwtUser(professorUnauthorized.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 403);
+    }
+
+    @Test
+    void rejectApplicationUnauthenticatedReturns401() {
+        RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
+        api
+            .withoutPostProcessors()
+            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 401);
+    }
+
+    @Test
+    void rejectApplicationForbidden403() {
+        RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
+        api
+            .with(JwtPostProcessors.jwtUser(professorUnauthorized.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/reject", payload, Void.class, 403);
+    }
+
+    @Test
+    void markApplicationAsInReviewUnauthenticatedReturns401() {
+        api
+            .withoutPostProcessors()
+            .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 401);
+    }
+
+    @Test
+    void markApplicationAsInReviewForbiddenReturns403() {
+        api
+            .with(JwtPostProcessors.jwtUser(professorUnauthorized.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 403);
+    }
+
+    @Test
+    void getApplicationsOverviewsUnauthenticatedReturns401() {
+        api.withoutPostProcessors().getAndRead("/api/evaluation/applications", Map.of("offset", "0", "limit", "10"), Void.class, 401);
+    }
+
+    @Test
+    void getApplicationsDetailsUnauthenticatedReturns401() {
+        api
+            .withoutPostProcessors()
+            .getAndRead("/api/evaluation/application-details", Map.of("offset", "0", "limit", "10"), Void.class, 401);
+    }
+
+    @Test
+    void getApplicationsDetailsWindowUnauthenticatedReturns401() {
+        api
+            .withoutPostProcessors()
+            .getAndRead(
+                "/api/evaluation/application-details/window",
+                Map.ofEntries(entry("applicationId", inReviewApp.getApplicationId().toString()), entry("windowSize", "3")),
+                Void.class,
+                401
+            );
+    }
+
+    @Test
+    void downloadAllUnauthenticatedReturns401() {
+        api
+            .withoutPostProcessors()
+            .getAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/documents-download", Map.of(), Void.class, 401);
+    }
+
+    @Test
+    void downloadAllForbiddenReturns403() {
+        api
+            .with(JwtPostProcessors.jwtUser(professorUnauthorized.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(
+                "/api/evaluation/applications/" + sentApp.getApplicationId() + "/documents-download",
+                Map.of(),
+                Void.class,
+                403,
+                MediaType.ALL
+            );
+    }
+
+    @Test
+    void getAllJobNamesUnauthenticatedReturns401() {
+        api.withoutPostProcessors().getAndRead("/api/evaluation/job-names", Map.of(), Void.class, 401);
     }
 }
