@@ -4,43 +4,31 @@ import { of, throwError } from 'rxjs';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
-import { ToastService } from 'app/service/toast-service';
-import { TranslateService } from '@ngx-translate/core';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { DocumentSection } from 'app/evaluation/components/document-section/document-section';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
+import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
 
 describe('DocumentSection', () => {
   let fixture: ComponentFixture<DocumentSection>;
   let component: DocumentSection;
 
   let mockApi: { downloadAll: ReturnType<typeof vi.fn> };
-  let mockToast: { showError: ReturnType<typeof vi.fn> };
-  let mockTranslate: {
-    currentLang: string;
-    onLangChange: any;
-    instant: ReturnType<typeof vi.fn>;
-  };
+  let mockToast = createToastServiceMock();
+  let mockTranslate = createTranslateServiceMock();
 
   beforeEach(async () => {
     mockApi = {
       downloadAll: vi.fn(),
-    };
-    mockToast = {
-      showError: vi.fn(),
-    };
-    mockTranslate = {
-      currentLang: 'en',
-      onLangChange: of({ lang: 'en' }),
-      instant: vi.fn((v: string) => `t:${v}`),
     };
 
     await TestBed.configureTestingModule({
       imports: [DocumentSection],
       providers: [
         { provide: ApplicationEvaluationResourceApiService, useValue: mockApi },
-        { provide: ToastService, useValue: mockToast },
-        { provide: TranslateService, useValue: mockTranslate },
+        provideToastServiceMock(mockToast),
+        provideTranslateMock(mockTranslate),
       ],
     })
       .overrideComponent(DocumentSection, { set: { template: '' } })
@@ -50,10 +38,7 @@ describe('DocumentSection', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create component', () => {
-    expect(component).toBeTruthy();
-  });
-
+  // ---------------- ID CHANGE EFFECT ----------------
   describe('idChangeEffect', () => {
     it('should reset signals when idsDTO undefined', () => {
       fixture.componentRef.setInput('idsDTO', undefined);
@@ -75,7 +60,6 @@ describe('DocumentSection', () => {
       fixture.detectChanges();
 
       expect(component.documentsCount()).toBe(6);
-
       expect(component.documents().length).toBe(3);
       expect(component.extraDocuments().length).toBe(3);
     });
@@ -92,11 +76,11 @@ describe('DocumentSection', () => {
         { label: 'lbl2', document: { id: '2' } as DocumentInformationHolderDTO },
       ]);
       const tooltip = component.allDocumentsTooltip();
-      expect(tooltip).toBe('t:lbl1, t:lbl2');
-      expect(mockTranslate.instant).toHaveBeenCalledWith('lbl1');
+      expect(tooltip).toBe('lbl1, lbl2');
     });
   });
 
+  // ---------------- DOWNLOAD ALL DOCUMENTS ----------------
   describe('downloadAllDocuments', () => {
     let createObjectSpy: ReturnType<typeof vi.spyOn>;
     let revokeObjectSpy: ReturnType<typeof vi.spyOn>;
