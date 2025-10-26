@@ -2,8 +2,7 @@ import { EffectRef, Injectable, Injector, effect, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-
-import { AuthCardComponent } from '../../shared/components/templates/auth-card/auth-card.component';
+import { AuthCardComponent } from 'app/shared/components/templates/auth-card/auth-card.component';
 
 import { AuthOrchestratorService } from './auth-orchestrator.service';
 import { AuthOpenOptions } from './models/auth.model';
