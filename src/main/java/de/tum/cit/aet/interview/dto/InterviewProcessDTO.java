@@ -1,7 +1,6 @@
 package de.tum.cit.aet.interview.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
