@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -89,92 +90,115 @@ class RatingResourceTest extends AbstractResourceTest {
         application = ApplicationTestData.savedInReview(applicationRepository, publishedJob, applicant);
     }
 
-    @Test
-    void getRatingsReturnsEmptyOverview() {
-        String url = "/api/applications/" + application.getApplicationId() + "/ratings";
-
-        RatingOverviewDTO overview = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(url, Map.of(), RatingOverviewDTO.class, 200);
-
-        assertThat(overview.currentUserRating()).isNull();
-        assertThat(overview.otherRatings()).isEmpty();
+    private String ratingsUrl() {
+        return "/api/applications/" + application.getApplicationId() + "/ratings";
     }
 
-    @Test
-    void getRatingsNonexistentApplicationReturns404() {
-        UUID fakeAppId = UUID.randomUUID();
-        String url = "/api/applications/" + fakeAppId + "/ratings";
-
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).getAndRead(url, Map.of(), Void.class, 404);
+    private String ratingsUrl(UUID applicationId) {
+        return "/api/applications/" + applicationId + "/ratings";
     }
 
-    @Test
-    void updateRatingCreateAndUpdateAndDelete() {
-        String url = "/api/applications/" + application.getApplicationId() + "/ratings";
+    @Nested
+    class GetRatings {
 
-        RatingOverviewDTO created = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(url + "?rating=1", null, RatingOverviewDTO.class, 200);
+        @Test
+        void returnsEmptyOverviewInitially() {
+            RatingOverviewDTO overview = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(ratingsUrl(), Map.of(), RatingOverviewDTO.class, 200);
 
-        assertThat(created.currentUserRating()).isEqualTo(1);
+            assertThat(overview.currentUserRating()).isNull();
+            assertThat(overview.otherRatings()).isEmpty();
+        }
 
-        RatingOverviewDTO updated = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(url + "?rating=2", null, RatingOverviewDTO.class, 200);
+        @Test
+        void includesOtherProfessorRatings() {
+            RatingTestData.saved(ratingRepository, application, otherProfessor, -1);
 
-        assertThat(updated.currentUserRating()).isEqualTo(2);
+            RatingOverviewDTO overview = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(ratingsUrl(), Map.of(), RatingOverviewDTO.class, 200);
 
-        RatingOverviewDTO deleted = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(url, null, RatingOverviewDTO.class, 200);
+            assertThat(overview.currentUserRating()).isNull();
+            assertThat(overview.otherRatings()).anyMatch(
+                r -> r.rating() == -1 && r.from().equals(otherProfessor.getFirstName() + " " + otherProfessor.getLastName())
+            );
+        }
 
-        assertThat(deleted.currentUserRating()).isNull();
+        @Test
+        void nonexistentApplicationReturns404() {
+            UUID fakeAppId = UUID.randomUUID();
+
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(ratingsUrl(fakeAppId), Map.of(), Void.class, 404);
+
+            assertThat(result).isNull();
+        }
     }
 
-    @Test
-    void updateRatingNonexistentApplicationReturns404() {
-        UUID fakeAppId = UUID.randomUUID();
-        String url = "/api/applications/" + fakeAppId + "/ratings";
+    @Nested
+    class UpdateRating {
 
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).putAndRead(url + "?rating=1", null, Void.class, 404);
+        @Test
+        void createUpdateAndDeleteRating() {
+            // Create
+            RatingOverviewDTO created = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(ratingsUrl() + "?rating=1", null, RatingOverviewDTO.class, 200);
+
+            assertThat(created.currentUserRating()).isEqualTo(1);
+
+            // Update
+            RatingOverviewDTO updated = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(ratingsUrl() + "?rating=2", null, RatingOverviewDTO.class, 200);
+
+            assertThat(updated.currentUserRating()).isEqualTo(2);
+
+            // Delete
+            RatingOverviewDTO deleted = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(ratingsUrl(), null, RatingOverviewDTO.class, 200);
+
+            assertThat(deleted.currentUserRating()).isNull();
+        }
+
+        @Test
+        void nonexistentApplicationReturns404() {
+            UUID fakeAppId = UUID.randomUUID();
+
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(ratingsUrl(fakeAppId) + "?rating=1", null, Void.class, 404);
+
+            assertThat(result).isNull();
+        }
     }
 
-    @Test
-    void getRatingsUnauthenticatedReturns401() {
-        String url = "/api/applications/" + application.getApplicationId() + "/ratings";
-        api.withoutPostProcessors().getAndRead(url, Map.of(), Void.class, 401);
-    }
+    @Nested
+    class Authorization {
 
-    @Test
-    void updateRatingUnauthenticatedReturns401() {
-        String url = "/api/applications/" + application.getApplicationId() + "/ratings";
-        api.withoutPostProcessors().putAndRead(url + "?rating=1", null, Void.class, 401);
-    }
+        @Test
+        void getRatingsUnauthenticatedReturns401() {
+            Void result = api.withoutPostProcessors().getAndRead(ratingsUrl(), Map.of(), Void.class, 401);
+            assertThat(result).isNull();
+        }
 
-    @Test
-    @WithMockUser
-    void allEndpointsWithoutProfessorRoleReturn403() {
-        String url = "/api/applications/" + application.getApplicationId() + "/ratings";
+        @Test
+        void updateRatingUnauthenticatedReturns401() {
+            Void result = api.withoutPostProcessors().putAndRead(ratingsUrl() + "?rating=1", null, Void.class, 401);
+            assertThat(result).isNull();
+        }
 
-        api.getAndRead(url, Map.of(), Void.class, 403);
+        @Test
+        @WithMockUser
+        void allEndpointsWithoutProfessorRoleReturn403() {
+            Void getResult = api.getAndRead(ratingsUrl(), Map.of(), Void.class, 403);
+            assertThat(getResult).isNull();
 
-        api.putAndRead(url + "?rating=1", null, Void.class, 403);
-    }
-
-    @Test
-    void getRatingsIncludesOtherProfessorRatings() {
-        RatingTestData.saved(ratingRepository, application, otherProfessor, -1);
-
-        String url = "/api/applications/" + application.getApplicationId() + "/ratings";
-
-        RatingOverviewDTO overview = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(url, Map.of(), RatingOverviewDTO.class, 200);
-
-        assertThat(overview.currentUserRating()).isNull();
-        assertThat(overview.otherRatings()).anyMatch(
-            r -> r.rating() == -1 && r.from().equals(otherProfessor.getFirstName() + " " + otherProfessor.getLastName())
-        );
+            Void putResult = api.putAndRead(ratingsUrl() + "?rating=1", null, Void.class, 403);
+            assertThat(putResult).isNull();
+        }
     }
 }
