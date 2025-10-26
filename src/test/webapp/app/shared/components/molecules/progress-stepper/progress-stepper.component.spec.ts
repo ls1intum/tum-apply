@@ -56,7 +56,6 @@ describe('ProgressStepperComponent', () => {
     fixture = TestBed.createComponent(TestHostComponent);
     hostComponent = fixture.componentInstance;
 
-    // Set up steps with real templates (call the signals with ())
     hostComponent.steps = [
       {
         name: 'Step 1',
@@ -101,7 +100,6 @@ describe('ProgressStepperComponent', () => {
 
     fixture.detectChanges();
 
-    // Get the stepper component instance
     const stepperDebugElement = fixture.debugElement.query(de => de.componentInstance instanceof ProgressStepperComponent);
     component = stepperDebugElement.componentInstance;
   });
