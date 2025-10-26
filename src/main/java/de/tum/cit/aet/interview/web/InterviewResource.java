@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.web;
 
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
@@ -32,7 +33,7 @@ public class InterviewResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewOverviewDTO}
      */
-    @ProfessorOrAdmin
+    @Professor
     @GetMapping("/overview")
     public ResponseEntity<List<InterviewOverviewDTO>> getInterviewOverview() {
         List<InterviewOverviewDTO> overview = interviewService.getInterviewOverview();
