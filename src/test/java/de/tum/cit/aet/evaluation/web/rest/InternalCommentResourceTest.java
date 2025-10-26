@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -99,101 +100,131 @@ class InternalCommentResourceTest extends AbstractResourceTest {
         existingComment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
     }
 
-    @Test
-    void listCommentsReturnsOrderedList() {
-        internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "first"));
-        internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "second"));
+    @Nested
+    class Listing {
 
-        List<InternalCommentDTO> list = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(applicationCommentsUrl(), Map.of(), new TypeReference<>() {}, 200);
+        @Test
+        void listCommentsReturnsOrderedList() {
+            internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "first"));
+            internalCommentRepository.save(InternalCommentTestData.newCommentAll(application, professor, "second"));
 
-        assertThat(list).isNotEmpty();
+            List<InternalCommentDTO> list = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(applicationCommentsUrl(), Map.of(), new TypeReference<>() {}, 200);
+
+            assertThat(list).isNotEmpty();
+        }
+
+        @Test
+        void nonExistentApplicationReturns404() {
+            UUID fakeAppId = UUID.randomUUID();
+
+            Void getResult = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(applicationCommentsUrl(fakeAppId), Map.of(), Void.class, 404);
+            assertThat(getResult).isNull();
+
+            Void postResult = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(applicationCommentsUrl(fakeAppId), new InternalCommentUpdateDTO("ghost"), Void.class, 404);
+            assertThat(postResult).isNull();
+        }
     }
 
-    @Test
-    void createCommentReturns201() {
-        InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("hello world");
+    @Nested
+    class Creation {
 
-        InternalCommentDTO created = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(applicationCommentsUrl(), payload, InternalCommentDTO.class, 201);
+        @Test
+        void createCommentReturns201() {
+            InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("hello world");
 
-        assertThat(created.message()).isEqualTo("hello world");
+            InternalCommentDTO created = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(applicationCommentsUrl(), payload, InternalCommentDTO.class, 201);
+
+            assertThat(created.message()).isEqualTo("hello world");
+        }
     }
 
-    @Test
-    void nonExistentApplicationReturns404() {
-        UUID fakeAppId = UUID.randomUUID();
+    @Nested
+    class Update {
 
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(applicationCommentsUrl(fakeAppId), Map.of(), Void.class, 404);
+        @Test
+        void updateCommentOwnCommentReturns200() {
+            InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("updated");
 
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(applicationCommentsUrl(fakeAppId), new InternalCommentUpdateDTO("ghost"), Void.class, 404);
+            InternalCommentDTO updated = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(commentUrl(), payload, InternalCommentDTO.class, 200);
+
+            assertThat(updated.message()).isEqualTo("updated");
+        }
+
+        @Test
+        void updateCommentAsDifferentProfessorReturns403() {
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(commentUrl(), new InternalCommentUpdateDTO("illegal"), Void.class, 403);
+
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void nonexistentCommentReturns404() {
+            UUID fakeId = UUID.randomUUID();
+
+            Void putResult = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(commentUrl(fakeId), new InternalCommentUpdateDTO("does not exist"), Void.class, 404);
+            assertThat(putResult).isNull();
+        }
     }
 
-    @Test
-    void updateCommentOwnCommentReturns200() {
-        InternalCommentUpdateDTO payload = new InternalCommentUpdateDTO("updated");
+    @Nested
+    class Deletion {
 
-        InternalCommentDTO updated = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(commentUrl(), payload, InternalCommentDTO.class, 200);
+        @Test
+        void deleteCommentOwnCommentReturns204() {
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .deleteAndRead(commentUrl(), null, Void.class, 204);
 
-        assertThat(updated.message()).isEqualTo("updated");
+            assertThat(result).isNull();
+            assertThat(internalCommentRepository.findById(existingComment.getInternalCommentId())).isEmpty();
+        }
+
+        @Test
+        void nonexistentCommentReturns404() {
+            UUID fakeId = UUID.randomUUID();
+
+            Void deleteResult = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .deleteAndRead(commentUrl(fakeId), null, Void.class, 404);
+            assertThat(deleteResult).isNull();
+        }
     }
 
-    @Test
-    void deleteCommentOwnCommentReturns204() {
-        api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).deleteAndRead(commentUrl(), null, Void.class, 204);
+    @Nested
+    class Authorization {
 
-        assertThat(internalCommentRepository.findById(existingComment.getInternalCommentId())).isEmpty();
-    }
+        @Test
+        void allEndpointsUnauthenticatedReturn401() {
+            assertThat(api.withoutPostProcessors().getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 401)).isNull();
+            assertThat(
+                api.withoutPostProcessors().postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401)
+            ).isNull();
+            assertThat(api.withoutPostProcessors().putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401)).isNull();
+            assertThat(api.withoutPostProcessors().deleteAndRead(commentUrl(), null, Void.class, 401)).isNull();
+        }
 
-    @Test
-    void nonexistentCommentReturns404() {
-        UUID fakeId = UUID.randomUUID();
-
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(commentUrl(fakeId), new InternalCommentUpdateDTO("does not exist"), Void.class, 404);
-
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .deleteAndRead(commentUrl(fakeId), null, Void.class, 404);
-    }
-
-    @Test
-    void allEndpointsUnauthenticatedReturn401() {
-        api.withoutPostProcessors().getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 401);
-
-        api.withoutPostProcessors().postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401);
-
-        api.withoutPostProcessors().putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401);
-
-        api.withoutPostProcessors().deleteAndRead(commentUrl(), null, Void.class, 401);
-    }
-
-    @Test
-    void updateCommentAsDifferentProfessorReturns403() {
-        api
-            .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .putAndRead(commentUrl(), new InternalCommentUpdateDTO("illegal"), Void.class, 403);
-    }
-
-    @Test
-    @WithMockUser
-    void allEndpointsWithoutProfessorRoleReturn403() {
-        api.getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 403);
-
-        api.postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403);
-
-        api.putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403);
-
-        api.deleteAndRead(commentUrl(), null, Void.class, 403);
+        @Test
+        @WithMockUser
+        void allEndpointsWithoutProfessorRoleReturn403() {
+            assertThat(api.getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 403)).isNull();
+            assertThat(api.postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403)).isNull();
+            assertThat(api.putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403)).isNull();
+            assertThat(api.deleteAndRead(commentUrl(), null, Void.class, 403)).isNull();
+        }
     }
 
     private String applicationCommentsUrl() {
