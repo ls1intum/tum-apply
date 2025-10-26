@@ -54,7 +54,7 @@ describe('ButtonComponent', () => {
   });
 
   it('should render with default inputs', () => {
-    const fixture = createButtonFixture({ label: "Click Me" });
+    const fixture = createButtonFixture({ label: 'Click Me' });
 
     const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
     expect(buttonElement).toBeTruthy();
