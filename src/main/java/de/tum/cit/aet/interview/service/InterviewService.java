@@ -7,15 +7,14 @@ import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.service.UserService;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import de.tum.cit.aet.job.repository.JobRepository;
-import de.tum.cit.aet.usermanagement.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +29,7 @@ public class InterviewService {
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final CurrentUserService currentUserService;
+
     /**
      * Get overview of all interview processes with statistics per job.
      * Returns a list of jobs that have an active interview process with counts
@@ -44,9 +44,7 @@ public class InterviewService {
      */
 
     public List<InterviewOverviewDTO> getInterviewOverview() {
-
         UUID professorId = currentUserService.getUserId();
-
 
         List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
 
@@ -54,10 +52,7 @@ public class InterviewService {
             return Collections.emptyList();
         }
 
-
-        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(
-            professorId
-        );
+        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(professorId);
 
         Map<Job, Map<ApplicationState, Long>> countsPerJobAndState = new HashMap<>();
 
@@ -85,8 +80,8 @@ public class InterviewService {
                 // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
                     stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) +
-                        stateCounts.getOrDefault(ApplicationState.SENT, 0L) +
-                        stateCounts.getOrDefault(ApplicationState.ACCEPTED, 0L);
+                    stateCounts.getOrDefault(ApplicationState.SENT, 0L) +
+                    stateCounts.getOrDefault(ApplicationState.ACCEPTED, 0L);
 
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
 
