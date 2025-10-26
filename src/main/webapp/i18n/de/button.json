@@ -1,6 +1,7 @@
 {
   "button": {
     "cancel": "Abbrechen",
+    "close": "Schließen",
     "confirm": "Bestätigen",
     "delete": "Löschen",
     "remove": "Entfernen",

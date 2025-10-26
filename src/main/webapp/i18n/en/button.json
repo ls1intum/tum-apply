@@ -1,5 +1,6 @@
 {
   "button": {
+    "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
     "delete": "Delete",
