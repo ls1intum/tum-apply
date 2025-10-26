@@ -7,6 +7,7 @@ import { ProfessorRequestAccessFormComponent } from 'app/shared/components/molec
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 import { provideTranslateMock } from 'util/translate.mock';
 import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
+import { of } from 'rxjs/internal/observable/of';
 
 describe('OnboardingDialog', () => {
   let component: OnboardingDialog;
@@ -26,7 +27,7 @@ describe('OnboardingDialog', () => {
     };
 
     mockProfOnboardingService = {
-      confirmOnboarding: vi.fn().mockResolvedValue(undefined),
+      confirmOnboarding: vi.fn().mockReturnValue(of(undefined)),
     };
 
     await TestBed.configureTestingModule({

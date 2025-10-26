@@ -59,6 +59,21 @@ describe('ProfessorRequestAccessFormComponent', () => {
     vi.clearAllMocks();
   });
 
+  /**
+   * Helper function to fill the form with valid data
+   */
+  function fillValidForm(overrides: Record<string, unknown> = {}): void {
+    component.professorForm.patchValue({
+      title: 'Prof.',
+      firstName: 'Max',
+      lastName: 'Mustermann',
+      tumID: 'ab12cde',
+      researchGroupHead: 'Prof. Dr. Max Mustermann',
+      researchGroupName: 'AI Research Group',
+      ...overrides,
+    });
+  }
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -133,14 +148,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should validate form as valid when all required fields are filled', () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
-      });
+      fillValidForm();
 
       expect(component.professorForm.valid).toBe(true);
     });
@@ -163,14 +171,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should trigger confirm dialog when form is valid', () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
-      });
+      fillValidForm();
 
       const mockConfirmDialog = { confirm: vi.fn() };
       vi.spyOn(component, 'confirmDialog').mockReturnValue(mockConfirmDialog as any);
@@ -183,14 +184,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
 
   describe('onConfirmSubmit', () => {
     beforeEach(() => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
-      });
+      fillValidForm();
     });
 
     it('should not submit when form is invalid', () => {
@@ -210,15 +204,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should call research group service with correct data', async () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
-        researchGroupAbbreviation: 'AIRG',
-      });
+      fillValidForm({ researchGroupAbbreviation: 'AIRG' });
 
       component.onConfirmSubmit();
 
@@ -238,7 +224,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should trim whitespace from form values', async () => {
-      component.professorForm.patchValue({
+      fillValidForm({
         title: '  Prof.  ',
         firstName: '  Max  ',
         lastName: '  Mustermann  ',
@@ -267,13 +253,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should convert empty optional fields to empty strings', async () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
+      fillValidForm({
         researchGroupAbbreviation: '',
         researchGroupWebsite: '',
         researchGroupSchool: '',
@@ -293,15 +273,9 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should handle non-string values in optional fields', async () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
+      fillValidForm({
         researchGroupWebsite: 12345,
-        researchGroupAbbreviation: { some: 'object' } as any,
+        researchGroupAbbreviation: { some: 'object' },
       });
 
       component.onConfirmSubmit();
@@ -357,14 +331,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
 
   describe('Error Handling', () => {
     beforeEach(() => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
-      });
+      fillValidForm();
     });
 
     it('should show error toast when research group creation fails', async () => {
@@ -441,13 +408,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should handle null values in optional fields', async () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
+      fillValidForm({
         researchGroupAbbreviation: null,
         researchGroupWebsite: null,
       });
@@ -465,13 +426,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should handle undefined values in optional fields', async () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
+      fillValidForm({
         researchGroupAbbreviation: undefined,
         researchGroupContactEmail: undefined,
       });
@@ -489,13 +444,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should handle whitespace-only values in optional fields', async () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
+      fillValidForm({
         researchGroupAbbreviation: '   ',
         researchGroupWebsite: '  ',
         researchGroupSchool: '\t\n',
@@ -523,14 +472,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should prevent multiple simultaneous submissions', () => {
-      component.professorForm.patchValue({
-        title: 'Prof.',
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Max Mustermann',
-        researchGroupName: 'AI Research Group',
-      });
+      fillValidForm();
 
       component.isSubmitting.set(true);
       component.onConfirmSubmit();
