@@ -1,8 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-
-import { environment } from '../../environments/environment';
+import { environment } from 'app/environments/environment';
 
 export enum IdpProvider {
   Google = 'google',
@@ -136,7 +135,7 @@ export class KeycloakAuthenticationService {
    * @throws An error if the token refresh fails.
    */
   async ensureFreshToken(): Promise<void> {
-    if (this.keycloak === undefined || this.keycloak.authenticated === false) {
+    if (!this.keycloak?.authenticated) {
       return;
     }
     if (this.refreshInFlight) {
