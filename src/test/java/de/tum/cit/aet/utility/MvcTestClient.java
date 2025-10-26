@@ -176,6 +176,7 @@ public class MvcTestClient {
             case 401 -> result = putUnauthorized(url, body, accepts);
             case 403 -> result = putForbidden(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
+            case 500 -> result = putInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -440,6 +441,17 @@ public class MvcTestClient {
             return putJson(url, body, accepts).andExpect(status().isNotFound()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("PUT " + url + " failed with 404", e);
+        }
+    }
+
+    /**
+     * Low-level PUT that asserts 500 Internal Server Error and returns the MvcResult.
+     */
+    private MvcResult putInternalServerError(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isInternalServerError()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed with 500", e);
         }
     }
 
