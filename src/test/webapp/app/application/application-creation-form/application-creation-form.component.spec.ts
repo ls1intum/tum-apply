@@ -1576,4 +1576,95 @@ describe('ApplicationForm', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'app-draft']);
     });
   });
+
+  describe('initPageLoadExistingApplication', () => {
+    it('should load application and return it when application state is SAVED', async () => {
+      const mockApplication: ApplicationForApplicantDTO = {
+        applicationId: 'existing-app-123',
+        applicationState: 'SAVED',
+        job: {
+          jobId: 'job-789',
+          title: 'Software Engineer',
+        },
+        applicant: {},
+      } as ApplicationForApplicantDTO;
+
+      applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
+
+      const result = await comp.initPageLoadExistingApplication('existing-app-123');
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      // Should fetch the application
+      expect(applicationResourceApiService.getApplicationById).toHaveBeenCalledWith('existing-app-123');
+
+      // Should set applicationId
+      expect(comp.applicationId()).toBe('existing-app-123');
+
+      // Should NOT show error toast
+      expect(toast.showErrorKey).not.toHaveBeenCalled();
+
+      // Should NOT navigate away
+      expect(router.navigate).not.toHaveBeenCalled();
+
+      // Should return the application
+      expect(result).toEqual(mockApplication);
+    });
+
+    it('should show error toast, navigate to detail page and throw error when application state is not SAVED', async () => {
+      const mockApplication: ApplicationForApplicantDTO = {
+        applicationId: 'existing-app-456',
+        applicationState: 'SENT', // not SAVED, not editable
+        job: {
+          jobId: 'job-789',
+          title: 'Software Engineer',
+        },
+        applicant: {},
+      } as ApplicationForApplicantDTO;
+
+      applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
+
+      // Should throw an error
+      await expect(comp.initPageLoadExistingApplication('existing-app-456')).rejects.toThrow(
+        'Application is not editable.',
+      );
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      // Should fetch the application
+      expect(applicationResourceApiService.getApplicationById).toHaveBeenCalledWith('existing-app-456');
+
+      // Should show error toast
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
+
+      // Should navigate to detail page
+      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'existing-app-456']);
+
+      // Should NOT set applicationId
+      expect(comp.applicationId()).not.toBe('existing-app-456');
+    });
+
+    it('should handle REJECTED application state as not editable', async () => {
+      const mockApplication: ApplicationForApplicantDTO = {
+        applicationId: 'existing-app-rejected',
+        applicationState: 'REJECTED',
+        job: {
+          jobId: 'job-000',
+          title: 'Test Job',
+        },
+        applicant: {},
+      } as ApplicationForApplicantDTO;
+
+      applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
+
+      await expect(comp.initPageLoadExistingApplication('existing-app-rejected')).rejects.toThrow(
+        'Application is not editable.',
+      );
+
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
+      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'existing-app-rejected']);
+    });
+  });
 });
