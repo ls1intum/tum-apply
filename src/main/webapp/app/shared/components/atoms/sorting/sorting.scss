@@ -11,3 +11,18 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .sort-bar {
+    width: 100%;
+
+    .sort-bar-buttons {
+      width: 100%;
+
+      jhi-select {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+  }
+}

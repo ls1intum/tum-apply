@@ -98,6 +98,23 @@ export class FilterMultiselect {
     this.isOpen.update(current => !current);
     if (this.isOpen()) {
       this.searchTerm.set('');
+
+      // Adjust dropdown position for small screens to avoid overflow
+      setTimeout(() => {
+        const dropdown = this.elementRef.nativeElement.querySelector('.filter-dropdown');
+        if (dropdown && window.innerWidth <= 768) {
+          const rect = dropdown.getBoundingClientRect();
+          const viewportWidth = window.innerWidth;
+
+          if (rect.right > viewportWidth) {
+            dropdown.style.left = 'auto';
+            dropdown.style.right = '0';
+          } else if (rect.left < 0) {
+            dropdown.style.left = '0';
+            dropdown.style.right = 'auto';
+          }
+        }
+      }, 0);
     }
   }
 

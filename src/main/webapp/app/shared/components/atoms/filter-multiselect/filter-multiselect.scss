@@ -131,3 +131,29 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .filter-multiselect {
+    .filter-button {
+      justify-content: space-between;
+
+      span {
+        margin-right: 0.5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+      }
+
+      .filter-icon {
+        flex-shrink: 0;
+      }
+    }
+
+    .filter-dropdown {
+      left: 0;
+      right: 0;
+      max-width: calc(100vw - 2rem);
+    }
+  }
+}

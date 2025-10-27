@@ -37,3 +37,30 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .search-filter-sort-bar {
+    .functionality-bar {
+      .filter-sort {
+        width: 100%;
+
+        .group {
+          width: 100%;
+
+          > span {
+            width: 100%;
+          }
+
+          jhi-filter-multiselect {
+            flex: 1;
+            min-width: 0;
+          }
+        }
+      }
+    }
+
+    .p-iconfield {
+      min-width: 100%;
+    }
+  }
+}
