@@ -21,7 +21,7 @@
   min-width: 40%;
 }
 
-/* Tablets and smaller */
+/* Tablets and smaller (width <= 768px) */
 @media (width <= 768px) {
   .carousel {
     gap: 0.75rem;
@@ -31,7 +31,7 @@
     gap: 0.5rem;
   }
 
-  .nav ::ng-deep button {
+  .nav button {
     width: 2.75rem;
     height: 2.75rem;
     padding: 0.5rem;
@@ -40,7 +40,7 @@
   }
 }
 
-/* Large phones*/
+/* Large phones */
 @media (width <= 480px) {
   .carousel {
     gap: 0.3rem;
@@ -50,7 +50,7 @@
     gap: 0.25rem;
   }
 
-  .nav ::ng-deep button {
+  .nav button {
     width: 1.75rem;
     height: 1.75rem;
     padding: 0.2rem;
@@ -69,7 +69,7 @@
     gap: 0.2rem;
   }
 
-  .nav ::ng-deep button {
+  .nav button {
     width: 1.6rem;
     height: 1.6rem;
     padding: 0.18rem;
@@ -78,7 +78,7 @@
   }
 }
 
-/* Small phones */
+/* Small phones - iPhone SE, etc. (width <= 380px) */
 @media (width <= 380px) {
   .carousel {
     gap: 0.2rem;
@@ -88,7 +88,7 @@
     gap: 0.15rem;
   }
 
-  .nav ::ng-deep button {
+  .nav button {
     width: 1.5rem;
     height: 1.5rem;
     padding: 0.15rem;

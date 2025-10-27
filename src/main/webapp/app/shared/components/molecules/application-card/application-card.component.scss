@@ -112,7 +112,7 @@
   }
 }
 
-/* Large phones  */
+/* Large phones */
 @media (width <= 480px) {
   .card {
     width: 14rem;
@@ -131,6 +131,8 @@
     line-height: 1.2;
     padding: 0.2rem;
     order: 1;
+    text-align: left;
+    justify-self: start;
   }
 
   .job {
@@ -138,6 +140,7 @@
     min-height: 1.8rem;
     padding: 0.2rem;
     order: 2;
+    justify-self: start;
 
     .job-title {
       font-size: 0.72rem;
@@ -153,6 +156,7 @@
     font-size: 0.55rem;
     padding: 0.1rem 0.2rem;
     order: 3;
+    justify-self: start;
   }
 
   .icon {
@@ -160,7 +164,7 @@
   }
 }
 
-/* Standard phones */
+/* Standard phones  */
 @media (width <= 400px) {
   .card {
     width: 12.5rem;
@@ -184,7 +188,7 @@
   }
 }
 
-/* Small phones  */
+/* Small phones */
 @media (width <= 380px) {
   .card {
     width: 11.5rem;

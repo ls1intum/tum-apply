@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, effect, inject, input, output, signal, ViewEncapsulation } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
@@ -33,6 +33,7 @@ const VISIBLE_DESKTOP = 3;
   templateUrl: './application-carousel.component.html',
   styleUrls: ['./application-carousel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   host: {
     tabindex: '0',
     role: 'region',
