@@ -1667,4 +1667,75 @@ describe('ApplicationForm', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'existing-app-rejected']);
     });
   });
+
+  describe('updateDocumentInformation', () => {
+    it('should return early when useLocalStorage is true (if block)', () => {
+      comp.useLocalStorage.set(true);
+      comp.applicationId.set('app-123');
+
+      const getDocumentDictionaryIdsSpy = vi.spyOn(applicationResourceApiService, 'getDocumentDictionaryIds');
+
+      comp.updateDocumentInformation();
+
+      // Should NOT call getDocumentDictionaryIds when using local storage
+      expect(getDocumentDictionaryIdsSpy).not.toHaveBeenCalled();
+
+      // documentIds should remain empty
+      expect(comp.documentIds()).toStrictEqual({});
+    });
+
+    it('should fetch document ids when useLocalStorage is false', async () => {
+      comp.useLocalStorage.set(false);
+      comp.applicationId.set('app-456');
+
+      const mockDocumentIds = { documentId1: 'doc-1', documentId2: 'doc-2' } as any;
+      applicationResourceApiService.getDocumentDictionaryIds = vi.fn().mockReturnValue(of(mockDocumentIds));
+
+      comp.updateDocumentInformation();
+
+      // Wait for async operation to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Should call getDocumentDictionaryIds
+      expect(applicationResourceApiService.getDocumentDictionaryIds).toHaveBeenCalledWith('app-456');
+
+      // Should set documentIds
+      expect(comp.documentIds()).toEqual(mockDocumentIds);
+    });
+
+    it('should show error toast when getDocumentDictionaryIds fails', async () => {
+      comp.useLocalStorage.set(false);
+      comp.applicationId.set('app-error');
+
+      applicationResourceApiService.getDocumentDictionaryIds = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
+
+      comp.updateDocumentInformation();
+
+      // Wait for async operation and error handling to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Should show error toast
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchDocumentIdsFailed');
+
+      // documentIds should remain undefined
+      expect(comp.documentIds()).toStrictEqual({});
+    });
+
+    it('should not call API and not set documentIds when useLocalStorage is true (covers if condition)', async () => {
+      comp.useLocalStorage.set(true);
+      comp.applicationId.set('app-any-id');
+
+      const getDocumentSpy = vi.spyOn(applicationResourceApiService, 'getDocumentDictionaryIds');
+      const errorSpy = vi.spyOn(toast, 'showErrorKey');
+
+      comp.updateDocumentInformation();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Verify the if block was executed (early return)
+      expect(getDocumentSpy).not.toHaveBeenCalled();
+      expect(errorSpy).not.toHaveBeenCalled();
+      expect(comp.documentIds()).toStrictEqual({});
+    });
+  });
 });
