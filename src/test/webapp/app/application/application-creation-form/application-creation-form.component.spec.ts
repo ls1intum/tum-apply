@@ -759,42 +759,43 @@ describe('ApplicationForm', () => {
       expect(authFacade.requestOtp).toHaveBeenCalledWith(true);
     });
 
-    it.only('should reject with timeout error when user does not log in within MAX_OTP_WAIT_TIME_MS', async () => {
-      // Use fake timers
-      vi.useFakeTimers();
-
-      // Override the timeout for test speed
-      (ApplicationCreationFormComponent as any).MAX_OTP_WAIT_TIME_MS = 1000;
-
+    it('should reject with timeout error when user does not log in within MAX_OTP_WAIT_TIME_MS', async () => {
       // Set up signals properly
       accountService.loaded.set(false);
       accountService.user.set(undefined);
 
-      // No need to overwrite loadedUser — it's a computed now
-
       // Mock requestOtp
       authFacade.requestOtp = vi.fn().mockResolvedValue(undefined);
 
-      // Mock dialog
-      const dialogRef = { close: vi.fn() };
-      dialogService.open = vi.fn().mockImplementation(() => ({
-        close: vi.fn(),
-      }));
+      // Mock dialog - return a mock ref object that won't actually render
+      const closeDialogSpy = vi.fn();
+      const mockDialogRef = { close: closeDialogSpy };
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockDialogRef as any);
 
-      vi.mock('path-to/otp-input', () => ({
-        OtpInput: vi.fn(), // Just a dummy mock component
-      }));
+      // Use fake timers
+      vi.useFakeTimers();
 
       // Call the method under test
       const promise = comp['openOtpAndWaitForLogin']('test@example.com', 'John', 'Doe');
 
-      // Advance fake timers
-      await vi.advanceTimersByTimeAsync(1500);
-
-      // Allow microtasks to resolve
+      // Let the promise settle (requestOtp will resolve)
+      // The interval will be set up but won't trigger logged-in check
+      vi.advanceTimersByTime(100);
       await Promise.resolve();
 
-      // Now assert the promise was rejected
+      // Verify requestOtp was called
+      expect(authFacade.requestOtp).toHaveBeenCalledWith(true);
+
+      // Now advance timers past the timeout
+      // MAX_OTP_WAIT_TIME_MS is 600_000 (10 minutes)
+      // The interval polls every 250ms, so we need to advance enough for the timeout check to trigger
+      // We advance 601 seconds (601,000ms) to be past the 600,000ms timeout
+      vi.advanceTimersByTime(601_000);
+
+      // Allow microtasks to process so the rejection can be caught
+      await Promise.resolve();
+
+      // Now assert the promise was rejected with the timeout error
       await expect(promise).rejects.toThrow('OTP verification timeout. Please try again.');
 
       // Clean up
