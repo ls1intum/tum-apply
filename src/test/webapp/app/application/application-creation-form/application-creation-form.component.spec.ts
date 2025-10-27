@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter, Router, UrlSegment, withDisabledInitialNavigation } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router, UrlSegment } from '@angular/router';
 import { computed, signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -626,7 +626,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -649,7 +649,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -672,7 +672,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       // Mock updateApplication to throw an error
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
@@ -691,7 +691,7 @@ describe('ApplicationForm', () => {
 
       // Mock mapPagesToDTO
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
-      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
+      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
 
@@ -1173,7 +1173,7 @@ describe('ApplicationForm', () => {
       });
 
       it('should call handleNextFromStep1 when next button is clicked', () => {
-        const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => {});
+        const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => { });
 
         const steps = comp.stepData();
         const personalInfoStep = steps[0];
@@ -1196,7 +1196,7 @@ describe('ApplicationForm', () => {
         freshComp.applicantId.set('user-123');
 
         // Spy on the fresh component
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1218,7 +1218,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1240,7 +1240,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1261,7 +1261,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
@@ -1283,7 +1283,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
 
         freshFixture.detectChanges();
 
