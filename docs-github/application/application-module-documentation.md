@@ -32,6 +32,13 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 ### Server-Side Architecture
 
+**Source Paths:**
+
+- Service: `de/tum/cit/aet/application/service/ApplicationService.java`
+- Repository: `de/tum/cit/aet/application/repository/ApplicationRepository.java`
+- Repository Impl: `de/tum/cit/aet/application/repository/impl/ApplicationEntityRepositoryImpl.java`
+- Resource: `de/tum/cit/aet/application/web/ApplicationResource.java`
+
 **Core Components:**
 
 - `ApplicationService` — orchestrates application lifecycle logic (create, update, submit, withdraw, delete), manages state transitions, coordinates with external modules (Document Module, Job Posting Module), and ensures data consistency through transactional operations.
@@ -108,13 +115,6 @@ The **Application Module** enables applicants to create, manage, and submit doct
   - `findDtoById`: Single application with nested DTOs (ApplicantDTO, JobCardDTO).
   - Avoids N+1 select problems through explicit LEFT JOINs.
   - Returns fully populated DTOs suitable for immediate UI rendering.
-
-**Source Paths:**
-
-- Service: `de/tum/cit/aet/application/service/ApplicationService.java`
-- Repository: `de/tum/cit/aet/application/repository/ApplicationRepository.java`
-- Repository Impl: `de/tum/cit/aet/application/repository/impl/ApplicationEntityRepositoryImpl.java`
-- Resource: `de/tum/cit/aet/application/web/ApplicationResource.java`
 
 ---
 
