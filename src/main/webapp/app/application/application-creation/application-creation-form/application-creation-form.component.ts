@@ -18,6 +18,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -29,9 +30,7 @@ import ApplicationCreationPage3Component, {
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
-  bachelorGradingScale,
   getPage2FromApplication,
-  masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
@@ -91,12 +90,14 @@ export default class ApplicationCreationFormComponent {
   educationData = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
-    bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: undefined,
+    bachelorGradeUpperLimit: '',
+    bachelorGradeLowerLimit: '',
+    bachelorGrade: '',
     masterDegreeName: '',
     masterDegreeUniversity: '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: undefined,
+    masterGradeUpperLimit: '',
+    masterGradeLowerLimit: '',
+    masterGrade: '',
   });
 
   applicationDetailsData = signal<ApplicationCreationPage3Data>({
@@ -150,10 +151,17 @@ export default class ApplicationCreationFormComponent {
     privacyAccepted: this.formbuilder.nonNullable.control(false, {
       validators: Validators.requiredTrue,
     }),
+    doctoralRequirementsAccepted: this.formbuilder.nonNullable.control(false, {
+      validators: Validators.requiredTrue,
+    }),
   });
 
   readonly privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls.privacyAccepted.valueChanges, {
     initialValue: this.additionalInfoForm.controls.privacyAccepted.value,
+  });
+
+  readonly doctoralRequirementsAcceptedSignal = toSignal(this.additionalInfoForm.controls.doctoralRequirementsAccepted.valueChanges, {
+    initialValue: this.additionalInfoForm.controls.doctoralRequirementsAccepted.value,
   });
 
   submitAttempted = signal(false);
@@ -337,6 +345,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
+  private readonly jobResourceService = inject(JobResourceApiService);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -367,9 +376,9 @@ export default class ApplicationCreationFormComponent {
       try {
         let application: ApplicationForApplicantDTO;
 
-        if (applicationId) {
+        if (applicationId !== null) {
           application = await this.initPageLoadExistingApplication(applicationId);
-        } else if (jobId) {
+        } else if (jobId !== null) {
           application = await this.initPageCreateApplication(jobId);
         } else {
           throw new Error('Either job ID or application ID must be provided in the URL.');
@@ -400,11 +409,21 @@ export default class ApplicationCreationFormComponent {
 
   initPageForLocalStorageCase(jobId: string | null): void {
     this.useLocalStorage.set(true);
-    if (jobId) {
-      // TODO fetch jobData for lateron displaying jobDetails
+    if (jobId !== null) {
       this.jobId.set(jobId);
       this.loadPersonalInfoDataFromLocalStorage(jobId);
       this.applicationState.set('SAVED');
+
+      // Fetch job title for display
+      firstValueFrom(this.jobResourceService.getJobDetails(jobId))
+        .then(jobDetails => {
+          if (jobDetails.title) {
+            this.title.set(jobDetails.title);
+          }
+        })
+        .catch(() => {
+          // Silently ignore errors when fetching job title - this is non-critical for the application flow
+        });
     } else {
       this.showInitErrorMessage(`${applyflow}.missingJobIdUnauthenticated`);
     }
@@ -463,6 +482,10 @@ export default class ApplicationCreationFormComponent {
     this.submitAttempted.set(true);
     if (!this.privacyAcceptedSignal()) {
       this.toastService.showErrorKey('privacy.privacyConsent.toastError');
+      return;
+    }
+    if (!this.doctoralRequirementsAcceptedSignal()) {
+      this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
     void this.sendCreateApplicationData('SENT', true);
@@ -645,11 +668,13 @@ export default class ApplicationCreationFormComponent {
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
-        bachelorGradingScale: p2.bachelorGradingScale.value,
+        bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
+        bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
         masterDegreeName: p2.masterDegreeName,
         masterUniversity: p2.masterDegreeUniversity,
         masterGrade: p2.masterGrade,
-        masterGradingScale: p2.masterGradingScale.value,
+        masterGradeUpperLimit: p2.masterGradeUpperLimit,
+        masterGradeLowerLimit: p2.masterGradeLowerLimit,
       },
       motivation: p3.motivation,
       specialSkills: p3.skills,
@@ -675,8 +700,6 @@ export default class ApplicationCreationFormComponent {
             phoneNumber: p1.phoneNumber,
             preferredLanguage: p1.language?.value,
           },
-          bachelorGradingScale: 'ONE_TO_FOUR',
-          masterGradingScale: 'ONE_TO_FOUR',
         },
       } as UpdateApplicationDTO;
     }

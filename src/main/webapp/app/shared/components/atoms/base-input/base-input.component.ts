@@ -23,12 +23,26 @@ export abstract class BaseInputDirective<T> {
   customErrorKey = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
-  isTouched = signal(false);
   isFocused = signal(false);
 
   formControl = computed(() => {
     const ctrl = this.control();
     return ctrl instanceof FormControl ? ctrl : new FormControl('');
+  });
+
+  isTouched = computed(() => {
+    this.formValidityVersion();
+    const ctrl = this.formControl();
+
+    if (this._isTouched()) return true;
+
+    if (ctrl.touched && ctrl.errors) {
+      const errorKeys = Object.keys(ctrl.errors);
+      const hasNonRequiredErrors = errorKeys.some(key => key !== 'required');
+      return hasNonRequiredErrors;
+    }
+
+    return false;
   });
 
   inputState = computed(() => {
@@ -61,12 +75,19 @@ export abstract class BaseInputDirective<T> {
       invalidPostalCode: this.translate.instant('entity.applicationPage1.validation.postalCode'),
       min: this.translate.instant('global.input.error.min', { min: val?.min }),
       max: this.translate.instant('global.input.error.max', { max: val?.max }),
+      tooManyDecimals: this.translate.instant('global.input.error.tooManyDecimals'),
+      invalidGrade: this.translate.instant('global.input.error.invalidGrade'),
+      formatMismatch: this.translate.instant('global.input.error.formatMismatch'),
+      boundaryMismatch: this.translate.instant('global.input.error.boundaryMismatch'),
+      outOfRange: this.translate.instant('global.input.error.outOfRange'),
     };
     if (Object.prototype.hasOwnProperty.call(defaults, key)) {
       return defaults[key];
     }
     return `Invalid: ${key}`;
   });
+
+  private _isTouched = signal(false);
 
   constructor() {
     effect(onCleanup => {
@@ -78,12 +99,16 @@ export abstract class BaseInputDirective<T> {
   }
 
   onBlur(): void {
-    this.isTouched.set(true);
+    this._isTouched.set(true);
     this.isFocused.set(false);
   }
 
   onFocus(): void {
     this.isFocused.set(true);
+  }
+
+  protected markAsTouchedManually(): void {
+    this._isTouched.set(true);
   }
 
   // TODO: Add optional tooltip handling

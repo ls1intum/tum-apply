@@ -11,29 +11,20 @@ import { UserDTO } from './userDTO';
 
 
 export interface ApplicantDTO { 
-    user: UserDTO;
-    street?: string;
-    postalCode?: string;
+    bachelorDegreeName?: string;
+    bachelorGrade?: string;
+    bachelorGradeLowerLimit?: string;
+    bachelorGradeUpperLimit?: string;
+    bachelorUniversity?: string;
     city?: string;
     country?: string;
-    bachelorDegreeName?: string;
-    bachelorGradingScale?: ApplicantDTO.BachelorGradingScaleEnum;
-    bachelorGrade?: string;
-    bachelorUniversity?: string;
     masterDegreeName?: string;
-    masterGradingScale?: ApplicantDTO.MasterGradingScaleEnum;
     masterGrade?: string;
+    masterGradeLowerLimit?: string;
+    masterGradeUpperLimit?: string;
     masterUniversity?: string;
+    postalCode?: string;
+    street?: string;
+    user: UserDTO;
 }
-export namespace ApplicantDTO {
-    export type BachelorGradingScaleEnum = 'ONE_TO_FOUR';
-    export const BachelorGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as BachelorGradingScaleEnum
-    };
-    export type MasterGradingScaleEnum = 'ONE_TO_FOUR';
-    export const MasterGradingScaleEnum = {
-        OneToFour: 'ONE_TO_FOUR' as MasterGradingScaleEnum
-    };
-}
-
 
