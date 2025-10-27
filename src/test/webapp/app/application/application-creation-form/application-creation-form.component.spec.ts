@@ -69,8 +69,8 @@ describe('ApplicationForm', () => {
   const mockApplication = createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved);
   beforeEach(async () => {
     accountService = {
-      loaded: signal<boolean>(false),
-      user: signal<User | undefined>(undefined),
+      loaded: signal<boolean>(true),
+      user: signal<User | undefined>({ id: '2', email: 'test@example.com', name: 'Test User' }),
       signedIn: signal<boolean>(true),
       loadedUser: computed(() => (accountService.loaded() ? accountService.user() : undefined)),
     };
