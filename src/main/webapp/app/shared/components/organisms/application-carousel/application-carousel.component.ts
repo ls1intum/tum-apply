@@ -43,9 +43,9 @@ const VISIBLE_DESKTOP = 3;
 export class ApplicationCarouselComponent {
   totalRecords = input(0); // Total number of applications
   currentIndex = input(0); // Global index of currently selected application
-  windowIndex = input(0); // Local index in current application window
+  carouselIndex = input(0); // Local index in current application window
   applications = input<ApplicationEvaluationDetailDTO[]>([]);
-  windowSize = input.required<number>();
+  carouselSize = input.required<number>();
 
   cardsVisible = signal(VISIBLE_DESKTOP); // Number of visible cards (responsive)
 
@@ -61,17 +61,17 @@ export class ApplicationCarouselComponent {
   });
 
   // Compute the list of applications to display (always fills visible slots with null)
-  readonly visibleApps = computed(() => {
+  readonly visibleApplications = computed(() => {
     const size = this.cardsVisible();
     const half = Math.floor(size / 2);
     const result: (ApplicationEvaluationDetailDTO | undefined)[] = [];
 
     for (let offset = -half; offset <= half; offset++) {
-      const idx = this.windowIndex() + offset;
-      if (idx < 0 || idx >= this.windowSize()) {
+      const index = this.carouselIndex() + offset;
+      if (index < 0 || index >= this.carouselSize()) {
         result.push(undefined); // Fill with nulls if out of bounds
       } else {
-        result.push(this.applications()[idx]);
+        result.push(this.applications()[index]);
       }
     }
 
@@ -83,10 +83,10 @@ export class ApplicationCarouselComponent {
     return Math.floor(this.cardsVisible() / 2);
   });
 
-  private readonly bp = inject(BreakpointObserver);
+  private readonly breakPoint = inject(BreakpointObserver);
 
   private readonly breakpoint: Signal<BreakpointState | undefined> = toSignal(
-    this.bp.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]),
+    this.breakPoint.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]),
     {
       initialValue: undefined,
     },

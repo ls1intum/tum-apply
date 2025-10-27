@@ -8,17 +8,34 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { BREAKPOINT_QUERIES } from 'app/shared/constants/breakpoints';
+import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import { ProfessorDTO } from 'app/generated/model/professorDTO';
 
 describe('ApplicationCarouselComponent', () => {
   let fixture: ComponentFixture<ApplicationCarouselComponent>;
   let component: ApplicationCarouselComponent;
 
-  const makeApp = (id: string): ApplicationEvaluationDetailDTO =>
-    ({
-      applicationId: id,
-      jobId: `job-${id}`,
-      applicantName: `Name ${id}`,
-    }) as any;
+  const mockApplicationDetail = (id: string): ApplicationDetailDTO => ({
+    applicationId: id,
+    jobId: `job-${id}`,
+    researchGroup: `Group ${id}`,
+    supervisingProfessorName: `Prof. ${id}`,
+    applicationState: ApplicationDetailDTO.ApplicationStateEnum.Sent,
+  });
+
+  const mockProfessor = (id: string): ProfessorDTO => ({
+    firstName: `ProfFirst${id}`,
+    lastName: `ProfLast${id}`,
+    email: `prof${id}@example.com`,
+    researchGroupName: `Group ${id}`,
+  });
+
+  const mockApplication = (id: string): ApplicationEvaluationDetailDTO => ({
+    applicationDetailDTO: mockApplicationDetail(id),
+    jobId: `job-${id}`,
+    professor: mockProfessor(id),
+    appliedAt: new Date().toISOString(),
+  });
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,7 +55,7 @@ describe('ApplicationCarouselComponent', () => {
     fixture = TestBed.createComponent(ApplicationCarouselComponent);
     component = fixture.componentInstance;
 
-    fixture.componentRef.setInput('windowSize', 3);
+    fixture.componentRef.setInput('carouselSize', 3);
     fixture.detectChanges();
   });
 
@@ -58,7 +75,7 @@ describe('ApplicationCarouselComponent', () => {
 
       fixture = TestBed.createComponent(ApplicationCarouselComponent);
       component = fixture.componentInstance;
-      fixture.componentRef.setInput('windowSize', 3);
+      fixture.componentRef.setInput('carouselSize', 3);
       fixture.detectChanges();
 
       expect(component.cardsVisible()).toBe(1);
@@ -70,7 +87,7 @@ describe('ApplicationCarouselComponent', () => {
 
       fixture = TestBed.createComponent(ApplicationCarouselComponent);
       component = fixture.componentInstance;
-      fixture.componentRef.setInput('windowSize', 3);
+      fixture.componentRef.setInput('carouselSize', 3);
       fixture.detectChanges();
 
       expect(component.cardsVisible()).toBe(5);
@@ -82,7 +99,7 @@ describe('ApplicationCarouselComponent', () => {
 
       fixture = TestBed.createComponent(ApplicationCarouselComponent);
       component = fixture.componentInstance;
-      fixture.componentRef.setInput('windowSize', 3);
+      fixture.componentRef.setInput('carouselSize', 3);
       fixture.detectChanges();
 
       expect(component.cardsVisible()).toBe(3);
@@ -90,11 +107,11 @@ describe('ApplicationCarouselComponent', () => {
 
     it('should handle empty applications array', () => {
       fixture.componentRef.setInput('applications', []);
-      fixture.componentRef.setInput('windowIndex', 0);
+      fixture.componentRef.setInput('carouselIndex', 0);
       component.cardsVisible.set(3);
       fixture.detectChanges();
 
-      const result = component.visibleApps();
+      const result = component.visibleApplications();
       expect(result.length).toBe(3);
       expect(result.every(app => app === undefined)).toBe(true);
     });
@@ -105,7 +122,7 @@ describe('ApplicationCarouselComponent', () => {
 
       fixture = TestBed.createComponent(ApplicationCarouselComponent);
       component = fixture.componentInstance;
-      fixture.componentRef.setInput('windowSize', 3);
+      fixture.componentRef.setInput('carouselSize', 3);
       fixture.detectChanges();
 
       expect(component.cardsVisible()).toBe(3);
@@ -158,16 +175,16 @@ describe('ApplicationCarouselComponent', () => {
   // ---------------- VISIBLE APPLICATIONS ----------------
   describe('visible applications', () => {
     it('should compute visible apps with no fillers when in bounds', () => {
-      const a1 = makeApp('a1');
-      const a2 = makeApp('a2');
-      const a3 = makeApp('a3');
+      const a1 = mockApplication('a1');
+      const a2 = mockApplication('a2');
+      const a3 = mockApplication('a3');
 
       fixture.componentRef.setInput('applications', [a1, a2, a3]);
-      fixture.componentRef.setInput('windowIndex', 1);
+      fixture.componentRef.setInput('carouselIndex', 1);
       component.cardsVisible.set(3);
       fixture.detectChanges();
 
-      const result = component.visibleApps();
+      const result = component.visibleApplications();
       expect(result.length).toBe(3);
       expect(result[0]).toBe(a1);
       expect(result[1]).toBe(a2);
@@ -175,14 +192,14 @@ describe('ApplicationCarouselComponent', () => {
     });
 
     it('should fill undefined when index out of bounds', () => {
-      const a1 = makeApp('a1');
+      const a1 = mockApplication('a1');
 
       fixture.componentRef.setInput('applications', [a1]);
-      fixture.componentRef.setInput('windowIndex', 0);
+      fixture.componentRef.setInput('carouselIndex', 0);
       component.cardsVisible.set(3);
       fixture.detectChanges();
 
-      const result = component.visibleApps();
+      const result = component.visibleApplications();
       expect(result.length).toBe(3);
       expect(result[0]).toBeUndefined();
       expect(result[1]).toBe(a1);
