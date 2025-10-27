@@ -23,6 +23,8 @@ The **Application Module** enables applicants to create, manage, and submit doct
 - [Performance Optimizations](#performance-optimizations)
 - [Integration Points](#integration-points)
 - [Error Handling](#error-handling)
+- [Future Features](#future-features)
+  - [CustomFieldAnswer](#customfieldanswer)
 
 ---
 
@@ -34,7 +36,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 - `ApplicationService` — orchestrates application lifecycle logic (create, update, submit, withdraw, delete), manages state transitions, coordinates with external modules (Document Module, Job Posting Module), and ensures data consistency through transactional operations.
 - `ApplicationRepository` / `ApplicationEntityRepositoryImpl` — provides persistence and query capabilities, including JPQL-based DTO projections, paginated queries using Criteria API, and bulk state update operations.
-- `Application` — domain entity storing application metadata (state, timestamps, applicant responses) with relationships to Job, Applicant, and supporting entities (CustomFieldAnswer, InternalComment).
+- `Application` — domain entity storing application metadata (state, timestamps, applicant responses) with relationships to Job, Applicant, and supporting entities ([CustomFieldAnswer](#customfieldanswer), InternalComment).
 
 **Key Behaviors:**
 
@@ -70,7 +72,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 - **Deletion flow:**
 
   - Allowed only for `SAVED` (draft) applications.
-  - Cascade deletion of associated entities: CustomFieldAnswers, InternalComments, DocumentDictionary references.
+  - Cascade deletion of associated entities: [CustomFieldAnswers](#customfieldanswer), InternalComments, DocumentDictionary references.
   - Actual document files handled by separate Document Module.
   - Returns `204 No Content` on success.
 
@@ -240,12 +242,6 @@ The **Application Module** enables applicants to create, manage, and submit doct
   - Stores `documentType` enum and user-defined `name`.
   - Enables document reuse across multiple applications.
 - Managed by separate Document Module; Application Module maintains references only.
-
-**CustomFieldAnswer:**
-- Not used yet in production
-- Stores responses to job-specific custom questions.
-- Links to both `Application` and `CustomField` (defined in Job Posting Module).
-- Supports multiple answer types through flexible schema.
 
 **ApplicationState Enum:**
 - `SAVED` — Draft application, editable by applicant.
@@ -589,3 +585,10 @@ The **Application Module** enables applicants to create, manage, and submit doct
 - Unhandled exceptions return `500 Internal Server Error`.
 - Logged with full stack trace for debugging.
 - Frontend displays generic error message to user.
+
+## Future Features
+
+### CustomFieldAnswer
+- Stores responses to job-specific custom questions.
+- Links to both `Application` and `CustomField` (defined in Job Posting Module).
+- Supports multiple answer types through flexible schema.
