@@ -114,8 +114,8 @@ describe('ApplicationForm', () => {
     };
 
     jobResourceService = {
-      getJobDetails: vi.fn().mockReturnValue({ title: "Test Job" })
-    }
+      getJobDetails: vi.fn().mockReturnValue({ title: 'Test Job' }),
+    };
 
     activatedRoute = {
       url: route$,
@@ -166,7 +166,7 @@ describe('ApplicationForm', () => {
 
   afterEach(() => {
     vi.resetAllMocks();
-  })
+  });
 
   it('should create the component', () => {
     expect(comp).toBeTruthy();
@@ -439,7 +439,7 @@ describe('ApplicationForm', () => {
 
     it('should handle missing title in jobDetails in initPageForLocalStorageCase', async () => {
       const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
-      const mockJobDetails = { }; // No title property
+      const mockJobDetails = {}; // No title property
 
       // Reset title to empty string
       comp.title = signal('');
@@ -626,7 +626,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -649,7 +649,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -672,7 +672,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to throw an error
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
@@ -691,7 +691,7 @@ describe('ApplicationForm', () => {
 
       // Mock mapPagesToDTO
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
-      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
 
@@ -738,7 +738,7 @@ describe('ApplicationForm', () => {
         masterDegreeUniversity: 'Stanford',
         masterGrade: '3.9',
         masterGradeLowerLimit: '4',
-        masterGradeUpperLimit: '1'
+        masterGradeUpperLimit: '1',
       });
 
       comp.applicationDetailsData.set({
@@ -1173,7 +1173,7 @@ describe('ApplicationForm', () => {
       });
 
       it('should call handleNextFromStep1 when next button is clicked', () => {
-        const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => { });
+        const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => {});
 
         const steps = comp.stepData();
         const personalInfoStep = steps[0];
@@ -1196,7 +1196,7 @@ describe('ApplicationForm', () => {
         freshComp.applicantId.set('user-123');
 
         // Spy on the fresh component
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1218,7 +1218,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1240,7 +1240,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1261,7 +1261,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1283,7 +1283,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1504,7 +1504,6 @@ describe('ApplicationForm', () => {
       comp.applicationDetailsDataValid.set(true);
       expect(comp.allPagesValid()).toBe(true);
     });
-
   });
 
   describe('data validity callbacks', () => {
@@ -1779,9 +1778,7 @@ describe('ApplicationForm', () => {
       applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
       // Should throw an error
-      await expect(comp.initPageLoadExistingApplication('existing-app-456')).rejects.toThrow(
-        'Application is not editable.',
-      );
+      await expect(comp.initPageLoadExistingApplication('existing-app-456')).rejects.toThrow('Application is not editable.');
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -1812,9 +1809,7 @@ describe('ApplicationForm', () => {
 
       applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
-      await expect(comp.initPageLoadExistingApplication('existing-app-rejected')).rejects.toThrow(
-        'Application is not editable.',
-      );
+      await expect(comp.initPageLoadExistingApplication('existing-app-rejected')).rejects.toThrow('Application is not editable.');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
       expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'existing-app-rejected']);
