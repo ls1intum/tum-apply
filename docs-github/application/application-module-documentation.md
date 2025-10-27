@@ -123,6 +123,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 **Core Components:**
 
 - `ApplicationOverviewForApplicantComponent` (`application-overview-for-applicant.component.ts`)
+![Application Overview Page](images/application-overview.png)
   - Provides paginated, sortable tabular overview of applicant's applications.
   - Uses signal-based reactive state management for loading states and data.
   - Integrates `DynamicTableComponent` for consistent table rendering.
@@ -131,10 +132,10 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 - `ApplicationCreationFormComponent` (`application-creation-form.component.ts`)
   - Implements multi-step wizard workflow with four stages:
-    1. Personal Information (`application-creation-page1`)
-    2. Education + Document Uploads (`application-creation-page2`)
-    3. Application Details + Document Uploads (`application-creation-page3`)
-    4. Summary + Consent (`application-detail-for-applicant` in preview mode)
+    1. Personal Information (`application-creation-page1`) ![Step 1](images/application-form-1.png)
+    2. Education + Document Uploads (`application-creation-page2`) ![Step 2](images/application-form-2.png)
+    3. Application Details + Document Uploads (`application-creation-page3`) ![Step 3 (Part 1)](images/application-form-3-1.png) ![Step 3 (Part 2)](images/application-form-3-2.png)
+    4. Summary + Consent (`application-detail-for-applicant` in preview mode) ![Step 4 (Part 1)](images/application-form-4-1.png) ![Step 4 (Part 2)](images/application-form-4-2.png)
   - Features automatic progress saving with visual feedback (`saving`, `saved`, `error` states).
   - Uses `ProgressStepperComponent` for visual step navigation.
   - Implements bi-directional data flow with child form components.
@@ -142,6 +143,8 @@ The **Application Module** enables applicants to create, manage, and submit doct
   - Provides confirmation dialog before final submission.
 
 - `ApplicationDetailForApplicantComponent` (`application-detail-for-applicant.component.ts`)
+![Application Detail Page (Part 1)](images/application-detail-1.png)
+![Application Detail Page (Part 2)](images/application-detail-2.png)
   - Renders comprehensive application view with dual modes:
     - **Preview mode**: Used within submission workflow (step 4) with passed-in data.
     - **Standalone mode**: Full detail page with data fetched from backend.
