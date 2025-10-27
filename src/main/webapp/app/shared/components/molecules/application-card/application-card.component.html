@@ -4,10 +4,10 @@
     <div class="header">
       <p class="name">{{ applicationDetails()?.applicant?.user?.name }}</p>
       <jhi-tag
+        class="status-tag"
         [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
         [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
         [tooltipText]="'evaluation.statusBadge.tooltips.' + (applicationDetails()?.applicationState || '')"
-        width="7rem"
       />
     </div>
 
