@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     box-sizing: border-box;
 
     .review-actions {
@@ -15,5 +15,23 @@
 
   jhi-application-carousel {
     width: 100%;
+  }
+}
+
+/* Tablets and smaller (width <= 768px) */
+@media (width <= 768px) {
+  .page-container {
+    .body {
+      gap: 1rem;
+    }
+  }
+}
+
+/* Mobile phones (width <= 480px) */
+@media (width <= 480px) {
+  .page-container {
+    .body {
+      gap: 0.75rem;
+    }
   }
 }
