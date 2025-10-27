@@ -280,7 +280,11 @@ describe('ApplicationForm', () => {
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
     const freshComp = freshFixture.componentInstance;
 
-    freshFixture.detectChanges();
+    // Set up accountService to return a loaded user
+    // This forces the authenticated path (no localStorage fallback)
+    // This ensures the code tries to load from backend and throws when no IDs provided
+    accountService.loaded.set(true);
+    accountService.user.set({ id: 'user-123', email: 'test@example.com', name: 'Test User' });
 
     // The error message will be the re-thrown message from the catch block
     await expect(freshComp.init()).rejects.toThrow(
