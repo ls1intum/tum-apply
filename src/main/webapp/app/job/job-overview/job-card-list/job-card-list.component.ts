@@ -39,12 +39,10 @@ export class JobCardListComponent {
 
   DropdownOptions = DropdownOptions;
 
-  readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedFieldOfStudiesFilters = signal<string[]>([]);
   readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
 
-  readonly allJobNames = signal<string[]>([]);
   readonly allFieldOfStudies = signal<string[]>([]);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
   readonly allSupervisorNames = signal<string[]>([]);
@@ -91,11 +89,7 @@ export class JobCardListComponent {
   }
 
   onFilterEmit(filterChange: FilterChange): void {
-    if (filterChange.filterId === 'jobTitle') {
-      this.page.set(0);
-      this.selectedJobFilters.set(filterChange.selectedValues);
-      void this.loadJobs();
-    } else if (filterChange.filterId === 'fieldOfStudies') {
+    if (filterChange.filterId === 'fieldOfStudies') {
       this.page.set(0);
       this.selectedFieldOfStudiesFilters.set(filterChange.selectedValues);
       void this.loadJobs();
@@ -121,11 +115,9 @@ export class JobCardListComponent {
   async loadAllFilter(): Promise<void> {
     try {
       const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
-      this.allJobNames.set(filterOptions.jobNames ?? []);
       this.allFieldOfStudies.set(filterOptions.fieldsOfStudy ?? []);
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
-      this.allJobNames.set([]);
       this.allFieldOfStudies.set([]);
       this.allSupervisorNames.set([]);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
@@ -138,7 +130,6 @@ export class JobCardListComponent {
         this.jobService.getAvailableJobs(
           this.pageSize(),
           this.page(),
-          emptyToUndef(this.selectedJobFilters()),
           emptyToUndef(this.selectedFieldOfStudiesFilters()),
           emptyToUndef(this.selectedLocationFilters()),
           emptyToUndef(this.selectedSupervisorFilters()),

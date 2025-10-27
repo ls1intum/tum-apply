@@ -13,8 +13,8 @@ import { ApplicationDetailDTO } from './applicationDetailDTO';
 
 export interface ApplicationEvaluationDetailDTO { 
     applicationDetailDTO: ApplicationDetailDTO;
-    professor?: ProfessorDTO;
-    jobId?: string;
     appliedAt?: string;
+    jobId?: string;
+    professor?: ProfessorDTO;
 }
 

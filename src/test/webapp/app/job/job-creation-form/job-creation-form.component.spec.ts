@@ -1,12 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError, Subject } from 'rxjs';
-import { Router, ActivatedRoute, UrlSegment } from '@angular/router';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation-form.component';
-import { AccountService } from 'app/core/auth/account.service';
-import { ToastService } from 'app/service/toast-service';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
@@ -15,6 +13,9 @@ import * as DropdownOptions from 'app/job/dropdown-options';
 import { signal } from '@angular/core';
 import { User } from 'app/core/auth/account.service';
 import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
+import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
+import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 
 interface Step {
   name: string;
@@ -46,46 +47,39 @@ describe('JobCreationFormComponent', () => {
   let fixture: ComponentFixture<JobCreationFormComponent>;
   let component: JobCreationFormComponent;
 
-  let accountService: Pick<AccountService, 'loadedUser'>;
   let jobService: {
     getJobById: ReturnType<typeof vi.fn>;
     createJob: ReturnType<typeof vi.fn>;
     updateJob: ReturnType<typeof vi.fn>;
   };
-  let toast: Pick<ToastService, 'showErrorKey' | 'showSuccessKey'>;
-  let router: Pick<Router, 'navigate'>;
+
+  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
+  let mockToastService = createToastServiceMock();
+  let mockRouter = createRouterMock();
   let location: Pick<Location, 'back'>;
   let route$: Subject<UrlSegment[]>;
 
   beforeEach(async () => {
-    accountService = {
-      loadedUser: signal<User | undefined>({ id: 'u1', name: 'User X' } as User),
-    };
-
     jobService = {
       getJobById: vi.fn().mockReturnValue(of({ title: 'Loaded Job', description: 'Desc' })),
       createJob: vi.fn().mockReturnValue(of({ jobId: 'new123' })),
       updateJob: vi.fn().mockReturnValue(of({})),
     };
 
-    toast = {
-      showErrorKey: vi.fn(),
-      showSuccessKey: vi.fn(),
-    };
-
-    router = { navigate: vi.fn() };
+    mockAccountService = createAccountServiceMock();
+    mockAccountService.setLoadedUser({ id: 'u1', name: 'Test User' } as User);
     location = { back: vi.fn() };
     route$ = new Subject();
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
       providers: [
-        { provide: AccountService, useValue: accountService },
         { provide: JobResourceApiService, useValue: jobService },
-        { provide: ToastService, useValue: toast },
-        { provide: Router, useValue: router },
         { provide: Location, useValue: location },
         { provide: ActivatedRoute, useValue: { url: route$, snapshot: { paramMap: new Map() } } },
+        provideAccountServiceMock(mockAccountService),
+        provideToastServiceMock(mockToastService),
+        provideRouterMock(mockRouter),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -127,7 +121,7 @@ describe('JobCreationFormComponent', () => {
   it('should show error if privacy not accepted on publish', async () => {
     component.additionalInfoForm.patchValue({ privacyAccepted: false });
     await component.publishJob();
-    expect(toast.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
   });
 
   it('should set savingState to FAILED when autoSave fails', async () => {
@@ -135,7 +129,7 @@ describe('JobCreationFormComponent', () => {
     component.jobId.set('id123');
     await (component as unknown as { performAutoSave: () => Promise<void> }).performAutoSave();
     expect(component.savingState()).toBe('FAILED');
-    expect(toast.showErrorKey).toHaveBeenCalledWith('toast.saveFailed');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.saveFailed');
   });
 
   it('should call Location.back on onBack', () => {
@@ -153,13 +147,13 @@ describe('JobCreationFormComponent', () => {
   });
 
   it('should navigate to login if no user in init', async () => {
-    accountService.loadedUser = signal<User | undefined>(undefined);
+    mockAccountService.loadedUser = signal<User | undefined>(undefined);
 
     const fixture2 = TestBed.createComponent(JobCreationFormComponent);
     fixture2.detectChanges();
     await fixture2.whenStable();
 
-    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
   });
 
   it('should navigate to /my-positions if edit mode but no jobId', async () => {
@@ -176,7 +170,7 @@ describe('JobCreationFormComponent', () => {
     fixture2.detectChanges();
 
     await fixture2.whenStable();
-    expect(router.navigate).toHaveBeenCalledWith(['/my-positions']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-positions']);
   });
 
   it('should publish successfully and navigate', async () => {
@@ -186,8 +180,8 @@ describe('JobCreationFormComponent', () => {
     component.jobId.set('id123');
     await component.publishJob();
 
-    expect(toast.showSuccessKey).toHaveBeenCalledWith('toast.published');
-    expect(router.navigate).toHaveBeenCalledWith(['/my-positions']);
+    expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('toast.published');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-positions']);
   });
 
   it('should handle publishJob failure', async () => {
@@ -199,7 +193,7 @@ describe('JobCreationFormComponent', () => {
     component.jobId.set('id123');
     await component.publishJob();
 
-    expect(toast.showErrorKey).toHaveBeenCalledWith('toast.publishFailed');
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.publishFailed');
   });
 
   it('should return undefined when findDropdownOption has no match', () => {
@@ -236,8 +230,8 @@ describe('JobCreationFormComponent', () => {
     fixture2.detectChanges();
     await fixture2.whenStable();
 
-    expect(toast.showErrorKey).toHaveBeenCalledWith('toast.loadFailed');
-    expect(router.navigate).toHaveBeenCalledWith(['/my-positions']);
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.loadFailed');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-positions']);
   });
 
   it('should set jobId after creating a new job', async () => {
@@ -310,8 +304,8 @@ describe('JobCreationFormComponent', () => {
     await component.publishJob();
 
     // no success/error toast should be called
-    expect(toast.showSuccessKey).not.toHaveBeenCalled();
-    expect(toast.showErrorKey).not.toHaveBeenCalled();
+    expect(mockToastService.showSuccessKey).not.toHaveBeenCalled();
+    expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
   });
 
   it('should populate fundingType when job has it', () => {

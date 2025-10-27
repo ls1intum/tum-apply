@@ -45,7 +45,12 @@ public class PageUtil {
                 "postalCode",
                 "city"
             )
-        );
+        ),
+
+        /**
+         * Sortable columns used in admin research group listings.
+         */
+        RESEARCH_GROUPS_ADMIN(Set.of("name", "head", "state", "createdAt"));
 
         private final Set<String> sortableColumns;
 

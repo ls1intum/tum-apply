@@ -87,7 +87,14 @@
     </div>
     <div class="form-field">
       <label jhiTranslate="entity.applicationPage1.label.dateOfBirth"></label>
-      <jhi-datepicker [selectedDate]="data().dateOfBirth" label="" width="100%" (selectedDateChange)="setDateOfBirth($event)" />
+      <jhi-datepicker
+        [selectedDate]="data().dateOfBirth"
+        label=""
+        width="100%"
+        (selectedDateChange)="setDateOfBirth($event)"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+      />
     </div>
   </div>
 
