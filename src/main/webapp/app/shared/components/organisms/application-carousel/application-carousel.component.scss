@@ -1,3 +1,4 @@
+@use '../../../../../content/scss/breakpoints' as bp;
 .carousel {
   width: 100%;
   display: flex;
@@ -22,7 +23,7 @@
 }
 
 /* Tablets and smaller (width <= 768px) */
-@media (width <= 768px) {
+@media (max-width: bp.$md) {
   .carousel {
     gap: 0.75rem;
   }
@@ -41,7 +42,7 @@
 }
 
 /* Large phones */
-@media (width <= 480px) {
+@media (max-width: bp.$sm) {
   .carousel {
     gap: 0.3rem;
   }
@@ -60,7 +61,7 @@
 }
 
 /* Standard phones */
-@media (width <= 400px) {
+@media (max-width: bp.$xs) {
   .carousel {
     gap: 0.25rem;
   }
@@ -78,8 +79,8 @@
   }
 }
 
-/* Small phones - iPhone SE, etc. (width <= 380px) */
-@media (width <= 380px) {
+/* Small phones */
+@media (max-width: bp.$xxs) {
   .carousel {
     gap: 0.2rem;
   }

@@ -1,3 +1,4 @@
+@use '../../../../../content/scss/breakpoints' as bp;
 .card {
   display: flex;
   flex-direction: column;
@@ -81,7 +82,7 @@
 }
 
 /* Tablets and smaller (width <= 768px) */
-@media (width <= 768px) {
+@media (max-width: bp.$md) {
   .card {
     width: clamp(12rem, 70vw, 16rem);
     padding: 0.7rem;
@@ -113,7 +114,7 @@
 }
 
 /* Large phones */
-@media (width <= 480px) {
+@media (max-width: bp.$sm) {
   .card {
     width: 14rem;
     padding: 0.45rem;
@@ -165,7 +166,7 @@
 }
 
 /* Standard phones  */
-@media (width <= 400px) {
+@media (max-width: bp.$xs) {
   .card {
     width: 12.5rem;
   }
@@ -189,7 +190,7 @@
 }
 
 /* Small phones */
-@media (width <= 380px) {
+@media (max-width: bp.$xxs) {
   .card {
     width: 11.5rem;
   }
