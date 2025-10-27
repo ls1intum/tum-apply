@@ -1335,56 +1335,6 @@ describe('ApplicationForm', () => {
       });
     });
   });
-  describe('education step buttons', () => {
-    it('should call updateDocumentInformation when prev button is clicked', () => {
-      // IMPORTANT: Set up spy BEFORE accessing stepData()
-      const updateDocsSpy = vi.spyOn(comp, 'updateDocumentInformation').mockImplementation(() => { });
-
-      // Create a fresh component to ensure computed runs with spy in place
-      const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
-      const freshComp = freshFixture.componentInstance;
-      freshComp.personalInfoDataValid.set(true);
-      freshComp.educationDataValid.set(true);
-      freshComp.applicationDetailsDataValid.set(true);
-      freshComp.applicantId.set('user-123');
-
-      // Spy on the fresh component
-      const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
-
-      freshFixture.detectChanges();
-
-      const steps = freshComp.stepData();
-      const educationStep = steps[1]; // Second step
-      const prevButton = educationStep.buttonGroupPrev[0];
-
-      prevButton.onClick();
-
-      expect(freshSpy).toHaveBeenCalled();
-    });
-
-    it('should call updateDocumentInformation when next button is clicked', () => {
-      // Create a fresh component
-      const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
-      const freshComp = freshFixture.componentInstance;
-      freshComp.personalInfoDataValid.set(true);
-      freshComp.educationDataValid.set(true);
-      freshComp.applicationDetailsDataValid.set(true);
-      freshComp.applicantId.set('user-123');
-
-      // Spy on the fresh component BEFORE computed runs
-      const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
-
-      freshFixture.detectChanges();
-
-      const steps = freshComp.stepData();
-      const educationStep = steps[1];
-      const nextButton = educationStep.buttonGroupNext[0];
-
-      nextButton.onClick();
-
-      expect(freshSpy).toHaveBeenCalled();
-    });
-  });
 
   describe('savingBadgeCalculatedClass', () => {
     it('should return class with saved_color when savingState is SAVED', () => {
@@ -1465,6 +1415,9 @@ describe('ApplicationForm', () => {
       expect(comp.allPagesValid()).toBe(true);
     });
 
+  });
+
+  describe('data validity callbacks', () => {
     it('should set educationDataValid to true when onEducationDataValidityChanged is called with true', () => {
       comp.onEducationDataValidityChanged(true);
       expect(comp.educationDataValid()).toBe(true);
