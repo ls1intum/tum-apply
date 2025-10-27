@@ -290,7 +290,6 @@ describe('ApplicationForm', () => {
     const freshComp = freshFixture.componentInstance;
 
     // Set up accountService to return a loaded user
-    // This forces the authenticated path (no localStorage fallback)
     // This ensures the code tries to load from backend and throws when no IDs provided
     accountService.loaded.set(true);
     accountService.user.set({ id: 'user-123', email: 'test@example.com', name: 'Test User' });
@@ -626,7 +625,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -649,7 +648,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -672,7 +671,7 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to throw an error
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(throwError(() => new Error('Network error')));
@@ -691,7 +690,7 @@ describe('ApplicationForm', () => {
 
       // Mock mapPagesToDTO
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
-      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
+      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
 
@@ -723,11 +722,6 @@ describe('ApplicationForm', () => {
         country: { value: 'US', name: 'United States' },
         postcode: '10001',
       });
-      // type ApplicationCreationFormComponentWithPublicMapPagesToDto = ApplicationCreationFormComponent & {
-      //   mapPagesToDTO: (state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT') => UpdateApplicationDTO | ApplicationDetailDTO
-      // };
-      // let compWithPublicMapPagesToDto: ApplicationCreationFormComponentWithPublicMapPagesToDto;
-      let mapPagesToDTO: (state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT') => UpdateApplicationDTO | ApplicationDetailDTO;
       comp.educationData.set({
         bachelorDegreeName: 'Computer Science',
         bachelorDegreeUniversity: 'MIT',
@@ -753,19 +747,19 @@ describe('ApplicationForm', () => {
     });
 
     it('should return UpdateApplicationDTO with all fields when state is provided', () => {
-      const result = comp['mapPagesToDTO']('SENT');
+      const result = comp['mapPagesToDTO']('SENT') as UpdateApplicationDTO;
 
       expect(result.applicationId).toBe('app-123');
       expect(result.applicationState).toBe('SENT');
       expect(result.applicant?.user.userId).toBe('user-456');
       expect(result.applicant?.user.email).toBe('john@example.com');
-      // expect(result.applicant?.user.firstName).toBe('John');
-      // expect(result.applicant?.user.lastName).toBe('Doe');
+      expect(result.applicant?.user.firstName).toBe('John');
+      expect(result.applicant?.user.lastName).toBe('Doe');
       expect(result.applicant?.user.phoneNumber).toBe('+1234567890');
-      // expect(result.applicant?.city).toBe('New York');
-      // expect(result.applicant?.country).toBe('US');
-      // expect(result.applicant?.street).toBe('123 Main St');
-      // expect(result.applicant?.postalCode).toBe('10001');
+      expect(result.applicant?.city).toBe('New York');
+      expect(result.applicant?.country).toBe('US');
+      expect(result.applicant?.street).toBe('123 Main St');
+      expect(result.applicant?.postalCode).toBe('10001');
       expect(result.motivation).toBe('<p>I am passionate about software</p>');
       expect(result.specialSkills).toBe('<p>Java, TypeScript, Angular</p>');
       expect(result.desiredDate).toBe('2025-06-01');
@@ -1173,7 +1167,7 @@ describe('ApplicationForm', () => {
       });
 
       it('should call handleNextFromStep1 when next button is clicked', () => {
-        const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => { });
+        const handleNextSpy = spyOnPrivate(comp, 'handleNextFromStep1').mockImplementation(() => {});
 
         const steps = comp.stepData();
         const personalInfoStep = steps[0];
@@ -1196,7 +1190,7 @@ describe('ApplicationForm', () => {
         freshComp.applicantId.set('user-123');
 
         // Spy on the fresh component
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1218,7 +1212,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1240,7 +1234,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1261,7 +1255,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1283,7 +1277,7 @@ describe('ApplicationForm', () => {
         freshComp.applicationDetailsDataValid.set(true);
         freshComp.applicantId.set('user-123');
 
-        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => { });
+        const freshSpy = vi.spyOn(freshComp, 'updateDocumentInformation').mockImplementation(() => {});
 
         freshFixture.detectChanges();
 
@@ -1453,7 +1447,7 @@ describe('ApplicationForm', () => {
 
     it('should return class with saving_color for any other savingState value', () => {
       // Test with a value that's not SAVED or FAILED
-      comp.savingState.set('UNKNOWN' as any);
+      comp.savingState.set('SAVING');
 
       const result = comp.savingBadgeCalculatedClass();
 
@@ -1650,20 +1644,13 @@ describe('ApplicationForm', () => {
 
       // Reconfigure the existing mock
       applicationResourceApiService.createApplication = vi.fn().mockReturnValue(of(mockApplication));
-
-      // Should throw an error
       await expect(comp.initPageCreateApplication('job-456')).rejects.toThrow('Application is not editable.');
 
       fixture.detectChanges();
       await fixture.whenStable();
 
-      // Should create application
       expect(applicationResourceApiService.createApplication).toHaveBeenCalledWith('job-456');
-
-      // Should show error toast
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
-
-      // Should navigate to detail page
       expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'app-789']);
     });
 
@@ -1695,8 +1682,6 @@ describe('ApplicationForm', () => {
 
       fixture.detectChanges();
       await fixture.whenStable();
-
-      // Should set applicationId to empty string when undefined
       expect(comp.applicationId()).toBe('');
 
       // Should navigate with undefined application in query params
@@ -1747,20 +1732,11 @@ describe('ApplicationForm', () => {
 
       fixture.detectChanges();
       await fixture.whenStable();
-
-      // Should fetch the application
       expect(applicationResourceApiService.getApplicationById).toHaveBeenCalledWith('existing-app-123');
-
-      // Should set applicationId
       expect(comp.applicationId()).toBe('existing-app-123');
-
-      // Should NOT show error toast
       expect(toast.showErrorKey).not.toHaveBeenCalled();
-
       // Should NOT navigate away
       expect(router.navigate).not.toHaveBeenCalled();
-
-      // Should return the application
       expect(result).toEqual(mockApplication);
     });
 
@@ -1783,16 +1759,9 @@ describe('ApplicationForm', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      // Should fetch the application
       expect(applicationResourceApiService.getApplicationById).toHaveBeenCalledWith('existing-app-456');
-
-      // Should show error toast
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
-
-      // Should navigate to detail page
       expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'existing-app-456']);
-
-      // Should NOT set applicationId
       expect(comp.applicationId()).not.toBe('existing-app-456');
     });
 
