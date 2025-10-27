@@ -288,7 +288,15 @@ public class PDFBuilder {
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont);
+            boolean first = true;
             for (IBlockElement element : elements) {
+                if (element instanceof Paragraph para && first) {
+                    para.setMarginTop(0);
+                    first = false;
+                } else if (element instanceof com.itextpdf.layout.element.List list && first) {
+                    list.setMarginTop(0);
+                    first = false;
+                }
                 container.add(element);
             }
         }
