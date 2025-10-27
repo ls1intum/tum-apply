@@ -2,13 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  ViewEncapsulation,
   computed,
   effect,
   inject,
   input,
   output,
-  signal,
-  ViewEncapsulation,
+  signal
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
