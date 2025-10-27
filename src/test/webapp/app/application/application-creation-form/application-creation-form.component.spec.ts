@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router, UrlSegment, withDisabledInitialNavigation } from '@angular/router';
 import { computed, signal } from '@angular/core';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationFormComponent from '../../../../../main/webapp/app/application/application-creation/application-creation-form/application-creation-form.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -22,6 +22,7 @@ import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { UpdateApplicationDTO } from 'app/generated/model/updateApplicationDTO';
 import { UserDTO } from 'app/generated/model/userDTO';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
+import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 
 function spyOnPrivate<T extends object>(obj: T, methodName: string) {
   return vi.spyOn(obj as any, methodName);
@@ -63,6 +64,7 @@ describe('ApplicationForm', () => {
   let localStorageService: Pick<LocalStorageService, 'saveApplicationDraft' | 'clearApplicationDraft' | 'loadApplicationDraft'>;
   let translateService: Pick<TranslateService, 'instant'>;
   let activatedRoute: Pick<ActivatedRoute, 'snapshot' | 'url'>;
+  let jobResourceService: Pick<JobResourceApiService, 'getJobDetails'>;
 
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
   let comp: ApplicationCreationFormComponent;
@@ -111,6 +113,10 @@ describe('ApplicationForm', () => {
       instant: vi.fn(),
     };
 
+    jobResourceService = {
+      getJobDetails: vi.fn().mockReturnValue({ title: "Test Job" })
+    }
+
     activatedRoute = {
       url: route$,
       snapshot: {
@@ -148,6 +154,7 @@ describe('ApplicationForm', () => {
         { provide: AuthOrchestratorService, useValue: authOrchestrator },
         { provide: LocalStorageService, useValue: localStorageService },
         { provide: TranslateService, useValue: translateService },
+        { provide: JobResourceApiService, useValue: jobResourceService },
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -213,6 +220,7 @@ describe('ApplicationForm', () => {
         { provide: AuthOrchestratorService, useValue: authOrchestrator },
         { provide: LocalStorageService, useValue: localStorageService },
         { provide: TranslateService, useValue: translateService },
+        { provide: JobResourceApiService, useValue: jobResourceService },
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -272,6 +280,7 @@ describe('ApplicationForm', () => {
         { provide: AuthOrchestratorService, useValue: authOrchestrator },
         { provide: LocalStorageService, useValue: localStorageService },
         { provide: TranslateService, useValue: translateService },
+        { provide: JobResourceApiService, useValue: jobResourceService },
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -310,15 +319,30 @@ describe('ApplicationForm', () => {
     expect(toast.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
   });
 
+  it('should show error if doctoral requirements are not accepted on send', () => {
+    comp.additionalInfoForm.controls.privacyAccepted.setValue(true);
+    comp.additionalInfoForm.controls.doctoralRequirementsAccepted.setValue(false);
+    fixture.detectChanges();
+    const sendSpy = vi.spyOn(comp, 'sendCreateApplicationData');
+
+    comp.onConfirmSend();
+
+    expect(toast.showErrorKey).toHaveBeenCalledWith('entity.applicationPage4.doctoralRequirements.toastError');
+    expect(sendSpy).not.toHaveBeenCalled();
+  });
+
   it('should send application if privacy accepted', async () => {
     comp.applicationId.set('456');
     comp.useLocalStorage.set(false);
     comp.additionalInfoForm.controls.privacyAccepted.setValue(true);
+    comp.additionalInfoForm.controls.doctoralRequirementsAccepted.setValue(true);
+    fixture.detectChanges();
     const sendSpy = vi.spyOn(comp, 'sendCreateApplicationData').mockResolvedValue(true);
 
     comp.onConfirmSend();
 
-    // Wait for any promises to resolve
+    // Wait for any async operations and promises to resolve
+    await new Promise(resolve => setTimeout(resolve, 10));
     await fixture.whenStable();
 
     expect(sendSpy).toHaveBeenCalledWith('SENT', true);
@@ -364,16 +388,18 @@ describe('ApplicationForm', () => {
     });
 
     // Additional test with empty string to be thorough
-    it('should show error message when jobId is empty string in initPageForLocalStorageCase', async () => {
-      const showErrorSpy = spyOnPrivate(comp, 'showInitErrorMessage');
+    it('should load data when jobId is empty string in initPageForLocalStorageCase', async () => {
+      const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
 
       comp.initPageForLocalStorageCase('');
 
       fixture.detectChanges();
+      await new Promise(resolve => setTimeout(resolve, 10));
       await fixture.whenStable();
 
       expect(comp.useLocalStorage()).toBe(true);
-      expect(showErrorSpy).toHaveBeenCalledWith('entity.toast.applyFlow.missingJobIdUnauthenticated');
+      expect(comp.jobId()).toBe('');
+      expect(loadDataSpy).toHaveBeenCalledWith('');
     });
 
     // Test the if branch for completeness (if not already tested)
@@ -389,6 +415,68 @@ describe('ApplicationForm', () => {
       expect(comp.jobId()).toBe('job-123');
       expect(loadDataSpy).toHaveBeenCalledWith('job-123');
       expect(comp.applicationState()).toBe('SAVED');
+    });
+
+    it('should set title when jobDetails are fetched with title in initPageForLocalStorageCase', async () => {
+      const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
+      const mockJobDetails = { title: 'Senior Software Engineer' };
+
+      jobResourceService.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
+
+      comp.initPageForLocalStorageCase('job-456');
+
+      fixture.detectChanges();
+      await new Promise(resolve => setTimeout(resolve, 50));
+      await fixture.whenStable();
+
+      expect(comp.useLocalStorage()).toBe(true);
+      expect(comp.jobId()).toBe('job-456');
+      expect(loadDataSpy).toHaveBeenCalledWith('job-456');
+      expect(comp.applicationState()).toBe('SAVED');
+      expect(comp.title()).toBe('Senior Software Engineer');
+      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-456');
+    });
+
+    it('should handle missing title in jobDetails in initPageForLocalStorageCase', async () => {
+      const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
+      const mockJobDetails = { }; // No title property
+
+      // Reset title to empty string
+      comp.title = signal('');
+
+      jobResourceService.getJobDetails = vi.fn().mockReturnValue(of(mockJobDetails));
+
+      comp.initPageForLocalStorageCase('job-789');
+
+      fixture.detectChanges();
+      await new Promise(resolve => setTimeout(resolve, 50));
+      await fixture.whenStable();
+
+      expect(comp.useLocalStorage()).toBe(true);
+      expect(comp.jobId()).toBe('job-789');
+      expect(loadDataSpy).toHaveBeenCalledWith('job-789');
+      expect(comp.applicationState()).toBe('SAVED');
+      expect(comp.title()).toBe(''); // Title should remain empty since jobDetails has no title
+      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-789');
+    });
+
+    it('should handle error when fetching jobDetails in initPageForLocalStorageCase', async () => {
+      const loadDataSpy = spyOnPrivate(comp, 'loadPersonalInfoDataFromLocalStorage');
+
+      jobResourceService.getJobDetails = vi.fn().mockReturnValue(throwError(() => new Error('Job fetch failed')));
+
+      comp.initPageForLocalStorageCase('job-error');
+
+      fixture.detectChanges();
+      await new Promise(resolve => setTimeout(resolve, 50));
+      await fixture.whenStable();
+
+      expect(comp.useLocalStorage()).toBe(true);
+      expect(comp.jobId()).toBe('job-error');
+      expect(loadDataSpy).toHaveBeenCalledWith('job-error');
+      expect(comp.applicationState()).toBe('SAVED');
+      // Error should be silently caught (no toast shown for non-critical operation)
+      expect(jobResourceService.getJobDetails).toHaveBeenCalledWith('job-error');
     });
   });
 
@@ -643,12 +731,14 @@ describe('ApplicationForm', () => {
       comp.educationData.set({
         bachelorDegreeName: 'Computer Science',
         bachelorDegreeUniversity: 'MIT',
-        bachelorGrade: 3.8,
-        bachelorGradingScale: { value: 'ONE_TO_FOUR', name: '1-4' },
+        bachelorGrade: '3.8',
+        bachelorGradeLowerLimit: '4',
+        bachelorGradeUpperLimit: '1',
         masterDegreeName: 'Software Engineering',
         masterDegreeUniversity: 'Stanford',
-        masterGrade: 3.9,
-        masterGradingScale: { value: 'ONE_TO_FOUR', name: '1-4' },
+        masterGrade: '3.9',
+        masterGradeLowerLimit: '4',
+        masterGradeUpperLimit: '1'
       });
 
       comp.applicationDetailsData.set({
