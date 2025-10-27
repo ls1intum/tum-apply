@@ -4,6 +4,27 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 ---
 
+## Table of Contents
+
+- [Application Management](#application-management)
+  - [Server-Side Architecture](#server-side-architecture)
+  - [Client-Side Architecture](#client-side-architecture)
+- [Domain Model](#domain-model)
+  - [Core Entities](#core-entities)
+  - [Data Transfer Objects](#data-transfer-objects)
+- [Key Workflows](#key-workflows)
+  - [Application Creation Workflow](#application-creation-workflow)
+  - [Application Update Workflow](#application-update-workflow)
+  - [Application Submission Workflow](#application-submission-workflow)
+  - [Application Withdrawal Workflow](#application-withdrawal-workflow)
+  - [Document Upload Workflow](#document-upload-workflow)
+- [Authorization and Security](#authorization-and-security)
+- [Performance Optimizations](#performance-optimizations)
+- [Integration Points](#integration-points)
+- [Error Handling](#error-handling)
+
+---
+
 ## Application Management
 
 ### Server-Side Architecture
