@@ -1738,4 +1738,37 @@ describe('ApplicationForm', () => {
       expect(comp.documentIds()).toStrictEqual({});
     });
   });
+
+  describe('clearLocalStorage', () => {
+    it('should call localStorageService.clearApplicationDraft with applicationId and jobId', () => {
+      comp.applicationId.set('app-123');
+      comp.jobId.set('job-456');
+
+      comp['clearLocalStorage']();
+
+      // Should call clearApplicationDraft with correct parameters
+      expect(localStorageService.clearApplicationDraft).toHaveBeenCalledWith('app-123', 'job-456');
+    });
+
+    it('should call clearApplicationDraft with empty strings when applicationId and jobId are empty', () => {
+      comp.applicationId.set('');
+      comp.jobId.set('');
+
+      comp['clearLocalStorage']();
+
+      // Should call clearApplicationDraft with empty strings
+      expect(localStorageService.clearApplicationDraft).toHaveBeenCalledWith('', '');
+    });
+
+    it('should pass the current signal values to clearApplicationDraft', () => {
+      comp.applicationId.set('existing-app-789');
+      comp.jobId.set('job-999');
+
+      comp['clearLocalStorage']();
+
+      // Should call with the current signal values
+      expect(localStorageService.clearApplicationDraft).toHaveBeenCalledWith('existing-app-789', 'job-999');
+      expect(localStorageService.clearApplicationDraft).toHaveBeenCalledTimes(1);
+    });
+  });
 });
