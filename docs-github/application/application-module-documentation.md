@@ -13,6 +13,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
   - [Core Entities](#core-entities)
   - [Data Transfer Objects](#data-transfer-objects)
 - [Key Workflows](#key-workflows)
+  - [Quick Reference](#quick-reference)
   - [Application Creation Workflow](#application-creation-workflow)
   - [Application Update Workflow](#application-update-workflow)
   - [Application Submission Workflow](#application-submission-workflow)
@@ -301,6 +302,12 @@ The **Application Module** enables applicants to create, manage, and submit doct
 ---
 
 ## Key Workflows
+
+### Quick Reference
+- Create Application: `POST /api/applications/create/{jobId}`
+- Update Application: `PUT /api/applications`
+- Submit Application: `PUT /api/applications` (state=SENT)
+- Withdraw: `PUT /api/applications/withdraw/{id}`
 
 ### Application Creation Workflow
 
