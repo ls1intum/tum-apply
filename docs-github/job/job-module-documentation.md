@@ -39,16 +39,6 @@ Common locations you’ll work with:
   - `dropdown-options.ts` – central lists for select/sort options
   - `../../shared/constants/saving-states.ts` – shared saving-state labels
 
-- **Shared UI Library**
-  - `src/main/webapp/app/shared/components/`
-    - **atoms**: `string-input`, `number-input`, `select`, `datepicker`, `button`, `tag`, `editor`, etc.
-    - **molecules**: `progress-stepper`, `button-group`, `search-filter-sort-bar`, etc.
-    - **organisms**: `dynamic-table`, etc.
-
-- **Language**
-  - `src/main/webapp/i18n/` (dictionaries to add translation keys)
-
-> Tip: The module favors **reusable atomic components**. Prefer composing existing atoms/molecules before introducing new ones.
 
 ---
 
@@ -63,8 +53,6 @@ Common locations you’ll work with:
 - **`domain/`**
   - `Job`, `CustomField`
     JPA entities with validation annotations and state transition helpers.
-- **`dto/`**
-    Data transfer objects for API boundaries; separate create/update shapes.
 - **`repository/`**
   - `JobRepository`, `CustomFieldRepository`  
     Spring Data repositories with custom query methods for filtering/sorting.
@@ -97,14 +85,6 @@ Action availability is state-dependent (e.g., **Delete** is only allowed for Dra
 - Inline validation and tooltips reduce user error.
 - Autosave/draft-save prevents data loss; saving state strings are unified in `shared/constants/saving-states.ts`.
 
-### 4.4 Sorting & filtering (client-side)
-- Sorting and filter UIs are provided by `search-filter-sort-bar`, `filter-multiselect` (molecules), and `sorting` component (atoms), and fed by `dropdown-options.ts`.
-
-### 4.5 Internationalization (DE/EN)
-- All visible strings must be translation-driven.
-- Add keys in the translation files and use the `translate` directive in templates.
-- Keep labels short and consistent to preserve layout in both languages.
-
 ---
 
 ## 5) Key components to know (Client-side)
@@ -129,14 +109,6 @@ Action availability is state-dependent (e.g., **Delete** is only allowed for Dra
 ## 6) Testing and quality bars
 
 ### 6.1 Client-side tests
-
-- Test runner: **Vitest**  
-  Example command:
-  ```bash
-  npm run test:ci
-  ```
-- Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
-  Keep unit tests close to the component you change. Prefer focused DOM and behavior tests (validation, visibility of actions, rendering of states, sorting/filter effects).
 
 - Useful spec locations:
   - `src/test/webapp/app/job/job-creation-form/*.spec.ts`
