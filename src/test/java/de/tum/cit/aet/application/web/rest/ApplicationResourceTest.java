@@ -7,10 +7,17 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationDocumentIdsDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.application.domain.dto.ApplicationOverviewDTO;
+import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
+import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -31,13 +38,19 @@ import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.web.multipart.MultipartFile;
 
 class ApplicationResourceTest extends AbstractResourceTest {
 
@@ -55,6 +68,12 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
     @Autowired
     ResearchGroupRepository researchGroupRepository;
+
+    @Autowired
+    DocumentRepository documentRepository;
+
+    @Autowired
+    DocumentDictionaryRepository documentDictionaryRepository;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -439,5 +458,175 @@ class ApplicationResourceTest extends AbstractResourceTest {
     void getDocumentIdsWithoutAuthReturnsForbidden() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         api.getAndRead("/api/applications/getDocumentIds/" + application.getApplicationId(), null, Object.class, 403);
+    }
+
+    // ===== DELETE DOCUMENT FROM APPLICATION =====
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void deleteDocumentFromApplicationRemovesIt() {
+        Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+        DocumentDictionary docDict = createTestDocument(application, applicantUser, DocumentType.CV, "test_cv.pdf");
+
+        assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isTrue();
+
+        api.with(JwtPostProcessors.jwtUser(applicant.getApplicantId(), "ROLE_APPLICANT"))
+            .deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 204);
+
+        assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isFalse();
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void deleteDocumentFromApplicationNonexistentThrowsNotFound() {
+        api.with(JwtPostProcessors.jwtUser(applicant.getApplicantId(), "ROLE_APPLICANT"))
+            .deleteAndRead("/api/applications/delete-document/" + UUID.randomUUID(), null, Void.class, 404);
+    }
+
+    @Test
+    void deleteDocumentFromApplicationWithoutAuthReturnsForbidden() {
+        Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+        DocumentDictionary docDict = createTestDocument(application, applicantUser, DocumentType.CV, "test_cv.pdf");
+
+        api.deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
+    }
+
+    // ===== RENAME DOCUMENT =====
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void renameDocumentUpdatesName() {
+        Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+        DocumentDictionary docDict = createTestDocument(application, applicantUser, DocumentType.CV, "original_name.pdf");
+
+        assertThat(docDict.getName()).isEqualTo("original_name.pdf");
+
+        api.with(JwtPostProcessors.jwtUser(applicant.getApplicantId(), "ROLE_APPLICANT"))
+            .putAndRead("/api/applications/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=new_cv_name.pdf", null, Void.class, 200);
+
+        DocumentDictionary updated = documentDictionaryRepository.findById(docDict.getDocumentDictionaryId()).orElseThrow();
+        assertThat(updated.getName()).isEqualTo("new_cv_name.pdf");
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void renameDocumentNonexistentThrowsNotFound() {
+        api.with(JwtPostProcessors.jwtUser(applicant.getApplicantId(), "ROLE_APPLICANT"))
+            .putAndRead("/api/applications/rename-document/" + UUID.randomUUID() + "?newName=new_name.pdf", null, Void.class, 404);
+    }
+
+    @Test
+    void renameDocumentWithoutAuthReturnsForbidden() {
+        Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+        DocumentDictionary docDict = createTestDocument(application, applicantUser, DocumentType.CV, "test_cv.pdf");
+
+        api.putAndRead("/api/applications/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=renamed.pdf", null, Void.class, 403);
+    }
+
+    // ===== UPLOAD DOCUMENTS =====
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void uploadDocumentsUploadsSuccessfully() {
+        Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+
+        MockMultipartFile file = new MockMultipartFile(
+            "files",
+            "bachelor_transcript.pdf",
+            "application/pdf",
+            "PDF content here".getBytes()
+        );
+
+        Set<DocumentInformationHolderDTO> uploadedDocs = api
+            .with(JwtPostProcessors.jwtUser(applicant.getApplicantId(), "ROLE_APPLICANT"))
+            .postAndRead(
+                "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.BACHELOR_TRANSCRIPT,
+                List.of(file),
+                new TypeReference<>() {},
+                200
+            );
+
+        assertThat(uploadedDocs).isNotEmpty();
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void uploadDocumentsForNonexistentApplicationThrowsNotFound() {
+        MockMultipartFile file = new MockMultipartFile(
+            "files",
+            "transcript.pdf",
+            "application/pdf",
+            "PDF content".getBytes()
+        );
+
+        api.with(JwtPostProcessors.jwtUser(applicant.getApplicantId(), "ROLE_APPLICANT"))
+            .postAndRead(
+                "/api/applications/upload-documents/" + UUID.randomUUID() + "/" + DocumentType.BACHELOR_TRANSCRIPT,
+                List.of(file),
+                new TypeReference<>() {},
+                404
+            );
+    }
+
+    @Test
+    void uploadDocumentsWithoutAuthReturnsForbidden() {
+        Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+
+        MockMultipartFile file = new MockMultipartFile(
+            "files",
+            "transcript.pdf",
+            "application/pdf",
+            "PDF content".getBytes()
+        );
+
+        api.postAndRead(
+            "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
+            List.of(file),
+            new TypeReference<>() {},
+            403
+        );
+    }
+
+    // ===== GET APPLICATION BY ID - 404 BRANCH =====
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void getApplicationByIdReturnsNotFoundWhenApplicationDoesNotExist() {
+        api.with(JwtPostProcessors.jwtUser(applicant.getApplicantId(), "ROLE_APPLICANT"))
+            .getAndRead("/api/applications/" + UUID.randomUUID(), null, ApplicationForApplicantDTO.class, 404);
+    }
+
+    // ===== HELPER METHODS =====
+
+    /**
+     * Creates a test document and associates it with an application.
+     * This helper method creates the necessary Document and DocumentDictionary entities.
+     */
+    private DocumentDictionary createTestDocument(
+        Application application,
+        User uploadedBy,
+        DocumentType documentType,
+        String fileName
+    ) {
+        // Create document
+        Document document = new Document();
+        document.setDocumentId(UUID.randomUUID());
+        document.setSha256Id(UUID.randomUUID().toString());
+        document.setPath("/test/path/" + fileName);
+        document.setMimeType("application/pdf");
+        document.setSizeBytes(1024L);
+        document.setUploadedBy(uploadedBy);
+        document = documentRepository.save(document);
+
+        // Create document dictionary entry
+        DocumentDictionary docDict = new DocumentDictionary();
+        docDict.setDocumentDictionaryId(UUID.randomUUID());
+        docDict.setDocument(document);
+        docDict.setApplication(application);
+        docDict.setDocumentType(documentType);
+        docDict.setName(fileName);
+        docDict = documentDictionaryRepository.save(docDict);
+
+        return docDict;
     }
 }
