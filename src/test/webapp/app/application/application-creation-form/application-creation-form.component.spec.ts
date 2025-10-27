@@ -447,7 +447,7 @@ describe('ApplicationForm', () => {
         postcode: '',
         street: '',
         website: '',
-      }); // TODO all as any
+      });
       comp.applicationId.set('app-789');
       comp.jobId.set('job-999');
 
@@ -535,10 +535,10 @@ describe('ApplicationForm', () => {
 
       // Mock mapPagesToDTO
       const mockUpdateDTO = { applicationId: 'app-456', applicationState: 'SENT' };
-      vi.spyOn(comp as any, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
+      spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue(mockUpdateDTO);
 
       // Mock clearLocalStorage
-      const clearLocalStorageSpy = vi.spyOn(comp as any, 'clearLocalStorage').mockImplementation(() => { });
+      const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => { });
 
       // Mock updateApplication to return success
       applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
@@ -909,7 +909,6 @@ describe('ApplicationForm', () => {
       } as any);
 
       const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
-      const migrateSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
 
       accountService.user.set({ id: 'new-user-456', email: 'test@example.com', name: 'Jane Smith' });
 
@@ -942,6 +941,117 @@ describe('ApplicationForm', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.otpVerificationFailed');
+    });
+
+    it('should set applicantId to empty string when loadedUser().id is undefined (nullish coalescing operator)', async () => {
+      comp.applicantId.set('');
+      comp.personalInfoData.set({
+        email: 'test@example.com',
+        firstName: 'Jane',
+        lastName: 'Smith',
+      } as any);
+
+      const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
+      const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
+
+      // Set up loadedUser to return undefined id (simulating the ?? '' fallback case)
+      accountService.user.set({ id: undefined as any, email: 'test@example.com', name: 'Jane Smith' });
+
+      const progressStepperMock = {
+        goToStep: vi.fn(),
+      };
+      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
+
+      comp['handleNextFromStep1']();
+
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Should call openOtpAndWaitForLogin
+      expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
+
+      // Should set applicantId to empty string when id is undefined (nullish coalescing fallback)
+      expect(comp.applicantId()).toBe('');
+
+      // Should still call migrateDraftIfNeeded
+      expect(migrateDraftSpy).toHaveBeenCalled();
+
+      // Should still navigate to step 2
+      expect(progressStepperMock.goToStep).toHaveBeenCalledWith(2);
+    });
+
+    it('should set applicantId to empty string when loadedUser is null (nullish coalescing operator)', async () => {
+      comp.applicantId.set('');
+      comp.personalInfoData.set({
+        email: 'test@example.com',
+        firstName: 'Jane',
+        lastName: 'Smith',
+      } as any);
+
+      const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
+      const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
+
+      // Set up loadedUser to return null/undefined (simulating the ?? '' fallback case)
+      accountService.user.set(undefined);
+
+      const progressStepperMock = {
+        goToStep: vi.fn(),
+      };
+      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
+
+      comp['handleNextFromStep1']();
+
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Should call openOtpAndWaitForLogin
+      expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
+
+      // Should set applicantId to empty string when loadedUser is null/undefined (nullish coalescing fallback)
+      expect(comp.applicantId()).toBe('');
+
+      // Should still call migrateDraftIfNeeded
+      expect(migrateDraftSpy).toHaveBeenCalled();
+
+      // Should still navigate to step 2
+      expect(progressStepperMock.goToStep).toHaveBeenCalledWith(2);
+    });
+
+    it('should set applicantId to user id when loadedUser().id has a value', async () => {
+      comp.applicantId.set('');
+      comp.personalInfoData.set({
+        email: 'test@example.com',
+        firstName: 'Jane',
+        lastName: 'Smith',
+      } as any);
+
+      const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
+      const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
+
+      // Set up loadedUser with a valid id
+      accountService.user.set({ id: 'valid-user-789', email: 'test@example.com', name: 'Jane Smith' });
+
+      const progressStepperMock = {
+        goToStep: vi.fn(),
+      };
+      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
+
+      comp['handleNextFromStep1']();
+
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Should call openOtpAndWaitForLogin
+      expect(openOtpSpy).toHaveBeenCalledWith('test@example.com', 'Jane', 'Smith');
+
+      // Should set applicantId to the user id (not empty string)
+      expect(comp.applicantId()).toBe('valid-user-789');
+
+      // Should still call migrateDraftIfNeeded
+      expect(migrateDraftSpy).toHaveBeenCalled();
+
+      // Should still navigate to step 2
+      expect(progressStepperMock.goToStep).toHaveBeenCalledWith(2);
     });
   });
 
@@ -1769,6 +1879,126 @@ describe('ApplicationForm', () => {
       // Should call with the current signal values
       expect(localStorageService.clearApplicationDraft).toHaveBeenCalledWith('existing-app-789', 'job-999');
       expect(localStorageService.clearApplicationDraft).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('loadPersonalInfoDataFromLocalStorage', () => {
+    it('should load and set personal info data when draft exists', () => {
+      const mockDraft = {
+        applicationId: 'app-draft-123',
+        jobId: 'job-draft-456',
+        personalInfoData: {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john@example.com',
+          phoneNumber: '+1234567890',
+          dateOfBirth: '1990-01-01',
+          city: 'New York',
+          linkedIn: 'https://linkedin.com/in/johndoe',
+          postcode: '10001',
+          street: '123 Main St',
+          website: 'https://example.com',
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      localStorageService.loadApplicationDraft = vi.fn().mockReturnValue(mockDraft);
+
+      comp['loadPersonalInfoDataFromLocalStorage']('job-draft-456');
+
+      // Should call loadApplicationDraft with undefined applicantId and jobId
+      expect(localStorageService.loadApplicationDraft).toHaveBeenCalledWith(undefined, 'job-draft-456');
+
+      // Should set personalInfoData signal
+      expect(comp.personalInfoData()).toEqual(mockDraft.personalInfoData);
+
+      // Should set applicationId signal
+      expect(comp.applicationId()).toBe('app-draft-123');
+
+      // Should set jobId signal
+      expect(comp.jobId()).toBe('job-draft-456');
+    });
+
+    it('should not set any data when draft is null/undefined', () => {
+      const initialPersonalInfoData = comp.personalInfoData();
+      const initialApplicationId = comp.applicationId();
+      const initialJobId = comp.jobId();
+
+      localStorageService.loadApplicationDraft = vi.fn().mockReturnValue(null);
+
+      comp['loadPersonalInfoDataFromLocalStorage']('job-456');
+
+      // Should NOT change any signals
+      expect(comp.personalInfoData()).toEqual(initialPersonalInfoData);
+      expect(comp.applicationId()).toBe(initialApplicationId);
+      expect(comp.jobId()).toBe(initialJobId);
+    });
+
+    it('should show error toast and throw error when loadApplicationDraft throws (catch block)', async () => {
+      const mockError = new Error('LocalStorage access denied');
+      localStorageService.loadApplicationDraft = vi.fn().mockImplementation(() => {
+        throw mockError;
+      });
+
+      // Call the method - it should queue error handling via queueMicrotask
+      comp['loadPersonalInfoDataFromLocalStorage']('job-456');
+
+      // Wait for queueMicrotask to execute
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Should show error toast
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.loadFailed');
+    });
+
+    it('should call loadApplicationDraft with correct parameters', () => {
+      const mockDraft = {
+        applicationId: 'app-123',
+        jobId: 'job-789',
+        personalInfoData: {} as any,
+        timestamp: new Date().toISOString(),
+      };
+
+      localStorageService.loadApplicationDraft = vi.fn().mockReturnValue(mockDraft);
+
+      comp['loadPersonalInfoDataFromLocalStorage']('job-789');
+
+      // Should pass undefined as applicantId and jobId parameter
+      expect(localStorageService.loadApplicationDraft).toHaveBeenCalledWith(undefined, 'job-789');
+      expect(localStorageService.loadApplicationDraft).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle error message formatting in catch block', async () => {
+      const errorMessage = 'Storage quota exceeded';
+      const mockError = new Error(errorMessage);
+      localStorageService.loadApplicationDraft = vi.fn().mockImplementation(() => {
+        throw mockError;
+      });
+
+      comp['loadPersonalInfoDataFromLocalStorage']('job-456');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Verify the error toast was called (the error message is included in the thrown error)
+      expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.loadFailed');
+    });
+
+    it('should not modify signals when error occurs in catch block', async () => {
+      const initialPersonalInfoData = comp.personalInfoData();
+      const initialApplicationId = comp.applicationId();
+      const initialJobId = comp.jobId();
+
+      localStorageService.loadApplicationDraft = vi.fn().mockImplementation(() => {
+        throw new Error('Failed to load');
+      });
+
+      comp['loadPersonalInfoDataFromLocalStorage']('job-456');
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Signals should remain unchanged
+      expect(comp.personalInfoData()).toEqual(initialPersonalInfoData);
+      expect(comp.applicationId()).toBe(initialApplicationId);
+      expect(comp.jobId()).toBe(initialJobId);
     });
   });
 });
