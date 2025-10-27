@@ -21,8 +21,8 @@
   min-width: 40%;
 }
 
-/* Tablets and smaller (< 768px) */
-@media (max-width: 768px) {
+/* Tablets and smaller */
+@media (width <= 768px) {
   .carousel {
     gap: 0.75rem;
   }
@@ -40,8 +40,8 @@
   }
 }
 
-/* Mobile phones (< 480px) */
-@media (max-width: 480px) {
+/* Large phones*/
+@media (width <= 480px) {
   .carousel {
     gap: 0.3rem;
   }
@@ -56,5 +56,43 @@
     padding: 0.2rem;
     min-width: 1.75rem;
     font-size: 0.8rem;
+  }
+}
+
+/* Standard phones */
+@media (width <= 400px) {
+  .carousel {
+    gap: 0.25rem;
+  }
+
+  .cards {
+    gap: 0.2rem;
+  }
+
+  .nav ::ng-deep button {
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0.18rem;
+    min-width: 1.6rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Small phones */
+@media (width <= 380px) {
+  .carousel {
+    gap: 0.2rem;
+  }
+
+  .cards {
+    gap: 0.15rem;
+  }
+
+  .nav ::ng-deep button {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.15rem;
+    min-width: 1.5rem;
+    font-size: 0.7rem;
   }
 }

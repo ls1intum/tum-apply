@@ -80,8 +80,8 @@
   }
 }
 
-/* Tablets and smaller (< 768px) */
-@media (max-width: 768px) {
+/* Tablets and smaller (width <= 768px) */
+@media (width <= 768px) {
   .card {
     width: clamp(12rem, 70vw, 16rem);
     padding: 0.7rem;
@@ -112,8 +112,8 @@
   }
 }
 
-/* Mobile phones (< 480px) */
-@media (max-width: 480px) {
+/* Large phones  */
+@media (width <= 480px) {
   .card {
     width: 14rem;
     padding: 0.45rem;
@@ -157,5 +157,60 @@
 
   .icon {
     font-size: 0.7rem;
+  }
+}
+
+/* Standard phones */
+@media (width <= 400px) {
+  .card {
+    width: 12.5rem;
+  }
+
+  .name {
+    font-size: 0.8rem;
+  }
+
+  .job {
+    .job-title {
+      font-size: 0.68rem;
+      line-height: 0.95rem;
+      max-height: calc(0.95rem * 2);
+    }
+  }
+
+  .status-tag {
+    font-size: 0.52rem;
+    padding: 0.1rem 0.18rem;
+  }
+}
+
+/* Small phones  */
+@media (width <= 380px) {
+  .card {
+    width: 11.5rem;
+  }
+
+  .name {
+    font-size: 0.75rem;
+    padding: 0.15rem;
+  }
+
+  .job {
+    padding: 0.15rem;
+
+    .job-title {
+      font-size: 0.65rem;
+      line-height: 0.9rem;
+      max-height: calc(0.9rem * 2);
+    }
+  }
+
+  .status-tag {
+    font-size: 0.5rem;
+    padding: 0.08rem 0.15rem;
+  }
+
+  .icon {
+    font-size: 0.65rem;
   }
 }
