@@ -7,10 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ResearchGroupAdminDTO } from './researchGroupAdminDTO';
 
 
-export interface JobFilterOptionDTO { 
-    jobId?: string;
-    jobName?: string;
+export interface PageResponseDTOResearchGroupAdminDTO { 
+    content?: Array<ResearchGroupAdminDTO>;
+    totalElements?: number;
 }
 

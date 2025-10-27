@@ -4,51 +4,7 @@
   min-width: 0;
 }
 
-// Base card styles - shared between all card types
-.card {
-  border: 0.05rem solid var(--p-border-default);
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-// Detail card extends base card with additional structure
-.detail-card {
-  @extend .card;
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    border-bottom: 0.05rem solid var(--p-border-default);
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-  }
-
-  .card-title {
-    font-weight: 600;
-  }
-
-  .card-body {
-    font-size: 0.875rem;
-    overflow-wrap: anywhere;
-  }
-}
-
-// Section header (for sections with title and action button)
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  margin-bottom: 1rem;
-}
-
-// Section title (used across all sections)
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  padding-bottom: 0.5rem;
-}
+// Card styles now moved to global.scss for reusability
 
 // Position Overview section
 .overview-content {
@@ -56,22 +12,6 @@
   align-items: center;
   gap: 2rem;
   flex-wrap: wrap;
-}
-
-// Generic info item (used for overview and other info displays)
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.icon {
-  color: var(--p-primary-color);
-}
-
-.label {
-  font-weight: 600;
 }
 
 // Main Content Grid
@@ -83,23 +23,6 @@
 
   @media (max-width: bp.$xl) {
     grid-template-columns: 1fr;
-  }
-
-  .info-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.875rem;
-
-    .value {
-      text-align: right;
-    }
   }
 
   // Links container styling (uses global .link class for individual links)
