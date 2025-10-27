@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Thin HTTP client for MVC.
@@ -123,6 +125,39 @@ public class MvcTestClient {
     }
 
     /**
+     * Performs a GET and asserts the given status, then returns the raw response body as bytes.
+     * Useful for binary downloads (e.g. ZIP, PDF).
+     */
+    public byte[] getAndReturnBytes(String url, Map<String, String> params, int expectedStatus, MediaType... accepts) {
+        try {
+            MultiValueMap<String, String> multiParams = new LinkedMultiValueMap<>();
+            if (params != null) {
+                params.forEach(multiParams::add);
+            }
+
+            ResultActions action = mockMvc.perform(
+                applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url).params(multiParams), accepts)
+            );
+
+            MockHttpServletResponse response;
+            switch (expectedStatus) {
+                case 200 -> response = action.andExpect(status().isOk()).andReturn().getResponse();
+                case 204 -> response = action.andExpect(status().isNoContent()).andReturn().getResponse();
+                case 400 -> response = action.andExpect(status().isBadRequest()).andReturn().getResponse();
+                case 401 -> response = action.andExpect(status().isUnauthorized()).andReturn().getResponse();
+                case 403 -> response = action.andExpect(status().isForbidden()).andReturn().getResponse();
+                case 404 -> response = action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 500 -> response = action.andExpect(status().isInternalServerError()).andReturn().getResponse();
+                default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+            }
+
+            return response.getContentAsByteArray();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with status " + expectedStatus, e);
+        }
+    }
+
+    /**
      * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the given class.
      * If type is Void, only the assertion is performed.
      */
@@ -211,7 +246,6 @@ public class MvcTestClient {
             case 200 -> result = deleteOk(url, body, accepts);
             case 204 -> result = deleteNoContent(url, body, accepts);
             case 400 -> result = deleteInvalid(url, body, accepts);
-            case 403 -> result = deleteForbidden(url, body, accepts);
             case 401 -> result = deleteUnauthorized(url, body, accepts);
             case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
