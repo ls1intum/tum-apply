@@ -40,7 +40,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 - **Withdrawal flow:**
 
-  - State transition: `SENT`/`IN_REVIEW` → `WITHDRAWN`.
+  - State transition: `SENT` / `IN_REVIEW` → `WITHDRAWN`.
   - Preserves application data for audit compliance.
   - Updates implemented via bulk update query for efficiency.
   - Triggers stakeholder notifications about withdrawal.
@@ -74,8 +74,8 @@ The **Application Module** enables applicants to create, manage, and submit doct
   - Used during job state transitions (`CLOSED`, `APPLICANT_FOUND`).
   - Updates all applications for a job based on conditional logic:
     - `SAVED` → `JOB_CLOSED` (draft applications for closed positions).
-    - `SENT`/`IN_REVIEW` → `JOB_CLOSED` when job closes without selection.
-    - `SENT`/`IN_REVIEW` → `REJECTED` when position is filled.
+    - `SENT` / `IN_REVIEW` → `JOB_CLOSED` when job closes without selection.
+    - `SENT` / `IN_REVIEW` → `REJECTED` when position is filled.
   - Implemented via JPQL bulk update with CASE expression for conditional state mapping.
 
 - **DTO projections:**
@@ -123,14 +123,14 @@ The **Application Module** enables applicants to create, manage, and submit doct
     - **Standalone mode**: Full detail page with data fetched from backend.
   - Displays structured sections: Position Overview, Personal Statements, Personal Information, Documents.
   - Integrates `DocumentViewerComponent` for inline document preview.
-  - Provides state-conditional actions: Update (SAVED), Withdraw (SENT/IN_REVIEW), Delete (SAVED).
+  - Provides state-conditional actions: Update (SAVED), Withdraw (SENT / IN_REVIEW), Delete (SAVED).
   - Uses computed signals for reactive data resolution (preview vs. actual).
 
 **Section Components (used within pages):**
 
 - `ApplicationCreationPage1Component` — Personal information form (name, contact, links).
-- `ApplicationCreationPage2Component` — Education data + transcript uploads (Bachelor/Master).
-- `ApplicationCreationPage3Component` — Application-specific fields + CV/reference uploads.
+- `ApplicationCreationPage2Component` — Education data + transcript uploads (Bachelor / Master).
+- `ApplicationCreationPage3Component` — Application-specific fields + CV / reference uploads.
 - `ApplicationStateForApplicantsComponent` — Displays application state as color-coded badge.
 - `DocumentViewerComponent` — Renders document previews with download functionality.
 - `UploadButtonComponent` — Handles file uploads with validation and progress tracking.
@@ -160,13 +160,13 @@ The **Application Module** enables applicants to create, manage, and submit doct
 - **Lazy loading and pagination:**
   - Table loads data on-demand via `TableLazyLoadEvent`.
   - Calculates page number from `first` and `rows` parameters.
-  - Stores last event for refresh operations (post-delete/withdraw).
+  - Stores last event for refresh operations (post-delete / withdraw).
   - Loading state prevents double-fetching during navigation.
 
 - **Conditional action rendering:**
   - Action buttons visibility controlled by application state:
     - `SAVED`: Update, Delete
-    - `SENT`/`IN_REVIEW`: View, Withdraw
+    - `SENT` / `IN_REVIEW`: View, Withdraw
     - Other states: View only
   - Prevents invalid state transitions through UI constraints.
 
@@ -213,7 +213,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 **Document / DocumentDictionary:**
 - **Document**: Stores actual file metadata (`path`, `mimeType`, `sizeBytes`, `sha256Id` for deduplication).
 
-- **DocumentDictionary**: Junction entity linking documents to applications/applicants.
+- **DocumentDictionary**: Junction entity linking documents to applications / applicants.
   - Flexible associations: Can link to `application`, `applicant`, or `customFieldAnswer`.
   - Stores `documentType` enum and user-defined `name`.
   - Enables document reuse across multiple applications.
@@ -301,7 +301,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 4. **Response:**
    - Constructs `ApplicationForApplicantDTO` via JPQL projection.
-   - Pre-populates applicant profile data from User/Applicant entities.
+   - Pre-populates applicant profile data from User / Applicant entities.
    - Returns DTO to frontend for form initialization.
 
 5. **Frontend Handling:**
@@ -372,7 +372,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 1. **Withdrawal Request:**
    - Applicant navigates to submitted application detail page.
-   - Clicks "Withdraw" button (visible only for `SENT`/`IN_REVIEW` states).
+   - Clicks "Withdraw" button (visible only for `SENT` / `IN_REVIEW` states).
    - Confirmation dialog appears with withdrawal warning.
 
 2. **Server-Side Processing:**
@@ -407,7 +407,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
    - Displays validation errors if constraints violated.
 
 3. **Upload Request:**
-   - Constructs multipart/form-data request.
+   - Constructs multipart / form-data request.
    - Sends POST to `/api/applications/upload-documents/{applicationId}/{documentType}`.
    - Includes file array and metadata.
 
@@ -452,8 +452,8 @@ The **Application Module** enables applicants to create, manage, and submit doct
 **State-Based Access Control:**
 
 - **SAVED**: Full CRUD access by owning applicant.
-- **SENT/IN\_REVIEW**: Read-only for applicant, withdraw allowed.
-- **ACCEPTED/REJECTED/WITHDRAWN**: Read-only for all parties.
+- **SENT / IN\_REVIEW**: Read-only for applicant, withdraw allowed.
+- **ACCEPTED / REJECTED / WITHDRAWN**: Read-only for all parties.
 - **JOB\_CLOSED**: Read-only, indicates position no longer available.
 
 ---
@@ -468,7 +468,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 **Pagination:**
 
-- Criteria API enables database-level pagination (LIMIT/OFFSET).
+- Criteria API enables database-level pagination (LIMIT / OFFSET).
 - Prevents loading entire datasets into memory.
 - Configurable page size (default 25, max 100).
 
@@ -506,8 +506,8 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 **Evaluation Module:**
 
-- Applications in `SENT`/`IN_REVIEW` states available for professor review.
-- Evaluation decisions update application state to `ACCEPTED`/`REJECTED`.
+- Applications in `SENT` / `IN_REVIEW` states available for professor review.
+- Evaluation decisions update application state to `ACCEPTED` / `REJECTED`.
 - Internal comments stored in Application entity but managed by Evaluation Module.
 
 **Document Module:**
@@ -521,7 +521,7 @@ The **Application Module** enables applicants to create, manage, and submit doct
 - Triggers email notifications on state transitions:
   - Application submission → Notifies supervisors.
   - Application withdrawal → Notifies supervisors.
-  - State changes (Accept/Reject) → Notifies applicants (handled by Evaluation Module).
+  - State changes (Accept / Reject) → Notifies applicants (handled by Evaluation Module).
 
 **Authentication Module:**
 
