@@ -661,6 +661,21 @@ paths:
               schema:
                 type: array
                 items: {type: string}
+  /api/interviews:
+    post:
+      tags: [interview-resource]
+      operationId: createInterviewProcess
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateInterviewProcessDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewProcessDTO'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -1411,6 +1426,11 @@ components:
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
+    CreateInterviewProcessDTO:
+      type: object
+      properties:
+        jobId: {type: string, format: uuid}
+      required: [jobId]
     CreatedJobDTO:
       type: object
       properties:
@@ -1558,6 +1578,13 @@ components:
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobTitle, scheduledCount, totalInterviews,
         uncontactedCount]
+    InterviewProcessDTO:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        jobId: {type: string, format: uuid}
+        jobTitle: {type: string}
     Job:
       type: object
       properties:
