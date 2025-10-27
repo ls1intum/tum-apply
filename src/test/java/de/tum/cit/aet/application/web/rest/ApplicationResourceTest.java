@@ -87,8 +87,8 @@ class ApplicationResourceTest extends AbstractResourceTest {
         // Setup research group
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
-            "AI Research Group",
             "Prof. Smith",
+            "AI Research Group",
             "ai@example.com",
             "AI",
             "CS",
@@ -177,15 +177,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
         assertThat(saved.getApplicant().getUserId()).isEqualTo(applicant.getUserId());
         assertThat(saved.getState()).isEqualTo(ApplicationState.SAVED);
     }
-
-    // @Test
-    // @WithMockUser(roles = "APPLICANT")
-    // void createApplicationForDraftJobReturnsError() {
-    // api.with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-    // .postAndRead("/api/applications/create/" + draftJob.getJobId(), null,
-    // ApplicationForApplicantDTO.class,
-    // 400);
-    // }
 
     @Test
     void createApplicationWithoutAuthReturnsForbidden() {
@@ -409,7 +400,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         assertThat(detailDTO.specialSkills()).isEqualTo("Machine Learning, Python, TensorFlow");
         assertThat(detailDTO.motivation()).isEqualTo("Passionate about AI research");
         assertThat(detailDTO.supervisingProfessorName()).isEqualTo("Alice Smith");
-        // assertThat(detailDTO.researchGroup()).isEqualTo("AI Research Group");
+        assertThat(detailDTO.researchGroup()).isEqualTo("AI Research Group");
     }
 
     @Test
@@ -580,7 +571,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
             "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
             List.of(file),
             new TypeReference<>() {},
-            401
+            403
         );
     }
 
@@ -591,7 +582,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
     void getApplicationByIdReturnsNotFoundWhenApplicationDoesNotExist() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-            .getAndRead("/api/applications/" + UUID.randomUUID(), null, ApplicationForApplicantDTO.class, 404);
+            .getAndRead("/api/applications/" + UUID.randomUUID(), null, Void.class, 404);
     }
 
     // ===== HELPER METHODS =====
@@ -604,7 +595,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     private DocumentDictionary createTestDocument(Application application, User uploadedBy, DocumentType documentType, String fileName) {
         // Create document
         Document document = new Document();
-        // document.setDocumentId(UUID.randomUUID());
         document.setSha256Id(UUID.randomUUID().toString());
         document.setPath("/test/path/" + fileName);
         document.setMimeType("application/pdf");
@@ -614,7 +604,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         // Create document dictionary entry
         DocumentDictionary docDict = new DocumentDictionary();
-        // docDict.setDocumentDictionaryId(UUID.randomUUID());
         docDict.setDocument(document);
         docDict.setApplication(application);
         docDict.setDocumentType(documentType);
