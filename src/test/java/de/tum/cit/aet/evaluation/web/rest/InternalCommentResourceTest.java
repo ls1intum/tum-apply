@@ -112,22 +112,22 @@ class InternalCommentResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .getAndRead(applicationCommentsUrl(), Map.of(), new TypeReference<>() {}, 200);
 
-            assertThat(list).isNotEmpty();
+            assertThat(list).hasSize(3);
+            assertThat(list.get(1).message()).isEqualTo("first");
+            assertThat(list.get(2).message()).isEqualTo("second");
         }
 
         @Test
         void nonExistentApplicationReturns404() {
             UUID fakeAppId = UUID.randomUUID();
-
-            Void getResult = api
+            long commentCountBefore = internalCommentRepository.count();
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .getAndRead(applicationCommentsUrl(fakeAppId), Map.of(), Void.class, 404);
-            assertThat(getResult).isNull();
-
-            Void postResult = api
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead(applicationCommentsUrl(fakeAppId), new InternalCommentUpdateDTO("ghost"), Void.class, 404);
-            assertThat(postResult).isNull();
+            assertThat(internalCommentRepository.count()).isEqualTo(commentCountBefore);
         }
     }
 
@@ -162,21 +162,18 @@ class InternalCommentResourceTest extends AbstractResourceTest {
 
         @Test
         void updateCommentAsDifferentProfessorReturns403() {
-            Void result = api
+            api
                 .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead(commentUrl(), new InternalCommentUpdateDTO("illegal"), Void.class, 403);
-
-            assertThat(result).isNull();
         }
 
         @Test
         void nonexistentCommentReturns404() {
             UUID fakeId = UUID.randomUUID();
 
-            Void putResult = api
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead(commentUrl(fakeId), new InternalCommentUpdateDTO("does not exist"), Void.class, 404);
-            assertThat(putResult).isNull();
         }
     }
 
@@ -185,11 +182,8 @@ class InternalCommentResourceTest extends AbstractResourceTest {
 
         @Test
         void deleteCommentOwnCommentReturns204() {
-            Void result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .deleteAndRead(commentUrl(), null, Void.class, 204);
+            api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR")).deleteAndRead(commentUrl(), null, Void.class, 204);
 
-            assertThat(result).isNull();
             assertThat(internalCommentRepository.findById(existingComment.getInternalCommentId())).isEmpty();
         }
 
@@ -197,10 +191,9 @@ class InternalCommentResourceTest extends AbstractResourceTest {
         void nonexistentCommentReturns404() {
             UUID fakeId = UUID.randomUUID();
 
-            Void deleteResult = api
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .deleteAndRead(commentUrl(fakeId), null, Void.class, 404);
-            assertThat(deleteResult).isNull();
         }
     }
 
@@ -209,21 +202,19 @@ class InternalCommentResourceTest extends AbstractResourceTest {
 
         @Test
         void allEndpointsUnauthenticatedReturn401() {
-            assertThat(api.withoutPostProcessors().getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 401)).isNull();
-            assertThat(
-                api.withoutPostProcessors().postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401)
-            ).isNull();
-            assertThat(api.withoutPostProcessors().putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401)).isNull();
-            assertThat(api.withoutPostProcessors().deleteAndRead(commentUrl(), null, Void.class, 401)).isNull();
+            api.withoutPostProcessors().getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 401);
+            api.withoutPostProcessors().postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401);
+            api.withoutPostProcessors().putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 401);
+            api.withoutPostProcessors().deleteAndRead(commentUrl(), null, Void.class, 401);
         }
 
         @Test
         @WithMockUser
         void allEndpointsWithoutProfessorRoleReturn403() {
-            assertThat(api.getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 403)).isNull();
-            assertThat(api.postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403)).isNull();
-            assertThat(api.putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403)).isNull();
-            assertThat(api.deleteAndRead(commentUrl(), null, Void.class, 403)).isNull();
+            api.getAndRead(applicationCommentsUrl(), Map.of(), Void.class, 403);
+            api.postAndRead(applicationCommentsUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403);
+            api.putAndRead(commentUrl(), new InternalCommentUpdateDTO("x"), Void.class, 403);
+            api.deleteAndRead(commentUrl(), null, Void.class, 403);
         }
     }
 
