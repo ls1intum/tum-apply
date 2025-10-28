@@ -176,5 +176,15 @@ describe('ResearchGroupTemplates', () => {
       expect(component['pageNumber']()).toBe(0);
       expect(spy).toHaveBeenCalled();
     });
+
+    it('calculates correct page number from first/rows', () => {
+      api.getTemplates.mockReturnValue(of({ content: [], totalElements: 0 }));
+      const spy = vi.spyOn(component as unknown as { loadPage: () => Promise<void> }, 'loadPage');
+
+      component.onTableEmit({ first: 20, rows: 10 });
+
+      expect(component['pageNumber']()).toBe(2);
+      expect(spy).toHaveBeenCalled();
+    });
   });
 });
