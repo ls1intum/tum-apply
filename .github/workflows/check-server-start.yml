@@ -10,7 +10,6 @@ jobs:
     name: Ensure Server Starts Successfully
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    environment: test-server
 
     steps:
       - name: Checkout code
