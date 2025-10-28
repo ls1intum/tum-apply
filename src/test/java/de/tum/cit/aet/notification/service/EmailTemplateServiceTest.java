@@ -17,6 +17,7 @@ import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -250,7 +251,23 @@ class EmailTemplateServiceTest {
 
             List<EmailTemplate> savedTemplates = StreamSupport.stream(templateIterableCaptor.getValue().spliterator(), false).toList();
 
-            assertThat(savedTemplates).isNotEmpty();
+            int expectedCount = EmailType.values().length + (RejectReason.values().length - 1);
+
+            assertThat(savedTemplates).hasSize(expectedCount);
+
+            Set<EmailType> createdTypes = savedTemplates.stream().map(EmailTemplate::getEmailType).collect(Collectors.toSet());
+            assertThat(createdTypes).containsExactlyInAnyOrder(EmailType.values());
+
+            assertThat(savedTemplates).allSatisfy(template -> {
+                assertThat(template.getResearchGroup()).isEqualTo(researchGroup);
+                assertThat(template.isDefault()).isTrue();
+                assertThat(template.getTranslations()).hasSize(2);
+            });
+            long rejectionCount = savedTemplates
+                .stream()
+                .filter(t -> t.getEmailType() == EmailType.APPLICATION_REJECTED)
+                .count();
+            assertThat(rejectionCount).isEqualTo(RejectReason.values().length);
         }
 
         @Test
@@ -259,19 +276,13 @@ class EmailTemplateServiceTest {
 
             emailTemplateService.addMissingTemplates(researchGroup);
 
-            verify(emailTemplateRepository).saveAll(
-                argThat(savedIterable -> {
-                    List<EmailTemplate> savedTemplates = StreamSupport.stream(savedIterable.spliterator(), false).toList();
+            verify(emailTemplateRepository).saveAll(templateIterableCaptor.capture());
 
-                    long rejectionTemplateCount = savedTemplates
-                        .stream()
-                        .filter(template -> template.getEmailType() == EmailType.APPLICATION_REJECTED)
-                        .count();
+            List<EmailTemplate> savedTemplates = StreamSupport.stream(templateIterableCaptor.getValue().spliterator(), false).toList();
 
-                    assertThat(rejectionTemplateCount).isEqualTo(RejectReason.values().length);
-                    return true;
-                })
-            );
+            assertThat(savedTemplates)
+                .filteredOn(t -> t.getEmailType() == EmailType.APPLICATION_REJECTED)
+                .hasSize(RejectReason.values().length);
         }
 
         @Test
@@ -281,19 +292,13 @@ class EmailTemplateServiceTest {
 
             emailTemplateService.addMissingTemplates(researchGroup);
 
-            verify(emailTemplateRepository).saveAll(
-                argThat(savedIterable -> {
-                    List<EmailTemplate> savedTemplates = StreamSupport.stream(savedIterable.spliterator(), false).toList();
+            verify(emailTemplateRepository).saveAll(templateIterableCaptor.capture());
 
-                    boolean hasAcceptedTemplate = savedTemplates
-                        .stream()
-                        .anyMatch(template -> template.getEmailType() == EmailType.APPLICATION_ACCEPTED);
+            List<EmailTemplate> savedTemplates = StreamSupport.stream(templateIterableCaptor.getValue().spliterator(), false).toList();
 
-                    assertThat(hasAcceptedTemplate).isFalse();
-                    assertThat(savedTemplates).isNotEmpty();
-                    return true;
-                })
-            );
+            assertThat(savedTemplates).extracting(EmailTemplate::getEmailType).doesNotContain(EmailType.APPLICATION_ACCEPTED);
+
+            assertThat(savedTemplates).isNotEmpty();
         }
 
         @Test

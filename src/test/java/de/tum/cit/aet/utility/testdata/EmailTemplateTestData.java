@@ -8,6 +8,7 @@ import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Test data helpers for EmailTemplate.
@@ -26,22 +27,7 @@ public final class EmailTemplateTestData {
      * Creates an unsaved EmailTemplate with required fields and default translations (EN + DE).
      */
     public static EmailTemplate newTemplate(ResearchGroup researchGroup, User creator, EmailType type) {
-        EmailTemplate template = new EmailTemplate();
-        template.setTemplateName(DEFAULT_TEMPLATE_NAME);
-        template.setResearchGroup(researchGroup);
-        template.setEmailType(type);
-        template.setDefault(false);
-        template.setCreatedBy(creator);
-
-        // Add default translations
-        template.setTranslations(
-            Set.of(
-                newTranslation(template, Language.ENGLISH, DEFAULT_SUBJECT + " EN", DEFAULT_BODY + " EN"),
-                newTranslation(template, Language.GERMAN, DEFAULT_SUBJECT + " DE", DEFAULT_BODY + " DE")
-            )
-        );
-
-        return template;
+        return newTemplateAll(researchGroup, creator, type, DEFAULT_TEMPLATE_NAME, false, null);
     }
 
     /**
@@ -55,13 +41,21 @@ public final class EmailTemplateTestData {
         boolean isDefault,
         Set<EmailTemplateTranslation> translations
     ) {
-        EmailTemplate template = newTemplate(researchGroup, creator, type);
-
-        if (templateName != null) {
-            template.setTemplateName(templateName);
-        }
+        EmailTemplate template = new EmailTemplate();
+        template.setTemplateName(templateName != null ? templateName : DEFAULT_TEMPLATE_NAME);
+        template.setResearchGroup(researchGroup);
+        template.setEmailType(type);
         template.setDefault(isDefault);
-        if (translations != null && !translations.isEmpty()) {
+        template.setCreatedBy(creator);
+
+        if (translations == null || translations.isEmpty()) {
+            template.setTranslations(
+                Set.of(
+                    newTranslation(template, Language.ENGLISH, DEFAULT_SUBJECT + " EN", DEFAULT_BODY + " EN"),
+                    newTranslation(template, Language.GERMAN, DEFAULT_SUBJECT + " DE", DEFAULT_BODY + " DE")
+                )
+            );
+        } else {
             translations.forEach(t -> t.setEmailTemplate(template));
             template.setTranslations(translations);
         }
@@ -72,10 +66,24 @@ public final class EmailTemplateTestData {
     // --- Saved variants --------------------------------------------------------------------------
 
     /**
-     * Saves a new EmailTemplate with given ResearchGroup, Creator, and EmailType.
+     * Saves a new EmailTemplate with a guaranteed unique name to avoid constraint violations.
      */
     public static EmailTemplate saved(EmailTemplateRepository repo, ResearchGroup researchGroup, User creator, EmailType type) {
-        return repo.save(newTemplate(researchGroup, creator, type));
+        String uniqueName = DEFAULT_TEMPLATE_NAME + "-" + UUID.randomUUID().toString().substring(0, 8);
+        return repo.save(newTemplateAll(researchGroup, creator, type, uniqueName, false, null));
+    }
+
+    /**
+     * Saves a new EmailTemplate with a custom template name.
+     */
+    public static EmailTemplate savedWithName(
+        EmailTemplateRepository repo,
+        ResearchGroup researchGroup,
+        User creator,
+        EmailType type,
+        String templateName
+    ) {
+        return repo.save(newTemplateAll(researchGroup, creator, type, templateName, false, null));
     }
 
     // --- Helper ---------------------------------------------------------------------------------
