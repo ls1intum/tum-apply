@@ -1,3 +1,5 @@
+@use '../../../../../content/scss/breakpoints' as bp;
+
 .search-filter-sort-bar {
   display: flex;
   flex-direction: column;
@@ -38,7 +40,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: bp.$md) {
   .search-filter-sort-bar {
     .functionality-bar {
       .filter-sort {

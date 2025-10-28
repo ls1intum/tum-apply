@@ -1,3 +1,5 @@
+@use '../../../../../content/scss/breakpoints' as bp;
+
 .sort-bar {
   .sort-bar-buttons {
     display: flex;
@@ -12,7 +14,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: bp.$md) {
   .sort-bar {
     width: 100%;
 

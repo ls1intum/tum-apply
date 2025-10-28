@@ -1,3 +1,5 @@
+@use '../../../../../content/scss/breakpoints' as bp;
+
 .filter-multiselect {
   position: relative;
   display: inline-block;
@@ -132,7 +134,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: bp.$md) {
   .filter-multiselect {
     .filter-button {
       justify-content: space-between;
