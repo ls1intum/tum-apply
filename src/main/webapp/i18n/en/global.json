@@ -29,6 +29,7 @@
       },
       "settings": "TUMApply - Settings",
       "researchGroup": {
+        "adminView": "TUMApply - Admin View",
         "templates": "TUMApply - My Templates",
         "templateCreation": "TUMApply - New Template",
         "templateEdit": "TUMApply - Edit Template",
@@ -108,7 +109,12 @@
         "pattern": "Invalid format.",
         "email": "Invalid email.",
         "min": "This field should be at least {{ min }}.",
-        "max": "This field cannot be more than {{ max }}."
+        "max": "This field cannot be more than {{ max }}.",
+        "tooManyDecimals": "Please enter at most two decimal places.",
+        "invalidGrade": "Please enter the grade as a positive number, percentage, or letter.",
+        "formatMismatch": "Please enter all values in the same format.",
+        "boundaryMismatch": "The highest achievable grade must be better than the lowest passing grade.",
+        "outOfRange": "The grade must be between the highest achievable and lowest passing grades."
       }
     },
     "editor": {
@@ -150,6 +156,8 @@
     },
     "detail_card": {
       "name": "Name",
+      "upper_passing_limit": "Highest Achievable Grade",
+      "lower_passing_limit": "Lowest Passing Grade",
       "grade": "Grade",
       "university": "University",
       "motivation": "Motivation",
@@ -161,7 +169,9 @@
       "desired_start_date": "Desired Start Date",
       "preferred_language": "Preferred Language",
       "applicant_info": "Applicant Information",
-      "nationality": "Nationality"
+      "nationality": "Nationality",
+      "website": "Website",
+      "linkedin": "LinkedIn"
     },
     "delete": {
       "title": "Confirm delete operation"
@@ -226,8 +236,18 @@
     },
     "application_detail": {
       "applicant": {
-        "header": "Application for '{{jobTitle}}'"
-      }
+        "header": "Application for '{{jobTitle}}'",
+        "title_prefix": "Application for"
+      },
+      "position_overview": "Position Overview",
+      "supervisor": "Supervisor:",
+      "research_group": "Research Group:",
+      "location": "Location:",
+      "view_job_details": "To Job Details",
+      "personal_statements": "Personal Statements",
+      "personal_information": "Personal Information",
+      "personal_documents": "Personal Documents",
+      "not_found": "Application not found"
     },
     "applicationSteps": {
       "personalInformation": "Personal Information",
@@ -287,28 +307,28 @@
         "master": "Master"
       },
       "label": {
+        "gradeUpperLimit": "Highest Achievable Grade",
+        "gradeLowerLimit": "Lowest Passing Grade",
         "bachelorDegreeName": "Bachelor Degree Name",
         "bachelorDegreeUniversity": "Bachelor Degree University",
-        "bachelorGradingScale": "Bachelor Grading Scale",
         "bachelorGrade": "Bachelor Grade",
         "masterDegreeName": "Master Degree Name",
         "masterDegreeUniversity": "Master Degree University",
-        "masterGradingScale": "Master Grading Scale",
         "masterGrade": "Master Grade"
       },
       "tooltip": {
         "bachelorDegreeName": "Specify the study program of your Bachelor's Degree.",
         "bachelorDegreeUniversity": "Enter the name of the University where you completed your Bachelor's Degree.",
-        "bachelorGradingScale": "Choose the Grading Scale used for your Bachelor's Degree (only German scale available at the moment).",
+        "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
+        "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
         "masterDegreeName": "Specify the study program of your Master's Degree.",
         "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
-        "masterGradingScale": "Choose the Grading Scale used for your Master's Degree (only German scale available at the moment).",
+        "masterGradeUpperLimit": "Enter the highest achievable grade in your Master's degree grading system (e.g. 1.0 in Germany).",
+        "masterGradeLowerLimit": "Enter the lowest passing grade in your Master's degree grading system (e.g. 4.0 in Germany)",
         "masterGrade": "Enter your final Master's Grade according to your institution's grading system.",
         "filenamePrivacy": "File names stay private and are not shown to professors."
-      },
-      "gradingConversionBachelor": "Please enter your grade in the German grading system in the field <em>Bachelor grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us.",
-      "gradingConversionMaster": "Please enter your grade in the German grading system in the field <em>Master grade</em>. Use the <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Grade Conversion Tool</a> from TUM to calculate it. If you encounter any problems, please contact us."
+      }
     },
     "applicationPage3": {
       "label": {
@@ -342,7 +362,17 @@
     },
     "applicationPage4": {
       "title": "Overview",
-      "message": "Please review your entries before submitting the application."
+      "message": "Please review your entries before submitting the application.",
+      "doctoralRequirements": {
+        "title": "German Doctoral Position Requirements",
+        "text": "Please ensure you have informed yourself about the <a class=\"link\" href=\"https://www.gs.tum.de/en/gs/qualification-career/transferable-skills-training/eligibility-requirements/\" target=\"_blank\" rel=\"noopener noreferrer\">requirements for a German Doctoral Position</a>.",
+        "confirmationText": "I have informed myself about the requirements for a German Doctoral Position.",
+        "missingConfirmation": "Please confirm that you have informed yourself about the requirements for a German Doctoral Position.",
+        "toastError": {
+          "summary": "Doctoral requirements confirmation missing",
+          "detail": "Please confirm that you have informed yourself about the requirements for a German Doctoral Position to proceed."
+        }
+      }
     },
     "applicationOverview": {
       "header": "Your Applications",
@@ -411,9 +441,13 @@
           "summary": "Submission failed",
           "detail": "Failed to submit application: {{status}}"
         },
+        "fetchApplicationFailed": {
+          "summary": "Application not loaded",
+          "detail": "The application could not be loaded. Please try again or contact an admin."
+        },
         "fetchDocumentIdsFailed": {
           "summary": "Error",
-          "detail": "Failed to fetch document IDs for this application."
+          "detail": "Failed to fetch document IDs for this application. Please try again or contact an admin."
         },
         "notEditable": {
           "summary": "Error",
@@ -425,19 +459,59 @@
         },
         "saveFailed": {
           "summary": "Error",
-          "detail": "Failed to save application."
+          "detail": "Failed to save application. Please try again or contact an admin."
         },
         "loadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application."
+          "detail": "Failed to load application. Please try again or contact an admin."
         },
         "initLoadFailed": {
           "summary": "Error",
-          "detail": "Failed to load application."
+          "detail": "Failed to load application. Please try again or contact an admin."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Error",
           "detail": "Job ID must be provided when not authenticated."
+        },
+        "applicationDeleted": {
+          "summary": "Application deleted",
+          "detail": "The application was deleted successfully."
+        },
+        "errorDeletingApplication": {
+          "summary": "Delete failed",
+          "detail": "The application could not be deleted. Please try again or contact an admin."
+        },
+        "applicationWithdrawn": {
+          "summary": "Application withdrawn",
+          "detail": "Your application was withdrawn successfully."
+        },
+        "errorWithdrawingApplication": {
+          "summary": "Withdrawal failed",
+          "detail": "The application could not be withdrawn. Please try again or contact an admin."
+        },
+        "jobIdNotAvailable": {
+          "summary": "Error",
+          "detail": "Job ID is not available for this application."
+        },
+        "invalidEmail": {
+          "summary": "Error",
+          "detail": "Please provide a valid email address."
+        },
+        "invalidFirstName": {
+          "summary": "Error",
+          "detail": "Please provide a valid first name."
+        },
+        "invalidLastName": {
+          "summary": "Error",
+          "detail": "Please provide a valid last name."
+        },
+        "migrationFailed": {
+          "summary": "Error",
+          "detail": "Failed to save local draft. Try again, reload the page or check your connection."
+        },
+        "otpVerificationFailed": {
+          "summary": "Error",
+          "detail": "Email verification failed. Please try again."
         }
       },
       "applicationOverview": {

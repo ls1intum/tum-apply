@@ -29,6 +29,7 @@
       },
       "settings": "TUMApply - Einstellungen",
       "researchGroup": {
+        "adminView": "TUMApply - Admin Ansicht",
         "templates": "TUMApply - Meine Vorlagen",
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
@@ -108,7 +109,12 @@
         "pattern": "Ungültiges Format.",
         "email": "Ungültige Email-Adresse.",
         "min": "Dieses Feld muss mind. {{min}} sein.",
-        "max": "Dieses Feld darf max. {{max}} sein."
+        "max": "Dieses Feld darf max. {{max}} sein.",
+        "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
+        "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
+        "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
+        "boundaryMismatch": "Die höchstmögliche Note muss besser sein als die niedrigste Note zum Bestehen.",
+        "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
       }
     },
     "editor": {
@@ -150,6 +156,8 @@
     },
     "detail_card": {
       "name": "Name",
+      "upper_passing_limit": "Höchstmögliche Note",
+      "lower_passing_limit": "Niedrigste Note zum Bestehen",
       "grade": "Note",
       "university": "Universität",
       "motivation": "Motivation",
@@ -161,7 +169,9 @@
       "desired_start_date": "Gewünschtes Anfangsdatum",
       "preferred_language": "Bevorzugte Sprache",
       "applicant_info": "Bewerberinformationen",
-      "nationality": "Nationalität"
+      "nationality": "Nationalität",
+      "website": "Webseite",
+      "linkedin": "LinkedIn"
     },
     "delete": {
       "title": "Löschen bestätigen"
@@ -226,8 +236,18 @@
     },
     "application_detail": {
       "applicant": {
-        "header": "Bewerbung für '{{jobTitle}}'"
-      }
+        "header": "Bewerbung für '{{jobTitle}}'",
+        "title_prefix": "Bewerbung für"
+      },
+      "position_overview": "Stellenübersicht",
+      "supervisor": "Betreuer:in:",
+      "research_group": "Forschungsgruppe:",
+      "location": "Standort:",
+      "view_job_details": "Zur Stellenbeschreibung",
+      "personal_statements": "Persönliche Angaben",
+      "personal_information": "Persönliche Informationen",
+      "personal_documents": "Persönliche Dokumente",
+      "not_found": "Bewerbung nicht gefunden"
     },
     "applicationSteps": {
       "personalInformation": "Persönliche Informationen",
@@ -241,7 +261,7 @@
         "send": "Senden"
       },
       "confirmDialog": {
-        "header": "Bewerbung abschicken",
+        "header": "Bewerbung absenden",
         "message": "Bist du sicher, dass du deine Bewerbung absenden möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
       },
       "status": {
@@ -287,28 +307,28 @@
         "master": "Master"
       },
       "label": {
+        "gradeUpperLimit": "Höchstmögliche Note",
+        "gradeLowerLimit": "Niedrigste Note zum Bestehen",
         "bachelorDegreeName": "Bachelor-Studiengang",
         "bachelorDegreeUniversity": "Universität des Bachelors",
-        "bachelorGradingScale": "Benotungsskala Bachelor",
         "bachelorGrade": "Bachelor-Abschlussnote",
         "masterDegreeName": "Master-Studiengang",
         "masterDegreeUniversity": "Universität des Masters",
-        "masterGradingScale": "Benotungsskala Master",
         "masterGrade": "Master-Abschlussnote"
       },
       "tooltip": {
         "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
         "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
-        "bachelorGradingScale": "Wähle die Benotungsskala deines Bachelors (derzeit nur deutsche Skala verfügbar).",
+        "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
+        "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterDegreeName": "Gib den Studiengang deines Masters an.",
         "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
-        "masterGradingScale": "Wähle die Benotungsskala deines Masters (derzeit nur deutsche Skala verfügbar).",
+        "masterGradeUpperLimit": "Gib die bestmögliche Note in deinem Master-Notensystem an (z. B. 1,0 in Deutschland).",
+        "masterGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Master-Notensystem an (z. B. 4,0 in Deutschland).",
         "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
-      },
-      "gradingConversionBachelor": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Bachelor-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns.",
-      "gradingConversionMaster": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Master-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns."
+      }
     },
     "applicationPage3": {
       "label": {
@@ -342,7 +362,17 @@
     },
     "applicationPage4": {
       "title": "Übersicht",
-      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst."
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst.",
+      "doctoralRequirements": {
+        "title": "Anforderungen für eine deutsche Doktorandenstelle",
+        "text": "Bitte stelle sicher, dass du dich über die <a class=\"link\" href=\"https://www.gs.tum.de/gs/qualifizierung-karriere/fachuebergreifende-qualifizierung/teilnahmebedingungen/\" target=\"_blank\" rel=\"noopener noreferrer\">Anforderungen für eine deutsche Doktorandenstelle</a> informiert hast.",
+        "confirmationText": "Ich habe mich über die Anforderungen für eine deutsche Doktorandenstelle informiert.",
+        "missingConfirmation": "Bitte bestätige, dass du dich über die Anforderungen für eine deutsche Doktorandenstelle informiert hast.",
+        "toastError": {
+          "summary": "Bestätigung der Doktorandenanforderungen fehlt",
+          "detail": "Bitte bestätige, dass du dich über die Anforderungen für eine deutsche Doktorandenstelle informiert hast, um fortzufahren."
+        }
+      }
     },
     "applicationOverview": {
       "header": "Deine Bewerbungen",
@@ -411,9 +441,13 @@
           "summary": "Übermittlung fehlgeschlagen",
           "detail": "Bewerbung konnte nicht übermittelt werden: {{status}}"
         },
+        "fetchApplicationFailed": {
+          "summary": "Bewerbung nicht geladen",
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
         "fetchDocumentIdsFailed": {
           "summary": "Dokumente nicht geladen",
-          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut."
+          "detail": "Die Dokument-IDs für diese Bewerbung konnten nicht abgerufen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
         "notEditable": {
           "summary": "Nicht bearbeitbar",
@@ -425,19 +459,59 @@
         },
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht gespeichert werden. Bitte versuche es erneut."
+          "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und versuche es erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite."
+          "detail": "Die Bewerbung konnte nicht geladen werden. Bitte aktualisiere die Seite oder kontaktiere einen Admin."
         },
         "initLoadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut."
+          "detail": "Die Bewerbung konnte nicht initial geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
         "missingJobIdUnauthenticated": {
           "summary": "Job-ID fehlt",
           "detail": "Ohne Anmeldung muss eine Job-ID angegeben werden."
+        },
+        "applicationDeleted": {
+          "summary": "Bewerbung gelöscht",
+          "detail": "Die Bewerbung wurde erfolgreich gelöscht."
+        },
+        "errorDeletingApplication": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "applicationWithdrawn": {
+          "summary": "Bewerbung zurückgezogen",
+          "detail": "Deine Bewerbung wurde erfolgreich zurückgezogen."
+        },
+        "errorWithdrawingApplication": {
+          "summary": "Zurückziehen fehlgeschlagen",
+          "detail": "Die Bewerbung konnte nicht zurückgezogen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "jobIdNotAvailable": {
+          "summary": "Fehler",
+          "detail": "Job-ID ist für diese Bewerbung nicht verfügbar."
+        },
+        "invalidEmail": {
+          "summary": "Fehler",
+          "detail": "Bitte gib eine gültige E-Mail-Adresse an."
+        },
+        "invalidFirstName": {
+          "summary": "Fehler",
+          "detail": "Bitte gib einen gültigen Vornamen an."
+        },
+        "invalidLastName": {
+          "summary": "Fehler",
+          "detail": "Bitte gib einen gültigen Nachnamen an."
+        },
+        "migrationFailed": {
+          "summary": "Fehler",
+          "detail": "Der lokale Entwurf konnte nicht gespeichert werden. Versuche es erneut, lade die Seite neu oder überprüfe deine Verbindung."
+        },
+        "otpVerificationFailed": {
+          "summary": "Fehler",
+          "detail": "E-Mail-Verifizierung fehlgeschlagen. Bitte versuch es erneut."
         }
       },
       "applicationOverview": {

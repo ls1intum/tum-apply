@@ -15,12 +15,13 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
-import de.tum.cit.aet.utility.testDataGeneration.JobTestData;
-import de.tum.cit.aet.utility.testDataGeneration.ResearchGroupTestData;
-import de.tum.cit.aet.utility.testDataGeneration.UserTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
+import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
@@ -41,6 +42,9 @@ class JobResourceTest extends AbstractResourceTest {
     ResearchGroupRepository researchGroupRepository;
 
     @Autowired
+    DatabaseCleaner databaseCleaner;
+
+    @Autowired
     MvcTestClient api;
 
     ResearchGroup researchGroup;
@@ -48,9 +52,7 @@ class JobResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     void setup() {
-        jobRepository.deleteAll();
-        userRepository.deleteAll();
-        researchGroupRepository.deleteAll();
+        databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
@@ -83,7 +85,6 @@ class JobResourceTest extends AbstractResourceTest {
             "männlich",
             UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
-        api = api.with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"));
 
         JobTestData.saved(jobRepository, professor, researchGroup, "Published Role", JobState.PUBLISHED, LocalDate.of(2025, 9, 1));
         JobTestData.saved(jobRepository, professor, researchGroup, "Draft Role", JobState.DRAFT, LocalDate.of(2025, 10, 1));
@@ -138,7 +139,9 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.PUBLISHED
         );
 
-        JobFormDTO returned = api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 200);
+        JobFormDTO returned = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead("/api/jobs/create", payload, JobFormDTO.class, 200);
 
         assertThat(returned.jobId()).isNotNull();
         assertThat(returned).usingRecursiveComparison().ignoringFields("jobId").isEqualTo(payload);
@@ -207,6 +210,51 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    void createJobWithoutAuthReturnsForbidden() {
+        JobFormDTO payload = new JobFormDTO(
+            null,
+            "Unauthorized",
+            "Area",
+            "Field",
+            professor.getUserId(),
+            Campus.GARCHING,
+            LocalDate.now(),
+            LocalDate.now().plusMonths(1),
+            20,
+            6,
+            FundingType.FULLY_FUNDED,
+            "desc",
+            "tasks",
+            "req",
+            JobState.DRAFT
+        );
+        api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void createJobAsApplicantForbidden() {
+        JobFormDTO payload = new JobFormDTO(
+            null,
+            "Applicant attempt",
+            "Area",
+            "Field",
+            professor.getUserId(),
+            Campus.GARCHING,
+            LocalDate.now(),
+            LocalDate.now().plusMonths(1),
+            20,
+            6,
+            FundingType.FULLY_FUNDED,
+            "desc",
+            "tasks",
+            "req",
+            JobState.DRAFT
+        );
+        api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
+    }
+
+    @Test
     @WithMockUser(roles = "PROFESSOR")
     void updateJobUpdatesCorrectly() {
         Job job = jobRepository.findAll().getFirst();
@@ -229,7 +277,9 @@ class JobResourceTest extends AbstractResourceTest {
             JobState.DRAFT
         );
 
-        JobFormDTO returnedJob = api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
+        JobFormDTO returnedJob = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
 
         assertThat(returnedJob).usingRecursiveComparison().isEqualTo(updatedPayload);
         Job updatedJob = jobRepository.findById(job.getJobId()).orElseThrow();
@@ -275,12 +325,37 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    void updateJobWithoutAuthReturnsForbidden() {
+        Job job = jobRepository.findAll().getFirst();
+        JobFormDTO updatedPayload = new JobFormDTO(
+            job.getJobId(),
+            "No Auth",
+            "Area",
+            "Field",
+            professor.getUserId(),
+            Campus.GARCHING,
+            LocalDate.now(),
+            LocalDate.now().plusMonths(1),
+            10,
+            3,
+            FundingType.FULLY_FUNDED,
+            "desc",
+            "tasks",
+            "req",
+            JobState.DRAFT
+        );
+        api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);
+    }
+
+    @Test
     @WithMockUser(roles = "PROFESSOR")
     void deleteJobRemovesIt() {
         Job job = jobRepository.findAll().getFirst();
         assertThat(jobRepository.existsById(job.getJobId())).isTrue();
 
-        api.deleteAndRead("/api/jobs/" + job.getJobId(), null, Void.class, 204);
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .deleteAndRead("/api/jobs/" + job.getJobId(), null, Void.class, 204);
 
         assertThat(jobRepository.existsById(job.getJobId())).isFalse();
     }
@@ -292,17 +367,32 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    void deleteJobWithoutAuthReturnsForbidden() {
+        Job job = jobRepository.findAll().getFirst();
+        api.deleteAndRead("/api/jobs/" + job.getJobId(), null, Void.class, 403);
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void deleteJobAsApplicantForbidden() {
+        Job job = jobRepository.findAll().getFirst();
+        api.deleteAndRead("/api/jobs/" + job.getJobId(), null, Void.class, 403);
+    }
+
+    @Test
     @WithMockUser(roles = "PROFESSOR")
     void changeJobStateUpdatesIt() {
         Job job = jobRepository.findAll().getFirst();
         assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
 
-        JobFormDTO returnedJob = api.putAndRead(
-            "/api/jobs/changeState/" + job.getJobId() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
-            null,
-            JobFormDTO.class,
-            200
-        );
+        JobFormDTO returnedJob = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead(
+                "/api/jobs/changeState/" + job.getJobId() + "?jobState=CLOSED&shouldRejectRemainingApplications=true",
+                null,
+                JobFormDTO.class,
+                200
+            );
 
         assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
 
@@ -318,6 +408,29 @@ class JobResourceTest extends AbstractResourceTest {
             null,
             JobFormDTO.class,
             404
+        );
+    }
+
+    @Test
+    void changeJobStateWithoutAuthForbidden() {
+        Job job = jobRepository.findAll().getFirst();
+        api.putAndRead(
+            "/api/jobs/changeState/" + job.getJobId() + "?jobState=CLOSED&shouldRejectRemainingApplications=false",
+            null,
+            JobFormDTO.class,
+            403
+        );
+    }
+
+    @Test
+    @WithMockUser(roles = "APPLICANT")
+    void changeJobStateAsApplicantForbidden() {
+        Job job = jobRepository.findAll().getFirst();
+        api.putAndRead(
+            "/api/jobs/changeState/" + job.getJobId() + "?jobState=CLOSED&shouldRejectRemainingApplications=false",
+            null,
+            JobFormDTO.class,
+            403
         );
     }
 
@@ -339,11 +452,18 @@ class JobResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    void getJobsByProfessorWithoutAuthForbidden() {
+        api.getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 403);
+    }
+
+    @Test
     @WithMockUser(roles = "PROFESSOR")
     void getJobByIdReturnsCorrectJob() {
         Job job = jobRepository.findAll().getFirst();
 
-        JobDTO returnedJob = api.getAndRead("/api/jobs/" + job.getJobId(), null, JobDTO.class, 200);
+        JobDTO returnedJob = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead("/api/jobs/" + job.getJobId(), null, JobDTO.class, 200);
 
         assertThat(returnedJob.jobId()).isEqualTo(job.getJobId());
         assertThat(returnedJob.title()).isEqualTo(job.getTitle());
@@ -365,7 +485,15 @@ class JobResourceTest extends AbstractResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void getJobByIdNonExistentJobThrowsNotFound() {
-        api.getAndRead("/api/jobs/" + UUID.randomUUID(), null, JobDTO.class, 404);
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead("/api/jobs/" + UUID.randomUUID(), null, JobDTO.class, 404);
+    }
+
+    @Test
+    void getJobByIdWithoutAuthForbidden() {
+        Job job = jobRepository.findAll().getFirst();
+        api.getAndRead("/api/jobs/" + job.getJobId(), null, JobDTO.class, 403);
     }
 
     @Test

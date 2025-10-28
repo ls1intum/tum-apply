@@ -17,7 +17,7 @@
       }
     },
     "basicInformationSection": {
-      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende/r Professor/in.",
+      "description": "Gib die wichtigsten Details über die Doktorandenstelle an, wie Titel, Fachgebiet und betreuende:r Professor:in.",
       "jobTitle": {
         "label": "Stellentitel",
         "placeholder": "z.B. Doktorandenstelle im Bereich Robotik"
@@ -32,7 +32,7 @@
         "placeholder": "Wähle ein Studienfach..."
       },
       "supervisingProfessor": {
-        "label": "Betreuende/r Professor/in"
+        "label": "Betreuende:r Professor:in"
       },
       "location": {
         "label": "Standort",
@@ -108,8 +108,6 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "job": "Stelle",
-        "jobSearchPlaceholder": "Stellen suchen...",
         "fieldOfStudies": "Studienrichtung",
         "fieldOfStudiesPlaceholder": "Studienrichtungen suchen...",
         "location": "Standort",
@@ -136,12 +134,12 @@
     "hoursPerWeek": "{{workload}} h/Woche",
     "errors": {
       "loadFilter": {
-        "summary": "Laden der Filteroptionen fehlgeschlagen",
-        "detail": "Fehler beim Laden der Filter Optionen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der Filteroptionen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       },
       "loadJobs": {
-        "summary": "Laden der Stellen fehlgeschlagen",
-        "detail": "Fehler beim Laden der verfügbaren Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        "summary": "Fehler",
+        "detail": "Laden der verfügbaren Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   },
@@ -153,7 +151,6 @@
     "searchFilterSortBar": {
       "searchText": "Stellen suchen...",
       "filterOptions": {
-        "jobSearchPlaceholder": "Suche Stellen...",
         "stateSearchPlaceholder": "Suche Status..."
       }
     },
@@ -172,44 +169,46 @@
       "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
     },
     "errors": {
-      "loadJobNames": "Fehler beim Laden der Jobnamen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.",
-      "loadJobs": "Fehler beim Laden der Stellen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      "loadJobs": {
+        "summary": "Fehler",
+        "detail": "Laden der Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      }
     }
   },
   "jobDetailPage": {
     "header": {
-      "supervisor": "Betreuer:in: ",
-      "researchGroup": "Forschungsgruppe: ",
-      "location": "Standort: "
+      "supervisor": "Betreuer:in:",
+      "researchGroup": "Forschungsgruppe:",
+      "location": "Standort:"
     },
-    "positionOverview": {
+    "sections": {
+      "jobDescription": "Stellenbeschreibung",
+      "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
+      "eligibilityCriteria": "Zulassungsvoraussetzungen",
+      "dataProtection": "Hinweis zum Datenschutz"
+    },
+    "cards": {
       "positionOverview": "Stellenübersicht",
-      "fieldOfStudies": "Studienrichtung:",
-      "researchArea": "Forschungsbereich:",
-      "workload": "Arbeitsaufwand:",
-      "hoursPerWeek": "{{workload}} Stunden/Woche",
-      "contractDuration": "Vertragslaufzeit:",
-      "years": "{{years}} Jahre",
-      "fundingType": "Finanzierungsart:",
-      "startDate": "Startdatum:",
-      "endDate": "Bewerbungsfrist:",
-      "created": "Erstellt am:",
-      "lastModified": "Zuletzt geändert:"
-    },
-    "researchGroupDetails": {
       "researchGroup": "Forschungsgruppe"
     },
-    "positionDetails": {
-      "positionDetails": "Stellendetails",
-      "description": "Stellenbeschreibung",
-      "tasks": "Aufgaben & Verantwortlichkeiten",
-      "requirements": "Zulassungsvoraussetzungen"
+    "labels": {
+      "fieldOfStudies": "Studienrichtung",
+      "researchArea": "Forschungsbereich",
+      "workload": "Arbeitsaufwand",
+      "contractDuration": "Vertragslaufzeit",
+      "fundingType": "Finanzierungsart",
+      "startDate": "Startdatum",
+      "applicationEndDate": "Bewerbungsfrist"
+    },
+    "units": {
+      "hoursPerWeek": "Stunden/Woche",
+      "years": "Jahre"
     },
     "dataPrivacy": {
-      "dataProtectionInformation": "Hinweis zum Datenschutz:",
       "dataProtectionText": "Im Rahmen Ihrer Bewerbung um eine Stelle an der Technischen Universität München (TUM) übermitteln Sie personenbezogene Daten. Beachten Sie bitte hierzu unsere <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise gemäß Art. 13 Datenschutz-Grundverordnung (DSGVO) zur Erhebung und Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung. </a> Durch die Übermittlung Ihrer Bewerbung bestätigen Sie, dass Sie die Datenschutzhinweise der TUM zur Kenntnis genommen haben."
     },
-    "noData": "Nicht Angegeben"
+    "editResearchGroup": "Forschungsgruppen-Informationen bearbeiten",
+    "noData": "Keine Daten verfügbar"
   },
   "jobActionButton": {
     "apply": "Bewerben",

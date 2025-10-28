@@ -108,13 +108,101 @@
       },
 
       "toastMessages": {
-        "loadFailed": "Failed to load. Please try again or contact an admin.",
-        "addSuccess": "Successfully added to the research group.",
-        "removeSuccess": "{{memberName}} has been removed from the research group.",
-        "removeFailed": "Failed to remove. Please try again or contact an admin."
+        "loadFailed": {
+          "summary": "Load Failed",
+          "detail": "Failed to load. Please try again or contact an admin."
+        },
+        "addSuccess": {
+          "summary": "Member Added",
+          "detail": "{{memberName}} has been added to the research group."
+        },
+        "removeSuccess": {
+          "summary": "Member Removed",
+          "detail": "{{memberName}} has been removed from the research group."
+        },
+        "removeFailed": {
+          "summary": "Remove Failed",
+          "detail": "Failed to remove. Please try again or contact an admin."
+        }
       },
 
-      "noRole": "No role"
+      "noRole": "No Role"
+    },
+    "adminView": {
+      "errors": {
+        "loadFilter": {
+          "summary": "Error",
+          "detail": "Failed to load filter options. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "loadResearchGroups": {
+          "summary": "Error",
+          "detail": "Failed to load research groups. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "approve": {
+          "summary": "Error",
+          "detail": "Failed to approve research group. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "deny": {
+          "summary": "Error",
+          "detail": "Failed to deny research group. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "withdraw": {
+          "summary": "Error",
+          "detail": "Error withdrawing approval. Please try refreshing the page, or contact us if the problem continues."
+        }
+      },
+      "success": {
+        "approve": {
+          "summary": "Success",
+          "detail": "Research group approved successfully"
+        },
+        "deny": {
+          "summary": "Success",
+          "detail": "Research group denied successfully"
+        },
+        "withdraw": {
+          "summary": "Success",
+          "detail": "Approval withdrawn successfully"
+        }
+      },
+      "filter": {
+        "status": "Status",
+        "stateSearchPlaceholder": "Search status..."
+      },
+      "group": "Research Group",
+      "groups": "Research Groups",
+      "groupState": {
+        "draft": "Pending",
+        "active": "Accepted",
+        "denied": "Rejected",
+        "unknown": "Unknown"
+      },
+      "searchFilterSortBar": {
+        "searchText": "Search Research Groups..."
+      },
+      "tableColumn": {
+        "professor": "Professor",
+        "status": "Status",
+        "researchGroup": "Research Group",
+        "requestedAt": "Requested at"
+      },
+      "viewButton": "View",
+      "confirmDialog": {
+        "header": "Approve Research Group",
+        "message": "Are you sure you want to approve this research group?",
+        "confirm": "Approve"
+      },
+      "denyConfirmDialog": {
+        "header": "Deny Research Group",
+        "message": "Are you sure you want to deny this research group?",
+        "confirm": "Deny"
+      },
+      "withdrawConfirmDialog": {
+        "header": "Withdraw Approval",
+        "message": "Are you sure you want to withdraw approval for this research group?",
+        "confirm": "Withdraw"
+      },
+      "title": "Manage Research Groups"
     }
   }
 }

@@ -1,15 +1,27 @@
+@use 'breakpoints' as bp;
+
 .page-header {
   font-weight: 700;
-  padding-bottom: 4rem;
+  padding-bottom: 1.5rem;
   font-size: 2rem;
   color: var(--p-primary-color);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .header-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding-bottom: 4rem;
+  align-items: start;
+  padding-bottom: 1.5rem;
+
+  @media (max-width: bp.$md) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
 
   .page-header {
     padding-bottom: 0;

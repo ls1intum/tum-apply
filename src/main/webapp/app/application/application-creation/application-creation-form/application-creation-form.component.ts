@@ -18,6 +18,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -29,9 +30,7 @@ import ApplicationCreationPage3Component, {
 } from '../application-creation-page3/application-creation-page3.component';
 import ApplicationCreationPage2Component, {
   ApplicationCreationPage2Data,
-  bachelorGradingScale,
   getPage2FromApplication,
-  masterGradingScale,
 } from '../application-creation-page2/application-creation-page2.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { AuthFacadeService } from '../../../core/auth/auth-facade.service';
@@ -71,7 +70,7 @@ export default class ApplicationCreationFormComponent {
   readonly sendButtonSeverity = 'primary' as ButtonColor;
   readonly sendButtonIcon = 'paper-plane';
 
-  page1 = signal<ApplicationCreationPage1Data>({
+  personalInfoData = signal<ApplicationCreationPage1Data>({
     firstName: '',
     lastName: '',
     email: '',
@@ -88,18 +87,20 @@ export default class ApplicationCreationFormComponent {
     postcode: '',
   });
 
-  page2 = signal<ApplicationCreationPage2Data>({
+  educationData = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
-    bachelorGradingScale: bachelorGradingScale[0],
-    bachelorGrade: undefined,
+    bachelorGradeUpperLimit: '',
+    bachelorGradeLowerLimit: '',
+    bachelorGrade: '',
     masterDegreeName: '',
     masterDegreeUniversity: '',
-    masterGradingScale: masterGradingScale[0],
-    masterGrade: undefined,
+    masterGradeUpperLimit: '',
+    masterGradeLowerLimit: '',
+    masterGrade: '',
   });
 
-  page3 = signal<ApplicationCreationPage3Data>({
+  applicationDetailsData = signal<ApplicationCreationPage3Data>({
     desiredStartDate: '',
     motivation: '',
     skills: '',
@@ -108,10 +109,10 @@ export default class ApplicationCreationFormComponent {
 
   previewData = computed(() => this.mapPagesToDTO() as ApplicationDetailDTO);
 
-  panel1 = viewChild<TemplateRef<ApplicationCreationPage1Component>>('panel1');
-  panel2 = viewChild<TemplateRef<ApplicationCreationPage2Component>>('panel2');
-  panel3 = viewChild<TemplateRef<ApplicationCreationPage3Component>>('panel3');
-  panel4 = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('panel4');
+  personalInfoPanel = viewChild<TemplateRef<ApplicationCreationPage1Component>>('personalInfoPanel');
+  educationPanel = viewChild<TemplateRef<ApplicationCreationPage2Component>>('educationPanel');
+  applicationDetailsPanel = viewChild<TemplateRef<ApplicationCreationPage3Component>>('applicationDetailsPanel');
+  summaryPanel = viewChild<TemplateRef<ApplicationDetailForApplicantComponent>>('summaryPanel');
   savedStatusPanel = viewChild<TemplateRef<HTMLDivElement>>('saving_state_panel');
   sendConfirmDialog = viewChild<ConfirmDialog>('sendConfirmDialog');
   progressStepper = viewChild<ProgressStepperComponent>(ProgressStepperComponent);
@@ -134,11 +135,11 @@ export default class ApplicationCreationFormComponent {
       }`,
   );
 
-  page1Valid = signal<boolean>(false);
-  page2Valid = signal<boolean>(false);
-  page3Valid = signal<boolean>(false);
+  personalInfoDataValid = signal<boolean>(false);
+  educationDataValid = signal<boolean>(false);
+  applicationDetailsDataValid = signal<boolean>(false);
   savingTick = signal<number>(0);
-  allPagesValid = computed(() => this.page1Valid() && this.page2Valid() && this.page3Valid());
+  allPagesValid = computed(() => this.personalInfoDataValid() && this.educationDataValid() && this.applicationDetailsDataValid());
   documentIds = signal<ApplicationDocumentIdsDTO | undefined>(undefined);
   readonly formbuilder = inject(FormBuilder);
 
@@ -150,10 +151,17 @@ export default class ApplicationCreationFormComponent {
     privacyAccepted: this.formbuilder.nonNullable.control(false, {
       validators: Validators.requiredTrue,
     }),
+    doctoralRequirementsAccepted: this.formbuilder.nonNullable.control(false, {
+      validators: Validators.requiredTrue,
+    }),
   });
 
   readonly privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls.privacyAccepted.valueChanges, {
     initialValue: this.additionalInfoForm.controls.privacyAccepted.value,
+  });
+
+  readonly doctoralRequirementsAcceptedSignal = toSignal(this.additionalInfoForm.controls.doctoralRequirementsAccepted.valueChanges, {
+    initialValue: this.additionalInfoForm.controls.doctoralRequirementsAccepted.value,
   });
 
   submitAttempted = signal(false);
@@ -161,26 +169,26 @@ export default class ApplicationCreationFormComponent {
   // Stepper config
   stepData = computed<StepData[]>(() => {
     const steps: StepData[] = [];
-    const panel1 = this.panel1();
-    const panel2 = this.panel2();
-    const panel3 = this.panel3();
-    const panel4 = this.panel4();
+    const personalInfoPanel = this.personalInfoPanel();
+    const educationPanel = this.educationPanel();
+    const applicationDetailsPanel = this.applicationDetailsPanel();
+    const summaryPanel = this.summaryPanel();
     const applicantId = this.applicantId();
-    const page1Valid = this.page1Valid();
-    const page2Valid = this.page2Valid();
-    const page3Valid = this.page3Valid();
-    const page1And2Valid = page1Valid && page2Valid;
-    const page1And2And3Valid = page1Valid && page2Valid && page3Valid;
+    const personalInfoDataValid = this.personalInfoDataValid();
+    const educationDataValid = this.educationDataValid();
+    const applicationDetailsDataValid = this.applicationDetailsDataValid();
+    const personalInfoAndEducationDataValid = personalInfoDataValid && educationDataValid;
+    const allDataValid = personalInfoDataValid && educationDataValid && applicationDetailsDataValid;
     const allPagesValid = this.allPagesValid();
     const location = this.location;
     const performAutomaticSaveLocal: () => Promise<void> = () => this.performAutomaticSave();
     const statusPanel = this.savedStatusPanel();
     const updateDocumentInformation = this.updateDocumentInformation.bind(this);
 
-    if (panel1) {
+    if (personalInfoPanel) {
       steps.push({
         name: 'entity.applicationSteps.personalInformation',
-        panelTemplate: panel1,
+        panelTemplate: personalInfoPanel,
         shouldTranslate: true,
         buttonGroupPrev: [
           {
@@ -206,7 +214,7 @@ export default class ApplicationCreationFormComponent {
             onClick: () => {
               this.handleNextFromStep1();
             },
-            disabled: !page1Valid,
+            disabled: !personalInfoDataValid,
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
             changePanel: this.applicantId() !== '',
@@ -216,10 +224,10 @@ export default class ApplicationCreationFormComponent {
       });
     }
 
-    if (panel2) {
+    if (educationPanel) {
       steps.push({
         name: 'entity.applicationSteps.education',
-        panelTemplate: panel2,
+        panelTemplate: educationPanel,
         shouldTranslate: true,
         buttonGroupPrev: [
           {
@@ -242,22 +250,22 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               updateDocumentInformation();
             },
-            disabled: !page2Valid,
+            disabled: !educationDataValid,
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
             changePanel: true,
           },
         ],
-        disabled: !page1Valid || !applicantId,
+        disabled: !personalInfoDataValid || !applicantId,
         status: statusPanel,
       });
     }
 
-    if (panel3) {
+    if (applicationDetailsPanel) {
       steps.push({
         name: 'entity.applicationSteps.applicationDetails',
         shouldTranslate: true,
-        panelTemplate: panel3,
+        panelTemplate: applicationDetailsPanel,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -279,22 +287,22 @@ export default class ApplicationCreationFormComponent {
             onClick() {
               updateDocumentInformation();
             },
-            disabled: !page3Valid,
+            disabled: !applicationDetailsDataValid,
             label: 'entity.applicationSteps.buttons.next',
             shouldTranslate: true,
             changePanel: true,
           },
         ],
-        disabled: !page1And2Valid || !applicantId,
+        disabled: !personalInfoAndEducationDataValid || !applicantId,
         status: statusPanel,
       });
     }
 
-    if (panel4) {
+    if (summaryPanel) {
       steps.push({
         name: 'entity.applicationSteps.summary',
         shouldTranslate: true,
-        panelTemplate: panel4,
+        panelTemplate: summaryPanel,
         buttonGroupPrev: [
           {
             variant: 'outlined',
@@ -322,7 +330,7 @@ export default class ApplicationCreationFormComponent {
             changePanel: false,
           },
         ],
-        disabled: !page1And2And3Valid || !applicantId,
+        disabled: !allDataValid || !applicantId,
         status: statusPanel,
       });
     }
@@ -337,6 +345,7 @@ export default class ApplicationCreationFormComponent {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly localStorageService = inject(LocalStorageService);
   private readonly translateService = inject(TranslateService);
+  private readonly jobResourceService = inject(JobResourceApiService);
 
   private otpDialogRef: DynamicDialogRef | null = null;
   private initCalled = signal(false);
@@ -367,9 +376,9 @@ export default class ApplicationCreationFormComponent {
       try {
         let application: ApplicationForApplicantDTO;
 
-        if (applicationId) {
+        if (applicationId !== null) {
           application = await this.initPageLoadExistingApplication(applicationId);
-        } else if (jobId) {
+        } else if (jobId !== null) {
           application = await this.initPageCreateApplication(jobId);
         } else {
           throw new Error('Either job ID or application ID must be provided in the URL.');
@@ -385,14 +394,14 @@ export default class ApplicationCreationFormComponent {
         this.useLocalStorage.set(false);
 
         // Load data from application
-        this.page1.set(getPage1FromApplication(application));
-        this.page2.set(getPage2FromApplication(application));
-        this.page3.set(getPage3FromApplication(application));
+        this.personalInfoData.set(getPage1FromApplication(application));
+        this.educationData.set(getPage2FromApplication(application));
+        this.applicationDetailsData.set(getPage3FromApplication(application));
 
         this.updateDocumentInformation();
       } catch (error: unknown) {
         const httpError = error as HttpErrorResponse;
-        this.showInitErrorMessage(`${applyflow}.initLoadFailed`);
+        this.showInitErrorMessage(`${applyflow}.loadFailed`);
         throw new Error(`Init failed with HTTP ${httpError.status} ${httpError.statusText}: ${httpError.message}`);
       }
     }
@@ -400,11 +409,21 @@ export default class ApplicationCreationFormComponent {
 
   initPageForLocalStorageCase(jobId: string | null): void {
     this.useLocalStorage.set(true);
-    if (jobId) {
-      // TODO fetch jobData for lateron displaying jobDetails
+    if (jobId !== null) {
       this.jobId.set(jobId);
-      this.loadPage1FromLocalStorage(jobId);
+      this.loadPersonalInfoDataFromLocalStorage(jobId);
       this.applicationState.set('SAVED');
+
+      // Fetch job title for display
+      firstValueFrom(this.jobResourceService.getJobDetails(jobId))
+        .then(jobDetails => {
+          if (jobDetails.title) {
+            this.title.set(jobDetails.title);
+          }
+        })
+        .catch(() => {
+          // Silently ignore errors when fetching job title - this is non-critical for the application flow
+        });
     } else {
       this.showInitErrorMessage(`${applyflow}.missingJobIdUnauthenticated`);
     }
@@ -462,10 +481,11 @@ export default class ApplicationCreationFormComponent {
   onConfirmSend(): void {
     this.submitAttempted.set(true);
     if (!this.privacyAcceptedSignal()) {
-      this.toastService.showError({
-        summary: this.translateService.instant('privacy.privacyConsent.toastError.summary'),
-        detail: this.translateService.instant('privacy.privacyConsent.toastError.detail'),
-      });
+      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
+      return;
+    }
+    if (!this.doctoralRequirementsAcceptedSignal()) {
+      this.toastService.showErrorKey('entity.applicationPage4.doctoralRequirements.toastError');
       return;
     }
     void this.sendCreateApplicationData('SENT', true);
@@ -497,9 +517,8 @@ export default class ApplicationCreationFormComponent {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
         await this.router.navigate(['/application/overview']);
       }
-    } catch (err) {
-      const httpError = err as HttpErrorResponse;
-      this.toastService.showErrorKey(`${applyflow}.saveFailedWithStatus`, { status: httpError.statusText });
+    } catch {
+      this.toastService.showErrorKey(`${applyflow}.saveFailed`);
       return false;
     }
     return true;
@@ -522,16 +541,16 @@ export default class ApplicationCreationFormComponent {
     this.savingState.set(SavingStates.SAVING);
   }
 
-  onPage1ValidityChanged(isValid: boolean): void {
-    this.page1Valid.set(isValid);
+  onPersonalInfoDataValidityChanged(isValid: boolean): void {
+    this.personalInfoDataValid.set(isValid);
   }
 
-  onPage2ValidityChanged(isValid: boolean): void {
-    this.page2Valid.set(isValid);
+  onEducationDataValidityChanged(isValid: boolean): void {
+    this.educationDataValid.set(isValid);
   }
 
-  onPage3ValidityChanged(isValid: boolean): void {
-    this.page3Valid.set(isValid);
+  onApplicationDetailsDataValidityChanged(isValid: boolean): void {
+    this.applicationDetailsDataValid.set(isValid);
   }
 
   // Handles the Next action from Step 1: runs OTP flow, refreshes user, and migrates draft
@@ -540,9 +559,9 @@ export default class ApplicationCreationFormComponent {
       return;
     }
 
-    const email = this.page1().email;
-    const firstName = this.page1().firstName;
-    const lastName = this.page1().lastName;
+    const email = this.personalInfoData().email;
+    const firstName = this.personalInfoData().firstName;
+    const lastName = this.personalInfoData().lastName;
 
     void (async () => {
       try {
@@ -550,11 +569,8 @@ export default class ApplicationCreationFormComponent {
         this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
         void this.migrateDraftIfNeeded();
         this.progressStepper()?.goToStep(2);
-      } catch (err) {
-        this.toastService.showError({
-          summary: 'Error',
-          detail: (err as Error).message || 'Email verification failed. Please try again.',
-        });
+      } catch {
+        this.toastService.showErrorKey(`${applyflow}.otpVerificationFailed`);
       }
     })();
   }
@@ -563,17 +579,17 @@ export default class ApplicationCreationFormComponent {
   private async openOtpAndWaitForLogin(email: string, firstName: string, lastName: string): Promise<void> {
     const normalizedEmail = email.trim();
     if (!normalizedEmail) {
-      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid email address.' });
+      this.toastService.showErrorKey(`${applyflow}.invalidEmail`);
       return;
     }
     const normalizedFirstName = firstName.trim();
     if (!normalizedFirstName) {
-      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid first name.' });
+      this.toastService.showErrorKey(`${applyflow}.invalidFirstName`);
       return;
     }
     const normalizedLastName = lastName.trim();
     if (!normalizedLastName) {
-      this.toastService.showError({ summary: 'Error', detail: 'Please provide a valid last name.' });
+      this.toastService.showErrorKey(`${applyflow}.invalidLastName`);
       return;
     }
 
@@ -627,14 +643,14 @@ export default class ApplicationCreationFormComponent {
       await this.sendCreateApplicationData(this.applicationState(), false);
       // TODO: remove application from local storage
     } catch {
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to migrate local draft to server.' });
+      this.toastService.showErrorKey(`${applyflow}.migrationFailed`);
     }
   }
 
   private mapPagesToDTO(state?: ApplicationDetailDTO.ApplicationStateEnum | 'SENT'): UpdateApplicationDTO | ApplicationDetailDTO {
-    const p1 = this.page1();
-    const p2 = this.page2();
-    const p3 = this.page3();
+    const p1 = this.personalInfoData();
+    const p2 = this.educationData();
+    const p3 = this.applicationDetailsData();
 
     const base = {
       applicationId: this.applicationId(),
@@ -652,11 +668,13 @@ export default class ApplicationCreationFormComponent {
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
-        bachelorGradingScale: p2.bachelorGradingScale.value,
+        bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
+        bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
         masterDegreeName: p2.masterDegreeName,
         masterUniversity: p2.masterDegreeUniversity,
         masterGrade: p2.masterGrade,
-        masterGradingScale: p2.masterGradingScale.value,
+        masterGradeUpperLimit: p2.masterGradeUpperLimit,
+        masterGradeLowerLimit: p2.masterGradeLowerLimit,
       },
       motivation: p3.motivation,
       specialSkills: p3.skills,
@@ -682,8 +700,6 @@ export default class ApplicationCreationFormComponent {
             phoneNumber: p1.phoneNumber,
             preferredLanguage: p1.language?.value,
           },
-          bachelorGradingScale: 'ONE_TO_FOUR',
-          masterGradingScale: 'ONE_TO_FOUR',
         },
       } as UpdateApplicationDTO;
     }
@@ -696,7 +712,7 @@ export default class ApplicationCreationFormComponent {
 
   private saveToLocalStorage(): boolean {
     const applicationData: ApplicationDraftData = {
-      page1: this.page1(),
+      personalInfoData: this.personalInfoData(),
       applicationId: this.applicationId(),
       jobId: this.jobId(),
       timestamp: new Date().toISOString(),
@@ -717,11 +733,11 @@ export default class ApplicationCreationFormComponent {
    * @returns {boolean} True if data was successfully loaded, false otherwise
    * @private
    */
-  private loadPage1FromLocalStorage(jobId: string): void {
+  private loadPersonalInfoDataFromLocalStorage(jobId: string): void {
     try {
       const draft = this.localStorageService.loadApplicationDraft(undefined, jobId);
       if (draft) {
-        this.page1.set(draft.page1);
+        this.personalInfoData.set(draft.personalInfoData);
         this.applicationId.set(draft.applicationId);
         this.jobId.set(draft.jobId);
       }

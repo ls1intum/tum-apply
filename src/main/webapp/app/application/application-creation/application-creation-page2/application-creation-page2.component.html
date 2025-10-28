@@ -1,173 +1,164 @@
-<form [formGroup]="page2Form()">
-  <p-divider layout="horizontal">
-    <span jhiTranslate="entity.applicationPage2.section.bachelor"></span>
-  </p-divider>
+@if (data(); as data) {
+  <form [formGroup]="page2Form">
+    <p-divider layout="horizontal">
+      <span jhiTranslate="entity.applicationPage2.section.bachelor"></span>
+    </p-divider>
 
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.bachelorDegreeName' | translate }}"
-        [required]="true"
-        [(model)]="data().bachelorDegreeName"
-        [control]="page2Form().get('bachelorDegreeName') ?? undefined"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.bachelorDegreeName' | translate"
-      />
-    </div>
-    <div class="form-field">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.bachelorDegreeUniversity' | translate }}"
-        [required]="true"
-        [(model)]="data().bachelorDegreeUniversity"
-        [control]="page2Form().controls.bachelorDegreeUniversity"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.bachelorDegreeUniversity' | translate"
-      />
-    </div>
-  </div>
-
-  <div class="form-row mb-6">
-    <div class="form-field">
-      <jhi-select
-        label="{{ 'entity.applicationPage2.label.bachelorGradingScale' | translate }}"
-        [disabled]="true"
-        width="100%"
-        [required]="true"
-        [items]="bachelorGradingScaleLocal"
-        [translateItems]="true"
-        [(selected)]="data().bachelorGradingScale"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradingScale' | translate"
-        [helperText]="'entity.applicationPage2.gradingConversionBachelor'"
-      />
-    </div>
-    <div class="form-field">
-      @switch (data().bachelorGradingScale.value) {
-        @case (BachelorGradingScaleEnumLocal.OneToFour) {
-          <ng-container
-            *ngTemplateOutlet="
-              gradeInput;
-              context: {
-                labelKey: 'entity.applicationPage2.label.bachelorGrade',
-                tooltipKey: 'entity.applicationPage2.tooltip.bachelorGrade',
-                control: page2Form().controls.bachelorGrade,
-                model: data().bachelorGrade,
-                modelChange: setBachelorGradeAsNumber,
-              }
-            "
-          />
-        }
-        @default {
-          <span>Not Implemented</span>
-        }
-      }
-    </div>
-  </div>
-
-  @if (applicationIdForDocuments(); as applicationId) {
-    <div class="form-row justify-center">
-      <div class="w-1/2 mb-6">
-        <jhi-upload-button
-          uploadKey="entity.upload.upload_instruction.BACHELOR_TRANSCRIPT"
-          documentType="BACHELOR_TRANSCRIPT"
-          [applicationId]="applicationId"
-          [documentIds]="documentIdsBachelorTranscript()"
+    <div class="form-row">
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.bachelorDegreeName' | translate }}"
+          [required]="true"
+          [(model)]="data.bachelorDegreeName"
+          [control]="page2Form.get('bachelorDegreeName') ?? undefined"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.bachelorDegreeName' | translate"
         />
       </div>
-      <fa-icon
-        icon="circle-info"
-        class="upload-info-icon"
-        pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
-        tooltipPosition="top"
-      />
-    </div>
-  }
-
-  <p-divider layout="horizontal">
-    <span jhiTranslate="entity.applicationPage2.section.master"></span>
-  </p-divider>
-
-  <div class="form-row">
-    <div class="form-field">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.masterDegreeName' | translate }}"
-        [required]="true"
-        [(model)]="data().masterDegreeName"
-        [control]="page2Form().controls.masterDegreeName"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.masterDegreeName' | translate"
-      />
-    </div>
-    <div class="form-field">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.masterDegreeUniversity' | translate }}"
-        [required]="true"
-        [(model)]="data().masterDegreeUniversity"
-        [control]="page2Form().controls.masterDegreeUniversity"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.masterDegreeUniversity' | translate"
-      />
-    </div>
-  </div>
-
-  <div class="form-row mb-6">
-    <div class="form-field">
-      <jhi-select
-        label="{{ 'entity.applicationPage2.label.masterGradingScale' | translate }}"
-        [disabled]="true"
-        width="100%"
-        [required]="true"
-        [items]="masterGradingScaleLocal"
-        [(selected)]="data().masterGradingScale"
-        [translateItems]="true"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.masterGradingScale' | translate"
-        [helperText]="'entity.applicationPage2.gradingConversionMaster'"
-      />
-    </div>
-    <div class="form-field">
-      @switch (data().masterGradingScale.value) {
-        @case (MasterGradingScaleEnumLocal.OneToFour) {
-          <ng-container
-            *ngTemplateOutlet="
-              gradeInput;
-              context: {
-                labelKey: 'entity.applicationPage2.label.masterGrade',
-                tooltipKey: 'entity.applicationPage2.tooltip.masterGrade',
-                control: page2Form().controls.masterGrade,
-                model: data().masterGrade,
-                modelChange: setMasterGradeAsNumber,
-              }
-            "
-          />
-        }
-        @default {
-          <span>Not Implemented</span>
-        }
-      }
-    </div>
-  </div>
-
-  @if (applicationIdForDocuments(); as applicationId) {
-    <div class="form-row justify-center">
-      <div class="w-1/2 mb-6">
-        <jhi-upload-button
-          [applicationId]="applicationId"
-          documentType="MASTER_TRANSCRIPT"
-          uploadKey="entity.upload.upload_instruction.MASTER_TRANSCRIPT"
-          [documentIds]="documentIdsMasterTranscript()"
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.bachelorDegreeUniversity' | translate }}"
+          [required]="true"
+          [(model)]="data.bachelorDegreeUniversity"
+          [control]="page2Form.controls.bachelorDegreeUniversity"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.bachelorDegreeUniversity' | translate"
         />
       </div>
-      <fa-icon
-        icon="circle-info"
-        class="upload-info-icon"
-        pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
-        tooltipPosition="top"
-      />
     </div>
-  }
-</form>
 
+    <div class="form-row mb-6">
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
+          [required]="true"
+          [(model)]="data.bachelorGradeUpperLimit"
+          [control]="page2Form.controls.bachelorGradeUpperLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeUpperLimit' | translate"
+        />
+      </div>
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
+          [required]="true"
+          [(model)]="data.bachelorGradeLowerLimit"
+          [control]="page2Form.controls.bachelorGradeLowerLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeLowerLimit' | translate"
+        />
+      </div>
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}"
+          [required]="true"
+          [(model)]="data.bachelorGrade"
+          [control]="page2Form.controls.bachelorGrade"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
+        />
+      </div>
+    </div>
+
+    @if (applicationIdForDocuments(); as applicationId) {
+      <div class="form-row justify-center">
+        <div class="w-1/2 mb-6">
+          <jhi-upload-button
+            uploadKey="entity.upload.upload_instruction.BACHELOR_TRANSCRIPT"
+            documentType="BACHELOR_TRANSCRIPT"
+            [applicationId]="applicationId"
+            [documentIds]="documentIdsBachelorTranscript()"
+          />
+        </div>
+        <fa-icon
+          icon="circle-info"
+          class="upload-info-icon"
+          pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
+          tooltipPosition="top"
+        />
+      </div>
+    }
+
+    <p-divider layout="horizontal">
+      <span jhiTranslate="entity.applicationPage2.section.master"></span>
+    </p-divider>
+
+    <div class="form-row">
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.masterDegreeName' | translate }}"
+          [required]="true"
+          [(model)]="data.masterDegreeName"
+          [control]="page2Form.controls.masterDegreeName"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.masterDegreeName' | translate"
+        />
+      </div>
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.masterDegreeUniversity' | translate }}"
+          [required]="true"
+          [(model)]="data.masterDegreeUniversity"
+          [control]="page2Form.controls.masterDegreeUniversity"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.masterDegreeUniversity' | translate"
+        />
+      </div>
+    </div>
+
+    <div class="form-row mb-6">
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
+          [required]="true"
+          [(model)]="data.masterGradeUpperLimit"
+          [control]="page2Form.controls.masterGradeUpperLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.masterGradeUpperLimit' | translate"
+        />
+      </div>
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
+          [required]="true"
+          [(model)]="data.masterGradeLowerLimit"
+          [control]="page2Form.controls.masterGradeLowerLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.masterGradeLowerLimit' | translate"
+        />
+      </div>
+      <div class="form-field">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.masterGrade' | translate }}"
+          [required]="true"
+          [(model)]="data.masterGrade"
+          [control]="page2Form.controls.masterGrade"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
+        />
+      </div>
+    </div>
+
+    @if (applicationIdForDocuments(); as applicationId) {
+      <div class="form-row justify-center">
+        <div class="w-1/2 mb-6">
+          <jhi-upload-button
+            [applicationId]="applicationId"
+            documentType="MASTER_TRANSCRIPT"
+            uploadKey="entity.upload.upload_instruction.MASTER_TRANSCRIPT"
+            [documentIds]="documentIdsMasterTranscript()"
+          />
+        </div>
+        <fa-icon
+          icon="circle-info"
+          class="upload-info-icon"
+          pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
+          tooltipPosition="top"
+        />
+      </div>
+    }
+  </form>
+}
 <ng-template
   #gradeInput
   let-labelKey="labelKey"
@@ -188,5 +179,6 @@
     [max]="4"
     [minFractionDigits]="0"
     [maxFractionDigits]="1"
+    [customErrorKey]="'entity.applicationPage2.validation.invalidGrade'"
   />
 </ng-template>

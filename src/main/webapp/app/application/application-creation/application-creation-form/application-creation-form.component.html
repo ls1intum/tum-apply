@@ -10,18 +10,23 @@
   (confirmed)="onConfirmSend()"
 />
 
-<ng-template #panel1>
+<ng-template #personalInfoPanel>
   <div class="panel">
-    <jhi-application-creation-page1 class="w-full" [(data)]="page1" (valid)="onPage1ValidityChanged($event)" (changed)="onValueChanged()" />
+    <jhi-application-creation-page1
+      class="w-full"
+      [(data)]="personalInfoData"
+      (valid)="onPersonalInfoDataValidityChanged($event)"
+      (changed)="onValueChanged()"
+    />
   </div>
 </ng-template>
 
-<ng-template #panel2>
+<ng-template #educationPanel>
   <div class="panel">
     <jhi-application-creation-page2
       class="w-full"
-      [(data)]="page2"
-      (valid)="onPage2ValidityChanged($event)"
+      [(data)]="educationData"
+      (valid)="onEducationDataValidityChanged($event)"
       (changed)="onValueChanged()"
       [applicationIdForDocuments]="applicationId()"
       [documentIdsBachelorTranscript]="documentIds()?.bachelorDocumentDictionaryIds"
@@ -30,14 +35,14 @@
   </div>
 </ng-template>
 
-<ng-template #panel3>
+<ng-template #applicationDetailsPanel>
   <div class="panel">
-    @if (page3()) {
+    @if (applicationDetailsData()) {
       <jhi-application-creation-page3
         class="w-full"
-        [(data)]="page3"
+        [(data)]="applicationDetailsData"
         (changed)="onValueChanged()"
-        (valid)="onPage3ValidityChanged($event)"
+        (valid)="onApplicationDetailsDataValidityChanged($event)"
         [applicationIdForDocuments]="applicationId()"
         [documentIdsReferences]="documentIds()?.referenceDocumentDictionaryIds"
         [documentIdsCv]="documentIds()?.cvDocumentDictionaryId"
@@ -46,7 +51,7 @@
   </div>
 </ng-template>
 
-<ng-template #panel4>
+<ng-template #summaryPanel>
   <p jhiTranslate="entity.applicationPage4.message"></p>
   <!-- Summary panel -->
   <jhi-application-detail-for-applicant
@@ -67,11 +72,30 @@
   <div [formGroup]="additionalInfoForm">
     <label>
       <input type="checkbox" formControlName="privacyAccepted" />
-      <span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
+      <span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
     </label>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
       <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
+    }
+  </div>
+
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage4.doctoralRequirements.title"></span>
+  </p-divider>
+
+  <div class="data-privacy-notice mb-2">
+    <p jhiTranslate="entity.applicationPage4.doctoralRequirements.text"></p>
+  </div>
+
+  <div [formGroup]="additionalInfoForm">
+    <label>
+      <input type="checkbox" formControlName="doctoralRequirementsAccepted" />
+      <span class="required mr-1">*</span><span jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></span>
+    </label>
+
+    @if (!doctoralRequirementsAcceptedSignal() && submitAttempted()) {
+      <div class="error-text mt-1" jhiTranslate="entity.applicationPage4.doctoralRequirements.missingConfirmation"></div>
     }
   </div>
 </ng-template>

@@ -10,16 +10,26 @@
 
 
 export interface ResearchGroupDTO { 
-    name: string;
     abbreviation?: string;
-    head: string;
-    email?: string;
-    website?: string;
-    school?: string;
-    description?: string;
-    defaultFieldOfStudies?: string;
-    street?: string;
-    postalCode?: string;
     city?: string;
+    defaultFieldOfStudies?: string;
+    description?: string;
+    email?: string;
+    head: string;
+    name: string;
+    postalCode?: string;
+    school?: string;
+    state?: ResearchGroupDTO.StateEnum;
+    street?: string;
+    website?: string;
 }
+export namespace ResearchGroupDTO {
+    export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
+    export const StateEnum = {
+        Draft: 'DRAFT' as StateEnum,
+        Active: 'ACTIVE' as StateEnum,
+        Denied: 'DENIED' as StateEnum
+    };
+}
+
 

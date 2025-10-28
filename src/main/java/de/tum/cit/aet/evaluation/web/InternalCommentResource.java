@@ -1,5 +1,6 @@
 package de.tum.cit.aet.evaluation.web;
 
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.evaluation.dto.InternalCommentDTO;
 import de.tum.cit.aet.evaluation.dto.InternalCommentUpdateDTO;
 import de.tum.cit.aet.evaluation.service.InternalCommentService;
@@ -9,7 +10,6 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +26,7 @@ public class InternalCommentResource {
      * @return a {@link ResponseEntity} containing a list of {@link InternalCommentDTO}
      */
     @GetMapping("/applications/{applicationId}/comments")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<List<InternalCommentDTO>> listComments(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(internalCommentService.getComments(applicationId));
     }
@@ -39,7 +39,7 @@ public class InternalCommentResource {
      * @return a {@link ResponseEntity} with status {@code 201 Created} and the created {@link InternalCommentDTO}
      */
     @PostMapping(path = "/applications/{applicationId}/comments")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<InternalCommentDTO> createComment(
         @PathVariable UUID applicationId,
         @Valid @RequestBody InternalCommentUpdateDTO body
@@ -56,7 +56,7 @@ public class InternalCommentResource {
      * @return a {@link ResponseEntity} containing the updated {@link InternalCommentDTO}
      */
     @PutMapping(path = "/comments/{commentId}")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<InternalCommentDTO> updateComment(
         @PathVariable UUID commentId,
         @Valid @RequestBody InternalCommentUpdateDTO body
@@ -71,7 +71,7 @@ public class InternalCommentResource {
      * @return a {@link ResponseEntity} with status {@code 204 No Content} if deletion was successful
      */
     @DeleteMapping("/comments/{commentId}")
-    @PreAuthorize("hasRole('PROFESSOR')")
+    @Professor
     public ResponseEntity<Void> deleteComment(@PathVariable UUID commentId) {
         internalCommentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();

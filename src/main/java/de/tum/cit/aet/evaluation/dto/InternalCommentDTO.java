@@ -2,11 +2,12 @@ package de.tum.cit.aet.evaluation.dto;
 
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.usermanagement.domain.User;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import lombok.NonNull;
 
-public record InternalCommentDTO(UUID commentId, String author, String message, LocalDateTime createdAt, boolean canEdit) {
+public record InternalCommentDTO(UUID commentId, String author, String message, Instant createdAt, boolean canEdit) {
     /**
      * Creates a DTO representation of an internal comment for the given user context.
      *
@@ -23,7 +24,7 @@ public record InternalCommentDTO(UUID commentId, String author, String message, 
             comment.getInternalCommentId(),
             author.getFirstName() + " " + author.getLastName(),
             comment.getMessage(),
-            comment.getCreatedAt(),
+            comment.getCreatedAt().toInstant(ZoneOffset.UTC),
             author.getUserId().equals(currentUser.getUserId())
         );
     }

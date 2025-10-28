@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.*;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
@@ -113,6 +115,7 @@ public class MvcTestClient {
             case 200 -> result = getOk(url, params, accepts);
             case 400 -> result = getInvalid(url, params, accepts);
             case 401 -> result = getUnauthorized(url, params, accepts);
+            case 403 -> result = getForbidden(url, params, accepts);
             case 404 -> result = getNotFound(url, params, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -127,8 +130,10 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
+            case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -146,8 +151,10 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
+            case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -162,9 +169,12 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = putOk(url, body, accepts);
+            case 204 -> result = putNoContent(url, body, accepts);
             case 400 -> result = putInvalid(url, body, accepts);
             case 401 -> result = putUnauthorized(url, body, accepts);
+            case 403 -> result = putForbidden(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
+            case 500 -> result = putInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -181,8 +191,10 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = putOk(url, body, accepts);
+            case 204 -> result = putNoContent(url, body, accepts);
             case 400 -> result = putInvalid(url, body, accepts);
             case 401 -> result = putUnauthorized(url, body, accepts);
+            case 403 -> result = putForbidden(url, body, accepts);
             case 404 -> result = putNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -199,7 +211,9 @@ public class MvcTestClient {
             case 200 -> result = deleteOk(url, body, accepts);
             case 204 -> result = deleteNoContent(url, body, accepts);
             case 400 -> result = deleteInvalid(url, body, accepts);
+            case 403 -> result = deleteForbidden(url, body, accepts);
             case 401 -> result = deleteUnauthorized(url, body, accepts);
+            case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -293,6 +307,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 204 No Content and returns the MvcResult.
+     */
+    private MvcResult postNoContent(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 204", e);
+        }
+    }
+
+    /**
      * Low-level POST that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult postInvalid(String url, Object body, MediaType... accepts) {
@@ -315,6 +340,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 403 Forbidden and returns the MvcResult.
+     */
+    private MvcResult postForbidden(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isForbidden()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 403", e);
+        }
+    }
+
+    /**
      * Low-level POST that asserts 404 Not Found and returns the MvcResult.
      */
     private MvcResult postNotFound(String url, Object body, MediaType... accepts) {
@@ -331,6 +367,17 @@ public class MvcTestClient {
     private MvcResult putOk(String url, Object body, MediaType... accepts) {
         try {
             return putJson(url, body, accepts).andExpect(status().isOk()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed", e);
+        }
+    }
+
+    /**
+     * Low-level PUT that asserts 204 No Content and returns the MvcResult.
+     */
+    private MvcResult putNoContent(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isNoContent()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("PUT " + url + " failed", e);
         }
@@ -358,6 +405,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level PUT that asserts 403 Forbidden and returns the MvcResult.
+     */
+    private MvcResult putForbidden(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isForbidden()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed with 403", e);
+        }
+    }
+
+    /**
      * Low-level PUT that asserts 404 Not Found and returns the MvcResult.
      */
     private MvcResult putNotFound(String url, Object body, MediaType... accepts) {
@@ -365,6 +423,17 @@ public class MvcTestClient {
             return putJson(url, body, accepts).andExpect(status().isNotFound()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("PUT " + url + " failed with 404", e);
+        }
+    }
+
+    /**
+     * Low-level PUT that asserts 500 Internal Server Error and returns the MvcResult.
+     */
+    private MvcResult putInternalServerError(String url, Object body, MediaType... accepts) {
+        try {
+            return putJson(url, body, accepts).andExpect(status().isInternalServerError()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("PUT " + url + " failed with 500", e);
         }
     }
 
@@ -406,6 +475,16 @@ public class MvcTestClient {
             return deleteJson(url, body, accepts).andExpect(status().isUnauthorized()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("DELETE " + url + " failed with 401", e);
+        }
+    }
+
+    /*     * Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
+     */
+    private MvcResult deleteForbidden(String url, Object body, MediaType... accepts) {
+        try {
+            return deleteJson(url, body, accepts).andExpect(status().isForbidden()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 403", e);
         }
     }
 
