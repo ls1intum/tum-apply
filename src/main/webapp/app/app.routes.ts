@@ -300,10 +300,11 @@ const routes: Routes = [
           import('./interview/interview-processes-overview/interview-processes-overview.component').then(
             m => m.InterviewProcessesOverviewComponent
           ),
-        title: 'Interview Processes Overview',
+        title: 'global.routes.interview.overview',
         data: {
           authorities: ['PROFESSOR', 'ADMIN'],
         },
+
       },
     ],
   },

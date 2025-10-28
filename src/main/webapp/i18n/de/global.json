@@ -35,7 +35,10 @@
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
         "info": "TUMApply - Meine Gruppe"
       },
-      "about-us": "TumApply - Über uns"
+      "about-us": "TumApply - Über uns",
+      "interview": {
+        "overview": "TUMApply - Interviewübersicht"
+      }
     },
     "menu": {
       "home": "Startseite",
