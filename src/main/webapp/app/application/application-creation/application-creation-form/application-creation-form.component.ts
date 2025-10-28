@@ -741,7 +741,7 @@ export default class ApplicationCreationFormComponent {
         this.applicationId.set(draft.applicationId);
         this.jobId.set(draft.jobId);
       }
-    } catch (_) {
+    } catch {
       queueMicrotask(() => {
         this.toastService.showErrorKey(`${applyflow}.loadFailed`);
         // Error is handled via toast notification, no need to re-throw
