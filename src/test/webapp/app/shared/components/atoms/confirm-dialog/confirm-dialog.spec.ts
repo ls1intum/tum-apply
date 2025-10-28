@@ -4,10 +4,18 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { By } from '@angular/platform-browser';
+import { ConfirmationService } from 'primeng/api';
+import { Subject } from 'rxjs';
 
 type ConfirmArgs = { message?: string; header?: string; accept?: () => void; reject?: () => void };
 
 describe('ConfirmDialog', () => {
+  let mockConfirmationService: {
+    confirm: ReturnType<typeof vi.fn>;
+    requireConfirmation$: Subject<any>;
+    close$: Subject<any>;
+  };
+
   function createFixture() {
     const fixture = TestBed.createComponent(ConfirmDialog);
     fixture.componentRef.setInput('label', 'Delete');
@@ -20,10 +28,22 @@ describe('ConfirmDialog', () => {
   }
 
   beforeEach(async () => {
+    mockConfirmationService = {
+      confirm: vi.fn(),
+      requireConfirmation$: new Subject(),
+      close$: new Subject(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ConfirmDialog, ButtonComponent],
       providers: [provideFontAwesomeTesting()],
-    }).compileComponents();
+    })
+      .overrideComponent(ConfirmDialog, {
+        set: {
+          providers: [{ provide: ConfirmationService, useValue: mockConfirmationService }],
+        },
+      })
+      .compileComponents();
   });
 
   afterEach(() => {
@@ -143,11 +163,11 @@ describe('ConfirmDialog', () => {
     it('should call confirmationService.confirm when confirm() is called', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      const confirmSpy = vi.spyOn(confirmationService, 'confirm');
+
       comp.confirm();
-      expect(confirmSpy).toHaveBeenCalledTimes(1);
-      expect(confirmSpy).toHaveBeenCalledWith(
+
+      expect(mockConfirmationService.confirm).toHaveBeenCalledTimes(1);
+      expect(mockConfirmationService.confirm).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Are you sure you want to delete this item?',
           header: 'Confirm Deletion',
@@ -159,12 +179,12 @@ describe('ConfirmDialog', () => {
     it('should use correct header and message in confirmation dialog', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      const confirmSpy = vi.spyOn(confirmationService, 'confirm');
       fixture.componentRef.setInput('header', 'Custom Header');
       fixture.componentRef.setInput('message', 'Custom Message');
+
       comp.confirm();
-      expect(confirmSpy).toHaveBeenCalledWith(
+
+      expect(mockConfirmationService.confirm).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Custom Message',
           header: 'Custom Header',
@@ -176,12 +196,12 @@ describe('ConfirmDialog', () => {
     it('should handle undefined header gracefully', () => {
       const fixture = TestBed.createComponent(ConfirmDialog);
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      const confirmSpy = vi.spyOn(confirmationService, 'confirm');
       fixture.componentRef.setInput('header', undefined);
       fixture.componentRef.setInput('message', 'Test message');
+
       comp.confirm();
-      expect(confirmSpy).toHaveBeenCalledWith(
+
+      expect(mockConfirmationService.confirm).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Test message',
           header: undefined,
@@ -193,12 +213,12 @@ describe('ConfirmDialog', () => {
     it('should handle undefined message gracefully', () => {
       const fixture = TestBed.createComponent(ConfirmDialog);
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      const confirmSpy = vi.spyOn(confirmationService, 'confirm');
       fixture.componentRef.setInput('header', 'Test header');
       fixture.componentRef.setInput('message', undefined);
+
       comp.confirm();
-      expect(confirmSpy).toHaveBeenCalledWith(
+
+      expect(mockConfirmationService.confirm).toHaveBeenCalledWith(
         expect.objectContaining({
           message: undefined,
           header: 'Test header',
@@ -220,47 +240,51 @@ describe('ConfirmDialog', () => {
     it('should emit confirmed event with data when accept is called', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      const confirmSpy = vi.spyOn(confirmationService, 'confirm');
       fixture.componentRef.setInput('data', 'test-data-123');
+
       const emitSpy = vi.spyOn(comp.confirmed, 'emit');
+
       comp.confirm();
-      const confirmCall = confirmSpy.mock.calls[0][0] as ConfirmArgs;
+
+      const confirmCall = mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs;
       confirmCall.accept?.();
+
       expect(emitSpy).toHaveBeenCalledWith('test-data-123');
     });
 
     it('should emit confirmed event with undefined when no data is provided', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      const confirmSpy = vi.spyOn(confirmationService, 'confirm');
       const emitSpy = vi.spyOn(comp.confirmed, 'emit');
+
       comp.confirm();
-      const confirmCall = confirmSpy.mock.calls[0][0] as ConfirmArgs;
+
+      const confirmCall = mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs;
       confirmCall.accept?.();
+
       expect(emitSpy).toHaveBeenCalledWith(undefined);
     });
 
     it('should not emit confirmed when accept is not called', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      vi.spyOn(confirmationService, 'confirm');
       const emitSpy = vi.spyOn(comp.confirmed, 'emit');
+
       comp.confirm();
+
       expect(emitSpy).not.toHaveBeenCalled();
     });
 
     it('should not emit confirmed when dialog is rejected', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const confirmationService = (comp as any).confirmationService;
-      const confirmSpy = vi.spyOn(confirmationService, 'confirm');
       const emitSpy = vi.spyOn(comp.confirmed, 'emit');
+
       comp.confirm();
-      const confirmCall = confirmSpy.mock.calls[0][0] as ConfirmArgs;
+
+      const confirmCall = mockConfirmationService.confirm.mock.calls[0][0] as ConfirmArgs;
       confirmCall.reject?.();
+
       expect(emitSpy).not.toHaveBeenCalled();
     });
   });
