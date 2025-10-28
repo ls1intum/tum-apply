@@ -109,7 +109,6 @@ export class JobDetailComponent {
                 onClick: () => this.onApply(),
                 disabled: false,
                 shouldTranslate: true,
-                icon: 'plus',
               },
             ],
           };

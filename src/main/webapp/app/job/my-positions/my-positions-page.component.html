@@ -3,7 +3,13 @@
     <div class="page-header">
       <h1 jhiTranslate="myPositionsPage.header.title"></h1>
     </div>
-    <jhi-button label="myPositionsPage.header.createButton" severity="primary" (click)="onCreateJob()" [shouldTranslate]="true" />
+    <jhi-button
+      label="myPositionsPage.header.createButton"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateJob()"
+      [shouldTranslate]="true"
+    />
   </div>
   <div class="my-positions-container">
     <div class="body">

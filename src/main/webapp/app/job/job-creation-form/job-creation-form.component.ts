@@ -175,7 +175,7 @@ export class JobCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'chevron-left',
+            icon: 'arrow-left',
             onClick: () => this.onBack(),
             disabled: false,
             label: 'jobActionButton.back',
@@ -186,7 +186,7 @@ export class JobCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick() {},
             disabled: !this.basicInfoValid(),
             label: 'jobActionButton.next',
@@ -207,7 +207,7 @@ export class JobCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {},
             disabled: false,
             label: 'jobActionButton.back',
@@ -218,7 +218,7 @@ export class JobCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick() {},
             disabled: !this.positionDetailsValid(),
             label: 'jobActionButton.next',
@@ -274,7 +274,7 @@ export class JobCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {},
             disabled: false,
             label: 'jobActionButton.back',

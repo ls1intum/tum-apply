@@ -194,7 +194,7 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'info',
-            icon: 'caret-left',
+            icon: 'arrow-left',
             onClick(): void {
               void (async () => {
                 await performAutomaticSaveLocal();
@@ -210,7 +210,7 @@ export default class ApplicationCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick: () => {
               this.handleNextFromStep1();
             },
@@ -233,7 +233,7 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {
               updateDocumentInformation();
             },
@@ -246,7 +246,7 @@ export default class ApplicationCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick() {
               updateDocumentInformation();
             },
@@ -270,7 +270,7 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {
               updateDocumentInformation();
             },
@@ -283,7 +283,7 @@ export default class ApplicationCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick() {
               updateDocumentInformation();
             },
@@ -307,7 +307,7 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {
               updateDocumentInformation();
             },

@@ -125,11 +125,11 @@
 
         <div class="section-detail-card">
           <div class="section-card-header">
-            <fa-icon [icon]="['fas', 'research-group']" class="icon scale-80" />
+            <fa-icon [icon]="['fas', 'research-group']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="jobDetailPage.cards.researchGroup"></h3>
             @if (isProfessor()) {
               <fa-icon
-                [icon]="['fas', 'edit']"
+                [icon]="['fas', 'pencil']"
                 class="icon edit-icon cursor-pointer ml-auto"
                 (click)="onEditResearchGroup()"
                 title="{{ 'jobDetailPage.editResearchGroup' | translate }}"
@@ -193,7 +193,14 @@
     @if (!previewData()) {
       <section class="mt-8 pt-8 border-t border-gray-300">
         <div class="flex justify-start">
-          <jhi-button label="jobActionButton.back" severity="info" variant="outlined" (click)="onBack()" [shouldTranslate]="true" />
+          <jhi-button
+            label="jobActionButton.back"
+            icon="arrow-left"
+            severity="info"
+            variant="outlined"
+            (click)="onBack()"
+            [shouldTranslate]="true"
+          />
         </div>
       </section>
     }
