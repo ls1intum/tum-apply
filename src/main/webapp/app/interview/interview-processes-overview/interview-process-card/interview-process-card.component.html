@@ -1,0 +1,78 @@
+<div
+  (click)="onCardClick()"
+  class="bg-white border border-gray-300 rounded-lg p-6 cursor-pointer transition-shadow hover:shadow-md"
+>
+  <!-- Job Title -->
+  <h3 class="text-lg font-semibold text-gray-900 mb-6">
+    {{ process().jobTitle }}
+  </h3>
+
+  <!-- Statistics Row (4 columns horizontal) -->
+  <div class="grid grid-cols-4 gap-6 mb-4">
+    <!-- Completed -->
+    <div class="flex items-start gap-2">
+      <div class="w-1 h-12 bg-blue-800 rounded"></div>
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-gray-900">{{ process().completedCount }}</span>
+        <span class="text-sm text-gray-500" jhiTranslate="interview.overview.stats.completed">Completed</span>
+      </div>
+    </div>
+
+    <!-- Scheduled -->
+    <div class="flex items-start gap-2">
+      <div class="w-1 h-12 bg-blue-600 rounded"></div>
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-gray-900">{{ process().scheduledCount }}</span>
+        <span class="text-sm text-gray-500" jhiTranslate="interview.overview.stats.scheduled">Scheduled</span>
+      </div>
+    </div>
+
+    <!-- Invited -->
+    <div class="flex items-start gap-2">
+      <div class="w-1 h-12 bg-blue-400 rounded"></div>
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-gray-900">{{ process().invitedCount }}</span>
+        <span class="text-sm text-gray-500" jhiTranslate="interview.overview.stats.invited">Invited</span>
+      </div>
+    </div>
+
+    <!-- Uncontacted -->
+    <div class="flex items-start gap-2">
+      <div class="w-1 h-12 bg-blue-200 rounded"></div>
+      <div class="flex flex-col">
+        <span class="text-2xl font-bold text-gray-900">{{ process().uncontactedCount }}</span>
+        <span class="text-sm text-gray-500" jhiTranslate="interview.overview.stats.uncontacted">Uncontacted</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-segment Progress Bar -->
+  <div class="h-8 bg-gray-200 rounded-lg overflow-hidden flex mb-3">
+    <!-- Completed segment (darkest blue) -->
+    <div
+      class="bg-blue-800 h-full transition-all duration-300"
+      [style.width.%]="calculateWidth(process().completedCount)"
+    ></div>
+    <!-- Scheduled segment (medium blue) -->
+    <div
+      class="bg-blue-600 h-full transition-all duration-300"
+      [style.width.%]="calculateWidth(process().scheduledCount)"
+    ></div>
+    <!-- Invited segment (light blue) -->
+    <div
+      class="bg-blue-400 h-full transition-all duration-300"
+      [style.width.%]="calculateWidth(process().invitedCount)"
+    ></div>
+    <!-- Uncontacted segment (lightest blue) -->
+    <div
+      class="bg-blue-200 h-full transition-all duration-300"
+      [style.width.%]="calculateWidth(process().uncontactedCount)"
+    ></div>
+  </div>
+
+  <!-- Total Interviews -->
+  <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+    <span class="text-sm text-gray-500" jhiTranslate="interview.overview.stats.totalInterviews">Total interviews</span>
+    <span class="text-lg font-bold text-gray-900">{{ process().totalInterviews }}</span>
+  </div>
+</div>
