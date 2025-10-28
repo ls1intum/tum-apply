@@ -28,7 +28,7 @@ public record ApplicationEvaluationDetailDTO(
             ApplicationDetailDTO.getFromEntity(application, job),
             ProfessorDTO.fromEntity(job.getSupervisingProfessor()),
             job.getJobId(),
-            application.getCreatedAt()
+            application.getAppliedAt()
         );
     }
 }
