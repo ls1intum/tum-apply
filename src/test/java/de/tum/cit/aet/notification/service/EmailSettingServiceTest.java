@@ -1,4 +1,4 @@
-package de.tum.cit.aet.evaluation.service;
+package de.tum.cit.aet.notification.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
-import de.tum.cit.aet.notification.service.EmailSettingService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
