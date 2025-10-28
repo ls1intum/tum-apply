@@ -5,13 +5,13 @@
       "positions": {
         "title": "Positionen"
       },
-      "loading": "Interview-Prozesse werden geladen...",
+      "loading": "Interview Prozesse werden geladen...",
       "empty": {
         "title": "Keine Interview-Prozesse",
         "description": "Sie haben noch keine Interview-Prozesse erstellt. Klicken Sie auf \"Neuer Interview-Prozess\", um zu beginnen."
       },
       "actions": {
-        "newProcess": "Neuer Interview-Prozess",
+        "newProcess": "Neuer Interview Prozess",
         "viewDetails": "Details anzeigen"
       },
       "stats": {

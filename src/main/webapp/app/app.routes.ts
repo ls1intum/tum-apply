@@ -287,6 +287,10 @@ const routes: Routes = [
     loadComponent: () => import('./shared/pages/about-us-page/about-us-page.component').then(m => m.AboutUsPageComponent),
     title: 'global.routes.about-us',
   },
+
+  // ======================================================================================
+  // Interview
+  // ======================================================================================
   {
     path: 'interviews',
     children: [
