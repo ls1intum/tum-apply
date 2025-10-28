@@ -1,0 +1,77 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { SettingsComponent } from 'app/shared/settings/settings.component';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
+import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
+import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
+import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
+
+describe('SettingsComponent', () => {
+  let fixture: ComponentFixture<SettingsComponent>;
+  let component: SettingsComponent;
+
+  let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
+  let translateMock: ReturnType<typeof createTranslateServiceMock>;
+
+  const emailSettingServiceMock = {
+    getEmailSettings: vi.fn(),
+    updateEmailSettings: vi.fn(),
+  };
+
+  const toastServiceMock = createToastServiceMock();
+
+  beforeEach(() => {
+    accountServiceMock = createAccountServiceMock();
+    translateMock = createTranslateServiceMock();
+
+    TestBed.configureTestingModule({
+      imports: [SettingsComponent],
+      providers: [
+        provideAccountServiceMock(accountServiceMock),
+        provideTranslateMock(translateMock),
+        provideToastServiceMock(toastServiceMock),
+        { provide: EmailSettingResourceApiService, useValue: emailSettingServiceMock },
+      ],
+    });
+
+    fixture = TestBed.createComponent(SettingsComponent);
+    component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should set role from AccountService authorities', () => {
+    accountServiceMock.setLoadedUser({
+      id: 'u1',
+      name: 'Test User',
+      email: 'user@test.com',
+      authorities: [UserShortDTO.RolesEnum.Professor],
+    });
+
+    const c = TestBed.createComponent(SettingsComponent).componentInstance;
+    expect(c.role()).toBe(UserShortDTO.RolesEnum.Professor);
+  });
+
+  it('should keep role undefined if no user is loaded', () => {
+    accountServiceMock.setLoadedUser(undefined);
+
+    const c = TestBed.createComponent(SettingsComponent).componentInstance;
+    expect(c.role()).toBeUndefined();
+  });
+
+  it('should keep role undefined if authorities array is empty', () => {
+    accountServiceMock.setLoadedUser({
+      id: 'u1',
+      name: 'Test User',
+      email: 'user@test.com',
+      authorities: [],
+    });
+
+    const c = TestBed.createComponent(SettingsComponent).componentInstance;
+    expect(c.role()).toBeUndefined();
+  });
+});
