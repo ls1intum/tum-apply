@@ -8,6 +8,7 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,9 @@ public class Application extends AbstractAuditingEntity {
 
     @Column(name = "desired_start_date")
     private LocalDate desiredStartDate;
+
+    @Column(name = "applied_at")
+    private LocalDateTime appliedAt;
 
     @Column(name = "projects")
     private String projects;
