@@ -2,10 +2,10 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { DividerModule } from 'primeng/divider';
 import { InterviewService, InterviewOverviewDTO } from '../service/interview.service';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { InterviewProcessCardComponent} from "app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component";
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component'; // ← NEU!
 
 @Component({
   selector: 'jhi-interview-processes-overview',
@@ -14,8 +14,8 @@ import { InterviewProcessCardComponent} from "app/interview/interview-processes-
     CommonModule,
     TranslateModule,
     TranslateDirective,
-    DividerModule,
     InterviewProcessCardComponent,
+    ButtonComponent, // ← NEU!
   ],
   templateUrl: './interview-processes-overview.component.html',
 })

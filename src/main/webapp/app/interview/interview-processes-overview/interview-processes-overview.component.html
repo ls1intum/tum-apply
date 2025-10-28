@@ -3,19 +3,21 @@
   <h1 class="text-3xl font-semibold text-blue-600 mb-6" jhiTranslate="interview.overview.title">Interviews</h1>
 
   <!-- Two-column Layout with stretch height -->
-  <div class="flex gap-4 items-stretch flex-1">
+  <div class="flex gap-4 items-start flex-1">
     <!-- Left Section: Positions (70%) -->
     <div class="flex-[0_0_68%] flex flex-col">
       <!-- Section Header -->
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-4 h-10">
         <h2 class="text-xl font-semibold text-gray-900" jhiTranslate="interview.overview.positions.title">Positions</h2>
-        <button
+
+        <jhi-button
+          [label]="'interview.overview.actions.newProcess'"
+          [shouldTranslate]="true"
+          [icon]="'plus'"
+          [severity]="'primary'"
+          [size]="'sm'"
           (click)="createNewInterviewProcess()"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center gap-2"
-        >
-          <i class="pi pi-plus"></i>
-          <span jhiTranslate="interview.overview.actions.newProcess">New Interview Process</span>
-        </button>
+        />
       </div>
 
       <!-- Error State -->
@@ -61,7 +63,9 @@
 
     <!-- Right Section: Upcoming (remaining space) -->
     <div class="flex-1 flex flex-col">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
+      <div class="mb-4 h-10 flex items-center">
+        <h2 class="text-xl font-semibold text-gray-900" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
+      </div>
 
       <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg py-16 px-6 flex flex-col items-center text-center">
         <i class="pi pi-calendar text-gray-400 text-4xl mb-3"></i>
