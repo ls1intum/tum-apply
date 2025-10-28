@@ -33,7 +33,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9080/realms/tumapply
-          principal-claim-name: preferred_username
   task:
     execution:
       thread-name-prefix: tum-apply-task-
