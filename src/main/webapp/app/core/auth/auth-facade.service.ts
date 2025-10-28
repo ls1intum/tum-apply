@@ -168,7 +168,7 @@ export class AuthFacadeService {
         void this.router.navigate(['/']);
       } else if (this.authMethod === 'keycloak') {
         this.authMethod = 'none';
-        await this.keycloakAuthenticationService.logout(window.location.href);
+        await this.keycloakAuthenticationService.logout(window.location.origin + '/professor');
       }
       // Reset states
       this.accountService.user.set(undefined);
