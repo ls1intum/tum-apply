@@ -9,7 +9,6 @@ import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
 
 import { InterviewService } from '../service/interview.service';
 
-
 @Component({
   selector: 'jhi-interview-processes-overview',
   standalone: true,
