@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -112,5 +112,310 @@ describe('StringInputComponent', () => {
 
     expect(spyFocus).toHaveBeenCalledTimes(1);
     expect(spyBlur).toHaveBeenCalledTimes(1);
+  });
+
+  describe('BaseInputDirective - isTouched computed property', () => {
+    it('should return false when input has not been touched and control has no errors', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('');
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      expect(comp.isTouched()).toBe(false);
+    });
+
+    it('should return true when input has been blurred (onBlur called)', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      comp.onBlur();
+      fixture.detectChanges();
+
+      expect(comp.isTouched()).toBe(true);
+    });
+
+    it('should return true when control.touched is true and has non-required errors', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('', { validators: (c) => (c.value.length < 5 ? { minlength: true } : null), updateOn: 'blur' });
+      fixture.componentRef.setInput('control', ctrl);
+      ctrl.setValue('hi');
+      ctrl.markAsTouched();
+      fixture.detectChanges();
+
+      expect(comp.isTouched()).toBe(true);
+    });
+
+    it('should return false when control.touched is true but only has required error', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('', []);
+      fixture.componentRef.setInput('control', ctrl);
+      ctrl.setErrors({ required: true });
+      ctrl.markAsTouched();
+      fixture.detectChanges();
+
+      expect(comp.isTouched()).toBe(false);
+    });
+  });
+
+  describe('BaseInputDirective - inputState computed property', () => {
+    it('should return untouched when input has not been touched', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('valid value');
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      expect(comp.inputState()).toBe('untouched');
+    });
+
+    it('should return invalid when control is invalid and touched', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('', { validators: (c) => (c.value === '' ? { required: true } : null) });
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      comp.onBlur();
+      fixture.detectChanges();
+
+      expect(comp.inputState()).toBe('invalid');
+    });
+
+    it('should return valid when control is valid and touched', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('valid value');
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      comp.onBlur();
+      fixture.detectChanges();
+
+      expect(comp.inputState()).toBe('valid');
+    });
+  });
+
+  describe('BaseInputDirective - errorMessage computed property', () => {
+    it('should return null when control has no errors', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('valid value');
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      expect(comp.errorMessage()).toBeNull();
+    });
+
+    it('should return translated custom error when customErrorKey is provided', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('');
+      ctrl.setErrors({ custom: true });
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.componentRef.setInput('customErrorKey', 'entity.applicationPage1.validation.postalCode');
+      fixture.detectChanges();
+
+      const msg = comp.errorMessage();
+      expect(msg).toBeDefined();
+      expect(msg).not.toBeNull();
+    });
+
+    it('should return minlength error message when validation fails', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('ab', { validators: (c) => (c.value.length < 5 ? { minlength: { requiredLength: 5, actualLength: 2 } } : null) });
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      const msg = comp.errorMessage();
+      expect(msg).toBeDefined();
+      expect(msg).not.toBeNull();
+    });
+
+    it('should return maxlength error message when input exceeds max length', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('toolongvalue', { validators: (c) => (c.value.length > 5 ? { maxlength: { requiredLength: 5, actualLength: 12 } } : null) });
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      const msg = comp.errorMessage();
+      expect(msg).toBeDefined();
+      expect(msg).not.toBeNull();
+    });
+
+    it('should return required error message when input is empty and required', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('');
+      ctrl.setErrors({ required: true });
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.componentRef.setInput('required', true);
+      fixture.detectChanges();
+
+      const msg = comp.errorMessage();
+      expect(msg).toBeDefined();
+      expect(msg?.includes('required') || msg !== null).toBe(true);
+    });
+
+    it('should handle unknown error types gracefully', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('');
+      ctrl.setErrors({ unknownError: true });
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      const msg = comp.errorMessage();
+      expect(msg).toContain('global.input.error.required');
+    });
+  });
+
+  describe('BaseInputDirective - focus/blur handlers', () => {
+    it('should set isFocused signal to true on onFocus', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+
+      expect(comp.isFocused()).toBe(false);
+      comp.onFocus();
+      expect(comp.isFocused()).toBe(true);
+    });
+
+    it('should set isFocused signal to false on onBlur', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+
+      comp.onFocus();
+      expect(comp.isFocused()).toBe(true);
+
+      comp.onBlur();
+      expect(comp.isFocused()).toBe(false);
+    });
+
+    it('should mark input as touched when onBlur is called', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+
+      expect(comp.isTouched()).toBe(false);
+      comp.onBlur();
+      expect(comp.isTouched()).toBe(true);
+    });
+  });
+
+  describe('BaseInputDirective - formControl computed property', () => {
+    it('should return provided FormControl when control input is a FormControl', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('test value');
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      expect(comp.formControl()).toBe(ctrl);
+      expect(comp.formControl().value).toBe('test value');
+    });
+
+    it('should create new FormControl when control input is undefined', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('control', undefined);
+      fixture.detectChanges();
+
+      expect(comp.formControl()).toBeDefined();
+      expect(comp.formControl() instanceof FormControl).toBe(true);
+    });
+  });
+
+  describe('BaseInputDirective - input signals', () => {
+    it('should correctly bind model input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('model', 'test model value');
+      fixture.detectChanges();
+
+      expect(comp.model()).toBe('test model value');
+    });
+
+    it('should correctly bind disabled input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('disabled', true);
+      fixture.detectChanges();
+
+      expect(comp.disabled()).toBe(true);
+    });
+
+    it('should correctly bind icon input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('icon', 'circle-info');
+      fixture.detectChanges();
+
+      expect(comp.icon()).toBe('circle-info');
+    });
+
+    it('should correctly bind tooltipText input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('tooltipText', 'Help text');
+      fixture.detectChanges();
+
+      expect(comp.tooltipText()).toBe('Help text');
+    });
+
+    it('should correctly bind shouldTranslate input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('shouldTranslate', true);
+      fixture.detectChanges();
+
+      expect(comp.shouldTranslate()).toBe(true);
+    });
+
+    it('should correctly bind autofocus input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('autofocus', true);
+      fixture.detectChanges();
+
+      expect(comp.autofocus()).toBe(true);
+    });
+
+    it('should correctly bind errorEnabled input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('errorEnabled', false);
+      fixture.detectChanges();
+
+      expect(comp.errorEnabled()).toBe(false);
+    });
+
+    it('should correctly bind customErrorKey input signal', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      fixture.componentRef.setInput('customErrorKey', 'custom.error.key');
+      fixture.detectChanges();
+
+      expect(comp.customErrorKey()).toBe('custom.error.key');
+    });
+  });
+
+  describe('BaseInputDirective - form control status changes', () => {
+    it('should update formValidityVersion when form control status changes', () => {
+      const fixture = createFixture();
+      const comp = fixture.componentInstance;
+      const ctrl = new FormControl('', { validators: (c) => (c.value === '' ? { required: true } : null), updateOn: 'change' });
+      fixture.componentRef.setInput('control', ctrl);
+      fixture.detectChanges();
+
+      const initialVersion = comp.isTouched(); // Access to trigger computation
+
+      ctrl.setValue('new value');
+      fixture.detectChanges();
+
+      // The computed property should have been recalculated
+      expect(comp.formValidityVersion()).toBeGreaterThan(0);
+    });
   });
 });
