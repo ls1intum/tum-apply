@@ -61,10 +61,12 @@ Follow these steps to evaluate and manage applications.
 There are two ways to access the **Applications - Review** page:
 
 1. **From the Applications Overview page**
+
    Click the **More** button on a candidate’s application entry and select **Review**.
    ![Application Overview Page](images/application-overview.png)
 
 2. **From the sidebar navigation**
+
    Open the sidebar and select **Applications → Review**.
 
 ---
