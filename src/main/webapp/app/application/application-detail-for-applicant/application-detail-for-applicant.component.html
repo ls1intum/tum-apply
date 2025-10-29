@@ -12,7 +12,7 @@
           <jhi-application-state-for-applicants [state]="application.applicationState" />
         </div>
         @if (['SAVED'].includes(application.applicationState)) {
-          <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
+          <jhi-button [label]="'button.edit'" icon="pencil" [shouldTranslate]="true" (click)="onUpdateApplication()" />
         }
       </div>
 
@@ -292,7 +292,7 @@
           <div class="left-buttons">
             <jhi-button
               icon="arrow-left"
-              [label]="'jobActionButton.back'"
+              [label]="'button.back'"
               [shouldTranslate]="true"
               severity="info"
               [variant]="'outlined'"
@@ -304,7 +304,8 @@
           <div class="right-buttons">
             @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
               <jhi-confirm-dialog
-                [label]="'entity.applicationOverview.actions.withdraw' | translate"
+                [label]="'button.withdraw' | translate"
+                [confirmIcon]="'withdraw'"
                 [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
                 [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
                 (confirmed)="onWithdrawApplication()"
@@ -315,7 +316,8 @@
 
             @if (['SAVED'].includes(application.applicationState)) {
               <jhi-confirm-dialog
-                [label]="'entity.applicationOverview.actions.delete' | translate"
+                [label]="'button.delete' | translate"
+                [confirmIcon]="'trash'"
                 [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
                 [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
                 confirmIcon="trash"

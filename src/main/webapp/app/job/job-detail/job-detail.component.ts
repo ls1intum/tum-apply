@@ -104,7 +104,7 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.apply',
+                label: 'button.apply',
                 severity: 'primary',
                 onClick: () => this.onApply(),
                 disabled: false,
@@ -117,7 +117,7 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.edit',
+                label: 'button.edit',
                 severity: 'primary',
                 variant: 'outlined',
                 onClick: () => this.onEditApplication(),
@@ -132,7 +132,7 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.viewApplication',
+                label: 'button.view',
                 severity: 'secondary',
                 onClick: () => this.onViewApplication(),
                 disabled: false,
@@ -149,15 +149,16 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: 'jobActionButton.edit',
+            label: 'button.edit',
             severity: 'primary',
             variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
             shouldTranslate: true,
+            icon: 'pencil',
           },
           {
-            label: this.deleteButtonLabel,
+            label: 'button.delete',
             severity: this.deleteButtonSeverity,
             icon: this.deleteButtonIcon,
             onClick: () => {
@@ -175,7 +176,7 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: this.closeButtonLabel,
+            label: 'button.close',
             severity: this.closeButtonSeverity,
             icon: this.closeButtonIcon,
             variant: 'outlined',

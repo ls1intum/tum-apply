@@ -11,6 +11,9 @@
     "submit": "Submit",
     "view": "View",
     "update": "Update",
-    "withdraw": "Withdraw"
+    "withdraw": "Withdraw",
+    "back": "Back",
+    "next": "Next",
+    "apply": "Apply"
   }
 }

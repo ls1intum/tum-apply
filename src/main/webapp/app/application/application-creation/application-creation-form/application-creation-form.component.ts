@@ -202,7 +202,7 @@ export default class ApplicationCreationFormComponent {
               })();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.back',
+            label: 'button.back',
             changePanel: false,
             shouldTranslate: true,
           },
@@ -215,7 +215,7 @@ export default class ApplicationCreationFormComponent {
               this.handleNextFromStep1();
             },
             disabled: !personalInfoDataValid,
-            label: 'entity.applicationSteps.buttons.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: this.applicantId() !== '',
           },
@@ -238,7 +238,7 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.prev',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -251,7 +251,7 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: !educationDataValid,
-            label: 'entity.applicationSteps.buttons.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -275,7 +275,7 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.prev',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -288,7 +288,7 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: !applicationDetailsDataValid,
-            label: 'entity.applicationSteps.buttons.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -312,7 +312,7 @@ export default class ApplicationCreationFormComponent {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.prev',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -325,7 +325,7 @@ export default class ApplicationCreationFormComponent {
               this.sendConfirmDialog()?.confirm();
             },
             disabled: !allPagesValid,
-            label: this.sendButtonLabel,
+            label: 'button.send',
             shouldTranslate: true,
             changePanel: false,
           },

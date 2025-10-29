@@ -11,6 +11,9 @@
     "submit": "Absenden",
     "update": "Aktualisieren",
     "view": "Anzeigen",
-    "withdraw": "Zurückziehen"
+    "withdraw": "Zurückziehen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "apply": "Bewerben"
   }
 }
