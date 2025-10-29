@@ -1,11 +1,12 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+
+import { InterviewProcessCardComponent} from "app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component";
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import TranslateDirective from 'app/shared/language/translate.directive';
 import { InterviewService, InterviewOverviewDTO } from '../service/interview.service';
-import TranslateDirective from '../../shared/language/translate.directive';
-import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component'; // ← NEU!
 
 @Component({
   selector: 'jhi-interview-processes-overview',
@@ -15,23 +16,23 @@ import { ButtonComponent } from '../../shared/components/atoms/button/button.com
     TranslateModule,
     TranslateDirective,
     InterviewProcessCardComponent,
-    ButtonComponent, // ← NEU!
+    ButtonComponent,
   ],
   templateUrl: './interview-processes-overview.component.html',
 })
 export class InterviewProcessesOverviewComponent implements OnInit {
-  private interviewService = inject(InterviewService);
-  private router = inject(Router);
-
   interviewProcesses = signal<InterviewOverviewDTO[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
+
+  private readonly interviewService = inject(InterviewService);
+  private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.loadInterviewProcesses();
   }
 
-  loadInterviewProcesses(): void {
+  private loadInterviewProcesses(): void {
     this.loading.set(true);
     this.error.set(null);
 
@@ -40,16 +41,17 @@ export class InterviewProcessesOverviewComponent implements OnInit {
         this.interviewProcesses.set(data);
         this.loading.set(false);
       },
-      error: err => {
+      error: () => {
         this.error.set('Failed to load interview processes');
         this.loading.set(false);
-        console.error('Error loading interview processes:', err);
+        // eslint-disable-next-line no-console
+        console.error('Error loading interview processes');
       },
     });
   }
 
   createNewInterviewProcess(): void {
-    console.log('Create new interview process clicked');
+    this.router.navigate(['/interviews/create']);
   }
 
   viewDetails(jobId: string): void {

@@ -1,14 +1,23 @@
 <div class="py-8 px-12 max-w-[1600px] mx-auto flex flex-col min-h-screen">
   <!-- Page Title -->
-  <h1 class="text-[2rem] font-bold text-[var(--p-primary-color)] mb-6" jhiTranslate="interview.overview.title">Interviews</h1>
+  <h1
+    class="text-[2rem] font-bold text-[var(--p-primary-color)] mb-6"
+    jhiTranslate="interview.overview.title"
+  >
+    Interviews
+  </h1>
 
-  <!-- Two-column Layout with stretch height -->
+  <!-- Two-column Layout -->
   <div class="flex gap-4 items-start flex-1">
-    <!-- Left Section: Positions (70%) -->
+    <!-- Left Section -->
     <div class="flex-[0_0_68%] flex flex-col">
-      <!-- Section Header -->
       <div class="flex justify-between items-center mb-4 h-10">
-        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.positions.title">Positions</h2>
+        <h2
+          class="text-lg font-semibold text-[var(--p-text-primary)]"
+          jhiTranslate="interview.overview.positions.title"
+        >
+          Positions
+        </h2>
 
         <jhi-button
           [label]="'interview.overview.actions.newProcess'"
@@ -21,56 +30,80 @@
       </div>
 
       <!-- Error State -->
-      <div
-        *ngIf="error()"
-        class="flex flex-col items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
-      >
-        <i class="pi pi-exclamation-triangle text-[var(--p-danger-500)] text-4xl mb-3"></i>
-        <p class="text-[var(--p-text-secondary)] text-sm">{{ error() }}</p>
-      </div>
+      @if (error()) {
+        <div
+          class="flex flex-col items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
+        >
+          <i class="pi pi-exclamation-triangle text-[var(--p-danger-500)] text-4xl mb-3"></i>
+          <p class="text-[var(--p-text-secondary)] text-sm">{{ error() }}</p>
+        </div>
+      }
 
       <!-- Loading State -->
-      <div
-        *ngIf="loading() && !error()"
-        class="flex items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
-      >
-        <i class="pi pi-spin pi-spinner text-4xl text-[var(--p-primary-400)]"></i>
-      </div>
+      @if (loading() && !error()) {
+        <div
+          class="flex items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
+        >
+          <i class="pi pi-spin pi-spinner text-4xl text-[var(--p-primary-400)]"></i>
+        </div>
+      }
 
       <!-- Empty State -->
-      <div
-        *ngIf="!loading() && !error() && interviewProcesses().length === 0"
-        class="flex flex-col items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
-      >
-        <i class="pi pi-inbox text-[var(--p-text-tertiary)] text-5xl mb-4"></i>
-        <h3 class="text-lg font-semibold text-[var(--p-text-primary)] mb-2" jhiTranslate="interview.overview.empty.title">
-          No interview processes
-        </h3>
-        <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.empty.description">
-          You haven't created any interview processes yet. Click "New Interview Process" to get started.
-        </p>
-      </div>
+      @if (!loading() && !error() && interviewProcesses().length === 0) {
+        <div
+          class="flex flex-col items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
+        >
+          <i class="pi pi-inbox text-[var(--p-text-tertiary)] text-5xl mb-4"></i>
+          <h3
+            class="text-lg font-semibold text-[var(--p-text-primary)] mb-2"
+            jhiTranslate="interview.overview.empty.title"
+          >
+            No interview processes
+          </h3>
+          <p
+            class="text-sm text-[var(--p-text-secondary)]"
+            jhiTranslate="interview.overview.empty.description"
+          >
+            You haven't created any interview processes yet. Click "New Interview Process" to get started.
+          </p>
+        </div>
+      }
 
-      <!-- Interview Process Cards -->
-      <div *ngIf="!loading() && !error() && interviewProcesses().length > 0" class="flex flex-col gap-4">
-        <jhi-interview-process-card *ngFor="let process of interviewProcesses()" [process]="process" (cardClick)="viewDetails($event)" />
-      </div>
+      <!-- Cards -->
+      @if (!loading() && !error() && interviewProcesses().length > 0) {
+        <div class="flex flex-col gap-4">
+          @for (process of interviewProcesses(); track process.jobId) {
+            <jhi-interview-process-card
+              [process]="process"
+              (cardClick)="viewDetails($event)"
+            />
+          }
+        </div>
+      }
     </div>
 
-    <!-- Divider - full height -->
+    <!-- Divider -->
     <div class="w-px bg-[var(--p-divider-default)] self-stretch"></div>
 
-    <!-- Right Section: Upcoming (remaining space) -->
+    <!-- Right Section -->
     <div class="flex-1 flex flex-col">
       <div class="mb-4 h-10 flex items-center">
-        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
+        <h2
+          class="text-lg font-semibold text-[var(--p-text-primary)]"
+          jhiTranslate="interview.overview.upcoming.title"
+        >
+          Upcoming
+        </h2>
       </div>
 
       <div
         class="bg-[var(--p-background-surface)] border border-dashed border-[var(--p-border-default)] rounded-lg py-16 px-6 flex flex-col items-center text-center"
       >
         <i class="pi pi-calendar text-[var(--p-text-tertiary)] text-4xl mb-3"></i>
-        <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.upcoming.empty">
+        <p
+          class="text-sm text-[var(--p-text-secondary)]"
+          jhiTranslate="interview.overview.upcoming.empty"
+        >
           No upcoming interviews scheduled
         </p>
       </div>
