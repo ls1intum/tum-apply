@@ -38,6 +38,10 @@ describe('DocumentSection', () => {
     component = fixture.componentInstance;
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   // ---------------- ID CHANGE EFFECT ----------------
   describe('idChangeEffect', () => {
     it('should reset signals when idsDTO undefined', () => {
