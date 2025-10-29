@@ -298,13 +298,12 @@ const routes: Routes = [
         path: 'overview',
         loadComponent: () =>
           import('./interview/interview-processes-overview/interview-processes-overview.component').then(
-            m => m.InterviewProcessesOverviewComponent
+            m => m.InterviewProcessesOverviewComponent,
           ),
         title: 'global.routes.interview.overview',
         data: {
           authorities: ['PROFESSOR', 'ADMIN'],
         },
-
       },
     ],
   },

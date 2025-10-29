@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { InterviewService, InterviewOverviewDTO } from '../service/interview.service';
 import TranslateDirective from '../../shared/language/translate.directive';
-import { InterviewProcessCardComponent} from "app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component";
+import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component'; // ← NEU!
 
 @Component({

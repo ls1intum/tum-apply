@@ -2,8 +2,8 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { TranslateModule } from '@ngx-translate/core';
-import { InterviewOverviewDTO} from "app/generated/model/interviewOverviewDTO";
-import {TranslateDirective} from "app/shared/language";
+import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-interview-process-card',
