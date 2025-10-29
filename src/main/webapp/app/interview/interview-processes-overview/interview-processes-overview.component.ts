@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-
 import { InterviewProcessCardComponent} from "app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component";
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -29,25 +28,21 @@ export class InterviewProcessesOverviewComponent implements OnInit {
   private readonly router = inject(Router);
 
   ngOnInit(): void {
-    this.loadInterviewProcesses();
+    void this.loadInterviewProcesses();
   }
 
-  private loadInterviewProcesses(): void {
-    this.loading.set(true);
-    this.error.set(null);
+  private async loadInterviewProcesses(): Promise<void> {
+    try {
+      this.loading.set(true);
+      this.error.set(null);
 
-    this.interviewService.getInterviewOverview().subscribe({
-      next: data => {
-        this.interviewProcesses.set(data);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Failed to load interview processes');
-        this.loading.set(false);
-        // eslint-disable-next-line no-console
-        console.error('Error loading interview processes');
-      },
-    });
+      const data = await this.interviewService.getInterviewOverview().toPromise();
+      this.interviewProcesses.set(data ?? []);
+    } catch {
+      this.error.set('Failed to load interview processes');
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   createNewInterviewProcess(): void {
