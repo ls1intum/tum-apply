@@ -23,6 +23,14 @@ describe('ResearchGroupTemplates', () => {
   let mockRouter = createRouterMock();
   let mockTranslate = createTranslateServiceMock();
 
+  function mockGetTemplates(content: EmailTemplateOverviewDTO[] = [], total = 0) {
+    api.getTemplates.mockReturnValue(of({ content, totalElements: total }));
+  }
+
+  function mockDeleteTemplate(success = true) {
+    api.deleteTemplate.mockReturnValue(success ? of({}) : throwError(() => new Error('fail')));
+  }
+
   beforeEach(async () => {
     mockToast = createToastServiceMock();
 
@@ -59,7 +67,7 @@ describe('ResearchGroupTemplates', () => {
       const templates: EmailTemplateOverviewDTO[] = [
         { templateName: 't1', emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent, isDefault: false },
       ];
-      api.getTemplates.mockReturnValueOnce(of({ content: templates, totalElements: 1 }));
+      mockGetTemplates(templates, 1);
 
       await component['loadPage']();
 
@@ -89,88 +97,80 @@ describe('ResearchGroupTemplates', () => {
   // ---------------- DELETE ----------------
   describe('delete()', () => {
     it('deletes template successfully and shows toast', async () => {
-      api.deleteTemplate.mockReturnValueOnce(of({}));
-      api.getTemplates.mockReturnValue(of({ content: [], totalElements: 0 }));
+      mockDeleteTemplate(true);
+      mockGetTemplates();
 
       await component.delete('123');
 
       expect(api.deleteTemplate).toHaveBeenCalledWith('123');
       expect(mockToast.showSuccess).toHaveBeenCalledWith({ detail: 'Successfully deleted template' });
-      expect(api.getTemplates).toHaveBeenCalled(); // reloads
+      expect(api.getTemplates).toHaveBeenCalled();
     });
 
     it('shows error toast if deletion fails but still reloads', async () => {
-      api.deleteTemplate.mockReturnValueOnce(throwError(() => new Error('fail')));
-      api.getTemplates.mockReturnValue(of({ content: [], totalElements: 0 }));
+      mockDeleteTemplate(false);
+      mockGetTemplates();
 
       await component.delete('999');
 
       expect(mockToast.showError).toHaveBeenCalledWith({ detail: 'Failed to delete template' });
-      expect(api.getTemplates).toHaveBeenCalled(); // reloads in finally
+      expect(api.getTemplates).toHaveBeenCalled();
     });
   });
 
   // ---------------- NAVIGATION ----------------
-  describe('navigation', () => {
-    it('navigates to create page', () => {
-      component['navigateToCreate']();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/template/new']);
-    });
-
-    it('navigates to edit page', () => {
-      component['navigateToEdit']('xyz');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/template', 'xyz', 'edit']);
+  describe.each([
+    { action: 'navigateToCreate', args: [], expected: ['/research-group/template/new'] },
+    { action: 'navigateToEdit', args: ['xyz'], expected: ['/research-group/template', 'xyz', 'edit'] },
+  ])('navigation', ({ action, args, expected }) => {
+    it(`${action} navigates correctly`, () => {
+      (component as any)[action](...args);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(expected);
     });
   });
 
   // ---------------- TABLE DATA ----------------
   describe('tableData mapping', () => {
-    it('uses translation keys for default template with name', () => {
-      const t: EmailTemplateOverviewDTO = {
-        templateName: 'welcome',
-        emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent,
-        isDefault: true,
-      };
-      component['responseData'].set([t]);
-
+    it.each([
+      {
+        desc: 'default template with name',
+        templateDto: { templateName: 'welcome', emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent, isDefault: true },
+        expectedDisplay: 'researchGroup.emailTemplates.default.APPLICATION_SENT-welcome',
+        expectedCreatedBy: 'researchGroup.emailTemplates.systemDefault',
+      },
+      {
+        desc: 'default template without name',
+        templateDto: { templateName: undefined, emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationAccepted, isDefault: true },
+        expectedDisplay: 'researchGroup.emailTemplates.default.APPLICATION_ACCEPTED',
+        expectedCreatedBy: 'researchGroup.emailTemplates.systemDefault',
+      },
+      {
+        desc: 'non-default template with first/last name',
+        templateDto: {
+          templateName: 'manual',
+          emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent,
+          isDefault: false,
+          firstName: 'Alice',
+          lastName: 'Smith',
+        },
+        expectedDisplay: undefined, // not asserting display name here
+        expectedCreatedBy: 'Alice Smith',
+      },
+    ])('builds row for $desc', ({ templateDto, expectedDisplay, expectedCreatedBy }) => {
+      component['responseData'].set([templateDto as EmailTemplateOverviewDTO]);
       const row = component['tableData']()[0];
-      expect(row.displayName).toContain('researchGroup.emailTemplates.default.APPLICATION_SENT-welcome');
-      expect(row.createdBy).toContain('researchGroup.emailTemplates.systemDefault');
-    });
-
-    it('uses translation keys for default template without name', () => {
-      const t: EmailTemplateOverviewDTO = {
-        templateName: undefined,
-        emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationAccepted,
-        isDefault: true,
-      };
-      component['responseData'].set([t]);
-
-      const row = component['tableData']()[0];
-      expect(row.displayName).toContain('researchGroup.emailTemplates.default.APPLICATION_ACCEPTED');
-      expect(row.createdBy).toContain('researchGroup.emailTemplates.systemDefault');
-    });
-
-    it('builds createdBy string from first and last name for non-default', () => {
-      const t: EmailTemplateOverviewDTO = {
-        templateName: 'manual',
-        emailType: EmailTemplateOverviewDTO.EmailTypeEnum.ApplicationSent,
-        isDefault: false,
-        firstName: 'Alice',
-        lastName: 'Smith',
-      };
-      component['responseData'].set([t]);
-
-      const row = component['tableData']()[0];
-      expect(row.createdBy).toBe('Alice Smith');
+      if (expectedDisplay) {
+        expect(row.displayName).toContain(expectedDisplay);
+      }
+      expect(row.createdBy).toContain(expectedCreatedBy);
     });
   });
 
   // ---------------- TABLE EVENTS ----------------
   describe('onTableEmit()', () => {
     it('handles undefined first/rows by using defaults', () => {
-      api.getTemplates.mockReturnValue(of({ content: [], totalElements: 0 }));
-      const spy = vi.spyOn(component as unknown as { loadPage: () => Promise<void> }, 'loadPage');
+      mockGetTemplates();
+      const spy = vi.spyOn(component as any, 'loadPage');
       component.onTableEmit({});
 
       expect(component['pageNumber']()).toBe(0);
@@ -178,9 +178,8 @@ describe('ResearchGroupTemplates', () => {
     });
 
     it('calculates correct page number from first/rows', () => {
-      api.getTemplates.mockReturnValue(of({ content: [], totalElements: 0 }));
-      const spy = vi.spyOn(component as unknown as { loadPage: () => Promise<void> }, 'loadPage');
-
+      mockGetTemplates();
+      const spy = vi.spyOn(component as any, 'loadPage');
       component.onTableEmit({ first: 20, rows: 10 });
 
       expect(component['pageNumber']()).toBe(2);
