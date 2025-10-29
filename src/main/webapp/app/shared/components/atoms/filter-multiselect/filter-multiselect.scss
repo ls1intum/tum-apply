@@ -75,6 +75,14 @@
     display: flex;
     flex-direction: column;
 
+    left: 0;
+    right: auto;
+
+    &.align-right {
+      left: auto;
+      right: 0;
+    }
+
     .panel-header {
       padding: 0.6rem 0.75rem 0.4rem;
       display: flex;
