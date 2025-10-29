@@ -10,7 +10,7 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { BREAKPOINT_QUERIES } from '../../../constants/breakpoints';
 
-// Constants defining the default visible slots and application window size
+// Constants defining the default visible slots and application carousel size
 const VISIBLE_DESKTOP = 3;
 
 /**
@@ -43,7 +43,7 @@ const VISIBLE_DESKTOP = 3;
 export class ApplicationCarouselComponent {
   totalRecords = input(0); // Total number of applications
   currentIndex = input(0); // Global index of currently selected application
-  carouselIndex = input(0); // Local index in current application window
+  carouselIndex = input(0); // Local index in current application carousel
   applications = input<ApplicationEvaluationDetailDTO[]>([]);
   carouselSize = input.required<number>();
 
