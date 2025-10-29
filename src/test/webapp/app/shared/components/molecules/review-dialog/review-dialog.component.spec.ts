@@ -23,6 +23,11 @@ describe('ReviewDialogComponent', () => {
     fixture.componentRef.setInput('mode', 'ACCEPT');
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
   describe('computed canAccept', () => {
     it('should be false if notifyApplicant is true and editorModel length <= 7', () => {
       component.notifyApplicant.set(true);

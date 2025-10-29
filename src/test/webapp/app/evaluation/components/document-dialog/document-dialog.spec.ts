@@ -15,8 +15,17 @@ function createHolder(id: string, name: string, size = 123): DocumentHolder {
   return { label: `Label ${id}`, document: createDocument(id, name, size) };
 }
 
-describe('DocumentDialog (Vitest)', () => {
+describe('DocumentDialog', () => {
   let fixture: ComponentFixture<DocumentDialog>;
+  let component: DocumentDialog;
+
+  function setHolders(holders: DocumentHolder[], selectedId?: string) {
+    fixture.componentRef.setInput('documentHolders', holders);
+    if (selectedId !== undefined) {
+      component.selectedId.set(selectedId);
+    }
+    fixture.detectChanges();
+  }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -25,127 +34,120 @@ describe('DocumentDialog (Vitest)', () => {
         provideTranslateMock(),
         {
           provide: DocumentResourceApiService,
-          useValue: {
-            downloadDocument: () => of(new ArrayBuffer(0)),
-          },
+          useValue: { downloadDocument: () => of(new ArrayBuffer(0)) },
         },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DocumentDialog);
+    component = fixture.componentInstance;
   });
 
-  describe('initialization', () => {
-    it('should not select anything if documentHolders is empty', () => {
-      fixture.componentRef.setInput('documentHolders', []);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.selectedId()).toBeUndefined();
-    });
-
-    it('should select the first document if holders exist and no selection set', () => {
-      const holders = [createHolder('doc1', 'Doc 1'), createHolder('doc2', 'Doc 2')];
-      fixture.componentRef.setInput('documentHolders', holders);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.selectedId()).toBe('doc1');
-    });
-
-    it('should not override selectedId if already set', () => {
-      const holders = [createHolder('doc1', 'Doc 1')];
-      fixture.componentInstance.selectedId.set('customId');
-      fixture.componentRef.setInput('documentHolders', holders);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.selectedId()).toBe('customId');
-    });
-  });
-
-  describe('selectedDocument', () => {
-    it('should auto-select the first document if selectedId is undefined', () => {
-      fixture.componentRef.setInput('documentHolders', [createHolder('doc1', 'Doc 1')]);
-      fixture.componentInstance.selectedId.set(undefined);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.selectedDocument()?.id).toBe('doc1');
-    });
-
-    it('should return document if selectedId matches', () => {
-      const holders = [createHolder('doc1', 'Doc 1'), createHolder('doc2', 'Doc 2')];
-      fixture.componentRef.setInput('documentHolders', holders);
-      fixture.componentInstance.selectedId.set('doc2');
-      fixture.detectChanges();
-      expect(fixture.componentInstance.selectedDocument()?.id).toBe('doc2');
-    });
-
-    it('should return undefined if selectedId not found', () => {
-      fixture.componentRef.setInput('documentHolders', [createHolder('doc1', 'Doc 1')]);
-      fixture.componentInstance.selectedId.set('missing');
-      fixture.detectChanges();
-      expect(fixture.componentInstance.selectedDocument()).toBeUndefined();
+  describe.each([
+    { desc: 'should not select anything if documentHolders is empty', holders: [], selected: undefined, expected: undefined },
+    {
+      desc: 'should select the first document if holders exist and no selection set',
+      holders: [createHolder('doc1', 'Doc 1'), createHolder('doc2', 'Doc 2')],
+      selected: undefined,
+      expected: 'doc1',
+    },
+    {
+      desc: 'should not override selectedId if already set',
+      holders: [createHolder('doc1', 'Doc 1')],
+      selected: 'customId',
+      expected: 'customId',
+    },
+  ])('initialization', ({ desc, holders, selected, expected }) => {
+    it(desc, () => {
+      setHolders(holders, selected);
+      expect(component.selectedId()).toBe(expected);
     });
   });
 
-  describe('isSelected', () => {
-    it('should return true when id matches selectedDocument', () => {
-      fixture.componentRef.setInput('documentHolders', [createHolder('doc1', 'Doc 1')]);
-      fixture.componentInstance.selectedId.set('doc1');
-      fixture.detectChanges();
-      expect(fixture.componentInstance.isSelected('doc1')()).toBe(true);
+  describe.each([
+    {
+      desc: 'auto-selects the first document if selectedId is undefined',
+      holders: [createHolder('doc1', 'Doc 1')],
+      selected: undefined,
+      expected: 'doc1',
+    },
+    {
+      desc: 'returns document if selectedId matches',
+      holders: [createHolder('doc1', 'Doc 1'), createHolder('doc2', 'Doc 2')],
+      selected: 'doc2',
+      expected: 'doc2',
+    },
+    {
+      desc: 'returns undefined if selectedId not found',
+      holders: [createHolder('doc1', 'Doc 1')],
+      selected: 'missing',
+      expected: undefined,
+    },
+  ])('selectedDocument', ({ desc, holders, selected, expected }) => {
+    it(desc, () => {
+      setHolders(holders, selected);
+      expect(component.selectedDocument()?.id).toBe(expected);
     });
+  });
 
-    it('should return false when id does not match', () => {
-      fixture.componentRef.setInput('documentHolders', [createHolder('doc1', 'Doc 1')]);
-      fixture.componentInstance.selectedId.set('doc1');
-      fixture.detectChanges();
-      expect(fixture.componentInstance.isSelected('doc2')()).toBe(false);
-    });
-
-    it('should return false if no document selected', () => {
-      fixture.componentRef.setInput('documentHolders', []);
-      fixture.componentInstance.selectedId.set(undefined);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.isSelected('doc1')()).toBe(false);
+  describe.each([
+    {
+      desc: 'returns true when id matches selectedDocument',
+      holders: [createHolder('doc1', 'Doc 1')],
+      selected: 'doc1',
+      checkId: 'doc1',
+      expected: true,
+    },
+    {
+      desc: 'returns false when id does not match',
+      holders: [createHolder('doc1', 'Doc 1')],
+      selected: 'doc1',
+      checkId: 'doc2',
+      expected: false,
+    },
+    { desc: 'returns false if no document selected', holders: [], selected: undefined, checkId: 'doc1', expected: false },
+  ])('isSelected', ({ desc, holders, selected, checkId, expected }) => {
+    it(desc, () => {
+      setHolders(holders, selected);
+      expect(component.isSelected(checkId)()).toBe(expected);
     });
   });
 
   describe('isChecked & toggleChecked', () => {
     it('should return false if id not checked', () => {
       fixture.detectChanges();
-      expect(fixture.componentInstance.isChecked('doc1')()).toBe(false);
+      expect(component.isChecked('doc1')()).toBe(false);
     });
 
     it('should return true if id is checked', () => {
-      fixture.componentInstance.checkedIds.set(new Set(['doc1']));
+      component.checkedIds.set(new Set(['doc1']));
       fixture.detectChanges();
-      expect(fixture.componentInstance.isChecked('doc1')()).toBe(true);
+      expect(component.isChecked('doc1')()).toBe(true);
     });
 
     it('should add id when toggled with checked=true', () => {
-      fixture.componentInstance.toggleChecked('doc1', true);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.checkedIds().has('doc1')).toBe(true);
+      component.toggleChecked('doc1', true);
+      expect(component.checkedIds().has('doc1')).toBe(true);
     });
 
     it('should remove id when toggled with checked=false', () => {
-      fixture.componentInstance.checkedIds.set(new Set(['doc1']));
-      fixture.detectChanges();
-      fixture.componentInstance.toggleChecked('doc1', false);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.checkedIds().has('doc1')).toBe(false);
+      component.checkedIds.set(new Set(['doc1']));
+      component.toggleChecked('doc1', false);
+      expect(component.checkedIds().has('doc1')).toBe(false);
     });
 
     it('should not remove other ids when one is toggled off', () => {
-      fixture.componentInstance.checkedIds.set(new Set(['doc1', 'doc2']));
-      fixture.detectChanges();
-      fixture.componentInstance.toggleChecked('doc1', false);
-      fixture.detectChanges();
-      expect(fixture.componentInstance.checkedIds().has('doc2')).toBe(true);
-      expect(fixture.componentInstance.checkedIds().has('doc1')).toBe(false);
+      component.checkedIds.set(new Set(['doc1', 'doc2']));
+      component.toggleChecked('doc1', false);
+      expect(component.checkedIds().has('doc2')).toBe(true);
+      expect(component.checkedIds().has('doc1')).toBe(false);
     });
   });
 
   describe('selectDoc', () => {
     it('should update selectedId', () => {
-      fixture.componentInstance.selectDoc('doc1');
-      fixture.detectChanges();
-      expect(fixture.componentInstance.selectedId()).toBe('doc1');
+      component.selectDoc('doc1');
+      expect(component.selectedId()).toBe('doc1');
     });
   });
 });
