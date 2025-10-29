@@ -121,7 +121,7 @@ There are two ways to access the **Applications - Review** page:
 ### 🎥 Help Video
 
 For a visual walkthrough of the review workflow, check out this video:
-[How to review an application](https://www.youtube.com/watch?v=5bqUYhrwyK0)
+[How to review an application](TO_BE_REPLACED)
 
 ---
 
