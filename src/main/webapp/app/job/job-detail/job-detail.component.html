@@ -127,7 +127,7 @@
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'research-group']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="jobDetailPage.cards.researchGroup"></h3>
-            @if (isProfessor()) {
+            @if (isProfessor() && job.belongsToResearchGroup) {
               <fa-icon
                 [icon]="['fas', 'pencil']"
                 class="icon edit-icon cursor-pointer ml-auto"

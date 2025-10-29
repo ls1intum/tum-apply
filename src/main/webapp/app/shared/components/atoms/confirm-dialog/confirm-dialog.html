@@ -11,19 +11,20 @@
 
       <div class="confirm-buttons">
         <jhi-button class="cancel" [shouldTranslate]="true" label="entity.action.cancel" (click)="onReject()" variant="outlined" />
-        <jhi-button
-          class="confirm"
-          [icon]="confirmIcon()"
-          [label]="label()"
-          (click)="onAccept()"
-          [severity]="severity()"
-          [variant]="variant()"
-        />
+        <jhi-button class="confirm" [label]="label()" (click)="onAccept()" [severity]="severity()" [variant]="variant()" />
       </div>
     </div>
   </ng-template>
 </p-confirmdialog>
 
 @if (showOpenButton()) {
-  <jhi-button [label]="label()" [icon]="confirmIcon()" (click)="confirm()" [severity]="severity()" [variant]="variant()" />
+  <jhi-button
+    [label]="iconOnly() ? undefined : label()"
+    [icon]="confirmIcon()"
+    (click)="confirm()"
+    [severity]="severity()"
+    [variant]="iconOnly() ? 'text' : variant()"
+    [tooltip]="tooltip()"
+    [tooltipPosition]="tooltipPosition()"
+  />
 }
