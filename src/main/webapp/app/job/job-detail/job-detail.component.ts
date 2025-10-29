@@ -123,7 +123,7 @@ export class JobDetailComponent {
                 onClick: () => this.onEditApplication(),
                 disabled: false,
                 shouldTranslate: true,
-                icon: 'file-import',
+                icon: 'pencil',
               },
             ],
           };
