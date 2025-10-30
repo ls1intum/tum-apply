@@ -89,7 +89,7 @@ export class SidebarComponent {
           title: 'sidebar.applications.applications',
           buttons: [
             {
-              icon: 'file',
+              icon: 'application-overview',
               text: 'sidebar.applications.myapplications',
               link: '/application/overview',
             },
