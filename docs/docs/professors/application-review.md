@@ -29,14 +29,14 @@ The **Applications - Review** page is your workspace for reviewing and managing 
 
 * ⚪ **Unopened**: Submitted but not yet opened.
 * 🟡 **In Review**: Currently being evaluated.
-* 🟢 **Accepted**: Approved; candidate has been notified.
-* 🔴 **Rejected**: Declined; candidate has been notified.
+* 🟢 **Accepted**: Approved; applicant has been notified.
+* 🔴 **Rejected**: Declined; applicant has been notified.
 
 ---
 
 ## 📄 Documents
 
-On the review page, you will see a preview of the most relevant documents (e.g., CV, transcripts) directly inline. This makes it easy to assess candidates without leaving the page.
+On the review page, you will see a preview of the most relevant documents (e.g., CV, transcripts) directly inline. This makes it easy to assess applicants without leaving the page.
 
 If you want to view all submitted documents in full size, click the **_View_** button in the document section. A dedicated document viewer will open, allowing you to navigate through every file submitted by the applicant.
 
@@ -53,8 +53,8 @@ Follow these steps to evaluate and manage applications.
 ### 📌 Prerequisites
 
 * You are logged in to TUMApply.
-* You belong to a research group or have permissions to access the position.
-* At least one candidate has submitted an application.
+* You have professor access and belong to a research group.
+* At least one applicant has submitted an application.
 
 ### 🧭 How to Get There
 
@@ -62,12 +62,12 @@ There are two ways to access the **Applications - Review** page:
 
 1. **From the Applications Overview page**
 
-   Click the **More** button on a candidate’s application entry and select **Review**.
+   On the **Applications Overview** page, click **_More_** on a specific application to jump directly to its review.
    ![Application Overview Page](images/application-overview.png)
 
 2. **From the sidebar navigation**
 
-   Open the sidebar and select **Applications → Review**.
+   Open the sidebar and select **Applications → Review** to start from the beginning of the list.
 
 ---
 
@@ -77,9 +77,9 @@ There are two ways to access the **Applications - Review** page:
 
    Go to the *Review* tab. You’ll see all applications for your positions.
 
-2. **Select a candidate**
+2. **Select an applicant**
 
-   Click on an application to open the detailed review view.
+   Click on the _More_ button of an application to open the detailed review view.
 
 3. **Inspect documents**
 
@@ -99,12 +99,12 @@ There are two ways to access the **Applications - Review** page:
    Add qualitative feedback or observations.
    *(Comments are also internal and not shared with applicants.)*
 
-7. **Decide**
+7. **Make a decision**
 
    Use the *Accept* or *Reject* buttons under the carousel. A confirmation dialog will appear.
 
-  * If you accept, you can optionally close the position and notify the applicant.
-  * If you reject, select a reason and confirm.
+   * If you accept, you can optionally close the position and notify the applicant.
+   * If you reject, select a reason and confirm.
 
 8. **Notify the applicant**
 
@@ -112,7 +112,7 @@ There are two ways to access the **Applications - Review** page:
 
 9. **Continue with next applications**
 
-   Use the carousel to move to the next candidate seamlessly.
+   Use the carousel to move to the next applicant seamlessly.
 
 10. **Track status changes**
 
@@ -121,7 +121,7 @@ There are two ways to access the **Applications - Review** page:
 ### 🎥 Help Video
 
 For a visual walkthrough of the review workflow, check out this video:
-[How to review an application](TO_BE_REPLACED)
+[How to review an application](https://live.rbg.tum.de/w/artemisintro/67003)
 
 ---
 
