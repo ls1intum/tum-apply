@@ -63,10 +63,10 @@ export interface JobDetails {
   styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
-  readonly closeButtonLabel = 'jobActionButton.close';
+  readonly closeButtonLabel = 'button.close';
   readonly closeButtonSeverity = 'danger' as ButtonColor;
   readonly closeButtonIcon = 'xmark';
-  readonly deleteButtonLabel = 'jobActionButton.delete';
+  readonly deleteButtonLabel = 'button.delete';
   readonly deleteButtonSeverity = 'danger' as ButtonColor;
   readonly deleteButtonIcon = 'trash';
 
@@ -158,7 +158,7 @@ export class JobDetailComponent {
             icon: 'pencil',
           },
           {
-            label: 'button.delete',
+            label: this.deleteButtonLabel,
             severity: this.deleteButtonSeverity,
             icon: this.deleteButtonIcon,
             onClick: () => {
@@ -176,7 +176,7 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: 'button.close',
+            label: this.closeButtonLabel,
             severity: this.closeButtonSeverity,
             icon: this.closeButtonIcon,
             variant: 'outlined',
