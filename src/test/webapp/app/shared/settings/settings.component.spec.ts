@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SettingsComponent } from 'app/shared/settings/settings.component';
@@ -9,9 +9,6 @@ import { createAccountServiceMock, provideAccountServiceMock } from '../../../ut
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 
 describe('SettingsComponent', () => {
-  let fixture: ComponentFixture<SettingsComponent>;
-  let component: SettingsComponent;
-
   let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
   let translateMock: ReturnType<typeof createTranslateServiceMock>;
 
@@ -35,9 +32,6 @@ describe('SettingsComponent', () => {
         { provide: EmailSettingResourceApiService, useValue: emailSettingServiceMock },
       ],
     });
-
-    fixture = TestBed.createComponent(SettingsComponent);
-    component = fixture.componentInstance;
   });
 
   afterEach(() => {
