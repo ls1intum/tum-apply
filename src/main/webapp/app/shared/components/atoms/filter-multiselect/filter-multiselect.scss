@@ -74,13 +74,6 @@
     max-height: 20rem;
     display: flex;
     flex-direction: column;
-    left: 0;
-    right: auto;
-
-    &.align-right {
-      left: auto;
-      right: 0;
-    }
 
     .panel-header {
       padding: 0.6rem 0.75rem 0.4rem;
@@ -163,6 +156,11 @@
       left: 0;
       right: 0;
       max-width: calc(100vw - 2rem);
+
+      &.align-right {
+        left: auto;
+        right: 0;
+      }
     }
   }
 }
