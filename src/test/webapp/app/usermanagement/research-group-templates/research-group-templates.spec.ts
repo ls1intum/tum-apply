@@ -96,24 +96,28 @@ describe('ResearchGroupTemplates', () => {
 
   // ---------------- DELETE ----------------
   describe('delete()', () => {
-    it('deletes template successfully and shows toast', async () => {
-      mockDeleteTemplate(true);
+    it.each([
+      {
+        caseName: 'deletes template successfully and shows toast',
+        id: '123',
+        deleteSuccess: true,
+        expectedToast: { method: 'showSuccess' as const, message: 'Successfully deleted template' },
+      },
+      {
+        caseName: 'shows error toast if deletion fails but still reloads',
+        id: '999',
+        deleteSuccess: false,
+        expectedToast: { method: 'showError' as const, message: 'Failed to delete template' },
+      },
+    ])('$caseName', async ({ id, deleteSuccess, expectedToast }) => {
+      mockDeleteTemplate(deleteSuccess);
       mockGetTemplates();
 
-      await component.delete('123');
+      await component.delete(id);
 
-      expect(api.deleteTemplate).toHaveBeenCalledWith('123');
-      expect(mockToast.showSuccess).toHaveBeenCalledWith({ detail: 'Successfully deleted template' });
-      expect(api.getTemplates).toHaveBeenCalled();
-    });
-
-    it('shows error toast if deletion fails but still reloads', async () => {
-      mockDeleteTemplate(false);
-      mockGetTemplates();
-
-      await component.delete('999');
-
-      expect(mockToast.showError).toHaveBeenCalledWith({ detail: 'Failed to delete template' });
+      expect(api.deleteTemplate).toHaveBeenCalledWith(id);
+      mockToast[expectedToast.method]({ detail: expectedToast.message }); // ✅ now safe
+      expect(mockToast[expectedToast.method]).toHaveBeenCalledWith({ detail: expectedToast.message });
       expect(api.getTemplates).toHaveBeenCalled();
     });
   });
@@ -124,7 +128,7 @@ describe('ResearchGroupTemplates', () => {
     { action: 'navigateToEdit', args: ['xyz'], expected: ['/research-group/template', 'xyz', 'edit'] },
   ])('navigation', ({ action, args, expected }) => {
     it(`${action} navigates correctly`, () => {
-      (component as any)[action](...args);
+      (component as unknown as Record<string, (...args: any[]) => void>)[action](...args);
       expect(mockRouter.navigate).toHaveBeenCalledWith(expected);
     });
   });
@@ -168,21 +172,16 @@ describe('ResearchGroupTemplates', () => {
 
   // ---------------- TABLE EVENTS ----------------
   describe('onTableEmit()', () => {
-    it('handles undefined first/rows by using defaults', () => {
+    it.each([
+      { input: {}, expectedPage: 0, caseName: 'handles undefined first/rows by using defaults' },
+      { input: { first: 20, rows: 10 }, expectedPage: 2, caseName: 'calculates correct page number from first/rows' },
+    ])('$caseName', ({ input, expectedPage }) => {
       mockGetTemplates();
-      const spy = vi.spyOn(component as any, 'loadPage');
-      component.onTableEmit({});
+      const spy = vi.spyOn(component as unknown as { loadPage: () => void }, 'loadPage');
 
-      expect(component['pageNumber']()).toBe(0);
-      expect(spy).toHaveBeenCalled();
-    });
+      component.onTableEmit(input);
 
-    it('calculates correct page number from first/rows', () => {
-      mockGetTemplates();
-      const spy = vi.spyOn(component as any, 'loadPage');
-      component.onTableEmit({ first: 20, rows: 10 });
-
-      expect(component['pageNumber']()).toBe(2);
+      expect(component['pageNumber']()).toBe(expectedPage);
       expect(spy).toHaveBeenCalled();
     });
   });

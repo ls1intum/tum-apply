@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
-
 import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
+
 import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateDTO } from 'app/generated/model/emailTemplateDTO';
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
@@ -31,11 +31,27 @@ describe('ResearchGroupTemplateEdit', () => {
   let component: ResearchGroupTemplateEdit;
   let api: EmailTemplateResourceApiServiceMock;
   let mockToast: ToastServiceMock;
+  let paramMapSubject: BehaviorSubject<ParamMap>;
 
   const mockRouter = createRouterMock();
   const mockTranslate = createTranslateServiceMock();
 
-  let paramMapSubject: BehaviorSubject<ParamMap>;
+  // --- helpers ---
+  function mockGetTemplate(dto: EmailTemplateDTO | Error) {
+    api.getTemplate.mockReturnValue(dto instanceof Error ? throwError(() => dto) : of(dto));
+  }
+
+  function mockCreateTemplate(dto: EmailTemplateDTO | Error | { status: number }) {
+    if (dto instanceof Error || (dto && typeof dto === 'object' && 'status' in dto)) {
+      api.createTemplate.mockReturnValue(throwError(() => dto));
+    } else {
+      api.createTemplate.mockReturnValue(of(dto));
+    }
+  }
+
+  function mockUpdateTemplate(dto: EmailTemplateDTO | Error) {
+    api.updateTemplate.mockReturnValue(dto instanceof Error ? throwError(() => dto) : of(dto));
+  }
 
   beforeEach(async () => {
     mockToast = createToastServiceMock();
@@ -49,12 +65,7 @@ describe('ResearchGroupTemplateEdit', () => {
         provideToastServiceMock(mockToast),
         provideTranslateMock(mockTranslate),
         provideFontAwesomeTesting(),
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            paramMap: paramMapSubject.asObservable(),
-          },
-        },
+        { provide: ActivatedRoute, useValue: { paramMap: paramMapSubject.asObservable() } },
       ],
     })
       .overrideComponent(ResearchGroupTemplateEdit, {
@@ -77,13 +88,12 @@ describe('ResearchGroupTemplateEdit', () => {
   // ---------------- LOAD ----------------
   describe('load()', () => {
     it('loads and sanitizes template successfully', async () => {
-      const dto: EmailTemplateDTO = {
+      mockGetTemplate({
         templateName: 'T',
-        english: null as unknown as { subject: string; body: string },
-        german: null as unknown as { subject: string; body: string },
+        english: undefined,
+        german: undefined,
         isDefault: false,
-      };
-      api.getTemplate.mockReturnValueOnce(of(dto));
+      } as EmailTemplateDTO);
 
       await component['load']('id-1');
 
@@ -93,93 +103,56 @@ describe('ResearchGroupTemplateEdit', () => {
     });
 
     it('shows error toast if loading fails', async () => {
-      api.getTemplate.mockReturnValueOnce(throwError(() => new Error('fail')));
-
+      mockGetTemplate(new Error('fail'));
       await component['load']('id-err');
-
       expect(mockToast.showError).toHaveBeenCalledWith({ detail: 'Failed to load template' });
     });
   });
 
   // ---------------- AUTOSAVE ----------------
   describe('performAutoSave()', () => {
+    const baseDto: EmailTemplateDTO = {
+      templateName: 'X',
+      emailType: 'APPLICATION_ACCEPTED',
+      isDefault: false,
+      english: { subject: '', body: '' },
+      german: { subject: '', body: '' },
+    };
+
     it('creates new template if id is missing', async () => {
-      const dto: EmailTemplateDTO = {
-        templateName: 'New',
-        emailType: 'APPLICATION_ACCEPTED',
-        isDefault: false,
-        english: { subject: '', body: '' },
-        german: { subject: '', body: '' },
-      };
-      component.formModel.set(dto);
-      api.createTemplate.mockReturnValueOnce(of({ ...dto, emailTemplateId: 'new-1' }));
+      component.formModel.set(baseDto);
+      mockCreateTemplate({ ...baseDto, emailTemplateId: 'new-1' });
 
       await component['performAutoSave']();
 
-      expect(api.createTemplate).toHaveBeenCalledWith(dto);
+      expect(api.createTemplate).toHaveBeenCalled();
       expect(component.formModel().emailTemplateId).toBe('new-1');
       expect(component.savingState()).toBe('SAVED');
     });
 
     it('updates template if id exists', async () => {
-      const dto: EmailTemplateDTO = {
-        emailTemplateId: 'x1',
-        templateName: 'Upd',
-        emailType: 'APPLICATION_ACCEPTED',
-        isDefault: false,
-        english: { subject: '', body: '' },
-        german: { subject: '', body: '' },
-      };
+      const dto = { ...baseDto, emailTemplateId: 'x1' };
       component.formModel.set(dto);
-      api.updateTemplate.mockReturnValueOnce(of(dto));
+      mockUpdateTemplate(dto);
 
       await component['performAutoSave']();
-
       expect(api.updateTemplate).toHaveBeenCalledWith(dto);
-      expect(component.savingState()).toBe('SAVED');
     });
 
-    it('handles conflict error (409) with specific toast', async () => {
-      const dto: EmailTemplateDTO = {
-        templateName: 'Dup',
-        emailType: 'APPLICATION_ACCEPTED',
-        isDefault: false,
-        english: { subject: '', body: '' },
-        german: { subject: '', body: '' },
-      };
-      component.formModel.set(dto);
-      api.createTemplate.mockReturnValueOnce(throwError(() => ({ status: 409 })));
+    it.each([
+      { err: { status: 409 }, expectedToast: 'Template name already exists.' },
+      { err: new Error('fail'), expectedToast: 'Autosave failed' },
+    ])('handles error: $expectedToast', async ({ err, expectedToast }) => {
+      component.formModel.set(baseDto);
+      mockCreateTemplate(err as Error);
 
       await component['performAutoSave']();
 
-      expect(mockToast.showError).toHaveBeenCalledWith({ detail: 'Template name already exists.' });
-      expect(component.savingState()).toBe('UNSAVED');
-    });
-
-    it('handles generic error with autosave failed toast', async () => {
-      const dto: EmailTemplateDTO = {
-        templateName: 'Err',
-        emailType: 'APPLICATION_ACCEPTED',
-        isDefault: false,
-        english: { subject: '', body: '' },
-        german: { subject: '', body: '' },
-      };
-      component.formModel.set(dto);
-      api.createTemplate.mockReturnValueOnce(throwError(() => new Error('fail')));
-
-      await component['performAutoSave']();
-
-      expect(mockToast.showError).toHaveBeenCalledWith({ detail: 'Autosave failed' });
+      expect(mockToast.showError).toHaveBeenCalledWith({ detail: expectedToast });
     });
 
     it('does not save if non-default and missing name/type', async () => {
-      component.formModel.set({
-        templateName: '',
-        emailType: undefined,
-        isDefault: false,
-        english: { subject: '', body: '' },
-        german: { subject: '', body: '' },
-      });
+      component.formModel.set({ ...baseDto, templateName: '', emailType: undefined });
       await component['performAutoSave']();
       expect(component.savingState()).toBe('SAVED');
     });
@@ -195,69 +168,67 @@ describe('ResearchGroupTemplateEdit', () => {
 
   // ---------------- FORM UPDATES ----------------
   describe('form updates', () => {
-    it('updates template name', () => {
-      component.setTemplateName('Hello');
-      expect(component.formModel().templateName).toBe('Hello');
-    });
+    const getters: Record<string, (m: EmailTemplateDTO) => unknown> = {
+      templateName: m => m.templateName,
+      'english.subject': m => m.english?.subject,
+      'english.body': m => m.english?.body,
+      'german.subject': m => m.german?.subject,
+      'german.body': m => m.german?.body,
+    };
 
-    it('updates english subject', () => {
-      component.updateEnglishSubject('Subj');
-      expect(component.formModel().english!.subject).toBe('Subj');
-    });
-
-    it('updates english body', () => {
-      component.updateEnglishBody('Body EN');
-      expect(component.formModel().english!.body).toBe('Body EN');
-    });
-
-    it('updates german subject', () => {
-      component.updateGermanSubject('Subj DE');
-      expect(component.formModel().german!.subject).toBe('Subj DE');
-    });
-
-    it('updates german body', () => {
-      component.updateGermanBody('Body DE');
-      expect(component.formModel().german!.body).toBe('Body DE');
+    it.each([
+      { action: 'setTemplateName', value: 'Hello', path: 'templateName' },
+      { action: 'updateEnglishSubject', value: 'Subj', path: 'english.subject' },
+      { action: 'updateEnglishBody', value: 'Body EN', path: 'english.body' },
+      { action: 'updateGermanSubject', value: 'Subj DE', path: 'german.subject' },
+      { action: 'updateGermanBody', value: 'Body DE', path: 'german.body' },
+    ])('$action updates form model', ({ action, value, path }) => {
+      (component as unknown as Record<string, (val: string) => void>)[action](value);
+      const actual = getters[path](component.formModel());
+      expect(actual).toBe(value);
     });
 
     it('updates email type via setSelectedEmailType', () => {
-      component.setSelectedEmailType({ name: 'x', value: 'APPLICATION_REJECTED' });
-      expect(component.formModel().emailType).toBe('APPLICATION_REJECTED');
+      component.setSelectedEmailType({
+        name: 'x',
+        value: EmailTemplateDTO.EmailTypeEnum.ApplicationRejected,
+      });
+      expect(component.formModel().emailType).toBe(EmailTemplateDTO.EmailTypeEnum.ApplicationRejected);
     });
 
-    it('english/german computed fall back to empty when null', () => {
+    it.each([
+      { field: 'english', getter: () => component.english() },
+      { field: 'german', getter: () => component.german() },
+    ])('$field computed falls back to empty when null', ({ getter }) => {
       component.formModel.set({
         templateName: 'X',
-        emailType: 'APPLICATION_ACCEPTED',
+        emailType: EmailTemplateDTO.EmailTypeEnum.ApplicationAccepted,
         isDefault: false,
         english: undefined,
         german: undefined,
       });
-      expect(component.english()).toEqual({ subject: '', body: '' });
-      expect(component.german()).toEqual({ subject: '', body: '' });
+      expect(getter()).toEqual({ subject: '', body: '' });
     });
   });
 
   // ---------------- DISPLAY NAME ----------------
-  describe('templateDisplayName', () => {
-    it('returns translated key for default with name', () => {
-      component.formModel.update(prev => ({
-        ...prev,
-        isDefault: true,
-        templateName: 'welcome',
-        emailType: 'APPLICATION_ACCEPTED',
-      }));
-      expect(component.templateDisplayName()).toContain('researchGroup.emailTemplates.default.APPLICATION_ACCEPTED-welcome');
-    });
-
-    it('returns translated key for default without name', () => {
-      component.formModel.update(prev => ({
-        ...prev,
-        isDefault: true,
-        templateName: undefined,
-        emailType: 'APPLICATION_SENT',
-      }));
-      expect(component.templateDisplayName()).toContain('researchGroup.emailTemplates.default.APPLICATION_SENT');
+  describe.each([
+    {
+      name: 'with name',
+      templateName: 'welcome',
+      emailType: EmailTemplateDTO.EmailTypeEnum.ApplicationAccepted,
+      expected: 'researchGroup.emailTemplates.default.APPLICATION_ACCEPTED-welcome',
+    },
+    {
+      name: 'without name',
+      templateName: undefined,
+      emailType: EmailTemplateDTO.EmailTypeEnum.ApplicationSent,
+      expected: 'researchGroup.emailTemplates.default.APPLICATION_SENT',
+    },
+  ])('templateDisplayName', ({ name, templateName, emailType, expected }) => {
+    it(`returns translated key for default ${name}`, () => {
+      component.formModel.update(prev => ({ ...prev, isDefault: true, templateName, emailType }));
+      expect(component.templateDisplayName()).toContain(expected);
     });
   });
 
@@ -276,8 +247,23 @@ describe('ResearchGroupTemplateEdit', () => {
 
   // ---------------- TRANSLATION ----------------
   describe('translateMentionsInTemplate()', () => {
-    it('replaces mention labels with translations', () => {
-      const html = `<p><span class="mention" data-id="APPLICANT_FIRST_NAME" data-value="Old"><span contenteditable="false">$Old</span></span></p>`;
+    it.each([
+      {
+        name: 'replaces mention labels with translations',
+        html: `<span class="mention" data-id="APPLICANT_FIRST_NAME"><span>$Old</span></span>`,
+        expectedContent: 'researchGroup.emailTemplates.variables.APPLICANT_FIRST_NAME',
+      },
+      {
+        name: 'updates inner span when contenteditable="false" is present',
+        html: `<span class="mention" data-id="APPLICANT_FIRST_NAME"><span contenteditable="false">$Old</span></span>`,
+        expectedContent: 'ql-mention-denotation-char',
+      },
+      {
+        name: 'skips mentions without id',
+        html: `<span class="mention"></span>`,
+        expectedContent: '<span class="mention"></span>',
+      },
+    ])('$name', ({ html, expectedContent }) => {
       const dto: EmailTemplateDTO = {
         templateName: 'T',
         emailType: 'APPLICATION_ACCEPTED',
@@ -285,26 +271,14 @@ describe('ResearchGroupTemplateEdit', () => {
         english: { subject: '', body: html },
         german: { subject: '', body: html },
       };
-
       const translated = component['translateMentionsInTemplate'](dto);
-
-      expect(translated.english!.body).toContain('researchGroup.emailTemplates.variables.APPLICANT_FIRST_NAME');
+      expect(translated.english!.body).toContain(expectedContent);
     });
 
-    it('skips mentions without id', () => {
-      const html = `<p><span class="mention"></span></p>`;
-      const dto: EmailTemplateDTO = {
-        templateName: 'T',
-        emailType: 'APPLICATION_ACCEPTED',
-        isDefault: false,
-        english: { subject: '', body: html },
-        german: { subject: '', body: html },
-      };
-      const translated = component['translateMentionsInTemplate'](dto);
-      expect(translated.english!.body).toContain('<span class="mention"></span>');
-    });
-
-    it('handles undefined english/german safely', () => {
+    it.each([
+      { field: 'english', getter: (dto: EmailTemplateDTO) => dto.english!.body },
+      { field: 'german', getter: (dto: EmailTemplateDTO) => dto.german!.body },
+    ])('handles undefined $field safely', ({ getter }) => {
       const dto: EmailTemplateDTO = {
         templateName: 'T',
         emailType: 'APPLICATION_ACCEPTED',
@@ -313,54 +287,53 @@ describe('ResearchGroupTemplateEdit', () => {
         german: undefined,
       };
       const translated = component['translateMentionsInTemplate'](dto);
-      expect(translated.english!.body).toBe('');
-      expect(translated.german!.body).toBe('');
+      expect(getter(translated)).toBe('');
     });
   });
 
   // ---------------- EFFECTS ----------------
   describe('effects', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
 
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('early returns when non-default and missing name/type', () => {
-      component.formModel.set({
-        templateName: '',
-        emailType: undefined,
-        isDefault: false,
-        english: { subject: '', body: '' },
-        german: { subject: '', body: '' },
-      });
-
+    it.each([
+      {
+        name: 'early returns when non-default and missing name/type',
+        formModel: {
+          templateName: '',
+          emailType: undefined,
+          isDefault: false,
+          english: { subject: '', body: '' },
+          german: { subject: '', body: '' },
+        },
+        expectedState: 'UNSAVED',
+        expectTimer: false,
+      },
+      {
+        name: 'sets SAVING and schedules autosave when valid form',
+        formModel: {
+          templateName: 'Valid',
+          emailType: 'APPLICATION_ACCEPTED' as const,
+          isDefault: false,
+          english: { subject: '', body: '' },
+          german: { subject: '', body: '' },
+        },
+        expectedState: 'SAVING',
+        expectTimer: true,
+      },
+    ])('$name', ({ formModel, expectedState, expectTimer }) => {
+      component.formModel.set(formModel);
       fixture.detectChanges();
-
-      expect(component.savingState()).toBe('UNSAVED');
-      expect(component['autoSaveTimer']).toBeUndefined();
-    });
-
-    it('sets SAVING and schedules autosave when valid form', () => {
-      component.formModel.set({
-        templateName: 'Valid',
-        emailType: 'APPLICATION_ACCEPTED',
-        isDefault: false,
-        english: { subject: '', body: '' },
-        german: { subject: '', body: '' },
-      });
-
-      fixture.detectChanges();
-
-      expect(component.savingState()).toBe('SAVING');
-      expect(component['autoSaveTimer']).toBeDefined();
+      expect(component.savingState()).toBe(expectedState);
+      if (expectTimer) {
+        expect(component['autoSaveTimer']).toBeDefined();
+      } else {
+        expect(component['autoSaveTimer']).toBeUndefined();
+      }
     });
 
     it('calls performAutoSave after 3s', () => {
-      const spy = vi.spyOn(component as unknown as Record<string, any>, 'performAutoSave').mockResolvedValue(undefined);
-
+      const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave');
       component.formModel.set({
         templateName: 'AutoSave',
         emailType: 'APPLICATION_ACCEPTED',
@@ -368,25 +341,23 @@ describe('ResearchGroupTemplateEdit', () => {
         english: { subject: '', body: '' },
         german: { subject: '', body: '' },
       });
-
       fixture.detectChanges();
       vi.advanceTimersByTime(3000);
-
       expect(spy).toHaveBeenCalled();
     });
 
-    it('does not call load when templateId is null', () => {
-      const spy = vi.spyOn(component as unknown as Record<string, any>, 'load');
-      paramMapSubject.next(convertToParamMap({}));
+    it.each([
+      { name: 'does not call load when templateId is null', paramMap: {}, expectLoad: false },
+      { name: 'calls load when templateId is provided', paramMap: { templateId: '123' }, expectLoad: true },
+    ])('$name', ({ paramMap, expectLoad }) => {
+      const spy = vi.spyOn(component as unknown as { load: (id: string) => Promise<void> }, 'load').mockResolvedValue(undefined);
+      paramMapSubject.next(convertToParamMap(paramMap));
       fixture.detectChanges();
-      expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('calls load when templateId is provided', () => {
-      const spy = vi.spyOn(component as unknown as Record<string, any>, 'load').mockResolvedValue(undefined);
-      paramMapSubject.next(convertToParamMap({ templateId: '123' }));
-      fixture.detectChanges();
-      expect(spy).toHaveBeenCalledWith('123');
+      if (expectLoad) {
+        expect(spy).toHaveBeenCalledWith('123');
+      } else {
+        expect(spy).not.toHaveBeenCalled();
+      }
     });
   });
 
@@ -409,12 +380,10 @@ describe('ResearchGroupTemplateEdit', () => {
   // ---------------- BEFORE UNLOAD ----------------
   describe('beforeUnloadHandler', () => {
     it('calls performAutoSave if unsaved changes exist', async () => {
-      const spy = vi.spyOn(component as unknown as Record<string, any>, 'performAutoSave').mockResolvedValue(undefined);
+      const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave');
       component.lastSavedSnapshot.set({ ...component.formModel() });
       component.formModel.update(prev => ({ ...prev, templateName: 'Changed' }));
-
       component.beforeUnloadHandler();
-
       expect(spy).toHaveBeenCalled();
     });
   });
