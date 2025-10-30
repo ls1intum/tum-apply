@@ -21,10 +21,6 @@
       "job": "Job",
       "appliedAt": "Applied at"
     },
-    "cancel": "Cancel",
-    "save": "Save",
-    "post": "Post",
-    "more": "More",
     "statusBadge": {
       "SENT": "Unopened",
       "ACCEPTED": "Approved",

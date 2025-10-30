@@ -210,19 +210,6 @@
     "editResearchGroup": "Forschungsgruppen-Informationen bearbeiten",
     "noData": "Keine Daten verfügbar"
   },
-  "jobActionButton": {
-    "apply": "Bewerben",
-    "edit": "Bearbeiten",
-    "delete": "Löschen",
-    "close": "Schließen",
-    "view": "Anzeigen",
-    "publish": "Veröffentlichen",
-    "cancel": "Abbrechen",
-    "next": "Weiter",
-    "back": "Zurück",
-    "saveDraft": "Entwurf speichern",
-    "viewApplication": "Zur Bewerbung"
-  },
   "jobState": {
     "preview": "Vorschau",
     "draft": "Entwurf",

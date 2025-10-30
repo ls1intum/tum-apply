@@ -57,7 +57,6 @@ type JobFormMode = 'create' | 'edit';
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
 
-  readonly publishButtonLabel = 'jobActionButton.publish';
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
   // Services
@@ -178,7 +177,7 @@ export class JobCreationFormComponent {
             icon: 'arrow-left',
             onClick: () => this.onBack(),
             disabled: false,
-            label: 'jobActionButton.back',
+            label: 'button.back',
             changePanel: false,
             shouldTranslate: true,
           },
@@ -189,7 +188,7 @@ export class JobCreationFormComponent {
             icon: 'chevron-right',
             onClick() {},
             disabled: !this.basicInfoValid(),
-            label: 'jobActionButton.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -210,7 +209,7 @@ export class JobCreationFormComponent {
             icon: 'chevron-left',
             onClick() {},
             disabled: false,
-            label: 'jobActionButton.back',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -221,7 +220,7 @@ export class JobCreationFormComponent {
             icon: 'chevron-right',
             onClick() {},
             disabled: !this.positionDetailsValid(),
-            label: 'jobActionButton.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -277,7 +276,7 @@ export class JobCreationFormComponent {
             icon: 'chevron-left',
             onClick() {},
             disabled: false,
-            label: 'jobActionButton.back',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -290,7 +289,7 @@ export class JobCreationFormComponent {
               this.sendPublishDialog()?.confirm();
             },
             disabled: !this.allFormsValid(),
-            label: this.publishButtonLabel,
+            label: 'button.publish',
             shouldTranslate: true,
             changePanel: false,
           },

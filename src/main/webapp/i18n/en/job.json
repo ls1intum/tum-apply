@@ -210,19 +210,6 @@
     "editResearchGroup": "Edit Research Group Information",
     "noData": "No data available"
   },
-  "jobActionButton": {
-    "apply": "Apply",
-    "edit": "Edit",
-    "delete": "Delete",
-    "close": "Close",
-    "view": "View",
-    "publish": "Publish",
-    "cancel": "Cancel",
-    "next": "Next",
-    "back": "Back",
-    "saveDraft": "Save Draft",
-    "viewApplication": "View Application"
-  },
   "jobState": {
     "preview": "Preview",
     "draft": "Draft",

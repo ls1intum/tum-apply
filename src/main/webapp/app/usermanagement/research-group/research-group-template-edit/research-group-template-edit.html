@@ -90,13 +90,7 @@
   </p-tabs>
 
   <div class="actions mt-16">
-    <jhi-button
-      label="researchGroup.emailTemplates.back"
-      [shouldTranslate]="true"
-      icon="chevron-left"
-      variant="outlined"
-      (click)="navigateBack()"
-    />
+    <jhi-button label="button.back" [shouldTranslate]="true" icon="chevron-left" variant="outlined" (click)="navigateBack()" />
     <div class="saving-state" [ngClass]="savingState().toLowerCase()">
       <fa-icon icon="floppy-disk" />
       <span [jhiTranslate]="'researchGroup.emailTemplates.' + savingState().toLocaleLowerCase()"></span>
