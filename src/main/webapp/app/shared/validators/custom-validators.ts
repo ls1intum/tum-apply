@@ -67,7 +67,10 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | und
     return undefined;
   }
 
+  // Trim whitespace before validating
+  const trimmedValue = typeof value === 'string' ? value.trim() : value;
+
   const tumIdPattern = /^[a-z]{2}[0-9]{2}[a-z]{3}$/;
 
-  return tumIdPattern.test(value) ? undefined : { pattern: true };
+  return tumIdPattern.test(trimmedValue) ? undefined : { pattern: true };
 }
