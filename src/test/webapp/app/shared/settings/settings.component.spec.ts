@@ -46,15 +46,15 @@ describe('SettingsComponent', () => {
       authorities: [UserShortDTO.RolesEnum.Professor],
     });
 
-    const c = TestBed.createComponent(SettingsComponent).componentInstance;
-    expect(c.role()).toBe(UserShortDTO.RolesEnum.Professor);
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    expect(component.role()).toBe(UserShortDTO.RolesEnum.Professor);
   });
 
   it('should keep role undefined if no user is loaded', () => {
     accountServiceMock.setLoadedUser(undefined);
 
-    const c = TestBed.createComponent(SettingsComponent).componentInstance;
-    expect(c.role()).toBeUndefined();
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    expect(component.role()).toBeUndefined();
   });
 
   it('should keep role undefined if authorities array is empty', () => {
@@ -65,7 +65,7 @@ describe('SettingsComponent', () => {
       authorities: [],
     });
 
-    const c = TestBed.createComponent(SettingsComponent).componentInstance;
-    expect(c.role()).toBeUndefined();
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    expect(component.role()).toBeUndefined();
   });
 });

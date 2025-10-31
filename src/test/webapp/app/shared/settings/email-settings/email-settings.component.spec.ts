@@ -48,7 +48,7 @@ describe('EmailSettingsComponent', () => {
       await component.loadSettings(RolesEnum.Applicant);
 
       const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
-      expect(groups.every(g => g.enabled)).toBe(true);
+      expect(groups.every(group => group.enabled)).toBe(true);
       expect(component['loaded']()).toBe(true);
     });
 
@@ -63,7 +63,7 @@ describe('EmailSettingsComponent', () => {
       await component.loadSettings(RolesEnum.Applicant);
 
       const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
-      expect(groups.find(g => g.groupKey.includes('submission'))?.enabled).toBe(false);
+      expect(groups.find(group => group.groupKey.includes('submission'))?.enabled).toBe(false);
       expect(component['loaded']()).toBe(true);
     });
 
@@ -90,7 +90,7 @@ describe('EmailSettingsComponent', () => {
       await component.loadSettings(RolesEnum.Applicant);
 
       const groups = component['roleSettings']().get(RolesEnum.Applicant) ?? [];
-      const submissionGroup = groups.find(g => g.groupKey.includes('submission'));
+      const submissionGroup = groups.find(group => group.groupKey.includes('submission'));
       expect(submissionGroup?.enabled).toBe(true);
       expect(component['loaded']()).toBe(true);
     });
