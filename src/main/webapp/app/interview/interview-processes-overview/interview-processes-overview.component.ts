@@ -11,7 +11,6 @@ import { InterviewService } from '../service/interview.service';
 
 @Component({
   selector: 'jhi-interview-processes-overview',
-  standalone: true,
   imports: [CommonModule, TranslateModule, TranslateDirective, InterviewProcessCardComponent, ButtonComponent],
   templateUrl: './interview-processes-overview.component.html',
 })

@@ -1,13 +1,19 @@
 <div class="py-8 px-12 max-w-[1600px] mx-auto flex flex-col min-h-screen">
-  <!-- Page Title -->
-  <h1 class="text-[2rem] font-bold text-[var(--p-primary-color)] mb-6" jhiTranslate="interview.overview.title">Interviews</h1>
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="text-[2rem] font-bold text-[var(--p-primary-color)]" jhiTranslate="interview.overview.title">
+      Interviews
+    </h1>
+  </div>
 
   <!-- Two-column Layout -->
   <div class="flex gap-4 items-start flex-1">
     <!-- Left Section -->
     <div class="flex-[0_0_68%] flex flex-col">
       <div class="flex justify-between items-center mb-4 h-10">
-        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.positions.title">Positions</h2>
+        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.positions.title">
+          Positions
+        </h2>
 
         <jhi-button
           [label]="'interview.overview.actions.newProcess'"
@@ -69,7 +75,9 @@
     <!-- Right Section -->
     <div class="flex-1 flex flex-col">
       <div class="mb-4 h-10 flex items-center">
-        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
+        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.upcoming.title">
+          Upcoming
+        </h2>
       </div>
 
       <div
