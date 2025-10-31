@@ -1,8 +1,10 @@
 package de.tum.cit.aet.utility.testdata;
 
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import java.util.UUID;
 
@@ -15,6 +17,8 @@ public final class ApplicantTestData {
 
     /** Creates an unsaved Applicant with sensible defaults. */
     public static Applicant newApplicant(User user) {
+        attachApplicantRole(user);
+
         Applicant a = new Applicant();
         a.setUser(user);
         a.setStreet("Teststr. 1");
@@ -69,11 +73,13 @@ public final class ApplicantTestData {
         applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
         applicantUser.setFirstName("Ada");
         applicantUser.setLastName("Lovelace");
+
+        attachApplicantRole(applicantUser);
+
         return applicantUser;
     }
 
-    // --- Saved variants
-    // -------------------------------------------------------------------------
+    // --- Saved variants -------------------------------------------------------------------------
 
     public static Applicant saved(ApplicantRepository repo, User user) {
         return repo.save(newApplicant(user));
@@ -81,5 +87,18 @@ public final class ApplicantTestData {
 
     public static Applicant savedWithNewUser(ApplicantRepository repo) {
         return saved(repo, newApplicantUser());
+    }
+
+    // --- Attach roles ---------------------------------------------------------------------------
+
+    /**
+     * Attaches the APPLICANT role for a given user.
+     */
+    public static void attachApplicantRole(User user) {
+        UserResearchGroupRole link = new UserResearchGroupRole();
+        link.setUser(user);
+        link.setRole(UserRole.APPLICANT);
+
+        user.getResearchGroupRoles().add(link);
     }
 }
