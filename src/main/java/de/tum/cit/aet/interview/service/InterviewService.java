@@ -19,10 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service class for managing interview processes and providing overview statistics.
- * <p>
  * This service handles the creation and retrieval of interview processes for professors,
  * including aggregated statistics about application states across different interview stages.
- * </p>
  */
 @AllArgsConstructor
 @Service
@@ -35,16 +33,12 @@ public class InterviewService {
 
     /**
      * Retrieves an overview of all interview processes for the currently authenticated professor.
-     * <p>
      * This method aggregates application counts by state for each interview process,
      * categorizing them into:
-     * <ul>
-     *   <li><b>Completed:</b> Applications in COMPLETED state</li>
-     *   <li><b>Scheduled:</b> Applications in SCHEDULED state</li>
-     *   <li><b>Invited:</b> Applications in INVITED state</li>
-     *   <li><b>Uncontacted:</b> Applications in IN_REVIEW, SENT, or ACCEPTED states</li>
-     * </ul>
-     * </p>
+     * Completed: Applications in COMPLETED state
+     * Scheduled: Applications in SCHEDULED state
+     * Invited:   Applications in INVITED state
+     * Uncontacted:Applications in IN_REVIEW, SENT, or ACCEPTED states
      *
      * @return List of {@link InterviewOverviewDTO} containing interview statistics for each job
      * @throws org.springframework.security.access.AccessDeniedException if user is not authenticated
