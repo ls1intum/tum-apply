@@ -24,6 +24,9 @@
       "upcoming": {
         "title": "Upcoming",
         "empty": "No upcoming interviews scheduled"
+      },
+      "error": {
+        "failedToLoad": "Failed to load interview processes."
       }
     }
   }

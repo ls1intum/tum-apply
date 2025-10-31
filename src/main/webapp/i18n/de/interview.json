@@ -7,7 +7,7 @@
       },
       "loading": "Interview Prozesse werden geladen...",
       "empty": {
-        "title": "Keine Interview-Prozesse",
+        "title": "Keine Interview Prozesse",
         "description": "Du hast noch keine Interview Prozesse erstellt. Klicke auf \"Neuer Interview Prozess\", um zu beginnen."
       },
       "actions": {
@@ -24,6 +24,9 @@
       "upcoming": {
         "title": "Anstehend",
         "empty": "Keine anstehenden Interviews geplant"
+      },
+      "error": {
+        "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
       }
     }
   }

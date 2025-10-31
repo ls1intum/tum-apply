@@ -14,7 +14,6 @@ interface StatItem {
 
 @Component({
   selector: 'jhi-interview-process-card',
-  standalone: true,
   imports: [CommonModule, CardModule, TranslateModule, TranslateDirective],
   templateUrl: './interview-process-card.component.html',
 })
@@ -26,29 +25,29 @@ export class InterviewProcessCardComponent {
    * Stats configuration array - avoids repetitive HTML
    */
   stats = computed<StatItem[]>(() => {
-    const proc = this.process();
+    const process = this.process();
     return [
       {
         key: 'completed',
-        count: proc.completedCount,
+        count: process.completedCount,
         label: 'interview.overview.stats.completed',
         colorClass: 'bg-[var(--p-primary-400)]',
       },
       {
         key: 'scheduled',
-        count: proc.scheduledCount,
+        count: process.scheduledCount,
         label: 'interview.overview.stats.scheduled',
         colorClass: 'bg-[var(--p-primary-300)]',
       },
       {
         key: 'invited',
-        count: proc.invitedCount,
+        count: process.invitedCount,
         label: 'interview.overview.stats.invited',
         colorClass: 'bg-[var(--p-primary-200)]',
       },
       {
         key: 'uncontacted',
-        count: proc.uncontactedCount,
+        count: process.uncontactedCount,
         label: 'interview.overview.stats.uncontacted',
         colorClass: 'bg-[var(--p-primary-100)]',
       },
@@ -56,9 +55,9 @@ export class InterviewProcessCardComponent {
   });
 
   calculateWidth(count: number): number {
-    const proc = this.process();
-    if (proc.totalInterviews === 0) return 0;
-    return (count / proc.totalInterviews) * 100;
+    const process = this.process();
+    if (process.totalInterviews === 0) return 0;
+    return (count / process.totalInterviews) * 100;
   }
 
   onCardClick(): void {
