@@ -66,7 +66,6 @@ const applyflow = 'entity.toast.applyFlow';
 })
 export default class ApplicationCreationFormComponent {
   private static readonly MAX_OTP_WAIT_TIME_MS = 600_000; // 10 minutes
-  readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
   readonly sendButtonSeverity = 'primary' as ButtonColor;
   readonly sendButtonIcon = 'paper-plane';
 
