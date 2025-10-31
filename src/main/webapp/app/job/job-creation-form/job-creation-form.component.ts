@@ -173,7 +173,7 @@ export class JobCreationFormComponent {
         buttonGroupPrev: [
           {
             variant: 'outlined',
-            severity: 'primary',
+            severity: 'info',
             icon: 'arrow-left',
             onClick: () => this.onBack(),
             disabled: false,
