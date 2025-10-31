@@ -26,7 +26,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.usermanagement.service.UserService;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -49,7 +49,6 @@ public class ApplicationService {
     private final DocumentDictionaryService documentDictionaryService;
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
-    private final UserService userService;
 
     /**
      * Creates a new job application for the given applicant and job.
@@ -96,6 +95,7 @@ public class ApplicationService {
             null,
             null,
             null,
+            null,
             new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
             new HashSet<>()
         );
@@ -127,6 +127,9 @@ public class ApplicationService {
         application.setProjects(updateApplicationDTO.projects());
         application.setSpecialSkills(updateApplicationDTO.specialSkills());
         application.setMotivation(updateApplicationDTO.motivation());
+        if (updateApplicationDTO.applicationState().equals(ApplicationState.SENT)) {
+            application.setAppliedAt(LocalDateTime.now());
+        }
         application = applicationRepository.save(application);
 
         ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
@@ -380,7 +383,7 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     * document IDs for the application
+     *         document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {
