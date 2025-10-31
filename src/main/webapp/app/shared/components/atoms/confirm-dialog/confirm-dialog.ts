@@ -15,12 +15,15 @@ import { ButtonColor, ButtonComponent, ButtonVariant } from '../button/button.co
 })
 export class ConfirmDialog {
   label = input<string | undefined>(undefined);
+  iconOnly = input<boolean>(false);
   header = input<string | undefined>(undefined);
   message = input<string | undefined>(undefined);
   confirmIcon = input<string | undefined>(undefined);
   severity = input<ButtonColor>('primary');
   variant = input<ButtonVariant>();
   showOpenButton = input<boolean>(true);
+  tooltip = input<string | undefined>(undefined);
+  tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
 
   data = input<string | undefined>(undefined);
 

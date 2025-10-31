@@ -2,7 +2,7 @@ import { Component, TemplateRef, computed, inject, signal, viewChild } from '@an
 import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom, map } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
@@ -14,7 +14,7 @@ import { EmailTemplateOverviewDTO } from '../../../generated/model/emailTemplate
 
 @Component({
   selector: 'jhi-research-group-templates',
-  imports: [DynamicTableComponent, ButtonComponent, TranslateDirective],
+  imports: [DynamicTableComponent, ButtonComponent, TranslateDirective, TranslateModule],
   templateUrl: './research-group-templates.html',
   styleUrl: './research-group-templates.scss',
 })
