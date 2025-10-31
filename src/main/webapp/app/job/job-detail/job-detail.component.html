@@ -132,7 +132,8 @@
                 [icon]="['fas', 'pencil']"
                 class="icon edit-icon cursor-pointer ml-auto"
                 (click)="onEditResearchGroup()"
-                title="{{ 'jobDetailPage.editResearchGroup' | translate }}"
+                [pTooltip]="'button.edit' | translate"
+                tooltipPosition="top"
               />
             }
           </div>
