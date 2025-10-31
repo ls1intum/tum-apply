@@ -104,7 +104,7 @@ public class TemplateProcessingService {
      * @return fully rendered HTML including layout
      * @throws TemplateProcessingException if layout template rendering fails
      */
-    private String renderLayout(@NonNull Language language, String html, boolean sanitize) {
+    private String renderLayout(Language language, String html, boolean sanitize) {
         try {
             Template layout = freemarkerConfig.getTemplate(BASE_RAW_TEMPLATE);
 
@@ -148,8 +148,7 @@ public class TemplateProcessingService {
             case Application application -> addApplicationData(dataModel, application);
             case Job job -> addJobData(dataModel, job);
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
-            case null, default -> {
-                assert content != null;
+            default -> {
                 throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
             }
         }
