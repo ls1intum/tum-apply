@@ -101,7 +101,8 @@ If you're a developer or contributor, head over to the full documentation:
 
 - 📚 [Development Setup](docs-github/setup/dev-environment.md)
 - 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
-- 🛠️ [API Documentation](docs-github/TUMApply%20API)
+- 💡 [General Documentation](docs-github/general/general-documentation.md)
+- 💼 [Job Documentation](docs-github/job/job-module-documentation.md)
 - 🧪 [Testing Guide](docs-github/testing/testing-guide.md)
 - 🐳 [Docker Setup](docs-github/deployment/docker.md)
 - 🚀 [Build for Production](docs-github/deployment/build-production.md)
