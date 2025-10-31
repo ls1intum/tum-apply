@@ -1,13 +1,13 @@
 import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
+import { AccountService } from 'app/core/auth/account.service';
+import { ToastService } from 'app/service/toast-service';
+import { RatingOverviewDTO } from 'app/generated/model/ratingOverviewDTO';
+import { RatingResourceApiService } from 'app/generated/api/ratingResourceApi.service';
 
-import { SubSection } from '../sub-section/sub-section';
-import { RatingComponent } from '../../../shared/components/atoms/rating/rating.component';
-import { AccountService } from '../../../core/auth/account.service';
-import { ToastService } from '../../../service/toast-service';
 import TranslateDirective from '../../../shared/language/translate.directive';
-import { RatingOverviewDTO } from '../../../generated/model/ratingOverviewDTO';
-import { RatingResourceApiService } from '../../../generated/api/ratingResourceApi.service';
+import { SubSection } from '../sub-section/sub-section';
 
 @Component({
   selector: 'jhi-rating-section',
@@ -28,7 +28,7 @@ export class RatingSection {
     return this.ratings()?.otherRatings ?? [];
   });
 
-  _loadRaringEffect = effect(() => {
+  _loadRatingEffect = effect(() => {
     const applicationId = this.applicationId();
     if (applicationId !== undefined) {
       void this.loadRatings(applicationId);
