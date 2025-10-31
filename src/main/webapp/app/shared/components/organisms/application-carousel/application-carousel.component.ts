@@ -14,6 +14,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Signal } from '@angular/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
