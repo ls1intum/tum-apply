@@ -1,9 +1,7 @@
 <div class="py-8 px-12 max-w-[1600px] mx-auto flex flex-col min-h-screen">
   <!-- Page Header -->
-  <div class="page-header">
-    <h1 class="text-[2rem] font-bold text-[var(--p-primary-color)]" jhiTranslate="interview.overview.title">
-      Interviews
-    </h1>
+  <div class="page-header mb-6">
+    <h1 jhiTranslate="interview.overview.title">Interviews</h1>
   </div>
 
   <!-- Two-column Layout -->
@@ -11,9 +9,7 @@
     <!-- Left Section -->
     <div class="flex-[0_0_68%] flex flex-col">
       <div class="flex justify-between items-center mb-4 h-10">
-        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.positions.title">
-          Positions
-        </h2>
+        <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.positions.title">Positions</h2>
 
         <jhi-button
           [label]="'interview.overview.actions.newProcess'"
@@ -50,9 +46,7 @@
           class="flex flex-col items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
         >
           <i class="pi pi-inbox text-[var(--p-text-tertiary)] text-5xl mb-4"></i>
-          <h3 class="text-lg font-semibold text-[var(--p-text-primary)] mb-2" jhiTranslate="interview.overview.empty.title">
-            No interview processes
-          </h3>
+          <h3 class="text-lg font-semibold mb-2" jhiTranslate="interview.overview.empty.title">No interview processes</h3>
           <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.empty.description">
             You haven't created any interview processes yet. Click "New Interview Process" to get started.
           </p>
@@ -75,9 +69,7 @@
     <!-- Right Section -->
     <div class="flex-1 flex flex-col">
       <div class="mb-4 h-10 flex items-center">
-        <h2 class="text-lg font-semibold text-[var(--p-text-primary)]" jhiTranslate="interview.overview.upcoming.title">
-          Upcoming
-        </h2>
+        <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
       </div>
 
       <div

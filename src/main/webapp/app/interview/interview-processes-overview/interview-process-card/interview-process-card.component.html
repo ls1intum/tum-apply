@@ -3,7 +3,7 @@
   class="bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-4 cursor-pointer transition-shadow hover:shadow-md"
 >
   <!-- Job Title -->
-  <h3 class="text-base font-semibold text-[var(--p-text-primary)] mb-4">
+  <h3 class="text-base font-semibold mb-4">
     {{ process().jobTitle }}
   </h3>
 
@@ -13,7 +13,7 @@
       <div class="flex items-start gap-1.5">
         <div class="w-0.75 h-8 rounded" [ngClass]="stat.colorClass"></div>
         <div class="flex flex-col">
-          <span class="text-lg font-semibold text-[var(--p-text-primary)]">
+          <span class="text-lg font-semibold">
             {{ stat.count }}
           </span>
           <span class="text-xs text-[var(--p-text-secondary)]" [jhiTranslate]="stat.label">
@@ -27,11 +27,7 @@
   <!-- Multi-segment Progress Bar -->
   <div class="h-2 bg-[var(--p-background-disabled)] rounded-md overflow-hidden flex mb-2">
     @for (stat of stats(); track stat.label) {
-      <div
-        class="h-full transition-all duration-300"
-        [ngClass]="stat.colorClass"
-        [style.width.%]="calculateWidth(stat.count)"
-      ></div>
+      <div class="h-full transition-all duration-300" [ngClass]="stat.colorClass" [style.width.%]="calculateWidth(stat.count)"></div>
     }
   </div>
 
@@ -40,7 +36,7 @@
     <span class="text-xs text-[var(--p-text-secondary)] leading-normal" jhiTranslate="interview.overview.stats.totalInterviews">
       Total interviews
     </span>
-    <span class="text-base font-semibold text-[var(--p-text-primary)] leading-normal">
+    <span class="text-base font-semibold leading-normal">
       {{ process().totalInterviews }}
     </span>
   </div>
