@@ -33,7 +33,7 @@ public class ApplicationResource {
     /**
      * @param jobId The UUID of the Job
      * @return ApplicationForApplicantDTO as ResponseEntity, or 400 Bad Request if
-     * the createApplicationDTO is invalid
+     *         the createApplicationDTO is invalid
      */
     @ApplicantOrAdmin
     @PostMapping("/create/{jobId}")
@@ -61,11 +61,7 @@ public class ApplicationResource {
     @GetMapping("/{applicationId}")
     public ResponseEntity<ApplicationForApplicantDTO> getApplicationById(@PathVariable UUID applicationId) {
         ApplicationForApplicantDTO application = applicationService.getApplicationById(applicationId);
-        if (application != null) {
-            return ResponseEntity.ok(application);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(application);
     }
 
     /**
@@ -109,7 +105,7 @@ public class ApplicationResource {
      *
      * @param applicationId
      * @return the withdrawn ApplicationForApplicantDTO, or 404 Not Found if not
-     * found
+     *         found
      */
     @ApplicantOrAdmin
     @PutMapping("/withdraw/{applicationId}")
@@ -123,7 +119,8 @@ public class ApplicationResource {
      *
      * @param pageSize   The number of items per page (default: 25).
      * @param pageNumber The page number to retrieve (default: 0).
-     * @return A list of {@link ApplicationOverviewDTO} representing the application overview data.
+     * @return A list of {@link ApplicationOverviewDTO} representing the application
+     *         overview data.
      */
     @ApplicantOrAdmin
     @GetMapping("/pages")
@@ -137,7 +134,8 @@ public class ApplicationResource {
 
     /**
      * Retrieves the total number of applications submitted by a specific applicant.
-     * Can be removed once sorting and filtering demands using a ApplicationPageDTO, where this data can be directly included
+     * Can be removed once sorting and filtering demands using a ApplicationPageDTO,
+     * where this data can be directly included
      *
      * @param applicantId The UUID of the applicant.
      * @return The total count of applications.
