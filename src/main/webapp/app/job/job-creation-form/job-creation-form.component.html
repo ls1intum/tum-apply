@@ -243,7 +243,8 @@
     <div [formGroup]="additionalInfoForm">
       <label>
         <input type="checkbox" formControlName="privacyAccepted" />
-        <span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
+        <span class="required mr-1">*</span
+        ><span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
       </label>
 
       @if (privacyAcceptedSignal() === false && publishAttempted()) {
