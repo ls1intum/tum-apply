@@ -58,19 +58,14 @@ public class InterviewService {
         Map<UUID, Map<ApplicationState, Long>> countsPerJobAndState = new HashMap<>();
 
         for (InterviewStatisticsDTO stat : statistics) {
-            countsPerJobAndState
-                .computeIfAbsent(stat.jobId(), k -> new EnumMap<>(ApplicationState.class))
-                .put(stat.state(), stat.count());
+            countsPerJobAndState.computeIfAbsent(stat.jobId(), k -> new EnumMap<>(ApplicationState.class)).put(stat.state(), stat.count());
         }
 
         return interviewProcesses
             .stream()
             .map(interviewProcess -> {
                 Job job = interviewProcess.getJob();
-                Map<ApplicationState, Long> stateCounts = countsPerJobAndState.getOrDefault(
-                    job.getJobId(),
-                    Collections.emptyMap()
-                );
+                Map<ApplicationState, Long> stateCounts = countsPerJobAndState.getOrDefault(job.getJobId(), Collections.emptyMap());
 
                 long completedCount = stateCounts.getOrDefault(ApplicationState.COMPLETED, 0L);
                 long scheduledCount = stateCounts.getOrDefault(ApplicationState.SCHEDULED, 0L);
@@ -78,8 +73,8 @@ public class InterviewService {
 
                 long uncontactedCount =
                     stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) +
-                        stateCounts.getOrDefault(ApplicationState.SENT, 0L) +
-                        stateCounts.getOrDefault(ApplicationState.ACCEPTED, 0L);
+                    stateCounts.getOrDefault(ApplicationState.SENT, 0L) +
+                    stateCounts.getOrDefault(ApplicationState.ACCEPTED, 0L);
 
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
 
@@ -113,9 +108,7 @@ public class InterviewService {
     public InterviewProcessDTO createInterviewProcess(CreateInterviewProcessDTO dto) {
         UUID professorId = currentUserService.getUserId();
 
-        Job job = jobRepository
-            .findById(dto.jobId())
-            .orElseThrow(() -> EntityNotFoundException.forId("Job", dto.jobId()));
+        Job job = jobRepository.findById(dto.jobId()).orElseThrow(() -> EntityNotFoundException.forId("Job", dto.jobId()));
 
         if (!job.getSupervisingProfessor().getUserId().equals(professorId)) {
             throw new AccessDeniedException("You can only create interview processes for your own jobs");

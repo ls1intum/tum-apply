@@ -217,7 +217,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
      * @param professorId the UUID of the professor
      * @return list of statistics containing job ID, application state, and count
      */
-    @Query("""
+    @Query(
+        """
         SELECT new de.tum.cit.aet.interview.dto.InterviewStatisticsDTO(
             j.jobId,
             a.state,
@@ -228,6 +229,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         JOIN j.applications a
         WHERE j.supervisingProfessor.userId = :professorId
         GROUP BY j.jobId, a.state
-        """)
+        """
+    )
     List<InterviewStatisticsDTO> getInterviewStatistics(@Param("professorId") UUID professorId);
 }

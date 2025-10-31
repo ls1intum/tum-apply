@@ -7,8 +7,4 @@ import java.util.UUID;
  * DTO for projecting interview statistics directly from database queries.
  * Used to efficiently aggregate application counts by job and state.
  */
-public record InterviewStatisticsDTO(
-    UUID jobId,
-    ApplicationState state,
-    Long count
-) {}
+public record InterviewStatisticsDTO(UUID jobId, ApplicationState state, Long count) {}
