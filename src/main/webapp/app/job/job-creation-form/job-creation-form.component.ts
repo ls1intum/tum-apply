@@ -241,10 +241,10 @@ export class JobCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {},
             disabled: false,
-            label: 'jobActionButton.back',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -252,10 +252,10 @@ export class JobCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick() {},
             disabled: !this.positionDetailsValid(),
-            label: 'jobActionButton.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
