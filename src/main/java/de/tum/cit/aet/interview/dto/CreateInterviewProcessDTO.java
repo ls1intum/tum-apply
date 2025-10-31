@@ -8,7 +8,4 @@ import java.util.UUID;
  * DTO for creating a new interview process.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record CreateInterviewProcessDTO(
-    @NotNull(message = "Job ID must not be null")
-    UUID jobId
-) {}
+public record CreateInterviewProcessDTO(@NotNull(message = "Job ID must not be null") UUID jobId) {}

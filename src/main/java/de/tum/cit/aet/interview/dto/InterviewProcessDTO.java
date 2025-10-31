@@ -5,9 +5,4 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record InterviewProcessDTO(
-    UUID id,
-    UUID jobId,
-    String jobTitle,
-    LocalDateTime createdAt
-) {}
+public record InterviewProcessDTO(UUID id, UUID jobId, String jobTitle, LocalDateTime createdAt) {}
