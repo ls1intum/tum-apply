@@ -9,10 +9,10 @@ import {
   output,
   signal,
 } from '@angular/core';
-
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
@@ -113,12 +113,9 @@ export class ApplicationCarouselComponent {
   // Dynamically adjust the number of visible cards based on content width
   private updateVisibleCards(): void {
     const contentContainer =
-      document.querySelector('.page-container') ??
-      document.querySelector('main') ??
-      document.querySelector('.content') ??
-      document.body;
+      document.querySelector('.page-container') ?? document.querySelector('main') ?? document.querySelector('.content') ?? document.body;
 
-    const containerWidth = contentContainer?.clientWidth ?? window.innerWidth;
+    const containerWidth = contentContainer ? contentContainer.clientWidth : window.innerWidth;
 
     if (containerWidth < BREAKPOINTS.md) {
       this.cardsVisible.set(1);
