@@ -289,6 +289,26 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Interview
+  // ======================================================================================
+  {
+    path: 'interviews',
+    children: [
+      {
+        path: 'overview',
+        loadComponent: () =>
+          import('./interview/interview-processes-overview/interview-processes-overview.component').then(
+            m => m.InterviewProcessesOverviewComponent,
+          ),
+        title: 'global.routes.interview.overview',
+        data: {
+          authorities: ['PROFESSOR', 'ADMIN'],
+        },
+      },
+    ],
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,
