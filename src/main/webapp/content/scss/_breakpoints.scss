@@ -1,7 +1,9 @@
-$sm: 480px; // large phones
-$xs: 400px; // standard phones
-$xxs: 380px; // small phones
+$xxs: 360px; // very small phones
+$xs: 480px; // small phones
+$sm: 600px; // large phones
 $md: 768px; // tablets
-$lg: 1024px; // laptops
-$xl: 1440px; // desktops
-$ultra-wide: 2048px; // very large screens
+$smallDesktop: 800px; // compact desktop / sidebar open
+$lg: 1024px; // laptops / medium desktop
+$xl: 1300px; // compact desktop (single-card mode)
+$xxl: 1440px; // standard desktop
+$ultraWide: 2048px; // ultra-wide screens

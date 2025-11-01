@@ -5,22 +5,17 @@ import {
   ViewEncapsulation,
   computed,
   effect,
-  inject,
   input,
   output,
   signal,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
-import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Signal } from '@angular/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-
 import { ApplicationCardComponent } from '../../molecules/application-card/application-card.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { BREAKPOINT_QUERIES } from '../../../constants/breakpoints';
+import { BREAKPOINTS } from '../../../constants/breakpoints';
 
 // Constants defining the default visible slots and application carousel size
 const VISIBLE_DESKTOP = 3;
@@ -65,13 +60,8 @@ export class ApplicationCarouselComponent {
   next = output();
   prev = output();
 
-  isStart = computed(() => {
-    return this.currentIndex() === 0;
-  });
-
-  isEnd = computed(() => {
-    return this.currentIndex() === this.totalRecords() - 1 || this.totalRecords() === 0;
-  });
+  isStart = computed(() => this.currentIndex() === 0);
+  isEnd = computed(() => this.currentIndex() === this.totalRecords() - 1 || this.totalRecords() === 0);
 
   // Compute the list of applications to display (always fills visible slots with null)
   readonly visibleApplications = computed(() => {
@@ -92,30 +82,32 @@ export class ApplicationCarouselComponent {
   });
 
   // Index of the center card, used to determine which card is active/focused
-  readonly middle = computed(() => {
-    return Math.floor(this.cardsVisible() / 2);
-  });
+  readonly middle = computed(() => Math.floor(this.cardsVisible() / 2));
 
-  private readonly breakPoint = inject(BreakpointObserver);
+  constructor() {
+    effect(() => this.updateVisibleCards());
+    window.addEventListener('resize', () => this.updateVisibleCards());
+  }
 
-  private readonly breakpoint: Signal<BreakpointState | undefined> = toSignal(
-    this.breakPoint.observe([BREAKPOINT_QUERIES.onlyMobile, BREAKPOINT_QUERIES.ultraWide]),
-    {
-      initialValue: undefined,
-    },
-  );
+  // Dynamically adjust the number of visible cards based on content width
+  private updateVisibleCards(): void {
+    const contentContainer =
+      document.querySelector('.page-container') || document.querySelector('main') || document.querySelector('.content') || document.body;
 
-  private readonly _breakPointEffect = effect(() => {
-    const result = this.breakpoint();
-    if (!result) return;
-    if (result.breakpoints[BREAKPOINT_QUERIES.onlyMobile]) {
+    const containerWidth = contentContainer?.clientWidth ?? window.innerWidth;
+
+    if (containerWidth < BREAKPOINTS.md) {
       this.cardsVisible.set(1);
-    } else if (result.breakpoints[BREAKPOINT_QUERIES.ultraWide]) {
+    } else if (containerWidth < BREAKPOINTS.smallDesktop) {
+      this.cardsVisible.set(2);
+    } else if (containerWidth < BREAKPOINTS.xl) {
+      this.cardsVisible.set(3);
+    } else if (containerWidth < BREAKPOINTS.ultraWide) {
       this.cardsVisible.set(5);
     } else {
-      this.cardsVisible.set(VISIBLE_DESKTOP);
+      this.cardsVisible.set(6);
     }
-  });
+  }
 
   // Listen to arrow keys for navigation
   @HostListener('document:keydown', ['$event'])
