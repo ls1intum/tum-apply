@@ -66,7 +66,6 @@ const applyflow = 'entity.toast.applyFlow';
 })
 export default class ApplicationCreationFormComponent {
   private static readonly MAX_OTP_WAIT_TIME_MS = 600_000; // 10 minutes
-  readonly sendButtonLabel = 'entity.applicationSteps.buttons.send';
   readonly sendButtonSeverity = 'primary' as ButtonColor;
   readonly sendButtonIcon = 'paper-plane';
 
@@ -194,7 +193,7 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'info',
-            icon: 'caret-left',
+            icon: 'arrow-left',
             onClick(): void {
               void (async () => {
                 await performAutomaticSaveLocal();
@@ -202,7 +201,7 @@ export default class ApplicationCreationFormComponent {
               })();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.back',
+            label: 'button.back',
             changePanel: false,
             shouldTranslate: true,
           },
@@ -210,12 +209,12 @@ export default class ApplicationCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick: () => {
               this.handleNextFromStep1();
             },
             disabled: !personalInfoDataValid,
-            label: 'entity.applicationSteps.buttons.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: this.applicantId() !== '',
           },
@@ -233,12 +232,12 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.prev',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -246,12 +245,12 @@ export default class ApplicationCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick() {
               updateDocumentInformation();
             },
             disabled: !educationDataValid,
-            label: 'entity.applicationSteps.buttons.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -270,12 +269,12 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.prev',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -283,12 +282,12 @@ export default class ApplicationCreationFormComponent {
         buttonGroupNext: [
           {
             severity: 'primary',
-            icon: 'arrow-right',
+            icon: 'chevron-right',
             onClick() {
               updateDocumentInformation();
             },
             disabled: !applicationDetailsDataValid,
-            label: 'entity.applicationSteps.buttons.next',
+            label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -307,12 +306,12 @@ export default class ApplicationCreationFormComponent {
           {
             variant: 'outlined',
             severity: 'primary',
-            icon: 'arrow-left',
+            icon: 'chevron-left',
             onClick() {
               updateDocumentInformation();
             },
             disabled: false,
-            label: 'entity.applicationSteps.buttons.prev',
+            label: 'button.back',
             shouldTranslate: true,
             changePanel: true,
           },
@@ -325,7 +324,7 @@ export default class ApplicationCreationFormComponent {
               this.sendConfirmDialog()?.confirm();
             },
             disabled: !allPagesValid,
-            label: this.sendButtonLabel,
+            label: 'button.send',
             shouldTranslate: true,
             changePanel: false,
           },

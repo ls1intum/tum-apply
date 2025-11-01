@@ -3,7 +3,7 @@
   class="confirm-dialog"
   [header]="'jobCreationForm.confirmDialog.header' | translate"
   [message]="'jobCreationForm.confirmDialog.message' | translate"
-  [label]="publishButtonLabel | translate"
+  [label]="'button.publish' | translate"
   [severity]="publishButtonSeverity"
   [confirmIcon]="publishButtonIcon"
   [showOpenButton]="false"
@@ -67,7 +67,7 @@
             <span class="required">*</span>
           </label>
           <div class="icon-input-wrapper mb-6">
-            <fa-icon [icon]="['fas', 'user']" class="input-icon" />
+            <fa-icon [icon]="['fas', 'user-tie']" class="input-icon" />
             <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
           </div>
         </div>

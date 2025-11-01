@@ -27,13 +27,15 @@
   <ng-template #deleteTemplate let-member>
     @if (!member.isCurrentUser) {
       <jhi-confirm-dialog
-        [label]="'researchGroup.members.remove' | translate"
+        [label]="'button.remove' | translate"
+        [tooltip]="'button.remove' | translate"
+        [iconOnly]="true"
         severity="danger"
-        variant="outlined"
+        variant="text"
         [header]="'researchGroup.members.removeMemberModal.title' | translate"
         [message]="'researchGroup.members.removeMemberModal.message' | translate"
         (confirmed)="removeMember(member)"
-        confirmIcon="trash"
+        confirmIcon="circle-minus"
       />
     }
   </ng-template>

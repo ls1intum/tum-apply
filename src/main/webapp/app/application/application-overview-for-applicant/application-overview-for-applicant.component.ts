@@ -19,7 +19,6 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  standalone: true,
   imports: [
     DynamicTableComponent,
     ButtonComponent,
@@ -106,12 +105,10 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private applicantId = signal<string>('');
 
-  constructor() {
-    effect(() => {
-      this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-      this.loadTotal();
-    });
-  }
+  private initEffect = effect(() => {
+    this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
+    void this.loadTotal();
+  });
 
   async loadTotal(): Promise<void> {
     try {
@@ -132,10 +129,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
     try {
       const res = await firstValueFrom(this.applicationService.getApplicationPages(rows, page).pipe());
-
-      setTimeout(() => {
-        this.pageData.set(res);
-      });
+      this.pageData.set(res);
     } catch (error) {
       console.error('Failed to load applications:', error);
     } finally {
@@ -144,11 +138,11 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onViewApplication(applicationId: string): void {
-    this.router.navigate([`/application/detail/${applicationId}`]);
+    void this.router.navigate([`/application/detail/${applicationId}`]);
   }
 
   onUpdateApplication(applicationId: string): void {
-    this.router.navigate(['/application/form'], {
+    void this.router.navigate(['/application/form'], {
       queryParams: {
         application: applicationId,
       },
@@ -162,7 +156,7 @@ export default class ApplicationOverviewForApplicantComponent {
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });
         const event = this.lastLazyLoadEvent();
-        if (event) this.loadPage(event);
+        if (event) void this.loadPage(event);
       },
       error: err => {
         this.toastService.showError({ detail: 'Error deleting the application' });
@@ -176,7 +170,7 @@ export default class ApplicationOverviewForApplicantComponent {
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully withdrawn' });
         const event = this.lastLazyLoadEvent();
-        if (event) this.loadPage(event);
+        if (event) void this.loadPage(event);
       },
       error: err => {
         this.toastService.showError({ detail: 'Error withdrawing the application' });

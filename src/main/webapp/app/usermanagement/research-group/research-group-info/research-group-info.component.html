@@ -5,12 +5,7 @@
   <div class="card">
     <div class="card-header">
       <p jhiTranslate="researchGroup.groupInfo.description"></p>
-      <jhi-button
-        [label]="'researchGroup.groupInfo.saveButton'"
-        [shouldTranslate]="true"
-        [disabled]="!form.valid || isSaving()"
-        (click)="onSave()"
-      />
+      <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!form.valid || isSaving()" (click)="onSave()" />
     </div>
     <div class="card-body">
       <div class="space-y-4">

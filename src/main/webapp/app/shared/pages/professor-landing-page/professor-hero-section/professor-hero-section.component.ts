@@ -3,10 +3,10 @@ import { Carousel } from 'primeng/carousel';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { Router } from '@angular/router';
-
-import { ButtonComponent } from '../../../components/atoms/button/button.component';
-import TranslateDirective from '../../../language/translate.directive';
-import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import TranslateDirective from 'app/shared/language/translate.directive';
+import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   selector: 'jhi-professor-hero-section',
@@ -31,9 +31,14 @@ export class ProfessorHeroSectionComponent {
   ];
 
   private authFacadeService = inject(AuthFacadeService);
+  private accountService = inject(AccountService);
   private router = inject(Router);
 
   async navigateToGetStarted(): Promise<void> {
-    await this.authFacadeService.loginWithProvider(IdpProvider.TUM, '/my-positions');
+    if (this.accountService.signedIn()) {
+      await this.router.navigate(['/my-positions']);
+    } else {
+      await this.authFacadeService.loginWithProvider(IdpProvider.TUM, '/my-positions');
+    }
   }
 }

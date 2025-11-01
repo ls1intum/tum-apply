@@ -1,0 +1,20 @@
+{
+  "button": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "remove": "Remove",
+    "edit": "Edit",
+    "save": "Save",
+    "send": "Send",
+    "submit": "Submit",
+    "view": "View",
+    "update": "Update",
+    "withdraw": "Withdraw",
+    "back": "Back",
+    "next": "Next",
+    "apply": "Apply",
+    "publish": "Publish"
+  }
+}

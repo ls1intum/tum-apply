@@ -122,7 +122,7 @@
             <p-divider />
 
             <!-- Education -->
-            <jhi-section titleKey="evaluation.details.educationTitle" icon="building-columns">
+            <jhi-section titleKey="evaluation.details.educationTitle" icon="graduation-cap">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Bachelor -->
                 <jhi-sub-section titleKey="evaluation.details.educationBachelors">
@@ -139,7 +139,7 @@
             <p-divider />
 
             <!-- Application -->
-            <jhi-section titleKey="evaluation.details.applicationTitle" icon="file-lines">
+            <jhi-section titleKey="evaluation.details.applicationTitle" icon="file">
               <jhi-sub-section titleKey="evaluation.details.applicationDesiredStartDate">
                 <span class="text-sm"> {{ application.applicationDetailDTO.desiredDate || '—' }} </span>
               </jhi-sub-section>
@@ -161,7 +161,7 @@
           <p-divider class="block xl:hidden" />
 
           <div>
-            <jhi-section titleKey="evaluation.details.documentTitle" icon="folder">
+            <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
               <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
@@ -169,7 +169,7 @@
         <p-divider />
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
-            <jhi-section titleKey="evaluation.details.ratingTitle" icon="thumbs-up">
+            <jhi-section titleKey="evaluation.details.ratingTitle" icon="star">
               <jhi-rating-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>

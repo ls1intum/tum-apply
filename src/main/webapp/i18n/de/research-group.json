@@ -7,7 +7,6 @@
     "groupInfoHeader": "Meine Gruppe",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
-      "saveButton": "Speichern",
       "fields": {
         "name": "Name",
         "abbreviation": "Abkürzung",
@@ -62,7 +61,6 @@
       "addSubject": "Betreff der Email...",
       "addVariable": "Drücke '$', um eine Variable einzufügen",
       "message": "Nachricht",
-      "back": "Zurück",
       "saved": "Gespeichert",
       "saving": "Änderungen werden gespeichert",
       "unsaved": "Änderungen nicht gespeichert",
@@ -101,7 +99,6 @@
         "role": "Rolle"
       },
 
-      "remove": "Entfernen",
       "removeMemberModal": {
         "title": "Mitglied entfernen",
         "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"

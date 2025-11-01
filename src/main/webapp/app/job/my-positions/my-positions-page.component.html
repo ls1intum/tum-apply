@@ -3,7 +3,13 @@
     <div class="page-header">
       <h1 jhiTranslate="myPositionsPage.header.title"></h1>
     </div>
-    <jhi-button label="myPositionsPage.header.createButton" severity="primary" (click)="onCreateJob()" [shouldTranslate]="true" />
+    <jhi-button
+      label="myPositionsPage.header.createButton"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateJob()"
+      [shouldTranslate]="true"
+    />
   </div>
   <div class="my-positions-container">
     <div class="body">
@@ -41,16 +47,20 @@
       <ng-template #actionTemplate let-job>
         <div class="flex space-x-2">
           <jhi-button
-            label="jobActionButton.view"
+            icon="eye"
+            variant="text"
+            [tooltip]="'button.view' | translate"
             severity="primary"
             data-testid="view"
             (click)="onViewJob(job.jobId)"
             [shouldTranslate]="true"
           />
           <jhi-button
-            label="jobActionButton.edit"
+            icon="pencil"
+            variant="text"
+            [tooltip]="'button.edit' | translate"
             severity="primary"
-            variant="outlined"
+            variant="text"
             (click)="onEditJob(job.jobId)"
             data-testid="edit"
             [disabled]="job.state !== 'DRAFT'"
@@ -58,7 +68,9 @@
           />
           @if (job.state === 'DRAFT') {
             <jhi-confirm-dialog
-              [label]="'jobActionButton.delete' | translate"
+              [label]="'button.delete' | translate"
+              [iconOnly]="true"
+              [tooltip]="'button.delete' | translate"
               severity="danger"
               [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
               [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
@@ -69,9 +81,10 @@
           }
           @if (job.state === 'PUBLISHED') {
             <jhi-confirm-dialog
-              [label]="'jobActionButton.close' | translate"
+              [label]="'button.close' | translate"
+              [iconOnly]="true"
+              [tooltip]="'button.close' | translate"
               severity="danger"
-              variant="outlined"
               [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
               [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
               (confirmed)="onCloseJob(job.jobId)"

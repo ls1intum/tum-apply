@@ -40,7 +40,14 @@
     />
 
     <ng-template #actionTemplate let-application>
-      <jhi-button [label]="'evaluation.more' | translate" severity="primary" (click)="navigateToDetail(application)" />
+      <jhi-button
+        icon="eye"
+        [ariaLabel]="'button.view' | translate"
+        [tooltip]="'button.view' | translate"
+        severity="primary"
+        variant="text"
+        (click)="navigateToDetail(application)"
+      />
     </ng-template>
 
     <ng-template #stateTemplate let-application>
