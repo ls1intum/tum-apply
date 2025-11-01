@@ -1,3 +1,4 @@
+@use '../../../../../content/scss/breakpoints' as bp;
 .card {
   display: flex;
   flex-direction: column;
@@ -24,6 +25,12 @@
   justify-content: space-between;
   align-items: center;
   height: 2rem;
+  gap: 0.5rem;
+}
+
+.status-tag {
+  width: 7rem;
+  flex-shrink: 0;
 }
 
 .name {
@@ -71,5 +78,179 @@
     gap: 0.25rem;
     font-size: 1.125rem;
     color: var(--p-text-disabled);
+  }
+}
+
+/* Compact desktop (window resized, single-card mode) */
+@media (max-width: bp.$xl) {
+  .card {
+    width: 17.5rem;
+    display: grid;
+    grid-template-rows: auto auto auto;
+  }
+
+  .header {
+    display: contents;
+  }
+
+  .name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    order: 1;
+    text-align: left;
+  }
+
+  .job {
+    order: 2;
+    justify-self: start;
+
+    .job-title {
+      font-size: 0.95rem;
+      line-height: 1.25rem;
+    }
+  }
+
+  .status-tag {
+    width: 7rem;
+    order: 3;
+  }
+
+  .icon {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: bp.$md + 1) and (max-width: bp.$smallDesktop) {
+  .card {
+    width: clamp(13rem, 80vw, 16rem);
+  }
+}
+
+/* Tablets and smaller (width <= 768px) */
+@media (max-width: bp.$md) {
+  .card {
+    width: 14rem;
+    padding: 0.7rem;
+    gap: 0.5rem;
+  }
+
+  .status-tag {
+    width: 8rem;
+  }
+
+  .name {
+    font-size: 1.1rem;
+  }
+
+  .job {
+    gap: 0.4rem;
+    min-height: 2.3rem;
+
+    .job-title {
+      font-size: 0.9rem;
+      line-height: 1.2rem;
+      max-height: calc(1.2rem * 2);
+    }
+  }
+}
+
+/* Large phones */
+@media (max-width: bp.$sm) {
+  .card {
+    width: 14rem;
+    padding: 0.45rem;
+    gap: 0.2rem;
+    display: grid;
+    grid-template-rows: auto auto auto;
+  }
+
+  .header {
+    display: contents;
+  }
+
+  .name {
+    font-size: 0.85rem;
+    line-height: 1.2;
+    padding: 0.2rem;
+    order: 1;
+    text-align: left;
+  }
+
+  .job {
+    gap: 0.35rem;
+    min-height: 1.8rem;
+    padding: 0.2rem;
+    order: 2;
+
+    .job-title {
+      font-size: 0.72rem;
+      line-height: 1rem;
+      max-height: calc(1rem * 2);
+    }
+  }
+
+  .status-tag {
+    width: 7rem;
+    font-size: 0.55rem;
+    order: 3;
+  }
+
+  .icon {
+    font-size: 0.7rem;
+  }
+}
+
+/* Standard phones */
+@media (max-width: bp.$xs) {
+  .card {
+    width: 12.5rem;
+  }
+
+  .name {
+    font-size: 0.8rem;
+  }
+
+  .job {
+    .job-title {
+      font-size: 0.68rem;
+      line-height: 0.95rem;
+      max-height: calc(0.95rem * 2);
+    }
+  }
+
+  .status-tag {
+    font-size: 0.52rem;
+    padding: 0.1rem 0.18rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: bp.$xxs) {
+  .card {
+    width: 11.5rem;
+  }
+
+  .name {
+    font-size: 0.75rem;
+    padding: 0.15rem;
+  }
+
+  .job {
+    padding: 0.15rem;
+
+    .job-title {
+      font-size: 0.65rem;
+      line-height: 0.9rem;
+      max-height: calc(0.9rem * 2);
+    }
+  }
+
+  .status-tag {
+    font-size: 0.5rem;
+    padding: 0.08rem 0.15rem;
+  }
+
+  .icon {
+    font-size: 0.65rem;
   }
 }
