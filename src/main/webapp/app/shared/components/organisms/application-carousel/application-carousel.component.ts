@@ -83,8 +83,12 @@ export class ApplicationCarouselComponent {
   readonly middle = computed(() => Math.floor(this.cardsVisible() / 2));
 
   constructor() {
-    effect(() => this.updateVisibleCards());
-    window.addEventListener('resize', () => this.updateVisibleCards());
+    effect(() => {
+      this.updateVisibleCards();
+    });
+    window.addEventListener('resize', () => {
+      this.updateVisibleCards();
+    });
   }
 
   // Listen to arrow keys for navigation
