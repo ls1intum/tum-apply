@@ -13,9 +13,10 @@ interface StatItem {
 }
 
 @Component({
-  selector: 'jhi-interview-process-card',
-  imports: [CommonModule, CardModule, TranslateModule, TranslateDirective],
-  templateUrl: './interview-process-card.component.html',
+    selector: 'jhi-interview-process-card',
+    imports: [CommonModule, CardModule, TranslateModule, TranslateDirective],
+    templateUrl: './interview-process-card.component.html',
+    standalone: true
 })
 export class InterviewProcessCardComponent {
   process = input.required<InterviewOverviewDTO>();

@@ -3,7 +3,7 @@
     "overview": {
       "title": "Interviews",
       "positions": {
-        "title": "Positionen"
+        "title": "Positions"
       },
       "loading": "Loading interview processes...",
       "empty": {
@@ -19,7 +19,7 @@
         "scheduled": "Scheduled",
         "invited": "Invited",
         "uncontacted": "Uncontacted",
-        "totalInterviews": "Total interviews"
+        "totalInterviews": "Total Interviews"
       },
       "upcoming": {
         "title": "Upcoming",
@@ -28,6 +28,16 @@
       "error": {
         "failedToLoad": "Failed to load interview processes."
       }
+    },
+    "dialog": {
+      "selectPosition": "Select a Position",
+      "searchPlaceholder": "Search by title...",
+      "createProcess": "Create Interview Process",
+      "noJobsFound": "No published positions found"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "save": "Save"
     }
   }
 }

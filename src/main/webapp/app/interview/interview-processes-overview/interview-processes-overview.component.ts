@@ -1,32 +1,66 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component';
+import { TranslateService } from '@ngx-translate/core';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { InterviewProcessCardComponent} from "app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component";
+import { CreateInterviewDialogComponent } from './create-interview-dialog/create-interview-dialog.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
-
 import { InterviewService } from '../service/interview.service';
 
 @Component({
   selector: 'jhi-interview-processes-overview',
-  imports: [CommonModule, TranslateModule, TranslateDirective, InterviewProcessCardComponent],
+  standalone: true,
+  imports: [
+    CommonModule,
+    TranslateModule,
+    TranslateDirective,
+    InterviewProcessCardComponent,
+    ButtonComponent
+  ],
+  providers: [DialogService],
   templateUrl: './interview-processes-overview.component.html',
 })
-export class InterviewProcessesOverviewComponent implements OnInit {
-  interviewProcesses = signal<InterviewOverviewDTO[]>([]);
-  loading = signal<boolean>(true);
-  error = signal<string | null>(null);
+export class InterviewProcessesOverviewComponent implements OnInit, OnDestroy {
+  readonly interviewProcesses = signal<InterviewOverviewDTO[]>([]);
+  readonly loading = signal<boolean>(true);
+  readonly error = signal<string | null>(null);
 
   private readonly interviewService = inject(InterviewService);
+  private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
+  private readonly dialogService = inject(DialogService);
+  private dialogRef?: DynamicDialogRef;
 
   ngOnInit(): void {
     void this.loadInterviewProcesses();
   }
 
-  createNewInterviewProcess(): void {
-    this.router.navigate(['/interviews/create']);
+  ngOnDestroy(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
+  }
+
+  openCreateInterviewDialog(): void {
+    this.dialogRef = this.dialogService.open(CreateInterviewDialogComponent, {
+      width: '50rem',   // ← rem statt px
+      height: '43.75rem', // ← 700px = 43.75rem (700/16)
+      modal: true,
+      breakpoints: {
+        '960px': '90vw',
+        '640px': '95vw'
+      }
+    });
+
+    this.dialogRef.onClose.subscribe((result) => {
+      if (result) {
+        void this.loadInterviewProcesses();
+      }
+    });
   }
 
   viewDetails(jobId: string): void {

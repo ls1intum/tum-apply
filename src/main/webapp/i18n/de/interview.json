@@ -28,6 +28,16 @@
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
       }
+    },
+    "dialog": {
+      "selectPosition": "Wähle eine Position",
+      "searchPlaceholder": "Nach Titel suchen...",
+      "createProcess": "Interview Prozess erstellen",
+      "noJobsFound": "Keine veröffentlichten Positionen gefunden"
+    },
+    "common": {
+      "cancel": "Abbrechen",
+      "save": "Speichern"
     }
   }
 }
