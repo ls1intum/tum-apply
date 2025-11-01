@@ -13,7 +13,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { facWithdraw } from 'app/shared/icons/icons';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -21,7 +20,6 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
 
 @Component({
   selector: 'jhi-application-overview-for-applicant',
-  standalone: true,
   imports: [
     DynamicTableComponent,
     ButtonComponent,
@@ -109,15 +107,10 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private applicantId = signal<string>('');
 
-  constructor() {
-    // Register custom icons with FontAwesome library
-    this.library.addIcons(facWithdraw);
-
-    effect(() => {
-      this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-      void this.loadTotal();
-    });
-  }
+  private initEffect = effect(() => {
+    this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
+    void this.loadTotal();
+  });
 
   async loadTotal(): Promise<void> {
     try {
