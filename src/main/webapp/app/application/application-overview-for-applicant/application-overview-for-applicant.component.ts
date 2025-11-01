@@ -12,7 +12,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -103,7 +102,6 @@ export default class ApplicationOverviewForApplicantComponent {
   private readonly applicationService = inject(ApplicationResourceApiService);
   private readonly accountService = inject(AccountService);
   private readonly translate = inject(TranslateService);
-  private readonly library = inject(FaIconLibrary);
 
   private applicantId = signal<string>('');
 
