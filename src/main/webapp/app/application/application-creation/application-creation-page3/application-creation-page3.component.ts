@@ -69,10 +69,10 @@ export default class ApplicationCreationPage3Component {
   hasInitialized = signal(false);
 
   page3Form: FormGroup = this.formbuilder.group({
-    experiences: [this.data()?.experiences ?? '', htmlTextRequiredValidator], // TODO: tried putting htmlTextMaxLengthValidator(1000) but it created bugs such as step 3 not loading fully and auto-save breaking
-    motivation: [this.data()?.motivation ?? '', htmlTextRequiredValidator],
-    skills: [this.data()?.skills ?? '', htmlTextRequiredValidator],
-    desiredStartDate: [this.data()?.desiredStartDate ?? ''],
+    experiences: ['', htmlTextRequiredValidator], // TODO: tried putting htmlTextMaxLengthValidator(1000) but it created bugs such as step 3 not loading fully and auto-save breaking
+    motivation: ['', htmlTextRequiredValidator],
+    skills: ['', htmlTextRequiredValidator],
+    desiredStartDate: [''],
   });
 
   formValue = toSignal(this.page3Form.valueChanges.pipe(debounceTime(100)).pipe(distinctUntilChanged(deepEqual)), {
