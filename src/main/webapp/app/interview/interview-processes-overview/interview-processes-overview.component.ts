@@ -41,7 +41,7 @@ export class InterviewProcessesOverviewComponent implements OnInit {
       const data = await this.interviewService.getInterviewOverview().toPromise();
       this.interviewProcesses.set(data ?? []);
     } catch {
-      this.error.set('Failed to load interview processes');
+      this.error.set('interview.overview.error.failedToLoad');
     } finally {
       this.loading.set(false);
     }

@@ -30,7 +30,7 @@
           class="flex flex-col items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
         >
           <i class="pi pi-exclamation-triangle text-[var(--p-danger-500)] text-4xl mb-3"></i>
-          <p class="text-[var(--p-text-secondary)] text-sm">{{ error() }}</p>
+          <p class="text-[var(--p-text-secondary)] text-sm" [jhiTranslate]="error()"></p>
         </div>
       }
 
@@ -50,9 +50,7 @@
         >
           <i class="pi pi-inbox text-[var(--p-text-tertiary)] text-5xl mb-4"></i>
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="interview.overview.empty.title">No interview processes</h3>
-          <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.empty.description">
-            You haven't created any interview processes yet. Click "New Interview Process" to get started.
-          </p>
+          <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.empty.description"></p>
         </div>
       }
 
@@ -79,9 +77,7 @@
         class="bg-[var(--p-background-surface)] border border-dashed border-[var(--p-border-default)] rounded-lg py-16 px-6 flex flex-col items-center text-center"
       >
         <i class="pi pi-calendar text-[var(--p-text-tertiary)] text-4xl mb-3"></i>
-        <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.upcoming.empty">
-          No upcoming interviews scheduled
-        </p>
+        <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.upcoming.empty"></p>
       </div>
     </div>
   </div>
