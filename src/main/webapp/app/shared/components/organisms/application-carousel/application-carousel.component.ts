@@ -113,9 +113,9 @@ export class ApplicationCarouselComponent {
   // Dynamically adjust the number of visible cards based on content width
   private updateVisibleCards(): void {
     const contentContainer =
-      document.querySelector('.page-container') ?? document.querySelector('main') ?? document.querySelector('.content') ?? document.body;
+      document.querySelector('.page-container') ?? document.querySelector('main') ?? document.querySelector('.content');
 
-    const containerWidth = contentContainer ? contentContainer.clientWidth : window.innerWidth;
+    const containerWidth = contentContainer?.clientWidth ?? window.innerWidth;
 
     if (containerWidth < BREAKPOINTS.md) {
       this.cardsVisible.set(1);
