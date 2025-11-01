@@ -41,6 +41,7 @@ export class FilterMultiselect {
 
   isOpen = signal(false);
   searchTerm = signal('');
+  dropdownAlignment = signal<'left' | 'right'>('left');
 
   // gives the selected values back to the parent component
   filterChange = output<{ filterId: string; selectedValues: string[] }>();
@@ -98,6 +99,7 @@ export class FilterMultiselect {
     this.isOpen.update(current => !current);
     if (this.isOpen()) {
       this.searchTerm.set('');
+      this.calculateDropdownAlignment();
     }
   }
 
@@ -137,5 +139,23 @@ export class FilterMultiselect {
       filterId: this.filterId(),
       selectedValues: this.selectedValues(),
     });
+  }
+
+  private calculateDropdownAlignment(): void {
+    setTimeout(() => {
+      const dropdown = this.elementRef.nativeElement.querySelector('.filter-dropdown');
+      if (dropdown && window.innerWidth <= 768) {
+        const rect = dropdown.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+
+        if (rect.right > viewportWidth) {
+          this.dropdownAlignment.set('right');
+        } else if (rect.left < 0) {
+          this.dropdownAlignment.set('left');
+        }
+      } else {
+        this.dropdownAlignment.set('left');
+      }
+    }, 0);
   }
 }

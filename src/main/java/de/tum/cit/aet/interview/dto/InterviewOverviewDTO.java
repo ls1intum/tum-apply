@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record InterviewOverviewDTO(
     @NotNull UUID jobId,
     @NotNull String jobTitle,

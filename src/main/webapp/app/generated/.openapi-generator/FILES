@@ -33,6 +33,7 @@ model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
 model/authSessionInfoDTO.ts
+model/createInterviewProcessDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
@@ -48,6 +49,7 @@ model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
 model/interviewOverviewDTO.ts
+model/interviewProcessDTO.ts
 model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
