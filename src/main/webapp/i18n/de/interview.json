@@ -1,0 +1,33 @@
+{
+  "interview": {
+    "overview": {
+      "title": "Interviews",
+      "positions": {
+        "title": "Positionen"
+      },
+      "loading": "Interview Prozesse werden geladen...",
+      "empty": {
+        "title": "Keine Interview Prozesse",
+        "description": "Du hast noch keine Interview Prozesse erstellt. Klicke auf \"Neuer Interview Prozess\", um zu beginnen."
+      },
+      "actions": {
+        "newProcess": "Neuer Interview Prozess",
+        "viewDetails": "Details anzeigen"
+      },
+      "stats": {
+        "completed": "Abgeschlossen",
+        "scheduled": "Geplant",
+        "invited": "Eingeladen",
+        "uncontacted": "Nicht kontaktiert",
+        "totalInterviews": "Interviews gesamt"
+      },
+      "upcoming": {
+        "title": "Anstehend",
+        "empty": "Keine anstehenden Interviews geplant"
+      },
+      "error": {
+        "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
+      }
+    }
+  }
+}
