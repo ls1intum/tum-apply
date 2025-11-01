@@ -22,7 +22,7 @@
   <include file="changelog/00000000000011_alter_application_add_applied_date.xml"
     relativeToChangelogFile="true" />
 
-  <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints
   changelogs here -->
   <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase
