@@ -40,7 +40,7 @@ public class UserResource {
     @Public
     @GetMapping("/me")
     public ResponseEntity<UserShortDTO> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-        if (jwt==null) {
+        if (jwt == null) {
             return ResponseEntity.ok().build(); // no token = no user
         }
 
@@ -73,9 +73,8 @@ public class UserResource {
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
         boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
-        return updated ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
+        return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
     }
 
-    public record UpdatePasswordDTO(@NotBlank String newPassword) {
-    }
+    public record UpdatePasswordDTO(@NotBlank String newPassword) {}
 }
