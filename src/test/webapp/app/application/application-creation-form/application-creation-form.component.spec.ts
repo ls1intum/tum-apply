@@ -75,38 +75,40 @@ function createActivatedRoute(route$: Subject<UrlSegment[]>, params: Params): Pi
   return activatedRoute;
 }
 
-async function configureTestBed(
-  accountService: Pick<AccountService, 'loadedUser' | 'user' | 'signedIn' | 'loaded'>,
+interface TestBedConfig {
+  accountService: Pick<AccountService, 'loadedUser' | 'user' | 'signedIn' | 'loaded'>;
   applicationResourceApiService: Pick<
     ApplicationResourceApiService,
     'createApplication' | 'getApplicationById' | 'updateApplication' | 'getDocumentDictionaryIds'
-  >,
-  router: Pick<Router, 'navigate'>,
-  location: Pick<Location, 'back'>,
-  toast: Pick<ToastService, 'showErrorKey' | 'showSuccessKey'>,
-  authFacade: Pick<AuthFacadeService, 'requestOtp'>,
-  activatedRoute: Pick<ActivatedRoute, 'snapshot' | 'url'>,
-  dialogService: Pick<DialogService, 'open'>,
-  authOrchestrator: Pick<AuthOrchestratorService, 'email' | 'firstName' | 'lastName'>,
-  localStorageService: Pick<LocalStorageService, 'saveApplicationDraft' | 'clearApplicationDraft' | 'loadApplicationDraft'>,
-  translateService: Pick<TranslateService, 'instant'>,
-  jobResourceService: Pick<JobResourceApiService, 'getJobDetails'>,
-) {
+  >;
+  router: Pick<Router, 'navigate'>;
+  location: Pick<Location, 'back'>;
+  toast: Pick<ToastService, 'showErrorKey' | 'showSuccessKey'>;
+  authFacade: Pick<AuthFacadeService, 'requestOtp'>;
+  activatedRoute: Pick<ActivatedRoute, 'snapshot' | 'url'>;
+  dialogService: Pick<DialogService, 'open'>;
+  authOrchestrator: Pick<AuthOrchestratorService, 'email' | 'firstName' | 'lastName'>;
+  localStorageService: Pick<LocalStorageService, 'saveApplicationDraft' | 'clearApplicationDraft' | 'loadApplicationDraft'>;
+  translateService: Pick<TranslateService, 'instant'>;
+  jobResourceService: Pick<JobResourceApiService, 'getJobDetails'>;
+}
+
+async function configureTestBed(config: TestBedConfig) {
   return await TestBed.configureTestingModule({
     imports: [ApplicationCreationFormComponent],
     providers: [
-      { provide: AccountService, useValue: accountService },
-      { provide: ApplicationResourceApiService, useValue: applicationResourceApiService },
-      { provide: Router, useValue: router },
-      { provide: Location, useValue: location },
-      { provide: ToastService, useValue: toast },
-      { provide: AuthFacadeService, useValue: authFacade },
-      { provide: ActivatedRoute, useValue: activatedRoute },
-      { provide: DialogService, useValue: dialogService },
-      { provide: AuthOrchestratorService, useValue: authOrchestrator },
-      { provide: LocalStorageService, useValue: localStorageService },
-      { provide: TranslateService, useValue: translateService },
-      { provide: JobResourceApiService, useValue: jobResourceService },
+      { provide: AccountService, useValue: config.accountService },
+      { provide: ApplicationResourceApiService, useValue: config.applicationResourceApiService },
+      { provide: Router, useValue: config.router },
+      { provide: Location, useValue: config.location },
+      { provide: ToastService, useValue: config.toast },
+      { provide: AuthFacadeService, useValue: config.authFacade },
+      { provide: ActivatedRoute, useValue: config.activatedRoute },
+      { provide: DialogService, useValue: config.dialogService },
+      { provide: AuthOrchestratorService, useValue: config.authOrchestrator },
+      { provide: LocalStorageService, useValue: config.localStorageService },
+      { provide: TranslateService, useValue: config.translateService },
+      { provide: JobResourceApiService, useValue: config.jobResourceService },
       provideTranslateMock(),
       provideFontAwesomeTesting(),
     ],
@@ -223,7 +225,7 @@ describe('ApplicationForm', () => {
 
     activatedRoute = createActivatedRoute(route$, { job: '123', application: '456' });
 
-    await configureTestBed(
+    await configureTestBed({
       accountService,
       applicationResourceApiService,
       router,
@@ -236,7 +238,7 @@ describe('ApplicationForm', () => {
       localStorageService,
       translateService,
       jobResourceService,
-    );
+    });
     fixture = TestBed.createComponent(ApplicationCreationFormComponent);
     comp = fixture.componentInstance;
     fixture.detectChanges();
@@ -262,20 +264,20 @@ describe('ApplicationForm', () => {
     // Create new test setup without applicationId in URL
 
     TestBed.resetTestingModule();
-    await configureTestBed(
+    await configureTestBed({
       accountService,
       applicationResourceApiService,
       router,
       location,
       toast,
       authFacade,
-      createActivatedRoute(route$, { job: '123' }),
+      activatedRoute: createActivatedRoute(route$, { job: '123' }),
       dialogService,
       authOrchestrator,
       localStorageService,
       translateService,
       jobResourceService,
-    );
+    });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
     const freshComp = freshFixture.componentInstance;
@@ -294,20 +296,20 @@ describe('ApplicationForm', () => {
 
   it('should throw error when neither jobId nor applicationId is provided', async () => {
     TestBed.resetTestingModule();
-    await configureTestBed(
+    await configureTestBed({
       accountService,
       applicationResourceApiService,
       router,
       location,
       toast,
       authFacade,
-      createActivatedRoute(route$, {}),
+      activatedRoute: createActivatedRoute(route$, {}),
       dialogService,
       authOrchestrator,
       localStorageService,
       translateService,
       jobResourceService,
-    );
+    });
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
     const freshComp = freshFixture.componentInstance;
