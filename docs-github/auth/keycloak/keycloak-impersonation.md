@@ -34,28 +34,28 @@ To manually enable impersonation in Keycloak for TUMApply, follow these steps:
 **⚠️ Warning: The UI and texts can differ between versions. This is the approach for version 26.3.1.**
 
 1. **Enable Required Features**:
-  - Start Keycloak with the following features enabled (add this to your Docker command or Keycloak startup
-    configuration):
+    - Start Keycloak with the following features enabled (add this to your Docker command or Keycloak startup 
+      configuration):
     ```
     --features=token-exchange,admin-fine-grained-authz:v1
     ```
 
 2. **Enable User Permissions**:
-  - In the Keycloak Admin Console, go to **Users**.
-  - Navigate to the **Permissions** tab.
-  - Click **Enable Permissions**.
+    - In the Keycloak Admin Console, go to **Users**.
+    - Navigate to the **Permissions** tab.
+    - Click **Enable Permissions**.
 
 3. **Add Impersonation Permission**:
-  - In the same **Permissions** section, click on **user-impersonated**.
+    - In the same **Permissions** section, click on **user-impersonated**.
 
 4. **Configure Authorization in realm-management Client**:
-  - Go to **Clients → realm-management → Authorization**.
-  - Add or verify the necessary resources, policies, and scope-based permissions as shown in the pictures below.
+    - Go to **Clients → realm-management → Authorization**.
+    - Add or verify the necessary resources, policies, and scope-based permissions as shown in the pictures below.
 
 5. **Test the Impersonation Flow**:
-  - Use the `/protocol/openid-connect/token` endpoint with the
-    `grant_type=urn:ietf:params:oauth:grant-type:token-exchange` and the `requested_subject` parameter to verify
-    that impersonation works as expected.
+    - Use the `/protocol/openid-connect/token` endpoint with the 
+      `grant_type=urn:ietf:params:oauth:grant-type:token-exchange` and the `requested_subject` parameter to verify 
+      that impersonation works as expected.
 
 ### Resources
 
