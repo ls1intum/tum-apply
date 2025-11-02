@@ -1,4 +1,11 @@
-# Realms
+# Keycloak Realms and Clients
+
+In Keycloak, realms represent isolated security domains that manage users, credentials, roles, and groups. Clients are
+applications or services that use Keycloak for authentication and authorization within these realms.
+
+---
+
+## Realms
 
 There are three realms in total:
 
@@ -16,7 +23,7 @@ Admins.
 
 ---
 
-# Clients
+## Clients
 
 The following clients are used across environments with specific purposes:
 
