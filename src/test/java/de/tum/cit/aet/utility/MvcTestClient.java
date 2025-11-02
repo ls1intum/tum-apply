@@ -157,11 +157,13 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
+            case 409 -> result = postConflict(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -179,11 +181,13 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
+            case 201 -> result = postCreated(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
+            case 409 -> result = postConflict(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
         return read(result, typeRef);
@@ -243,7 +247,7 @@ public class MvcTestClient {
             case 204 -> result = deleteNoContent(url, body, accepts);
             case 400 -> result = deleteInvalid(url, body, accepts);
             case 401 -> result = deleteUnauthorized(url, body, accepts);
-            // case 403 -> result = deleteForbidden(url, body, accepts);
+            case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -277,8 +281,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level GET that asserts 400 Bad Request and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult getInvalid(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -288,8 +292,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level GET that asserts 401 Unauthorized and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 401 Unauthorized and returns the MvcResult.
      */
     private MvcResult getUnauthorized(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -299,8 +303,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level GET that asserts 403 Forbidden and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 403 Forbidden and returns the MvcResult.
      */
     private MvcResult getForbidden(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -310,8 +314,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level GET that asserts 404 Not Found and returns the MvcResult.
+    /**
+     * Low-level GET that asserts 404 Not Found and returns the MvcResult.
      */
     private MvcResult getNotFound(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -321,8 +325,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level GET that asserts 500 Internal Server Error and returns the
+    /**
+     * Low-level GET that asserts 500 Internal Server Error and returns the
      * MvcResult.
      */
     private MvcResult getInternalServerError(String url, Map<String, String> params, MediaType... accepts) {
@@ -341,6 +345,17 @@ public class MvcTestClient {
             return postJson(url, body, accepts).andExpect(status().isOk()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("POST " + url + " failed with 200", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 201 Created and returns the MvcResult.
+     */
+    private MvcResult postCreated(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isCreated()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 201", e);
         }
     }
 
@@ -400,6 +415,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 409 Conflict and returns the MvcResult.
+     */
+    private MvcResult postConflict(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isConflict()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 409", e);
+        }
+    }
+
+    /**
      * Low-level PUT that asserts 200 OK and returns the MvcResult.
      */
     private MvcResult putOk(String url, Object body, MediaType... accepts) {
@@ -421,8 +447,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level PUT that asserts 400 Bad Request and returns the MvcResult.
+    /**
+     * Low-level PUT that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult putInvalid(String url, Object body, MediaType... accepts) {
         try {
@@ -488,8 +514,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level DELETE that asserts 204 No Content and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 204 No Content and returns the MvcResult.
      */
     private MvcResult deleteNoContent(String url, Object body, MediaType... accepts) {
         try {
@@ -499,8 +525,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level DELETE that asserts 400 Bad Request and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 400 Bad Request and returns the MvcResult.
      */
     private MvcResult deleteInvalid(String url, Object body, MediaType... accepts) {
         try {
@@ -510,8 +536,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level DELETE that asserts 401 Unauthorized and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 401 Unauthorized and returns the MvcResult.
      */
     private MvcResult deleteUnauthorized(String url, Object body, MediaType... accepts) {
         try {
@@ -521,8 +547,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
      */
     private MvcResult deleteForbidden(String url, Object body, MediaType... accepts) {
         try {
@@ -532,8 +558,8 @@ public class MvcTestClient {
         }
     }
 
-    /*
-     * * Low-level DELETE that asserts 404 Not Found and returns the MvcResult.
+    /**
+     * Low-level DELETE that asserts 404 Not Found and returns the MvcResult.
      */
     private MvcResult deleteNotFound(String url, Object body, MediaType... accepts) {
         try {
