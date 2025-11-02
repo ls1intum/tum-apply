@@ -35,9 +35,11 @@ To manually enable impersonation in Keycloak for TUMApply, follow these steps:
 
 1. **Enable Required Features**:  
    Start Keycloak with the following features enabled:
+
    ```
    --features=token-exchange,admin-fine-grained-authz:v1
    ```
+
    (Add this to your Docker command or Keycloak startup configuration.)
 
 2. **Enable User Permissions**:

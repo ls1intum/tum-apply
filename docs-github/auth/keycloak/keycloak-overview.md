@@ -18,7 +18,7 @@ User roles are assigned and managed within the TUMApply database upon first logi
 ## Role Separation
 
 | Responsibility                       | Location         |
-|--------------------------------------|------------------|
+| ------------------------------------ | ---------------- |
 | Authentication (login, tokens)       | Keycloak         |
 | Authorization (roles, access checks) | Spring Boot / DB |
 | User creation on first login         | TUMApply server  |
@@ -41,4 +41,5 @@ User roles are assigned and managed within the TUMApply database upon first logi
 
 - [Official Keycloak Documentation](https://www.keycloak.org/documentation)
 - [Keycloak Server Administration Guide](https://www.keycloak.org/docs/latest/server_admin/)
+- [Keycloak API Documentation](https://www.keycloak.org/docs-api/latest/rest-api/index.html)
 - [Keycloak Release Notes](https://www.keycloak.org/docs/latest/release_notes/)
