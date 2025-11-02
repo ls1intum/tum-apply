@@ -16,6 +16,8 @@ will fail.**
 docker compose -f src/main/docker/keycloak.yml up --build
 ```
 
+Keycloak is now visible under `http://localhost:9080/realms/master` with the username `admin`and password `admin`.
+
 ---
 
 ## 📁 Realm Import
