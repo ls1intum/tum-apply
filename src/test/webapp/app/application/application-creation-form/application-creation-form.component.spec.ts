@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Router, UrlSegment } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Params, Router, UrlSegment } from '@angular/router';
 import { computed, signal } from '@angular/core';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, MockInstance } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationCreationFormComponent from '../../../../../main/webapp/app/application/application-creation/application-creation-form/application-creation-form.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -11,7 +11,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { Location } from '@angular/common';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { LocalStorageService } from 'app/service/localStorage.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -23,9 +23,114 @@ import { UpdateApplicationDTO } from 'app/generated/model/updateApplicationDTO';
 import { UserDTO } from 'app/generated/model/userDTO';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { ApplicationCreationPage1Data } from 'app/application/application-creation/application-creation-page1/application-creation-page1.component';
+import { ProgressStepperComponent } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
+
+type MockDialogRef = Pick<DynamicDialogRef, 'close'>;
 
 function spyOnPrivate<T extends object>(obj: T, methodName: string) {
   return vi.spyOn(obj as any, methodName);
+}
+
+function mockReturnValuePrivate<R>(spy: MockInstance<(this: unknown, ...args: unknown[]) => unknown> | MockInstance<any>, mockValue: R) {
+  return spy.mockReturnValue(mockValue as any);
+}
+
+function createMockDialogRef(): MockDialogRef {
+  return {
+    close: vi.fn(),
+  };
+}
+
+function createProgressStepperMock(): ProgressStepperComponent {
+  const mock = {
+    goToStep: vi.fn(),
+  };
+  return mock as unknown as ProgressStepperComponent;
+}
+
+function createActivatedRoute(route$: Subject<UrlSegment[]>, params: Params): Pick<ActivatedRoute, 'snapshot' | 'url'> {
+  const activatedRoute = {
+    url: route$,
+    snapshot: {
+      paramMap: convertToParamMap({}),
+      queryParamMap: convertToParamMap(params),
+      url: [],
+      params: {},
+      queryParams: {},
+      fragment: '',
+      data: {},
+      outlet: 'primary',
+      component: null,
+      routeConfig: null,
+      root: null!,
+      parent: null,
+      firstChild: null,
+      children: [],
+      pathFromRoot: [],
+      toString: () => '',
+      title: '',
+    },
+  };
+  return activatedRoute;
+}
+
+async function configureTestBed(
+  accountService: Pick<AccountService, 'loadedUser' | 'user' | 'signedIn' | 'loaded'>,
+  applicationResourceApiService: Pick<
+    ApplicationResourceApiService,
+    'createApplication' | 'getApplicationById' | 'updateApplication' | 'getDocumentDictionaryIds'
+  >,
+  router: Pick<Router, 'navigate'>,
+  location: Pick<Location, 'back'>,
+  toast: Pick<ToastService, 'showErrorKey' | 'showSuccessKey'>,
+  authFacade: Pick<AuthFacadeService, 'requestOtp'>,
+  activatedRoute: Pick<ActivatedRoute, 'snapshot' | 'url'>,
+  dialogService: Pick<DialogService, 'open'>,
+  authOrchestrator: Pick<AuthOrchestratorService, 'email' | 'firstName' | 'lastName'>,
+  localStorageService: Pick<LocalStorageService, 'saveApplicationDraft' | 'clearApplicationDraft' | 'loadApplicationDraft'>,
+  translateService: Pick<TranslateService, 'instant'>,
+  jobResourceService: Pick<JobResourceApiService, 'getJobDetails'>,
+) {
+  return await TestBed.configureTestingModule({
+    imports: [ApplicationCreationFormComponent],
+    providers: [
+      { provide: AccountService, useValue: accountService },
+      { provide: ApplicationResourceApiService, useValue: applicationResourceApiService },
+      { provide: Router, useValue: router },
+      { provide: Location, useValue: location },
+      { provide: ToastService, useValue: toast },
+      { provide: AuthFacadeService, useValue: authFacade },
+      { provide: ActivatedRoute, useValue: activatedRoute },
+      { provide: DialogService, useValue: dialogService },
+      { provide: AuthOrchestratorService, useValue: authOrchestrator },
+      { provide: LocalStorageService, useValue: localStorageService },
+      { provide: TranslateService, useValue: translateService },
+      { provide: JobResourceApiService, useValue: jobResourceService },
+      provideTranslateMock(),
+      provideFontAwesomeTesting(),
+    ],
+  }).compileComponents();
+}
+
+function createValidPersonalInfoData(overrides?: Partial<ApplicationCreationPage1Data>): ApplicationCreationPage1Data {
+  return {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'test@example.com',
+    phoneNumber: '+1234567890',
+    gender: undefined,
+    nationality: undefined,
+    language: undefined,
+    dateOfBirth: '',
+    website: '',
+    linkedIn: '',
+    street: '',
+    city: '',
+    country: undefined,
+    postcode: '',
+    ...overrides,
+  };
 }
 
 const createMockApplication = (applicationState: ApplicationForApplicantDTO.ApplicationStateEnum): ApplicationForApplicantDTO => ({
@@ -68,7 +173,6 @@ describe('ApplicationForm', () => {
 
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
   let comp: ApplicationCreationFormComponent;
-  const mockApplication = createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved);
   beforeEach(async () => {
     accountService = {
       loaded: signal<boolean>(true),
@@ -78,8 +182,8 @@ describe('ApplicationForm', () => {
     };
 
     applicationResourceApiService = {
-      createApplication: vi.fn().mockReturnValue(of(mockApplication)),
-      getApplicationById: vi.fn().mockReturnValue(of(mockApplication)),
+      createApplication: vi.fn().mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
+      getApplicationById: vi.fn().mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
       updateApplication: vi.fn().mockReturnValue(of({})),
       getDocumentDictionaryIds: vi.fn().mockReturnValue(of({})),
     };
@@ -117,48 +221,22 @@ describe('ApplicationForm', () => {
       getJobDetails: vi.fn().mockReturnValue({ title: 'Test Job' }),
     };
 
-    activatedRoute = {
-      url: route$,
-      snapshot: {
-        paramMap: convertToParamMap({}),
-        queryParamMap: convertToParamMap({ job: '123', application: '456' }),
-        url: [],
-        params: {},
-        queryParams: {},
-        fragment: '',
-        data: {},
-        outlet: 'primary',
-        component: null,
-        routeConfig: null,
-        root: null!,
-        parent: null,
-        firstChild: null,
-        children: [],
-        pathFromRoot: [],
-        toString: () => '',
-        title: '',
-      },
-    };
+    activatedRoute = createActivatedRoute(route$, { job: '123', application: '456' });
 
-    await TestBed.configureTestingModule({
-      imports: [ApplicationCreationFormComponent],
-      providers: [
-        { provide: AccountService, useValue: accountService },
-        { provide: ApplicationResourceApiService, useValue: applicationResourceApiService },
-        { provide: Router, useValue: router },
-        { provide: Location, useValue: location },
-        { provide: ToastService, useValue: toast },
-        { provide: AuthFacadeService, useValue: authFacade },
-        { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: DialogService, useValue: dialogService },
-        { provide: AuthOrchestratorService, useValue: authOrchestrator },
-        { provide: LocalStorageService, useValue: localStorageService },
-        { provide: TranslateService, useValue: translateService },
-        { provide: JobResourceApiService, useValue: jobResourceService },
-        provideTranslateMock(),
-        provideFontAwesomeTesting(),
-      ],
-    }).compileComponents();
+    await configureTestBed(
+      accountService,
+      applicationResourceApiService,
+      router,
+      location,
+      toast,
+      authFacade,
+      activatedRoute,
+      dialogService,
+      authOrchestrator,
+      localStorageService,
+      translateService,
+      jobResourceService,
+    );
     fixture = TestBed.createComponent(ApplicationCreationFormComponent);
     comp = fixture.componentInstance;
     fixture.detectChanges();
@@ -182,49 +260,22 @@ describe('ApplicationForm', () => {
 
   it('should call initPageCreateApplication when only jobId is provided in URL (no applicationId)', async () => {
     // Create new test setup without applicationId in URL
-    const freshActivatedRoute = {
-      url: new Subject<UrlSegment[]>(),
-      snapshot: {
-        paramMap: convertToParamMap({}),
-        queryParamMap: convertToParamMap({ job: '123' }), // Only job, no application
-        url: [],
-        params: {},
-        queryParams: { job: '123' },
-        fragment: '',
-        data: {},
-        outlet: 'primary',
-        component: null,
-        routeConfig: null,
-        root: null!,
-        parent: null,
-        firstChild: null,
-        children: [],
-        pathFromRoot: [],
-        toString: () => '',
-        title: '',
-      },
-    };
 
     TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [ApplicationCreationFormComponent],
-      providers: [
-        { provide: AccountService, useValue: accountService },
-        { provide: ApplicationResourceApiService, useValue: applicationResourceApiService },
-        { provide: Router, useValue: router },
-        { provide: Location, useValue: location },
-        { provide: ToastService, useValue: toast },
-        { provide: AuthFacadeService, useValue: authFacade },
-        { provide: ActivatedRoute, useValue: freshActivatedRoute },
-        { provide: DialogService, useValue: dialogService },
-        { provide: AuthOrchestratorService, useValue: authOrchestrator },
-        { provide: LocalStorageService, useValue: localStorageService },
-        { provide: TranslateService, useValue: translateService },
-        { provide: JobResourceApiService, useValue: jobResourceService },
-        provideTranslateMock(),
-        provideFontAwesomeTesting(),
-      ],
-    }).compileComponents();
+    await configureTestBed(
+      accountService,
+      applicationResourceApiService,
+      router,
+      location,
+      toast,
+      authFacade,
+      createActivatedRoute(route$, { job: '123' }),
+      dialogService,
+      authOrchestrator,
+      localStorageService,
+      translateService,
+      jobResourceService,
+    );
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
     const freshComp = freshFixture.componentInstance;
@@ -242,49 +293,21 @@ describe('ApplicationForm', () => {
   });
 
   it('should throw error when neither jobId nor applicationId is provided', async () => {
-    const freshActivatedRoute = {
-      url: new Subject<UrlSegment[]>(),
-      snapshot: {
-        paramMap: convertToParamMap({}),
-        queryParamMap: convertToParamMap({}), // No query params at all
-        url: [],
-        params: {},
-        queryParams: {},
-        fragment: '',
-        data: {},
-        outlet: 'primary',
-        component: null,
-        routeConfig: null,
-        root: null!,
-        parent: null,
-        firstChild: null,
-        children: [],
-        pathFromRoot: [],
-        toString: () => '',
-        title: '',
-      },
-    };
-
     TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [ApplicationCreationFormComponent],
-      providers: [
-        { provide: AccountService, useValue: accountService },
-        { provide: ApplicationResourceApiService, useValue: applicationResourceApiService },
-        { provide: Router, useValue: router },
-        { provide: Location, useValue: location },
-        { provide: ToastService, useValue: toast },
-        { provide: AuthFacadeService, useValue: authFacade },
-        { provide: ActivatedRoute, useValue: freshActivatedRoute },
-        { provide: DialogService, useValue: dialogService },
-        { provide: AuthOrchestratorService, useValue: authOrchestrator },
-        { provide: LocalStorageService, useValue: localStorageService },
-        { provide: TranslateService, useValue: translateService },
-        { provide: JobResourceApiService, useValue: jobResourceService },
-        provideTranslateMock(),
-        provideFontAwesomeTesting(),
-      ],
-    }).compileComponents();
+    await configureTestBed(
+      accountService,
+      applicationResourceApiService,
+      router,
+      location,
+      toast,
+      authFacade,
+      createActivatedRoute(route$, {}),
+      dialogService,
+      authOrchestrator,
+      localStorageService,
+      translateService,
+      jobResourceService,
+    );
 
     const freshFixture = TestBed.createComponent(ApplicationCreationFormComponent);
     const freshComp = freshFixture.componentInstance;
@@ -350,14 +373,14 @@ describe('ApplicationForm', () => {
   describe('initPageForLocalStorage', () => {
     it('should load from local storage when unauthenticated', async () => {
       accountService.user.set(undefined);
-      (localStorageService.loadApplicationDraft as any).mockReturnValue({
+      vi.mocked(localStorageService.loadApplicationDraft).mockReturnValue({
         applicationId: 'local-id',
         jobId: 'local-job',
-        personalInfoData: {
+        personalInfoData: createValidPersonalInfoData({
           email: 'local@example.com',
           firstName: 'Local',
           lastName: 'User',
-        },
+        }),
         timestamp: new Date().toISOString(),
       });
 
@@ -556,7 +579,7 @@ describe('ApplicationForm', () => {
     });
 
     it('should include timestamp in ISO format', () => {
-      comp.personalInfoData.set({} as any);
+      comp.personalInfoData.set(createValidPersonalInfoData({}));
       comp.applicationId.set('app-test');
       comp.jobId.set('job-test');
 
@@ -565,7 +588,7 @@ describe('ApplicationForm', () => {
       const afterTime = new Date().toISOString();
 
       // Get the timestamp that was passed to saveApplicationDraft
-      const callArgs = (localStorageService.saveApplicationDraft as any).mock.calls[0][0];
+      const callArgs = vi.mocked(localStorageService.saveApplicationDraft).mock.calls[0][0];
       const timestamp = callArgs.timestamp;
 
       // Timestamp should be a valid ISO string between before and after
@@ -575,7 +598,7 @@ describe('ApplicationForm', () => {
     });
 
     it('should save with empty strings when signals are empty', () => {
-      comp.personalInfoData.set({} as any);
+      comp.personalInfoData.set(createValidPersonalInfoData({}));
       comp.applicationId.set('');
       comp.jobId.set('');
 
@@ -840,7 +863,7 @@ describe('ApplicationForm', () => {
 
       // Mock dialog - return a mock ref object that won't actually render
       const mockDialogRef = { close: vi.fn() };
-      vi.spyOn(dialogService, 'open').mockReturnValue(mockDialogRef as any);
+      mockReturnValuePrivate(vi.spyOn(dialogService, 'open'), mockDialogRef);
 
       // Use fake timers to prevent infinite waiting
       vi.useFakeTimers();
@@ -871,8 +894,8 @@ describe('ApplicationForm', () => {
 
       // Mock dialog - return a mock ref object that won't actually render
       const closeDialogSpy = vi.fn();
-      const mockDialogRef = { close: closeDialogSpy };
-      vi.spyOn(dialogService, 'open').mockReturnValue(mockDialogRef as any);
+      const mockDialogRef = createMockDialogRef();
+      mockReturnValuePrivate(vi.spyOn(dialogService, 'open'), mockDialogRef);
 
       // Use fake timers
       vi.useFakeTimers();
@@ -932,16 +955,16 @@ describe('ApplicationForm', () => {
       comp.jobId.set('job-789');
       comp.applicationState.set('SAVED');
 
-      const mockApplication = { applicationId: 'new-app-123' } as any;
-
-      const initPageSpy = spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(mockApplication);
+      const initPageSpy = spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(
+        createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+      );
       const sendDataSpy = spyOnPrivate(comp, 'sendCreateApplicationData').mockResolvedValue(true);
 
       await comp['migrateDraftIfNeeded']();
 
       expect(initPageSpy).toHaveBeenCalledWith('job-789');
       expect(comp.useLocalStorage()).toBe(false);
-      expect(comp.applicationId()).toBe('new-app-123');
+      expect(comp.applicationId()).toBe('456');
       expect(comp.savingState()).toBe(SavingStates.SAVING);
       expect(sendDataSpy).toHaveBeenCalledWith('SAVED', false);
     });
@@ -962,7 +985,7 @@ describe('ApplicationForm', () => {
       comp.jobId.set('job-789');
       comp.applicationId.set('old-app-id');
 
-      const mockApplication = { applicationId: undefined } as any;
+      const mockApplication = { ...createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved), applicationId: undefined };
 
       spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(mockApplication);
       spyOnPrivate(comp, 'sendCreateApplicationData').mockResolvedValue(true);
@@ -986,11 +1009,13 @@ describe('ApplicationForm', () => {
 
     it('should call openOtpAndWaitForLogin with correct parameters when applicantId is not set', async () => {
       comp.applicantId.set('');
-      comp.personalInfoData.set({
-        email: 'test@example.com',
-        firstName: 'Jane',
-        lastName: 'Smith',
-      } as any);
+      comp.personalInfoData.set(
+        createValidPersonalInfoData({
+          email: 'test@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+        }),
+      );
 
       const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
 
@@ -999,7 +1024,7 @@ describe('ApplicationForm', () => {
       const progressStepperMock = {
         goToStep: vi.fn(),
       };
-      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
+      mockReturnValuePrivate(vi.spyOn(comp, 'progressStepper'), progressStepperMock);
 
       comp['handleNextFromStep1']();
 
@@ -1011,11 +1036,13 @@ describe('ApplicationForm', () => {
 
     it('should show error toast when openOtpAndWaitForLogin fails', async () => {
       comp.applicantId.set('');
-      comp.personalInfoData.set({
-        email: 'test@example.com',
-        firstName: 'Jane',
-        lastName: 'Smith',
-      } as any);
+      comp.personalInfoData.set(
+        createValidPersonalInfoData({
+          email: 'test@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+        }),
+      );
 
       spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockRejectedValue(new Error('OTP failed'));
 
@@ -1029,11 +1056,13 @@ describe('ApplicationForm', () => {
 
     it('should set applicantId to empty string when loadedUser().id is undefined (nullish coalescing operator)', async () => {
       comp.applicantId.set('');
-      comp.personalInfoData.set({
-        email: 'test@example.com',
-        firstName: 'Jane',
-        lastName: 'Smith',
-      } as any);
+      comp.personalInfoData.set(
+        createValidPersonalInfoData({
+          email: 'test@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+        }),
+      );
 
       const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
       const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
@@ -1044,7 +1073,7 @@ describe('ApplicationForm', () => {
       const progressStepperMock = {
         goToStep: vi.fn(),
       };
-      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
+      mockReturnValuePrivate(vi.spyOn(comp, 'progressStepper'), progressStepperMock);
 
       comp['handleNextFromStep1']();
 
@@ -1066,11 +1095,13 @@ describe('ApplicationForm', () => {
 
     it('should set applicantId to empty string when loadedUser is null (nullish coalescing operator)', async () => {
       comp.applicantId.set('');
-      comp.personalInfoData.set({
-        email: 'test@example.com',
-        firstName: 'Jane',
-        lastName: 'Smith',
-      } as any);
+      comp.personalInfoData.set(
+        createValidPersonalInfoData({
+          email: 'test@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+        }),
+      );
 
       const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
       const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
@@ -1081,7 +1112,7 @@ describe('ApplicationForm', () => {
       const progressStepperMock = {
         goToStep: vi.fn(),
       };
-      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
+      mockReturnValuePrivate(vi.spyOn(comp, 'progressStepper'), progressStepperMock);
 
       comp['handleNextFromStep1']();
 
@@ -1103,11 +1134,13 @@ describe('ApplicationForm', () => {
 
     it('should set applicantId to user id when loadedUser().id has a value', async () => {
       comp.applicantId.set('');
-      comp.personalInfoData.set({
-        email: 'test@example.com',
-        firstName: 'Jane',
-        lastName: 'Smith',
-      } as any);
+      comp.personalInfoData.set(
+        createValidPersonalInfoData({
+          email: 'test@example.com',
+          firstName: 'Jane',
+          lastName: 'Smith',
+        }),
+      );
 
       const openOtpSpy = spyOnPrivate(comp, 'openOtpAndWaitForLogin').mockResolvedValue(undefined);
       const migrateDraftSpy = spyOnPrivate(comp, 'migrateDraftIfNeeded').mockResolvedValue(undefined);
@@ -1115,10 +1148,9 @@ describe('ApplicationForm', () => {
       // Set up loadedUser with a valid id
       accountService.user.set({ id: 'valid-user-789', email: 'test@example.com', name: 'Jane Smith' });
 
-      const progressStepperMock = {
-        goToStep: vi.fn(),
-      };
-      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock as any);
+      const progressStepperMock = createProgressStepperMock();
+
+      vi.spyOn(comp, 'progressStepper').mockReturnValue(progressStepperMock);
 
       comp['handleNextFromStep1']();
 
@@ -1292,7 +1324,7 @@ describe('ApplicationForm', () => {
 
       it('should call sendConfirmDialog confirm when send button is clicked', () => {
         const confirmDialogMock = { confirm: vi.fn() };
-        vi.spyOn(comp, 'sendConfirmDialog').mockReturnValue(confirmDialogMock as any);
+        mockReturnValuePrivate(vi.spyOn(comp, 'sendConfirmDialog'), confirmDialogMock);
 
         // Re-trigger computed after spy is set up
         fixture.detectChanges();
@@ -1545,7 +1577,7 @@ describe('ApplicationForm', () => {
       comp.savingState.set(SavingStates.SAVING);
       comp.useLocalStorage.set(true);
 
-      const saveToLocalStorageSpy = vi.spyOn(comp, 'saveToLocalStorage' as any).mockReturnValue(true);
+      const saveToLocalStorageSpy = spyOnPrivate(comp, 'saveToLocalStorage').mockReturnValue(true);
 
       await comp.performAutomaticSave();
 
@@ -1628,19 +1660,11 @@ describe('ApplicationForm', () => {
       expect(toast.showErrorKey).not.toHaveBeenCalled();
 
       // Should return the application
-      expect(result).toEqual(mockApplication);
+      expect(result).toEqual(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
     });
 
     it('should show error toast, navigate to detail page and throw error when application state is not SAVED', async () => {
-      const mockApplication: ApplicationForApplicantDTO = {
-        applicationId: 'app-789',
-        applicationState: 'SENT', // not SAVED
-        job: {
-          jobId: 'job-456',
-          title: 'Software Developer',
-        },
-        applicant: {},
-      } as ApplicationForApplicantDTO;
+      const mockApplication = createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Sent);
 
       // Reconfigure the existing mock
       applicationResourceApiService.createApplication = vi.fn().mockReturnValue(of(mockApplication));
@@ -1651,32 +1675,13 @@ describe('ApplicationForm', () => {
 
       expect(applicationResourceApiService.createApplication).toHaveBeenCalledWith('job-456');
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
-      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'app-789']);
+      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', '456']);
     });
 
     it('should handle application with undefined applicationId', async () => {
-      const mockApplication: ApplicationForApplicantDTO = {
-        applicationId: undefined,
-        applicationState: 'SAVED',
-        job: {
-          jobId: 'job-456',
-          title: 'Software Developer',
-        },
-        applicant: {},
-      } as any;
-
       // Reconfigure the existing mock
-      applicationResourceApiService.createApplication = vi.fn().mockReturnValue(
-        of({
-          applicationId: undefined,
-          applicationState: 'SAVED',
-          job: {
-            jobId: 'job-456',
-            title: 'Software Developer',
-          },
-          applicant: {},
-        }),
-      );
+      let mockApplication = { ...createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved), applicationId: undefined };
+      applicationResourceApiService.createApplication = vi.fn().mockReturnValue(of(mockApplication));
 
       const result = await comp.initPageCreateApplication('job-456');
 
@@ -1695,38 +1700,22 @@ describe('ApplicationForm', () => {
     });
 
     it('should handle SAVED state as non-editable', async () => {
-      applicationResourceApiService.createApplication = vi.fn().mockReturnValue(
-        of({
-          applicationId: 'app-draft',
-          applicationState: 'SENT',
-          job: {
-            jobId: 'job-456',
-            title: 'Software Developer',
-          },
-          applicant: {},
-        }),
-      );
+      applicationResourceApiService.createApplication = vi
+        .fn()
+        .mockReturnValue(of(createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Sent)));
 
       await expect(comp.initPageCreateApplication('job-456')).rejects.toThrow('Application is not editable.');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
-      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'app-draft']);
+      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', '456']);
     });
   });
 
   describe('initPageLoadExistingApplication', () => {
     it('should load application and return it when application state is SAVED', async () => {
-      const mockApplication: ApplicationForApplicantDTO = {
-        applicationId: 'existing-app-123',
-        applicationState: 'SAVED',
-        job: {
-          jobId: 'job-789',
-          title: 'Software Engineer',
-        },
-        applicant: {},
-      } as ApplicationForApplicantDTO;
-
-      applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
+      applicationResourceApiService.getApplicationById = vi
+        .fn()
+        .mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
 
       const result = await comp.initPageLoadExistingApplication('existing-app-123');
 
@@ -1737,19 +1726,11 @@ describe('ApplicationForm', () => {
       expect(toast.showErrorKey).not.toHaveBeenCalled();
       // Should NOT navigate away
       expect(router.navigate).not.toHaveBeenCalled();
-      expect(result).toEqual(mockApplication);
+      expect(result).toEqual(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
     });
 
     it('should show error toast, navigate to detail page and throw error when application state is not SAVED', async () => {
-      const mockApplication: ApplicationForApplicantDTO = {
-        applicationId: 'existing-app-456',
-        applicationState: 'SENT', // not SAVED, not editable
-        job: {
-          jobId: 'job-789',
-          title: 'Software Engineer',
-        },
-        applicant: {},
-      } as ApplicationForApplicantDTO;
+      const mockApplication = createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Sent);
 
       applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
@@ -1766,22 +1747,14 @@ describe('ApplicationForm', () => {
     });
 
     it('should handle REJECTED application state as not editable', async () => {
-      const mockApplication: ApplicationForApplicantDTO = {
-        applicationId: 'existing-app-rejected',
-        applicationState: 'REJECTED',
-        job: {
-          jobId: 'job-000',
-          title: 'Test Job',
-        },
-        applicant: {},
-      } as ApplicationForApplicantDTO;
+      const mockApplication = createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Rejected);
 
       applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
-      await expect(comp.initPageLoadExistingApplication('existing-app-rejected')).rejects.toThrow('Application is not editable.');
+      await expect(comp.initPageLoadExistingApplication('456')).rejects.toThrow('Application is not editable.');
 
       expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.notEditable');
-      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', 'existing-app-rejected']);
+      expect(router.navigate).toHaveBeenCalledWith(['/application/detail', '456']);
     });
   });
 
@@ -1805,7 +1778,7 @@ describe('ApplicationForm', () => {
       comp.useLocalStorage.set(false);
       comp.applicationId.set('app-456');
 
-      const mockDocumentIds = { documentId1: 'doc-1', documentId2: 'doc-2' } as any;
+      const mockDocumentIds = { documentId1: 'doc-1', documentId2: 'doc-2' };
       applicationResourceApiService.getDocumentDictionaryIds = vi.fn().mockReturnValue(of(mockDocumentIds));
 
       comp.updateDocumentInformation();
@@ -1961,7 +1934,7 @@ describe('ApplicationForm', () => {
       const mockDraft = {
         applicationId: 'app-123',
         jobId: 'job-789',
-        personalInfoData: {} as any,
+        personalInfoData: {},
         timestamp: new Date().toISOString(),
       };
 
