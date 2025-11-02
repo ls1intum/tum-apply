@@ -3,11 +3,10 @@ package de.tum.cit.aet.usermanagement.service;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * Service for managing user-specific settings.
