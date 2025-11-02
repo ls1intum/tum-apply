@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.exception.UnauthorizedException;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.util.CookieUtils;
 import de.tum.cit.aet.core.util.HttpUtils;
 import de.tum.cit.aet.usermanagement.dto.auth.AuthResponseDTO;
@@ -39,6 +41,7 @@ public class AuthenticationResource {
      * @return HTTP 200 OK if login is successful and the cookie is set
      * @throws UnauthorizedException if login credentials are invalid
      */
+    @Public
     @PostMapping("/login")
     public AuthSessionInfoDTO login(@Valid @RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
         AuthResponseDTO tokens = keycloakAuthenticationService.loginWithCredentials(loginRequest.email(), loginRequest.password());
@@ -54,10 +57,11 @@ public class AuthenticationResource {
      * @return HTTP 200 OK if logout is successful
      * @throws UnauthorizedException if the refresh token is missing or logout fails
      */
+    @Authenticated
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = null;
-        if (request.getCookies() != null) {
+        if (request.getCookies()!=null) {
             for (Cookie c : request.getCookies()) {
                 if ("refresh_token".equals(c.getName())) {
                     refreshToken = c.getValue();
@@ -65,7 +69,7 @@ public class AuthenticationResource {
                 }
             }
         }
-        if (refreshToken != null && !refreshToken.isBlank()) {
+        if (refreshToken!=null && !refreshToken.isBlank()) {
             keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
         }
 
@@ -81,12 +85,13 @@ public class AuthenticationResource {
      * @return HTTP 200 OK if refresh is successful
      * @throws UnauthorizedException if the refresh token is missing or invalid
      */
+    @Public
     @PostMapping("/refresh")
     public AuthSessionInfoDTO refresh(HttpServletRequest request, HttpServletResponse response) {
         String accessToken = null;
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
+        if (cookies!=null) {
             for (Cookie cookie : cookies) {
                 if ("access_token".equals(cookie.getName())) {
                     accessToken = cookie.getValue();
@@ -111,6 +116,7 @@ public class AuthenticationResource {
      * @param response the HTTP servlet response used to set authentication cookies
      * @return DTO containing token lifetimes and profile completion flag
      */
+    @Public
     @PostMapping("/otp-complete")
     public AuthSessionInfoDTO otpComplete(
         @Valid @RequestBody OtpCompleteDTO body,
