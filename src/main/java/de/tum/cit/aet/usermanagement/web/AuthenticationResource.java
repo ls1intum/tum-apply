@@ -61,7 +61,7 @@ public class AuthenticationResource {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = null;
-        if (request.getCookies()!=null) {
+        if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if ("refresh_token".equals(c.getName())) {
                     refreshToken = c.getValue();
@@ -69,7 +69,7 @@ public class AuthenticationResource {
                 }
             }
         }
-        if (refreshToken!=null && !refreshToken.isBlank()) {
+        if (refreshToken != null && !refreshToken.isBlank()) {
             keycloakAuthenticationService.invalidateRefreshToken(refreshToken);
         }
 
@@ -91,7 +91,7 @@ public class AuthenticationResource {
         String accessToken = null;
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
-        if (cookies!=null) {
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("access_token".equals(cookie.getName())) {
                     accessToken = cookie.getValue();
