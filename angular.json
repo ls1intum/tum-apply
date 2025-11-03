@@ -30,6 +30,9 @@
             "polyfills": ["@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/main/webapp/content/scss"]
+            },
             "assets": [
               "src/main/webapp/content",
               "src/main/webapp/favicon.ico",
