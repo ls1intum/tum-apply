@@ -284,7 +284,7 @@ describe('ApplicationDetailComponent', () => {
       component.applications.set([makeDetailApp('1'), makeDetailApp('2'), makeDetailApp('3')]);
       component.totalRecords.set(10);
       component.currentIndex.set(0);
-      component.windowIndex.set(0);
+      component.carouselIndex.set(0);
       component.currentApplication.set(component.applications()[0]);
       component.onNext();
       expect(spy).toHaveBeenCalledWith(component.currentIndex() + component.half);
@@ -304,7 +304,7 @@ describe('ApplicationDetailComponent', () => {
       ]);
       component.totalRecords.set(7);
       component.currentIndex.set(4);
-      component.windowIndex.set(4);
+      component.carouselIndex.set(4);
       component.currentApplication.set(component.applications()[4]);
       component.onPrev();
       expect(spy).toHaveBeenCalledWith(component.currentIndex() - component.half);
@@ -333,12 +333,12 @@ describe('ApplicationDetailComponent', () => {
   describe('Constants', () => {
     it('should expose constants and derived values', () => {
       const testComp = component as unknown as {
-        WINDOW_SIZE: number;
+        CAROUSEL_SIZE: number;
         sortableFields: typeof sortableFields;
         half: number;
       };
 
-      expect(testComp.WINDOW_SIZE).toBe(7);
+      expect(testComp.CAROUSEL_SIZE).toBe(7);
       expect(testComp.sortableFields).toEqual(sortableFields);
       expect(testComp.half).toBe(3);
     });
@@ -354,7 +354,7 @@ describe('ApplicationDetailComponent', () => {
 
   // ---------------- WINDOW AND PAGE LOADING ----------------
   describe('Window and Page Loading', () => {
-    it('should loadWindow correctly and set state', async () => {
+    it('should loadCarousel correctly and set state', async () => {
       const mockRes = {
         applications: [makeDetailApp('1'), makeDetailApp('2')],
         totalRecords: 10,
@@ -366,13 +366,13 @@ describe('ApplicationDetailComponent', () => {
       const testComp = component as unknown as {
         updateDocumentInformation: (appId: string) => void;
         markCurrentApplicationAsInReview: () => Promise<void>;
-        loadWindow: (appId: string) => Promise<void>;
+        loadCarousel: (appId: string) => Promise<void>;
       };
 
       const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
       const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue();
 
-      await testComp.loadWindow('app-1');
+      await testComp.loadCarousel('app-1');
 
       expect(evaluationApi.getApplicationsDetailsWindow).toHaveBeenCalledWith(
         'app-1',
@@ -385,21 +385,21 @@ describe('ApplicationDetailComponent', () => {
       );
       expect(component.totalRecords()).toBe(10);
       expect(component.applications().length).toBe(2);
-      expect(component.windowIndex()).toBe(1);
+      expect(component.carouselIndex()).toBe(1);
       expect(component.currentIndex()).toBe(1);
       expect(component.currentApplication()?.applicationDetailDTO.applicationId).toBe('2');
       expect(updateDocSpy).toHaveBeenCalledWith('2');
       expect(markSpy).toHaveBeenCalled();
     });
 
-    it('should handle error in loadWindow gracefully', async () => {
+    it('should handle error in loadCarousel gracefully', async () => {
       evaluationApi.getApplicationsDetailsWindow.mockReturnValueOnce(throwError(() => new Error('fail')));
 
       const testComp = component as unknown as {
-        loadWindow: (appId: string) => Promise<void>;
+        loadCarousel: (appId: string) => Promise<void>;
       };
 
-      await testComp.loadWindow('app-1');
+      await testComp.loadCarousel('app-1');
 
       expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadApplications');
     });
@@ -439,7 +439,7 @@ describe('ApplicationDetailComponent', () => {
       if (op === 'next') {
         const initialApps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
         component.applications.set(initialApps);
-        component.windowIndex.set(6);
+        component.carouselIndex.set(6);
 
         vi.spyOn(testComp, 'loadPage').mockResolvedValue(pageResult);
 
@@ -448,13 +448,13 @@ describe('ApplicationDetailComponent', () => {
         if (pageResult) {
           const apps = component.applications();
           expect(apps.length).toBe(7);
-          expect(updateDocSpy).toHaveBeenCalledWith(apps[component.windowIndex()].applicationDetailDTO.applicationId);
+          expect(updateDocSpy).toHaveBeenCalledWith(apps[component.carouselIndex()].applicationDetailDTO.applicationId);
         } else {
           expect(updateDocSpy).not.toHaveBeenCalled();
         }
       } else {
         component.applications.set([makeDetailApp('2'), makeDetailApp('3')]);
-        component.windowIndex.set(0);
+        component.carouselIndex.set(0);
 
         vi.spyOn(testComp, 'loadPage').mockResolvedValue(pageResult);
 
@@ -486,7 +486,7 @@ describe('ApplicationDetailComponent', () => {
     it('should updateApplications trim front when windowIndex > half', () => {
       const apps = Array.from({ length: 7 }, (_, i) => makeDetailApp(`${i}`));
       component.applications.set(apps);
-      component.windowIndex.set(5);
+      component.carouselIndex.set(5);
 
       const testComp = component as unknown as {
         updateApplications: () => void;
@@ -498,14 +498,14 @@ describe('ApplicationDetailComponent', () => {
       testComp.updateApplications();
 
       expect(component.applications().length).toBeLessThanOrEqual(7);
-      expect(component.windowIndex()).toBeLessThan(5);
+      expect(component.carouselIndex()).toBeLessThan(5);
       expect(updateDocSpy).toHaveBeenCalled();
     });
 
     it('should updateApplications trim end when right side too large', () => {
       const apps = Array.from({ length: 10 }, (_, i) => makeDetailApp(`${i}`));
       component.applications.set(apps);
-      component.windowIndex.set(1);
+      component.carouselIndex.set(1);
 
       const testComp = component as unknown as {
         updateApplications: () => void;
@@ -614,13 +614,13 @@ describe('ApplicationDetailComponent', () => {
     ])('should initialize from query params', async ({ qp, pre, expect: assertFn }) => {
       const testComp = component as unknown as {
         loadInitialPage: () => Promise<void>;
-        loadWindow: (id: string) => Promise<void>;
+        loadCarousel: (id: string) => Promise<void>;
         isSortInitiatedByUser: boolean;
         isSearchInitiatedByUser: boolean;
       };
 
       const spyInit = vi.spyOn(testComp, 'loadInitialPage').mockResolvedValue(undefined);
-      const spyWindow = vi.spyOn(testComp, 'loadWindow').mockResolvedValue(undefined);
+      const spyWindow = vi.spyOn(testComp, 'loadCarousel').mockResolvedValue(undefined);
 
       if (pre.sortBy) component.sortBy.set(pre.sortBy);
       if (pre.search) component.searchQuery.set(pre.search);
@@ -744,17 +744,17 @@ describe('ApplicationDetailComponent', () => {
       const testComp = component as unknown as {
         updateDocumentInformation: (id: string) => void;
         markCurrentApplicationAsInReview: () => Promise<void>;
-        loadWindow: (appId: string) => Promise<void>;
+        loadCarousel: (appId: string) => Promise<void>;
       };
 
       const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
       const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue(undefined);
 
-      await testComp.loadWindow('app-123');
+      await testComp.loadCarousel('app-123');
 
       expect(component.totalRecords()).toBe(5);
       expect(component.applications().length).toBe(2);
-      expect(component.windowIndex()).toBe(1);
+      expect(component.carouselIndex()).toBe(1);
       expect(component.currentIndex()).toBe(1);
       expect(component.currentApplication()?.applicationDetailDTO.applicationId).toBe('2');
       expect(evaluationApi.getApplicationsDetailsWindow).toHaveBeenCalledWith(
@@ -770,7 +770,7 @@ describe('ApplicationDetailComponent', () => {
       expect(markSpy).toHaveBeenCalled();
     });
 
-    it('should handle undefined values gracefully in loadWindow', async () => {
+    it('should handle undefined values gracefully in loadCarousel', async () => {
       const mockRes = {
         applications: undefined,
         totalRecords: undefined,
@@ -782,17 +782,17 @@ describe('ApplicationDetailComponent', () => {
       const testComp = component as unknown as {
         updateDocumentInformation: (id: string) => void;
         markCurrentApplicationAsInReview: () => Promise<void>;
-        loadWindow: (appId: string) => Promise<void>;
+        loadCarousel: (appId: string) => Promise<void>;
       };
 
       const updateDocSpy = vi.spyOn(testComp, 'updateDocumentInformation').mockImplementation(() => {});
       const markSpy = vi.spyOn(testComp, 'markCurrentApplicationAsInReview').mockResolvedValue(undefined);
 
-      await testComp.loadWindow('app-456');
+      await testComp.loadCarousel('app-456');
 
       expect(component.totalRecords()).toBe(0);
       expect(component.applications()).toEqual([]);
-      expect(component.windowIndex()).toBe(0);
+      expect(component.carouselIndex()).toBe(0);
       expect(component.currentIndex()).toBe(0);
       expect(component.currentApplication()).toBeUndefined();
       expect(updateDocSpy).not.toHaveBeenCalled();

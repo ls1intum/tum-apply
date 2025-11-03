@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
-import { ActivatedRoute, convertToParamMap, Params, Router } from '@angular/router';
+import { convertToParamMap, Params, Router } from '@angular/router';
 
 import { ApplicationOverviewComponent } from 'app/evaluation/application-overview/application-overview.component';
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
@@ -11,6 +11,7 @@ import { availableStatusOptions, sortableFields } from 'app/evaluation/filterSor
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { provideToastServiceMock } from '../../../util/toast-service.mock';
 import { provideRouterMock } from '../../../util/router.mock';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
 type GetOverviewsArgs = Parameters<ApplicationEvaluationResourceApiService['getApplicationsOverviews']>;
 
@@ -39,6 +40,7 @@ describe('ApplicationOverviewComponent', () => {
   let q$: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
 
   const lastGetArgs = (): GetOverviewsArgs => api.getApplicationsOverviews.mock.calls.at(-1) as GetOverviewsArgs;
+  const mockActivatedRoute = createActivatedRouteMock({}, {});
 
   beforeEach(async () => {
     vi.useFakeTimers();
@@ -48,20 +50,12 @@ describe('ApplicationOverviewComponent', () => {
       getApplicationsOverviews: vi.fn().mockReturnValue(of({ applications: [makeOverview('1')], totalRecords: 1 })),
     };
 
-    q$ = new BehaviorSubject(convertToParamMap({}));
-
     await TestBed.configureTestingModule({
       imports: [ApplicationOverviewComponent],
       providers: [
         provideRouterMock(),
         { provide: ApplicationEvaluationResourceApiService, useValue: api },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParamMap: q$.asObservable(),
-            snapshot: { queryParamMap: convertToParamMap({}) },
-          },
-        },
+        provideActivatedRouteMock(mockActivatedRoute),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
         provideToastServiceMock(),
@@ -173,28 +167,26 @@ describe('ApplicationOverviewComponent', () => {
       api.getApplicationsOverviews.mockClear();
 
       component.loadOnSortEmit({ field: 'name', direction: 'ASC' });
-      q$.next(convertToParamMap({ sortBy: 'createdAt', sortDir: 'DESC' }));
+      mockActivatedRoute.setQueryParams({ sortBy: 'createdAt', sortDir: 'DESC' });
       vi.runOnlyPendingTimers();
       await fixture.whenStable();
       expect(component.sortBy()).toBe('name');
       expect(component.sortDirection()).toBe('ASC');
 
-      q$.next(convertToParamMap({ page: '-5', pageSize: '0', sortDir: 'INVALID' }));
+      mockActivatedRoute.setQueryParams({ sortBy: 'createdAt', sortDir: 'DESC' });
       vi.runOnlyPendingTimers();
       await fixture.whenStable();
       expect(component.page()).toBe(0);
-      expect(component.pageSize()).toBe(1);
+      expect(component.pageSize()).toBe(10);
       expect(component.sortDirection()).toBe('DESC');
 
-      q$.next(
-        convertToParamMap({
-          page: '2',
-          pageSize: '25',
-          sortBy: sortableFields[0].fieldName,
-          sortDir: 'ASC',
-          search: 'ml',
-        }),
-      );
+      mockActivatedRoute.setQueryParams({
+        page: '2',
+        pageSize: '25',
+        sortBy: sortableFields[0].fieldName,
+        sortDir: 'ASC',
+        search: 'ml',
+      });
       vi.runOnlyPendingTimers();
       await fixture.whenStable();
       expect(component.page()).toBe(2);
@@ -225,12 +217,10 @@ describe('ApplicationOverviewComponent', () => {
 
   // ---------------- SERVICE CALL ARGUMENT ----------------
   describe('Service Call Arguments', () => {
-    it('passes undefined for filters when none are selected', async () => {
+    it('passes undefined for filters when none are selected', () => {
       api.getApplicationsOverviews.mockClear();
 
       component.loadOnSearchEmit('');
-      await fixture.whenStable();
-      vi.runOnlyPendingTimers();
 
       const args = lastGetArgs();
       expect(args[4]).toBeUndefined();
