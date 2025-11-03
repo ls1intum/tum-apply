@@ -21,10 +21,6 @@
       "job": "Position",
       "appliedAt": "Beworben am"
     },
-    "cancel": "Abbrechen",
-    "save": "Speichern",
-    "post": "Absenden",
-    "more": "Mehr",
     "statusBadge": {
       "SENT": "Ungelesen",
       "ACCEPTED": "Angenommen",
@@ -75,6 +71,8 @@
       "educationDegree": "Abschluss",
       "educationUniversity": "Universität",
       "educationGrade": "Abschlussnote",
+      "educationGradeConverted": "Abschlussnote (konvertiert)",
+      "converterTooltip": "Die Abschlussnote wurde mittels des <a href=\"https://www.kmk.org/fileadmin/Dateien/pdf/ZAB/Hochschulzugang_Beschluesse_der_KMK/GesNot05.pdf\" target=\"_blank\"  class='external-link' rel=\"noopener noreferrer\">Beschlusses der Kultusministerkonferenz</a> ins deutsche System konvertiert",
       "applicationTitle": "Bewerbung",
       "applicationDesiredStartDate": "Bevorzugtes Startdatum",
       "applicationMotivation": "Motivation",
