@@ -151,7 +151,8 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}"
+      "show": "Show {{otherEntity}}",
+      "pdf": "Export PDF"
     },
     "detail": {
       "field": "Field",
@@ -238,6 +239,7 @@
       }
     },
     "application_detail": {
+      "headline": "Application for ",
       "applicant": {
         "header": "Application for '{{jobTitle}}'",
         "title_prefix": "Application for"
@@ -257,12 +259,6 @@
       "education": "Education",
       "applicationDetails": "Application Details",
       "summary": "Summary",
-      "buttons": {
-        "back": "Back",
-        "next": "Next",
-        "prev": "Previous",
-        "send": "Send"
-      },
       "confirmDialog": {
         "header": "Submit Application",
         "message": "Are you sure you want to submit your application? Once published, further edits will NOT be possible."
@@ -386,12 +382,6 @@
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
         "closed": "Closed"
-      },
-      "actions": {
-        "view": "View",
-        "withdraw": "Withdraw",
-        "update": "Update",
-        "delete": "Delete"
       },
       "columns": {
         "positionTitle": "Position Title",

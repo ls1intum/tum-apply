@@ -151,7 +151,8 @@
       "open": "Öffnen",
       "save": "Speichern",
       "view": "Details",
-      "show": "Zeige {{otherEntity}}"
+      "show": "Zeige {{otherEntity}}",
+      "pdf": "PDF exportieren"
     },
     "detail": {
       "field": "Feld",
@@ -238,6 +239,7 @@
       }
     },
     "application_detail": {
+      "headline": "Bewerbung für ",
       "applicant": {
         "header": "Bewerbung für '{{jobTitle}}'",
         "title_prefix": "Bewerbung für"
@@ -257,12 +259,6 @@
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
       "summary": "Zusammenfassung",
-      "buttons": {
-        "back": "Zurück",
-        "next": "Weiter",
-        "prev": "Zurück",
-        "send": "Senden"
-      },
       "confirmDialog": {
         "header": "Bewerbung absenden",
         "message": "Bist du sicher, dass du deine Bewerbung absenden möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
@@ -386,12 +382,6 @@
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
         "closed": "Geschlossen"
-      },
-      "actions": {
-        "view": "Ansehen",
-        "withdraw": "Zurückziehen",
-        "update": "Bearbeiten",
-        "delete": "Löschen"
       },
       "columns": {
         "positionTitle": "Stellentitel",

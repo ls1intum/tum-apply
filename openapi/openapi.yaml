@@ -665,6 +665,22 @@ paths:
     get:
       tags: [interview-resource]
       operationId: getInterviewOverview
+  /api/export/application/{id}/pdf:
+    post:
+      tags: [pdf-export-resource]
+      operationId: exportApplicationToPDF
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {type: string}
+        required: true
       responses:
         '200':
           description: OK
@@ -673,6 +689,8 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
+            application/pdf:
+              schema: {type: string, format: binary}
   /api/jobs/available:
     get:
       tags: [job-resource]
