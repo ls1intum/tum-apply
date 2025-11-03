@@ -19,11 +19,13 @@ import { RejectDTO } from 'app/generated/model/rejectDTO';
 import { ApplicationEvaluationDetailListDTO } from 'app/generated/model/applicationEvaluationDetailListDTO';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
+import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../components/section/section';
 import { SubSection } from '../components/sub-section/sub-section';
-import { DescriptionList } from '../components/description-list/description-list';
+import { DescItem, DescriptionList } from '../components/description-list/description-list';
 import { LinkList } from '../components/link-list/link-list';
 import { Prose } from '../components/prose/prose';
 import { DocumentSection } from '../components/document-section/document-section';
@@ -33,7 +35,7 @@ import { RatingSection } from '../components/rating-section/rating-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
-const WINDOW_SIZE = 7;
+const CAROUSEL_SIZE = 7;
 
 @Component({
   selector: 'jhi-application-detail',
@@ -61,7 +63,7 @@ export class ApplicationDetailComponent {
   applications = signal<ApplicationEvaluationDetailDTO[]>([]);
   totalRecords = signal<number>(0);
   currentIndex = signal<number>(0);
-  windowIndex = signal<number>(0);
+  carouselIndex = signal<number>(0);
   searchQuery = signal<string>('');
 
   currentApplication = signal<ApplicationEvaluationDetailDTO | undefined>(undefined);
@@ -78,11 +80,14 @@ export class ApplicationDetailComponent {
 
   allAvailableJobNames = signal<string[]>([]);
 
+  bachelorItems = signal<DescItem[]>([]);
+  masterItems = signal<DescItem[]>([]);
+
   // accept/reject dialog
   reviewDialogVisible = signal<boolean>(false);
   reviewDialogMode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
 
-  half = Math.floor(WINDOW_SIZE / 2); // Half the window size, used for centering
+  half = Math.floor(CAROUSEL_SIZE / 2); // Half the carousel size, used for centering
 
   canReview = computed(() => {
     const currentApplication = this.currentApplication();
@@ -93,11 +98,15 @@ export class ApplicationDetailComponent {
     return state !== 'ACCEPTED' && state !== 'REJECTED';
   });
 
+  currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
+  bachelorItemsComputed = computed(() => this.getBachelorItems(this.currentApplicationApplicant()));
+  masterItemsComputed = computed(() => this.getMasterItems(this.currentApplicationApplicant()));
+
   protected currentApplicationId = computed(() => {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
   });
 
-  protected readonly WINDOW_SIZE = WINDOW_SIZE;
+  protected readonly CAROUSEL_SIZE = CAROUSEL_SIZE;
   protected readonly sortableFields = sortableFields;
 
   private isSearchInitiatedByUser = false;
@@ -138,7 +147,7 @@ export class ApplicationDetailComponent {
 
     const id = this.qpSignal().get('applicationId');
     if (id) {
-      void this.loadWindow(id);
+      void this.loadCarousel(id);
     } else {
       // Load initial batch of applications
       void this.loadInitialPage();
@@ -153,6 +162,73 @@ export class ApplicationDetailComponent {
       this.allAvailableJobNames.set([]);
       this.toastService.showErrorKey('evaluation.errors.loadJobNames');
     }
+  }
+
+  getDisplayGrade(upperLimit: string | undefined, lowerLimit: string | undefined, grade: string | undefined): string | undefined {
+    return displayGradeWithConversion(upperLimit, lowerLimit, grade);
+  }
+
+  getBachelorItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
+    if (!applicant) return [];
+    const items: DescItem[] = [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.bachelorDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.bachelorUniversity },
+      { labelKey: 'evaluation.details.educationGrade', value: applicant.bachelorGrade },
+    ];
+
+    const converted = this.getGradeItem(
+      applicant.bachelorGrade,
+      applicant.bachelorGradeUpperLimit,
+      applicant.bachelorGradeLowerLimit,
+      'evaluation.details.educationGradeConverted',
+      'evaluation.details.converterTooltip',
+    );
+
+    items.push(...converted);
+    return items;
+  }
+
+  getMasterItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
+    if (!applicant) return [];
+    const items: DescItem[] = [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.masterDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.masterUniversity },
+      { labelKey: 'evaluation.details.educationGrade', value: applicant.masterGrade },
+    ];
+
+    const converted = this.getGradeItem(
+      applicant.masterGrade,
+      applicant.masterGradeUpperLimit,
+      applicant.masterGradeLowerLimit,
+      'evaluation.details.educationGradeConverted',
+      'evaluation.details.converterTooltip',
+    );
+
+    items.push(...converted);
+    return items;
+  }
+
+  getGradeItem(
+    grade: string | undefined,
+    upperLimit: string | undefined,
+    lowerLimit: string | undefined,
+    convertedLabel: string,
+    tooltipText?: string,
+  ): DescItem[] {
+    const originalGrade = grade ?? '';
+    const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
+
+    const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
+    const roundedOriginal = Math.floor(numericOriginal * 10) / 10;
+
+    const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
+    const roundedConverted = Math.floor(numericConverted * 10) / 10;
+
+    if (!convertedGrade || roundedOriginal === roundedConverted) {
+      return [];
+    }
+
+    return [{ labelKey: convertedLabel, value: convertedGrade, tooltipText }];
   }
 
   onSearchEmit(searchQuery: string): void {
@@ -186,8 +262,8 @@ export class ApplicationDetailComponent {
     if (this.currentIndex() >= this.totalRecords() - 1) return;
 
     this.currentIndex.update(v => v + 1);
-    this.windowIndex.update(v => v + 1);
-    const nextApp = this.applications()[this.windowIndex()];
+    this.carouselIndex.update(v => v + 1);
+    const nextApp = this.applications()[this.carouselIndex()];
     this.currentApplication.set(nextApp);
 
     void this.markCurrentApplicationAsInReview();
@@ -196,7 +272,7 @@ export class ApplicationDetailComponent {
       // Load next item if within bounds
       void this.loadNext(this.currentIndex() + this.half);
     } else {
-      // Otherwise update the visible window
+      // Otherwise update the visible carousel
       this.updateApplications();
     }
     this.updateUrlQueryParams();
@@ -207,8 +283,8 @@ export class ApplicationDetailComponent {
     if (this.currentIndex() <= 0) return;
 
     this.currentIndex.update(v => v - 1);
-    this.windowIndex.update(v => v - 1);
-    const prevApp = this.applications()[this.windowIndex()];
+    this.carouselIndex.update(v => v - 1);
+    const prevApp = this.applications()[this.carouselIndex()];
     this.currentApplication.set(prevApp);
 
     void this.markCurrentApplicationAsInReview();
@@ -217,7 +293,7 @@ export class ApplicationDetailComponent {
       // Load previous item if within bounds
       void this.loadPrev(this.currentIndex() - this.half);
     } else {
-      // Otherwise update the visible window
+      // Otherwise update the visible carousel
       this.updateApplications();
     }
     this.updateUrlQueryParams();
@@ -355,7 +431,7 @@ export class ApplicationDetailComponent {
     }
   }
 
-  private async loadWindow(applicationId: string): Promise<void> {
+  private async loadCarousel(applicationId: string): Promise<void> {
     try {
       const statusFilters = this.selectedStatusFilters().length > 0 ? this.selectedStatusFilters() : [];
       const jobFilters = this.selectedJobFilters().length > 0 ? this.selectedJobFilters() : [];
@@ -364,7 +440,7 @@ export class ApplicationDetailComponent {
       const res: ApplicationEvaluationDetailListDTO = await firstValueFrom(
         this.evaluationResourceService.getApplicationsDetailsWindow(
           applicationId,
-          WINDOW_SIZE,
+          CAROUSEL_SIZE,
           this.sortBy(),
           this.sortDirection(),
           statusFilters.length ? statusFilters : undefined,
@@ -374,10 +450,10 @@ export class ApplicationDetailComponent {
       );
       this.totalRecords.set(res.totalRecords ?? 0);
       this.applications.set(res.applications ?? []);
-      this.windowIndex.set(res.windowIndex ?? 0);
+      this.carouselIndex.set(res.windowIndex ?? 0);
       this.currentIndex.set(res.currentIndex ?? 0);
-      this.currentApplication.set(this.applications()[this.windowIndex()]);
-      this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
+      this.currentApplication.set(this.applications()[this.carouselIndex()]);
+      this.updateDocumentInformation(this.applications()[this.carouselIndex()].applicationDetailDTO.applicationId);
       void this.markCurrentApplicationAsInReview();
     } catch {
       this.toastService.showErrorKey('evaluation.errors.loadApplications');
@@ -386,77 +462,77 @@ export class ApplicationDetailComponent {
   }
 
   /**
-   * Loads the next application and appends it to the right side of the current window.
-   * Adjusts window to keep the size fixed (WINDOW_SIZE).
+   * Loads the next application and appends it to the right side of the current carousel.
+   * Adjusts carousel to keep the size fixed (CAROUSEL_SIZE).
    */
   private async loadNext(i: number): Promise<void> {
     const newEntry = await this.loadPage(i, 1);
     if (newEntry) {
       let apps = [...this.applications(), ...newEntry];
-      // Keep window size fixed
-      if (apps.length > WINDOW_SIZE) {
-        apps = apps.slice(apps.length - WINDOW_SIZE);
-        this.windowIndex.update(v => v - 1); // Adjust index to match slice
+      // Keep carousel size fixed
+      if (apps.length > CAROUSEL_SIZE) {
+        apps = apps.slice(apps.length - CAROUSEL_SIZE);
+        this.carouselIndex.update(v => v - 1); // Adjust index to match slice
       }
       this.applications.set(apps);
-      this.updateDocumentInformation(apps[this.windowIndex()].applicationDetailDTO.applicationId);
+      this.updateDocumentInformation(apps[this.carouselIndex()].applicationDetailDTO.applicationId);
     }
   }
 
   /**
-   * Loads the previous application and prepends it to the left side of the window.
-   * Adjusts window to keep the size fixed (WINDOW_SIZE).
+   * Loads the previous application and prepends it to the left side of the carousel.
+   * Adjusts carousel to keep the size fixed (CAROUSEL_SIZE).
    */
   private async loadPrev(i: number): Promise<void> {
     const newEntry = await this.loadPage(i, 1);
     if (newEntry) {
       let apps = [...newEntry, ...this.applications()];
-      if (apps.length > WINDOW_SIZE) {
-        apps = apps.slice(0, WINDOW_SIZE);
+      if (apps.length > CAROUSEL_SIZE) {
+        apps = apps.slice(0, CAROUSEL_SIZE);
       }
-      this.windowIndex.update(v => v + 1); // Adjust index to match new position
+      this.carouselIndex.update(v => v + 1); // Adjust index to match new position
       this.applications.set(apps);
-      this.updateDocumentInformation(apps[this.windowIndex()].applicationDetailDTO.applicationId);
+      this.updateDocumentInformation(apps[this.carouselIndex()].applicationDetailDTO.applicationId);
     }
   }
 
   /**
-   * Loads the initial window of applications when component initializes.
-   * Uses half of the window size to center the first item.
+   * Loads the initial carousel of applications when component initializes.
+   * Uses half of the carousel size to center the first item.
    */
   private async loadInitialPage(): Promise<void> {
     const data = await this.loadPage(0, this.half + 1);
     if (data) {
       this.currentIndex.set(0);
-      this.windowIndex.set(0);
+      this.carouselIndex.set(0);
       this.applications.set(data);
       this.currentApplication.set(data[0]);
       void this.markCurrentApplicationAsInReview();
       this.updateUrlQueryParams();
-      this.updateDocumentInformation(data[this.windowIndex()].applicationDetailDTO.applicationId);
+      this.updateDocumentInformation(data[this.carouselIndex()].applicationDetailDTO.applicationId);
     }
   }
 
   /**
-   * Trims or shifts the application window when the internal index drifts
+   * Trims or shifts the application carousel when the internal index drifts
    * outside the center (e.g. after multiple navigations).
    * Ensures the centered item is properly positioned in the middle.
    */
   private updateApplications(): void {
-    const windowIndex = this.windowIndex();
+    const carouselIndex = this.carouselIndex();
     const apps = this.applications();
 
-    if (windowIndex > this.half) {
-      // Trim the front of the window
-      const diff = windowIndex - this.half;
+    if (carouselIndex > this.half) {
+      // Trim the front of the carousel
+      const diff = carouselIndex - this.half;
       this.applications.set(apps.slice(diff));
-      this.windowIndex.update(v => v - diff);
-    } else if (apps.length - windowIndex - 1 > this.half) {
-      // Trim the end of the window
-      const diff = apps.length - windowIndex - 1 - this.half;
+      this.carouselIndex.update(v => v - diff);
+    } else if (apps.length - carouselIndex - 1 > this.half) {
+      // Trim the end of the carousel
+      const diff = apps.length - carouselIndex - 1 - this.half;
       this.applications.set(apps.slice(0, apps.length - diff));
     }
-    this.updateDocumentInformation(this.applications()[this.windowIndex()].applicationDetailDTO.applicationId);
+    this.updateDocumentInformation(this.applications()[this.carouselIndex()].applicationDetailDTO.applicationId);
   }
 
   private buildQueryParams(): Params {

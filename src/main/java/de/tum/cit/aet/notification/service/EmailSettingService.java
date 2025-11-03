@@ -1,5 +1,6 @@
 package de.tum.cit.aet.notification.service;
 
+import de.tum.cit.aet.core.exception.EmailSettingException;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
@@ -11,7 +12,6 @@ import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +63,7 @@ public class EmailSettingService {
      * @param settingDTOs a set of EmailSettingDTO objects containing the new email preferences
      * @param user        the user whose email settings should be updated
      * @return a set of updated EmailSettingDTO objects after successful persistence
-     * @throws IllegalStateException if the user attempts to modify an email type they're not allowed to receive
+     * @throws EmailSettingException if the user attempts to modify an email type they're not allowed to receive
      */
     @Transactional // ensures new settings are persisted and visible in the same DB transaction
     public Set<EmailSettingDTO> updateSettingsForUser(Set<EmailSettingDTO> settingDTOs, User user) {
@@ -77,9 +77,7 @@ public class EmailSettingService {
             EmailSetting setting = settingMap.get(dto.emailType());
 
             if (setting == null) {
-                throw new IllegalStateException(
-                    "User %s is not allowed to receive email type: %s".formatted(user.getUserId(), dto.emailType())
-                );
+                throw new EmailSettingException(String.format("Invalid email type '%s'", dto.emailType()));
             }
 
             setting.setEnabled(dto.enabled());
@@ -124,10 +122,10 @@ public class EmailSettingService {
      * Determines which email types a user is eligible to receive based on their roles.
      * Filters all available email types to only include those matching the user's current roles.
      *
-     * @param user the user to determine available email types for (must not be null)
+     * @param user the user to determine available email types for
      * @return a set of EmailType values that the user is eligible to receive based on their roles
      */
-    private Set<EmailType> getAvailableEmailTypesForUser(@NonNull User user) {
+    private Set<EmailType> getAvailableEmailTypesForUser(User user) {
         Set<UserRole> userRoles = userResearchGroupRoleRepository
             .findAllByUser(user)
             .stream()
