@@ -57,7 +57,8 @@ export class ApplicationCarouselComponent implements OnDestroy {
 
     for (let offset = -half; offset <= half; offset++) {
       const index = this.carouselIndex() + offset;
-      result.push(index >= 0 && index < this.carouselSize() ? apps[index] : undefined);
+      const item = index >= 0 && index < this.carouselSize() ? apps.at(index) : undefined;
+      result.push(item);
     }
 
     return result;
@@ -65,16 +66,18 @@ export class ApplicationCarouselComponent implements OnDestroy {
 
   readonly middle = computed(() => Math.floor(this.cardsVisible() / 2));
 
-  private readonly _updateCardsEffect = effect(() => {
+  private readonly updateCardsEffect = effect(() => {
     this.updateVisibleCards();
   });
 
+  private resizeHandlerBound = this.resizeHandler.bind(this);
+
   constructor() {
-    window.addEventListener('resize', this.resizeHandler);
+    window.addEventListener('resize', this.resizeHandlerBound);
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.resizeHandler);
+    window.removeEventListener('resize', this.resizeHandlerBound);
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -117,7 +120,7 @@ export class ApplicationCarouselComponent implements OnDestroy {
     }
   }
 
-  private readonly resizeHandler = (): void => {
+  private resizeHandler(): void {
     this.updateVisibleCards();
-  };
+  }
 }
