@@ -144,7 +144,13 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                     200
                 );
 
-            assertThat(details.applications()).isNotEmpty();
+            assertThat(details.applications().size()).isEqualTo(2);
+            assertThat(details.applications()).anyMatch(application ->
+                application.applicationDetailDTO().applicationId().equals(sentApp.getApplicationId())
+            );
+            assertThat(details.applications()).anyMatch(application ->
+                application.applicationDetailDTO().applicationId().equals(inReviewApp.getApplicationId())
+            );
         }
 
         @Test
@@ -158,26 +164,38 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                     200
                 );
 
-            assertThat(win.applications().size()).isBetween(1, 3);
+            assertThat(win.applications().size()).isEqualTo(2);
+            assertThat(win.applications()).anyMatch(application ->
+                application.applicationDetailDTO().applicationId().equals(sentApp.getApplicationId())
+            );
+            assertThat(win.applications()).anyMatch(application ->
+                application.applicationDetailDTO().applicationId().equals(inReviewApp.getApplicationId())
+            );
         }
 
         @Test
         void detailsLimitIsApplied() {
+            SortDTO sort = new SortDTO("status", SortDTO.Direction.DESC);
             ApplicationEvaluationDetailListDTO details = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .getAndRead(
                     "/api/evaluation/application-details",
-                    Map.of("offset", "0", "limit", "1"),
+                    Map.of("offset", "0", "limit", "1", "sortBy", sort.sortBy(), "direction", sort.direction().name()),
                     ApplicationEvaluationDetailListDTO.class,
                     200
                 );
 
             assertThat(details.applications()).hasSize(1);
+            assertThat(details.applications().getFirst().applicationDetailDTO().applicationId()).isEqualTo(inReviewApp.getApplicationId());
+            assertThat(details.applications().getFirst().applicationDetailDTO().applicationState()).isEqualTo(inReviewApp.getState());
+            assertThat(details.applications().getFirst().applicationDetailDTO().applicant().user().name()).isEqualTo(
+                applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName()
+            );
         }
 
         @Test
         void overviewsWithSortingOk() {
-            SortDTO sort = new SortDTO("appliedAt", SortDTO.Direction.DESC);
+            SortDTO sort = new SortDTO("status", SortDTO.Direction.DESC);
             OffsetPageDTO page = new OffsetPageDTO(0, 10);
 
             ApplicationEvaluationOverviewListDTO dto = api
@@ -198,7 +216,17 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                     200
                 );
 
-            assertThat(dto.applications()).isNotEmpty();
+            assertThat(dto.applications()).hasSize(2);
+            assertThat(dto.applications().getFirst().applicationId()).isEqualTo(inReviewApp.getApplicationId());
+            assertThat(dto.applications().getFirst().state()).isEqualTo(inReviewApp.getState());
+            assertThat(dto.applications().getFirst().name()).isEqualTo(
+                applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName()
+            );
+            assertThat(dto.applications().get(1).applicationId()).isEqualTo(sentApp.getApplicationId());
+            assertThat(dto.applications().get(1).state()).isEqualTo(sentApp.getState());
+            assertThat(dto.applications().get(1).name()).isEqualTo(
+                applicant.getUser().getFirstName() + " " + applicant.getUser().getLastName()
+            );
         }
     }
 
@@ -209,9 +237,11 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
         void sentBecomesAcceptedAndMayCloseJob() {
             AcceptDTO payload = new AcceptDTO("Accepted!", true, true);
 
-            api
+            Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 204);
+
+            assertThat(result).isNull();
 
             Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
             assertThat(updated.getState()).isEqualTo(ApplicationState.ACCEPTED);
@@ -250,9 +280,11 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
         void withoutClosingJobKeepsJobOpen() {
             AcceptDTO payload = new AcceptDTO("Accepted but job open", false, false);
 
-            api
+            Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 204);
+
+            assertThat(result).isNull();
 
             Job job = jobRepository.findById(publishedJob.getJobId()).orElseThrow();
             assertThat(job.getState()).isEqualTo(JobState.PUBLISHED);
@@ -262,9 +294,11 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
         void withoutNotifyApplicantStillAccepts() {
             AcceptDTO payload = new AcceptDTO("Accepted silently", true, false);
 
-            api
+            Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/accept", payload, Void.class, 204);
+
+            assertThat(result).isNull();
 
             Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
             assertThat(updated.getState()).isEqualTo(ApplicationState.ACCEPTED);
@@ -278,9 +312,11 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
         void inReviewBecomesRejectedAndStoresReason() {
             RejectDTO payload = new RejectDTO(RejectReason.OTHER_REASON, true);
 
-            api
+            Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
+
+            assertThat(result).isNull();
 
             Application updated = applicationRepository.findById(inReviewApp.getApplicationId()).orElseThrow();
             assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
@@ -316,9 +352,11 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
         void withoutNotifyApplicantStillRejects() {
             RejectDTO payload = new RejectDTO(RejectReason.FAILED_REQUIREMENTS, false);
 
-            api
+            Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .postAndRead("/api/evaluation/applications/" + inReviewApp.getApplicationId() + "/reject", payload, Void.class, 204);
+
+            assertThat(result).isNull();
 
             Application updated = applicationRepository.findById(inReviewApp.getApplicationId()).orElseThrow();
             assertThat(updated.getState()).isEqualTo(ApplicationState.REJECTED);
@@ -330,9 +368,11 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
 
         @Test
         void sentBecomesInReview() {
-            api
+            Void result = api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead("/api/evaluation/applications/" + sentApp.getApplicationId() + "/open", null, Void.class, 204);
+
+            assertThat(result).isNull();
 
             Application updated = applicationRepository.findById(sentApp.getApplicationId()).orElseThrow();
             assertThat(updated.getState()).isEqualTo(ApplicationState.IN_REVIEW);
@@ -394,16 +434,42 @@ class ApplicationEvaluationResourceTest extends AbstractResourceTest {
                     MediaType.valueOf("application/zip")
                 );
 
-            assertThat(zipBytes).isNotEmpty();
+            assertThat(zipBytes)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSizeGreaterThan(200)
+                .describedAs("Downloaded ZIP should contain all expected document files");
+
+            Set<String> foundEntries = new HashSet<>();
 
             try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
-                Set<String> foundEntries = new HashSet<>();
                 ZipEntry entry;
                 while ((entry = zis.getNextEntry()) != null) {
                     foundEntries.add(entry.getName());
                     zis.closeEntry();
                 }
-                assertThat(foundEntries).hasSize(expectedFileNames.size());
+            }
+
+            assertThat(foundEntries)
+                .isNotEmpty()
+                .hasSize(expectedFileNames.size())
+                .allSatisfy(name -> {
+                    assertThat(name).endsWith(".pdf");
+                    assertThat(name).doesNotContain("..");
+                    assertThat(name).doesNotContain("/");
+                });
+
+            assertThat(foundEntries)
+                .anyMatch(name -> name.startsWith("bachelor"))
+                .anyMatch(name -> name.startsWith("master"))
+                .anyMatch(name -> name.startsWith("cv"))
+                .anyMatch(name -> name.startsWith("reference"))
+                .anyMatch(name -> name.startsWith("custom"));
+
+            assertThat(foundEntries.stream().distinct().count()).isEqualTo(foundEntries.size());
+
+            for (Map.Entry<DocumentType, String> entry : expectedFileNames.entrySet()) {
+                assertThat(foundEntries).anyMatch(name -> name.startsWith(entry.getValue()));
             }
         }
 
