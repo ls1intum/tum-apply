@@ -148,7 +148,8 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}"
+      "show": "Show {{otherEntity}}",
+      "pdf": "Export PDF"
     },
     "detail": {
       "field": "Field",
@@ -235,6 +236,7 @@
       }
     },
     "application_detail": {
+      "headline": "Application for ",
       "applicant": {
         "header": "Application for '{{jobTitle}}'",
         "title_prefix": "Application for"
