@@ -20,7 +20,7 @@
             (click)="onDownloadPDF()"
           />
           @if (['SAVED'].includes(application.applicationState)) {
-            <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
+            <jhi-button [label]="'button.edit'" icon="pencil" [shouldTranslate]="true" (click)="onUpdateApplication()" />
           }
         </div>
       </div>
@@ -39,12 +39,12 @@
         </div>
         <div class="overview-content">
           <div class="info-item">
-            <fa-icon [icon]="['fas', 'user']" class="icon" />
+            <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
             <span class="label" jhiTranslate="entity.application_detail.supervisor"></span>
             <span class="value">{{ application.supervisingProfessorName || '-' }}</span>
           </div>
           <div class="info-item">
-            <fa-icon [icon]="['fas', 'flask']" class="icon" />
+            <fa-icon [icon]="['fas', 'research-group']" class="icon" />
             <span class="label" jhiTranslate="entity.application_detail.research_group"></span>
             <span class="value">{{ application.researchGroup || '-' }}</span>
           </div>
@@ -151,7 +151,7 @@
 
         <div class="section-detail-card">
           <div class="section-card-header">
-            <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
+            <fa-icon [icon]="['fas', 'graduation-cap']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="entity.detail_card.bachelor_info"></h3>
           </div>
           <div class="section-card-body">
@@ -182,7 +182,7 @@
 
         <div class="section-detail-card">
           <div class="section-card-header">
-            <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
+            <fa-icon [icon]="['fas', 'graduation-cap']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="entity.detail_card.master_info"></h3>
           </div>
           <div class="section-card-body">
@@ -300,7 +300,8 @@
           <!-- Left-aligned Back button -->
           <div class="left-buttons">
             <jhi-button
-              [label]="'jobActionButton.back'"
+              icon="arrow-left"
+              [label]="'button.back'"
               [shouldTranslate]="true"
               severity="info"
               [variant]="'outlined'"
@@ -312,10 +313,10 @@
           <div class="right-buttons">
             @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
               <jhi-confirm-dialog
-                [label]="'entity.applicationOverview.actions.withdraw' | translate"
+                [label]="'button.withdraw' | translate"
+                [confirmIcon]="'withdraw'"
                 [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
                 [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-                confirmIcon="file-circle-minus"
                 (confirmed)="onWithdrawApplication()"
                 severity="danger"
                 variant="outlined"
@@ -324,10 +325,10 @@
 
             @if (['SAVED'].includes(application.applicationState)) {
               <jhi-confirm-dialog
-                [label]="'entity.applicationOverview.actions.delete' | translate"
+                [label]="'button.delete' | translate"
+                [confirmIcon]="'trash'"
                 [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
                 [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
-                confirmIcon="trash"
                 (confirmed)="onDeleteApplication()"
                 severity="danger"
               />
