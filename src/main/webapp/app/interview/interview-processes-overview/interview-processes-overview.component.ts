@@ -16,7 +16,7 @@ import { InterviewService } from '../service/interview.service';
 export class InterviewProcessesOverviewComponent implements OnInit {
   interviewProcesses = signal<InterviewOverviewDTO[]>([]);
   loading = signal<boolean>(true);
-  error = signal<string | null>(null);
+  error = signal<boolean>(false);
 
   private readonly interviewService = inject(InterviewService);
   private readonly router = inject(Router);
@@ -36,12 +36,11 @@ export class InterviewProcessesOverviewComponent implements OnInit {
   private async loadInterviewProcesses(): Promise<void> {
     try {
       this.loading.set(true);
-      this.error.set(null);
-
+      this.error.set(false);
       const data = await this.interviewService.getInterviewOverview().toPromise();
       this.interviewProcesses.set(data ?? []);
     } catch {
-      this.error.set('interview.overview.error.failedToLoad');
+      this.error.set(true);
     } finally {
       this.loading.set(false);
     }
