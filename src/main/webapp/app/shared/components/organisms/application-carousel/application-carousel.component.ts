@@ -56,7 +56,7 @@ export class ApplicationCarouselComponent implements OnDestroy {
 
     for (let offset = -half; offset <= half; offset++) {
       const index = this.carouselIndex() + offset;
-      result.push(index < 0 || index >= this.carouselSize() ? undefined : this.applications()[index]);
+      result.push(Number.isInteger(index) && index >= 0 && index < this.carouselSize() ? this.applications()[index] : undefined);
     }
     return result;
   });
@@ -113,5 +113,7 @@ export class ApplicationCarouselComponent implements OnDestroy {
     }
   }
 
-  private readonly resizeHandler = (): void => this.updateVisibleCards();
+  private readonly resizeHandler = (): void => {
+    this.updateVisibleCards();
+  };
 }
