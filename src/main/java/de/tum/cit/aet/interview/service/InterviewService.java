@@ -113,7 +113,7 @@ public class InterviewService {
         }
 
         // Check if process already exists
-        if (interviewProcessRepository.existsByJob_JobId(dto.jobId())) {
+        if (interviewProcessRepository.existsByJobId(dto.jobId())) {
             throw new ResourceAlreadyExistsException("Interview process already exists");
         }
 
