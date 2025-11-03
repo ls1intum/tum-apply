@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AccountService } from 'app/core/auth/account.service';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
-import { AccountService } from '../../core/auth/account.service';
 import TranslateDirective from '../language/translate.directive';
-import { UserShortDTO } from '../../generated/model/userShortDTO';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 
@@ -18,7 +18,7 @@ export class SettingsComponent {
   private readonly accountService = inject(AccountService);
 
   constructor() {
-    const authorities = this.accountService.user()?.authorities;
+    const authorities = this.accountService.loadedUser()?.authorities;
     this.role.set(authorities?.map(authority => authority as UserShortDTO.RolesEnum)[0]);
   }
 }
