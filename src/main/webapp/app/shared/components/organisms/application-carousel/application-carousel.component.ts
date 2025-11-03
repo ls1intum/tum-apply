@@ -2,13 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  OnDestroy,
   ViewEncapsulation,
   computed,
   effect,
   input,
   output,
   signal,
-  OnDestroy,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
@@ -21,19 +21,6 @@ import { BREAKPOINTS } from '../../../constants/breakpoints';
 
 const VISIBLE_DESKTOP = 3;
 
-/**
- * ApplicationCarouselComponent
- *
- * This component displays a horizontal carousel of applications,
- * allowing reviewers to navigate through applications.
- *
- * The component handles:
- * - Lazy loading of applications from the backend.
- * - Maintaining a sliding window of applications with fixed size.
- * - Centering logic for focused/active application.
- * - Responsiveness by adapting the number of visible applications.
- * - Keyboard accessibility and visual cues.
- */
 @Component({
   selector: 'jhi-application-carousel',
   imports: [ApplicationCardComponent, FontAwesomeModule, ButtonComponent, TranslateModule, TranslateDirective],
@@ -48,14 +35,13 @@ const VISIBLE_DESKTOP = 3;
     'aria-label': 'Applications carousel',
   },
 })
-export class ApplicationCarouselComponent {
-  totalRecords = input(0); // Total number of applications
-  currentIndex = input(0); // Global index of currently selected application
-  carouselIndex = input(0); // Local index in current application carousel
+export class ApplicationCarouselComponent implements OnDestroy {
+  totalRecords = input(0);
+  currentIndex = input(0);
+  carouselIndex = input(0);
   applications = input<ApplicationEvaluationDetailDTO[]>([]);
   carouselSize = input.required<number>();
-
-  cardsVisible = signal(VISIBLE_DESKTOP); // Number of visible cards (responsive)
+  cardsVisible = signal(VISIBLE_DESKTOP);
 
   next = output();
   prev = output();
@@ -70,23 +56,15 @@ export class ApplicationCarouselComponent {
 
     for (let offset = -half; offset <= half; offset++) {
       const index = this.carouselIndex() + offset;
-      if (index < 0 || index >= this.carouselSize()) {
-        result.push(undefined); // Fill with nulls if out of bounds
-      } else {
-        result.push(this.applications()[index]);
-      }
+      result.push(index < 0 || index >= this.carouselSize() ? undefined : this.applications()[index]);
     }
-
     return result;
   });
 
   readonly middle = computed(() => Math.floor(this.cardsVisible() / 2));
-
   private readonly _updateCardsEffect = effect(() => {
     this.updateVisibleCards();
   });
-
-  private readonly resizeHandler = () => this.updateVisibleCards();
 
   constructor() {
     window.addEventListener('resize', this.resizeHandler);
@@ -95,8 +73,6 @@ export class ApplicationCarouselComponent {
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.resizeHandler);
   }
-
-  // Listen to arrow keys for navigation
   @HostListener('document:keydown', ['$event'])
   handleGlobalKeyDown(event: KeyboardEvent): void {
     switch (event.key) {
@@ -119,23 +95,23 @@ export class ApplicationCarouselComponent {
     this.prev.emit();
   }
 
-  // Dynamically adjust the number of visible cards based on content width
   private updateVisibleCards(): void {
-    const contentContainer =
-      document.querySelector('.page-container') ?? document.querySelector('main') ?? document.querySelector('.content');
+    const container = document.querySelector('.page-container') ?? document.querySelector('main') ?? document.querySelector('.content');
 
-    const containerWidth = contentContainer?.clientWidth ?? window.innerWidth;
+    const width = container?.clientWidth ?? window.innerWidth;
 
-    if (containerWidth < BREAKPOINTS.md) {
+    if (width < BREAKPOINTS.md) {
       this.cardsVisible.set(1);
-    } else if (containerWidth < BREAKPOINTS.smallDesktop) {
+    } else if (width < BREAKPOINTS.smallDesktop) {
       this.cardsVisible.set(2);
-    } else if (containerWidth < BREAKPOINTS.xl) {
+    } else if (width < BREAKPOINTS.xl) {
       this.cardsVisible.set(3);
-    } else if (containerWidth < BREAKPOINTS.ultraWide) {
+    } else if (width < BREAKPOINTS.ultraWide) {
       this.cardsVisible.set(5);
     } else {
       this.cardsVisible.set(6);
     }
   }
+
+  private readonly resizeHandler = (): void => this.updateVisibleCards();
 }
