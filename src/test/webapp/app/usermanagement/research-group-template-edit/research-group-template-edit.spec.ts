@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
-import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
+import { convertToParamMap, ParamMap } from '@angular/router';
 
 import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateDTO } from 'app/generated/model/emailTemplateDTO';
@@ -10,6 +10,7 @@ import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } fro
 import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { ResearchGroupTemplateEdit } from 'app/usermanagement/research-group/research-group-template-edit/research-group-template-edit';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-rout.mock';
 
 class ResizeObserverMock {
   observe() {}
@@ -32,6 +33,7 @@ describe('ResearchGroupTemplateEdit', () => {
   let api: EmailTemplateResourceApiServiceMock;
   let mockToast: ToastServiceMock;
   let paramMapSubject: BehaviorSubject<ParamMap>;
+  let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
 
   const mockRouter = createRouterMock();
   const mockTranslate = createTranslateServiceMock();
@@ -55,7 +57,7 @@ describe('ResearchGroupTemplateEdit', () => {
 
   beforeEach(async () => {
     mockToast = createToastServiceMock();
-    paramMapSubject = new BehaviorSubject<ParamMap>(convertToParamMap({}));
+    mockActivatedRoute = createActivatedRouteMock();
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupTemplateEdit],
@@ -65,7 +67,7 @@ describe('ResearchGroupTemplateEdit', () => {
         provideToastServiceMock(mockToast),
         provideTranslateMock(mockTranslate),
         provideFontAwesomeTesting(),
-        { provide: ActivatedRoute, useValue: { paramMap: paramMapSubject.asObservable() } },
+        provideActivatedRouteMock(mockActivatedRoute),
       ],
     })
       .overrideComponent(ResearchGroupTemplateEdit, {
@@ -351,7 +353,7 @@ describe('ResearchGroupTemplateEdit', () => {
       { name: 'calls load when templateId is provided', paramMap: { templateId: '123' }, expectLoad: true },
     ])('$name', ({ paramMap, expectLoad }) => {
       const spy = vi.spyOn(component as unknown as { load: (id: string) => Promise<void> }, 'load').mockResolvedValue(undefined);
-      paramMapSubject.next(convertToParamMap(paramMap));
+      mockActivatedRoute.paramMapSubject.next(convertToParamMap(paramMap));
       fixture.detectChanges();
       if (expectLoad) {
         expect(spy).toHaveBeenCalledWith('123');
