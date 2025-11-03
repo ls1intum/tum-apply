@@ -2,7 +2,11 @@
   @if (!placeholder()) {
     <!-- Header -->
     <div class="header">
-      <p class="name">{{ applicationDetails()?.applicant?.user?.name }}</p>
+      <div class="name" [class.has-last]="!!nameParts.last">
+        <span class="first">{{ nameParts.first }}</span>
+        <span class="last">{{ nameParts.last }}</span>
+      </div>
+
       <jhi-tag
         class="status-tag"
         [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"

@@ -8,6 +8,7 @@ import {
   input,
   output,
   signal,
+  OnDestroy,
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
@@ -18,7 +19,6 @@ import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { BREAKPOINTS } from '../../../constants/breakpoints';
 
-// Constants defining the default visible slots and application carousel size
 const VISIBLE_DESKTOP = 3;
 
 /**
@@ -82,13 +82,18 @@ export class ApplicationCarouselComponent {
 
   readonly middle = computed(() => Math.floor(this.cardsVisible() / 2));
 
+  private readonly _updateCardsEffect = effect(() => {
+    this.updateVisibleCards();
+  });
+
+  private readonly resizeHandler = () => this.updateVisibleCards();
+
   constructor() {
-    effect(() => {
-      this.updateVisibleCards();
-    });
-    window.addEventListener('resize', () => {
-      this.updateVisibleCards();
-    });
+    window.addEventListener('resize', this.resizeHandler);
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('resize', this.resizeHandler);
   }
 
   // Listen to arrow keys for navigation

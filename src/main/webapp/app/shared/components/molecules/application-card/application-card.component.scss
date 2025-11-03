@@ -23,7 +23,7 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   height: 2rem;
   gap: 0.5rem;
 }
@@ -38,8 +38,16 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--p-text-primary);
-}
+  display: flex;
+  flex-direction: column;
+  .first {
+    white-space: nowrap;
+  }
 
+  .last {
+    margin-top: 0.1rem;
+  }
+}
 .job {
   display: flex;
   align-items: flex-start;
@@ -80,6 +88,9 @@
     color: var(--p-text-disabled);
   }
 }
+.card:has(.name.has-last) .job {
+  transform: translateY(1.5rem);
+}
 
 /* Compact desktop (window resized, single-card mode) */
 @media (max-width: bp.$xl) {
@@ -98,6 +109,10 @@
     font-weight: 700;
     order: 1;
     text-align: left;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.3rem;
+    flex-wrap: wrap;
   }
 
   .job {
@@ -118,11 +133,17 @@
   .icon {
     font-size: 0.8rem;
   }
+  .card:has(.name.has-last) .job {
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: bp.$md + 1) and (max-width: bp.$smallDesktop) {
   .card {
     width: clamp(13rem, 80vw, 16rem);
+  }
+  .card:has(.name.has-last) .job {
+    transform: translateY(0);
   }
 }
 
@@ -151,6 +172,9 @@
       line-height: 1.2rem;
       max-height: calc(1.2rem * 2);
     }
+  }
+  .card:has(.name.has-last) .job {
+    transform: translateY(0);
   }
 }
 
@@ -198,6 +222,9 @@
   .icon {
     font-size: 0.7rem;
   }
+  .card:has(.name.has-last) .job {
+    transform: translateY(0);
+  }
 }
 
 /* Standard phones */
@@ -221,6 +248,42 @@
   .status-tag {
     font-size: 0.52rem;
     padding: 0.1rem 0.18rem;
+  }
+  .card:has(.name.has-last) .job {
+    transform: translateY(0);
+  }
+}
+
+/* ---- Ultra small viewport fix (≤ 550px) ---- */
+@media (max-width: bp.$mobileCompact) {
+  .card {
+    width: 11rem; // vorher 13rem → ~15 % schmaler
+    padding: 0.6rem; // leicht weniger Innenabstand
+    gap: 0.5rem;
+  }
+
+  .name {
+    font-size: 1rem; // etwas kleiner, damit nichts umbricht
+  }
+
+  .status-tag {
+    width: 8rem;
+    font-size: 0.55rem;
+  }
+
+  .job {
+    gap: 0.4rem;
+    min-height: 2rem;
+
+    .job-title {
+      font-size: 0.8rem;
+      line-height: 1.1rem;
+      max-height: calc(1.1rem * 2);
+    }
+  }
+
+  .icon {
+    font-size: 0.65rem;
   }
 }
 
@@ -247,10 +310,12 @@
 
   .status-tag {
     font-size: 0.5rem;
-    padding: 0.08rem 0.15rem;
   }
 
   .icon {
     font-size: 0.65rem;
+  }
+  .card:has(.name.has-last) .job {
+    transform: translateY(0);
   }
 }

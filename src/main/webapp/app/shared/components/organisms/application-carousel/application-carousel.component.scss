@@ -96,4 +96,22 @@
     min-width: 1.5rem;
     font-size: 0.7rem;
   }
+
+  @media (max-width: bp.$mobileCompact) {
+    .cards {
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 12rem;
+      flex: 1 1 auto;
+    }
+
+    .carousel {
+      overflow-x: hidden;
+    }
+  }
 }

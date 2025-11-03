@@ -31,4 +31,16 @@ export class ApplicationCardComponent {
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
   };
+
+  get nameParts(): { first: string; last: string } {
+    const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim() ?? '';
+    const parts = fullName.split(' ').filter(p => p.length > 0);
+
+    if (parts.length <= 2) {
+      return { first: fullName, last: '' };
+    }
+    const last = parts.pop() ?? '';
+    const first = parts.join(' ');
+    return { first, last };
+  }
 }
