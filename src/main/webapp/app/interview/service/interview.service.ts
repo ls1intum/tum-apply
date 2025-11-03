@@ -14,7 +14,7 @@ export class InterviewService {
   /**
    * Get overview of all interview processes with statistics.
    */
-  getInterviewOverview(): Observable<Array<InterviewOverviewDTO>> {
+  getInterviewOverview(): Observable<InterviewOverviewDTO[]> {
     return this.interviewResourceApiService.getInterviewOverview();
   }
 

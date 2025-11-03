@@ -1,33 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { InterviewProcessCardComponent} from "app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component";
-import { CreateInterviewDialogComponent } from './create-interview-dialog/create-interview-dialog.component';
-import TranslateDirective from 'app/shared/language/translate.directive';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
+import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
 import { InterviewService } from '../service/interview.service';
+
+import { CreateInterviewDialogComponent } from './create-interview-dialog/create-interview-dialog.component';
 
 @Component({
   selector: 'jhi-interview-processes-overview',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslateModule,
-    TranslateDirective,
-    InterviewProcessCardComponent,
-    ButtonComponent
-  ],
+  imports: [CommonModule, TranslateModule, InterviewProcessCardComponent, ButtonComponent],
   providers: [DialogService],
   templateUrl: './interview-processes-overview.component.html',
 })
-export class InterviewProcessesOverviewComponent implements OnInit {
-  interviewProcesses = signal<InterviewOverviewDTO[]>([]);
-  loading = signal<boolean>(true);
-  error = signal<boolean>(false);
+export class InterviewProcessesOverviewComponent implements OnInit, OnDestroy {
+  readonly interviewProcesses = signal<InterviewOverviewDTO[]>([]);
+  readonly loading = signal<boolean>(true);
+  readonly error = signal<boolean>(false);
 
   private readonly interviewService = inject(InterviewService);
   private readonly translateService = inject(TranslateService);
@@ -50,10 +44,10 @@ export class InterviewProcessesOverviewComponent implements OnInit {
       modal: true,
       closable: true,
       closeOnEscape: true,
-      dismissableMask: false
+      dismissableMask: false,
     });
 
-    this.dialogRef.onClose.subscribe((result) => {
+    this.dialogRef.onClose.subscribe(result => {
       if (result) {
         void this.loadInterviewProcesses();
       }
@@ -64,6 +58,7 @@ export class InterviewProcessesOverviewComponent implements OnInit {
     this.router.navigate(['/interviews', jobId]);
   }
 
+  // ---- Private section ----
   private async loadInterviewProcesses(): Promise<void> {
     try {
       this.loading.set(true);

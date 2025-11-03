@@ -557,3 +557,34 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* -------------------------------------
+   Global Fix: Normalize PrimeNG Button Height + Inner Layout
+   Fixes disabled/enabled height mismatch in JHipster/PrimeNG Buttons
+-------------------------------------- */
+.p-button,
+.p-button.p-disabled,
+.p-button.p-button-loading {
+  min-height: 2.75rem !important;
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+  box-sizing: border-box;
+  border-width: 0.1rem !important;
+  line-height: normal !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.p-button .p-button-label {
+  line-height: 1.25rem !important;
+}
+
+.p-button .p-button-icon {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.p-button.p-disabled {
+  opacity: 0.6; /* rein optisch – wichtig ist: keine height-Änderung */
+}
