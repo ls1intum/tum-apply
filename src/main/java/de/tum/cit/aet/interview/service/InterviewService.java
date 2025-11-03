@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.dto.CreateInterviewProcessDTO;
@@ -93,16 +94,12 @@ public class InterviewService {
 
     /**
      * Creates a new interview process for the specified job.
-     * <p>
-     * If an interview process already exists for the given job, the existing process
-     * is returned instead of creating a duplicate. This method ensures that only the
-     * supervising professor of a job can create interview processes for it.
-     * </p>
      *
-     * @param dto DTO containing the job ID for which to create the interview process
-     * @return {@link InterviewProcessDTO} representing the created or existing interview process
-     * @throws EntityNotFoundException if the specified job does not exist
-     * @throws AccessDeniedException if the current user is not the supervising professor of the job
+     * @param dto DTO containing the job ID
+     * @return {@link InterviewProcessDTO} representing the newly created interview process
+     * @throws EntityNotFoundException if the job does not exist
+     * @throws AccessDeniedException if not the supervising professor
+     * @throws ResourceAlreadyExistsException if an interview process already exists for this job
      */
     @Transactional
     public InterviewProcessDTO createInterviewProcess(CreateInterviewProcessDTO dto) {
@@ -110,20 +107,22 @@ public class InterviewService {
 
         Job job = jobRepository.findById(dto.jobId()).orElseThrow(() -> EntityNotFoundException.forId("Job", dto.jobId()));
 
+        // Security check
         if (!job.getSupervisingProfessor().getUserId().equals(professorId)) {
             throw new AccessDeniedException("You can only create interview processes for your own jobs");
         }
 
-        return interviewProcessRepository
-            .findByJob(job)
-            .map(this::mapToDTO)
-            .orElseGet(() -> {
-                InterviewProcess interviewProcess = new InterviewProcess();
-                interviewProcess.setJob(job);
+        // Check if process already exists
+        if (interviewProcessRepository.existsByJob_JobId(dto.jobId())) {
+            throw new ResourceAlreadyExistsException("Interview process already exists");
+        }
 
-                InterviewProcess saved = interviewProcessRepository.save(interviewProcess);
-                return mapToDTO(saved);
-            });
+        // Create new process
+        InterviewProcess interviewProcess = new InterviewProcess();
+        interviewProcess.setJob(job);
+
+        InterviewProcess saved = interviewProcessRepository.save(interviewProcess);
+        return mapToDTO(saved);
     }
 
     /**

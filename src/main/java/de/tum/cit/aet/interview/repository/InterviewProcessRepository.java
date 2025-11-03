@@ -42,4 +42,6 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
         """
     )
     List<InterviewProcess> findAllByProfessorId(@Param("professorId") UUID professorId);
+
+    boolean existsByJob_JobId(UUID jobId);
 }
