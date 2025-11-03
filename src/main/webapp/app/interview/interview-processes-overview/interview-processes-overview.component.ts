@@ -47,13 +47,10 @@ export class InterviewProcessesOverviewComponent implements OnInit {
 
   openCreateInterviewDialog(): void {
     this.dialogRef = this.dialogService.open(CreateInterviewDialogComponent, {
-      width: '50rem',   // ← rem statt px
-      height: '43.75rem', // ← 700px = 43.75rem (700/16)
       modal: true,
-      breakpoints: {
-        '960px': '90vw',
-        '640px': '95vw'
-      }
+      closable: true,
+      closeOnEscape: true,
+      dismissableMask: false
     });
 
     this.dialogRef.onClose.subscribe((result) => {

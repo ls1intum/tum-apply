@@ -88,7 +88,11 @@ export class CreateInterviewDialogComponent implements OnInit {
   }
 
   selectJob(job: JobForSelection): void {
-    this.selectedJob.set(job);
+    if (this.selectedJob()?.jobId === job.jobId) {
+      this.selectedJob.set(null);
+    } else {
+      this.selectedJob.set(job);
+    }
   }
 
   createInterviewProcess(): void {

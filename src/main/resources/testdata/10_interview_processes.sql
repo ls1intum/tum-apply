@@ -14,11 +14,6 @@ WHERE id LIKE '00000000-0000-0000-0000-000000030%';
 -- Insert example interview processes linked to existing jobs
 INSERT INTO interview_processes (id, job_id, created_at, last_modified_at)
 VALUES
-  -- Job 20001: Gamification in Education Intern (PUBLISHED)
-  ('00000000-0000-0000-0000-000000030001',
-   '00000000-0000-0000-0000-000000020001',
-   '2025-01-15 09:00:00',
-   '2025-01-15 09:00:00'),
 
   -- Job 20002: Learning Analytics Researcher (DRAFT)
   ('00000000-0000-0000-0000-000000030002',

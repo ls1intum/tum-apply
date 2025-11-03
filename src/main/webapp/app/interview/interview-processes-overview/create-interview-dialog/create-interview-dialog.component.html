@@ -1,14 +1,13 @@
-<div class="flex flex-col" style="height: 43.75rem;">
-  <!-- Header & Search - Fest oben -->
-  <div class="flex-shrink-0 flex flex-col gap-6 p-6 pb-4">
-    <!-- Header -->
-    <div>
-      <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 m-0">
+<!-- Root div mit fester Größe -->
+<div class="flex flex-col w-[50rem] h-[35rem]">
+  <!-- Header & Search -->
+  <div class="flex-none px-6 pt-6 pb-3">
+    <div class="mb-6">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
         {{ 'interview.dialog.selectPosition' | translate }}
       </h2>
     </div>
 
-    <!-- Search Input mit Icon -->
     <div class="relative">
       <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
       <input
@@ -24,19 +23,17 @@
 
   <!-- Jobs List - Scrollbar -->
   <div class="flex-1 overflow-y-auto px-6 min-h-0">
-    <!-- Loading State -->
     @if (loading()) {
-      <div class="flex items-center justify-center py-24">
+      <div class="flex items-center justify-center h-full">
         <i class="pi pi-spin pi-spinner text-4xl text-blue-500"></i>
       </div>
     }
 
-    <!-- Jobs List -->
     @if (!loading()) {
-      <div class="flex flex-col gap-3 pb-4">
+      <div class="space-y-3 pb-4">
         @if (filteredJobs().length === 0) {
-          <div class="text-center py-24">
-            <i class="pi pi-inbox text-5xl text-gray-400 mb-4"></i>
+          <div class="text-center py-16">
+            <i class="pi pi-inbox text-5xl text-gray-400 mb-4 block"></i>
             <p class="text-gray-500">{{ 'interview.dialog.noJobsFound' | translate }}</p>
           </div>
         }
@@ -44,40 +41,45 @@
         @for (job of filteredJobs(); track job.jobId) {
           <div
             (click)="selectJob(job)"
-            [class]="selectedJob()?.jobId === job.jobId
-              ? 'border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-              : 'border border-gray-300 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700'"
-            class="p-4 rounded-lg cursor-pointer transition-all duration-200"
-          >
-            <div class="flex items-center justify-between gap-4">
-              <div class="flex-1">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {{ job.title }}
-                </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Start: {{ job.startDate | date: 'dd.MM.yyyy' }}
-                </p>
-              </div>
-
-              <!-- Rechteckige Checkbox wie im Filter-System -->
-              <div
-                [class]="selectedJob()?.jobId === job.jobId
-                  ? 'w-5 h-5 border-2 border-blue-500 bg-blue-500 rounded flex items-center justify-center'
-                  : 'w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded'"
-              >
-                @if (selectedJob()?.jobId === job.jobId) {
-                  <i class="pi pi-check text-white text-xs"></i>
-                }
-              </div>
+            [class.border-2]="selectedJob()?.jobId === job.jobId"
+            [class.border-blue-500]="selectedJob()?.jobId === job.jobId"
+            [class.bg-blue-50]="selectedJob()?.jobId === job.jobId"
+            [class.dark:bg-blue-900/20]="selectedJob()?.jobId === job.jobId"
+            [class.border]="selectedJob()?.jobId !== job.jobId"
+            [class.border-gray-300]="selectedJob()?.jobId !== job.jobId"
+            [class.dark:border-gray-600]="selectedJob()?.jobId !== job.jobId"
+            class="p-4 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-700"
+            >
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+                {{ job.title }}
+              </h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Start: {{ job.startDate | date: 'dd.MM.yyyy' }}
+              </p>
             </div>
+
+            <div
+              [class.bg-blue-500]="selectedJob()?.jobId === job.jobId"
+              [class.border-blue-500]="selectedJob()?.jobId === job.jobId"
+              [class.border-gray-300]="selectedJob()?.jobId !== job.jobId"
+              [class.dark:border-gray-600]="selectedJob()?.jobId !== job.jobId"
+              class="w-5 h-5 border-2 rounded flex items-center justify-center flex-shrink-0"
+            >
+              @if (selectedJob()?.jobId === job.jobId) {
+                <i class="pi pi-check text-white text-xs"></i>
+              }
+            </div>
+          </div>
           </div>
         }
       </div>
     }
   </div>
 
-  <!-- Footer - Fest unten -->
-  <div class="flex-shrink-0 flex justify-end gap-3 p-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+  <!-- Footer -->
+  <div class="flex-none flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
     <jhi-button
       [label]="'interview.common.cancel'"
       [shouldTranslate]="true"
