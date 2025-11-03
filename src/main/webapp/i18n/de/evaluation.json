@@ -21,10 +21,6 @@
       "job": "Position",
       "appliedAt": "Beworben am"
     },
-    "cancel": "Abbrechen",
-    "save": "Speichern",
-    "post": "Absenden",
-    "more": "Mehr",
     "statusBadge": {
       "SENT": "Ungelesen",
       "ACCEPTED": "Angenommen",
