@@ -39,7 +39,7 @@ export class ApplicationCarouselComponent implements OnDestroy {
   totalRecords = input(0);
   currentIndex = input(0);
   carouselIndex = input(0);
-  applications = input<ApplicationEvaluationDetailDTO[]>([]);
+  applications = input.required<ApplicationEvaluationDetailDTO[]>();
   carouselSize = input.required<number>();
   cardsVisible = signal(VISIBLE_DESKTOP);
 
@@ -50,18 +50,21 @@ export class ApplicationCarouselComponent implements OnDestroy {
   isEnd = computed(() => this.currentIndex() === this.totalRecords() - 1 || this.totalRecords() === 0);
 
   readonly visibleApplications = computed(() => {
+    const apps: ApplicationEvaluationDetailDTO[] = this.applications();
     const size = this.cardsVisible();
     const half = Math.floor(size / 2);
     const result: (ApplicationEvaluationDetailDTO | undefined)[] = [];
 
     for (let offset = -half; offset <= half; offset++) {
       const index = this.carouselIndex() + offset;
-      result.push(this.safeGetApplication(index));
+      result.push(index >= 0 && index < this.carouselSize() ? apps[index] : undefined);
     }
+
     return result;
   });
 
   readonly middle = computed(() => Math.floor(this.cardsVisible() / 2));
+
   private readonly _updateCardsEffect = effect(() => {
     this.updateVisibleCards();
   });
@@ -73,6 +76,7 @@ export class ApplicationCarouselComponent implements OnDestroy {
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.resizeHandler);
   }
+
   @HostListener('document:keydown', ['$event'])
   handleGlobalKeyDown(event: KeyboardEvent): void {
     switch (event.key) {
@@ -116,14 +120,4 @@ export class ApplicationCarouselComponent implements OnDestroy {
   private readonly resizeHandler = (): void => {
     this.updateVisibleCards();
   };
-
-  /**
-   * Safely retrieves an application by index.
-   * Prevents out-of-bounds and invalid index access.
-   */
-  private safeGetApplication(index: number): ApplicationEvaluationDetailDTO | undefined {
-    if (!Number.isInteger(index)) return undefined;
-    if (index < 0 || index >= this.carouselSize()) return undefined;
-    return this.applications()[index];
-  }
 }
