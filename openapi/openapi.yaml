@@ -661,10 +661,6 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/interviews/overview:
-    get:
-      tags: [interview-resource]
-      operationId: getInterviewOverview
   /api/export/application/{id}/pdf:
     post:
       tags: [pdf-export-resource]
@@ -685,12 +681,20 @@ paths:
         '200':
           description: OK
           content:
+            application/pdf:
+              schema: {type: string, format: binary}
+  /api/interviews/overview:
+    get:
+      tags: [interview-resource]
+      operationId: getInterviewOverview
+      responses:
+        '200':
+          description: OK
+          content:
             application/json:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
-            application/pdf:
-              schema: {type: string, format: binary}
   /api/jobs/available:
     get:
       tags: [job-resource]
