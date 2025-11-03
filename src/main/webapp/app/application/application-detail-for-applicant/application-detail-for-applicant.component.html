@@ -20,7 +20,7 @@
             (click)="onDownloadPDF()"
           />
           @if (['SAVED'].includes(application.applicationState)) {
-            <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
+            <jhi-button [label]="'button.edit'" icon="pencil" [shouldTranslate]="true" (click)="onUpdateApplication()" />
           }
         </div>
       </div>

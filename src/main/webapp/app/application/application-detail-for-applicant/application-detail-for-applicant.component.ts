@@ -5,7 +5,7 @@ import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -69,12 +69,8 @@ export default class ApplicationDetailForApplicantComponent {
   private translate = inject(TranslateService);
 
   private readonly translationKey = 'entity.toast.applyFlow';
-  private readonly library = inject(FaIconLibrary);
 
   constructor() {
-    // Register custom icons with FontAwesome library
-    this.library.addIcons(facWithdraw);
-
     // Only initialize if we're on a detail page route (has application_id param)
     // and not in preview mode
     const applicationId = this.route.snapshot.paramMap.get('application_id');
