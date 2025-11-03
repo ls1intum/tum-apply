@@ -9,13 +9,14 @@ import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontaweso
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import { TranslateModule } from '@ngx-translate/core';
-import { facWithdraw } from 'app/shared/icons/icons';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import { getApplicationPDFLabels } from '../pdf-labels';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
@@ -64,6 +65,9 @@ export default class ApplicationDetailForApplicantComponent {
   private toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private pdfExportService = inject(PdfExportResourceApiService);
+  private translate = inject(TranslateService);
+
   private readonly translationKey = 'entity.toast.applyFlow';
   private readonly library = inject(FaIconLibrary);
 
@@ -102,6 +106,31 @@ export default class ApplicationDetailForApplicantComponent {
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.fetchDocumentIdsFailed`);
     }
+  }
+
+  onDownloadPDF(): void {
+    const applicationId = this.applicationId();
+
+    const labels = getApplicationPDFLabels(this.translate);
+
+    this.pdfExportService.exportApplicationToPDF(applicationId, labels, 'response').subscribe(response => {
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'application.pdf';
+
+      if (contentDisposition) {
+        filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'application.pdf';
+      }
+
+      const blob = response.body;
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+    });
   }
 
   onUpdateApplication(): void {
