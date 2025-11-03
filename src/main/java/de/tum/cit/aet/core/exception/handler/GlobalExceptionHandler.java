@@ -15,6 +15,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,6 +44,7 @@ public class GlobalExceptionHandler {
             new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.OPERATION_NOT_ALLOWED)
         ),
         Map.entry(UploadException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.UPLOAD_FAILED)),
+        Map.entry(AuthorizationDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(EmailVerificationFailedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(AccessDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(UnauthorizedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
@@ -138,9 +140,13 @@ public class GlobalExceptionHandler {
             log.warn("Handled mailing exception: {} - Path: {}", me.getClass().getSimpleName(), request.getRequestURI(), ex);
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR, ex, request.getRequestURI(), null);
         }
+        if (ex instanceof EmailSettingException ese) {
+            log.warn("Handled mailing exception: {} - Path: {}", ese.getClass().getSimpleName(), request.getRequestURI(), ex);
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_SETTING_ERROR, ex, request.getRequestURI(), null);
+        }
         if (ex instanceof EmailTemplateException ete) {
             log.warn("Handled email template exception: {} - Path: {}", ete.getClass().getSimpleName(), request.getRequestURI(), ex);
-            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.EMAIL_TEMPLATE_ERROR, ex, request.getRequestURI(), null);
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_TEMPLATE_ERROR, ex, request.getRequestURI(), null);
         }
         if (ex instanceof EmailVerificationFailedException evfe) {
             log.info("Handled OTP verification failure - Path: {}", request.getRequestURI());
