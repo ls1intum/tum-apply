@@ -56,7 +56,7 @@ export class ApplicationCarouselComponent implements OnDestroy {
 
     for (let offset = -half; offset <= half; offset++) {
       const index = this.carouselIndex() + offset;
-      result.push(Number.isInteger(index) && index >= 0 && index < this.carouselSize() ? this.applications()[index] : undefined);
+      result.push(this.safeGetApplication(index));
     }
     return result;
   });
@@ -116,4 +116,14 @@ export class ApplicationCarouselComponent implements OnDestroy {
   private readonly resizeHandler = (): void => {
     this.updateVisibleCards();
   };
+
+  /**
+   * Safely retrieves an application by index.
+   * Prevents out-of-bounds and invalid index access.
+   */
+  private safeGetApplication(index: number): ApplicationEvaluationDetailDTO | undefined {
+    if (!Number.isInteger(index)) return undefined;
+    if (index < 0 || index >= this.carouselSize()) return undefined;
+    return this.applications()[index];
+  }
 }
