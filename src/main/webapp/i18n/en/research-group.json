@@ -146,6 +146,10 @@
           "summary": "Error",
           "detail": "Failed to deny research group. Please try refreshing the page, or contact us if the problem continues."
         },
+        "view": {
+          "summary": "Error",
+          "detail": "Failed displaying research group information. Please try refreshing the page, or contact us if the problem continues."
+        },
         "withdraw": {
           "summary": "Error",
           "detail": "Error withdrawing approval. Please try refreshing the page, or contact us if the problem continues."

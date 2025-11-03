@@ -146,6 +146,10 @@
           "summary": "Fehler",
           "detail": "Fehler beim Ablehnen der Forschungsgruppe. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
         },
+        "view": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Anzeigen der Informationen zur Forschungsgruppe. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht.."
+        },
         "withdraw": {
           "summary": "Fehler",
           "detail": "Fehler beim Zurückziehen der Genehmigung. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."

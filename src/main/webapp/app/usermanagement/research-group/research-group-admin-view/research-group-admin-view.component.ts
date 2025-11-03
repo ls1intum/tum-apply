@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { DialogService } from 'primeng/dynamicdialog';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO';
 import { ToastService } from 'app/service/toast-service';
@@ -12,8 +15,7 @@ import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TranslateDirective } from 'app/shared/language';
-import { TableLazyLoadEvent } from 'primeng/table';
-import { firstValueFrom } from 'rxjs';
+import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 
 const I18N_BASE = 'researchGroup.adminView';
 
@@ -94,6 +96,7 @@ export class ResearchGroupAdminView {
 
   private toastService = inject(ToastService);
   private researchGroupService = inject(ResearchGroupResourceApiService);
+  private readonly dialogService = inject(DialogService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -128,11 +131,17 @@ export class ResearchGroupAdminView {
     void this.loadResearchGroups();
   }
 
-  // TODO: Will be implemented in a follow up
-  // onViewResearchGroup(researchGroupId: string): void {
-  //   // TODO: Navigate to research group detail
-  //   console.log('View research group:', researchGroupId);
-  // }
+  onViewResearchGroup(researchGroupId: string): void {
+    try {
+      this.dialogService.open(ResearchGroupDetailViewComponent, {
+        header: `${I18N_BASE}.detailView.dialogTitle`,
+        data: { researchGroupId },
+        width: '600px',
+      });
+    } catch {
+      this.toastService.showErrorKey(`${I18N_BASE}.errors.view`);
+    }
+  }
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {
     try {
