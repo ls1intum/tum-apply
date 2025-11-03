@@ -24,10 +24,10 @@ import { InterviewService } from '../service/interview.service';
   providers: [DialogService],
   templateUrl: './interview-processes-overview.component.html',
 })
-export class InterviewProcessesOverviewComponent implements OnInit, OnDestroy {
-  readonly interviewProcesses = signal<InterviewOverviewDTO[]>([]);
-  readonly loading = signal<boolean>(true);
-  readonly error = signal<string | null>(null);
+export class InterviewProcessesOverviewComponent implements OnInit {
+  interviewProcesses = signal<InterviewOverviewDTO[]>([]);
+  loading = signal<boolean>(true);
+  error = signal<boolean>(false);
 
   private readonly interviewService = inject(InterviewService);
   private readonly translateService = inject(TranslateService);
@@ -70,12 +70,11 @@ export class InterviewProcessesOverviewComponent implements OnInit, OnDestroy {
   private async loadInterviewProcesses(): Promise<void> {
     try {
       this.loading.set(true);
-      this.error.set(null);
-
+      this.error.set(false);
       const data = await this.interviewService.getInterviewOverview().toPromise();
       this.interviewProcesses.set(data ?? []);
     } catch {
-      this.error.set('interview.overview.error.failedToLoad');
+      this.error.set(true);
     } finally {
       this.loading.set(false);
     }
