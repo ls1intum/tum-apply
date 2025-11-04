@@ -9,7 +9,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 29rem;
   background-position: 50% 30%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -54,6 +53,7 @@
 
   .subtitle {
     color: var(--p-text-on-primary);
+    text-align: center;
     font-size: 1.5rem;
     font-weight: 600;
   }
@@ -74,7 +74,6 @@
 }
 @media (max-width: bp.$lg) {
   .hero-container {
-    height: 26rem;
     background-position: center center;
   }
 
@@ -94,7 +93,6 @@
 
 @media (max-width: bp.$md) {
   .hero-container {
-    height: 22rem;
     background-position: center center;
   }
 
