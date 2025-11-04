@@ -1,10 +1,13 @@
-<div class="platform-benefits-section">
-  <div class="image-container">
-    <img src="/content/images/landing-page/benefits-section/professor-landing-page-benefits.webp" />
+<div class="flex flex-col xl:flex-row gap-6 md:gap-8 p-6 md:p-8 items-center justify-center">
+  <div class="flex-none xl:flex-[0_1_50%] w-full xl:w-auto">
+    <img
+      src="/content/images/landing-page/benefits-section/professor-landing-page-benefits.webp"
+      class="w-full h-full object-cover rounded-[1.25rem] block"
+    />
   </div>
-  <div class="text-container">
-    <h2 class="title" jhiTranslate="professorLandingPage.platformBenefits.headline"></h2>
-    <p class="text" jhiTranslate="professorLandingPage.platformBenefits.text"></p>
+  <div class="flex flex-col items-center gap-8 xl:flex-[0_1_50%]">
+    <h2 class="font-bold text-3xl" jhiTranslate="professorLandingPage.platformBenefits.headline"></h2>
+    <p jhiTranslate="professorLandingPage.platformBenefits.text"></p>
     <!-- TODO: list buttons with platform overview when available -->
     <!--<jhi-button-group [data]="buttons()" [shouldTranslate]="true" />-->
   </div>
