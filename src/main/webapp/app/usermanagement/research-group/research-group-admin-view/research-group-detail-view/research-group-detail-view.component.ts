@@ -27,7 +27,7 @@ export class ResearchGroupDetailViewComponent {
   private toastService = inject(ToastService);
 
   constructor() {
-    const researchGroupId = this.config.data?.researchGroupId;
+    const researchGroupId = this.config.data?.researchGroupId as string;
     if (researchGroupId) {
       void this.loadResearchGroup(researchGroupId);
     }
