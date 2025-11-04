@@ -16,7 +16,7 @@ import { ApplicationResourceApiService } from '../../generated/api/applicationRe
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
-import { getApplicationPDFLabels } from '../pdf-labels';
+import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
