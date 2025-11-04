@@ -8,12 +8,12 @@
     [value]="imagesWithBackgroundClass"
   >
     <ng-template #item let-image>
-      <div [class]="image.backgroundClass" class="hero-container"></div>
+      <div [class]="image.backgroundClass" class="hero-container h-[41rem] md:h-[36rem] lg:h-[29rem]"></div>
     </ng-template>
   </p-carousel>
 
-  <div class="hero-overlay">
-    <div class="hero-content">
+  <div class="hero-overlay flex flex-col items-center justify-center py-12">
+    <div class="hero-content flex flex-col items-center gap-10 md:gap-8 lg:gap-10 w-full max-w-[75rem] px-4">
       <h1 class="title" jhiTranslate="professorLandingPage.hero.headline"></h1>
       <p class="subtitle" jhiTranslate="professorLandingPage.hero.subline"></p>
       <div class="pointer-events-auto">
