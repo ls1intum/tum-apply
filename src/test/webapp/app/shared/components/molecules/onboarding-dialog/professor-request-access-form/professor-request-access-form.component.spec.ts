@@ -10,20 +10,22 @@ import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardi
 import { ToastService } from 'app/service/toast-service';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
+import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 
 describe('ProfessorRequestAccessFormComponent', () => {
   let component: ProfessorRequestAccessFormComponent;
   let fixture: ComponentFixture<ProfessorRequestAccessFormComponent>;
 
-  let mockDialogRef: Partial<DynamicDialogRef>;
+  let mockDialogRef: DynamicDialogRefMock;
   let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
-  let mockToastService: Partial<ToastService>;
+  let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
-    mockDialogRef = {
-      close: vi.fn(),
-    };
+    mockDialogRef = createDynamicDialogRefMock();
+
+    mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
       createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
@@ -33,20 +35,15 @@ describe('ProfessorRequestAccessFormComponent', () => {
       confirmOnboarding: vi.fn(() => of(undefined)) as any,
     };
 
-    mockToastService = {
-      showSuccessKey: vi.fn(),
-      showErrorKey: vi.fn(),
-    };
-
     await TestBed.configureTestingModule({
       imports: [ProfessorRequestAccessFormComponent, ReactiveFormsModule],
       providers: [
         provideTranslateMock(),
         provideFontAwesomeTesting(),
-        { provide: DynamicDialogRef, useValue: mockDialogRef },
+        provideToastServiceMock(mockToastService),
+        provideDynamicDialogRefMock(mockDialogRef),
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
-        { provide: ToastService, useValue: mockToastService },
       ],
     }).compileComponents();
 

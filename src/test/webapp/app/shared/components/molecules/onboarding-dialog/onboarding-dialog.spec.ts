@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { ProfessorRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/professor-request-access-form/professor-request-access-form.component';
@@ -8,23 +7,21 @@ import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-d
 import { provideTranslateMock } from 'util/translate.mock';
 import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
 import { of } from 'rxjs/internal/observable/of';
+import { createDialogServiceMock, provideDialogServiceMock, DialogServiceMock } from 'util/dialog.service.mock';
+import { createDynamicDialogRefMock, provideDynamicDialogRefMock, DynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 
 describe('OnboardingDialog', () => {
   let component: OnboardingDialog;
   let fixture: ComponentFixture<OnboardingDialog>;
 
-  let mockDialogService: Partial<DialogService>;
-  let mockDialogRef: Partial<DynamicDialogRef>;
+  let mockDialogService: DialogServiceMock;
+  let mockDialogRef: DynamicDialogRefMock;
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
 
   beforeEach(async () => {
-    mockDialogService = {
-      open: vi.fn(),
-    };
+    mockDialogService = createDialogServiceMock();
 
-    mockDialogRef = {
-      close: vi.fn(),
-    };
+    mockDialogRef = createDynamicDialogRefMock();
 
     mockProfOnboardingService = {
       confirmOnboarding: vi.fn().mockReturnValue(of(undefined)),
@@ -34,8 +31,8 @@ describe('OnboardingDialog', () => {
       imports: [OnboardingDialog],
       providers: [
         provideTranslateMock(),
-        { provide: DialogService, useValue: mockDialogService },
-        { provide: DynamicDialogRef, useValue: mockDialogRef },
+        provideDialogServiceMock(mockDialogService),
+        provideDynamicDialogRefMock(mockDialogRef),
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
       ],
     }).compileComponents();
