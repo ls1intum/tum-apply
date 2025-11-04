@@ -1,1 +1,34 @@
-<p>research-group-detail-view.component works!</p>
+<!-- General Information -->
+<jhi-section titleKey="researchGroup.detailView.section1">
+  <jhi-description-list
+    [items]="[
+      { labelKey: 'researchGroup.detailView.abbreviation', value: researchGroup()?.abbreviation ?? '—' },
+      { labelKey: 'researchGroup.detailView.name', value: researchGroup()?.name ?? '—' },
+      { labelKey: 'researchGroup.detailView.school', value: researchGroup()?.school ?? '—' },
+      { labelKey: 'researchGroup.detailView.defaultFieldOfStudies', value: researchGroup()?.defaultFieldOfStudies ?? '—' },
+      { labelKey: 'researchGroup.detailView.head', value: researchGroup()?.head ?? '—' },
+      { labelKey: 'researchGroup.detailView.email', value: researchGroup()?.email ?? '—' },
+      { labelKey: 'researchGroup.detailView.website', value: researchGroup()?.website ?? '—' },
+    ]"
+  />
+</jhi-section>
+
+<p-divider />
+
+<!-- Description-->
+<jhi-section titleKey="researchGroup.detailView.section2">
+  <jhi-prose [text]="researchGroup()?.description ?? '—'" />
+</jhi-section>
+
+<p-divider />
+
+<!--  -->
+<jhi-section titleKey="researchGroup.detailView.section3">
+  <jhi-description-list
+    [items]="[
+      { labelKey: 'researchGroup.detailView.city', value: researchGroup()?.city ?? '—' },
+      { labelKey: 'researchGroup.detailView.postalCode', value: researchGroup()?.postalCode ?? '—' },
+      { labelKey: 'researchGroup.detailView.street', value: researchGroup()?.street ?? '—' },
+    ]"
+  />
+</jhi-section>

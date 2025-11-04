@@ -207,6 +207,23 @@
         "confirm": "Withdraw"
       },
       "title": "Manage Research Groups"
+    },
+    "detailView": {
+      "section1": "General Information",
+      "abbreviation": "Abbreviation",
+      "name": "Name",
+      "school": "School",
+      "defaultFieldOfStudies": "Field of Studies",
+      "head": "Head",
+      "email": "Email",
+      "title": "Research Group Details",
+      "website": "Website",
+      "section2": "Description",
+      "description": "Description",
+      "section3": "Address",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "street": "Street"
     }
   }
 }

@@ -207,6 +207,23 @@
         "confirm": "Zurückziehen"
       },
       "title": "Verwalte Forschungsgruppen"
+    },
+    "detailView": {
+      "section1": "Grundlegende Informationen",
+      "abbreviation": "Abkürzung",
+      "name": "Name",
+      "school": "School",
+      "defaultFieldOfStudies": "Studienrichtung",
+      "head": "Leitung",
+      "email": "E-Mail",
+      "title": "Forschungsgruppen Details",
+      "website": "Webseite",
+      "section2": "Beschreibung",
+      "description": "Beschreibung",
+      "section3": "Adresse",
+      "city": "Stadt",
+      "postalCode": "Postleitzahl",
+      "street": "Straße"
     }
   }
 }

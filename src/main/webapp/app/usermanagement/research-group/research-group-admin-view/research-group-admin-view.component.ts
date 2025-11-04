@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO';
 import { ToastService } from 'app/service/toast-service';
-import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
@@ -21,7 +21,16 @@ const I18N_BASE = 'researchGroup.adminView';
 
 @Component({
   selector: 'jhi-research-group-admin-view',
-  imports: [CommonModule, TagComponent, TranslateModule, TranslateDirective, SearchFilterSortBar, DynamicTableComponent, ConfirmDialog],
+  imports: [
+    ButtonComponent,
+    CommonModule,
+    TagComponent,
+    TranslateModule,
+    TranslateDirective,
+    SearchFilterSortBar,
+    DynamicTableComponent,
+    ConfirmDialog,
+  ],
   templateUrl: './research-group-admin-view.component.html',
 })
 export class ResearchGroupAdminView {
@@ -95,6 +104,7 @@ export class ResearchGroupAdminView {
   ];
 
   private toastService = inject(ToastService);
+  private readonly translate = inject(TranslateService);
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private readonly dialogService = inject(DialogService);
 
@@ -132,15 +142,13 @@ export class ResearchGroupAdminView {
   }
 
   onViewResearchGroup(researchGroupId: string): void {
-    try {
-      this.dialogService.open(ResearchGroupDetailViewComponent, {
-        header: `${I18N_BASE}.detailView.dialogTitle`,
-        data: { researchGroupId },
-        width: '600px',
-      });
-    } catch {
-      this.toastService.showErrorKey(`${I18N_BASE}.errors.view`);
-    }
+    this.dialogService.open(ResearchGroupDetailViewComponent, {
+      header: this.translate.instant('researchGroup.detailView.title'),
+      data: { researchGroupId },
+      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      closable: true,
+      modal: true,
+    });
   }
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {

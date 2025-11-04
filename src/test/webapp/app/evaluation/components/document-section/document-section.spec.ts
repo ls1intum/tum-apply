@@ -5,7 +5,7 @@ import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { DocumentSection } from 'app/evaluation/components/document-section/document-section';
+import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';

@@ -6,7 +6,7 @@ import { Comment } from 'app/shared/components/molecules/comment/comment';
 import { InternalCommentResourceApiService } from 'app/generated/api/internalCommentResourceApi.service';
 import { InternalCommentDTO } from 'app/generated/model/internalCommentDTO';
 
-import TranslateDirective from '../../../shared/language/translate.directive';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-comment-section',

@@ -23,15 +23,15 @@ import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantF
 import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
 
 import TranslateDirective from '../../shared/language/translate.directive';
-import { Section } from '../components/section/section';
-import { SubSection } from '../components/sub-section/sub-section';
-import { DescItem, DescriptionList } from '../components/description-list/description-list';
-import { LinkList } from '../components/link-list/link-list';
-import { Prose } from '../components/prose/prose';
-import { DocumentSection } from '../components/document-section/document-section';
+import { Section } from '../../shared/components/atoms/section/section';
+import { SubSection } from '../../shared/components/atoms/sub-section/sub-section';
+import { DescItem, DescriptionList } from '../../shared/components/atoms/description-list/description-list';
+import { LinkList } from '../../shared/components/atoms/link-list/link-list';
+import { Prose } from '../../shared/components/atoms/prose/prose';
+import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
-import { CommentSection } from '../components/comment-section/comment-section';
-import { RatingSection } from '../components/rating-section/rating-section';
+import { CommentSection } from '../../shared/components/molecules/comment-section/comment-section';
+import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 

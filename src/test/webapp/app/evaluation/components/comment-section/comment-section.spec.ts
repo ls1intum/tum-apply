@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { CommentSection } from 'app/evaluation/components/comment-section/comment-section';
+import { CommentSection } from 'app/shared/components/molecules/comment-section/comment-section';
 import { InternalCommentResourceApiService } from 'app/generated/api/internalCommentResourceApi.service';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
