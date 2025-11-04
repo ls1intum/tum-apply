@@ -12,15 +12,13 @@
     </ng-template>
   </p-carousel>
 
-  <div class="hero-overlay flex flex-col justify-between py-12">
-    <div></div>
-    <div class="hero-content flex flex-col items-center gap-10 md:gap-8 lg:gap-10">
+  <div class="hero-overlay flex flex-col items-center justify-center py-12">
+    <div class="hero-content flex flex-col items-center gap-10 md:gap-8 lg:gap-10 w-full max-w-[75rem] px-4">
       <h1 class="title" jhiTranslate="landingPage.hero.headline"></h1>
       <p class="subtitle" jhiTranslate="landingPage.hero.subline"></p>
       <div class="pointer-events-auto">
         <jhi-button (click)="navigateToJobOverview()" label="{{ 'landingPage.hero.button' | translate }}" severity="primary" />
       </div>
     </div>
-    <div></div>
   </div>
 </div>
