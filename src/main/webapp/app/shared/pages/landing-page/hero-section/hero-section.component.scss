@@ -34,10 +34,6 @@
 .hero-content {
   position: relative;
   z-index: 2;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.5rem;
 
   .title {
     overflow: hidden;
@@ -78,8 +74,6 @@
   }
 
   .hero-content {
-    gap: 2rem;
-
     .title {
       font-size: 2.5rem;
       -webkit-line-clamp: 2;
@@ -97,9 +91,6 @@
   }
 
   .hero-content {
-    gap: 1.5rem;
-    padding: 0 1rem;
-
     .title {
       font-size: 2rem;
       -webkit-line-clamp: 2;
