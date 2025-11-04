@@ -74,11 +74,11 @@ export class ResearchGroupAdminView {
     const buttonTpl = this.buttonTemplate();
 
     return [
-      { field: 'professorName', header: `${I18N_BASE}.tableColumn.professor`, width: '18rem' },
+      { field: 'professorName', header: `${I18N_BASE}.tableColumn.professor`, width: '20rem' },
       {
         field: 'status',
         header: `${I18N_BASE}.tableColumn.status`,
-        width: '8rem',
+        width: '6rem',
         alignCenter: true,
         template: stateTpl,
       },
