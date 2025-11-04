@@ -15,6 +15,7 @@
     "back": "Zurück",
     "next": "Weiter",
     "apply": "Bewerben",
-    "publish": "Veröffentlichen"
+    "publish": "Veröffentlichen",
+    "downloadPDF": "PDF exportieren"
   }
 }

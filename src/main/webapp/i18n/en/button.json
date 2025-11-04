@@ -15,6 +15,7 @@
     "back": "Back",
     "next": "Next",
     "apply": "Apply",
-    "publish": "Publish"
+    "publish": "Publish",
+    "downloadPDF": "Export PDF"
   }
 }

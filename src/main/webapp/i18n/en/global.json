@@ -148,8 +148,7 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}",
-      "pdf": "Export PDF"
+      "show": "Show {{otherEntity}}"
     },
     "detail": {
       "field": "Field",
