@@ -7,29 +7,30 @@ import { of, throwError } from 'rxjs';
 import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
-import { ToastService } from 'app/service/toast-service';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
+import { createDialogServiceMock, provideDialogServiceMock, DialogServiceMock } from 'util/dialog.service.mock';
+import { createDynamicDialogRefMock, provideDynamicDialogRefMock, DynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
+import { ToastService } from 'app/service/toast-service';
 
 describe('EmployeeRequestAccessFormComponent', () => {
   let component: EmployeeRequestAccessFormComponent;
   let fixture: ComponentFixture<EmployeeRequestAccessFormComponent>;
 
-  let mockDialogRef: Partial<DynamicDialogRef>;
-  let mockDialogService: Partial<DialogService>;
+  let mockDialogRef: DynamicDialogRefMock;
+  let mockDialogService: DialogServiceMock;
   let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
-  let mockToastService: Partial<ToastService>;
+  let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
-    mockDialogRef = {
-      close: vi.fn(),
-    };
+    mockDialogRef = createDynamicDialogRefMock();
 
-    mockDialogService = {
-      open: vi.fn(),
-    };
+    mockDialogService = createDialogServiceMock();
+
+    mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
       createEmployeeResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
@@ -39,21 +40,16 @@ describe('EmployeeRequestAccessFormComponent', () => {
       confirmOnboarding: vi.fn(() => of(undefined)) as any,
     };
 
-    mockToastService = {
-      showSuccessKey: vi.fn(),
-      showErrorKey: vi.fn(),
-    };
-
     await TestBed.configureTestingModule({
       imports: [EmployeeRequestAccessFormComponent, ReactiveFormsModule],
       providers: [
         provideTranslateMock(),
         provideFontAwesomeTesting(),
-        { provide: DynamicDialogRef, useValue: mockDialogRef },
-        { provide: DialogService, useValue: mockDialogService },
+        provideToastServiceMock(mockToastService),
+        provideDialogServiceMock(mockDialogService),
+        provideDynamicDialogRefMock(mockDialogRef),
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
-        { provide: ToastService, useValue: mockToastService },
       ],
     }).compileComponents();
 
