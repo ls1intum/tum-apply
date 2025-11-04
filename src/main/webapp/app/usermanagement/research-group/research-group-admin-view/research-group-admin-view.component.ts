@@ -145,6 +145,7 @@ export class ResearchGroupAdminView {
     this.dialogService.open(ResearchGroupDetailViewComponent, {
       header: this.translate.instant('researchGroup.detailView.title'),
       data: { researchGroupId },
+      styleClass: 'research-group-detail-dialog',
       style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
       closable: true,
       modal: true,

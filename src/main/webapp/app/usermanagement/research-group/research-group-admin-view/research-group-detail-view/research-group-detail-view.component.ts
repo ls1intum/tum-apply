@@ -18,6 +18,7 @@ const I18N_BASE = 'researchGroup.detailView';
   selector: 'jhi-research-group-detail-view.component',
   imports: [TranslateModule, TranslateDirective, Section, SubSection, DescriptionList, Prose, DividerModule],
   templateUrl: './research-group-detail-view.component.html',
+  styleUrl: './research-group-detail-view.component.scss',
 })
 export class ResearchGroupDetailViewComponent {
   researchGroup = signal<ResearchGroupDTO | null>(null);
