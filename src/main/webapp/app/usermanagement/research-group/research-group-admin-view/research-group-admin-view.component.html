@@ -30,50 +30,57 @@
     <ng-template #actionTemplate let-researchGroup>
       <div class="flex space-x-2">
         <jhi-button
-          label="researchGroup.adminView.viewButton"
+          icon="eye"
+          [ariaLabel]="'button.view' | translate"
+          [tooltip]="'button.view' | translate"
           severity="primary"
-          data-testid="view"
+          variant="text"
           (click)="onViewResearchGroup(researchGroup.id)"
-          [shouldTranslate]="true"
         />
         @if (researchGroup.status === 'ACTIVE') {
           <jhi-confirm-dialog
+            [label]="'button.withdraw' | translate"
+            [iconOnly]="true"
             [header]="'researchGroup.adminView.withdrawConfirmDialog.header' | translate"
             [message]="'researchGroup.adminView.withdrawConfirmDialog.message' | translate"
-            [label]="'researchGroup.adminView.withdrawConfirmDialog.confirm' | translate"
-            variant="outlined"
-            severity="danger"
-            confirmIcon="times"
+            confirmIcon="withdraw"
             (confirmed)="onWithdrawResearchGroup(researchGroup.id)"
+            severity="danger"
+            [tooltip]="'button.withdraw' | translate"
           />
         }
         @if (researchGroup.status === 'DRAFT') {
           <jhi-confirm-dialog
+            [label]="'button.confirm' | translate"
+            [iconOnly]="true"
             [header]="'researchGroup.adminView.confirmDialog.header' | translate"
             [message]="'researchGroup.adminView.confirmDialog.message' | translate"
-            [label]="'researchGroup.adminView.confirmDialog.confirm' | translate"
-            severity="success"
             confirmIcon="check"
             (confirmed)="onApproveResearchGroup(researchGroup.id)"
+            severity="success"
+            [tooltip]="'button.confirm' | translate"
           />
           <jhi-confirm-dialog
+            [label]="'button.deny' | translate"
+            [iconOnly]="true"
             [header]="'researchGroup.adminView.denyConfirmDialog.header' | translate"
             [message]="'researchGroup.adminView.denyConfirmDialog.message' | translate"
-            [label]="'researchGroup.adminView.denyConfirmDialog.confirm' | translate"
-            severity="danger"
             confirmIcon="times"
             (confirmed)="onDenyResearchGroup(researchGroup.id)"
+            severity="danger"
+            [tooltip]="'button.deny' | translate"
           />
         }
         @if (researchGroup.status === 'DENIED') {
           <jhi-confirm-dialog
+            [label]="'button.confirm' | translate"
+            [iconOnly]="true"
             [header]="'researchGroup.adminView.confirmDialog.header' | translate"
             [message]="'researchGroup.adminView.confirmDialog.message' | translate"
-            [label]="'researchGroup.adminView.confirmDialog.confirm' | translate"
-            variant="outlined"
-            severity="success"
             confirmIcon="check"
             (confirmed)="onApproveResearchGroup(researchGroup.id)"
+            severity="success"
+            [tooltip]="'button.confirm' | translate"
           />
         }
       </div>

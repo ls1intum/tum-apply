@@ -12,8 +12,6 @@ import { ToastService } from 'app/service/toast-service';
 import { TranslateDirective } from 'app/shared/language';
 import { firstValueFrom } from 'rxjs';
 
-const I18N_BASE = 'researchGroup.detailView';
-
 @Component({
   selector: 'jhi-research-group-detail-view.component',
   imports: [TranslateModule, TranslateDirective, Section, SubSection, DescriptionList, Prose, DividerModule],
@@ -39,7 +37,7 @@ export class ResearchGroupDetailViewComponent {
       const data = await firstValueFrom(this.ResearchGroupService.getResearchGroup(researchGroupId));
       this.researchGroup.set(data);
     } catch {
-      this.toastService.showErrorKey(`${I18N_BASE}.errors.view`);
+      this.toastService.showErrorKey('researchGroup.adminView.errors.view');
     }
   }
 }

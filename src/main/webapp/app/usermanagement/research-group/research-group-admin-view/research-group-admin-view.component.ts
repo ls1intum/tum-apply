@@ -74,7 +74,7 @@ export class ResearchGroupAdminView {
     const buttonTpl = this.buttonTemplate();
 
     return [
-      { field: 'professorName', header: `${I18N_BASE}.tableColumn.professor`, width: '14rem' },
+      { field: 'professorName', header: `${I18N_BASE}.tableColumn.professor`, width: '18rem' },
       {
         field: 'status',
         header: `${I18N_BASE}.tableColumn.status`,
@@ -82,8 +82,8 @@ export class ResearchGroupAdminView {
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'researchGroup', header: `${I18N_BASE}.tableColumn.researchGroup`, width: '26rem' },
-      { field: 'createdAt', header: `${I18N_BASE}.tableColumn.requestedAt`, type: 'date', width: '10rem' },
+      { field: 'researchGroup', header: `${I18N_BASE}.tableColumn.researchGroup`, width: '30rem' },
+      { field: 'createdAt', header: `${I18N_BASE}.tableColumn.requestedAt`, type: 'date', width: '16rem' },
       { field: 'actions', header: '', width: '5rem', template: buttonTpl },
     ];
   });
