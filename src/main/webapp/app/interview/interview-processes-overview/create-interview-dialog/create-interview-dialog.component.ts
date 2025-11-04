@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { InputTextModule } from 'primeng/inputtext';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { InterviewService } from 'app/interview/service/interview.service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
 interface JobForSelection {
   jobId: string;
@@ -19,7 +18,7 @@ interface JobForSelection {
 @Component({
   selector: 'jhi-create-interview-dialog',
   standalone: true,
-  imports: [CommonModule, InputTextModule, FormsModule, TranslateModule, ButtonComponent],
+  imports: [CommonModule, TranslateModule, ButtonComponent, SearchFilterSortBar],
   templateUrl: './create-interview-dialog.component.html',
 })
 export class CreateInterviewDialogComponent implements OnInit {
@@ -44,13 +43,19 @@ export class CreateInterviewDialogComponent implements OnInit {
     this.loadPublishedJobs();
   }
 
+  onSearchEmit(searchQuery: string): void {
+    this.searchTerm.set(searchQuery);
+  }
+
   selectJob(job: JobForSelection): void {
     this.selectedJob.set(this.selectedJob()?.jobId === job.jobId ? null : job);
   }
 
   createInterviewProcess(): void {
     const job = this.selectedJob();
-    if (!job) return;
+    if (!job) {
+      return;
+    }
 
     this.loading.set(true);
     this.interviewService.createInterviewProcess(job.jobId).subscribe({

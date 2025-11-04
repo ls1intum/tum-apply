@@ -33,7 +33,9 @@
       "selectPosition": "Wähle eine Position",
       "searchPlaceholder": "Nach Titel suchen...",
       "createProcess": "Interview Prozess erstellen",
-      "noJobsFound": "Keine veröffentlichten Positionen gefunden"
+      "noJobsFound": "Keine veröffentlichten Positionen gefunden",
+      "position": "Position",
+      "positions": "Positionen"
     },
     "common": {
       "cancel": "Abbrechen",
