@@ -40,17 +40,17 @@
         <div class="overview-content">
           <div class="info-item">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
-            <span class="label" jhiTranslate="entity.application_detail.supervisor"></span>
+            <span jhiTranslate="entity.application_detail.supervisor"></span>
             <span class="value">{{ application.supervisingProfessorName || '-' }}</span>
           </div>
           <div class="info-item">
             <fa-icon [icon]="['fas', 'research-group']" class="icon" />
-            <span class="label" jhiTranslate="entity.application_detail.research_group"></span>
+            <span jhiTranslate="entity.application_detail.research_group"></span>
             <span class="value">{{ application.researchGroup || '-' }}</span>
           </div>
           <div class="info-item">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-            <span class="label" jhiTranslate="entity.application_detail.location"></span>
+            <span jhiTranslate="entity.application_detail.location"></span>
             <span class="value">{{ application.jobLocation || '-' }}</span>
           </div>
         </div>
