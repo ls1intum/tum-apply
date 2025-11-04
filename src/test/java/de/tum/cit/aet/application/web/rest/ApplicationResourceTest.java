@@ -43,7 +43,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 
 class ApplicationResourceTest extends AbstractResourceTest {
 
@@ -129,7 +128,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== GET APPLICATION BY ID =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationByIdReturnsApplication() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
@@ -143,7 +141,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationByIdNonexistentThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -159,7 +156,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== CREATE APPLICATION =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void createApplicationPersistsAndReturnsIt() {
         long countBefore = applicationRepository.count();
 
@@ -184,7 +180,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void createApplicationForNonexistentJobReturnsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -194,7 +189,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== UPDATE APPLICATION =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void updateApplicationUpdatesCorrectly() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
@@ -245,7 +239,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== DELETE APPLICATION =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void deleteApplicationRemovesIt() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         assertThat(applicationRepository.existsById(application.getApplicationId())).isTrue();
@@ -258,7 +251,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void deleteApplicationNonexistentThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -274,7 +266,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== WITHDRAW APPLICATION =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void withdrawApplicationMarksAsWithdrawn() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         assertThat(application.getState()).isEqualTo(ApplicationState.SENT);
@@ -288,7 +279,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void withdrawApplicationNonexistentThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -304,7 +294,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== GET APPLICATION PAGES =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationPagesReturnsApplications() {
         ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         ApplicationTestData.savedInReview(applicationRepository, publishedJob, applicant);
@@ -318,7 +307,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationPagesWithPaginationWorks() {
         // Create multiple applications
         for (int i = 0; i < 30; i++) {
@@ -338,7 +326,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationPagesInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -353,7 +340,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== GET APPLICATION PAGES LENGTH =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationPagesLengthReturnsCorrectCount() {
         ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
@@ -374,7 +360,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== GET APPLICATION DETAIL =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationDetailReturnsCorrectDetails() {
         Application application = ApplicationTestData.savedAll(
             applicationRepository,
@@ -404,7 +389,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationDetailNonexistentThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -420,7 +404,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== GET DOCUMENT IDS =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getDocumentIdsReturnsEmptySetForNewApplication() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
@@ -430,7 +413,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getDocumentIdsNonexistentThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -446,7 +428,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== DELETE DOCUMENT FROM APPLICATION =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void deleteDocumentFromApplicationRemovesIt() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         DocumentDictionary docDict = createTestDocument(application, applicant.getUser(), DocumentType.CV, "test_cv.pdf");
@@ -461,7 +442,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void deleteDocumentFromApplicationNonexistentThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -479,7 +459,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== RENAME DOCUMENT =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void renameDocumentUpdatesName() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         DocumentDictionary docDict = createTestDocument(application, applicant.getUser(), DocumentType.CV, "original_name.pdf");
@@ -500,7 +479,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void renameDocumentNonexistentThrowsNotFound() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -523,7 +501,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== UPLOAD DOCUMENTS =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void uploadDocumentsUploadsSuccessfully() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
@@ -547,7 +524,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void uploadDocumentsForNonexistentApplicationThrowsNotFound() {
         MockMultipartFile file = new MockMultipartFile("files", "transcript.pdf", "application/pdf", "PDF content".getBytes());
 
@@ -578,7 +554,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== GET APPLICATION BY ID - 404 BRANCH =====
 
     @Test
-    @WithMockUser(roles = "APPLICANT")
     void getApplicationByIdReturnsNotFoundWhenApplicationDoesNotExist() {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
