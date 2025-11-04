@@ -7,7 +7,6 @@
     "groupInfoHeader": "My Group",
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
-      "saveButton": "Save",
       "fields": {
         "name": "Name",
         "abbreviation": "Abbreviation",
@@ -62,7 +61,6 @@
       "addSubject": "Enter email subject...",
       "addVariable": "Press '$' to add a variable",
       "message": "Message",
-      "back": "Back",
       "saved": "Saved",
       "saving": "Saving changes",
       "unsaved": "Changes not saved",
@@ -101,7 +99,6 @@
         "role": "Role"
       },
 
-      "remove": "Remove",
       "removeMemberModal": {
         "title": "Remove Member",
         "message": "Are you sure you want to remove this member from the research group?"
