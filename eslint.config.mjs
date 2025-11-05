@@ -104,7 +104,6 @@ export default [
       },
       plugins: {
         '@typescript-eslint': tsPlugin,
-        '@angular-eslint': angularPlugin,
         prettier: prettierPlugin,
         'unused-imports': unusedImports,
       },
@@ -249,7 +248,6 @@ export default [
       },
       extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
       plugins: {
-        '@angular-eslint': angularPlugin,
         prettier: prettierPlugin,
       },
       rules: {
