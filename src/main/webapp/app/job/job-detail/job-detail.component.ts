@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -58,15 +59,24 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateModule, TranslateDirective, ButtonGroupComponent, TagComponent, ConfirmDialog],
+  imports: [
+    ButtonComponent,
+    FontAwesomeModule,
+    TranslateModule,
+    TranslateDirective,
+    ButtonGroupComponent,
+    TagComponent,
+    ConfirmDialog,
+    TooltipModule,
+  ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
-  readonly closeButtonLabel = 'jobActionButton.close';
+  readonly closeButtonLabel = 'button.close';
   readonly closeButtonSeverity = 'danger' as ButtonColor;
   readonly closeButtonIcon = 'xmark';
-  readonly deleteButtonLabel = 'jobActionButton.delete';
+  readonly deleteButtonLabel = 'button.delete';
   readonly deleteButtonSeverity = 'danger' as ButtonColor;
   readonly deleteButtonIcon = 'trash';
 
@@ -104,12 +114,11 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.apply',
+                label: 'button.apply',
                 severity: 'primary',
                 onClick: () => this.onApply(),
                 disabled: false,
                 shouldTranslate: true,
-                icon: 'plus',
               },
             ],
           };
@@ -118,13 +127,13 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.edit',
+                label: 'button.edit',
                 severity: 'primary',
                 variant: 'outlined',
                 onClick: () => this.onEditApplication(),
                 disabled: false,
                 shouldTranslate: true,
-                icon: 'file-import',
+                icon: 'pencil',
               },
             ],
           };
@@ -133,7 +142,7 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.viewApplication',
+                label: 'button.view',
                 severity: 'secondary',
                 onClick: () => this.onViewApplication(),
                 disabled: false,
@@ -150,12 +159,13 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: 'jobActionButton.edit',
+            label: 'button.edit',
             severity: 'primary',
             variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
             shouldTranslate: true,
+            icon: 'pencil',
           },
           {
             label: this.deleteButtonLabel,
