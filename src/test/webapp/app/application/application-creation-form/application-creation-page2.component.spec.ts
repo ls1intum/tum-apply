@@ -8,17 +8,10 @@ import ApplicationCreationPage2Component, {
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient as provideHttpClientMock } from '@angular/common/http';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
-
-class MockHttpClient {
-  get = vi.fn();
-  post = vi.fn();
-  put = vi.fn();
-  delete = vi.fn();
-}
 
 function createApplicationPage2Fixture(
   inputs?: Partial<{
@@ -64,7 +57,7 @@ describe('ApplicationPage2Component', () => {
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationPage2Component],
       providers: [
-        { provide: HttpClient, useClass: MockHttpClient },
+        provideHttpClientMock(),
         provideRouter([]),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
