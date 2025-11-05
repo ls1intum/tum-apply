@@ -3,7 +3,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
-
 import { TagComponent } from '../../atoms/tag/tag.component';
 
 @Component({
@@ -32,15 +31,16 @@ export class ApplicationCardComponent {
     IN_REVIEW: 'warn',
   };
 
-  get nameParts(): { first: string; last: string } {
+  readonly nameParts = computed<{ first: string; last: string }>(() => {
     const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim() ?? '';
     const parts = fullName.split(' ').filter(p => p.length > 0);
 
     if (parts.length <= 2) {
       return { first: fullName, last: '' };
     }
+
     const last = parts.pop() ?? '';
     const first = parts.join(' ');
     return { first, last };
-  }
+  });
 }
