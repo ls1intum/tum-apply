@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
-  OnDestroy,
   ViewEncapsulation,
   computed,
   effect,
@@ -35,7 +34,7 @@ const VISIBLE_DESKTOP = 3;
     'aria-label': 'Applications carousel',
   },
 })
-export class ApplicationCarouselComponent implements OnDestroy {
+export class ApplicationCarouselComponent {
   totalRecords = input(0);
   currentIndex = input(0);
   carouselIndex = input(0);
@@ -74,10 +73,6 @@ export class ApplicationCarouselComponent implements OnDestroy {
 
   constructor() {
     window.addEventListener('resize', this.resizeHandlerBound);
-  }
-
-  ngOnDestroy(): void {
-    window.removeEventListener('resize', this.resizeHandlerBound);
   }
 
   @HostListener('document:keydown', ['$event'])
