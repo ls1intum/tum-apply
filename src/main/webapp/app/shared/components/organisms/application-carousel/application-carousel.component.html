@@ -7,7 +7,7 @@
     @if (totalRecords() === 0) {
       <p jhiTranslate="evaluation.noApplicationsFound">No Applications found.</p>
     } @else {
-      @for (app of visibleApps(); track i; let i = $index) {
+      @for (app of visibleApplications(); track i; let i = $index) {
         @if (app) {
           <jhi-application-card [application]="app" [disabled]="i !== middle()" />
         } @else {

@@ -9,10 +9,10 @@ export function isNumeric(val: string): boolean {
 }
 
 /**
- * Checks if a value is a letter grade (e.g., "A", "B+", "C-")
+ * Checks if a value is a letter grade (e.g., "A", "A*", "B+", "C-")
  */
 export function isLetter(val: string): boolean {
-  return /^[A-Za-z][+-]?$/.test(val.trim());
+  return /^[A-Za-z][+*-]?$/.test(val.trim());
 }
 
 /**
@@ -24,10 +24,10 @@ export function isPercentage(val: string): boolean {
 }
 
 /**
- * Removes +/- modifiers from letter grades and converts to uppercase
+ * Removes +/* modifiers from letter grades and converts to uppercase
  */
 export function cleanLetter(val: string): string {
-  return val.replace(/[+-]/g, '').toUpperCase().trim();
+  return val.replace(/[+*-]/g, '').toUpperCase().trim();
 }
 
 /**
@@ -64,7 +64,7 @@ export function toggleError(ctrl: AbstractControl | null | undefined, key: strin
 }
 
 /**
- * Validates the format of multiple grade controls
+ * Validates the format of grade controls with specific rules for upper/lower limits
  */
 export function validateFormat(ctrls: (AbstractControl | null)[], formats: ((val: string) => boolean)[]): string | null {
   for (const ctrl of ctrls) {
@@ -105,6 +105,7 @@ export function validateBoundaryMismatch(format: string, upper: string, lower: s
 
   const upperClean = cleanLetter(upper);
   const lowerClean = cleanLetter(lower);
+
   if (upperClean > lowerClean) return true;
 
   if (upperClean === lowerClean) {
@@ -159,7 +160,6 @@ export function validateGradeRange(format: string, upper: string, lower: string,
 }
 
 /**
- * Angular FormGroup validator for grade format validation
  * Validates that upper limit, lower limit, and grade all use the same format
  * and that the grade falls within the specified range
  */
