@@ -268,7 +268,7 @@ dependencies {
 
 
   // needed for OpenAPI generation
-  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13"
+  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14"
   implementation("org.yaml:snakeyaml") {
     version {
       strictly "${snakeyaml_version}"
