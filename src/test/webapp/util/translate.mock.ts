@@ -31,7 +31,8 @@ export function createTranslateServiceMock(): Pick<
 
   const get: TranslateService['get'] = key => of(Array.isArray(key) ? key.map(k => String(k)) : String(key));
 
-  const getParsedResult = vi.fn((translations: any, key: string) => key);
+  const getParsedResult: TranslateService['getParsedResult'] = (key, interpolateParams) =>
+    Array.isArray(key) ? key.map(k => String(k)) : String(key);
 
   const stream: TranslateService['stream'] = key => of(Array.isArray(key) ? key.map(k => String(k)) : String(key));
 
