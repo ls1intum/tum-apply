@@ -3,7 +3,7 @@
   class="confirm-dialog"
   [header]="'entity.applicationSteps.confirmDialog.header' | translate"
   [message]="'entity.applicationSteps.confirmDialog.message' | translate"
-  [label]="'entity.applicationSteps.buttons.send' | translate"
+  [label]="'button.send' | translate"
   [severity]="sendButtonSeverity"
   [confirmIcon]="sendButtonIcon"
   [showOpenButton]="false"
@@ -77,6 +77,25 @@
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
       <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
+    }
+  </div>
+
+  <p-divider layout="horizontal">
+    <span jhiTranslate="entity.applicationPage4.doctoralRequirements.title"></span>
+  </p-divider>
+
+  <div class="data-privacy-notice mb-2">
+    <p jhiTranslate="entity.applicationPage4.doctoralRequirements.text"></p>
+  </div>
+
+  <div [formGroup]="additionalInfoForm">
+    <label>
+      <input type="checkbox" formControlName="doctoralRequirementsAccepted" />
+      <span class="required mr-1">*</span><span jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></span>
+    </label>
+
+    @if (!doctoralRequirementsAcceptedSignal() && submitAttempted()) {
+      <div class="error-text mt-1" jhiTranslate="entity.applicationPage4.doctoralRequirements.missingConfirmation"></div>
     }
   </div>
 </ng-template>

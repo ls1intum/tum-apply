@@ -1,0 +1,20 @@
+meta {
+  name: Upload Document
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/applications/upload-documents/:applicationId/:documentType
+  body: multipartForm
+  auth: inherit
+}
+
+params:path {
+  documentType: REFERENCE
+  applicationId: 00000000-0000-0000-0000-300000020003
+}
+
+body:multipart-form {
+  files: @file(/Users/marcfett/Downloads/Empfehlungsschreiben.pdf)
+}

@@ -1,7 +1,7 @@
 name: tumapply
 services:
   mysql:
-    image: mysql:9.4.0
+    image: mysql:9.5.0
     env_file:
       - .env
     expose:
@@ -39,7 +39,7 @@ services:
     networks:
       - shared-network
   nginx:
-    image: nginx:1.29.1-alpine-slim
+    image: nginx:1.29.3-alpine-slim
     ports:
       - '80:80'
       - '443:443'

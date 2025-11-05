@@ -1,0 +1,22 @@
+meta {
+  name: Reject Application copy
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/evaluation/applications/:applicationId/reject
+  body: json
+  auth: inherit
+}
+
+params:path {
+  applicationId: 
+}
+
+body:json {
+  {
+    "reason": "JOB_FILLED",
+    "closeJob": false
+  }
+}

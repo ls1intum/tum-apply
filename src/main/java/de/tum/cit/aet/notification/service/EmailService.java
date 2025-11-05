@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
@@ -187,7 +188,7 @@ public class EmailService {
             attachDocuments(email, helper);
 
             mailSender.send(message);
-        } catch (MessagingException | IOException e) {
+        } catch (MailException | IOException | MessagingException e) {
             log.error("Failed to send email to: {}. Reason: {}", email.getTo(), e.getMessage());
             throw new MailingException(e.getMessage());
         }
@@ -219,9 +220,6 @@ public class EmailService {
      * @return a set of email addresses to notify
      */
     private Set<String> getRecipientsToNotify(Set<User> users, Email email) {
-        if (users == null || users.isEmpty()) {
-            return Set.of();
-        }
         if (email.isSendAlways()) {
             return users.stream().map(User::getEmail).collect(Collectors.toSet());
         }

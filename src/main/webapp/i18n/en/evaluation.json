@@ -21,10 +21,6 @@
       "job": "Job",
       "appliedAt": "Applied at"
     },
-    "cancel": "Cancel",
-    "save": "Save",
-    "post": "Post",
-    "more": "More",
     "statusBadge": {
       "SENT": "Unopened",
       "ACCEPTED": "Approved",
@@ -75,6 +71,8 @@
       "educationDegree": "Degree",
       "educationUniversity": "University",
       "educationGrade": "Grade",
+      "educationGradeConverted": "Grade (converted)",
+      "converterTooltip": "The grade was converted to the German system based on the <a href=\"https://www.kmk.org/fileadmin/Dateien/pdf/ZAB/Hochschulzugang_Beschluesse_der_KMK/GesNot05.pdf\" target=\"_blank\" class='external-link' rel=\"noopener noreferrer\">resolution of the Kultusministerkonferenz</a>",
       "applicationTitle": "Application",
       "applicationDesiredStartDate": "Preferred Start Date",
       "applicationMotivation": "Motivation",
@@ -86,22 +84,27 @@
       "documentTypeCV": "Curriculum Vitae",
       "documentTypeReference": "Reference Letter",
       "documentNoUploads": "No documents uploaded",
+      "documentView": "View",
       "documentDownloadAll": "Download all",
       "moreDocument": "+1 more document",
       "moreDocuments": "+{{count}} more documents",
-
       "ratingTitle": "Ratings",
       "ratingDescription": "Rate the application and view how other reviewers have assessed it. These are not visible to the applicant.",
       "ratingYourRating": "Your Rating",
       "ratingYourRatingLabel": "Click a box to select your rating",
       "ratingOtherRatings": "Other Ratings",
-
       "commentTitle": "Comments",
       "commentDescription": "Leave internal comments to discuss the application with other reviewers or keep personal notes. These are not visible to the applicant."
     },
     "errors": {
-      "loadJobNames": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues.",
-      "loadApplication": "Failed to load application. Please try refreshing the page, or contact us if the problem continues."
+      "loadJobNames": {
+        "summary": "Error",
+        "detail": "Failed to load job names. Please try refreshing the page, or contact us if the problem continues."
+      },
+      "loadApplications": {
+        "summary": "Error",
+        "detail": "Failed to load applications. Please try refreshing the page, or contact us if the problem continues."
+      }
     }
   }
 }

@@ -14,22 +14,23 @@ import { CustomFieldAnswer } from './customFieldAnswer';
 
 
 export interface Application { 
-    createdAt?: string;
-    lastModifiedAt?: string;
+    applicant?: Applicant;
     applicationId?: string;
     applicationReview?: ApplicationReview;
-    applicant?: Applicant;
-    job?: any | null;
-    state?: Application.StateEnum;
+    appliedAt?: string;
+    createdAt?: string;
+    customFieldAnswers?: Array<CustomFieldAnswer>;
     desiredStartDate?: string;
+    internalComments?: Array<InternalComment>;
+    job?: any | null;
+    lastModifiedAt?: string;
+    motivation?: string;
     projects?: string;
     specialSkills?: string;
-    motivation?: string;
-    customFieldAnswers?: Array<CustomFieldAnswer>;
-    internalComments?: Array<InternalComment>;
+    state?: Application.StateEnum;
 }
 export namespace Application {
-    export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
+    export type StateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
     export const StateEnum = {
         Saved: 'SAVED' as StateEnum,
         Sent: 'SENT' as StateEnum,
@@ -37,7 +38,10 @@ export namespace Application {
         InReview: 'IN_REVIEW' as StateEnum,
         Rejected: 'REJECTED' as StateEnum,
         Withdrawn: 'WITHDRAWN' as StateEnum,
-        JobClosed: 'JOB_CLOSED' as StateEnum
+        JobClosed: 'JOB_CLOSED' as StateEnum,
+        Invited: 'INVITED' as StateEnum,
+        Scheduled: 'SCHEDULED' as StateEnum,
+        Completed: 'COMPLETED' as StateEnum
     };
 }
 

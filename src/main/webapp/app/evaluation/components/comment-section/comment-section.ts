@@ -1,12 +1,12 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { AccountService } from 'app/core/auth/account.service';
+import { ToastService } from 'app/service/toast-service';
+import { Comment } from 'app/shared/components/molecules/comment/comment';
+import { InternalCommentResourceApiService } from 'app/generated/api/internalCommentResourceApi.service';
+import { InternalCommentDTO } from 'app/generated/model/internalCommentDTO';
 
-import { AccountService } from '../../../core/auth/account.service';
-import { ToastService } from '../../../service/toast-service';
-import { Comment } from '../../../shared/components/molecules/comment/comment';
 import TranslateDirective from '../../../shared/language/translate.directive';
-import { InternalCommentResourceApiService } from '../../../generated/api/internalCommentResourceApi.service';
-import { InternalCommentDTO } from '../../../generated/model/internalCommentDTO';
 
 @Component({
   selector: 'jhi-comment-section',
@@ -22,7 +22,7 @@ export class CommentSection {
 
   protected comments = signal<InternalCommentDTO[]>([]);
   protected createDraft = signal<string>('');
-  protected currentUser = this.accountService.user()?.name ?? '';
+  protected currentUser = this.accountService.loadedUser()?.name ?? '';
   protected editingId = signal<string | undefined>(undefined);
 
   protected _loadCommentsEffect = effect(() => {

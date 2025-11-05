@@ -13,18 +13,18 @@ import { ApplicantDTO } from './applicantDTO';
 
 
 export interface ApplicationForApplicantDTO { 
-    applicationId?: string;
     applicant?: ApplicantDTO;
-    job: JobCardDTO;
+    applicationId?: string;
     applicationState: ApplicationForApplicantDTO.ApplicationStateEnum;
+    customFields?: Array<CustomFieldAnswerDTO>;
     desiredDate?: string;
+    job: JobCardDTO;
+    motivation?: string;
     projects?: string;
     specialSkills?: string;
-    motivation?: string;
-    customFields?: Array<CustomFieldAnswerDTO>;
 }
 export namespace ApplicationForApplicantDTO {
-    export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED';
+    export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
     export const ApplicationStateEnum = {
         Saved: 'SAVED' as ApplicationStateEnum,
         Sent: 'SENT' as ApplicationStateEnum,
@@ -32,7 +32,10 @@ export namespace ApplicationForApplicantDTO {
         InReview: 'IN_REVIEW' as ApplicationStateEnum,
         Rejected: 'REJECTED' as ApplicationStateEnum,
         Withdrawn: 'WITHDRAWN' as ApplicationStateEnum,
-        JobClosed: 'JOB_CLOSED' as ApplicationStateEnum
+        JobClosed: 'JOB_CLOSED' as ApplicationStateEnum,
+        Invited: 'INVITED' as ApplicationStateEnum,
+        Scheduled: 'SCHEDULED' as ApplicationStateEnum,
+        Completed: 'COMPLETED' as ApplicationStateEnum
     };
 }
 
