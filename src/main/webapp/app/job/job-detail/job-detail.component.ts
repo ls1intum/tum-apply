@@ -12,13 +12,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
-import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { Button, ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
+import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
+import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -101,10 +103,30 @@ export class JobDetailComponent {
     return this.translate.instant('jobDetailPage.noData');
   });
 
+  pdfExportService = inject(PdfExportResourceApiService);
+
+  readonly pdfButton: Button = {
+    label: 'button.downloadPDF',
+    severity: 'secondary',
+    variant: 'outlined',
+    onClick: () => this.onDownloadPDF(),
+    disabled: false,
+    shouldTranslate: true,
+  };
+
   readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
-    if (this.previewData()) return null;
+    if (this.previewData()) {
+      return {
+        direction: 'horizontal',
+        buttons: [this.pdfButton],
+      };
+    }
     const job = this.jobDetails();
     if (!job) return null;
+
+    const addPdfButton = (buttons: Button[]): Button[] => {
+      return [...buttons, this.pdfButton];
+    };
 
     // Case 1: Not a research group member → show Apply button
     if (!job.belongsToResearchGroup) {
@@ -112,7 +134,7 @@ export class JobDetailComponent {
         case undefined:
           return {
             direction: 'horizontal',
-            buttons: [
+            buttons: addPdfButton([
               {
                 label: 'button.apply',
                 severity: 'primary',
@@ -120,12 +142,12 @@ export class JobDetailComponent {
                 disabled: false,
                 shouldTranslate: true,
               },
-            ],
+            ]),
           };
         case ApplicationStateEnum.Saved:
           return {
             direction: 'horizontal',
-            buttons: [
+            buttons: addPdfButton([
               {
                 label: 'button.edit',
                 severity: 'primary',
@@ -135,12 +157,12 @@ export class JobDetailComponent {
                 shouldTranslate: true,
                 icon: 'pencil',
               },
-            ],
+            ]),
           };
         default:
           return {
             direction: 'horizontal',
-            buttons: [
+            buttons: addPdfButton([
               {
                 label: 'button.view',
                 severity: 'secondary',
@@ -149,7 +171,7 @@ export class JobDetailComponent {
                 shouldTranslate: true,
                 variant: 'outlined',
               },
-            ],
+            ]),
           };
       }
     }
@@ -157,7 +179,7 @@ export class JobDetailComponent {
     if (job.jobState === 'DRAFT') {
       return {
         direction: 'horizontal',
-        buttons: [
+        buttons: addPdfButton([
           {
             label: 'button.edit',
             severity: 'primary',
@@ -177,14 +199,14 @@ export class JobDetailComponent {
             disabled: false,
             shouldTranslate: true,
           },
-        ],
+        ]),
       };
     }
     // Case 3: PUBLISHED → show Close button
     if (job.jobState === 'PUBLISHED') {
       return {
         direction: 'horizontal',
-        buttons: [
+        buttons: addPdfButton([
           {
             label: this.closeButtonLabel,
             severity: this.closeButtonSeverity,
@@ -196,7 +218,7 @@ export class JobDetailComponent {
             disabled: false,
             shouldTranslate: true,
           },
-        ],
+        ]),
       };
     }
     // Else → no buttons
@@ -317,6 +339,31 @@ export class JobDetailComponent {
       }
       //  }
     }
+  }
+
+  onDownloadPDF(): void {
+    const jobId = this.jobId();
+
+    const labels = getJobPDFLabels(this.translate);
+
+    this.pdfExportService.exportJobToPDF(jobId, labels, 'response').subscribe(response => {
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'job.pdf';
+
+      if (contentDisposition) {
+        filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
+      }
+
+      const blob = response.body;
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+    });
   }
 
   async init(): Promise<void> {
