@@ -3,6 +3,8 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.util.PDFBuilder;
+import de.tum.cit.aet.job.dto.JobDetailDTO;
+import de.tum.cit.aet.job.service.JobService;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
@@ -15,9 +17,11 @@ public class PDFExportService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private final ApplicationService applicationService;
+    private final JobService jobService;
 
-    public PDFExportService(ApplicationService applicationService) {
+    public PDFExportService(ApplicationService applicationService, JobService jobService) {
         this.applicationService = applicationService;
+        this.jobService = jobService;
     }
 
     /**
@@ -89,6 +93,87 @@ public class PDFExportService {
     }
 
     /**
+     * Exports job details to PDF
+     */
+    public Resource exportJobToPDF(UUID jobId, Map<String, String> labels) {
+        JobDetailDTO job = jobService.getJobDetails(jobId);
+
+        PDFBuilder builder = new PDFBuilder(job.title());
+
+        // Overview Section
+        builder
+            .setOverviewTitle(labels.get("overview"))
+            .addOverviewItem(labels.get("supervisor"), getValue(job.supervisingProfessorName()))
+            .addOverviewItem(labels.get("location"), getValue(job.location()))
+            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
+            .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
+            .addOverviewItem(labels.get("workload"), formatWorkload(job.workload()))
+            .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration()))
+            .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
+            .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()));
+
+        if (job.endDate() != null) {
+            builder.addOverviewItem(labels.get("endDate"), formatDate(job.endDate()));
+        }
+
+        boolean jobDescriptionExists = job.description() != null && !job.description().isEmpty();
+        boolean tasksExists = job.tasks() != null && !job.tasks().isEmpty();
+        boolean requirementsExists = job.requirements() != null && !job.requirements().isEmpty();
+
+        if (jobDescriptionExists || tasksExists || requirementsExists) {
+            builder.startSectionGroup(labels.get("jobDetails"));
+
+            if (jobDescriptionExists) {
+                builder.startInfoSection(labels.get("description")).addSectionContent(job.description());
+            }
+
+            if (tasksExists) {
+                builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(job.tasks());
+            }
+
+            if (requirementsExists) {
+                builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(job.requirements());
+            }
+        }
+
+        boolean groupDescriptionExists = job.researchGroup().getDescription() != null && !job.researchGroup().getDescription().isEmpty();
+        boolean emailExists = job.researchGroup().getEmail() != null && !job.researchGroup().getEmail().isEmpty();
+        boolean websiteExists = job.researchGroup().getWebsite() != null && !job.researchGroup().getWebsite().isEmpty();
+        boolean streetExists = job.researchGroup().getStreet() != null && !job.researchGroup().getStreet().isEmpty();
+        boolean postalCodeExists = job.researchGroup().getPostalCode() != null && !job.researchGroup().getPostalCode().isEmpty();
+        boolean cityExists = job.researchGroup().getCity() != null && !job.researchGroup().getCity().isEmpty();
+
+        if (groupDescriptionExists || emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
+            builder.startSectionGroup(labels.get("researchGroup"));
+
+            if (groupDescriptionExists) {
+                builder.startInfoSection(job.researchGroup().getName()).addSectionContent(job.researchGroup().getDescription());
+            }
+
+            if (emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
+                builder.startInfoSection(labels.get("contactDetails"));
+
+                if (streetExists || postalCodeExists || cityExists) {
+                    builder.addSectionData(
+                        labels.get("address"),
+                        formatAddress(job.researchGroup().getStreet(), job.researchGroup().getPostalCode(), job.researchGroup().getCity())
+                    );
+                }
+
+                if (emailExists) {
+                    builder.addSectionData(labels.get("email"), getValue(job.researchGroup().getEmail()));
+                }
+
+                if (websiteExists) {
+                    builder.addSectionData(labels.get("website"), getValue(job.researchGroup().getWebsite()));
+                }
+            }
+        }
+
+        return builder.build();
+    }
+
+    /**
      * Generates filename for application PDF
      *
      * @param applicationId the application ID
@@ -98,6 +183,18 @@ public class PDFExportService {
     public String generateApplicationFilename(UUID applicationId, String applicationLabel) {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
         return sanitizeFilename(app.jobTitle()) + "_" + applicationLabel + ".pdf";
+    }
+
+    /**
+     * Generates filename for job PDF
+     *
+     * @param jobId    the job ID
+     * @param jobLabel label for application used as ending of the filename
+     * @return sanitized filename for the PDF
+     */
+    public String generateJobFilename(UUID jobId, String jobLabel) {
+        JobDetailDTO job = jobService.getJobDetails(jobId);
+        return sanitizeFilename(job.title()) + "_" + jobLabel + ".pdf";
     }
 
     // Helper methods
@@ -117,5 +214,36 @@ public class PDFExportService {
     private String sanitizeFilename(String filename) {
         if (filename == null) return "document";
         return filename.replaceAll("[^a-zA-Z0-9-_]", "_").substring(0, Math.min(filename.length(), 50));
+    }
+
+    private String formatWorkload(Integer workload) {
+        return workload != null ? workload + " hours/week" : "-";
+    }
+
+    private String formatContractDuration(Integer duration) {
+        return duration != null ? duration + " years" : "-";
+    }
+
+    private String formatAddress(String street, String postalCode, String city) {
+        StringBuilder address = new StringBuilder();
+        boolean streetExists = street != null && !street.isEmpty();
+        boolean postalCodeExists = postalCode != null && !postalCode.isEmpty();
+        boolean cityExists = city != null && !city.isEmpty();
+        if (streetExists) {
+            address.append(street);
+            if (postalCodeExists || cityExists) {
+                address.append(", ");
+            }
+        }
+        if (postalCodeExists) {
+            address.append(postalCode);
+            if (cityExists) {
+                address.append(" ");
+            }
+        }
+        if (cityExists) {
+            address.append(city);
+        }
+        return address.toString();
     }
 }
