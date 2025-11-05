@@ -1,0 +1,95 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
+  </div>
+  <div class="body">
+    <jhi-search-filter-sort-bar
+      [searchText]="'researchGroup.adminView.searchFilterSortBar.searchText' | translate"
+      [totalRecords]="totalRecords()"
+      [singleEntity]="'researchGroup.adminView.group' | translate"
+      [multipleEntities]="'researchGroup.adminView.groups' | translate"
+      [filters]="filters"
+      (searchOutput)="onSearchEmit($event)"
+      (filterOutput)="onFilterEmit($event)"
+      (sortOutput)="loadOnSortEmit($event)"
+      [sortableFields]="sortableFields"
+    />
+
+    <div class="table-wrapper">
+      <jhi-dynamic-table
+        [columns]="columns()"
+        [data]="researchGroups()"
+        [totalRecords]="totalRecords()"
+        [page]="page()"
+        [rows]="pageSize()"
+        [selectable]="true"
+        (lazyLoad)="loadOnTableEmit($event)"
+      />
+    </div>
+
+    <ng-template #actionTemplate let-researchGroup>
+      <div class="flex space-x-2">
+        <!-- TODO: will be implemented in a follow up -->
+        <!-- <jhi-button
+          label="researchGroup.adminView.viewButton"
+          severity="primary"
+          data-testid="view"
+          (click)="onViewResearchGroup(researchGroup.id)"
+          [shouldTranslate]="true"
+        /> -->
+        @if (researchGroup.status === 'ACTIVE') {
+          <jhi-confirm-dialog
+            [header]="'researchGroup.adminView.withdrawConfirmDialog.header' | translate"
+            [message]="'researchGroup.adminView.withdrawConfirmDialog.message' | translate"
+            [label]="'researchGroup.adminView.withdrawConfirmDialog.confirm' | translate"
+            variant="outlined"
+            severity="danger"
+            confirmIcon="times"
+            (confirmed)="onWithdrawResearchGroup(researchGroup.id)"
+          />
+        }
+        @if (researchGroup.status === 'DRAFT') {
+          <jhi-confirm-dialog
+            [header]="'researchGroup.adminView.confirmDialog.header' | translate"
+            [message]="'researchGroup.adminView.confirmDialog.message' | translate"
+            [label]="'researchGroup.adminView.confirmDialog.confirm' | translate"
+            severity="success"
+            confirmIcon="check"
+            (confirmed)="onApproveResearchGroup(researchGroup.id)"
+          />
+          <jhi-confirm-dialog
+            [header]="'researchGroup.adminView.denyConfirmDialog.header' | translate"
+            [message]="'researchGroup.adminView.denyConfirmDialog.message' | translate"
+            [label]="'researchGroup.adminView.denyConfirmDialog.confirm' | translate"
+            severity="danger"
+            confirmIcon="times"
+            (confirmed)="onDenyResearchGroup(researchGroup.id)"
+          />
+        }
+        @if (researchGroup.status === 'DENIED') {
+          <jhi-confirm-dialog
+            [header]="'researchGroup.adminView.confirmDialog.header' | translate"
+            [message]="'researchGroup.adminView.confirmDialog.message' | translate"
+            [label]="'researchGroup.adminView.confirmDialog.confirm' | translate"
+            variant="outlined"
+            severity="success"
+            confirmIcon="check"
+            (confirmed)="onApproveResearchGroup(researchGroup.id)"
+          />
+        }
+      </div>
+    </ng-template>
+
+    <ng-template #stateTemplate let-researchGroup>
+      <jhi-tag
+        [text]="
+          stateTextMap()[researchGroup.status]
+            ? (stateTextMap()[researchGroup.status] | translate)
+            : ('researchGroup.adminView.groupState.unknown' | translate)
+        "
+        [color]="stateSeverityMap()[researchGroup.status] || 'info'"
+        width="8rem"
+      />
+    </ng-template>
+  </div>
+</div>

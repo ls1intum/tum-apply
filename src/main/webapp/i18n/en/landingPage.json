@@ -1,34 +1,38 @@
 {
   "landingPage": {
     "hero": {
-      "headline": "Start Your Doctorate at TUM",
-      "subline": "TUM offers a world-class environment for your doctoral journey.",
+      "headline": "Apply for your Doctorate at TUM CIT",
+      "subline": "TUMapply is your gateway to doctoral research at the TUM School of Computation, Information and Technology",
       "button": "Browse Positions"
     },
     "doctoralJourney": {
-      "headline": "Start Your Doctoral Journey at TUM",
-      "text": "The Technical University of Munich (TUM) is firmly grounded in the belief that talent is our asset to cultivating academic excellence in doctoral education. TUM boasts a long and proud tradition of fostering world-class doctoral candidates committed to finding solutions to the diverse challenges of our time. Supported by prominent researchers in their fields, TUM invests substantial resources in helping early-stage scientists to work independently and kick-start their careers.",
+      "headline": "Start your Doctoral Journey at TUM CIT",
+      "text": "TUMApply is your entry point to doctoral research at the Technical University of Munich (TUM). You can explore open positions across all departments of the TUM School of Computation, Information and Technology (CIT), discover opportunities that fit your interests, and submit your application directly online. <br> Wondering what makes TUM the right place for your doctorate? With our vibrant research environment, global networks, and strong support structures, TUM offers the ideal conditions to pursue your academic goals. The {{startLink}}TUM Graduate School{{endLink}} accompanies you throughout the process. From meeting prerequisites and navigating requirements to developing your research profile.",
       "button1": "Why TUM?",
-      "button2": "Find out more"
+      "button2": "Doctorate at TUM"
     },
     "applicationSteps": {
-      "headline": "Your Application in 4 Steps",
+      "headline": "Your Application in 5 Steps",
       "steps": {
-        "1": {
-          "title": "1. Browse Open Positions",
+        "checkPrerequisites": {
+          "title": "Check Prerequisites",
+          "description": "Ensure you meet the {{startLink}}eligibility criteria{{endLink}} to pursue a doctorate at TUM."
+        },
+        "browsePositions": {
+          "title": "Browse Positions",
           "description": "Use filters to find relevant positions across different research groups."
         },
-        "2": {
-          "title": "2. Check Details",
+        "checkDetails": {
+          "title": "Check Details",
           "description": "Read the job description, check eligibility, and see which documents are required."
         },
-        "3": {
-          "title": "3. Submit Application",
+        "submitApplication": {
+          "title": "Submit Application",
           "description": "Create an account, upload your documents, and submit your application."
         },
-        "4": {
-          "title": "4. Track Status",
-          "description": "Stay updated. Get notified via mail when your application is reviewed, new job postings are available, or saved postings are deleted."
+        "trackStatus": {
+          "title": "Track Status",
+          "description": "Get email updates on your application, new openings, and saved postings."
         }
       },
       "button": "View Process"

@@ -86,6 +86,20 @@ const main = async () => {
         }
 
         renamedMethodsInFile = stripLeadingUnderscoresAndTrailingDigitsFromAllMethods(sourceFile, renamedMethodsInFile);
+
+        // Sort properties in model classes alphabetically
+        if (sourceFile.getFilePath().includes('/model/')) {
+            for (const clazz of sourceFile.getClasses()) {
+                const properties = clazz.getProperties();
+                if (properties.length > 1) {
+                    const propStructures = properties.map(p => p.getStructure());
+                    properties.forEach(p => p.remove());
+                    propStructures.sort((a, b) => a.name.localeCompare(b.name));
+                    propStructures.forEach(struct => clazz.addProperty(struct));
+                }
+            }
+        }
+
         const path = sourceFile.getFilePath();
         const content = sourceFile.getFullText();
         const fixedContent = isWindows ? normalizeLineEndings(content, "CRLF") : content;

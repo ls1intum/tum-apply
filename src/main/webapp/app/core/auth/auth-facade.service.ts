@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { DocumentCacheService } from 'app/service/document-cache.service';
 
 import { OtpCompleteDTO } from '../../generated/model/otpCompleteDTO';
 import { UserProfileDTO } from '../../generated/model/userProfileDTO';
@@ -41,6 +42,7 @@ export class AuthFacadeService {
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
+  private readonly documentCache = inject(DocumentCacheService);
 
   private authMethod: AuthMethod = 'none';
 
@@ -156,17 +158,17 @@ export class AuthFacadeService {
    */
   async logout(): Promise<void> {
     if (this.authMethod === 'none') {
-      this.navigateAfterLogin();
       return;
     }
+    this.documentCache.clear();
     return this.runAuthAction(async () => {
       if (this.authMethod === 'server') {
         this.authMethod = 'none';
         await this.serverAuthenticationService.logout();
-        this.navigateAfterLogin();
+        void this.router.navigate(['/']);
       } else if (this.authMethod === 'keycloak') {
         this.authMethod = 'none';
-        await this.keycloakAuthenticationService.logout(window.location.href);
+        await this.keycloakAuthenticationService.logout(window.location.origin + '/professor');
       }
       // Reset states
       this.accountService.user.set(undefined);
@@ -201,18 +203,6 @@ export class AuthFacadeService {
       throw e;
     } finally {
       this.authOrchestrator.isBusy.set(false);
-    }
-  }
-
-  /**
-   * Navigate to the stored redirect URL or home after logout.
-   */
-  private navigateAfterLogin(): void {
-    let route = this.router.routerState.snapshot.root;
-    while (route.firstChild) route = route.firstChild;
-    const data = route.data;
-    if (data.authorities?.length > 0) {
-      void this.router.navigate(['/']);
     }
   }
 }

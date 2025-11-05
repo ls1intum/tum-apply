@@ -32,8 +32,8 @@
       [totalRecords]="totalRecords()"
       [applications]="applications()"
       [currentIndex]="currentIndex()"
-      [windowIndex]="windowIndex()"
-      [windowSize]="WINDOW_SIZE"
+      [carouselIndex]="carouselIndex()"
+      [carouselSize]="CAROUSEL_SIZE"
       (next)="onNext()"
       (prev)="onPrev()"
     />
@@ -66,7 +66,7 @@
 
     @if (currentApplication(); as application) {
       <div class="w-full">
-        <div class="grid gap-16 grid-cols-1 md:grid-cols-[7fr_3fr]">
+        <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
           <div>
             <jhi-section titleKey="evaluation.details.applicantTitle" icon="user">
               <div class="grid gap-8 md:grid-cols-2">
@@ -122,40 +122,16 @@
             <p-divider />
 
             <!-- Education -->
-            <jhi-section titleKey="evaluation.details.educationTitle" icon="building-columns">
+            <jhi-section titleKey="evaluation.details.educationTitle" icon="graduation-cap">
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Bachelor -->
                 <jhi-sub-section titleKey="evaluation.details.educationBachelors">
-                  <jhi-description-list
-                    [items]="[
-                      {
-                        labelKey: 'evaluation.details.educationDegree',
-                        value: application.applicationDetailDTO.applicant?.bachelorDegreeName,
-                      },
-                      {
-                        labelKey: 'evaluation.details.educationUniversity',
-                        value: application.applicationDetailDTO.applicant?.bachelorUniversity,
-                      },
-                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.bachelorGrade },
-                    ]"
-                  />
+                  <jhi-description-list [items]="bachelorItemsComputed()" />
                 </jhi-sub-section>
 
                 <!-- Master -->
                 <jhi-sub-section titleKey="evaluation.details.educationMasters">
-                  <jhi-description-list
-                    [items]="[
-                      {
-                        labelKey: 'evaluation.details.educationDegree',
-                        value: application.applicationDetailDTO.applicant?.masterDegreeName,
-                      },
-                      {
-                        labelKey: 'evaluation.details.educationUniversity',
-                        value: application.applicationDetailDTO.applicant?.masterUniversity,
-                      },
-                      { labelKey: 'evaluation.details.educationGrade', value: application.applicationDetailDTO.applicant?.masterGrade },
-                    ]"
-                  />
+                  <jhi-description-list [items]="masterItemsComputed()" />
                 </jhi-sub-section>
               </div>
             </jhi-section>
@@ -163,7 +139,7 @@
             <p-divider />
 
             <!-- Application -->
-            <jhi-section titleKey="evaluation.details.applicationTitle" icon="file-lines">
+            <jhi-section titleKey="evaluation.details.applicationTitle" icon="file">
               <jhi-sub-section titleKey="evaluation.details.applicationDesiredStartDate">
                 <span class="text-sm"> {{ application.applicationDetailDTO.desiredDate || '—' }} </span>
               </jhi-sub-section>
@@ -181,8 +157,11 @@
               </jhi-sub-section>
             </jhi-section>
           </div>
+
+          <p-divider class="block xl:hidden" />
+
           <div>
-            <jhi-section titleKey="evaluation.details.documentTitle" icon="folder">
+            <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
               <jhi-document-section [idsDTO]="currentDocumentIds()" [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>
@@ -190,7 +169,7 @@
         <p-divider />
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
-            <jhi-section titleKey="evaluation.details.ratingTitle" icon="thumbs-up">
+            <jhi-section titleKey="evaluation.details.ratingTitle" icon="star">
               <jhi-rating-section [applicationId]="currentApplicationId()" />
             </jhi-section>
           </div>

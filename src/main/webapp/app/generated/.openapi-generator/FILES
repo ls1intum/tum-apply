@@ -10,6 +10,7 @@ api/emailTemplateResourceApi.service.ts
 api/emailVerificationResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
 api/jobResourceApi.service.ts
+api/pdfExportResourceApi.service.ts
 api/profOnboardingResourceApi.service.ts
 api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
@@ -42,6 +43,7 @@ model/emailSettingDTO.ts
 model/emailTemplateDTO.ts
 model/emailTemplateOverviewDTO.ts
 model/emailTemplateTranslationDTO.ts
+model/employeeResearchGroupRequestDTO.ts
 model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
@@ -49,7 +51,6 @@ model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
 model/jobDetailDTO.ts
-model/jobFilterOptionDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/loginRequestDTO.ts
@@ -57,6 +58,7 @@ model/otpCompleteDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
+model/pageResponseDTOResearchGroupAdminDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
 model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
@@ -67,6 +69,7 @@ model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
 model/researchGroup.ts
+model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts

@@ -12,15 +12,15 @@ plugins {
   id "idea"
   id "java"
   id "jacoco"
-  id "com.diffplug.spotless" version "7.2.1"
+  id "com.diffplug.spotless" version "8.0.0"
   id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
-  id "com.github.ben-manes.versions" version "0.52.0"
+  id "com.github.ben-manes.versions" version "0.53.0"
   id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
   id "com.google.cloud.tools.jib" version "3.4.5"
   id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
   id "io.spring.dependency-management" version "1.1.7"
   id "org.liquibase.gradle" version "${liquibasePluginVersion}"
-  id "org.sonarqube" version "6.3.1.5724"
+  id "org.sonarqube" version "7.0.1.6134"
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
   // TODO: we cannot upgrade to the latest version yet, because of liquibase and openapi errors
@@ -28,13 +28,13 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.0.2"
+version = "1.0.4"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
 // Remove this once we have a way to run the dependency submission job with Java 25
 def isAutoDepJob = System.getenv("GITHUB_ACTIONS") == "true" &&
-                   System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
+  System.getenv("GITHUB_DEPENDENCY_GRAPH_DETECTOR_NAME") != null
 
 if (isAutoDepJob) {
   println "Auto dependency submission detected, using Java 21 toolchain for this run"
@@ -196,9 +196,9 @@ dependencies {
   testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
-  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.4"
+  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.5"
   implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
-  implementation "org.apache.commons:commons-lang3:3.18.0"
+  implementation "org.apache.commons:commons-lang3:3.19.0"
   annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
   implementation "org.mapstruct:mapstruct:${mapstructVersion}"
   annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -275,14 +275,14 @@ dependencies {
       // needed to reduce the number of vulnerabilities, also see https://mvnrepository.com/artifact/org.yaml/snakeyaml
     }
   }
-  runtimeOnly "com.h2database:h2:2.3.232"
+  runtimeOnly "com.h2database:h2:2.4.240"
 
 
   testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
   testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
   testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
   testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
-  annotationProcessor "org.glassfish.jaxb:jaxb-runtime"
+  annotationProcessor "org.glassfish.jaxb:jaxb-runtime:4.0.6"
   annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen:${hibernateVersion}"
   developmentOnly "org.springframework.boot:spring-boot-docker-compose:${springBootVersion}"
   developmentOnly "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
@@ -304,6 +304,9 @@ dependencies {
   // Keycloak
   implementation "org.keycloak:keycloak-admin-client:${keycloakVersion}"
   implementation "org.keycloak:keycloak-authz-client:${keycloakVersion}"
+
+  // Used for pdf creation
+  implementation 'com.itextpdf:html2pdf:5.0.1'
 }
 
 tasks.register("cleanResources", Delete) {

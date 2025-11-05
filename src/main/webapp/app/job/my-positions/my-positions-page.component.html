@@ -1,0 +1,107 @@
+<div class="page-container">
+  <div class="header-container">
+    <div class="page-header">
+      <h1 jhiTranslate="myPositionsPage.header.title"></h1>
+    </div>
+    <jhi-button
+      label="myPositionsPage.header.createButton"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateJob()"
+      [shouldTranslate]="true"
+    />
+  </div>
+  <div class="my-positions-container">
+    <div class="body">
+      <jhi-search-filter-sort-bar
+        [searchText]="'myPositionsPage.searchFilterSortBar.searchText' | translate"
+        [totalRecords]="totalRecords()"
+        [singleEntity]="'job' | translate"
+        [multipleEntities]="'jobs' | translate"
+        (searchOutput)="onSearchEmit($event)"
+        (filterOutput)="onFilterEmit($event)"
+        (sortOutput)="loadOnSortEmit($event)"
+        [filters]="[
+          {
+            filterId: 'status',
+            filterLabel: 'myPositionsPage.tableColumn.status',
+            filterSearchPlaceholder: 'myPositionsPage.searchFilterSortBar.filterOptions.stateSearchPlaceholder',
+            filterOptions: availableStatusLabels,
+            shouldTranslateOptions: true,
+          },
+        ]"
+        [sortableFields]="sortableFields"
+      />
+      <div class="table-wrapper">
+        <jhi-dynamic-table
+          [columns]="columns()"
+          [data]="jobs()"
+          [totalRecords]="totalRecords()"
+          [page]="page()"
+          [rows]="pageSize()"
+          [selectable]="true"
+          (lazyLoad)="loadOnTableEmit($event)"
+        />
+      </div>
+
+      <ng-template #actionTemplate let-job>
+        <div class="flex space-x-2">
+          <jhi-button
+            icon="eye"
+            variant="text"
+            [tooltip]="'button.view' | translate"
+            severity="primary"
+            data-testid="view"
+            (click)="onViewJob(job.jobId)"
+            [shouldTranslate]="true"
+          />
+          <jhi-button
+            icon="pencil"
+            variant="text"
+            [tooltip]="'button.edit' | translate"
+            severity="primary"
+            variant="text"
+            (click)="onEditJob(job.jobId)"
+            data-testid="edit"
+            [disabled]="job.state !== 'DRAFT'"
+            [shouldTranslate]="true"
+          />
+          @if (job.state === 'DRAFT') {
+            <jhi-confirm-dialog
+              [label]="'button.delete' | translate"
+              [iconOnly]="true"
+              [tooltip]="'button.delete' | translate"
+              severity="danger"
+              [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
+              [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+              (confirmed)="onDeleteJob(job.jobId)"
+              confirmIcon="trash"
+              data-testid="delete"
+            />
+          }
+          @if (job.state === 'PUBLISHED') {
+            <jhi-confirm-dialog
+              [label]="'button.close' | translate"
+              [iconOnly]="true"
+              [tooltip]="'button.close' | translate"
+              severity="danger"
+              [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
+              [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
+              (confirmed)="onCloseJob(job.jobId)"
+              confirmIcon="xmark"
+              data-testid="delete"
+            />
+          }
+        </div>
+      </ng-template>
+
+      <ng-template #stateTemplate let-job>
+        <jhi-tag
+          [text]="stateTextMap()[job.state] ? (stateTextMap()[job.state] | translate) : ('jobState.unknown' | translate)"
+          [color]="stateSeverityMap()[job.state] || 'info'"
+          width="8rem"
+        />
+      </ng-template>
+    </div>
+  </div>
+</div>
