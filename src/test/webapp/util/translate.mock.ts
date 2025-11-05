@@ -52,7 +52,7 @@ export function createTranslateServiceMock(): Pick<
       onLangChange.emit({ lang: _lang, translations: emptyTranslations });
       return of(emptyTranslations);
     },
-    setDefaultLang: (_lang: string) => undefined,
+    setDefaultLang: (_lang: string) => of(emptyTranslations),
   };
 
   return mock;
