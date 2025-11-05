@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
+import { TranslateDirective } from 'app/shared/language';
 
 import { ApplicationStepComponent } from './application-step/application-step/application-step.component';
 
 @Component({
   selector: 'jhi-application-steps-section',
-  imports: [ApplicationStepComponent],
+  imports: [ApplicationStepComponent, TranslateDirective],
   templateUrl: './application-steps-section.component.html',
   styleUrl: './application-steps-section.component.scss',
 })
