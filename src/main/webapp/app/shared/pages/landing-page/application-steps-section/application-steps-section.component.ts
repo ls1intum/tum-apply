@@ -7,7 +7,6 @@ import { ApplicationStepComponent } from './application-step/application-step/ap
   selector: 'jhi-application-steps-section',
   imports: [ApplicationStepComponent, TranslateDirective],
   templateUrl: './application-steps-section.component.html',
-  styleUrl: './application-steps-section.component.scss',
 })
 export class ApplicationStepsSectionComponent {
   steps = [
