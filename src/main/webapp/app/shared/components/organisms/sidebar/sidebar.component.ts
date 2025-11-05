@@ -82,14 +82,14 @@ export class SidebarComponent {
           title: 'sidebar.dashboard.dashboard',
           buttons: [
             { icon: 'home', text: 'sidebar.dashboard.home', link: '/' },
-            { icon: 'briefcase', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
+            { icon: 'find-positions', text: 'sidebar.dashboard.findpositions', link: '/job-overview' },
           ],
         },
         {
           title: 'sidebar.applications.applications',
           buttons: [
             {
-              icon: 'file',
+              icon: 'application-overview',
               text: 'sidebar.applications.myapplications',
               link: '/application/overview',
             },
@@ -101,20 +101,20 @@ export class SidebarComponent {
           title: 'sidebar.manage.manage',
           buttons: [
             { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
-            { icon: 'list', text: 'sidebar.manage.mypositions', link: '/my-positions' },
-            { icon: 'plus', text: 'sidebar.manage.createposition', link: '/job/create' },
+            { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
+            { icon: 'create-job', text: 'sidebar.manage.createposition', link: '/job/create' },
           ],
         },
         {
           title: 'sidebar.applications.applications',
           buttons: [
             {
-              icon: 'table-list',
+              icon: 'application-overview',
               text: 'sidebar.applications.applicationoverview',
               link: '/evaluation/overview',
             },
             {
-              icon: 'id-card',
+              icon: 'review-applications',
               text: 'sidebar.applications.reviewapplications',
               link: '/evaluation/application',
             },
@@ -125,7 +125,7 @@ export class SidebarComponent {
           buttons: [
             { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
             { icon: 'users', text: 'sidebar.researchgroup.yourmembers', link: '/research-group/members' },
-            { icon: 'flask', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
+            { icon: 'research-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
           ],
         },
       ],

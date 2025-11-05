@@ -10,6 +10,7 @@ api/emailTemplateResourceApi.service.ts
 api/emailVerificationResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
 api/jobResourceApi.service.ts
+api/pdfExportResourceApi.service.ts
 api/profOnboardingResourceApi.service.ts
 api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
@@ -50,7 +51,6 @@ model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
 model/jobDetailDTO.ts
-model/jobFilterOptionDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/loginRequestDTO.ts

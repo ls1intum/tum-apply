@@ -661,19 +661,28 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/evaluation/jobs:
-    get:
-      tags: [application-evaluation-resource]
-      operationId: getJobFilterOptions
+  /api/export/application/{id}/pdf:
+    post:
+      tags: [pdf-export-resource]
+      operationId: exportApplicationToPDF
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {type: string}
+        required: true
       responses:
         '200':
           description: OK
           content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/JobFilterOptionDTO'}
-                uniqueItems: true
+            application/pdf:
+              schema: {type: string, format: binary}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -1276,6 +1285,7 @@ components:
         applicant: {$ref: '#/components/schemas/Applicant'}
         applicationId: {type: string, format: uuid}
         applicationReview: {$ref: '#/components/schemas/ApplicationReview'}
+        appliedAt: {type: string, format: date-time}
         createdAt: {type: string, format: date-time}
         customFieldAnswers:
           type: array
@@ -1650,11 +1660,6 @@ components:
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
         title]
-    JobFilterOptionDTO:
-      type: object
-      properties:
-        jobId: {type: string, format: uuid}
-        jobName: {type: string}
     JobFiltersDTO:
       type: object
       properties:
