@@ -143,10 +143,6 @@
           "summary": "Error",
           "detail": "Failed to deny research group. Please try refreshing the page, or contact us if the problem continues."
         },
-        "view": {
-          "summary": "Error",
-          "detail": "Failed displaying research group information. Please try refreshing the page, or contact us if the problem continues."
-        },
         "withdraw": {
           "summary": "Error",
           "detail": "Error withdrawing approval. Please try refreshing the page, or contact us if the problem continues."
@@ -206,21 +202,54 @@
       "title": "Manage Research Groups"
     },
     "detailView": {
+      "title": "Research Group Details",
+      "errors": {
+        "view": {
+          "summary": "Error",
+          "detail": "Failed displaying research group information. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "noId": {
+          "summary": "Error",
+          "detail": "No research group ID provided. Please refresh the page and try again."
+        },
+        "save": {
+          "summary": "Error",
+          "detail": "Error saving research group information. Please try again or contact an admin."
+        }
+      },
+      "success": {
+        "updated": {
+          "summary": "Success",
+          "detail": "Research group information updated successfully."
+        }
+      },
       "section1": "General Information",
+      "section2": "Description",
+      "section3": "Address",
       "abbreviation": "Abbreviation",
       "name": "Name",
       "school": "School",
       "defaultFieldOfStudies": "Field of Studies",
       "head": "Head",
       "email": "Email",
-      "title": "Research Group Details",
       "website": "Website",
-      "section2": "Description",
       "description": "Description",
-      "section3": "Address",
       "city": "City",
       "postalCode": "Postal Code",
-      "street": "Street"
+      "street": "Street",
+      "placeholders": {
+        "abbreviation": "e.g. AI",
+        "name": "e.g. Research Group for Artificial Intelligence",
+        "school": "e.g. Informatics",
+        "defaultFieldOfStudies": "e.g. Computer Science",
+        "head": "e.g. Prof. Dr. Max Mustermann",
+        "email": "e.g. contact@researchgroup.com",
+        "website": "e.g. https://www.researchgroup.com",
+        "description": "Describe briefly the group's research focus, goals, and key areas.",
+        "city": "e.g. Berlin",
+        "postalCode": "e.g. 12345",
+        "street": "e.g. Musterstraße 123"
+      }
     }
   }
 }
