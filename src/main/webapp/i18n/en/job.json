@@ -182,9 +182,12 @@
       "location": "Location:"
     },
     "sections": {
+      "jobDetails": "Job Details",
+      "description": "Description",
       "jobDescription": "Job Description",
       "tasksResponsibilities": "Tasks & Responsibilities",
       "eligibilityCriteria": "Eligibility Criteria",
+      "contactDetails": "Contact Details",
       "dataProtection": "Data Protection Information"
     },
     "cards": {
