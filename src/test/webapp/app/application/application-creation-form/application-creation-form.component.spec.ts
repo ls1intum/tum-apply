@@ -928,6 +928,35 @@ describe('ApplicationForm', () => {
       // Clean up
       vi.useRealTimers();
     });
+
+    it('should successfully resolve, close dialog and clear interval when user logs in', async () => {
+      accountService.loaded.set(true);
+      accountService.user.set(undefined);
+
+      authFacade.requestOtp = vi.fn().mockResolvedValue(undefined);
+
+      const mockDialogRef = createMockDialogRef();
+      mockReturnValuePrivate(vi.spyOn(dialogService, 'open'), mockDialogRef);
+
+      vi.useFakeTimers();
+
+      const promise = comp['openOtpAndWaitForLogin']('test@example.com', 'John', 'Doe');
+
+      vi.advanceTimersByTime(100);
+      await Promise.resolve();
+
+      expect(authFacade.requestOtp).toHaveBeenCalledWith(true);
+
+      // Simulate user login before timeout
+      accountService.user.set({ id: 'new-user-123', email: 'test@example.com', name: 'John Doe' });
+
+      vi.advanceTimersByTime(601_000);
+      await Promise.resolve();
+
+      await expect(promise).resolves.toBeUndefined();
+
+      vi.useRealTimers();
+    });
   });
 
   describe('migrateDraftIfNeeded', () => {
