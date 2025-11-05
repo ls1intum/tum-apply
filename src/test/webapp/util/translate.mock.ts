@@ -36,11 +36,8 @@ export function createTranslateServiceMock(): Pick<
   const stream: TranslateService['stream'] = key => of(Array.isArray(key) ? key.map(k => String(k)) : String(key));
 
   const emptyTranslations: InterpolatableTranslationObject = {};
-  const use: TranslateService['use'] = (_lang: string) => of(emptyTranslations);
 
-  const setDefaultLang: TranslateService['setDefaultLang'] = (_lang: string) => undefined;
-
-  return {
+  const mock = {
     instant,
     get,
     getParsedResult,
@@ -49,9 +46,15 @@ export function createTranslateServiceMock(): Pick<
     onLangChange,
     onDefaultLangChange,
     currentLang: 'en',
-    use,
-    setDefaultLang,
+    use: (_lang: string) => {
+      mock.currentLang = _lang;
+      onLangChange.emit({ lang: _lang, translations: emptyTranslations });
+      return of(emptyTranslations);
+    },
+    setDefaultLang: (_lang: string) => undefined,
   };
+
+  return mock;
 }
 
 export function provideTranslateMock(mock: ReturnType<typeof createTranslateServiceMock> = createTranslateServiceMock()): Provider {
