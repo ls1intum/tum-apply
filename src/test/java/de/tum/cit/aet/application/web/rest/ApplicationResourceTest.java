@@ -141,13 +141,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void getApplicationByIdNonexistentThrowsNotFound() {
-        api
-            .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-            .getAndRead("/api/applications/" + UUID.randomUUID(), null, ApplicationForApplicantDTO.class, 404);
-    }
-
-    @Test
     void getApplicationByIdWithoutAuthReturnsForbidden() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         api.getAndRead("/api/applications/" + application.getApplicationId(), null, ApplicationForApplicantDTO.class, 403);
@@ -550,8 +543,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
             403
         );
     }
-
-    // ===== GET APPLICATION BY ID - 404 BRANCH =====
 
     @Test
     void getApplicationByIdReturnsNotFoundWhenApplicationDoesNotExist() {
