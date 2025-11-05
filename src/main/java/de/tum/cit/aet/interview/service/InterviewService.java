@@ -38,23 +38,25 @@ public class InterviewService {
      */
 
     public List<InterviewOverviewDTO> getInterviewOverview() {
+        // 1. Get the ID of the currently logged-in professor
         UUID professorId = currentUserService.getUserId();
 
-        // Load all active interview processes for this professor
+        //2. Load all active interview processes for this professor
         List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
 
-        // If no interview processes exist, return an empty list
+        // 2. If no interview processes exist, return an empty list
         if (interviewProcesses.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Fetch aggregated data: count of applications per job and ApplicationState
+        // 4. Fetch aggregated data: count of applications per job and ApplicationState
         List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(professorId);
 
+        // 5.Build a map structure with jobId as key
         // The inner map contains the count of applications per ApplicationState
         Map<UUID, Map<ApplicationState, Long>> countsPerJobAndState = new HashMap<>();
 
-        // Process the results and organize them into the map structure
+        // 6. Process the results and organize them into the map structure
         for (Object[] result : countResults) {
             Job job = (Job) result[0];
             ApplicationState state = (ApplicationState) result[1];
@@ -63,7 +65,7 @@ public class InterviewService {
             countsPerJobAndState.computeIfAbsent(job.getJobId(), k -> new EnumMap<>(ApplicationState.class)).put(state, count);
         }
 
-        // Create a DTO with statistical data for each interview process
+        // 7.Transform each interview process into a DTO with statistical data
         return interviewProcesses
             .stream()
             .map(interviewProcess -> {
@@ -90,7 +92,7 @@ public class InterviewService {
                 // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
                     stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
-                    stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
+                        stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
                 // Calculate total number of all applications in this interview process
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
