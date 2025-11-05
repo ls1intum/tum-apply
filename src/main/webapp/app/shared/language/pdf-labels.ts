@@ -29,3 +29,26 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
     grade: translate.instant('entity.detail_card.grade'),
   };
 }
+
+export function getJobPDFLabels(translate: TranslateService): Record<string, string> {
+  return {
+    overview: translate.instant('jobDetailPage.cards.positionOverview'),
+    supervisor: translate.instant('jobDetailPage.header.supervisor'),
+    location: translate.instant('jobDetailPage.header.location'),
+    fieldsOfStudies: translate.instant('jobDetailPage.labels.fieldsOfStudies'),
+    researchArea: translate.instant('jobDetailPage.labels.researchArea'),
+    workload: translate.instant('jobDetailPage.labels.workload'),
+    duration: translate.instant('jobDetailPage.labels.contractDuration'),
+    fundingType: translate.instant('jobDetailPage.labels.fundingType'),
+    startDate: translate.instant('jobDetailPage.labels.startDate'),
+    jobDetails: translate.instant('jobDetailPage.sections.jobDetails'),
+    description: translate.instant('jobDetailPage.sections.description'),
+    tasksResponsibilities: translate.instant('jobDetailPage.sections.tasksResponsibilities'),
+    eligibilityCriteria: translate.instant('jobDetailPage.sections.eligibilityCriteria'),
+    researchGroup: translate.instant('jobDetailPage.cards.researchGroup'),
+    contactDetails: translate.instant('jobDetailPage.sections.contactDetails'),
+    address: translate.instant('researchGroup.groupInfo.section3'),
+    email: translate.instant('researchGroup.groupInfo.email'),
+    website: translate.instant('researchGroup.groupInfo.website'),
+  };
+}
