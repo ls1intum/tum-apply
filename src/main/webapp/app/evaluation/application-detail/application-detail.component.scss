@@ -1,9 +1,10 @@
+@use '../../../content/scss/breakpoints' as bp;
 .page-container {
   .body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     box-sizing: border-box;
 
     .review-actions {
@@ -15,5 +16,23 @@
 
   jhi-application-carousel {
     width: 100%;
+  }
+}
+
+/* Tablets and smaller (width <= 768px) */
+@media (max-width: bp.$md) {
+  .page-container {
+    .body {
+      gap: 1rem;
+    }
+  }
+}
+
+/* Mobile phones (width <= 480px) */
+@media (max-width: bp.$sm) {
+  .page-container {
+    .body {
+      gap: 0.75rem;
+    }
   }
 }
