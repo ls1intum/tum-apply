@@ -122,7 +122,7 @@ const routes: Routes = [
     path: 'my-positions',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
-    loadComponent: () => import('./job/my-positions/my-positions-page/my-positions-page.component').then(m => m.MyPositionsPageComponent),
+    loadComponent: () => import('./job/my-positions/my-positions-page.component').then(m => m.MyPositionsPageComponent),
     title: 'global.routes.job.myPositions',
   },
 
@@ -220,6 +220,16 @@ const routes: Routes = [
   // ======================================================================================
   // Research Group
   // ======================================================================================
+  {
+    path: 'research-group/admin-view',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-admin-view/research-group-admin-view.component').then(
+        m => m.ResearchGroupAdminView,
+      ),
+    title: 'global.routes.researchGroup.adminView',
+  },
   {
     path: 'research-group/templates',
     canActivate: [UserRouteAccessService],

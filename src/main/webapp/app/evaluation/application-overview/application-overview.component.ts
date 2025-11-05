@@ -7,12 +7,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
+import { ToastService } from 'app/service/toast-service';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { Sort } from '../../shared/components/atoms/sorting/sorting';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { EvaluationService } from '../service/evaluation.service';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { ApplicationEvaluationResourceApiService } from '../../generated/api/applicationEvaluationResourceApi.service';
@@ -85,9 +85,9 @@ export class ApplicationOverviewComponent {
   private isSortInitiatedByUser = false;
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
-  private readonly evaluationService = inject(EvaluationService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private toastService = inject(ToastService);
 
   private readonly queryParamsSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
@@ -126,6 +126,7 @@ export class ApplicationOverviewComponent {
       this.allAvailableJobNames.set(jobNames.sort());
     } catch {
       this.allAvailableJobNames.set([]);
+      this.toastService.showErrorKey('evaluation.errors.loadJobNames');
     }
   }
 
@@ -212,6 +213,7 @@ export class ApplicationOverviewComponent {
       this.updateUrlQueryParams();
     } catch (error) {
       console.error('Failed to load applications:', error);
+      this.toastService.showErrorKey('evaluation.errors.loadApplications');
     }
   }
 

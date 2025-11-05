@@ -45,7 +45,6 @@ env:
 
 jobs:
   server-tests:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -131,7 +130,7 @@ jobs:
       #    cat $AGGREGATED_REPORT_FILE > $GITHUB_STEP_SUMMARY
       - name: Post Coverage Report as Comment if Server Coverage is too low
         if: failure() && github.event_name == 'pull_request'
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -153,10 +152,7 @@ jobs:
             Open the downloaded index.html file in your browser to inspect the coverage details.
             ```
 
-
-
   server-style:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -184,7 +180,6 @@ jobs:
           reporter: java-junit
 
   client-tests:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -218,7 +213,7 @@ jobs:
       #    path: junit.xml
       - name: Post Coverage Report as Comment if Client Coverage is too low
         if: failure() && github.event_name == 'pull_request'
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -241,7 +236,6 @@ jobs:
             ```
 
   client-tests-selected:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -279,7 +273,6 @@ jobs:
         if: success() || failure()
 
   client-compilation:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

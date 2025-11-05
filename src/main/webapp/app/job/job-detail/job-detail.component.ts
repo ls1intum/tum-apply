@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import dayjs from 'dayjs/esm';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -10,16 +11,17 @@ import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { trimWebsiteUrl } from 'app/shared/util/util';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
+import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 
-import TranslateDirective from '../../shared/language/translate.directive';
-import { ButtonColor, ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
-import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
-import { ResearchGroupResourceApiService } from '../../generated/api/researchGroupResourceApi.service';
-import { JobFormDTO } from '../../generated/model/jobFormDTO';
-import { ApplicationForApplicantDTO } from '../../generated/model/applicationForApplicantDTO';
-import { JobDetailDTO } from '../../generated/model/jobDetailDTO';
+import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -57,15 +59,24 @@ export interface JobDetails {
 
 @Component({
   selector: 'jhi-job-detail',
-  imports: [ButtonComponent, FontAwesomeModule, TranslateDirective, TranslateModule, ButtonGroupComponent, TagComponent, ConfirmDialog],
+  imports: [
+    ButtonComponent,
+    FontAwesomeModule,
+    TranslateModule,
+    TranslateDirective,
+    ButtonGroupComponent,
+    TagComponent,
+    ConfirmDialog,
+    TooltipModule,
+  ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
-  readonly closeButtonLabel = 'jobActionButton.close';
+  readonly closeButtonLabel = 'button.close';
   readonly closeButtonSeverity = 'danger' as ButtonColor;
   readonly closeButtonIcon = 'xmark';
-  readonly deleteButtonLabel = 'jobActionButton.delete';
+  readonly deleteButtonLabel = 'button.delete';
   readonly deleteButtonSeverity = 'danger' as ButtonColor;
   readonly deleteButtonIcon = 'trash';
 
@@ -103,12 +114,11 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.apply',
+                label: 'button.apply',
                 severity: 'primary',
                 onClick: () => this.onApply(),
                 disabled: false,
                 shouldTranslate: true,
-                icon: 'plus',
               },
             ],
           };
@@ -117,13 +127,13 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.edit',
+                label: 'button.edit',
                 severity: 'primary',
                 variant: 'outlined',
                 onClick: () => this.onEditApplication(),
                 disabled: false,
                 shouldTranslate: true,
-                icon: 'file-import',
+                icon: 'pencil',
               },
             ],
           };
@@ -132,7 +142,7 @@ export class JobDetailComponent {
             direction: 'horizontal',
             buttons: [
               {
-                label: 'jobActionButton.viewApplication',
+                label: 'button.view',
                 severity: 'secondary',
                 onClick: () => this.onViewApplication(),
                 disabled: false,
@@ -149,12 +159,13 @@ export class JobDetailComponent {
         direction: 'horizontal',
         buttons: [
           {
-            label: 'jobActionButton.edit',
+            label: 'button.edit',
             severity: 'primary',
             variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
             shouldTranslate: true,
+            icon: 'pencil',
           },
           {
             label: this.deleteButtonLabel,
@@ -225,6 +236,27 @@ export class JobDetailComponent {
 
   onBack(): void {
     this.location.back();
+  }
+
+  isProfessor(): boolean {
+    return this.accountService.hasAnyAuthority(['PROFESSOR']);
+  }
+
+  onEditResearchGroup(): void {
+    this.router.navigate(['/research-group/info']);
+  }
+
+  hasResearchGroupDescription(): boolean {
+    const description = this.jobDetails()?.researchGroupDescription;
+    if (!description) return false;
+
+    // Strip HTML tags and check if there's meaningful text content
+    const textContent = description.replace(/<[^>]*>/g, '').trim();
+    return textContent.length > 0;
+  }
+
+  trimWebsiteUrl(url: string): string {
+    return trimWebsiteUrl(url);
   }
 
   onApply(): void {

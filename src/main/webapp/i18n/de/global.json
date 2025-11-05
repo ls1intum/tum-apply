@@ -29,6 +29,7 @@
       },
       "settings": "TUMApply - Einstellungen",
       "researchGroup": {
+        "adminView": "TUMApply - Admin Ansicht",
         "templates": "TUMApply - Meine Vorlagen",
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
@@ -108,7 +109,12 @@
         "pattern": "Ungültiges Format.",
         "email": "Ungültige Email-Adresse.",
         "min": "Dieses Feld muss mind. {{min}} sein.",
-        "max": "Dieses Feld darf max. {{max}} sein."
+        "max": "Dieses Feld darf max. {{max}} sein.",
+        "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
+        "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
+        "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
+        "boundaryMismatch": "Die höchstmögliche Note muss besser sein als die niedrigste Note zum Bestehen.",
+        "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
       }
     },
     "editor": {
@@ -142,7 +148,8 @@
       "open": "Öffnen",
       "save": "Speichern",
       "view": "Details",
-      "show": "Zeige {{otherEntity}}"
+      "show": "Zeige {{otherEntity}}",
+      "pdf": "PDF exportieren"
     },
     "detail": {
       "field": "Feld",
@@ -150,6 +157,8 @@
     },
     "detail_card": {
       "name": "Name",
+      "upper_passing_limit": "Höchstmögliche Note",
+      "lower_passing_limit": "Niedrigste Note zum Bestehen",
       "grade": "Note",
       "university": "Universität",
       "motivation": "Motivation",
@@ -227,6 +236,7 @@
       }
     },
     "application_detail": {
+      "headline": "Bewerbung für ",
       "applicant": {
         "header": "Bewerbung für '{{jobTitle}}'",
         "title_prefix": "Bewerbung für"
@@ -235,7 +245,7 @@
       "supervisor": "Betreuer:in:",
       "research_group": "Forschungsgruppe:",
       "location": "Standort:",
-      "view_job_details": "Stellendetails ansehen",
+      "view_job_details": "Zur Stellenbeschreibung",
       "personal_statements": "Persönliche Angaben",
       "personal_information": "Persönliche Informationen",
       "personal_documents": "Persönliche Dokumente",
@@ -246,14 +256,8 @@
       "education": "Ausbildung",
       "applicationDetails": "Bewerbungsdetails",
       "summary": "Zusammenfassung",
-      "buttons": {
-        "back": "Zurück",
-        "next": "Weiter",
-        "prev": "Zurück",
-        "send": "Senden"
-      },
       "confirmDialog": {
-        "header": "Bewerbung abschicken",
+        "header": "Bewerbung absenden",
         "message": "Bist du sicher, dass du deine Bewerbung absenden möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
       },
       "status": {
@@ -299,30 +303,27 @@
         "master": "Master"
       },
       "label": {
+        "gradeUpperLimit": "Höchstmögliche Note",
+        "gradeLowerLimit": "Niedrigste Note zum Bestehen",
         "bachelorDegreeName": "Bachelor-Studiengang",
         "bachelorDegreeUniversity": "Universität des Bachelors",
-        "bachelorGradingScale": "Benotungsskala Bachelor",
         "bachelorGrade": "Bachelor-Abschlussnote",
         "masterDegreeName": "Master-Studiengang",
         "masterDegreeUniversity": "Universität des Masters",
-        "masterGradingScale": "Benotungsskala Master",
         "masterGrade": "Master-Abschlussnote"
       },
       "tooltip": {
         "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
         "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
-        "bachelorGradingScale": "Wähle die Benotungsskala deines Bachelors (derzeit nur deutsche Skala verfügbar).",
+        "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
+        "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterDegreeName": "Gib den Studiengang deines Masters an.",
         "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
-        "masterGradingScale": "Wähle die Benotungsskala deines Masters (derzeit nur deutsche Skala verfügbar).",
+        "masterGradeUpperLimit": "Gib die bestmögliche Note in deinem Master-Notensystem an (z. B. 1,0 in Deutschland).",
+        "masterGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Master-Notensystem an (z. B. 4,0 in Deutschland).",
         "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
-      },
-      "gradingConversionBachelor": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Bachelor-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns.",
-      "gradingConversionMaster": "Bitte trage deine Note im deutschen Notensystem im Feld <em>Master-Abschlussnote</em> ein. Die <a href='https://www.tum.de/en/studies/application/application-info-portal/grade-conversion-formula-for-grades-earned-outside-germany' target='_blank' rel='noopener noreferrer' class='external-link'>Notenumrechnung</a> der TUM hilft dir dabei deine Note umzuwandeln. Bei Problemen wende dich gerne an uns.",
-      "validation": {
-        "invalidGrade": "Bitte gib eine gültige Note zwischen 1.0 und 4.0 ein."
       }
     },
     "applicationPage3": {
@@ -357,7 +358,17 @@
     },
     "applicationPage4": {
       "title": "Übersicht",
-      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst."
+      "message": "Bitte überprüfe deine Eingaben, bevor du die Bewerbung abschickst.",
+      "doctoralRequirements": {
+        "title": "Anforderungen für eine deutsche Doktorandenstelle",
+        "text": "Bitte stelle sicher, dass du dich über die <a class=\"link\" href=\"https://www.gs.tum.de/gs/qualifizierung-karriere/fachuebergreifende-qualifizierung/teilnahmebedingungen/\" target=\"_blank\" rel=\"noopener noreferrer\">Anforderungen für eine deutsche Doktorandenstelle</a> informiert hast.",
+        "confirmationText": "Ich habe mich über die Anforderungen für eine deutsche Doktorandenstelle informiert.",
+        "missingConfirmation": "Bitte bestätige, dass du dich über die Anforderungen für eine deutsche Doktorandenstelle informiert hast.",
+        "toastError": {
+          "summary": "Bestätigung der Doktorandenanforderungen fehlt",
+          "detail": "Bitte bestätige, dass du dich über die Anforderungen für eine deutsche Doktorandenstelle informiert hast, um fortzufahren."
+        }
+      }
     },
     "applicationOverview": {
       "header": "Deine Bewerbungen",
@@ -368,12 +379,6 @@
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
         "closed": "Geschlossen"
-      },
-      "actions": {
-        "view": "Ansehen",
-        "withdraw": "Zurückziehen",
-        "update": "Bearbeiten",
-        "delete": "Löschen"
       },
       "columns": {
         "positionTitle": "Stellentitel",

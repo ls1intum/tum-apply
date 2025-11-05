@@ -4,7 +4,7 @@
   [rounded]="round()"
   [pTooltip]="tooltipText() ?? '' | translate"
   tooltipPosition="top"
-  [style.width]="widthValue()"
+  [style.width]="width()"
 >
   @if (icon() && !iconRight()) {
     <fa-icon [icon]="iconProp()" class="icon left" />

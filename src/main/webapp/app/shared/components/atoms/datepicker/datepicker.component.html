@@ -1,4 +1,4 @@
-<div [class.active]="isCalendarOpen" class="label-top datepicker-container">
+<div [class.active]="isCalendarOpen()" class="label-top datepicker-container">
   <label class="custom-label">
     @if (label() !== undefined) {
       @if (shouldTranslate()) {
@@ -24,19 +24,21 @@
   </label>
   <p-datepicker
     (ngModelChange)="onDateChange($event)"
-    (onHide)="isCalendarOpen = false"
-    (onShow)="isCalendarOpen = true"
+    (onHide)="isCalendarOpen.set(false)"
+    (onShow)="isCalendarOpen.set(true)"
     [(ngModel)]="modelDate"
-    [appendTo]="'body'"
     [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : placeholder()"
     [disabled]="disabled()"
+    [minDate]="effectiveMinDate()"
+    [maxDate]="maxDate()"
     [showButtonBar]="true"
     [style]="{ width: width() }"
     class="custom-datepicker"
-    dateFormat="dd/mm/yy"
+    [dateFormat]="dateFormat()"
     iconDisplay="button"
     inputId="startDate"
     showIcon="true"
+    [inputStyleClass]="'w-full'"
   >
     <ng-template pTemplate="triggericon">
       <fa-icon [icon]="['fas', 'calendar']" />

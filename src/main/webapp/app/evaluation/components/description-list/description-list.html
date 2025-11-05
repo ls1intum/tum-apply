@@ -3,6 +3,16 @@
     <div class="flex justify-between gap-x-8">
       <dt class="text-sm text-muted-foreground">
         {{ item.labelKey | translate }}
+        @if (item.tooltipText) {
+          <fa-icon
+            class="text-[var(--p-primary-color)]"
+            [icon]="['fas', 'circle-info']"
+            [escape]="false"
+            [pTooltip]="item.tooltipText | translate"
+            [autoHide]="false"
+            tooltipPosition="top"
+          />
+        }
       </dt>
       <dd class="text-sm text-right">
         @if (item.value !== null && item.value !== undefined && item.value !== '') {

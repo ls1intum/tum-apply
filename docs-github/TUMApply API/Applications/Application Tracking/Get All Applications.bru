@@ -1,0 +1,16 @@
+meta {
+  name: Get All Applications
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/applications/pages?pageSize=10&pageNumber=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  pageSize: 10
+  pageNumber: 0
+}

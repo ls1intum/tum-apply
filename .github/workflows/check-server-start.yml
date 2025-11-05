@@ -10,14 +10,13 @@ jobs:
     name: Ensure Server Starts Successfully
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    environment: test-server
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: '9.1.0'
 
