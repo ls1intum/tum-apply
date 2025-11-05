@@ -82,15 +82,15 @@
           <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label" jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
+                <span jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
                 <span class="value">{{ job.fieldOfStudies || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="jobDetailPage.labels.researchArea"></span>
+                <span jhiTranslate="jobDetailPage.labels.researchArea"></span>
                 <span class="value">{{ job.researchArea || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="jobDetailPage.labels.workload"></span>
+                <span jhiTranslate="jobDetailPage.labels.workload"></span>
                 @if (job.workload !== '') {
                   <span class="value">{{ job.workload }} <span jhiTranslate="jobDetailPage.units.hoursPerWeek"></span></span>
                 } @else {
@@ -98,7 +98,7 @@
                 }
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="jobDetailPage.labels.contractDuration"></span>
+                <span jhiTranslate="jobDetailPage.labels.contractDuration"></span>
                 @if (job.contractDuration !== '') {
                   <span class="value">{{ job.contractDuration }} <span jhiTranslate="jobDetailPage.units.years"></span></span>
                 } @else {
@@ -106,16 +106,16 @@
                 }
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="jobDetailPage.labels.fundingType"></span>
+                <span jhiTranslate="jobDetailPage.labels.fundingType"></span>
                 <span class="value">{{ job.fundingType || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="jobDetailPage.labels.startDate"></span>
+                <span jhiTranslate="jobDetailPage.labels.startDate"></span>
                 <span class="value">{{ job.startDate || '-' }}</span>
               </div>
               @if (job.endDate) {
                 <div class="info-row">
-                  <span class="label" jhiTranslate="jobDetailPage.labels.applicationEndDate"></span>
+                  <span jhiTranslate="jobDetailPage.labels.applicationEndDate"></span>
                   <span class="value text-danger">{{ job.endDate }}</span>
                 </div>
               }
