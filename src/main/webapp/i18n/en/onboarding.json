@@ -17,7 +17,7 @@
         "label": "Professor Name",
         "placeholder": "e.g. Prof. Dr. Max Mustermann"
       },
-      "notice": "Your request will be sent to the administrators. They will assign you to the research group of the professor you entered and contact you.",
+      "notice": "Please enter the name of the professor you will be working with or supervised by.<br/>Your request will be sent to the administrators. They will assign you to the research group of the professor you entered and contact you.",
       "confirmDialog": {
         "header": "Confirm Request Submission",
         "message": "Your request will be sent to the administrators for review. They will assign you to the research group of the specified professor and then contact you. Would you like to continue?",
