@@ -10,13 +10,15 @@ The **Application Module** enables applicants to create, manage, and submit doct
 
 * `ApplicationService` - orchestrates lifecycle logic, manages state transitions, coordinates with Document and Job modules.
 * `ApplicationRepository` / `ApplicationEntityRepositoryImpl` - persistence with DTO projections, paginated queries (Criteria API), bulk state updates.
-* `Application` - domain entity with relationships to Job, Applicant, CustomFieldAnswer, InternalComment.
+* `Application` - domain entity with relationships to Job, Applicant and InternalComment
 
 **Key Behaviors:**
 
+The `ApplicationState` is marked like this in the following section:
+
 * **Creation:** Validates job availability, checks duplicates, initializes as `SAVED`, returns pre-populated DTO.
 * **Update:** Authorization check, allowed only for `SAVED` state, transactional updates.
-* **Submit:** `SAVED` → `SENT`, sets `appliedAt` timestamp, prevents further edits.
+* **Submit:** `SAVED` → `SENT`, sets 'appliedAt' timestamp, prevents further edits.
 * **Withdraw:** `SENT`/`IN_REVIEW` → `WITHDRAWN`, preserves data for audit.
 * **Delete:** Only for `SAVED` applications, cascade deletes associated entities.
 * **Documents:** Delegates to Document Module, supports multiple types (CV, transcripts, references)
