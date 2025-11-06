@@ -15,6 +15,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,6 +44,7 @@ public class GlobalExceptionHandler {
             new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.OPERATION_NOT_ALLOWED)
         ),
         Map.entry(UploadException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.UPLOAD_FAILED)),
+        Map.entry(AuthorizationDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(EmailVerificationFailedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(AccessDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(UnauthorizedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
@@ -149,6 +151,10 @@ public class GlobalExceptionHandler {
         if (ex instanceof EmailVerificationFailedException evfe) {
             log.info("Handled OTP verification failure - Path: {}", request.getRequestURI());
             return buildErrorResponse(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED, evfe, request.getRequestURI(), null);
+        }
+        if (ex instanceof BadRequestException bre) {
+            log.info("Handled bad request exception - Path: {}", request.getRequestURI());
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST, bre, request.getRequestURI(), null);
         }
         ExceptionMetadata metadata = EXCEPTION_METADATA.getOrDefault(
             ex.getClass(),

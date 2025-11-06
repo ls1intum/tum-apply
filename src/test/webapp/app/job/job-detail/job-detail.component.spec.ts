@@ -225,7 +225,7 @@ describe('JobDetailComponent', () => {
   it('should compute rightActionButtons for non-research-group user', () => {
     const job = { belongsToResearchGroup: false, applicationState: undefined } as JobDetails;
     component.jobDetails.set(job);
-    expect(component.rightActionButtons()?.buttons[0].label).toBe('jobActionButton.apply');
+    expect(component.rightActionButtons()?.buttons[0].label).toBe('button.apply');
   });
 
   it('should compute rightActionButtons for DRAFT and trigger confirm()', () => {
@@ -311,7 +311,7 @@ describe('JobDetailComponent', () => {
 
   it('should compute noData() value after language change', () => {
     const spy = vi.spyOn(translate, 'instant').mockReturnValue('No data');
-    translate.onLangChange.next({ lang: 'de', translations: {}, defaultLang: '', scope: null } as LangChangeEvent);
+    translate.use('de');
     const result = component.noData();
     expect(result).toBe('No data');
     expect(spy).toHaveBeenCalledWith('jobDetailPage.noData');
@@ -360,7 +360,7 @@ describe('JobDetailComponent', () => {
     const spy = vi.spyOn(component, 'onEditJob');
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
-    const btn = component.rightActionButtons()?.buttons.find(b => b.label === 'jobActionButton.edit');
+    const btn = component.rightActionButtons()?.buttons.find(b => b.label === 'button.edit');
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
