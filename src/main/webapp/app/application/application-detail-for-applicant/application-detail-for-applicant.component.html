@@ -11,9 +11,18 @@
           ></h1>
           <jhi-application-state-for-applicants [state]="application.applicationState" />
         </div>
-        @if (['SAVED'].includes(application.applicationState)) {
-          <jhi-button [label]="'entity.applicationOverview.actions.update'" [shouldTranslate]="true" (click)="onUpdateApplication()" />
-        }
+        <div class="flex gap-2">
+          <jhi-button
+            [label]="'entity.action.pdf'"
+            [shouldTranslate]="true"
+            severity="secondary"
+            [variant]="'outlined'"
+            (click)="onDownloadPDF()"
+          />
+          @if (['SAVED'].includes(application.applicationState)) {
+            <jhi-button [label]="'button.edit'" icon="pencil" [shouldTranslate]="true" (click)="onUpdateApplication()" />
+          }
+        </div>
       </div>
 
       <!-- Position Overview Section -->
@@ -30,18 +39,18 @@
         </div>
         <div class="overview-content">
           <div class="info-item">
-            <fa-icon [icon]="['fas', 'user']" class="icon" />
-            <span class="label" jhiTranslate="entity.application_detail.supervisor"></span>
+            <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
+            <span jhiTranslate="entity.application_detail.supervisor"></span>
             <span class="value">{{ application.supervisingProfessorName || '-' }}</span>
           </div>
           <div class="info-item">
-            <fa-icon [icon]="['fas', 'flask']" class="icon" />
-            <span class="label" jhiTranslate="entity.application_detail.research_group"></span>
+            <fa-icon [icon]="['fas', 'research-group']" class="icon" />
+            <span jhiTranslate="entity.application_detail.research_group"></span>
             <span class="value">{{ application.researchGroup || '-' }}</span>
           </div>
           <div class="info-item">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-            <span class="label" jhiTranslate="entity.application_detail.location"></span>
+            <span jhiTranslate="entity.application_detail.location"></span>
             <span class="value">{{ application.jobLocation || '-' }}</span>
           </div>
         </div>
@@ -101,19 +110,19 @@
           <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.preferred_language"></span>
+                <span jhiTranslate="entity.detail_card.preferred_language"></span>
                 <span class="value">{{ application.applicant?.user?.preferredLanguage || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.desired_start_date"></span>
+                <span jhiTranslate="entity.detail_card.desired_start_date"></span>
                 <span class="value">{{ application.desiredDate || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.gender"></span>
+                <span jhiTranslate="entity.detail_card.gender"></span>
                 <span class="value">{{ application.applicant?.user?.gender || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.nationality"></span>
+                <span jhiTranslate="entity.detail_card.nationality"></span>
                 <span class="value">{{ application.applicant?.user?.nationality || '-' }}</span>
               </div>
             </div>
@@ -142,29 +151,29 @@
 
         <div class="section-detail-card">
           <div class="section-card-header">
-            <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
+            <fa-icon [icon]="['fas', 'graduation-cap']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="entity.detail_card.bachelor_info"></h3>
           </div>
           <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.name"></span>
+                <span jhiTranslate="entity.detail_card.name"></span>
                 <span class="value">{{ application.applicant?.bachelorDegreeName || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.university"></span>
+                <span jhiTranslate="entity.detail_card.university"></span>
                 <span class="value">{{ application.applicant?.bachelorUniversity || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.upper_passing_limit"></span>
+                <span jhiTranslate="entity.detail_card.upper_passing_limit"></span>
                 <span class="value">{{ application.applicant?.bachelorGradeUpperLimit || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.lower_passing_limit"></span>
+                <span jhiTranslate="entity.detail_card.lower_passing_limit"></span>
                 <span class="value">{{ application.applicant?.bachelorGradeLowerLimit || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.grade"></span>
+                <span jhiTranslate="entity.detail_card.grade"></span>
                 <span class="value">{{ application.applicant?.bachelorGrade || '-' }}</span>
               </div>
             </div>
@@ -173,29 +182,29 @@
 
         <div class="section-detail-card">
           <div class="section-card-header">
-            <fa-icon [icon]="['fas', 'building-columns']" class="icon" />
+            <fa-icon [icon]="['fas', 'graduation-cap']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="entity.detail_card.master_info"></h3>
           </div>
           <div class="section-card-body">
             <div class="info-list">
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.name"></span>
+                <span jhiTranslate="entity.detail_card.name"></span>
                 <span class="value">{{ application.applicant?.masterDegreeName || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.university"></span>
+                <span jhiTranslate="entity.detail_card.university"></span>
                 <span class="value">{{ application.applicant?.masterUniversity || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.upper_passing_limit"></span>
+                <span jhiTranslate="entity.detail_card.upper_passing_limit"></span>
                 <span class="value">{{ application.applicant?.masterGradeUpperLimit || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.lower_passing_limit"></span>
+                <span jhiTranslate="entity.detail_card.lower_passing_limit"></span>
                 <span class="value">{{ application.applicant?.masterGradeLowerLimit || '-' }}</span>
               </div>
               <div class="info-row">
-                <span class="label" jhiTranslate="entity.detail_card.grade"></span>
+                <span jhiTranslate="entity.detail_card.grade"></span>
                 <span class="value">{{ application.applicant?.masterGrade || '-' }}</span>
               </div>
             </div>
@@ -291,7 +300,8 @@
           <!-- Left-aligned Back button -->
           <div class="left-buttons">
             <jhi-button
-              [label]="'jobActionButton.back'"
+              icon="arrow-left"
+              [label]="'button.back'"
               [shouldTranslate]="true"
               severity="info"
               [variant]="'outlined'"
@@ -303,10 +313,10 @@
           <div class="right-buttons">
             @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
               <jhi-confirm-dialog
-                [label]="'entity.applicationOverview.actions.withdraw' | translate"
+                [label]="'button.withdraw' | translate"
+                [confirmIcon]="'withdraw'"
                 [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
                 [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-                confirmIcon="file-circle-minus"
                 (confirmed)="onWithdrawApplication()"
                 severity="danger"
                 variant="outlined"
@@ -315,10 +325,10 @@
 
             @if (['SAVED'].includes(application.applicationState)) {
               <jhi-confirm-dialog
-                [label]="'entity.applicationOverview.actions.delete' | translate"
+                [label]="'button.delete' | translate"
+                [confirmIcon]="'trash'"
                 [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
                 [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
-                confirmIcon="trash"
                 (confirmed)="onDeleteApplication()"
                 severity="danger"
               />
