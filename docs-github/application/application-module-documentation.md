@@ -57,6 +57,7 @@ The `ApplicationState` is marked like this in the following section:
 
 * `ApplicationDetailForApplicantComponent`
 ![Application Detail Page](images/application-detail-1.png)
+![Application Detail Page](images/application-detail-2.png)
   * Dual modes: Preview (in-workflow) and Standalone (fetched data)
   * Sections: Position Overview, Personal Statements, Personal Info, Documents
   * State-conditional actions: Update (`SAVED`), Withdraw (`SENT`/`IN_REVIEW`), Delete (`SAVED`)
