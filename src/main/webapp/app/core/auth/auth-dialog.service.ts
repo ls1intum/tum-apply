@@ -53,7 +53,7 @@ export class AuthDialogService {
     this.orchestrator.open(opts);
 
     // Open new dialog
-    const ref = this.dialogService.open(AuthCardComponent, {
+    const ref: DynamicDialogRef = this.dialogService.open(AuthCardComponent, {
       style: { border: 'none', overflow: 'auto', background: 'transparent', boxShadow: 'none', minWidth: '25rem' },
       contentStyle: { padding: '0' },
       modal: true,
@@ -78,10 +78,8 @@ export class AuthDialogService {
       { injector: this.injector },
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const onCloseSig = toSignal<unknown>(ref!.onClose, { injector: this.injector, initialValue: null });
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const onDestroySig = toSignal<unknown>(ref!.onDestroy, { injector: this.injector, initialValue: null });
+    const onCloseSig = toSignal<unknown>(ref.onClose, { injector: this.injector, initialValue: null });
+    const onDestroySig = toSignal<unknown>(ref.onDestroy, { injector: this.injector, initialValue: null });
 
     this.onRefEventsEffect = effect(
       () => {
