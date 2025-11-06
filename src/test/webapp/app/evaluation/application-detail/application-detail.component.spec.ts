@@ -14,6 +14,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
 import { provideRouterMock } from '../../../util/router.mock';
 import { ToastService } from 'app/service/toast-service';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
 function makeDetailApp(id: string, state: string = 'SENT'): ApplicationEvaluationDetailDTO {
   return {
@@ -60,7 +61,8 @@ describe('ApplicationDetailComponent', () => {
       getDocumentDictionaryIds: vi.fn().mockReturnValue(of(makeDocumentIds())),
     };
 
-    q$ = new BehaviorSubject(convertToParamMap({}));
+    const mockActivatedRoute = createActivatedRouteMock({}, {});
+    q$ = mockActivatedRoute.queryParamMapSubject;
 
     await TestBed.configureTestingModule({
       imports: [ApplicationDetailComponent],
@@ -68,13 +70,7 @@ describe('ApplicationDetailComponent', () => {
         provideRouterMock(),
         { provide: ApplicationEvaluationResourceApiService, useValue: evaluationApi },
         { provide: ApplicationResourceApiService, useValue: applicationApi },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParamMap: q$.asObservable(),
-            snapshot: { queryParamMap: convertToParamMap({}) },
-          },
-        },
+        provideActivatedRouteMock(mockActivatedRoute),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
         provideToastServiceMock(),
@@ -279,7 +275,14 @@ describe('ApplicationDetailComponent', () => {
     });
 
     it('should call loadNext when currentIndex + half < totalRecords', () => {
-      const spy = vi.spyOn(component as unknown as { loadNext: (index: number) => Promise<void> }, 'loadNext').mockResolvedValue(undefined);
+      const spy = vi
+        .spyOn(
+          component as unknown as {
+            loadNext: (index: number) => Promise<void>;
+          },
+          'loadNext',
+        )
+        .mockResolvedValue(undefined);
 
       component.applications.set([makeDetailApp('1'), makeDetailApp('2'), makeDetailApp('3')]);
       component.totalRecords.set(10);
@@ -291,7 +294,14 @@ describe('ApplicationDetailComponent', () => {
     });
 
     it('should call loadPrev when currentIndex - half >= 0', () => {
-      const spy = vi.spyOn(component as unknown as { loadPrev: (index: number) => Promise<void> }, 'loadPrev').mockResolvedValue(undefined);
+      const spy = vi
+        .spyOn(
+          component as unknown as {
+            loadPrev: (index: number) => Promise<void>;
+          },
+          'loadPrev',
+        )
+        .mockResolvedValue(undefined);
 
       component.applications.set([
         makeDetailApp('0'),
@@ -322,7 +332,11 @@ describe('ApplicationDetailComponent', () => {
     it('should show toast error when loadPage throws', async () => {
       evaluationApi.getApplicationsDetails.mockReturnValueOnce(throwError(() => new Error('fail')));
 
-      const result = await (component as unknown as { loadPage: (page: number, size: number) => Promise<unknown> }).loadPage(0, 1);
+      const result = await (
+        component as unknown as {
+          loadPage: (page: number, size: number) => Promise<unknown>;
+        }
+      ).loadPage(0, 1);
 
       expect(result).toBeUndefined();
       expect(toastService.showErrorKey).toHaveBeenCalledWith('evaluation.errors.loadApplications');
