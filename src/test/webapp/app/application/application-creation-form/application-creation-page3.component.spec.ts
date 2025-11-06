@@ -146,7 +146,7 @@ describe('ApplicationPage3Component', () => {
   });
 
   describe('Data Normalization', () => {
-    it('should normalize undefined values to empty strings in data signal', () => {
+    it('should normalize undefined values to empty strings in data signal', async () => {
       // Set initial data and mark as initialized
       comp.data.set({
         experiences: 'Old',
@@ -165,7 +165,8 @@ describe('ApplicationPage3Component', () => {
         desiredStartDate: undefined,
       });
 
-      // Wait for effect to run (simulate debounce time)
+      // Wait for debounce and effect to run
+      await new Promise(resolve => setTimeout(resolve, 150));
       fixture.detectChanges();
 
       // Verify data signal normalized undefined to empty strings
