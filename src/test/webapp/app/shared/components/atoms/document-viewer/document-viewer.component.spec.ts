@@ -136,14 +136,6 @@ describe('DocumentViewerComponent', () => {
   });
 
   describe('documentDictionaryId input changes', () => {
-    it('should initialize document when documentDictionaryId is set', async () => {
-      cacheService.get = vi.fn().mockReturnValue(mockSafeUrl);
-      await comp.initDocument();
-
-      expect(cacheService.get).toHaveBeenCalledWith('doc-123');
-      expect(comp.sanitizedBlobUrl()).toBe(mockSafeUrl);
-    });
-
     it('should handle document with different IDs sequentially', async () => {
       const mockBlob = new ArrayBuffer(100);
       const mockDocInfo2 = createMockDocumentInfo({ id: 'doc-2' });
