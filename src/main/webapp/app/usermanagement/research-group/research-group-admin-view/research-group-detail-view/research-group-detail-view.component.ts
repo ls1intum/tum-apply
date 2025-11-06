@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -17,7 +17,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './research-group-detail-view.component.html',
   styleUrl: './research-group-detail-view.component.scss',
 })
-export class ResearchGroupDetailViewComponent {
+export class ResearchGroupDetailViewComponent implements OnInit {
   form = new FormGroup({
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
@@ -41,7 +41,7 @@ export class ResearchGroupDetailViewComponent {
   private readonly config = inject(DynamicDialogConfig);
   private toastService = inject(ToastService);
 
-  constructor() {
+  ngOnInit(): void {
     void this.init();
   }
 
