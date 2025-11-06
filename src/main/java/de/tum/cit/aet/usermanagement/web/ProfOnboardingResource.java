@@ -1,9 +1,8 @@
 package de.tum.cit.aet.usermanagement.web;
 
-import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.security.annotations.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ProfOnboardingDTO;
 import de.tum.cit.aet.usermanagement.service.UserSettingService;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,41 +20,36 @@ public class ProfOnboardingResource {
     private static final String ONBOARDED = "onboarded";
 
     private final UserSettingService userSettingService;
-    private final CurrentUserService currentUserService;
 
     /**
      * Check whether the onboarding dialog should be shown for the current user.
      *
      * @return ProfOnboardingDTO containing the show flag
      */
+    @Applicant
     @GetMapping("/prof-onboarding")
     public ProfOnboardingDTO check() {
-        boolean hasProfessorRights = currentUserService.isProfessor();
-        if (hasProfessorRights) {
-            return new ProfOnboardingDTO(false);
-        }
-        UUID userId = currentUserService.getUserId();
-        boolean onboarded = userSettingService.getBool(userId, ONBOARDED);
+        boolean onboarded = userSettingService.getBool(ONBOARDED);
         return new ProfOnboardingDTO(!onboarded);
     }
 
     /**
      * Mark the current user as onboarded (either applicant confirmed or professor email sent).
      */
+    @Applicant
     @PostMapping("/prof-onboarding/confirm")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void confirmOnboarding() {
-        UUID userId = currentUserService.getUserId();
-        userSettingService.setBool(userId, ONBOARDED, true);
+        userSettingService.setBool(ONBOARDED, true);
     }
 
     /**
      * Mark the current user as not yet onboarded (remind later).
      */
+    @Applicant
     @PostMapping("/prof-onboarding/remind")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remindLater() {
-        UUID userId = currentUserService.getUserId();
-        userSettingService.setBool(userId, ONBOARDED, false);
+        userSettingService.setBool(ONBOARDED, false);
     }
 }
