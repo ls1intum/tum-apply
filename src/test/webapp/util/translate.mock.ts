@@ -3,12 +3,11 @@ import {
   TranslateService,
   LangChangeEvent,
   TranslationChangeEvent,
-  DefaultLangChangeEvent,
+  FallbackLangChangeEvent,
   InterpolatableTranslationObject,
 } from '@ngx-translate/core';
-import { EventEmitter, type Provider } from '@angular/core';
-import { of } from 'rxjs';
-import { vi } from 'vitest';
+import { type Provider } from '@angular/core';
+import { of, Subject } from 'rxjs';
 
 export function createTranslateServiceMock(): Pick<
   TranslateService,
@@ -19,13 +18,15 @@ export function createTranslateServiceMock(): Pick<
   | 'onTranslationChange'
   | 'onLangChange'
   | 'onDefaultLangChange'
+  | 'onFallbackLangChange'
   | 'currentLang'
   | 'use'
   | 'setDefaultLang'
+  | 'setFallbackLang'
 > {
-  const onTranslationChange = new EventEmitter<TranslationChangeEvent>();
-  const onLangChange = new EventEmitter<LangChangeEvent>();
-  const onDefaultLangChange = new EventEmitter<DefaultLangChangeEvent>();
+  const onTranslationChangeSubject = new Subject<TranslationChangeEvent>();
+  const onLangChangeSubject = new Subject<LangChangeEvent>();
+  const onFallbackLangChangeSubject = new Subject<FallbackLangChangeEvent>();
 
   const instant: TranslateService['instant'] = key => (Array.isArray(key) ? key.map(k => String(k)) : String(key));
 
@@ -43,16 +44,24 @@ export function createTranslateServiceMock(): Pick<
     get,
     getParsedResult,
     stream,
-    onTranslationChange,
-    onLangChange,
-    onDefaultLangChange,
+    onTranslationChange: onTranslationChangeSubject.asObservable(),
+    onLangChange: onLangChangeSubject.asObservable(),
+    onDefaultLangChange: onFallbackLangChangeSubject.asObservable(), // Deprecated, aliased to onFallbackLangChange
+    onFallbackLangChange: onFallbackLangChangeSubject.asObservable(),
     currentLang: 'en',
     use: (_lang: string) => {
       mock.currentLang = _lang;
-      onLangChange.emit({ lang: _lang, translations: emptyTranslations });
+      onLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });
       return of(emptyTranslations);
     },
-    setDefaultLang: (_lang: string) => of(emptyTranslations),
+    setDefaultLang: (_lang: string) => {
+      onFallbackLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });
+      return of(emptyTranslations);
+    },
+    setFallbackLang: (_lang: string) => {
+      onFallbackLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });
+      return of(emptyTranslations);
+    },
   };
 
   return mock;
