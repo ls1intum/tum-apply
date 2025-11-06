@@ -152,6 +152,10 @@ public class GlobalExceptionHandler {
             log.info("Handled OTP verification failure - Path: {}", request.getRequestURI());
             return buildErrorResponse(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED, evfe, request.getRequestURI(), null);
         }
+        if (ex instanceof BadRequestException bre) {
+            log.info("Handled bad request exception - Path: {}", request.getRequestURI());
+            return buildErrorResponse(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST, bre, request.getRequestURI(), null);
+        }
         ExceptionMetadata metadata = EXCEPTION_METADATA.getOrDefault(
             ex.getClass(),
             new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR)

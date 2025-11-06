@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
@@ -33,7 +34,6 @@ import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -71,7 +71,7 @@ public class ApplicationEvaluationService {
      * @param acceptDTO     the acceptance details
      * @param reviewingUser the user performing the review
      */
-    public void acceptApplication(@NonNull UUID applicationId, @NonNull AcceptDTO acceptDTO, @NonNull User reviewingUser) {
+    public void acceptApplication(UUID applicationId, AcceptDTO acceptDTO, User reviewingUser) {
         Application application = applicationEvaluationRepository
             .findById(applicationId)
             .orElseThrow(() -> new EntityNotFoundException("Application not found"));
@@ -79,7 +79,7 @@ public class ApplicationEvaluationService {
         currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
         if (!REVIEW_STATES.contains(application.getState())) {
-            throw new IllegalArgumentException("Application can not be reviewed");
+            throw new BadRequestException("Application can not be reviewed");
         }
 
         application.setState(ApplicationState.ACCEPTED);
@@ -116,7 +116,7 @@ public class ApplicationEvaluationService {
      * @param rejectDTO     the rejection details
      * @param reviewingUser the user performing the review
      */
-    public void rejectApplication(@NonNull UUID applicationId, @NonNull RejectDTO rejectDTO, @NonNull User reviewingUser) {
+    public void rejectApplication(UUID applicationId, RejectDTO rejectDTO, User reviewingUser) {
         Application application = applicationEvaluationRepository
             .findById(applicationId)
             .orElseThrow(() -> new EntityNotFoundException("Application not found"));
@@ -124,7 +124,7 @@ public class ApplicationEvaluationService {
         currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
         if (!REVIEW_STATES.contains(application.getState())) {
-            throw new IllegalArgumentException("Application can not be reviewed");
+            throw new BadRequestException("Application can not be reviewed");
         }
 
         application.setState(ApplicationState.REJECTED);
@@ -211,10 +211,6 @@ public class ApplicationEvaluationService {
         String searchQuery = filterDTO.getSearch();
 
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
-
-        if (windowSize == null || windowSize <= 0 || (windowSize % 2) != 1) {
-            throw new IllegalArgumentException("Window size must be a positive and odd integer");
-        }
 
         long idx = applicationEvaluationRepository.findIndexOfApplication(
             applicationId,
@@ -328,9 +324,7 @@ public class ApplicationEvaluationService {
 
                 // append file extension if present (e.g., "cv.pdf")
                 String ext = documentService.resolveFileExtension(doc).getExtension();
-                if (ext != null && !ext.isBlank()) {
-                    entryName += "." + ext;
-                }
+                entryName += "." + ext;
 
                 ZipEntry entry = new ZipEntry(entryName);
                 zos.putNextEntry(entry);
@@ -361,7 +355,7 @@ public class ApplicationEvaluationService {
             cleaned = cleaned.substring(0, 120);
         }
 
-        return cleaned.isEmpty() ? "file" : cleaned;
+        return cleaned;
     }
 
     /**

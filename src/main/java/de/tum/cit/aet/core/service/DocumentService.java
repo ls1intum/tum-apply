@@ -156,7 +156,7 @@ public class DocumentService {
      */
     private Resource load(Document document) throws IOException {
         Path path = Paths.get(document.getPath()).normalize();
-        if (!path.startsWith(root)) {
+        if (!path.startsWith(root.toAbsolutePath().normalize())) {
             throw new IllegalStateException("Stored path lies outside storage root: " + path);
         }
 
