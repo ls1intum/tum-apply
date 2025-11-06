@@ -1,15 +1,15 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { DividerModule } from 'primeng/divider';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { ToastService } from 'app/service/toast-service';
-import { firstValueFrom } from 'rxjs';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { DividerModule } from 'primeng/divider';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
@@ -35,6 +35,7 @@ export class ResearchGroupDetailViewComponent {
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
 
   isSaving = signal<boolean>(false);
+  isLoading = signal<boolean>(true);
 
   readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
   private readonly config = inject(DynamicDialogConfig);
@@ -84,17 +85,20 @@ export class ResearchGroupDetailViewComponent {
   }
 
   private async init(): Promise<void> {
-    try {
-      const researchGroupId = this.researchGroupId();
-      if (researchGroupId == null || researchGroupId.trim() === '') {
-        // No research group ID available, leave form empty
-        return;
-      }
+    const researchGroupId = this.researchGroupId();
+    if (researchGroupId == null || researchGroupId.trim() === '') {
+      // No research group ID available, leave form empty
+      this.isLoading.set(false);
+      return;
+    }
 
+    try {
       const researchGroup = await firstValueFrom(this.ResearchGroupService.getResearchGroup(researchGroupId));
       this.populateFormData(researchGroup);
     } catch {
       this.toastService.showErrorKey('researchGroup.detailView.errors.view');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
