@@ -49,7 +49,9 @@ The `ApplicationState` is marked like this in the following section:
   ![Step 1](images/application-form-1.png) 
   ![Step 2](images/application-form-2.png) 
   ![Step 3](images/application-form-3-1.png) 
+  ![Step 3_2](images/application-form-3-2.png) 
   ![Step 4](images/application-form-4-1.png)
+  ![Step 4_2](images/application-form-4-2.png)
   * Auto-save with 500ms debounce, visual feedback (`saving`, `saved`, `error`)
   * Uses `ProgressStepperComponent` for navigation
 
