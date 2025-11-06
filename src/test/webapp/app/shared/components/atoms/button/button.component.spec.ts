@@ -107,7 +107,7 @@ describe('ButtonComponent', () => {
     const fixture = createButtonFixture({ size: 'sm' });
 
     const buttonEl: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-    expect(Array.from(buttonEl.classList)).toContain('rounded-full');
+    expect(Array.from(buttonEl.classList)).toContain('rounded-2xl');
   });
 
   it('should show badge if numberOfFavorites is set', () => {
