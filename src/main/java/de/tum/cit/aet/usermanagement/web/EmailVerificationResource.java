@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.util.HttpUtils;
 import de.tum.cit.aet.usermanagement.service.EmailVerificationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ public class EmailVerificationResource {
      * @param request the HTTP servlet request, used to extract the client IP address
      * @return HTTP 202 Accepted if the request to send a code was processed
      */
+    @Public
     @PostMapping("/send-code")
     public ResponseEntity<Void> send(@Valid @RequestBody SendCodeRequest body, HttpServletRequest request) {
         String email = body.email();
