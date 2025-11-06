@@ -45,7 +45,6 @@ env:
 
 jobs:
   server-tests:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -93,7 +92,7 @@ jobs:
           ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
       - name: Upload JUnit Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: JUnit Test Results
           path: build/test-results/test/*.xml
@@ -119,7 +118,7 @@ jobs:
       #  run: bash supporting_scripts/extract_number_of_server_starts.sh
       - name: Upload Server Test Coverage Report
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Coverage Report Server Tests
           path: build/reports/jacoco/test/html/
@@ -153,10 +152,7 @@ jobs:
             Open the downloaded index.html file in your browser to inspect the coverage details.
             ```
 
-
-
   server-style:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -184,7 +180,6 @@ jobs:
           reporter: java-junit
 
   client-tests:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -194,7 +189,7 @@ jobs:
       - name: remove project-wide node options set in .npmrc just for this test
         run: rm .npmrc || true
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
@@ -206,7 +201,7 @@ jobs:
         run: npm run test:ci
       - name: Upload Client Test Coverage Report
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Coverage Report Client Tests
           path: build/test-results/lcov-report/
@@ -241,7 +236,6 @@ jobs:
             ```
 
   client-tests-selected:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -249,7 +243,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
@@ -266,7 +260,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
@@ -279,13 +273,12 @@ jobs:
         if: success() || failure()
 
   client-compilation:
-    environment: test-server
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
