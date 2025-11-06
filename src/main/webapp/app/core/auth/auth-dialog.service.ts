@@ -53,14 +53,14 @@ export class AuthDialogService {
     this.orchestrator.open(opts);
 
     // Open new dialog
-    const ref: DynamicDialogRef = this.dialogService.open(AuthCardComponent, {
+    const ref = this.dialogService.open(AuthCardComponent, {
       style: { border: 'none', overflow: 'auto', background: 'transparent', boxShadow: 'none', minWidth: '25rem' },
       contentStyle: { padding: '0' },
       modal: true,
       dismissableMask: true,
       closeOnEscape: true,
       showHeader: false,
-    });
+    }) as DynamicDialogRef;
 
     this.ref = ref;
 
