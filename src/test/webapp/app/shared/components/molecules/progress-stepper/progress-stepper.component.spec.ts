@@ -104,106 +104,113 @@ describe('ProgressStepperComponent', () => {
     component = stepperDebugElement.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(hostComponent).toBeTruthy();
+  describe('Component Initialization', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should initialize with step 1', () => {
+      expect(component.currentStep()).toBe(1);
+    });
+
+    it('should render the correct step content', () => {
+      const compiled = fixture.nativeElement;
+      expect(compiled.querySelector('.step-1-content')).toBeTruthy();
+      expect(compiled.querySelector('.step-1-content')?.textContent).toContain('Step 1 Content');
+    });
   });
 
-  it('should initialize with step 1', () => {
-    expect(component.currentStep()).toBe(1);
+  describe('Navigation', () => {
+    it('should navigate to next step', () => {
+      component.goToStep(2);
+      fixture.detectChanges();
+
+      expect(component.currentStep()).toBe(2);
+
+      const compiled = fixture.nativeElement;
+      expect(compiled.querySelector('.step-2-content')).toBeTruthy();
+    });
+
+    it('should navigate to previous step', () => {
+      component.goToStep(2);
+      fixture.detectChanges();
+      expect(component.currentStep()).toBe(2);
+
+      component.goToStep(1);
+      fixture.detectChanges();
+      expect(component.currentStep()).toBe(1);
+    });
+
+    it('should not navigate below step 1', () => {
+      component.goToStep(0);
+      expect(component.currentStep()).toBe(1);
+    });
+
+    it('should not navigate beyond available steps', () => {
+      component.goToStep(999);
+      expect(component.currentStep()).toBe(1);
+    });
   });
 
-  it('should render the correct step content', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.step-1-content')).toBeTruthy();
-    expect(compiled.querySelector('.step-1-content')?.textContent).toContain('Step 1 Content');
+  describe('Template Rendering', () => {
+    it('should render status template when provided', () => {
+      component.goToStep(2);
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement;
+      expect(compiled.querySelector('.status')).toBeTruthy();
+    });
   });
 
-  it('should navigate to next step', () => {
-    component.goToStep(2);
-    fixture.detectChanges();
+  describe('Button Group Functionality', () => {
+    it('should build button group data correctly', () => {
+      const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[0].buttonGroupNext, 'next', 1);
 
-    expect(component.currentStep()).toBe(2);
+      expect(buttonGroupData.direction).toBe('horizontal');
+      expect(buttonGroupData.buttons).toHaveLength(1);
+      expect(buttonGroupData.buttons[0].label).toBe('Next');
+    });
 
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.step-2-content')).toBeTruthy();
-  });
+    it('should call button onClick and change panel when changePanel is true', () => {
+      const nextButton = hostComponent.steps[0].buttonGroupNext[0];
+      const onClickSpy = vi.mocked(nextButton.onClick);
 
-  it('should navigate to previous step', () => {
-    component.goToStep(2);
-    fixture.detectChanges();
-    expect(component.currentStep()).toBe(2);
+      const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[0].buttonGroupNext, 'next', 1);
 
-    component.goToStep(1);
-    fixture.detectChanges();
-    expect(component.currentStep()).toBe(1);
-  });
+      buttonGroupData.buttons[0].onClick();
 
-  it('should not navigate below step 1', () => {
-    component.goToStep(0);
-    expect(component.currentStep()).toBe(1);
-  });
+      expect(onClickSpy).toHaveBeenCalled();
+      expect(component.currentStep()).toBe(2);
+    });
 
-  it('should not navigate beyond available steps', () => {
-    component.goToStep(999);
-    expect(component.currentStep()).toBe(1);
-  });
+    it('should call button onClick but not change panel when changePanel is false', () => {
+      component.goToStep(2);
+      const submitButton = hostComponent.steps[1].buttonGroupNext[0];
+      const onClickSpy = vi.mocked(submitButton.onClick);
 
-  it('should render status template when provided', () => {
-    component.goToStep(2);
-    fixture.detectChanges();
+      const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[1].buttonGroupNext, 'next', 2);
 
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.status')).toBeTruthy();
-  });
+      buttonGroupData.buttons[0].onClick();
 
-  it('should call button onClick and change panel when changePanel is true', () => {
-    const nextButton = hostComponent.steps[0].buttonGroupNext[0];
-    const onClickSpy = nextButton.onClick as any;
+      expect(onClickSpy).toHaveBeenCalled();
+      expect(component.currentStep()).toBe(2); // Should stay on step 2
+    });
 
-    const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[0].buttonGroupNext, 'next', 1);
+    it('should navigate to previous step when prev button with changePanel is clicked', () => {
+      // First go to step 2
+      component.goToStep(2);
+      fixture.detectChanges();
+      expect(component.currentStep()).toBe(2);
 
-    buttonGroupData.buttons[0].onClick();
+      const prevButton = hostComponent.steps[1].buttonGroupPrev[0];
+      const onClickSpy = vi.mocked(prevButton.onClick);
 
-    expect(onClickSpy).toHaveBeenCalled();
-    expect(component.currentStep()).toBe(2);
-  });
+      const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[1].buttonGroupPrev, 'prev', 2);
 
-  it('should call button onClick but not change panel when changePanel is false', () => {
-    component.goToStep(2);
-    const submitButton = hostComponent.steps[1].buttonGroupNext[0];
-    const onClickSpy = submitButton.onClick as any;
+      buttonGroupData.buttons[0].onClick();
 
-    const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[1].buttonGroupNext, 'next', 2);
-
-    buttonGroupData.buttons[0].onClick();
-
-    expect(onClickSpy).toHaveBeenCalled();
-    expect(component.currentStep()).toBe(2); // Should stay on step 2
-  });
-
-  it('should build button group data correctly', () => {
-    const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[0].buttonGroupNext, 'next', 1);
-
-    expect(buttonGroupData.direction).toBe('horizontal');
-    expect(buttonGroupData.buttons).toHaveLength(1);
-    expect(buttonGroupData.buttons[0].label).toBe('Next');
-  });
-
-  it('should navigate to previous step when prev button with changePanel is clicked', () => {
-    // First go to step 2
-    component.goToStep(2);
-    fixture.detectChanges();
-    expect(component.currentStep()).toBe(2);
-
-    const prevButton = hostComponent.steps[1].buttonGroupPrev[0];
-    const onClickSpy = prevButton.onClick as any;
-
-    const buttonGroupData = component.buildButtonGroupData(hostComponent.steps[1].buttonGroupPrev, 'prev', 2);
-
-    buttonGroupData.buttons[0].onClick();
-
-    expect(onClickSpy).toHaveBeenCalled();
-    expect(component.currentStep()).toBe(1); // Should go back to step 1
+      expect(onClickSpy).toHaveBeenCalled();
+      expect(component.currentStep()).toBe(1); // Should go back to step 1
+    });
   });
 });
