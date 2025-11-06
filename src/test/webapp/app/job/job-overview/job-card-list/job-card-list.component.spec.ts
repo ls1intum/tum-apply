@@ -301,7 +301,7 @@ describe('JobCardListComponent', () => {
 
     // switch to German
     const translate = TestBed.inject(TranslateService) as Partial<TranslateService & { currentLang?: string }>;
-    translate.onLangChange?.next({ lang: 'de', translations: {} });
+    (translate as TranslateService).use('de');
     fixture.detectChanges();
 
     cardDE = fixture.debugElement.query(By.directive(JobCardComponent));
