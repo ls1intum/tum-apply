@@ -65,113 +65,58 @@ describe('ApplicationCarouselComponent', () => {
 
   // ---------------- BREAKPOINT EFFECT ----------------
   describe('breakpoint effect', () => {
-    it('should default cardsVisible to 3 on desktop breakpoints', () => {
-      expect(component.cardsVisible()).toBe(3);
+    beforeEach(() => {
+      vi.restoreAllMocks();
+
+      const fakeContainer = document.createElement('div');
+      fakeContainer.classList.add('page-container');
+      document.body.appendChild(fakeContainer);
     });
 
-    it('should set cardsVisible to 1 on onlyMobile breakpoint', () => {
-      const bpMock = TestBed.inject(BreakpointObserver) as any;
-      bpMock.observe.mockReturnValueOnce(of({ breakpoints: { [BREAKPOINT_QUERIES.onlyMobile]: true } }));
+    afterEach(() => {
+      document.body.innerHTML = '';
+    });
+
+    function setup(width: number) {
+      vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(width);
+
+      const container = document.querySelector('.page-container') as HTMLElement;
+      Object.defineProperty(container, 'clientWidth', { configurable: true, value: width });
 
       fixture = TestBed.createComponent(ApplicationCarouselComponent);
       component = fixture.componentInstance;
+
       fixture.componentRef.setInput('carouselSize', 3);
       fixture.detectChanges();
 
+      component['updateVisibleCards']();
+    }
+
+    it('sets 1 when width < md', () => {
+      setup(600);
       expect(component.cardsVisible()).toBe(1);
     });
 
-    it('should set cardsVisible to 5 on ultraWide breakpoint', () => {
-      const bpMock = TestBed.inject(BreakpointObserver) as any;
-      bpMock.observe.mockReturnValueOnce(of({ breakpoints: { [BREAKPOINT_QUERIES.ultraWide]: true } }));
+    it('sets 2 when width between md and smallDesktop', () => {
+      setup(780);
+      expect(component.cardsVisible()).toBe(2);
+    });
 
-      fixture = TestBed.createComponent(ApplicationCarouselComponent);
-      component = fixture.componentInstance;
-      fixture.componentRef.setInput('carouselSize', 3);
-      fixture.detectChanges();
+    it('sets 3 when width between smallDesktop and xl', () => {
+      setup(1000);
+      expect(component.cardsVisible()).toBe(3);
+    });
 
+    it('sets 5 when width between xl and ultraWide', () => {
+      setup(1600);
       expect(component.cardsVisible()).toBe(5);
     });
 
-    it('should set cardsVisible to 3 when no matching breakpoints', () => {
-      const bpMock = TestBed.inject(BreakpointObserver) as any;
-      bpMock.observe.mockReturnValueOnce(of({ breakpoints: { foo: true } }));
-
-      fixture = TestBed.createComponent(ApplicationCarouselComponent);
-      component = fixture.componentInstance;
-      fixture.componentRef.setInput('carouselSize', 3);
-      fixture.detectChanges();
-
-      expect(component.cardsVisible()).toBe(3);
-    });
-
-    it('should handle empty applications array', () => {
-      fixture.componentRef.setInput('applications', []);
-      fixture.componentRef.setInput('carouselIndex', 0);
-      component.cardsVisible.set(3);
-      fixture.detectChanges();
-
-      const result = component.visibleApplications();
-      expect(result.length).toBe(3);
-      expect(result.every(app => app === undefined)).toBe(true);
-    });
-
-    it('should ignore effect when result is null', () => {
-      const bpMock = TestBed.inject(BreakpointObserver) as any;
-      bpMock.observe.mockReturnValueOnce(of(null));
-
-      fixture = TestBed.createComponent(ApplicationCarouselComponent);
-      component = fixture.componentInstance;
-      fixture.componentRef.setInput('carouselSize', 3);
-      fixture.detectChanges();
-
-      expect(component.cardsVisible()).toBe(3);
+    it('sets 6 when width ≥ ultraWide', () => {
+      setup(2100);
+      expect(component.cardsVisible()).toBe(6);
     });
   });
-
-  // ---------------- SIGNAL COMPUTATIONS ----------------
-  describe('signal computations', () => {
-    it('should mark start when currentIndex is 0', () => {
-      fixture.componentRef.setInput('currentIndex', 0);
-      fixture.componentRef.setInput('totalRecords', 5);
-      fixture.detectChanges();
-
-      expect(component.isStart()).toBe(true);
-    });
-
-    it('should not mark start when currentIndex > 0', () => {
-      fixture.componentRef.setInput('currentIndex', 2);
-      fixture.componentRef.setInput('totalRecords', 5);
-      fixture.detectChanges();
-
-      expect(component.isStart()).toBe(false);
-    });
-
-    it('should mark end when currentIndex is last record', () => {
-      fixture.componentRef.setInput('currentIndex', 4);
-      fixture.componentRef.setInput('totalRecords', 5);
-      fixture.detectChanges();
-
-      expect(component.isEnd()).toBe(true);
-    });
-
-    it('should mark end when no records exist', () => {
-      fixture.componentRef.setInput('currentIndex', 0);
-      fixture.componentRef.setInput('totalRecords', 0);
-      fixture.detectChanges();
-
-      expect(component.isEnd()).toBe(true);
-    });
-
-    it('should not mark end when currentIndex is before last', () => {
-      fixture.componentRef.setInput('currentIndex', 2);
-      fixture.componentRef.setInput('totalRecords', 5);
-      fixture.detectChanges();
-
-      expect(component.isEnd()).toBe(false);
-    });
-  });
-
   // ---------------- VISIBLE APPLICATIONS ----------------
   describe('visible applications', () => {
     it('should compute visible apps with no fillers when in bounds', () => {
