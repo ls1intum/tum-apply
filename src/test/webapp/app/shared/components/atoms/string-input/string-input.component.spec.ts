@@ -13,7 +13,6 @@ describe('StringInputComponent', () => {
     fixture.componentRef.setInput('required', true);
     fixture.componentRef.setInput('id', 'testInput');
     fixture.componentRef.setInput('width', '300px');
-    fixture.detectChanges();
     return fixture;
   }
 
@@ -38,7 +37,6 @@ describe('StringInputComponent', () => {
   it('should not show asterisk when required=false', () => {
     const fixture = createFixture();
     fixture.componentRef.setInput('required', false);
-    fixture.detectChanges();
 
     const comp = fixture.componentInstance;
     expect(comp.required()).toBe(false);
@@ -69,7 +67,6 @@ describe('StringInputComponent', () => {
     const comp = fixture.componentInstance;
 
     fixture.componentRef.setInput('icon', 'user');
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(comp.icon()).toBe('user');
@@ -82,7 +79,6 @@ describe('StringInputComponent', () => {
 
     fixture.componentRef.setInput('icon', 'circle-info');
     fixture.componentRef.setInput('tooltipText', 'Helpful information');
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(comp.icon()).toBe('circle-info');
@@ -95,7 +91,6 @@ describe('StringInputComponent', () => {
 
     fixture.componentRef.setInput('shouldTranslate', true);
     fixture.componentRef.setInput('label', 'string.label');
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(comp.shouldTranslate()).toBe(true);
@@ -120,7 +115,6 @@ describe('StringInputComponent', () => {
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('');
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       expect(comp.isTouched()).toBe(false);
     });
@@ -137,7 +131,7 @@ describe('StringInputComponent', () => {
     it('should return true when control.touched is true and has non-required errors', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const ctrl = new FormControl('', { validators: (c) => (c.value.length < 5 ? { minlength: true } : null), updateOn: 'blur' });
+      const ctrl = new FormControl('', { validators: c => (c.value.length < 5 ? { minlength: true } : null), updateOn: 'blur' });
       fixture.componentRef.setInput('control', ctrl);
       ctrl.setValue('hi');
       ctrl.markAsTouched();
@@ -165,7 +159,6 @@ describe('StringInputComponent', () => {
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('valid value');
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       expect(comp.inputState()).toBe('untouched');
     });
@@ -173,9 +166,8 @@ describe('StringInputComponent', () => {
     it('should return invalid when control is invalid and touched', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const ctrl = new FormControl('', { validators: (c) => (c.value === '' ? { required: true } : null) });
+      const ctrl = new FormControl('', { validators: c => (c.value === '' ? { required: true } : null) });
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       comp.onBlur();
       fixture.detectChanges();
@@ -188,7 +180,6 @@ describe('StringInputComponent', () => {
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('valid value');
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       comp.onBlur();
       fixture.detectChanges();
@@ -203,7 +194,6 @@ describe('StringInputComponent', () => {
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('valid value');
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       expect(comp.errorMessage()).toBeNull();
     });
@@ -215,35 +205,33 @@ describe('StringInputComponent', () => {
       ctrl.setErrors({ custom: true });
       fixture.componentRef.setInput('control', ctrl);
       fixture.componentRef.setInput('customErrorKey', 'entity.applicationPage1.validation.postalCode');
-      fixture.detectChanges();
 
       const msg = comp.errorMessage();
-      expect(msg).toBeDefined();
-      expect(msg).not.toBeNull();
+      expect(msg).toBe('entity.applicationPage1.validation.postalCode');
     });
 
     it('should return minlength error message when validation fails', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const ctrl = new FormControl('ab', { validators: (c) => (c.value.length < 5 ? { minlength: { requiredLength: 5, actualLength: 2 } } : null) });
+      const ctrl = new FormControl('ab', {
+        validators: c => (c.value.length < 5 ? { minlength: { requiredLength: 5, actualLength: 2 } } : null),
+      });
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       const msg = comp.errorMessage();
-      expect(msg).toBeDefined();
-      expect(msg).not.toBeNull();
+      expect(msg).toBe('global.input.error.minLength');
     });
 
     it('should return maxlength error message when input exceeds max length', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const ctrl = new FormControl('toolongvalue', { validators: (c) => (c.value.length > 5 ? { maxlength: { requiredLength: 5, actualLength: 12 } } : null) });
+      const ctrl = new FormControl('toolongvalue', {
+        validators: c => (c.value.length > 5 ? { maxlength: { requiredLength: 5, actualLength: 12 } } : null),
+      });
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       const msg = comp.errorMessage();
-      expect(msg).toBeDefined();
-      expect(msg).not.toBeNull();
+      expect(msg).toBe('global.input.error.maxLength');
     });
 
     it('should return required error message when input is empty and required', () => {
@@ -253,23 +241,22 @@ describe('StringInputComponent', () => {
       ctrl.setErrors({ required: true });
       fixture.componentRef.setInput('control', ctrl);
       fixture.componentRef.setInput('required', true);
-      fixture.detectChanges();
 
       const msg = comp.errorMessage();
-      expect(msg).toBeDefined();
-      expect(msg?.includes('required') || msg !== null).toBe(true);
+      expect(msg).toBe('global.input.error.required');
     });
 
     it('should handle unknown error types gracefully', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const ctrl = new FormControl('');
-      ctrl.setErrors({ unknownError: true });
+      const ctrl = new FormControl('test', {
+        validators: () => ({ customUnknownError: true }),
+      });
       fixture.componentRef.setInput('control', ctrl);
       fixture.detectChanges();
 
       const msg = comp.errorMessage();
-      expect(msg).toContain('global.input.error.required');
+      expect(msg).toBe('Invalid: customUnknownError');
     });
   });
 
@@ -310,7 +297,6 @@ describe('StringInputComponent', () => {
       const comp = fixture.componentInstance;
       const ctrl = new FormControl('test value');
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
       expect(comp.formControl()).toBe(ctrl);
       expect(comp.formControl().value).toBe('test value');
@@ -320,7 +306,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('control', undefined);
-      fixture.detectChanges();
 
       expect(comp.formControl()).toBeDefined();
       expect(comp.formControl() instanceof FormControl).toBe(true);
@@ -332,7 +317,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('model', 'test model value');
-      fixture.detectChanges();
 
       expect(comp.model()).toBe('test model value');
     });
@@ -341,7 +325,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('disabled', true);
-      fixture.detectChanges();
 
       expect(comp.disabled()).toBe(true);
     });
@@ -350,7 +333,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('icon', 'circle-info');
-      fixture.detectChanges();
 
       expect(comp.icon()).toBe('circle-info');
     });
@@ -359,7 +341,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('tooltipText', 'Help text');
-      fixture.detectChanges();
 
       expect(comp.tooltipText()).toBe('Help text');
     });
@@ -368,7 +349,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('shouldTranslate', true);
-      fixture.detectChanges();
 
       expect(comp.shouldTranslate()).toBe(true);
     });
@@ -377,7 +357,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('autofocus', true);
-      fixture.detectChanges();
 
       expect(comp.autofocus()).toBe(true);
     });
@@ -386,7 +365,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('errorEnabled', false);
-      fixture.detectChanges();
 
       expect(comp.errorEnabled()).toBe(false);
     });
@@ -395,7 +373,6 @@ describe('StringInputComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
       fixture.componentRef.setInput('customErrorKey', 'custom.error.key');
-      fixture.detectChanges();
 
       expect(comp.customErrorKey()).toBe('custom.error.key');
     });
@@ -405,17 +382,18 @@ describe('StringInputComponent', () => {
     it('should update formValidityVersion when form control status changes', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
-      const ctrl = new FormControl('', { validators: (c) => (c.value === '' ? { required: true } : null), updateOn: 'change' });
+      const ctrl = new FormControl('', { validators: c => (c.value === '' ? { required: true } : null), updateOn: 'change' });
       fixture.componentRef.setInput('control', ctrl);
-      fixture.detectChanges();
 
-      const initialVersion = comp.isTouched(); // Access to trigger computation
+      const initialVersion = comp.formValidityVersion();
+      comp.isTouched(); // Access to trigger computation
+      fixture.detectChanges();
 
       ctrl.setValue('new value');
       fixture.detectChanges();
 
       // The computed property should have been recalculated
-      expect(comp.formValidityVersion()).toBeGreaterThan(0);
+      expect(comp.formValidityVersion()).toBeGreaterThan(initialVersion);
     });
   });
 });
