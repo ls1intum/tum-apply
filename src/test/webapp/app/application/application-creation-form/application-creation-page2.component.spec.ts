@@ -8,10 +8,36 @@ import ApplicationCreationPage2Component, {
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page2/application-creation-page2.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
-import { HttpClient, provideHttpClient as provideHttpClientMock } from '@angular/common/http';
+import { provideHttpClient as provideHttpClientMock } from '@angular/common/http';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { provideToastServiceMock } from 'util/toast-service.mock';
 import { provideAccountServiceMock } from 'util/account.service.mock';
+
+const DEFAULT_PAGE2_FORM_DATA: ApplicationCreationPage2Data = {
+  bachelorDegreeName: '',
+  bachelorDegreeUniversity: '',
+  bachelorGrade: '',
+  bachelorGradeLowerLimit: '',
+  bachelorGradeUpperLimit: '',
+  masterDegreeName: '',
+  masterDegreeUniversity: '',
+  masterGrade: '',
+  masterGradeLowerLimit: '',
+  masterGradeUpperLimit: '',
+};
+
+const VALID_PAGE2_FORM_DATA: ApplicationCreationPage2Data = {
+  bachelorDegreeName: 'BSc',
+  bachelorDegreeUniversity: 'Uni',
+  bachelorGrade: '2.5',
+  bachelorGradeLowerLimit: '1.0',
+  bachelorGradeUpperLimit: '4.0',
+  masterDegreeName: 'MSc',
+  masterDegreeUniversity: 'Uni',
+  masterGrade: '2.7',
+  masterGradeLowerLimit: '1.0',
+  masterGradeUpperLimit: '4.0',
+};
 
 function createApplicationPage2Fixture(
   inputs?: Partial<{
@@ -34,17 +60,8 @@ function createApplicationPage2Fixture(
       componentRef.setInput('documentIdsMasterTranscript', inputs.documentIdsMasterTranscript);
     }
     componentRef.setInput('data', {
-      bachelorDegreeName: '',
-      bachelorDegreeUniversity: '',
-      bachelorGrade: '',
-      bachelorGradeLowerLimit: '',
-      bachelorGradeUpperLimit: '',
-      masterDegreeName: '',
-      masterDegreeUniversity: '',
-      masterGrade: '',
-      masterGradeLowerLimit: '',
-      masterGradeUpperLimit: '',
-      ...(inputs ? inputs.data : []),
+      ...DEFAULT_PAGE2_FORM_DATA,
+      ...(inputs ? inputs.data : {}),
     });
   }
   fixture.detectChanges();
@@ -89,6 +106,10 @@ describe('ApplicationPage2Component', () => {
       expect(formValues.masterDegreeUniversity).toBe('');
       expect(formValues.bachelorGrade).toBe('');
       expect(formValues.masterGrade).toBe('');
+      expect(formValues.bachelorGradeUpperLimit).toBe('4.0');
+      expect(formValues.bachelorGradeLowerLimit).toBe('1.0');
+      expect(formValues.masterGradeUpperLimit).toBe('4.0');
+      expect(formValues.masterGradeLowerLimit).toBe('1.0');
     });
 
     it('should mark fields as touched and invalid when initialized with incomplete data', () => {
@@ -118,18 +139,7 @@ describe('ApplicationPage2Component', () => {
 
     it('should validate the form with correct data', () => {
       const { componentInstance } = createApplicationPage2Fixture({
-        data: {
-          bachelorDegreeName: 'BSc Computer Science',
-          bachelorDegreeUniversity: 'Test University',
-          bachelorGrade: '3.5',
-          masterDegreeName: 'MSc Computer Science',
-          masterDegreeUniversity: 'Test University',
-          masterGrade: '3.8',
-          bachelorGradeLowerLimit: '4.0',
-          bachelorGradeUpperLimit: '1.0',
-          masterGradeLowerLimit: '4.0',
-          masterGradeUpperLimit: '1.0',
-        },
+        data: VALID_PAGE2_FORM_DATA,
       });
 
       expect(componentInstance.page2Form.valid).toBe(true);
@@ -139,16 +149,8 @@ describe('ApplicationPage2Component', () => {
       const { componentInstance } = createApplicationPage2Fixture();
 
       componentInstance.page2Form.setValue({
-        bachelorDegreeName: 'BSc',
-        bachelorDegreeUniversity: 'Uni',
-        bachelorGrade: '4.5', // Invalid
-        bachelorGradeLowerLimit: '1.0',
-        bachelorGradeUpperLimit: '4.0',
-        masterDegreeName: 'MSc',
-        masterDegreeUniversity: 'Uni',
-        masterGrade: '3.5',
-        masterGradeLowerLimit: '1.0',
-        masterGradeUpperLimit: '4.0',
+        ...VALID_PAGE2_FORM_DATA,
+        bachelorGrade: '4.5', // Invalid - out of range
       });
 
       expect(componentInstance.page2Form.valid).toBe(false);
@@ -157,18 +159,7 @@ describe('ApplicationPage2Component', () => {
     it('should validate grade correctly when within limits', () => {
       const { componentInstance } = createApplicationPage2Fixture();
 
-      componentInstance.page2Form.setValue({
-        bachelorDegreeName: 'BSc',
-        bachelorDegreeUniversity: 'Uni',
-        bachelorGrade: '2.5',
-        bachelorGradeLowerLimit: '1.0',
-        bachelorGradeUpperLimit: '4.0',
-        masterDegreeName: 'MSc',
-        masterDegreeUniversity: 'Uni',
-        masterGrade: '2.7',
-        masterGradeLowerLimit: '1.0',
-        masterGradeUpperLimit: '4.0',
-      });
+      componentInstance.page2Form.setValue(VALID_PAGE2_FORM_DATA);
 
       expect(componentInstance.page2Form.valid).toBe(true);
     });
@@ -228,18 +219,7 @@ describe('ApplicationPage2Component', () => {
         applicationIdForDocuments: '12345',
         documentIdsBachelorTranscript: [{ id: 'id-1', size: 1 }],
         documentIdsMasterTranscript: [{ id: 'id-2', size: 2 }],
-        data: {
-          bachelorDegreeName: '',
-          bachelorDegreeUniversity: '',
-          bachelorGrade: '',
-          bachelorGradeLowerLimit: '',
-          bachelorGradeUpperLimit: '',
-          masterDegreeName: '',
-          masterDegreeUniversity: '',
-          masterGrade: '',
-          masterGradeLowerLimit: '',
-          masterGradeUpperLimit: '',
-        },
+        data: DEFAULT_PAGE2_FORM_DATA,
       });
 
       const uploadButtons = fixture.nativeElement.querySelectorAll('jhi-upload-button');
@@ -248,7 +228,7 @@ describe('ApplicationPage2Component', () => {
   });
 
   describe('getPage2FromApplication', () => {
-    const createEmptyApplicationForApplicantDTO = (): ApplicationForApplicantDTO => ({
+    const standardApplicationForApplicantDTO: ApplicationForApplicantDTO = {
       applicant: {
         bachelorDegreeName: 'BSc CS',
         bachelorUniversity: 'Test University',
@@ -263,59 +243,48 @@ describe('ApplicationPage2Component', () => {
         user: {},
       },
       job: {
-        fieldOfStudies: '',
-        jobId: '',
-        location: '',
-        professorName: '',
-        title: '',
+        fieldOfStudies: 'fieldOfStudies',
+        jobId: 'id-123',
+        location: 'Garching',
+        professorName: 'Pr. Test',
+        title: 'Job title',
       },
       applicationState: 'SAVED',
-    });
+    };
 
     it('should map all applicant fields correctly when provided', () => {
-      const application: ApplicationForApplicantDTO = createEmptyApplicationForApplicantDTO();
+      const application: ApplicationForApplicantDTO = { ...standardApplicationForApplicantDTO };
 
       const result = getPage2FromApplication(application);
 
       expect(result).toEqual({
-        bachelorDegreeName: 'BSc CS',
-        bachelorDegreeUniversity: 'Test University',
-        bachelorGradeUpperLimit: '4.0',
-        bachelorGradeLowerLimit: '1.0',
-        bachelorGrade: '3.5',
-        masterDegreeName: 'MSc AI',
-        masterDegreeUniversity: 'Test University',
-        masterGradeUpperLimit: '4.0',
-        masterGradeLowerLimit: '1.0',
-        masterGrade: '3.8',
+        bachelorDegreeName: standardApplicationForApplicantDTO.applicant?.bachelorDegreeName,
+        bachelorDegreeUniversity: standardApplicationForApplicantDTO.applicant?.bachelorUniversity,
+        bachelorGradeUpperLimit: standardApplicationForApplicantDTO.applicant?.bachelorGradeUpperLimit,
+        bachelorGradeLowerLimit: standardApplicationForApplicantDTO.applicant?.bachelorGradeLowerLimit,
+        bachelorGrade: standardApplicationForApplicantDTO.applicant?.bachelorGrade,
+        masterDegreeName: standardApplicationForApplicantDTO.applicant?.masterDegreeName,
+        masterDegreeUniversity: standardApplicationForApplicantDTO.applicant?.masterUniversity,
+        masterGradeUpperLimit: standardApplicationForApplicantDTO.applicant?.masterGradeUpperLimit,
+        masterGradeLowerLimit: standardApplicationForApplicantDTO.applicant?.masterGradeLowerLimit,
+        masterGrade: standardApplicationForApplicantDTO.applicant?.masterGrade,
       });
     });
 
     it('should return empty strings for all fields if applicant is undefined', () => {
       const application: ApplicationForApplicantDTO = {
-        ...createEmptyApplicationForApplicantDTO(),
+        ...standardApplicationForApplicantDTO,
         applicant: undefined,
       };
 
       const result = getPage2FromApplication(application);
 
-      expect(result).toEqual({
-        bachelorDegreeName: '',
-        bachelorDegreeUniversity: '',
-        bachelorGradeUpperLimit: '',
-        bachelorGradeLowerLimit: '',
-        bachelorGrade: '',
-        masterDegreeName: '',
-        masterDegreeUniversity: '',
-        masterGradeUpperLimit: '',
-        masterGradeLowerLimit: '',
-        masterGrade: '',
-      });
+      expect(result).toEqual(DEFAULT_PAGE2_FORM_DATA);
     });
 
     it('should return empty strings for missing fields in applicant', () => {
       const application: ApplicationForApplicantDTO = {
-        ...createEmptyApplicationForApplicantDTO(),
+        ...standardApplicationForApplicantDTO,
         applicant: {
           bachelorDegreeName: 'BSc Biology',
           // all other fields are missing
@@ -326,16 +295,8 @@ describe('ApplicationPage2Component', () => {
       const result = getPage2FromApplication(application);
 
       expect(result).toEqual({
+        ...DEFAULT_PAGE2_FORM_DATA,
         bachelorDegreeName: 'BSc Biology',
-        bachelorDegreeUniversity: '',
-        bachelorGradeUpperLimit: '',
-        bachelorGradeLowerLimit: '',
-        bachelorGrade: '',
-        masterDegreeName: '',
-        masterDegreeUniversity: '',
-        masterGradeUpperLimit: '',
-        masterGradeLowerLimit: '',
-        masterGrade: '',
       });
     });
   });
