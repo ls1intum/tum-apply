@@ -110,7 +110,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnPaginatedMembersSuccessfully() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(0, 10);
+            PageDTO pageDTO = new PageDTO(1, 10);
             when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
 
@@ -133,7 +133,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnEmptyListWhenNoMembers() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(0, 10);
+            PageDTO pageDTO = new PageDTO(1, 10);
             when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
 
             Page<UUID> emptyPage = new PageImpl<>(List.of());
@@ -600,7 +600,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnAllResearchGroupsPaginated() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(0, 10);
+            PageDTO pageDTO = new PageDTO(1, 10);
             Page<ResearchGroup> page = new PageImpl<>(List.of(testResearchGroup));
             when(researchGroupRepository.findAll(any(Pageable.class))).thenReturn(page);
 
@@ -620,7 +620,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnDraftResearchGroups() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(0, 10);
+            PageDTO pageDTO = new PageDTO(1, 10);
             testResearchGroup.setState(ResearchGroupState.DRAFT);
             Page<ResearchGroup> page = new PageImpl<>(List.of(testResearchGroup));
             when(researchGroupRepository.findByState(eq(ResearchGroupState.DRAFT), any(Pageable.class))).thenReturn(page);
@@ -641,7 +641,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnFilteredResearchGroupsForAdmin() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(0, 10);
+            PageDTO pageDTO = new PageDTO(1, 10);
             AdminResearchGroupFilterDTO filterDTO = new AdminResearchGroupFilterDTO(List.of(ResearchGroupState.ACTIVE), "Test");
             SortDTO sortDTO = new SortDTO("name", SortDTO.Direction.ASC);
 
