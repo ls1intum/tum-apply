@@ -8,12 +8,7 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
-import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
-import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
-import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
+import de.tum.cit.aet.usermanagement.dto.*;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
@@ -26,7 +21,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
 
 /**
  * Integration tests for {@link ResearchGroupResource}.
@@ -60,7 +54,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     User secondResearchGroupUser;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         databaseCleaner.clean();
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
@@ -109,9 +103,41 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         return userRepository.save(user);
     }
 
+    /**
+     * Helper method to create a ResearchGroupDTO with all fields.
+     */
+    private ResearchGroupDTO createResearchGroupDTO(
+        String name,
+        String abbreviation,
+        String head,
+        String email,
+        String website,
+        String university,
+        String description,
+        String field,
+        String street,
+        String postalCode,
+        String city,
+        ResearchGroupState state
+    ) {
+        return new ResearchGroupDTO(
+            name,
+            abbreviation,
+            head,
+            email,
+            website,
+            university,
+            description,
+            field,
+            street,
+            postalCode,
+            city,
+            state
+        );
+    }
+
     @Test
-    @WithMockUser(roles = "PROFESSOR")
-    public void getResearchGroupDetailsExistingIdReturnsDetails() {
+    void getResearchGroupDetailsExistingIdReturnsDetails() {
         ResearchGroupLargeDTO result = api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(API_BASE_PATH + "/detail/" + researchGroup.getResearchGroupId(), Map.of(), ResearchGroupLargeDTO.class, 200);
@@ -126,7 +152,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsNoIdAndNonExistingIdThrowsException() {
         api.getAndRead(API_BASE_PATH + "/detail/", Map.of(), ResearchGroupLargeDTO.class, 500);
         UUID nonExistingId = UUID.randomUUID();
@@ -134,7 +159,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupDetailsOtherUsersGroupReturnsForbidden() {
         api.getAndRead(API_BASE_PATH + "/detail/" + secondResearchGroup.getResearchGroupId(), Map.of(), ResearchGroupLargeDTO.class, 403);
     }
@@ -195,7 +219,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- GET /api/research-groups/members (getResearchGroupMembers) ---
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupMembersReturnsPaginatedMembers() {
         PageResponseDTO<UserShortDTO> result = api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -223,7 +246,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- DELETE /api/research-groups/members/{userId} (removeMemberFromResearchGroup) ---
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void removeMemberFromResearchGroupReturnsNoContent() {
         User memberToRemove = UserTestData.savedProfessor(userRepository, researchGroup);
 
@@ -245,9 +267,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- PUT /api/research-groups/{id} (updateResearchGroup) ---
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateResearchGroupReturnsUpdatedGroup() {
-        ResearchGroupDTO updateDTO = new ResearchGroupDTO(
+        ResearchGroupDTO updateDTO = createResearchGroupDTO(
             "Updated ML Lab",
             "UML",
             "Prof. Smith",
@@ -273,9 +294,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void updateResearchGroupWithInvalidDataReturns400() {
-        ResearchGroupDTO invalidDTO = new ResearchGroupDTO(
+        ResearchGroupDTO invalidDTO = createResearchGroupDTO(
             "", // Invalid: empty name
             "ML",
             "",
@@ -298,7 +318,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- POST /api/research-groups/professor-request (createProfessorResearchGroupRequest) ---
 
     @Test
-    @WithMockUser
     void createProfessorResearchGroupRequestCreatesGroupInDraftState() {
         User requestUser = createUserWithoutResearchGroup("john.doe@tum.de", "John", "Doe", "ab12cde");
 
@@ -331,7 +350,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser
     void createProfessorResearchGroupRequestWithMinimalDataWorks() {
         User requestUser = createUserWithoutResearchGroup("minimal.user@tum.de", "Minimal", "User", "mn33zzz");
 
@@ -388,7 +406,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- POST /api/research-groups/employee-request (createEmployeeResearchGroupRequest) ---
 
     @Test
-    @WithMockUser
     void createEmployeeResearchGroupRequestReturnsNoContent() {
         User employeeUser = createUserWithoutResearchGroup("employee@tum.de", "Employee", "User", "em11plp");
 
@@ -400,7 +417,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser
     void createEmployeeResearchGroupRequestWithEmptyProfessorNameReturns400() {
         User employeeUser = createUserWithoutResearchGroup("employee2@tum.de", "Employee2", "User", "em22plp");
 
@@ -420,7 +436,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- GET /api/research-groups/admin (getResearchGroupsForAdmin) ---
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void getResearchGroupsForAdminReturnsPagedResults() {
         UUID adminUserId = UUID.randomUUID();
         PageResponseDTO<ResearchGroupAdminDTO> result = api
@@ -446,7 +461,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void getResearchGroupsForAdminWithSearchQueryFiltersResults() {
         UUID adminUserId = UUID.randomUUID();
         PageResponseDTO<ResearchGroupAdminDTO> result = api
@@ -475,7 +489,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getResearchGroupsForAdminWithoutAdminRoleReturns403() {
         api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -499,7 +512,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- GET /api/research-groups/draft (getDraftResearchGroups) ---
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void getDraftResearchGroupsReturnsOnlyDraftGroups() {
         // Create a draft research group
         ResearchGroup draftGroup = ResearchGroupTestData.savedAll(
@@ -535,7 +547,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getDraftResearchGroupsWithoutAdminRoleReturns403() {
         api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -550,7 +561,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- POST /api/research-groups/{researchGroupId}/activate (activateResearchGroup) ---
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void activateResearchGroupChangesStateToDraftToActive() {
         // Create a draft research group
         ResearchGroup draftGroup = ResearchGroupTestData.savedAll(
@@ -580,7 +590,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void activateResearchGroupWithoutAdminRoleReturns403() {
         api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -590,7 +599,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- POST /api/research-groups/{researchGroupId}/deny (denyResearchGroup) ---
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void denyResearchGroupChangesStateToDenied() {
         // Create a draft research group
         ResearchGroup draftGroup = ResearchGroupTestData.savedAll(
@@ -620,7 +628,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void denyResearchGroupWithoutAdminRoleReturns403() {
         api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -630,7 +637,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     // --- POST /api/research-groups/{researchGroupId}/withdraw (withdrawResearchGroup) ---
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void withdrawResearchGroupChangesStateBackToDraft() {
         // Create a separate research group for withdrawal
         ResearchGroup activeGroup = ResearchGroupTestData.savedAll(
@@ -660,7 +666,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void withdrawResearchGroupWithoutAdminRoleReturns403() {
         api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
