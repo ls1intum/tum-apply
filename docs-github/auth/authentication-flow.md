@@ -13,7 +13,7 @@ token is sent with each request and validated by the Spring Boot server.
 - Three **test users** with password login:
 
   | Username     | Password    | Role        |
-  | ------------ | ----------- | ----------- |
+    | ------------ | ----------- | ----------- |
   | `admin1`     | `admin`     | `ADMIN`     |
   | `professor1` | `professor` | `PROFESSOR` |
   | `applicant1` | `applicant` | `APPLICANT` |
@@ -22,7 +22,8 @@ These users can authenticate with a password and receive a valid access token (J
 
 ## 🚀 Starting Keycloak
 
-To start Keycloak, please follow the instructions in the [Keycloak Setup](keycloak-setup.md) document.
+To start Keycloak, please follow the instructions in the [Keycloak Setup](keycloak/development/setup.md)
+document.
 
 ## 🧪 Testing Login with Bruno
 
@@ -77,7 +78,9 @@ Example response:
 {
   "userId": "...",
   "email": "admin1@tumapply.local",
-  "roles": ["APPLICANT"],
+  "roles": [
+    "APPLICANT"
+  ],
   "researchGroup": {
     "researchGroupId": "...",
     "name": "Data Science Group"
