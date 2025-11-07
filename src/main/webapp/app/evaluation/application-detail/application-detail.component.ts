@@ -176,7 +176,7 @@ export class ApplicationDetailComponent {
       { labelKey: 'evaluation.details.educationGrade', value: applicant.bachelorGrade },
     ];
 
-    const converted = this.getGradeItem(
+    /* const converted = this.getGradeItem(
       applicant.bachelorGrade,
       applicant.bachelorGradeUpperLimit,
       applicant.bachelorGradeLowerLimit,
@@ -184,7 +184,7 @@ export class ApplicationDetailComponent {
       'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);
+    items.push(...converted);*/
     return items;
   }
 
@@ -196,7 +196,7 @@ export class ApplicationDetailComponent {
       { labelKey: 'evaluation.details.educationGrade', value: applicant.masterGrade },
     ];
 
-    const converted = this.getGradeItem(
+    /* const converted = this.getGradeItem(
       applicant.masterGrade,
       applicant.masterGradeUpperLimit,
       applicant.masterGradeLowerLimit,
@@ -204,7 +204,7 @@ export class ApplicationDetailComponent {
       'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);
+    items.push(...converted);*/
     return items;
   }
 
