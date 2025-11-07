@@ -203,7 +203,7 @@
     },
     "detailView": {
       "title": "Forschungsgruppen Details",
-      "infoMessage": "Du kannst die Informationen der Forschungsgruppe bearbeiten. Beachte, dass Professoren über diese Änderungen nicht benachrichtigt werden.",
+      "infoMessage": "Du kannst die Informationen der Forschungsgruppe bearbeiten. Beachte, dass Professor:innen über diese Änderungen nicht benachrichtigt werden.",
       "errors": {
         "view": {
           "summary": "Fehler",
@@ -224,9 +224,9 @@
           "detail": "Forschungsgruppeninformationen erfolgreich aktualisiert."
         }
       },
-      "section1": "Grundlegende Informationen",
-      "section2": "Beschreibung",
-      "section3": "Adresse",
+      "generalSection": "Grundlegende Informationen",
+      "descriptionSection": "Beschreibung",
+      "addressSection": "Adresse",
       "abbreviation": "Abkürzung",
       "name": "Name",
       "school": "School",

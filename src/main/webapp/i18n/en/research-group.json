@@ -224,9 +224,9 @@
           "detail": "Research group information updated successfully."
         }
       },
-      "section1": "General Information",
-      "section2": "Description",
-      "section3": "Address",
+      "generalSection": "General Information",
+      "descriptionSection": "Description",
+      "addressSection": "Address",
       "abbreviation": "Abbreviation",
       "name": "Name",
       "school": "School",
