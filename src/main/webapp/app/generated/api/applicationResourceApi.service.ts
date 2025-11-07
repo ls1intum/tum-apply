@@ -29,7 +29,7 @@ import { DocumentInformationHolderDTO } from '../model/documentInformationHolder
 import { UpdateApplicationDTO } from '../model/updateApplicationDTO';
 
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
+import { BASE_PATH }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
 
@@ -593,10 +593,10 @@ export class ApplicationResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Array<Blob>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<DocumentInformationHolderDTO>>;
-    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Array<Blob>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<DocumentInformationHolderDTO>>>;
-    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Array<Blob>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<DocumentInformationHolderDTO>>>;
-    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Array<Blob>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<DocumentInformationHolderDTO>>;
+    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<DocumentInformationHolderDTO>>>;
+    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<DocumentInformationHolderDTO>>>;
+    public uploadDocuments(applicationId: string, documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (applicationId === null || applicationId === undefined) {
             throw new Error('Required parameter applicationId was null or undefined when calling uploadDocuments.');
         }
@@ -637,14 +637,8 @@ export class ApplicationResourceApiService extends BaseService {
             localVarFormParams = new HttpParams({encoder: this.encoder});
         }
 
-        if (files) {
-            if (localVarUseForm) {
-                files.forEach((element) => {
-                    localVarFormParams = localVarFormParams.append('files', <any>element) as any || localVarFormParams;
-            })
-            } else {
-                localVarFormParams = localVarFormParams.append('files', [...files].join(COLLECTION_FORMATS['csv'])) as any || localVarFormParams;
-            }
+        if (files !== undefined) {
+            localVarFormParams = localVarFormParams.append('files', <any>files) as any || localVarFormParams;
         }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
