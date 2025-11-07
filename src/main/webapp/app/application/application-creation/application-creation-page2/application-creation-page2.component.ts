@@ -95,7 +95,7 @@ export default class ApplicationCreationPage2Component {
     },
   );
 
-  private hasInitialized = signal(false);
+  hasInitialized = signal(false);
 
   private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
     initialValue: this.page2Form.value,
