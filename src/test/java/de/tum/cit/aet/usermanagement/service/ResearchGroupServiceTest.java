@@ -63,6 +63,8 @@ class ResearchGroupServiceTest {
     private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
     private static final UUID OTHER_USER_ID = UUID.randomUUID();
     private static final String SUPPORT_EMAIL = "support@test.com";
+    private static final int DEFAULT_PAGE_NUMBER = 1;
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private User testUser;
     private ResearchGroup testResearchGroup;
@@ -88,6 +90,10 @@ class ResearchGroupServiceTest {
 
     // --- Helper Methods ---
 
+    private PageDTO createDefaultPageDTO() {
+        return new PageDTO(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
+    }
+
     private User createUser(UUID userId, String email, ResearchGroup researchGroup) {
         User user = new User();
         user.setUserId(userId);
@@ -104,13 +110,33 @@ class ResearchGroupServiceTest {
         return rg;
     }
 
+    private ProfessorResearchGroupRequestDTO createProfessorResearchGroupRequest(String researchGroupName) {
+        return new ProfessorResearchGroupRequestDTO(
+            "Prof.",
+            "John",
+            "Doe",
+            "ab12cde",
+            "Prof. New",
+            researchGroupName,
+            "NRG",
+            "nrg@test.com",
+            "https://nrg.com",
+            "Computer Science",
+            "Description",
+            "CS",
+            "Main St",
+            "12345",
+            "City"
+        );
+    }
+
     @Nested
     class GetResearchGroupMembers {
 
         @Test
         void shouldReturnPaginatedMembersSuccessfully() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(1, 10);
+            PageDTO pageDTO = createDefaultPageDTO();
             when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
 
@@ -133,7 +159,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnEmptyListWhenNoMembers() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(1, 10);
+            PageDTO pageDTO = createDefaultPageDTO();
             when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
 
             Page<UUID> emptyPage = new PageImpl<>(List.of());
@@ -471,23 +497,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldCreateResearchGroupRequestSuccessfully() {
             // Arrange
-            ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
-                "Prof.",
-                "John",
-                "Doe",
-                "ab12cde",
-                "Prof. New",
-                "New Research Group",
-                "NRG",
-                "nrg@test.com",
-                "https://nrg.com",
-                "Computer Science",
-                "Description",
-                "CS",
-                "Main St",
-                "12345",
-                "City"
-            );
+            ProfessorResearchGroupRequestDTO request = createProfessorResearchGroupRequest("New Research Group");
 
             testUser.setResearchGroup(null);
             when(currentUserService.getUser()).thenReturn(testUser);
@@ -513,23 +523,7 @@ class ResearchGroupServiceTest {
             testUser.setResearchGroup(testResearchGroup);
             when(currentUserService.getUser()).thenReturn(testUser);
 
-            ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
-                "Prof.",
-                "John",
-                "Doe",
-                "ab12cde",
-                "Prof",
-                "New Group",
-                "NG",
-                "test@test.com",
-                "https://test.com",
-                "School",
-                "Desc",
-                "CS",
-                "Street",
-                "12345",
-                "City"
-            );
+            ProfessorResearchGroupRequestDTO request = createProfessorResearchGroupRequest("New research group");
 
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
@@ -544,23 +538,7 @@ class ResearchGroupServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(true);
 
-            ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
-                "Prof.",
-                "John",
-                "Doe",
-                "ab12cde",
-                "Prof",
-                "Existing Group",
-                "EG",
-                "test@test.com",
-                "https://test.com",
-                "School",
-                "Desc",
-                "CS",
-                "Street",
-                "12345",
-                "City"
-            );
+            ProfessorResearchGroupRequestDTO request = createProfessorResearchGroupRequest("Existing Group");
 
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
@@ -600,7 +578,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnAllResearchGroupsPaginated() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(1, 10);
+            PageDTO pageDTO = createDefaultPageDTO();
             Page<ResearchGroup> page = new PageImpl<>(List.of(testResearchGroup));
             when(researchGroupRepository.findAll(any(Pageable.class))).thenReturn(page);
 
@@ -620,7 +598,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnDraftResearchGroups() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(1, 10);
+            PageDTO pageDTO = createDefaultPageDTO();
             testResearchGroup.setState(ResearchGroupState.DRAFT);
             Page<ResearchGroup> page = new PageImpl<>(List.of(testResearchGroup));
             when(researchGroupRepository.findByState(eq(ResearchGroupState.DRAFT), any(Pageable.class))).thenReturn(page);
@@ -641,7 +619,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnFilteredResearchGroupsForAdmin() {
             // Arrange
-            PageDTO pageDTO = new PageDTO(1, 10);
+            PageDTO pageDTO = createDefaultPageDTO();
             AdminResearchGroupFilterDTO filterDTO = new AdminResearchGroupFilterDTO(List.of(ResearchGroupState.ACTIVE), "Test");
             SortDTO sortDTO = new SortDTO("name", SortDTO.Direction.ASC);
 
