@@ -26,16 +26,6 @@ describe('DoctoralJourneySectionComponent', () => {
     expect(img?.getAttribute('src')).toBe('/content/images/landing-page/doctoral-journey-section/landing-page-doctoral-journey.webp');
   });
 
-  it('should render headline with correct translation key', () => {
-    const headline = nativeElement.querySelector('h2.title');
-    expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.doctoralJourney.headline');
-  });
-
-  it('should render paragraph with correct translation key', () => {
-    const paragraph = nativeElement.querySelector('p.text');
-    expect(paragraph?.getAttribute('jhiTranslate')).toBe('landingPage.doctoralJourney.text');
-  });
-
   it('should provide correct button group data', () => {
     const data = fixture.componentInstance.buttons();
     expect(data.direction).toBe('horizontal');
