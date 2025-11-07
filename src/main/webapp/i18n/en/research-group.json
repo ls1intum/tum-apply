@@ -203,6 +203,7 @@
     },
     "detailView": {
       "title": "Research Group Details",
+      "infoMessage": "You can edit the research group information. Note that professors will not be notified of these changes.",
       "errors": {
         "view": {
           "summary": "Error",

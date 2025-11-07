@@ -15,7 +15,6 @@ import { firstValueFrom } from 'rxjs';
   selector: 'jhi-research-group-detail-view.component',
   imports: [TranslateModule, StringInputComponent, ButtonComponent, ReactiveFormsModule, DividerModule, EditorComponent],
   templateUrl: './research-group-detail-view.component.html',
-  styleUrl: './research-group-detail-view.component.scss',
 })
 export class ResearchGroupDetailViewComponent implements OnInit {
   form = new FormGroup({

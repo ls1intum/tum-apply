@@ -203,6 +203,7 @@
     },
     "detailView": {
       "title": "Forschungsgruppen Details",
+      "infoMessage": "Du kannst die Informationen der Forschungsgruppe bearbeiten. Beachte, dass Professoren über diese Änderungen nicht benachrichtigt werden.",
       "errors": {
         "view": {
           "summary": "Fehler",
@@ -245,7 +246,7 @@
         "head": "z.B. Prof. Dr. Max Mustermann",
         "email": "z.B. kontakt@forschung.de",
         "website": "z.B. https://www.forschung.de/gruppe",
-        "description": "Beschreibe kurz die Forschungsrichtung, Ziele und Schwerpunkte deiner Gruppe.",
+        "description": "Beschreibe kurz die Forschungsrichtung, Ziele und Schwerpunkte der Gruppe.",
         "city": "z.B. Berlin",
         "postalCode": "z.B. 12345",
         "street": "z.B. Musterstraße 123"
