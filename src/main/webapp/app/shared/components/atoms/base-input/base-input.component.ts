@@ -3,6 +3,8 @@ import { Directive, Signal, computed, effect, inject, input, output, signal } fr
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
+let nextId = 0;
+
 @Directive()
 export abstract class BaseInputDirective<T> {
   model = input<T>();
@@ -89,6 +91,8 @@ export abstract class BaseInputDirective<T> {
 
   private _isTouched = signal(false);
 
+  private autoId = `jhi-input-${nextId++}`;
+
   constructor() {
     effect(onCleanup => {
       const sub = this.formControl().statusChanges.subscribe(() => {
@@ -105,6 +109,10 @@ export abstract class BaseInputDirective<T> {
 
   onFocus(): void {
     this.isFocused.set(true);
+  }
+
+  getId(): string {
+    return this.id() ?? this.autoId;
   }
 
   protected markAsTouchedManually(): void {

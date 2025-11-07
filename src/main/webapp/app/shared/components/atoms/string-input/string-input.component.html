@@ -1,7 +1,7 @@
 <div class="input-container">
   <div class="label-top label-input-wrapper">
     @if (label(); as label) {
-      <label class="custom-label" [for]="id()">
+      <label class="custom-label" [for]="getId()">
         {{ shouldTranslate() ? (label | translate) : label }}
         @if (required()) {
           <span class="required">*</span>
@@ -27,7 +27,7 @@
           (blur)="onBlur()"
           (focus)="onFocus()"
           [disabled]="disabled()"
-          [id]="id()"
+          [id]="getId()"
           [formControl]="formControl()"
           [pAutoFocus]="autofocus()"
           [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : (placeholder() ?? '')"
@@ -43,7 +43,7 @@
           (focus)="onFocus()"
           (ngModelChange)="onInputChange($event)"
           [disabled]="disabled()"
-          [id]="id()"
+          [id]="getId()"
           [ngModel]="model()"
           [pAutoFocus]="autofocus()"
           [placeholder]="shouldTranslate() && placeholder() ? (placeholder() ?? '' | translate) : (placeholder() ?? '')"
