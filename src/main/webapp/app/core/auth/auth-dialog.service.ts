@@ -53,7 +53,7 @@ export class AuthDialogService {
     this.orchestrator.open(opts);
 
     // Open new dialog
-    this.ref = this.dialogService.open(AuthCardComponent, {
+    const ref = this.dialogService.open(AuthCardComponent, {
       style: { border: 'none', overflow: 'auto', background: 'transparent', boxShadow: 'none', minWidth: '25rem' },
       contentStyle: { padding: '0' },
       modal: true,
@@ -61,6 +61,8 @@ export class AuthDialogService {
       closeOnEscape: true,
       showHeader: false,
     });
+
+    this.ref = ref;
 
     this.onOrchestratorEffect = effect(
       () => {
@@ -76,8 +78,8 @@ export class AuthDialogService {
       { injector: this.injector },
     );
 
-    const onCloseSig = toSignal<unknown>(this.ref.onClose, { injector: this.injector, initialValue: null });
-    const onDestroySig = toSignal<unknown>(this.ref.onDestroy, { injector: this.injector, initialValue: null });
+    const onCloseSig = toSignal<unknown>(ref.onClose, { injector: this.injector, initialValue: null });
+    const onDestroySig = toSignal<unknown>(ref.onDestroy, { injector: this.injector, initialValue: null });
 
     this.onRefEventsEffect = effect(
       () => {
