@@ -24,7 +24,7 @@ plugins {
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
   // TODO: we cannot upgrade to the latest version yet, because of liquibase and openapi errors
-  id "org.openapi.generator" version "7.12.0"
+  id "org.openapi.generator" version "7.17.0"
 }
 
 group = "de.tum.cit.aet"
@@ -196,7 +196,7 @@ dependencies {
   testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
-  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.15.5"
+  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.16.0"
   implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
   implementation "org.apache.commons:commons-lang3:3.19.0"
   annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -253,7 +253,7 @@ dependencies {
   implementation "org.springframework.security:spring-security-ldap:${springSecurityVersion}"
   testImplementation "org.springframework.security:spring-security-test:${springSecurityVersion}"
 
-  implementation "com.mysql:mysql-connector-j:9.4.0"
+  implementation "com.mysql:mysql-connector-j:9.5.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
 
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
@@ -268,7 +268,7 @@ dependencies {
 
 
   // needed for OpenAPI generation
-  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13"
+  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14"
   implementation("org.yaml:snakeyaml") {
     version {
       strictly "${snakeyaml_version}"
@@ -306,7 +306,7 @@ dependencies {
   implementation "org.keycloak:keycloak-authz-client:${keycloakVersion}"
 
   // Used for pdf creation
-  implementation 'com.itextpdf:html2pdf:5.0.1'
+  implementation 'com.itextpdf:html2pdf:6.2.1'
 }
 
 tasks.register("cleanResources", Delete) {

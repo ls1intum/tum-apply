@@ -9,7 +9,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 29rem;
   background-position: 50% 30%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -35,25 +34,17 @@
 .hero-content {
   position: relative;
   z-index: 2;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.5rem;
 
   .title {
-    overflow: hidden;
     color: var(--p-text-on-primary);
     text-align: center;
-    text-overflow: ellipsis;
     font-size: 3rem;
     font-weight: 700;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
   }
 
   .subtitle {
     color: var(--p-text-on-primary);
+    text-align: center;
     font-size: 1.5rem;
     font-weight: 600;
   }
@@ -74,13 +65,10 @@
 }
 @media (max-width: bp.$lg) {
   .hero-container {
-    height: 26rem;
     background-position: center center;
   }
 
   .hero-content {
-    gap: 2rem;
-
     .title {
       font-size: 2.5rem;
       -webkit-line-clamp: 2;
@@ -94,14 +82,10 @@
 
 @media (max-width: bp.$md) {
   .hero-container {
-    height: 22rem;
     background-position: center center;
   }
 
   .hero-content {
-    gap: 1.5rem;
-    padding: 0 1rem;
-
     .title {
       font-size: 2rem;
       -webkit-line-clamp: 2;
