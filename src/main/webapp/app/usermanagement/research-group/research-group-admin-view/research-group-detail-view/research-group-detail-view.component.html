@@ -2,12 +2,37 @@
   @if (!isLoading()) {
     <form [formGroup]="form">
       <div class="form-group">
-        <!-- General Information -->
+        <!-- Information Notice -->
+        <div class="flex items-start gap-3 p-4 bg-blue-50 border-l-4 border-[var(--p-primary-color)] rounded-r-lg mt-2 mb-4">
+          <div class="flex-1">
+            <p class="m-0 text-sm">{{ 'researchGroup.detailView.infoMessage' | translate }}</p>
+          </div>
+        </div>
+
+        <jhi-button
+          [label]="'button.save'"
+          icon="save"
+          [shouldTranslate]="true"
+          [disabled]="!form.valid || isSaving()"
+          (click)="onSave()"
+        />
+
+        <!-- Basic information section -->
         <p-divider layout="horizontal">
           <span jhiTranslate="researchGroup.detailView.section1"></span>
         </p-divider>
 
         <div class="form-row">
+          <div class="form-field">
+            <jhi-string-input
+              [id]="'rg-name'"
+              label="{{ 'researchGroup.detailView.name' | translate }}"
+              [required]="true"
+              [control]="form.controls.name"
+              [model]="form.controls.name.value || ''"
+              placeholder="{{ 'researchGroup.detailView.placeholders.name' | translate }}"
+            />
+          </div>
           <div class="form-field">
             <jhi-string-input
               [id]="'rg-abbreviation'"
@@ -17,16 +42,26 @@
               placeholder="{{ 'researchGroup.detailView.placeholders.abbreviation' | translate }}"
             />
           </div>
+        </div>
+
+        <div class="form-row">
           <div class="form-field">
             <jhi-string-input
-              [id]="'rg-name'"
-              label="{{ 'researchGroup.detailView.name' | translate }}"
-              [control]="form.controls.name"
-              [model]="form.controls.name.value || ''"
-              placeholder="{{ 'researchGroup.detailView.placeholders.name' | translate }}"
+              [id]="'rg-head'"
+              label="{{ 'researchGroup.detailView.head' | translate }}"
+              [required]="true"
+              [control]="form.controls.head"
+              [model]="form.controls.head.value || ''"
+              placeholder="{{ 'researchGroup.detailView.placeholders.head' | translate }}"
             />
           </div>
+          <div class="form-field"></div>
         </div>
+
+        <!-- School and website section -->
+        <p-divider layout="horizontal">
+          <span jhiTranslate="researchGroup.detailView.section2"></span>
+        </p-divider>
 
         <div class="form-row">
           <div class="form-field">
@@ -52,11 +87,11 @@
         <div class="form-row">
           <div class="form-field">
             <jhi-string-input
-              [id]="'rg-head'"
-              label="{{ 'researchGroup.detailView.head' | translate }}"
-              [control]="form.controls.head"
-              [model]="form.controls.head.value || ''"
-              placeholder="{{ 'researchGroup.detailView.placeholders.head' | translate }}"
+              [id]="'rg-website'"
+              label="{{ 'researchGroup.detailView.website' | translate }}"
+              [control]="form.controls.website"
+              [model]="form.controls.website.value || ''"
+              placeholder="{{ 'researchGroup.detailView.placeholders.website' | translate }}"
             />
           </div>
           <div class="form-field">
@@ -70,31 +105,7 @@
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-field">
-            <jhi-string-input
-              [id]="'rg-website'"
-              label="{{ 'researchGroup.detailView.website' | translate }}"
-              [control]="form.controls.website"
-              [model]="form.controls.website.value || ''"
-              placeholder="{{ 'researchGroup.detailView.placeholders.website' | translate }}"
-            />
-          </div>
-        </div>
-
-        <p-divider layout="horizontal">
-          <span jhiTranslate="researchGroup.detailView.section2"></span>
-        </p-divider>
-
-        <jhi-editor
-          [id]="'rg-description'"
-          [characterLimit]="1000"
-          label="researchGroup.detailView.description"
-          [control]="form.controls.description"
-          placeholder="researchGroup.detailView.placeholders.description"
-          [shouldTranslate]="true"
-        />
-
+        <!-- Address section -->
         <p-divider layout="horizontal">
           <span jhiTranslate="researchGroup.detailView.section3"></span>
         </p-divider>
@@ -120,7 +131,7 @@
           </div>
         </div>
 
-        <div class="form-row">
+        <div class="form-row mb-6">
           <div class="form-field">
             <jhi-string-input
               [id]="'rg-street'"
@@ -130,14 +141,16 @@
               placeholder="{{ 'researchGroup.detailView.placeholders.street' | translate }}"
             />
           </div>
+          <div class="form-field"></div>
         </div>
 
-        <jhi-button
-          [label]="'button.save'"
-          icon="save"
+        <jhi-editor
+          [id]="'rg-description'"
+          [characterLimit]="1000"
+          label="researchGroup.detailView.description"
+          [control]="form.controls.description"
+          placeholder="researchGroup.detailView.placeholders.description"
           [shouldTranslate]="true"
-          [disabled]="!form.valid || isSaving()"
-          (click)="onSave()"
         />
       </div>
     </form>
