@@ -10,10 +10,12 @@ import de.tum.cit.aet.core.security.annotations.Authenticated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -130,7 +132,10 @@ public class ApplicationResource {
      */
     @ApplicantOrAdmin
     @GetMapping("/pages")
-    public ResponseEntity<Page<ApplicationOverviewDTO>> getApplicationPages(PageDTO pageDTO, SortDTO sortDTO) {
+    public ResponseEntity<Page<ApplicationOverviewDTO>> getApplicationPages(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+    ) {
         return ResponseEntity.ok(applicationService.getAllApplications(pageDTO, sortDTO));
     }
 
