@@ -82,7 +82,7 @@
     "bootstrap": "5.3.8",
     "dayjs": "1.11.18",
     "keycloak-js": "26.2.1",
-    "ngx-quill": "28.0.1",
+    "ngx-quill": "28.0.2",
     "postal-codes-js": "2.5.2",
     "primeicons": "7.0.0",
     "primeng": "20.3.0",
