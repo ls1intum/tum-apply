@@ -26,10 +26,6 @@ import { DocumentInformationHolderDTO } from '../model/documentInformationHolder
 // @ts-ignore
 import { PageApplicationOverviewDTO } from '../model/pageApplicationOverviewDTO';
 // @ts-ignore
-import { PageDTO } from '../model/pageDTO';
-// @ts-ignore
-import { SortDTO } from '../model/sortDTO';
-// @ts-ignore
 import { UpdateApplicationDTO } from '../model/updateApplicationDTO';
 
 // @ts-ignore
@@ -307,27 +303,27 @@ export class ApplicationResourceApiService extends BaseService {
     }
 
     /**
-     * @param pageDTO 
-     * @param sortDTO 
+     * @param pageSize 
+     * @param pageNumber 
+     * @param sortBy 
+     * @param direction 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageApplicationOverviewDTO>;
-    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageApplicationOverviewDTO>>;
-    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageApplicationOverviewDTO>>;
-    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (pageDTO === null || pageDTO === undefined) {
-            throw new Error('Required parameter pageDTO was null or undefined when calling getApplicationPages.');
-        }
-        if (sortDTO === null || sortDTO === undefined) {
-            throw new Error('Required parameter sortDTO was null or undefined when calling getApplicationPages.');
-        }
+    public getApplicationPages(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageApplicationOverviewDTO>;
+    public getApplicationPages(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageApplicationOverviewDTO>>;
+    public getApplicationPages(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageApplicationOverviewDTO>>;
+    public getApplicationPages(pageSize?: number, pageNumber?: number, sortBy?: string, direction?: 'ASC' | 'DESC', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>pageDTO, 'pageDTO');
+          <any>pageSize, 'pageSize');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>sortDTO, 'sortDTO');
+          <any>pageNumber, 'pageNumber');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>sortBy, 'sortBy');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>direction, 'direction');
 
         let localVarHeaders = this.defaultHeaders;
 

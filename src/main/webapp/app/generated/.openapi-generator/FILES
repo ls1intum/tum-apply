@@ -59,7 +59,6 @@ model/loginRequestDTO.ts
 model/otpCompleteDTO.ts
 model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
-model/pageDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts
@@ -79,7 +78,6 @@ model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
-model/sortDTO.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/updatePasswordDTO.ts

@@ -79,14 +79,24 @@ paths:
       tags: [application-resource]
       operationId: getApplicationPages
       parameters:
-      - name: pageDTO
+      - name: pageSize
         in: query
-        required: true
-        schema: {$ref: '#/components/schemas/PageDTO'}
-      - name: sortDTO
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
         in: query
-        required: true
-        schema: {$ref: '#/components/schemas/SortDTO'}
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
       responses:
         '200':
           description: OK
@@ -1762,11 +1772,6 @@ components:
         sort: {$ref: '#/components/schemas/SortObject'}
         totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
-    PageDTO:
-      type: object
-      properties:
-        pageNumber: {type: integer, format: int32, minimum: 0}
-        pageSize: {type: integer, format: int32, minimum: 1}
     PageJobCardDTO:
       type: object
       properties:
@@ -1950,13 +1955,6 @@ components:
         email: {type: string, format: email, minLength: 1}
         registration: {type: boolean}
       required: [email]
-    SortDTO:
-      type: object
-      properties:
-        direction:
-          type: string
-          enum: [ASC, DESC]
-        sortBy: {type: string}
     SortObject:
       type: object
       properties:
