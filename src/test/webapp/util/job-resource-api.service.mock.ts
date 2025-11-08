@@ -4,13 +4,13 @@ import { vi } from 'vitest';
 
 export type JobResourceApiServiceMock = Pick<
   JobResourceApiService,
-  'getJobDetails' | 'getAllJobs' | 'getJobById' | 'createJob' | 'updateJob' | 'deleteJob'
+  'getJobDetails' | 'getAvailableJobs' | 'getJobsByProfessor' | 'getJobById' | 'createJob' | 'updateJob' | 'deleteJob'
 >;
-
 export function createJobResourceApiServiceMock(): JobResourceApiServiceMock {
   return {
     getJobDetails: vi.fn(),
-    getAllJobs: vi.fn(),
+    getAvailableJobs: vi.fn(),
+    getJobsByProfessor: vi.fn(),
     getJobById: vi.fn(),
     createJob: vi.fn(),
     updateJob: vi.fn(),
