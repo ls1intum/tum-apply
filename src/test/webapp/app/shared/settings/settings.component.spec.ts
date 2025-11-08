@@ -39,7 +39,7 @@ describe('SettingsComponent', () => {
   });
 
   it('should set role from AccountService authorities', () => {
-    accountServiceMock.setLoadedUser({
+    accountServiceMock.user.set({
       id: 'u1',
       name: 'Test User',
       email: 'user@test.com',
@@ -51,14 +51,14 @@ describe('SettingsComponent', () => {
   });
 
   it('should keep role undefined if no user is loaded', () => {
-    accountServiceMock.setLoadedUser(undefined);
+    accountServiceMock.user.set(undefined);
 
     const component = TestBed.createComponent(SettingsComponent).componentInstance;
     expect(component.role()).toBeUndefined();
   });
 
   it('should keep role undefined if authorities array is empty', () => {
-    accountServiceMock.setLoadedUser({
+    accountServiceMock.user.set({
       id: 'u1',
       name: 'Test User',
       email: 'user@test.com',
