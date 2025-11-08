@@ -129,7 +129,16 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
     @Test
     void getApplicationByIdReturnsApplication() {
-        Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
+        Application application = ApplicationTestData.savedAll(
+            applicationRepository,
+            publishedJob,
+            applicant,
+            ApplicationState.SENT,
+            LocalDate.of(2025, 9, 15),
+            "Building web applications",
+            "Java, Spring, React",
+            "Eager to contribute to research"
+        );
 
         ApplicationForApplicantDTO returnedApp = api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -137,7 +146,11 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         assertThat(returnedApp.applicationId()).isEqualTo(application.getApplicationId());
         assertThat(returnedApp.applicationState()).isEqualTo(ApplicationState.SENT);
-        assertThat(returnedApp.desiredDate()).isEqualTo(application.getDesiredStartDate());
+        assertThat(returnedApp.desiredDate()).isEqualTo(LocalDate.of(2025, 9, 15));
+        assertThat(returnedApp.projects()).isEqualTo("Building web applications");
+        assertThat(returnedApp.specialSkills()).isEqualTo("Java, Spring, React");
+        assertThat(returnedApp.motivation()).isEqualTo("Eager to contribute to research");
+        assertThat(returnedApp.job().jobId()).isEqualTo(publishedJob.getJobId());
     }
 
     @Test
@@ -287,9 +300,18 @@ class ApplicationResourceTest extends AbstractResourceTest {
     // ===== GET APPLICATION PAGES =====
 
     @Test
-    void getApplicationPagesReturnsApplications() {
+    void getApplicationPagesReturnsApplicationsWithCorrectDetails() {
         ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-        ApplicationTestData.savedInReview(applicationRepository, publishedJob, applicant);
+        Application reviewApp = ApplicationTestData.savedAll(
+            applicationRepository,
+            publishedJob,
+            applicant,
+            ApplicationState.IN_REVIEW,
+            LocalDate.of(2025, 11, 15),
+            "Robotics and AI projects",
+            "Machine Learning, Python, TensorFlow",
+            "Passionate about AI research"
+        );
         ApplicationTestData.savedAccepted(applicationRepository, draftJob, applicant);
 
         List<ApplicationOverviewDTO> applications = api
@@ -297,6 +319,22 @@ class ApplicationResourceTest extends AbstractResourceTest {
             .getAndRead("/api/applications/pages?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 200);
 
         assertThat(applications).hasSize(3);
+
+        // Verify one application has correct details
+        ApplicationDetailDTO detailDTO = api
+            .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+            .getAndRead("/api/applications/" + reviewApp.getApplicationId() + "/detail", null, ApplicationDetailDTO.class, 200);
+
+        assertThat(detailDTO.applicationId()).isEqualTo(reviewApp.getApplicationId());
+        assertThat(detailDTO.jobId()).isEqualTo(publishedJob.getJobId());
+        assertThat(detailDTO.applicationState()).isEqualTo(ApplicationState.IN_REVIEW);
+        assertThat(detailDTO.jobTitle()).isEqualTo("AI Engineer Position");
+        assertThat(detailDTO.desiredDate()).isEqualTo(LocalDate.of(2025, 11, 15));
+        assertThat(detailDTO.projects()).isEqualTo("Robotics and AI projects");
+        assertThat(detailDTO.specialSkills()).isEqualTo("Machine Learning, Python, TensorFlow");
+        assertThat(detailDTO.motivation()).isEqualTo("Passionate about AI research");
+        assertThat(detailDTO.supervisingProfessorName()).isEqualTo("Alice Smith");
+        assertThat(detailDTO.researchGroup()).isEqualTo("AI Research Group");
     }
 
     @Test
@@ -351,35 +389,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     }
 
     // ===== GET APPLICATION DETAIL =====
-
-    @Test
-    void getApplicationDetailReturnsCorrectDetails() {
-        Application application = ApplicationTestData.savedAll(
-            applicationRepository,
-            publishedJob,
-            applicant,
-            ApplicationState.IN_REVIEW,
-            LocalDate.of(2025, 11, 15),
-            "Robotics and AI projects",
-            "Machine Learning, Python, TensorFlow",
-            "Passionate about AI research"
-        );
-
-        ApplicationDetailDTO detailDTO = api
-            .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-            .getAndRead("/api/applications/" + application.getApplicationId() + "/detail", null, ApplicationDetailDTO.class, 200);
-
-        assertThat(detailDTO.applicationId()).isEqualTo(application.getApplicationId());
-        assertThat(detailDTO.jobId()).isEqualTo(publishedJob.getJobId());
-        assertThat(detailDTO.applicationState()).isEqualTo(ApplicationState.IN_REVIEW);
-        assertThat(detailDTO.jobTitle()).isEqualTo("AI Engineer Position");
-        assertThat(detailDTO.desiredDate()).isEqualTo(LocalDate.of(2025, 11, 15));
-        assertThat(detailDTO.projects()).isEqualTo("Robotics and AI projects");
-        assertThat(detailDTO.specialSkills()).isEqualTo("Machine Learning, Python, TensorFlow");
-        assertThat(detailDTO.motivation()).isEqualTo("Passionate about AI research");
-        assertThat(detailDTO.supervisingProfessorName()).isEqualTo("Alice Smith");
-        assertThat(detailDTO.researchGroup()).isEqualTo("AI Research Group");
-    }
 
     @Test
     void getApplicationDetailNonexistentThrowsNotFound() {
