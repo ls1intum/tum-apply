@@ -1,19 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Params, Router, UrlSegment } from '@angular/router';
-import { computed, signal } from '@angular/core';
+import { ActivatedRoute, convertToParamMap, Params, UrlSegment } from '@angular/router';
+import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach, MockInstance } from 'vitest';
-import { provideTranslateMock } from 'util/translate.mock';
+import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 import ApplicationCreationFormComponent from '../../../../../main/webapp/app/application/application-creation/application-creation-form/application-creation-form.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { AccountService, User } from 'app/core/auth/account.service';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { AccountService } from 'app/core/auth/account.service';
 import { of, Subject, throwError } from 'rxjs';
-import { ToastService } from 'app/service/toast-service';
-import { Location } from '@angular/common';
-import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
-import { LocalStorageService } from 'app/service/localStorage.service';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateService } from '@ngx-translate/core';
 import { SavingStates } from 'app/shared/constants/saving-states';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
@@ -22,11 +16,31 @@ import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { UpdateApplicationDTO } from 'app/generated/model/updateApplicationDTO';
 import { UserDTO } from 'app/generated/model/userDTO';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { ApplicationCreationPage1Data } from 'app/application/application-creation/application-creation-page1/application-creation-page1.component';
 import { ProgressStepperComponent } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-
-type MockDialogRef = Pick<DynamicDialogRef, 'close'>;
+import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
+import { createLocationMock, provideLocationMock, LocationMock } from 'util/location.mock';
+import { createAuthFacadeServiceMock, provideAuthFacadeServiceMock, AuthFacadeServiceMock } from 'util/auth-facade.service.mock';
+import { createDialogServiceMock, provideDialogServiceMock, DialogServiceMock } from 'util/dialog.service.mock';
+import {
+  createAuthOrchestratorServiceMock,
+  provideAuthOrchestratorServiceMock,
+  AuthOrchestratorServiceMock,
+} from 'util/auth-orchestrator.service.mock';
+import { createLocalStorageServiceMock, provideLocalStorageServiceMock, LocalStorageServiceMock } from 'util/local-storage.service.mock';
+import {
+  createApplicationResourceApiServiceMock,
+  provideApplicationResourceApiServiceMock,
+  ApplicationResourceApiServiceMock,
+} from 'util/application-resource-api.service.mock';
+import {
+  createJobResourceApiServiceMock,
+  provideJobResourceApiServiceMock,
+  JobResourceApiServiceMock,
+} from 'util/job-resource-api.service.mock';
+import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 function spyOnPrivate<T extends object>(obj: T, methodName: string) {
   return vi.spyOn(obj as any, methodName);
@@ -35,6 +49,8 @@ function spyOnPrivate<T extends object>(obj: T, methodName: string) {
 function mockReturnValuePrivate<R>(spy: MockInstance<(this: unknown, ...args: unknown[]) => unknown> | MockInstance<any>, mockValue: R) {
   return spy.mockReturnValue(mockValue as any);
 }
+
+type MockDialogRef = Pick<DynamicDialogRef, 'close'>;
 
 function createMockDialogRef(): MockDialogRef {
   return {
@@ -49,67 +65,37 @@ function createProgressStepperMock(): ProgressStepperComponent {
   return mock as unknown as ProgressStepperComponent;
 }
 
-function createActivatedRoute(route$: Subject<UrlSegment[]>, params: Params): Pick<ActivatedRoute, 'snapshot' | 'url'> {
-  const activatedRoute = {
-    url: route$,
-    snapshot: {
-      paramMap: convertToParamMap({}),
-      queryParamMap: convertToParamMap(params),
-      url: [],
-      params: {},
-      queryParams: {},
-      fragment: '',
-      data: {},
-      outlet: 'primary',
-      component: null,
-      routeConfig: null,
-      root: null!,
-      parent: null,
-      firstChild: null,
-      children: [],
-      pathFromRoot: [],
-      toString: () => '',
-      title: '',
-    },
-  };
-  return activatedRoute;
-}
-
 interface TestBedConfig {
-  accountService: Pick<AccountService, 'loadedUser' | 'user' | 'signedIn' | 'loaded'>;
-  applicationResourceApiService: Pick<
-    ApplicationResourceApiService,
-    'createApplication' | 'getApplicationById' | 'updateApplication' | 'getDocumentDictionaryIds'
-  >;
-  router: Pick<Router, 'navigate'>;
-  location: Pick<Location, 'back'>;
-  toast: Pick<ToastService, 'showErrorKey' | 'showSuccessKey'>;
-  authFacade: Pick<AuthFacadeService, 'requestOtp'>;
-  activatedRoute: Pick<ActivatedRoute, 'snapshot' | 'url'>;
-  dialogService: Pick<DialogService, 'open'>;
-  authOrchestrator: Pick<AuthOrchestratorService, 'email' | 'firstName' | 'lastName'>;
-  localStorageService: Pick<LocalStorageService, 'saveApplicationDraft' | 'clearApplicationDraft' | 'loadApplicationDraft'>;
-  translateService: Pick<TranslateService, 'instant'>;
-  jobResourceService: Pick<JobResourceApiService, 'getJobDetails'>;
+  accountService: AccountServiceMock;
+  applicationResourceApiService: ApplicationResourceApiServiceMock;
+  router: RouterMock;
+  location: LocationMock;
+  toast: ToastServiceMock;
+  authFacade: AuthFacadeServiceMock;
+  activatedRoute: ActivatedRouteMock;
+  dialogService: DialogServiceMock;
+  authOrchestrator: AuthOrchestratorServiceMock;
+  localStorageService: LocalStorageServiceMock;
+  translateService: TranslateServiceMock;
+  jobResourceService: JobResourceApiServiceMock;
 }
 
 async function configureTestBed(config: TestBedConfig) {
   return await TestBed.configureTestingModule({
     imports: [ApplicationCreationFormComponent],
     providers: [
-      { provide: AccountService, useValue: config.accountService },
-      { provide: ApplicationResourceApiService, useValue: config.applicationResourceApiService },
-      { provide: Router, useValue: config.router },
-      { provide: Location, useValue: config.location },
-      { provide: ToastService, useValue: config.toast },
-      { provide: AuthFacadeService, useValue: config.authFacade },
-      { provide: ActivatedRoute, useValue: config.activatedRoute },
-      { provide: DialogService, useValue: config.dialogService },
-      { provide: AuthOrchestratorService, useValue: config.authOrchestrator },
-      { provide: LocalStorageService, useValue: config.localStorageService },
-      { provide: TranslateService, useValue: config.translateService },
-      { provide: JobResourceApiService, useValue: config.jobResourceService },
-      provideTranslateMock(),
+      provideAccountServiceMock(config.accountService as any),
+      provideApplicationResourceApiServiceMock(config.applicationResourceApiService),
+      provideRouterMock(config.router),
+      provideLocationMock(config.location),
+      provideToastServiceMock(config.toast),
+      provideAuthFacadeServiceMock(config.authFacade),
+      provideActivatedRouteMock(config.activatedRoute),
+      provideDialogServiceMock(config.dialogService),
+      provideAuthOrchestratorServiceMock(config.authOrchestrator),
+      provideLocalStorageServiceMock(config.localStorageService),
+      provideJobResourceApiServiceMock(config.jobResourceService),
+      provideTranslateMock(config.translateService),
       provideFontAwesomeTesting(),
     ],
   }).compileComponents();
@@ -154,76 +140,54 @@ const createMockApplication = (applicationState: ApplicationForApplicantDTO.Appl
 });
 
 describe('ApplicationForm', () => {
-  let accountService: Pick<AccountService, 'loadedUser' | 'user' | 'signedIn' | 'loaded'>;
-  let applicationResourceApiService: Pick<
-    ApplicationResourceApiService,
-    'createApplication' | 'getApplicationById' | 'updateApplication' | 'getDocumentDictionaryIds'
-  >;
-  let toast: Pick<ToastService, 'showErrorKey' | 'showSuccessKey'>;
-  let router: Pick<Router, 'navigate'>;
-  let location: Pick<Location, 'back'>;
-  let authFacade: Pick<AuthFacadeService, 'requestOtp'>;
-
-  let route$: Subject<UrlSegment[]>;
-
-  let dialogService: Pick<DialogService, 'open'>;
-  let authOrchestrator: Pick<AuthOrchestratorService, 'email' | 'firstName' | 'lastName'>;
-  let localStorageService: Pick<LocalStorageService, 'saveApplicationDraft' | 'clearApplicationDraft' | 'loadApplicationDraft'>;
-  let translateService: Pick<TranslateService, 'instant'>;
-  let activatedRoute: Pick<ActivatedRoute, 'snapshot' | 'url'>;
-  let jobResourceService: Pick<JobResourceApiService, 'getJobDetails'>;
+  let accountService: AccountServiceMock;
+  let applicationResourceApiService: ApplicationResourceApiServiceMock;
+  let toast: ToastServiceMock;
+  let router: RouterMock;
+  let location: LocationMock;
+  let authFacade: AuthFacadeServiceMock;
+  let dialogService: DialogServiceMock;
+  let authOrchestrator: AuthOrchestratorServiceMock;
+  let localStorageService: LocalStorageServiceMock;
+  let translateService: TranslateServiceMock;
+  let activatedRoute: ActivatedRouteMock;
+  let jobResourceService: JobResourceApiServiceMock;
 
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
   let comp: ApplicationCreationFormComponent;
   beforeEach(async () => {
-    accountService = {
-      loaded: signal<boolean>(true),
-      user: signal<User | undefined>({ id: '2', email: 'test@example.com', name: 'Test User' }),
-      signedIn: signal<boolean>(true),
-      loadedUser: computed(() => (accountService.loaded() ? accountService.user() : undefined)),
-    };
+    accountService = createAccountServiceMock({ id: '2', email: 'test@example.com', name: 'Test User' });
 
-    applicationResourceApiService = {
-      createApplication: vi.fn().mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
-      getApplicationById: vi.fn().mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved))),
-      updateApplication: vi.fn().mockReturnValue(of({})),
-      getDocumentDictionaryIds: vi.fn().mockReturnValue(of({})),
-    };
-    toast = {
-      showErrorKey: vi.fn(),
-      showSuccessKey: vi.fn(),
-    };
-    router = { navigate: vi.fn() };
-    location = { back: vi.fn() };
-    authFacade = { requestOtp: vi.fn() };
+    applicationResourceApiService = createApplicationResourceApiServiceMock();
+    applicationResourceApiService.createApplication = vi
+      .fn()
+      .mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
+    applicationResourceApiService.getApplicationById = vi
+      .fn()
+      .mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
+    applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of({}));
+    applicationResourceApiService.getDocumentDictionaryIds = vi.fn().mockReturnValue(of({}));
 
-    route$ = new Subject();
+    toast = createToastServiceMock();
+    router = createRouterMock();
+    location = createLocationMock();
+    authFacade = createAuthFacadeServiceMock();
+    dialogService = createDialogServiceMock();
+    dialogService.open = vi.fn().mockReturnValue(of({ close: vi.fn() }));
 
-    dialogService = {
-      open: vi.fn().mockReturnValue(of({ close: vi.fn() })),
-    };
+    authOrchestrator = createAuthOrchestratorServiceMock();
+    authOrchestrator.email.set('email@email.com');
+    authOrchestrator.firstName.set('firstname');
+    authOrchestrator.lastName.set('lastname');
 
-    authOrchestrator = {
-      email: signal<string>('email@email.com'),
-      firstName: signal<string>('firstname'),
-      lastName: signal<string>('lastname'),
-    };
+    localStorageService = createLocalStorageServiceMock();
 
-    localStorageService = {
-      clearApplicationDraft: vi.fn(),
-      loadApplicationDraft: vi.fn(),
-      saveApplicationDraft: vi.fn(),
-    };
+    translateService = createTranslateServiceMock();
 
-    translateService = {
-      instant: vi.fn(),
-    };
+    jobResourceService = createJobResourceApiServiceMock();
+    jobResourceService.getJobDetails = vi.fn().mockReturnValue({ title: 'Test Job' });
 
-    jobResourceService = {
-      getJobDetails: vi.fn().mockReturnValue({ title: 'Test Job' }),
-    };
-
-    activatedRoute = createActivatedRoute(route$, { job: '123', application: '456' });
+    activatedRoute = createActivatedRouteMock({}, { job: '123', application: '456' });
 
     await configureTestBed({
       accountService,
@@ -271,7 +235,7 @@ describe('ApplicationForm', () => {
       location,
       toast,
       authFacade,
-      activatedRoute: createActivatedRoute(route$, { job: '123' }),
+      activatedRoute: createActivatedRouteMock({}, { job: '123' }),
       dialogService,
       authOrchestrator,
       localStorageService,
@@ -291,7 +255,7 @@ describe('ApplicationForm', () => {
     freshFixture.detectChanges();
 
     expect(initCreateSpy).toHaveBeenCalledWith('123');
-    expect(freshComp.applicantId()).toBe('2'); // from accountService.loadedUser().id
+    expect(freshComp.applicantId()).toBe('2'); // from accountService.user().id
   });
 
   it('should throw error when neither jobId nor applicationId is provided', async () => {
@@ -303,7 +267,7 @@ describe('ApplicationForm', () => {
       location,
       toast,
       authFacade,
-      activatedRoute: createActivatedRoute(route$, {}),
+      activatedRoute: createActivatedRouteMock({}, {}),
       dialogService,
       authOrchestrator,
       localStorageService,
@@ -1681,8 +1645,9 @@ describe('ApplicationForm', () => {
       expect(comp.applicationId()).toBe('456');
 
       // Should navigate with query params
+      const injectedRoute = TestBed.inject(ActivatedRoute);
       expect(router.navigate).toHaveBeenCalledWith([], {
-        relativeTo: activatedRoute,
+        relativeTo: injectedRoute,
         queryParams: { job: '123', application: '456' },
         queryParamsHandling: 'merge',
       });
@@ -1721,8 +1686,9 @@ describe('ApplicationForm', () => {
       expect(comp.applicationId()).toBe('');
 
       // Should navigate with undefined application in query params
+      const injectedRoute = TestBed.inject(ActivatedRoute);
       expect(router.navigate).toHaveBeenCalledWith([], {
-        relativeTo: activatedRoute,
+        relativeTo: injectedRoute,
         queryParams: { job: 'job-456', application: undefined },
         queryParamsHandling: 'merge',
       });

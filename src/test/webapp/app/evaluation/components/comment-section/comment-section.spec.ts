@@ -25,15 +25,9 @@ describe('CommentSection', () => {
   };
 
   let mockToast = createToastServiceMock();
-  const mockAccount = createAccountServiceMock();
+  const mockAccount = createAccountServiceMock({ id: 'reviewer-1', name: 'Alice Reviewer', email: 'alice@test.com' });
 
   beforeEach(async () => {
-    mockAccount.setLoadedUser({
-      id: 'u1',
-      name: 'Alice Reviewer',
-      email: 'alice@test.com',
-    });
-
     mockCommentApi = {
       listComments: vi.fn(),
       createComment: vi.fn(),
@@ -70,8 +64,7 @@ describe('CommentSection', () => {
     it('should set currentUser to empty string when user is null', () => {
       TestBed.resetTestingModule();
 
-      const accountServiceWithNoUser = createAccountServiceMock();
-      accountServiceWithNoUser.setLoadedUser(undefined);
+      const accountServiceWithNoUser = createAccountServiceMock(undefined);
 
       TestBed.configureTestingModule({
         imports: [CommentSection],

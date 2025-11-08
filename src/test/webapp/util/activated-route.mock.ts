@@ -34,7 +34,7 @@ export function createActivatedRouteMock(
 }
 
 /**
- * Provides the mock to Angular’s DI.
+ * Provides the mock to Angular's DI.
  */
 export function provideActivatedRouteMock(mock: ActivatedRouteMock): Provider {
   return {
@@ -43,8 +43,8 @@ export function provideActivatedRouteMock(mock: ActivatedRouteMock): Provider {
       paramMap: mock.paramMapSubject.asObservable(),
       queryParamMap: mock.queryParamMapSubject.asObservable(),
       snapshot: {
-        paramMap: convertToParamMap({}),
-        queryParamMap: convertToParamMap({}),
+        paramMap: mock.paramMapSubject.value,
+        queryParamMap: mock.queryParamMapSubject.value,
       },
     },
   };
