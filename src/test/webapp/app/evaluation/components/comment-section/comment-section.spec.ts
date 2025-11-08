@@ -26,14 +26,9 @@ describe('CommentSection', () => {
 
   let mockToast = createToastServiceMock();
   const mockAccount = createAccountServiceMock();
+  mockAccount.user.set({ id: 'reviewer-1', name: 'Alice Reviewer', email: 'alice@test.com' });
 
   beforeEach(async () => {
-    mockAccount.setLoadedUser({
-      id: 'u1',
-      name: 'Alice Reviewer',
-      email: 'alice@test.com',
-    });
-
     mockCommentApi = {
       listComments: vi.fn(),
       createComment: vi.fn(),
@@ -71,7 +66,7 @@ describe('CommentSection', () => {
       TestBed.resetTestingModule();
 
       const accountServiceWithNoUser = createAccountServiceMock();
-      accountServiceWithNoUser.setLoadedUser(undefined);
+      accountServiceWithNoUser.user.set(undefined);
 
       TestBed.configureTestingModule({
         imports: [CommentSection],

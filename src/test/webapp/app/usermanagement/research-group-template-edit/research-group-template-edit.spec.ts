@@ -10,7 +10,7 @@ import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } fro
 import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { ResearchGroupTemplateEdit } from 'app/usermanagement/research-group/research-group-template-edit/research-group-template-edit';
-import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-rout.mock';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 
 class ResizeObserverMock {
   observe() {}
