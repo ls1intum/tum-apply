@@ -9,7 +9,7 @@ import {
 import { type Provider } from '@angular/core';
 import { of, Subject } from 'rxjs';
 
-export function createTranslateServiceMock(): Pick<
+export type TranslateServiceMock = Pick<
   TranslateService,
   | 'instant'
   | 'get'
@@ -23,7 +23,9 @@ export function createTranslateServiceMock(): Pick<
   | 'use'
   | 'setDefaultLang'
   | 'setFallbackLang'
-> {
+>;
+
+export function createTranslateServiceMock(): TranslateServiceMock {
   const onTranslationChangeSubject = new Subject<TranslationChangeEvent>();
   const onLangChangeSubject = new Subject<LangChangeEvent>();
   const onFallbackLangChangeSubject = new Subject<FallbackLangChangeEvent>();
