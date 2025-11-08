@@ -80,7 +80,7 @@
     "@primeuix/themes": "1.2.5",
     "@primeuix/utils": "0.6.2",
     "bootstrap": "5.3.8",
-    "dayjs": "1.11.18",
+    "dayjs": "1.11.19",
     "keycloak-js": "26.2.1",
     "ngx-quill": "28.0.1",
     "postal-codes-js": "2.5.2",
