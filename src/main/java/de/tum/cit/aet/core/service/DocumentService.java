@@ -156,9 +156,9 @@ public class DocumentService {
      */
     private Resource load(Document document) throws IOException {
         String storedPath = document.getPath();
-        
+
         Path path = Paths.get(storedPath);
-        
+
         if (!path.isAbsolute()) {
             if (path.getNameCount() == 1) {
                 path = root.resolve(path);
@@ -167,11 +167,10 @@ public class DocumentService {
                 path = workingDir.resolve(path);
             }
         }
-        
+
         path = path.toAbsolutePath().normalize();
         Path normalizedRoot = root.toAbsolutePath().normalize();
 
-        
         if (!path.startsWith(normalizedRoot)) {
             throw new IllegalStateException("Stored path lies outside storage root: " + path);
         }
@@ -183,7 +182,7 @@ public class DocumentService {
         if (!resource.isReadable()) {
             throw new NoSuchFileException("Binary not readable on disk: " + path);
         }
-        
+
         return resource;
     }
 
