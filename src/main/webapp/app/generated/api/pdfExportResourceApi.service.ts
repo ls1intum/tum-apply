@@ -33,6 +33,7 @@ export class PdfExportResourceApiService extends BaseService {
     }
 
     /**
+     * @endpoint post /api/export/application/{id}/pdf
      * @param id 
      * @param requestBody 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -73,15 +74,16 @@ export class PdfExportResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/export/application/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/pdf`;
-        return this.httpClient.request('post', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: requestBody,
                 responseType: "blob",
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
