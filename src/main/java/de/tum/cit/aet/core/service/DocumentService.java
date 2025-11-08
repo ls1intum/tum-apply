@@ -19,7 +19,6 @@ import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.Optional;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @Service
 public class DocumentService {
 
@@ -180,15 +178,12 @@ public class DocumentService {
 
         Resource resource = new PathResource(path);
         if (!resource.exists()) {
-            log.error("File does not exist: {}", path);
             throw new NoSuchFileException("Binary not found on disk: " + path);
         }
         if (!resource.isReadable()) {
-            log.error("File is not readable: {}", path);
             throw new NoSuchFileException("Binary not readable on disk: " + path);
         }
         
-        log.debug("Successfully loaded document from: {}", path);
         return resource;
     }
 
