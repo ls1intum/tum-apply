@@ -35,7 +35,6 @@ export class InterviewResourceApiService extends BaseService {
     }
 
     /**
-     * @endpoint get /api/interviews/overview
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -70,15 +69,14 @@ export class InterviewResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/interviews/overview`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<InterviewOverviewDTO>>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<Array<InterviewOverviewDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                transferCache: localVarTransferCache,
                 reportProgress: reportProgress
             }
         );
