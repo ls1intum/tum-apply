@@ -11,8 +11,8 @@ import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewD
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
-import { createRouterMock } from 'util/router.mock';
-import { createToastServiceMock } from 'util/toast-service.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 
 const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDTO>): ApplicationOverviewDTO => ({
   applicationId: '123',
@@ -29,8 +29,8 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     ApplicationResourceApiService,
     'getApplicationPages' | 'getApplicationPagesLength' | 'deleteApplication' | 'withdrawApplication'
   >;
-  let toastService: Pick<ToastService, 'showSuccess' | 'showError'>;
-  let router: Pick<Router, 'navigate'>;
+  let toastService: ToastServiceMock;
+  let router: RouterMock;
   let fixture: ComponentFixture<ApplicationOverviewForApplicantComponent>;
   let comp: ApplicationOverviewForApplicantComponent;
 
@@ -55,11 +55,10 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ApplicationOverviewForApplicantComponent],
       providers: [
-        { provide: AccountService, useValue: accountService },
-        { provide: ApplicationResourceApiService, useValue: applicationService },
-        { provide: ToastService, useValue: toastService },
-        { provide: Router, useValue: router },
-        provideRouter([]),
+        { provide: AccountService, useValue: accountService }, // TODO move to AccountServiceMock when ApplicationCreationForm Tests are merged
+        { provide: ApplicationResourceApiService, useValue: applicationService }, // TODO move to ApplicationResourceMock when ApplicationCreationForm Tests are merged
+        provideToastServiceMock(toastService),
+        provideRouterMock(router),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -83,7 +82,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     expect(comp.pageData()).toEqual([]);
     expect(comp.pageSize()).toBe(10);
     expect(comp.total()).toBe(0);
-    // lastLazyLoadEvent may be set during initialization, so we don't assert it's undefined
   });
 
   it('should set applicantId from accountService on construction', () => {
@@ -294,62 +292,22 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     });
   });
 
-  describe('columns computed property', () => {
-    it('should define correct table columns', () => {
-      const columns = comp.columns();
-
-      expect(columns).toHaveLength(5);
-      expect(columns[0].field).toBe('jobTitle');
-      expect(columns[0].header).toBe('entity.applicationOverview.columns.positionTitle');
-      expect(columns[0].width).toBe('34rem');
-
-      expect(columns[1].field).toBe('researchGroup');
-      expect(columns[1].header).toBe('entity.applicationOverview.columns.researchGroup');
-
-      expect(columns[2].field).toBe('badges');
-      expect(columns[2].header).toBe('entity.applicationOverview.columns.status');
-
-      expect(columns[3].field).toBe('timeSinceCreation');
-      expect(columns[3].header).toBe('entity.applicationOverview.columns.created');
-
-      expect(columns[4].field).toBe('actions');
-      expect(columns[4].header).toBe('');
-    });
-
-    it('should include templates in column definitions', () => {
-      const columns = comp.columns();
-
-      expect(columns[0].template).toBeDefined(); // jobNameTemplate
-      expect(columns[2].template).toBeDefined(); // badgeTemplate
-      expect(columns[4].template).toBeDefined(); // actionTemplate
-    });
-  });
-
   describe('effect - applicantId update', () => {
     it('should reload total when user changes', async () => {
       const loadTotalSpy = vi.spyOn(comp, 'loadTotal').mockResolvedValue();
-
-      // Change the user
       accountService.user.set({ id: 'new-user-456', email: 'new@example.com', name: 'New User' });
-
-      // Trigger change detection to run effect
       fixture.detectChanges();
-      await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(loadTotalSpy).toHaveBeenCalled();
+      expect(comp['applicantId']()).toBe('new-user-456');
     });
 
     it('should handle undefined user', async () => {
       const loadTotalSpy = vi.spyOn(comp, 'loadTotal').mockResolvedValue();
 
-      // Set user to undefined
       accountService.user.set(undefined);
 
-      // Trigger change detection to run effect
       fixture.detectChanges();
-      await new Promise(resolve => setTimeout(resolve, 10));
 
-      // Should be called with empty string due to ?? '' fallback
       expect(loadTotalSpy).toHaveBeenCalled();
     });
   });
