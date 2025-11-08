@@ -13,7 +13,6 @@ import de.tum.cit.aet.application.domain.dto.DocumentInformationHolderDTO;
 import de.tum.cit.aet.application.domain.dto.UpdateApplicationDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
@@ -32,6 +31,7 @@ import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.ApplicationTestData;
+import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
@@ -423,7 +423,15 @@ class ApplicationResourceTest extends AbstractResourceTest {
     @Test
     void deleteDocumentFromApplicationRemovesIt() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-        DocumentDictionary docDict = createTestDocument(application, applicant.getUser(), DocumentType.CV, "test_cv.pdf");
+        DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            documentRepository,
+            documentDictionaryRepository,
+            applicant.getUser(),
+            application,
+            applicant,
+            DocumentType.CV,
+            "test_cv.pdf"
+        );
 
         assertThat(documentDictionaryRepository.existsById(docDict.getDocumentDictionaryId())).isTrue();
 
@@ -444,7 +452,15 @@ class ApplicationResourceTest extends AbstractResourceTest {
     @Test
     void deleteDocumentFromApplicationWithoutAuthReturnsForbidden() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-        DocumentDictionary docDict = createTestDocument(application, applicant.getUser(), DocumentType.CV, "test_cv.pdf");
+        DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            documentRepository,
+            documentDictionaryRepository,
+            applicant.getUser(),
+            application,
+            applicant,
+            DocumentType.CV,
+            "test_cv.pdf"
+        );
 
         api.deleteAndRead("/api/applications/delete-document/" + docDict.getDocumentDictionaryId(), null, Void.class, 403);
     }
@@ -454,7 +470,15 @@ class ApplicationResourceTest extends AbstractResourceTest {
     @Test
     void renameDocumentUpdatesName() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-        DocumentDictionary docDict = createTestDocument(application, applicant.getUser(), DocumentType.CV, "original_name.pdf");
+        DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            documentRepository,
+            documentDictionaryRepository,
+            applicant.getUser(),
+            application,
+            applicant,
+            DocumentType.CV,
+            "original_name.pdf"
+        );
 
         assertThat(docDict.getName()).isEqualTo("original_name.pdf");
 
@@ -481,7 +505,15 @@ class ApplicationResourceTest extends AbstractResourceTest {
     @Test
     void renameDocumentWithoutAuthReturnsForbidden() {
         Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-        DocumentDictionary docDict = createTestDocument(application, applicant.getUser(), DocumentType.CV, "test_cv.pdf");
+        DocumentDictionary docDict = DocumentTestData.savedDictionaryWithMockDocument(
+            documentRepository,
+            documentDictionaryRepository,
+            applicant.getUser(),
+            application,
+            applicant,
+            DocumentType.CV,
+            "test_cv.pdf"
+        );
 
         api.putAndRead(
             "/api/applications/rename-document/" + docDict.getDocumentDictionaryId() + "?newName=renamed.pdf",
@@ -549,33 +581,5 @@ class ApplicationResourceTest extends AbstractResourceTest {
         api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
             .getAndRead("/api/applications/" + UUID.randomUUID(), null, Void.class, 404);
-    }
-
-    // ===== HELPER METHODS =====
-
-    /**
-     * Creates a test document and associates it with an application.
-     * This helper method creates the necessary Document and DocumentDictionary
-     * entities.
-     */
-    private DocumentDictionary createTestDocument(Application application, User uploadedBy, DocumentType documentType, String fileName) {
-        // Create document
-        Document document = new Document();
-        document.setSha256Id(UUID.randomUUID().toString());
-        document.setPath("/test/path/" + fileName);
-        document.setMimeType("application/pdf");
-        document.setSizeBytes(1024L);
-        document.setUploadedBy(uploadedBy);
-        document = documentRepository.save(document);
-
-        // Create document dictionary entry
-        DocumentDictionary docDict = new DocumentDictionary();
-        docDict.setDocument(document);
-        docDict.setApplication(application);
-        docDict.setDocumentType(documentType);
-        docDict.setName(fileName);
-        docDict = documentDictionaryRepository.save(docDict);
-
-        return docDict;
     }
 }
