@@ -22,9 +22,13 @@ import { ApplicationDocumentIdsDTO } from '../model/applicationDocumentIdsDTO';
 // @ts-ignore
 import { ApplicationForApplicantDTO } from '../model/applicationForApplicantDTO';
 // @ts-ignore
-import { ApplicationOverviewDTO } from '../model/applicationOverviewDTO';
-// @ts-ignore
 import { DocumentInformationHolderDTO } from '../model/documentInformationHolderDTO';
+// @ts-ignore
+import { PageApplicationOverviewDTO } from '../model/pageApplicationOverviewDTO';
+// @ts-ignore
+import { PageDTO } from '../model/pageDTO';
+// @ts-ignore
+import { SortDTO } from '../model/sortDTO';
 // @ts-ignore
 import { UpdateApplicationDTO } from '../model/updateApplicationDTO';
 
@@ -303,21 +307,27 @@ export class ApplicationResourceApiService extends BaseService {
     }
 
     /**
-     * @param pageSize 
-     * @param pageNumber 
+     * @param pageDTO 
+     * @param sortDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getApplicationPages(pageSize?: number, pageNumber?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ApplicationOverviewDTO>>;
-    public getApplicationPages(pageSize?: number, pageNumber?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ApplicationOverviewDTO>>>;
-    public getApplicationPages(pageSize?: number, pageNumber?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ApplicationOverviewDTO>>>;
-    public getApplicationPages(pageSize?: number, pageNumber?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageApplicationOverviewDTO>;
+    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageApplicationOverviewDTO>>;
+    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageApplicationOverviewDTO>>;
+    public getApplicationPages(pageDTO: PageDTO, sortDTO: SortDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (pageDTO === null || pageDTO === undefined) {
+            throw new Error('Required parameter pageDTO was null or undefined when calling getApplicationPages.');
+        }
+        if (sortDTO === null || sortDTO === undefined) {
+            throw new Error('Required parameter sortDTO was null or undefined when calling getApplicationPages.');
+        }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>pageSize, 'pageSize');
+          <any>pageDTO, 'pageDTO');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>pageNumber, 'pageNumber');
+          <any>sortDTO, 'sortDTO');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -345,62 +355,10 @@ export class ApplicationResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/applications/pages`;
-        return this.httpClient.request<Array<ApplicationOverviewDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageApplicationOverviewDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                transferCache: localVarTransferCache,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @param applicantId 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public getApplicationPagesLength(applicantId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<number>;
-    public getApplicationPagesLength(applicantId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<number>>;
-    public getApplicationPagesLength(applicantId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<number>>;
-    public getApplicationPagesLength(applicantId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (applicantId === null || applicantId === undefined) {
-            throw new Error('Required parameter applicantId was null or undefined when calling getApplicationPagesLength.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/json'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/applications/pages/length/${this.configuration.encodeParam({name: "applicantId", value: applicantId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<number>('get', `${this.configuration.basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
