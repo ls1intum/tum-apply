@@ -11,6 +11,13 @@
 />
 
 <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
+  <!-- Information Notice -->
+  <div class="flex items-start gap-3 p-2 bg-blue-50 border-l-4 border-[var(--p-primary-color)] rounded-r-lg">
+    <div class="flex-1">
+      <p class="m-0 text-sm" jhiTranslate="onboarding.employeeRequest.notice"></p>
+    </div>
+  </div>
+
   <!-- Professor Name Input -->
   <div class="form-field">
     <jhi-string-input
@@ -22,13 +29,6 @@
       [control]="employeeForm.get('professorName') ?? undefined"
       [shouldTranslate]="true"
     />
-  </div>
-
-  <!-- Information Notice -->
-  <div class="flex items-start gap-3 p-4 bg-blue-50 border-l-4 border-[var(--p-primary-color)] rounded-r-lg mt-2">
-    <div class="flex-1">
-      <p class="m-0 text-sm" jhiTranslate="onboarding.employeeRequest.notice"></p>
-    </div>
   </div>
 
   <!-- Form Actions -->

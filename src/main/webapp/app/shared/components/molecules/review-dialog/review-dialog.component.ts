@@ -105,11 +105,7 @@ export class ReviewDialogComponent {
 
       // TODO: Remove this when editor is fixed
       // Always use english for the message
-      const value = this.translate.getParsedResult(
-        this.translate.translations['en'],
-        'evaluation.defaultAcceptMessage',
-        this.translationMetaData(),
-      );
+      const value = this.translate.instant('evaluation.defaultAcceptMessage', this.translationMetaData());
       this.editorModel.set(value);
     }
   });

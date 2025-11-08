@@ -17,7 +17,7 @@
         "label": "Professor:in Name",
         "placeholder": "z.B. Prof. Dr. Max Mustermann"
       },
-      "notice": "Deine Anfrage wird an die Administratoren gesendet. Sie werden dich der Forschungsgruppe des angegebenen Professors zuweisen und dich kontaktieren.",
+      "notice": "Bitte gib den Namen der Professor:in ein, mit der du zusammenarbeitest oder von der du betreut wirst.<br/>Deine Anfrage wird an die Administratoren gesendet. Sie werden dich der Forschungsgruppe des angegebenen Professors zuweisen und dich kontaktieren.",
       "confirmDialog": {
         "header": "Bestätige die Anfrage",
         "message": "Deine Anfrage wird zur Überprüfung an die Administratoren gesendet. Sie werden dich der Forschungsgruppe des angegebenen Professors zuweisen und dich anschließend kontaktieren. Möchtest du fortfahren?",
