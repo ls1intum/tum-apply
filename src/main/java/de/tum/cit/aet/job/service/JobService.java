@@ -37,7 +37,7 @@ public class JobService {
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
-    private  InterviewService interviewService;
+    private InterviewService interviewService;
 
     public JobService(
         JobRepository jobRepository,
@@ -96,9 +96,6 @@ public class JobService {
      */
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
         Job job = assertCanManageJob(jobId);
-        if (targetState == JobState.PUBLISHED) {
-            interviewService.createInterviewProcessForJob(jobId);
-        }
         job.setState(targetState);
 
         if (targetState == JobState.CLOSED) {
@@ -221,18 +218,6 @@ public class JobService {
         );
     }
 
-    /**
-     * Returns a paginated list of all available (PUBLISHED) jobs.
-     * Supports filtering by multiple fields and dynamic sorting, including manual
-     * sort for professor name.
-     *
-     * @param pageDTO                pagination configuration
-     * @param availableJobsFilterDTO DTO containing all optionally filterable fields
-     * @param sortDTO                sort configuration (by field and direction)
-     * @param searchQuery            string to search for job title, field of
-     *                               studies or supervisor name
-     * @return a page of {@link JobCardDTO} matching the criteria
-     */
     public Page<JobCardDTO> getAvailableJobs(
         PageDTO pageDTO,
         AvailableJobsFilterDTO availableJobsFilterDTO,
@@ -328,6 +313,7 @@ public class JobService {
         // Ensure that the current user is either an admin or a research group member of
         // the supervising professor
         currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
+        JobState oldState = job.getState();
 
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
@@ -343,13 +329,12 @@ public class JobService {
         job.setDescription(dto.description());
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
-        if (dto.state() == JobState.PUBLISHED && job.getState() != JobState.PUBLISHED) {
-            job.setState(dto.state());
+        job.setState(dto.state());
+        if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
             Job savedJob = jobRepository.save(job);
             interviewService.createInterviewProcessForJob(savedJob.getJobId());
             return JobFormDTO.getFromEntity(savedJob);
         }
-        job.setState(dto.state());
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
     }
