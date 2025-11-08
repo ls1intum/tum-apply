@@ -89,5 +89,4 @@ model/userProfileDTO.ts
 model/userResearchGroupRole.ts
 model/userShortDTO.ts
 param.ts
-provide-api.ts
 variables.ts
