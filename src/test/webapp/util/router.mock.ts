@@ -1,12 +1,15 @@
 import { vi } from 'vitest';
 import { Router } from '@angular/router';
+import { Provider } from '@angular/core';
 
-export function createRouterMock() {
+export type RouterMock = Pick<Router, 'navigate'>;
+
+export function createRouterMock(): RouterMock {
   return {
     navigate: vi.fn(),
-  } as unknown as Router;
+  };
 }
 
-export function provideRouterMock(mock = createRouterMock()) {
+export function provideRouterMock(mock: RouterMock = createRouterMock()): Provider {
   return { provide: Router, useValue: mock };
 }
