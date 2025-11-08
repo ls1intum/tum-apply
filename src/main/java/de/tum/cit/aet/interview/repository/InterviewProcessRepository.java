@@ -13,14 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InterviewProcessRepository extends JpaRepository<InterviewProcess, UUID> {
     /**
-     * Find an InterviewProcess by the associated Job.
-     *
-     * @param job the job to search for
-     * @return Optional containing the InterviewProcess if found
-     */
-    Optional<InterviewProcess> findByJob(Job job);
-
-    /**
      * Find all InterviewProcesses for jobs created by a specific professor.
      *
      * @param professorId the ID of the professor
