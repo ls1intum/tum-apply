@@ -34,6 +34,7 @@ import {
   createApplicationResourceApiServiceMock,
   provideApplicationResourceApiServiceMock,
   ApplicationResourceApiServiceMock,
+  createMockApplication,
 } from 'util/application-resource-api.service.mock';
 import {
   createJobResourceApiServiceMock,
@@ -121,24 +122,6 @@ function createValidPersonalInfoData(overrides?: Partial<ApplicationCreationPage
   };
 }
 
-const createMockApplication = (applicationState: ApplicationForApplicantDTO.ApplicationStateEnum): ApplicationForApplicantDTO => ({
-  applicationState: applicationState,
-  applicationId: '456',
-  job: {
-    jobId: '123',
-    fieldOfStudies: '',
-    location: 'Garching',
-    professorName: 'Prof. Dr. Abc',
-    title: 'Sophisticated Studies',
-  },
-  applicant: {
-    user: {
-      firstName: 'Testus Maxima',
-      email: 'test@gmail.com',
-    },
-  },
-});
-
 describe('ApplicationForm', () => {
   let accountService: AccountServiceMock;
   let applicationResourceApiService: ApplicationResourceApiServiceMock;
@@ -159,14 +142,6 @@ describe('ApplicationForm', () => {
     accountService = createAccountServiceMock();
 
     applicationResourceApiService = createApplicationResourceApiServiceMock();
-    applicationResourceApiService.createApplication = vi
-      .fn()
-      .mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
-    applicationResourceApiService.getApplicationById = vi
-      .fn()
-      .mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
-    applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of({}));
-    applicationResourceApiService.getDocumentDictionaryIds = vi.fn().mockReturnValue(of({}));
 
     toast = createToastServiceMock();
     router = createRouterMock();
