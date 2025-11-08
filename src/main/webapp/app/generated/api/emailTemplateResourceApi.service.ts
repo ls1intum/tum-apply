@@ -37,6 +37,7 @@ export class EmailTemplateResourceApiService extends BaseService {
     }
 
     /**
+     * @endpoint post /api/email-templates
      * @param emailTemplateDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -84,21 +85,23 @@ export class EmailTemplateResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates`;
-        return this.httpClient.request<EmailTemplateDTO>('post', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<EmailTemplateDTO>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: emailTemplateDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
     }
 
     /**
+     * @endpoint delete /api/email-templates/{templateId}
      * @param templateId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -136,20 +139,22 @@ export class EmailTemplateResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates/${this.configuration.encodeParam({name: "templateId", value: templateId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
     }
 
     /**
+     * @endpoint get /api/email-templates/{templateId}
      * @param templateId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -188,20 +193,22 @@ export class EmailTemplateResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates/${this.configuration.encodeParam({name: "templateId", value: templateId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
-        return this.httpClient.request<EmailTemplateDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<EmailTemplateDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
     }
 
     /**
+     * @endpoint get /api/email-templates
      * @param pageSize 
      * @param pageNumber 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -244,21 +251,23 @@ export class EmailTemplateResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates`;
-        return this.httpClient.request<PageResponseDTOEmailTemplateOverviewDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<PageResponseDTOEmailTemplateOverviewDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
     }
 
     /**
+     * @endpoint put /api/email-templates
      * @param emailTemplateDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -306,15 +315,16 @@ export class EmailTemplateResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/email-templates`;
-        return this.httpClient.request<EmailTemplateDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<EmailTemplateDTO>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: emailTemplateDTO,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );

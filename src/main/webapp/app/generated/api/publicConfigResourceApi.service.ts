@@ -33,6 +33,7 @@ export class PublicConfigResourceApiService extends BaseService {
     }
 
     /**
+     * @endpoint get /api/public/config
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -67,14 +68,15 @@ export class PublicConfigResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/public/config`;
-        return this.httpClient.request<{ [key: string]: any; }>('get', `${this.configuration.basePath}${localVarPath}`,
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<{ [key: string]: any; }>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
+                ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );

@@ -34,7 +34,6 @@ model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
 model/authSessionInfoDTO.ts
-model/createInterviewProcessDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
@@ -50,7 +49,6 @@ model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
 model/interviewOverviewDTO.ts
-model/interviewProcessDTO.ts
 model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
@@ -91,4 +89,5 @@ model/userProfileDTO.ts
 model/userResearchGroupRole.ts
 model/userShortDTO.ts
 param.ts
+provide-api.ts
 variables.ts
