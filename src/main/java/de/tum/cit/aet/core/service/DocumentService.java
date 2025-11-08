@@ -19,6 +19,7 @@ import java.util.EnumSet;
 import java.util.HexFormat;
 import java.util.Optional;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 public class DocumentService {
 
@@ -155,15 +157,38 @@ public class DocumentService {
      * @throws UploadException     if the ID is unknown
      */
     private Resource load(Document document) throws IOException {
-        Path path = Paths.get(document.getPath()).normalize();
-        if (!path.startsWith(root.toAbsolutePath().normalize())) {
+        String storedPath = document.getPath();
+        
+        Path path = Paths.get(storedPath);
+        
+        if (!path.isAbsolute()) {
+            if (path.getNameCount() == 1) {
+                path = root.resolve(path);
+            } else {
+                Path workingDir = Paths.get("").toAbsolutePath();
+                path = workingDir.resolve(path);
+            }
+        }
+        
+        path = path.toAbsolutePath().normalize();
+        Path normalizedRoot = root.toAbsolutePath().normalize();
+
+        
+        if (!path.startsWith(normalizedRoot)) {
             throw new IllegalStateException("Stored path lies outside storage root: " + path);
         }
 
         Resource resource = new PathResource(path);
-        if (!resource.exists() || !resource.isReadable()) {
+        if (!resource.exists()) {
+            log.error("File does not exist: {}", path);
             throw new NoSuchFileException("Binary not found on disk: " + path);
         }
+        if (!resource.isReadable()) {
+            log.error("File is not readable: {}", path);
+            throw new NoSuchFileException("Binary not readable on disk: " + path);
+        }
+        
+        log.debug("Successfully loaded document from: {}", path);
         return resource;
     }
 
