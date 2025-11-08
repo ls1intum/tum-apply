@@ -21,14 +21,6 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
     Optional<InterviewProcess> findByJob(Job job);
 
     /**
-     * Check if an InterviewProcess exists for a given Job.
-     *
-     * @param job the job to check
-     * @return true if an InterviewProcess exists for this job
-     */
-    boolean existsByJob(Job job);
-
-    /**
      * Find all InterviewProcesses for jobs created by a specific professor.
      *
      * @param professorId the ID of the professor
@@ -42,4 +34,15 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
         """
     )
     List<InterviewProcess> findAllByProfessorId(@Param("professorId") UUID professorId);
+
+    /**
+     * Checks whether at least one entity exists for the given job identifier.
+     *
+     * @param jobId the UUID of the job to check; must not be {@code null}
+     * @return {@code true} if at least one record with the given {@code jobId} exists,
+     *         {@code false} otherwise
+     * @throws IllegalArgumentException if {@code jobId} is {@code null}
+     *
+     */
+    boolean existsByJobJobId(UUID jobId);
 }

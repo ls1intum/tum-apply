@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import de.tum.cit.aet.interview.dto.InterviewStatisticsDTO;
 import de.tum.cit.aet.job.domain.Job;
 import java.util.List;
 import java.util.Set;
