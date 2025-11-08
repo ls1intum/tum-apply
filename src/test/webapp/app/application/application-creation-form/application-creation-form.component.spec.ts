@@ -156,7 +156,7 @@ describe('ApplicationForm', () => {
   let fixture: ComponentFixture<ApplicationCreationFormComponent>;
   let comp: ApplicationCreationFormComponent;
   beforeEach(async () => {
-    accountService = createAccountServiceMock({ id: '2', email: 'test@example.com', name: 'Test User' });
+    accountService = createAccountServiceMock();
 
     applicationResourceApiService = createApplicationResourceApiServiceMock();
     applicationResourceApiService.createApplication = vi
@@ -255,7 +255,7 @@ describe('ApplicationForm', () => {
     freshFixture.detectChanges();
 
     expect(initCreateSpy).toHaveBeenCalledWith('123');
-    expect(freshComp.applicantId()).toBe('2'); // from accountService.user().id
+    expect(freshComp.applicantId()).toBe('id-2'); // from accountService.user().id
   });
 
   it('should throw error when neither jobId nor applicationId is provided', async () => {
