@@ -2,11 +2,15 @@ package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
+import de.tum.cit.aet.interview.dto.InterviewProcessDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
+import jakarta.transaction.Transactional;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -23,6 +27,7 @@ public class InterviewService {
     private final InterviewProcessRepository interviewProcessRepository;
     private final ApplicationRepository applicationRepository;
     private final CurrentUserService currentUserService;
+    private final JobRepository jobRepository;
 
     /**
      * Get overview of all interview processes with statistics per job.
