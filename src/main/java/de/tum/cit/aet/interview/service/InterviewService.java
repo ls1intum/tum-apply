@@ -2,11 +2,15 @@ package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
+import de.tum.cit.aet.interview.dto.InterviewProcessDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
+import jakarta.transaction.Transactional;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import java.util.Collections;
@@ -30,6 +34,7 @@ public class InterviewService {
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final CurrentUserService currentUserService;
+    private final JobRepository jobRepository;
 
     /**
      * Get overview of all interview processes with statistics per job.
@@ -116,5 +121,45 @@ public class InterviewService {
                 );
             })
             .toList();
+    }
+
+    /**
+     * Creates an interview process for a job (called automatically when job is published).
+     * This is called from JobService, so security checks are already done.
+     *
+     * @param jobId the ID of the job for which to create the interview process
+     * @return the created InterviewProcessDTO, or null if one already exists
+     */
+    @Transactional
+    public InterviewProcessDTO createInterviewProcessForJob(UUID jobId) {
+        // Check if process already exists
+        if (interviewProcessRepository.existsByJobJobId(jobId)) {
+            return null; // Already exists, do nothing
+        }
+
+        // Load the job
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
+        // Create new process
+        InterviewProcess interviewProcess = new InterviewProcess();
+        interviewProcess.setJob(job);
+
+        InterviewProcess saved = interviewProcessRepository.save(interviewProcess);
+        return mapToDTO(saved);
+    }
+
+    /**
+     * Maps an {@link InterviewProcess} entity to its corresponding DTO representation.
+     *
+     * @param interviewProcess the interview process entity to map
+     * @return {@link InterviewProcessDTO} containing the interview process data
+     */
+    private InterviewProcessDTO mapToDTO(InterviewProcess interviewProcess) {
+        return new InterviewProcessDTO(
+            interviewProcess.getId(),
+            interviewProcess.getJob().getJobId(),
+            interviewProcess.getJob().getTitle(),
+            interviewProcess.getCreatedAt()
+        );
     }
 }
