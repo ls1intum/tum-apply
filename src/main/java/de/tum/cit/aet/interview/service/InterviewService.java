@@ -7,7 +7,6 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
-import de.tum.cit.aet.interview.dto.CreateInterviewProcessDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewProcessDTO;
 import de.tum.cit.aet.interview.dto.InterviewStatisticsDTO;
@@ -93,29 +92,22 @@ public class InterviewService {
     }
 
     /**
-     * Creates a new interview process for the specified job.
+     * Creates an interview process for a job (called automatically when job is published).
+     * This is called from JobService, so security checks are already done.
      *
-     * @param dto DTO containing the job ID
-     * @return {@link InterviewProcessDTO} representing the newly created interview process
-     * @throws EntityNotFoundException if the job does not exist
-     * @throws AccessDeniedException if not the supervising professor
-     * @throws ResourceAlreadyExistsException if an interview process already exists for this job
+     * @param jobId the ID of the job for which to create the interview process
+     * @return the created InterviewProcessDTO, or null if one already exists
      */
     @Transactional
-    public InterviewProcessDTO createInterviewProcess(CreateInterviewProcessDTO dto) {
-        UUID professorId = currentUserService.getUserId();
-
-        Job job = jobRepository.findById(dto.jobId()).orElseThrow(() -> EntityNotFoundException.forId("Job", dto.jobId()));
-
-        // Security check
-        if (!job.getSupervisingProfessor().getUserId().equals(professorId)) {
-            throw new AccessDeniedException("You can only create interview processes for your own jobs");
-        }
-
+    public InterviewProcessDTO createInterviewProcessForJob(UUID jobId) {
         // Check if process already exists
-        if (interviewProcessRepository.existsByJobJobId(dto.jobId())) {
-            throw new ResourceAlreadyExistsException("Interview process already exists");
+        if (interviewProcessRepository.existsByJobJobId(jobId)) {
+            return null; // Already exists, do nothing
         }
+
+        // Load the job
+        Job job = jobRepository.findById(jobId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         // Create new process
         InterviewProcess interviewProcess = new InterviewProcess();

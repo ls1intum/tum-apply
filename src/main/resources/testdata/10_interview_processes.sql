@@ -7,13 +7,15 @@
 -- ===========================================================
 
 -- Clean up existing entries (for consistent seeding)
-DELETE
-FROM dbo.interview_processes
+DELETE FROM interview_processes
 WHERE id LIKE '00000000-0000-0000-0000-000000030%';
+
+-- Reset AUTO_INCREMENT (optional, if using integer PKs — skip if UUID)
+-- ALTER TABLE interview_processes AUTO_INCREMENT = 1;
 
 -- Insert interview_processes only for professor1@tumapply.local's jobs
 -- Research Group 1 jobs (professor_id: 00000000-0000-0000-0000-000000000102)
-INSERT INTO dbo.interview_processes (id, job_id, created_at, last_modified_at)
+INSERT INTO interview_processes (id, job_id, created_at, last_modified_at)
 VALUES
   -- Job 20001: Gamification in Education Intern (PUBLISHED)
   ('00000000-0000-0000-0000-000000030001', '00000000-0000-0000-0000-000000020001', '2025-01-15 09:00:00', '2025-01-15 09:00:00'),

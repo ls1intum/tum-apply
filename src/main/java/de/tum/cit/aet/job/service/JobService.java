@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
+import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
@@ -36,19 +37,22 @@ public class JobService {
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
+    private  InterviewService interviewService;
 
     public JobService(
         JobRepository jobRepository,
         UserRepository userRepository,
         ApplicationRepository applicationRepository,
         AsyncEmailSender sender,
-        CurrentUserService currentUserService
+        CurrentUserService currentUserService,
+        InterviewService interviewService
     ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
         this.sender = sender;
         this.currentUserService = currentUserService;
+        this.interviewService = interviewService;
     }
 
     /**
@@ -92,6 +96,9 @@ public class JobService {
      */
     public JobFormDTO changeJobState(UUID jobId, JobState targetState, boolean shouldRejectRemainingApplications) {
         Job job = assertCanManageJob(jobId);
+        if (targetState == JobState.PUBLISHED) {
+            interviewService.createInterviewProcessForJob(jobId);
+        }
         job.setState(targetState);
 
         if (targetState == JobState.CLOSED) {
@@ -336,6 +343,12 @@ public class JobService {
         job.setDescription(dto.description());
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
+        if (dto.state() == JobState.PUBLISHED && job.getState() != JobState.PUBLISHED) {
+            job.setState(dto.state());
+            Job savedJob = jobRepository.save(job);
+            interviewService.createInterviewProcessForJob(savedJob.getJobId());
+            return JobFormDTO.getFromEntity(savedJob);
+        }
         job.setState(dto.state());
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
