@@ -14,14 +14,14 @@ export interface EmailSettingDTO {
     enabled?: boolean;
 }
 export namespace EmailSettingDTO {
+    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN';
     export const EmailTypeEnum = {
-        ApplicationAccepted: 'APPLICATION_ACCEPTED',
-        ApplicationRejected: 'APPLICATION_REJECTED',
-        ApplicationReceived: 'APPLICATION_RECEIVED',
-        ApplicationSent: 'APPLICATION_SENT',
-        ApplicationWithdrawn: 'APPLICATION_WITHDRAWN'
-    } as const;
-    export type EmailTypeEnum = typeof EmailTypeEnum[keyof typeof EmailTypeEnum];
+        ApplicationAccepted: 'APPLICATION_ACCEPTED' as EmailTypeEnum,
+        ApplicationRejected: 'APPLICATION_REJECTED' as EmailTypeEnum,
+        ApplicationReceived: 'APPLICATION_RECEIVED' as EmailTypeEnum,
+        ApplicationSent: 'APPLICATION_SENT' as EmailTypeEnum,
+        ApplicationWithdrawn: 'APPLICATION_WITHDRAWN' as EmailTypeEnum
+    };
 }
 
 

@@ -39,7 +39,6 @@ export class AuthenticationResourceApiService extends BaseService {
     }
 
     /**
-     * @endpoint post /api/auth/login
      * @param loginRequestDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -87,23 +86,21 @@ export class AuthenticationResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/auth/login`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<AuthSessionInfoDTO>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<AuthSessionInfoDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: loginRequestDTO,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                transferCache: localVarTransferCache,
                 reportProgress: reportProgress
             }
         );
     }
 
     /**
-     * @endpoint post /api/auth/logout
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -137,22 +134,20 @@ export class AuthenticationResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/auth/logout`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                transferCache: localVarTransferCache,
                 reportProgress: reportProgress
             }
         );
     }
 
     /**
-     * @endpoint post /api/auth/otp-complete
      * @param otpCompleteDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -200,23 +195,21 @@ export class AuthenticationResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/auth/otp-complete`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<AuthSessionInfoDTO>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<AuthSessionInfoDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: otpCompleteDTO,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                transferCache: localVarTransferCache,
                 reportProgress: reportProgress
             }
         );
     }
 
     /**
-     * @endpoint post /api/auth/refresh
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -251,15 +244,14 @@ export class AuthenticationResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/auth/refresh`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<AuthSessionInfoDTO>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<AuthSessionInfoDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                transferCache: localVarTransferCache,
                 reportProgress: reportProgress
             }
         );

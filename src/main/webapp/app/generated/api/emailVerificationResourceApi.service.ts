@@ -35,7 +35,6 @@ export class EmailVerificationResourceApiService extends BaseService {
     }
 
     /**
-     * @endpoint post /api/auth/send-code
      * @param sendCodeRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -82,16 +81,15 @@ export class EmailVerificationResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/auth/send-code`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: sendCodeRequest,
                 responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
+                withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
                 observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                transferCache: localVarTransferCache,
                 reportProgress: reportProgress
             }
         );
