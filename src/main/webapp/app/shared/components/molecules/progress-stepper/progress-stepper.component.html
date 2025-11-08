@@ -1,5 +1,5 @@
 <p-stepper [value]="currentStep()" (valueChange)="currentStep.set($event ?? 1)" class="basis-[50rem]">
-  <p-step-list>
+  <p-step-list class="[&_.p-step-header]:cursor-pointer">
     @for (step of steps(); track $index) {
       @if (step.shouldTranslate) {
         <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''" [disabled]="step?.disabled ?? false">
