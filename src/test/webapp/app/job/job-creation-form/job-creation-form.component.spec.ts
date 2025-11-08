@@ -67,7 +67,7 @@ describe('JobCreationFormComponent', () => {
     };
 
     mockAccountService = createAccountServiceMock();
-    mockAccountService.setLoadedUser({ id: 'u1', name: 'Test User' } as User);
+    mockAccountService.user.set({ id: 'u1', name: 'Test User' } as User);
     location = { back: vi.fn() };
     route$ = new Subject();
 
