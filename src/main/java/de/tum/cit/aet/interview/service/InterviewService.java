@@ -106,8 +106,7 @@ public class InterviewService {
         }
 
         // Load the job
-        Job job = jobRepository.findById(jobId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
 
         // Create new process
         InterviewProcess interviewProcess = new InterviewProcess();
