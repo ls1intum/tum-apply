@@ -17,6 +17,9 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 public class ApplicationEntityRepositoryImpl implements ApplicationEntityRepository {
 
@@ -24,7 +27,7 @@ public class ApplicationEntityRepositoryImpl implements ApplicationEntityReposit
     private EntityManager entityManager;
 
     @Override
-    public List<ApplicationOverviewDTO> findApplicationsByApplicant(UUID applicantId, int pageNumber, int pageSize) {
+    public Page<ApplicationOverviewDTO> findApplicationsByApplicant(UUID applicantId, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ApplicationOverviewDTO> cq = cb.createQuery(ApplicationOverviewDTO.class);
         Root<Application> application = cq.from(Application.class);
@@ -47,9 +50,18 @@ public class ApplicationEntityRepositoryImpl implements ApplicationEntityReposit
         cq.orderBy(cb.desc(application.get(Application_.createdAt)));
 
         TypedQuery<ApplicationOverviewDTO> query = entityManager.createQuery(cq);
-        query.setFirstResult(pageNumber * pageSize);
-        query.setMaxResults(pageSize);
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
 
-        return query.getResultList();
+        List<ApplicationOverviewDTO> results = query.getResultList();
+
+        // Get total count for pagination
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<Application> countRoot = countQuery.from(Application.class);
+        countQuery.select(cb.count(countRoot));
+        countQuery.where(cb.equal(countRoot.get(Application_.applicant).get(Applicant_.userId), applicantId));
+        Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(results, pageable, total);
     }
 }
