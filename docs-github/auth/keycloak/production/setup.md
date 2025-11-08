@@ -1,0 +1,94 @@
+# Keycloak Production Setup for TUMApply
+
+This documentation describes the setup and management of the **Keycloak Production instance** used for TUMApply. It
+covers access, configuration, usage, and best practices to ensure a secure and stable production environment.
+
+---
+
+## Overview
+
+The Keycloak Production instance is a critical component of the TUMApply authentication infrastructure. It is managed
+and maintained by the AET Admins and serves both deployed test and production servers.
+
+- **Access URL:** `https://keycloak.aet.cit.tum.de/realms/external_login/`
+- **Managed by:** AET Admins
+- **Data Persistence:** All data stored in this instance is persistent and must **never** be deleted.
+
+---
+
+## Access and Permissions
+
+Access requires opening **two AET Admins Jira tickets**:
+
+1. Request access to the Keycloak Admin Console
+2. Request VPN access to the TUM AET chair network.
+
+Access is only possible once both requests are approved, the account has been enabled, and the user is connected to the
+**TUM AET VPN**. Without the VPN connection, the Admin Console is not reachable.
+
+### Realm Access
+
+Users accessing the production instance can only interact with the `external_login` realm. They do **not** have access
+to the full Keycloak instance or other realms.
+
+### Admin Access
+
+- Access to the Keycloak admin UI or instance-level changes requires:
+  - A valid VPN connection to the TUM AET network.
+  - A configured and approved university account.
+- For any changes to the instance itself (e.g., configuration, realms, themes), a **new admin ticket** must be submitted
+  and approved.
+- Direct access to the instance is restricted to authorized AET Admins.
+
+---
+
+## Differences between Development & Production
+
+- The production instance configuration is largely identical to the Development instance, ensuring consistency between
+  environments.
+- However, certain Identity Providers (IdPs) and integrations are **production-only**:
+  - Google
+  - Apple
+  - Microsoft
+  - LDAP
+- All Identity Providers (IdPs) are configured and managed exclusively by the AET Admins to ensure proper integration
+  and compliance with institutional policies.
+- The login and admin user interfaces differ from the Development instance because AET uses a customized Keycloak theme
+  tailored for production use.
+
+---
+
+## Usage
+
+- The instance is used for both deployed test and production TUMApply servers.
+- No test or dummy user accounts should exist or be created in the production environment.
+- All changes to clients, roles, and settings must be coordinated and approved by the project team and, if necessary,
+  the AET Admins.
+
+---
+
+## Production Best Practices
+
+To maintain a secure and reliable production environment, the following best practices must be followed:
+
+- **Backups:** Regular backups of the Keycloak database and configuration must be performed to prevent data loss.
+  (Admins will do that)
+- **Security:**
+  - Access is only possible via VPN with strict authentication.
+  - Admin access is limited and controlled through tickets and approvals.
+  - No test user accounts or credentials should be present.
+- **Persistence:** All data in the production instance is persistent and must not be deleted or modified without proper
+  authorization.
+- **Export Procedure:**
+  - Before making any configuration changes, export the current realm settings and clients.
+  - Maintain versioned backups of exports for rollback if needed.
+- **Coordination:** All changes must be reviewed and approved by the project team and coordinated with AET Admins to
+  avoid disruptions.
+- **Monitoring:** Regular monitoring of the instance health and usage is recommended to detect and resolve issues early.
+
+---
+
+## Additional Resources
+
+For comparison and details about the Development instance setup, please refer to
+the [Keycloak Development Setup Documentation](../development/setup.md).

@@ -311,7 +311,7 @@ describe('JobDetailComponent', () => {
 
   it('should compute noData() value after language change', () => {
     const spy = vi.spyOn(translate, 'instant').mockReturnValue('No data');
-    translate.onLangChange.next({ lang: 'de', translations: {}, defaultLang: '', scope: null } as LangChangeEvent);
+    translate.use('de');
     const result = component.noData();
     expect(result).toBe('No data');
     expect(spy).toHaveBeenCalledWith('jobDetailPage.noData');
