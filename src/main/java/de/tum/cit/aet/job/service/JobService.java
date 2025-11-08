@@ -218,6 +218,18 @@ public class JobService {
         );
     }
 
+    /**
+     * Returns a paginated list of all available (PUBLISHED) jobs.
+     * Supports filtering by multiple fields and dynamic sorting, including manual
+     * sort for professor name.
+     *
+     * @param pageDTO                pagination configuration
+     * @param availableJobsFilterDTO DTO containing all optionally filterable fields
+     * @param sortDTO                sort configuration (by field and direction)
+     * @param searchQuery            string to search for job title, field of
+     *                               studies or supervisor name
+     * @return a page of {@link JobCardDTO} matching the criteria
+     */
     public Page<JobCardDTO> getAvailableJobs(
         PageDTO pageDTO,
         AvailableJobsFilterDTO availableJobsFilterDTO,
