@@ -1,5 +1,7 @@
 <div class="step">
-  <jhi-button [icon]="icon()" severity="contrast" />
+  <div class="[&_button]:!rounded-full">
+    <jhi-button [icon]="icon()" severity="contrast" class="pointer-events-none" />
+  </div>
   <h3 class="title">{{ title() }}</h3>
   <p class="description">{{ description() }}</p>
 </div>

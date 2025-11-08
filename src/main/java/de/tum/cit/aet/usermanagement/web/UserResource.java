@@ -1,5 +1,7 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
@@ -35,6 +37,7 @@ public class UserResource {
      * @param jwt of the authenticated user
      * @return the user data as {@link UserShortDTO}, or an empty response if unauthenticated
      */
+    @Public
     @GetMapping("/me")
     public ResponseEntity<UserShortDTO> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
         if (jwt == null) {
@@ -52,6 +55,7 @@ public class UserResource {
      * @param updateUserNameDTO contains the new first and last name
      * @return 204 No Content if updated successfully
      */
+    @Authenticated
     @PutMapping("/name")
     public ResponseEntity<Void> updateUserName(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserNameDTO updateUserNameDTO) {
         userService.updateNames(jwt.getSubject(), updateUserNameDTO.firstName(), updateUserNameDTO.lastName());
@@ -65,6 +69,7 @@ public class UserResource {
      * @param dto contains the new password
      * @return 204 No Content if updated successfully, 400 Bad Request if update fails
      */
+    @Authenticated
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
         boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
