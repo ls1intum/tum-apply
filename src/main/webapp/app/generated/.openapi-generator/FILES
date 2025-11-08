@@ -11,6 +11,7 @@ api/emailVerificationResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
 api/interviewResourceApi.service.ts
 api/jobResourceApi.service.ts
+api/pdfExportResourceApi.service.ts
 api/profOnboardingResourceApi.service.ts
 api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
