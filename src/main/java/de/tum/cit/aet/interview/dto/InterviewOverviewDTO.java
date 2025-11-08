@@ -1,6 +1,5 @@
 package de.tum.cit.aet.interview.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 

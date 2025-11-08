@@ -37,7 +37,7 @@ public class JobService {
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
-    private InterviewService interviewService;
+    private final InterviewService interviewService;
 
     public JobService(
         JobRepository jobRepository,
