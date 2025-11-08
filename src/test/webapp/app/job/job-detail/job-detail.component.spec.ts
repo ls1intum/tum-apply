@@ -465,7 +465,7 @@ describe('JobDetailComponent', () => {
   it('should set empty string when user id or job_id are missing', async () => {
     // user has no id, and route provides no job_id
     const accountServiceNoId = createAccountServiceMock();
-    accountServiceNoId.setLoadedUser({ name: 'Anon' } as User);
+    accountServiceNoId.user.set({ name: 'Anon' } as User);
 
     const routeNoJobId = {
       snapshot: { paramMap: new Map([['job_id', null]]) },
@@ -554,7 +554,7 @@ describe('JobDetailComponent', () => {
   it('should call getResourceGroupDetails with empty string when user has no researchGroup', async () => {
     const userWithoutGroup = { id: 'u2', name: 'NoGroupUser', researchGroup: {} };
 
-    mockAccountService.setLoadedUser(userWithoutGroup as User);
+    mockAccountService.user.set(userWithoutGroup as User);
 
     const form: JobFormDTO = {
       title: 'Form Job',
@@ -581,7 +581,7 @@ describe('JobDetailComponent', () => {
       name: 'Researcher',
       researchGroup: { researchGroupId: 'rgX', name: 'RGX' },
     };
-    mockAccountService.setLoadedUser(user as User);
+    mockAccountService.user.set(user as User);
 
     const dto: JobDetailDTO = {
       title: 'RG Job',
