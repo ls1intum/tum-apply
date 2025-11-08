@@ -21,4 +21,9 @@ export class TagComponent {
   width = input<string | undefined>(undefined);
 
   readonly iconProp = computed(() => this.icon() as IconDefinition);
+  readonly severity = computed(() => {
+    const colorValue = this.color();
+    // Map 'primary' to 'info' since PrimeNG Tag doesn't support 'primary' severity
+    return colorValue === 'primary' ? 'info' : colorValue;
+  });
 }

@@ -9,6 +9,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { ButtonStubComponent } from 'src/test/webapp/util/button.stub';
 
 describe('ApplicationStepComponent', () => {
+  let component: ApplicationStepComponent;
   let fixture: ComponentFixture<ApplicationStepComponent>;
 
   beforeEach(async () => {
@@ -27,22 +28,45 @@ describe('ApplicationStepComponent', () => {
       .compileComponents();
 
     fixture = TestBed.createComponent(ApplicationStepComponent);
+    component = fixture.componentInstance;
   });
 
-  it('should render inputs correctly', () => {
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should render button with correct icon', () => {
     fixture.componentRef.setInput('icon', 'bell');
-    fixture.componentRef.setInput('title', 'Test Title');
-    fixture.componentRef.setInput('description', 'Test Description');
-    fixture.componentRef.setInput('index', 2);
     fixture.detectChanges();
 
     const buttonDebug = fixture.debugElement.query(By.directive(ButtonStubComponent));
-
     expect(buttonDebug?.componentInstance.icon()).toBe('bell');
-    const titleEl = fixture.nativeElement.querySelector('h3.title');
-    const descEl = fixture.nativeElement.querySelector('p.description');
+  });
 
-    expect(titleEl?.textContent).toBe('3. Test Title');
-    expect(descEl?.textContent).toBe('Test Description');
+  it('should render title with index and translation key', () => {
+    fixture.componentRef.setInput('title', 'landingPage.applicationSteps.steps.checkPrerequisites.title');
+    fixture.componentRef.setInput('index', 2);
+    fixture.detectChanges();
+
+    const titleEl = fixture.nativeElement.querySelector('h3');
+    expect(titleEl?.textContent).toContain('3.');
+
+    const spanEl = titleEl?.querySelector('span');
+    expect(spanEl?.textContent.trim()).toBe('landingPage.applicationSteps.steps.checkPrerequisites.title');
+  });
+
+  it('should render description with translation key', () => {
+    fixture.componentRef.setInput('description', 'landingPage.applicationSteps.steps.checkPrerequisites.description');
+    fixture.detectChanges();
+
+    const descEl = fixture.nativeElement.querySelector('p');
+    expect(descEl?.textContent.trim()).toBe('landingPage.applicationSteps.steps.checkPrerequisites.description');
+  });
+
+  it('should use default icon when not provided', () => {
+    fixture.detectChanges();
+
+    const buttonDebug = fixture.debugElement.query(By.directive(ButtonStubComponent));
+    expect(buttonDebug?.componentInstance.icon()).toBe('search');
   });
 });
