@@ -1736,7 +1736,11 @@ components:
     MultipartUploadRequest:
       type: object
       properties:
-        files: {type: string, format: binary, description: List of documents to upload}
+        files:
+          type: array
+          format: binary
+          description: List of documents to upload
+          items: {type: string, format: binary}
     OtpCompleteDTO:
       type: object
       properties:
