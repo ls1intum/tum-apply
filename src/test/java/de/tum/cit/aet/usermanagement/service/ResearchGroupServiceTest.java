@@ -133,11 +133,15 @@ class ResearchGroupServiceTest {
     @Nested
     class GetResearchGroupMembers {
 
+        @BeforeEach
+        void setup() {
+            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+        }
+
         @Test
         void shouldReturnPaginatedMembersSuccessfully() {
             // Arrange
             PageDTO pageDTO = createDefaultPageDTO();
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
 
             Page<UUID> userIdsPage = new PageImpl<>(List.of(TEST_USER_ID, OTHER_USER_ID));
@@ -160,7 +164,6 @@ class ResearchGroupServiceTest {
         void shouldReturnEmptyListWhenNoMembers() {
             // Arrange
             PageDTO pageDTO = createDefaultPageDTO();
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
 
             Page<UUID> emptyPage = new PageImpl<>(List.of());
             when(userRepository.findUserIdsByResearchGroupId(eq(TEST_RESEARCH_GROUP_ID), any(Pageable.class))).thenReturn(emptyPage);
@@ -177,11 +180,15 @@ class ResearchGroupServiceTest {
     @Nested
     class RemoveMemberFromResearchGroup {
 
+        @BeforeEach
+        void setup() {
+            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+        }
+
         @Test
         void shouldRemoveMemberSuccessfully() {
             // Arrange
             User memberToRemove = createUser(OTHER_USER_ID, "member@test.com", testResearchGroup);
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
 
@@ -197,7 +204,6 @@ class ResearchGroupServiceTest {
         @Test
         void shouldThrowExceptionWhenUserNotFound() {
             // Arrange
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.empty());
 
             // Act & Assert
@@ -212,7 +218,6 @@ class ResearchGroupServiceTest {
             ResearchGroup otherGroup = createResearchGroup(UUID.randomUUID(), "Other Group", ResearchGroupState.ACTIVE);
             User memberFromOtherGroup = createUser(OTHER_USER_ID, "other@test.com", otherGroup);
 
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberFromOtherGroup));
 
             // Act & Assert
@@ -225,7 +230,6 @@ class ResearchGroupServiceTest {
         void shouldThrowExceptionWhenRemovingSelf() {
             // Arrange
             User currentUser = createUser(TEST_USER_ID, "current@test.com", testResearchGroup);
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(TEST_USER_ID)).thenReturn(Optional.of(currentUser));
 
