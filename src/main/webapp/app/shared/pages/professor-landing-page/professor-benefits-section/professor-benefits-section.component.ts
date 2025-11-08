@@ -2,15 +2,13 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
-
-import { ButtonGroupData } from '../../../components/molecules/button-group/button-group.component';
-import TranslateDirective from '../../../language/translate.directive';
+import { ButtonGroupData } from 'app/shared/components/molecules/button-group/button-group.component';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-professor-benefits-section',
   imports: [CommonModule, TranslateModule, TranslateDirective],
   templateUrl: './professor-benefits-section.component.html',
-  styleUrl: './professor-benefits-section.component.scss',
 })
 export class ProfessorBenefitsSectionComponent {
   private router = inject(Router);

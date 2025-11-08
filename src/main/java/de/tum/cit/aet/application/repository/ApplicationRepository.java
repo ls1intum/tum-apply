@@ -211,25 +211,24 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     long countByJobAndStateIn(Job job, List<ApplicationState> states);
 
     /**
-     * Retrieves aggregated interview statistics by joining from InterviewProcess.
-     * This ensures only applications for jobs with an active interview process are included.
+     * Counts applications grouped by job and state for jobs with interview processes
+     * belonging to a specific professor.
+     * This is optimized to fetch all counts in a single query instead of N×M queries.
+     * Used by the interview overview to efficiently get statistics across all jobs.
      *
-     * @param professorId the UUID of the professor
-     * @return list of statistics containing job ID, application state, and count
+     * @param professorId the ID of the professor whose jobs to count applications for
+     * @return List of Object arrays containing [Job, ApplicationState, Count]
      */
     @Query(
         """
-        SELECT new de.tum.cit.aet.interview.dto.InterviewStatisticsDTO(
-            j.jobId,
-            a.state,
-            COUNT(a)
-        )
-        FROM InterviewProcess ip
-        JOIN ip.job j
-        JOIN j.applications a
-        WHERE j.supervisingProfessor.userId = :professorId
-        GROUP BY j.jobId, a.state
+            SELECT a.job, a.state, COUNT(a)
+            FROM Application a
+            WHERE a.job IN (
+                SELECT ip.job FROM InterviewProcess ip
+                WHERE ip.job.supervisingProfessor.userId = :professorId
+            )
+            GROUP BY a.job, a.state
         """
     )
-    List<InterviewStatisticsDTO> getInterviewStatistics(@Param("professorId") UUID professorId);
+    List<Object[]> countApplicationsByJobAndStateForInterviewProcesses(@Param("professorId") UUID professorId);
 }

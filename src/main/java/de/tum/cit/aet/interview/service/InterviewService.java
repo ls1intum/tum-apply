@@ -2,84 +2,104 @@ package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.exception.AccessDeniedException;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
-import de.tum.cit.aet.interview.dto.InterviewProcessDTO;
-import de.tum.cit.aet.interview.dto.InterviewStatisticsDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.job.repository.JobRepository;
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Service class for managing interview processes and providing overview statistics.
- * This service handles the creation and retrieval of interview processes for professors,
- * including aggregated statistics about application states across different interview stages.
- */
 @AllArgsConstructor
 @Service
 public class InterviewService {
 
     private final InterviewProcessRepository interviewProcessRepository;
     private final ApplicationRepository applicationRepository;
-    private final JobRepository jobRepository;
     private final CurrentUserService currentUserService;
 
     /**
-     * Retrieves an overview of all interview processes for the currently authenticated professor.
-     * This method aggregates application counts by state for each interview process,
-     * categorizing them into:
-     * - Completed: Applications in COMPLETED state
-     * - Scheduled: Applications in SCHEDULED state
-     * - Invited: Applications in INVITED state
-     * - Uncontacted: Applications in IN_REVIEW, SENT, or ACCEPTED states
+     * Get overview of all interview processes with statistics per job.
+     * Returns a list of jobs that have an active interview process with counts
+     * of applications in each state (completed, scheduled, invited, uncontacted).
+     * <p>
+     * <p>
+     * TODO: This implementation uses ApplicationState to track interview status.
+     * Future improvement: Create separate InterviewInvitation entity to better
+     * separate application review process from interview process.
      *
-     * @return List of {@link InterviewOverviewDTO} containing interview statistics for each job
-     * @throws org.springframework.security.access.AccessDeniedException if user is not authenticated
+     * @return list of interview overview DTOs with statistics
      */
+
     public List<InterviewOverviewDTO> getInterviewOverview() {
+        // 1. Get the ID of the currently logged-in professor
         UUID professorId = currentUserService.getUserId();
 
+        //2. Load all active interview processes for this professor
         List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
 
+        // 2. If no interview processes exist, return an empty list
         if (interviewProcesses.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<InterviewStatisticsDTO> statistics = applicationRepository.getInterviewStatistics(professorId);
+        // 4. Fetch aggregated data: count of applications per job and ApplicationState
+        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(professorId);
 
+        // 5.Build a map structure with jobId as key
+        // The inner map contains the count of applications per ApplicationState
         Map<UUID, Map<ApplicationState, Long>> countsPerJobAndState = new HashMap<>();
 
-        for (InterviewStatisticsDTO stat : statistics) {
-            countsPerJobAndState.computeIfAbsent(stat.jobId(), k -> new EnumMap<>(ApplicationState.class)).put(stat.state(), stat.count());
+        // 6. Process the results and organize them into the map structure
+        for (Object[] result : countResults) {
+            Job job = (Job) result[0];
+            ApplicationState state = (ApplicationState) result[1];
+            Long count = (Long) result[2];
+
+            countsPerJobAndState.computeIfAbsent(job.getJobId(), k -> new EnumMap<>(ApplicationState.class)).put(state, count);
         }
 
+        // 7.Transform each interview process into a DTO with statistical data
         return interviewProcesses
             .stream()
             .map(interviewProcess -> {
                 Job job = interviewProcess.getJob();
-                Map<ApplicationState, Long> stateCounts = countsPerJobAndState.getOrDefault(job.getJobId(), Collections.emptyMap());
+                UUID jobId = job.getJobId();
 
+                // Get the state counts for this job (or an empty map if no data exists)
+                Map<ApplicationState, Long> stateCounts = countsPerJobAndState.getOrDefault(jobId, Collections.emptyMap());
+
+                // Count applications in interview specific states
+                // COMPLETED: Interview has been completed
                 long completedCount = stateCounts.getOrDefault(ApplicationState.COMPLETED, 0L);
+
+                // SCHEDULED: Interview appointment has been scheduled
                 long scheduledCount = stateCounts.getOrDefault(ApplicationState.SCHEDULED, 0L);
+
+                // INVITED: Candidate has been invited to interview, but no appointment yet
                 long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
 
+                // TODO: Replace with InterviewInvitation entity lookup
+                // Calculate "uncontacted" - applications that haven't been invited to interview yet
+                // Currently: uncontacted = applications not yet moved to interview process
+                // These states represent applications that are still in the review process (or submitted applications) but have not yet transitioned to the interview phase
+                // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
-                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) +
-                    stateCounts.getOrDefault(ApplicationState.SENT, 0L) +
-                    stateCounts.getOrDefault(ApplicationState.ACCEPTED, 0L);
+                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
+                    stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
+                // Calculate total number of all applications in this interview process
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
 
+                // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
-                    job.getJobId(),
+                    jobId,
                     job.getTitle(),
                     completedCount,
                     scheduledCount,

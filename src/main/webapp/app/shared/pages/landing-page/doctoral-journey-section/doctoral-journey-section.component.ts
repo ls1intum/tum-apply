@@ -9,7 +9,6 @@ import TranslateDirective from '../../../language/translate.directive';
   selector: 'jhi-doctoral-journey-section',
   imports: [CommonModule, TranslateModule, ButtonGroupComponent, TranslateDirective],
   templateUrl: './doctoral-journey-section.component.html',
-  styleUrl: './doctoral-journey-section.component.scss',
 })
 export class DoctoralJourneySectionComponent {
   private translate = inject(TranslateService);

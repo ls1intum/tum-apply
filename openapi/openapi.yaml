@@ -710,6 +710,18 @@ paths:
           content:
             application/pdf:
               schema: {type: string, format: binary}
+  /api/interviews/overview:
+    get:
+      tags: [interview-resource]
+      operationId: getInterviewOverview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]

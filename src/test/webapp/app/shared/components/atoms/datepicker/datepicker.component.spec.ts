@@ -310,7 +310,7 @@ describe('DatePickerComponent', () => {
       const translateService = TestBed.inject(TranslateService);
       const langChangeSpy = vi.spyOn(comp.currentLanguage, 'set');
 
-      translateService.onLangChange.emit({ lang: 'de', translations: {} });
+      translateService.use('de');
 
       expect(langChangeSpy).toHaveBeenCalledWith('de');
       expect(comp.currentLanguage()).toBe('de');
