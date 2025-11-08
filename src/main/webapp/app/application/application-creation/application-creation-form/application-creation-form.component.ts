@@ -740,10 +740,11 @@ export default class ApplicationCreationFormComponent {
         this.applicationId.set(draft.applicationId);
         this.jobId.set(draft.jobId);
       }
-    } catch (err) {
+    } catch {
       queueMicrotask(() => {
         this.toastService.showErrorKey(`${applyflow}.loadFailed`);
-        throw new Error('Local load failed: ' + (err as Error).message);
+        // Error is handled via toast notification, no need to re-throw
+        // This prevents unhandled error exceptions in tests and maintains graceful error handling
       });
     }
   }
