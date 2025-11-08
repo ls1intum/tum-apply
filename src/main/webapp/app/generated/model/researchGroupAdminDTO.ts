@@ -17,12 +17,12 @@ export interface ResearchGroupAdminDTO {
     status?: ResearchGroupAdminDTO.StatusEnum;
 }
 export namespace ResearchGroupAdminDTO {
+    export type StatusEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
     export const StatusEnum = {
-        Draft: 'DRAFT',
-        Active: 'ACTIVE',
-        Denied: 'DENIED'
-    } as const;
-    export type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
+        Draft: 'DRAFT' as StatusEnum,
+        Active: 'ACTIVE' as StatusEnum,
+        Denied: 'DENIED' as StatusEnum
+    };
 }
 
 
