@@ -7,9 +7,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-
-import SharedModule from '../../../shared/shared.module';
-import { JobCardDTO } from '../../../generated/model/jobCardDTO';
+import SharedModule from 'app/shared/shared.module';
+import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
 
