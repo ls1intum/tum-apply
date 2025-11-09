@@ -93,7 +93,9 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           a.state as applicationState,
           j.workload as workload,
           j.startDate as startDate,
-          j.endDate as endDate
+          j.endDate as endDate,
+          CAST(j.fundingType AS string) as fundingType,
+          j.contractDuration as contractDuration
         )
         FROM Job j
         JOIN j.supervisingProfessor p
@@ -170,7 +172,9 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             a.state as applicationState,
             j.workload as workload,
             j.startDate as startDate,
-            j.endDate as endDate
+            j.endDate as endDate,
+            CAST(j.fundingType AS string) as fundingType,
+            j.contractDuration as contractDuration
           )
           FROM Job j
           JOIN j.supervisingProfessor p

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.FundingType;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public record JobCardDTO(
     LocalDate startDate,
     String relativeTimeEnglish,
     String relativeTimeGerman,
-    String fundingType,
+    FundingType fundingType,
     Integer contractDuration
 ) {
     public JobCardDTO(
@@ -50,7 +51,7 @@ public record JobCardDTO(
             startDate,
             UiTextFormatter.getTimeLeftLabelEnglish(endDate),
             UiTextFormatter.getTimeLeftLabelGerman(endDate),
-            fundingType,
+            FundingType.valueOf(fundingType),
             contractDuration
         );
     }

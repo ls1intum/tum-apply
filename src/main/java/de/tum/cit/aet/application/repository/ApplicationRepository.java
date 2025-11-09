@@ -64,7 +64,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     a.state,
                     j.workload,
                     j.startDate,
-                    j.endDate
+                    j.endDate,
+                    CAST(j.fundingType AS string),
+                    j.contractDuration
                 ),
                 a.state,
                 a.desiredStartDate,
@@ -127,7 +129,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     a.state,
                     j.workload,
                     j.startDate,
-                    j.endDate
+                    j.endDate,
+                    CAST(j.fundingType AS string),
+                    j.contractDuration
                 ),
                 a.state,
                 a.desiredStartDate,
