@@ -1,9 +1,7 @@
 package de.tum.cit.aet.interview.repository;
 
 import de.tum.cit.aet.interview.domain.InterviewProcess;
-import de.tum.cit.aet.job.domain.Job;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
