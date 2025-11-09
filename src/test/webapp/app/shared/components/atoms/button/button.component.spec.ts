@@ -70,7 +70,7 @@ describe('ButtonComponent', () => {
     expect(iconEl).toBeTruthy();
   });
 
-  it('should render brand icons with the "fab" prefix', () => {
+  it('should render icons correctly', () => {
     const fixture = createButtonFixture({ icon: 'google' });
     const iconEl: HTMLElement = fixture.nativeElement.querySelector('fa-icon');
 
@@ -78,15 +78,12 @@ describe('ButtonComponent', () => {
     const faIconInstance = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
     fixture.detectChanges();
     expect(faIconInstance.icon()).toEqual(['fab', 'google']);
-  });
-
-  it('should render brand icons with the "fab" prefix', () => {
-    const fixture = createButtonFixture({ icon: 'download' });
-    const iconEl: HTMLElement = fixture.nativeElement.querySelector('fa-icon');
-    expect(iconEl).toBeTruthy();
-    const faIconInstance = fixture.debugElement.query(By.css('fa-icon')).componentInstance;
-    fixture.detectChanges();
-    expect(faIconInstance.icon()).toEqual(['fas', 'download']);
+    const fixture2 = createButtonFixture({ icon: 'download' });
+    const iconEl2: HTMLElement = fixture2.nativeElement.querySelector('fa-icon');
+    expect(iconEl2).toBeTruthy();
+    const faIconInstance2 = fixture2.debugElement.query(By.css('fa-icon')).componentInstance;
+    fixture2.detectChanges();
+    expect(faIconInstance2.icon()).toEqual(['fas', 'download']);
   });
 
   it('should show external link icon if isExternalLink is true', () => {

@@ -4,34 +4,23 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { UploadButtonComponent, DocumentType } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
-import { FileUpload } from 'primeng/fileupload';
+import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 
 import { signal } from '@angular/core';
-import rxjs, { of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-
-class MockHttpClient {
-  get = vi.fn();
-  post = vi.fn();
-  put = vi.fn();
-  delete = vi.fn();
-}
-
-class MockApplicationResourceApiService {
-  uploadDocuments = vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }]));
-  deleteDocumentFromApplication = vi.fn().mockReturnValue(of(void 0));
-  renameDocument = vi.fn().mockReturnValue(of(void 0));
-}
-
-class MockToastService {
-  showError = vi.fn();
-}
+import rxjs from 'rxjs';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
+import { provideHttpClientMock } from 'util/http-client.mock';
+import {
+  ApplicationResourceApiServiceMock,
+  createApplicationResourceApiServiceMock,
+  provideApplicationResourceApiServiceMock,
+} from 'util/application-resource-api.service.mock';
 
 describe('UploadButtonComponent', () => {
-  let applicationService: Pick<ApplicationResourceApiService, 'uploadDocuments' | 'deleteDocumentFromApplication' | 'renameDocument'>;
-  let toastService: Pick<ToastService, 'showError'>;
+  let applicationService: ApplicationResourceApiServiceMock;
+  let toastService: ToastServiceMock;
 
   function createUploadButtonFixture(inputs: { documentType: DocumentType; applicationId: string; markAsRequired?: boolean }) {
     const fixture = TestBed.createComponent(UploadButtonComponent);
@@ -43,14 +32,14 @@ describe('UploadButtonComponent', () => {
   }
 
   beforeEach(async () => {
-    applicationService = new MockApplicationResourceApiService();
-    toastService = new MockToastService();
+    applicationService = createApplicationResourceApiServiceMock();
+    toastService = createToastServiceMock();
     await TestBed.configureTestingModule({
       imports: [UploadButtonComponent],
       providers: [
-        { provide: ApplicationResourceApiService, useValue: applicationService },
-        { provide: ToastService, useValue: toastService },
-        { provide: HttpClient, useClass: MockHttpClient },
+        provideApplicationResourceApiServiceMock(applicationService),
+        provideToastServiceMock(toastService),
+        provideHttpClientMock(),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
       ],
@@ -77,7 +66,7 @@ describe('UploadButtonComponent', () => {
     } as unknown as FileUpload);
 
     const bigFile = new File([new ArrayBuffer(2 * 1024 * 1024)], 'bigfile.pdf'); // 2MB
-    await component.onFileSelected({ currentFiles: [bigFile] });
+    await component.onFileSelected({ currentFiles: [bigFile] } as FileSelectEvent);
 
     expect(component['toastService'].showError).toHaveBeenCalledWith({
       summary: 'Error',
@@ -219,7 +208,7 @@ describe('UploadButtonComponent', () => {
 
     const uploadSpy = vi.spyOn(component, 'onUpload').mockImplementation(async () => {});
 
-    await component.onFileSelected({ currentFiles: [newFile] });
+    await component.onFileSelected({ currentFiles: [newFile] } as FileSelectEvent);
 
     const result = component.selectedFiles();
 
