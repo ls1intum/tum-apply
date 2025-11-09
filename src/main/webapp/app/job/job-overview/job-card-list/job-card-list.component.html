@@ -29,8 +29,8 @@
   [sortableFields]="sortableFields"
 />
 @if (jobs().length > 0) {
-  <div class="job-card-grid">
-    @for (job of jobs(); track job.jobId) {
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(16.5rem,20rem))] gap-4 py-4 justify-center">
+    @for (job of jobs(); track job.jobId; let i = $index) {
       <jhi-job-card
         [jobId]="job.jobId"
         [jobTitle]="job.title"
@@ -42,11 +42,14 @@
         [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"
         [applicationId]="job.applicationId"
         [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
+        [fundingType]="job.fundingType"
+        [contractDuration]="job.contractDuration"
+        [headerImageUrl]="getExampleImageUrl(i)"
       />
     }
   </div>
 } @else {
-  <p class="no-jobs-text" jhiTranslate="jobOverviewPage.noJobsFound"></p>
+  <p class="text-center p-8" jhiTranslate="jobOverviewPage.noJobsFound"></p>
 }
 <p-table
   [value]="jobs()"

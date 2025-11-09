@@ -31,7 +31,7 @@ export class JobCardListComponent {
   jobs = signal<JobCardDTO[]>([]);
   totalRecords = signal<number>(0);
   page = signal<number>(0);
-  pageSize = signal<number>(8);
+  pageSize = signal<number>(12);
   searchQuery = signal<string>('');
 
   sortBy = signal<string>('startDate');
@@ -144,5 +144,20 @@ export class JobCardListComponent {
       console.error('Failed to load jobs from API:', error);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
     }
+  }
+
+  /**
+   * Returns a randomly selected header image URL from a pool of 4 images
+   * Replace with actual image urls when available
+   */
+  getExampleImageUrl(index: number): string {
+    const headerImages = [
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
+      'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80',
+      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
+      'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=800&q=80',
+    ];
+
+    return headerImages[index % headerImages.length];
   }
 }
