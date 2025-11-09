@@ -36,8 +36,6 @@ import org.springframework.core.io.Resource;
 
 public class PDFBuilder {
 
-    private static final String LOGO_PATH = "images/tum-logo-blue.png";
-
     private final String mainHeading;
     private final List<OverviewItem> overviewItems = new ArrayList<>();
     private String overviewTitle;
@@ -167,8 +165,6 @@ public class PDFBuilder {
             PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
             PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
 
-            addLogoHeader(document, boldFont);
-
             // Main Heading
             Paragraph mainHeadingParagraph = new Paragraph(mainHeading)
                 .setFont(boldFont)
@@ -206,43 +202,6 @@ public class PDFBuilder {
     }
 
     // ----------------- Helpers -----------------
-    private void addLogoHeader(Document document, PdfFont boldFont) throws IOException {
-        float logoSize = 35;
-        Table headerTable = new Table(new float[] { 1, 4 });
-        headerTable.setBorder(Border.NO_BORDER);
-        headerTable.setHorizontalAlignment(HorizontalAlignment.LEFT);
-
-        try {
-            URL logoUrl = getClass().getClassLoader().getResource(LOGO_PATH);
-            if (logoUrl != null) {
-                Image logo = new Image(ImageDataFactory.create(logoUrl));
-                logo.scaleToFit(logoSize, logoSize);
-                Cell logoCell = new Cell()
-                    .add(logo)
-                    .setBorder(Border.NO_BORDER)
-                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                    .setPaddingRight(HEADER_SPACING);
-                headerTable.addCell(logoCell);
-            } else {
-                headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
-            }
-        } catch (Exception e) {
-            headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
-        }
-
-        Paragraph appNamePara = new Paragraph(new Text("Apply").setFont(boldFont).setFontSize(FONT_SIZE_HEADER))
-            .setFontColor(PRIMARY_COLOR)
-            .setMargin(0);
-
-        Cell textCell = new Cell()
-            .add(appNamePara)
-            .setBorder(Border.NO_BORDER)
-            .setVerticalAlignment(VerticalAlignment.MIDDLE)
-            .setPaddingLeft(0);
-        headerTable.addCell(textCell);
-
-        document.add(headerTable);
-    }
 
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
         Div container = new Div()
