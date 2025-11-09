@@ -11,12 +11,7 @@ import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import jakarta.transaction.Transactional;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -125,9 +120,10 @@ public class InterviewService {
      */
     @Transactional
     public InterviewProcessDTO createInterviewProcessForJob(UUID jobId) {
-        // Check if process already exists
-        if (interviewProcessRepository.existsByJobJobId(jobId)) {
-            return null; // Already exists, do nothing
+        Optional<InterviewProcess> existing = interviewProcessRepository.findByJobJobId(jobId);
+
+        if (existing.isPresent()) {
+            return mapToDTO(existing.get());
         }
 
         // Load the job
