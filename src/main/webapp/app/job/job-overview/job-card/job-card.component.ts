@@ -34,7 +34,7 @@ export class JobCardComponent {
   startDate = input<string | undefined>('');
   relativeTime = input<string>('');
   applicationId = input<string | undefined>(undefined);
-  fundingType = input<string>('');
+  fundingType = input<string | undefined>(undefined);
   contractDuration = input<number | undefined>(undefined);
 
   applicationState = input<ApplicationStatusExtended>(ApplicationStatusExtended.NotYetApplied);
@@ -59,6 +59,15 @@ export class JobCardComponent {
     }
     const percentage = Math.round((workloadValue / 40) * 100);
     return this.translate.instant('jobDetailPage.workload.partTime', { percentage });
+  });
+
+  readonly formattedContractDuration = computed(() => {
+    const duration = this.contractDuration();
+    if (duration === undefined) {
+      return undefined;
+    }
+    const yearsText = this.translate.instant('jobDetailPage.units.years');
+    return `${duration} ${yearsText}`;
   });
 
   ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;

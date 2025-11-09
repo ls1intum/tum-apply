@@ -49,8 +49,10 @@
       @if (fundingType()) {
         <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary"> {{ fundingType() }} </span>
       }
-      @if (contractDuration()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary"> {{ contractDuration() }} </span>
+      @if (formattedContractDuration()) {
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary">
+          {{ formattedContractDuration() }}
+        </span>
       }
     </div>
   </div>

@@ -22,7 +22,7 @@ public record JobCardDTO(
     LocalDate startDate,
     String relativeTimeEnglish,
     String relativeTimeGerman,
-    FundingType fundingType,
+    String fundingType,
     Integer contractDuration
 ) {
     public JobCardDTO(
@@ -36,7 +36,7 @@ public record JobCardDTO(
         Integer workload,
         LocalDate startDate,
         LocalDate endDate,
-        String fundingType,
+        FundingType fundingType,
         Integer contractDuration
     ) {
         this(
@@ -51,7 +51,7 @@ public record JobCardDTO(
             startDate,
             UiTextFormatter.getTimeLeftLabelEnglish(endDate),
             UiTextFormatter.getTimeLeftLabelGerman(endDate),
-            fundingType != null ? FundingType.valueOf(fundingType) : null,
+            UiTextFormatter.formatEnumValue(fundingType),
             contractDuration
         );
     }
