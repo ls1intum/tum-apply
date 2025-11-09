@@ -12,7 +12,9 @@
 export interface JobCardDTO { 
     applicationId?: string;
     applicationState?: JobCardDTO.ApplicationStateEnum;
+    contractDuration?: number;
     fieldOfStudies: string;
+    fundingType?: JobCardDTO.FundingTypeEnum;
     jobId: string;
     location: string;
     professorName: string;
@@ -35,6 +37,16 @@ export namespace JobCardDTO {
         Invited: 'INVITED' as ApplicationStateEnum,
         Scheduled: 'SCHEDULED' as ApplicationStateEnum,
         Completed: 'COMPLETED' as ApplicationStateEnum
+    };
+    export type FundingTypeEnum = 'FULLY_FUNDED' | 'PARTIALLY_FUNDED' | 'SCHOLARSHIP' | 'SELF_FUNDED' | 'INDUSTRY_SPONSORED' | 'GOVERNMENT_FUNDED' | 'RESEARCH_GRANT';
+    export const FundingTypeEnum = {
+        FullyFunded: 'FULLY_FUNDED' as FundingTypeEnum,
+        PartiallyFunded: 'PARTIALLY_FUNDED' as FundingTypeEnum,
+        Scholarship: 'SCHOLARSHIP' as FundingTypeEnum,
+        SelfFunded: 'SELF_FUNDED' as FundingTypeEnum,
+        IndustrySponsored: 'INDUSTRY_SPONSORED' as FundingTypeEnum,
+        GovernmentFunded: 'GOVERNMENT_FUNDED' as FundingTypeEnum,
+        ResearchGrant: 'RESEARCH_GRANT' as FundingTypeEnum
     };
 }
 
