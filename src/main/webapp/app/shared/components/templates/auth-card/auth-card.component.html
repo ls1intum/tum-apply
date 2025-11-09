@@ -1,4 +1,7 @@
 <div class="login-card">
+  <!-- Close Button -->
+  <jhi-button-group [data]="buttonGroupData" />
+  <!--  Auth Mode   -->
   @if (authOrchestrator.mode() === 'login') {
     <jhi-login />
   } @else {
