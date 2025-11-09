@@ -103,9 +103,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       expect(comp.loading()).toBe(false);
       expect(comp.lastLazyLoadEvent()).toEqual(mockLazyLoadEvent);
       expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 0);
-
-      // Wait for setTimeout to execute
-      // await new Promise(resolve => setTimeout(resolve, 10));
       expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
     });
 
@@ -184,9 +181,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
       comp.onDeleteApplication('app-delete');
 
-      // Wait for observable to complete
-      // await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(applicationService.deleteApplication).toHaveBeenCalledWith('app-delete');
       expect(toastService.showSuccess).toHaveBeenCalledWith({ detail: 'Application successfully deleted' });
       expect(loadPageSpy).toHaveBeenCalledWith(comp.lastLazyLoadEvent());
@@ -197,9 +191,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       applicationService.deleteApplication = vi.fn().mockReturnValue(throwError(() => new Error('Delete failed')));
 
       comp.onDeleteApplication('app-delete');
-
-      // Wait for observable to complete
-      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(toastService.showError).toHaveBeenCalledWith({ detail: 'Error deleting the application' });
       expect(consoleErrorSpy).toHaveBeenCalledWith('Delete failed', expect.any(Error));
@@ -212,9 +203,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       applicationService.deleteApplication = vi.fn().mockReturnValue(of({}));
 
       comp.onDeleteApplication('app-delete');
-
-      // Wait for observable to complete
-      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(loadPageSpy).not.toHaveBeenCalled();
     });
@@ -232,9 +220,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       const loadPageSpy = vi.spyOn(comp, 'loadPage').mockResolvedValue();
       comp.onWithdrawApplication('app-withdraw');
 
-      // Wait for observable to complete
-      // await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(applicationService.withdrawApplication).toHaveBeenCalledWith('app-withdraw');
       expect(toastService.showSuccess).toHaveBeenCalledWith({ detail: 'Application successfully withdrawn' });
       expect(loadPageSpy).toHaveBeenCalledWith(comp.lastLazyLoadEvent());
@@ -246,9 +231,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
       comp.onWithdrawApplication('app-withdraw');
 
-      // Wait for observable to complete
-      // await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(toastService.showError).toHaveBeenCalledWith({ detail: 'Error withdrawing the application' });
       expect(consoleErrorSpy).toHaveBeenCalledWith('Withdraw failed', expect.any(Error));
       consoleErrorSpy.mockRestore();
@@ -259,9 +241,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       const loadPageSpy = vi.spyOn(comp, 'loadPage').mockResolvedValue();
 
       comp.onWithdrawApplication('app-withdraw');
-
-      // Wait for observable to complete
-      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(loadPageSpy).not.toHaveBeenCalled();
     });
