@@ -30,7 +30,7 @@ export class AuthCardComponent {
         severity: 'secondary',
         label: undefined,
         disabled: false,
-        onClick: () => this.onClose(),
+        onClick: () => { this.onClose(); },
       },
     ],
   };
