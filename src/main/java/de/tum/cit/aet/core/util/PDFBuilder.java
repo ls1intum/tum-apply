@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.util;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -11,24 +10,18 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
-import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
-import com.itextpdf.layout.properties.BorderRadius;
-import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.VerticalAlignment;
 import de.tum.cit.aet.core.exception.PDFGenerationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.core.io.ByteArrayResource;
@@ -43,29 +36,18 @@ public class PDFBuilder {
     private SectionGroup currentGroup;
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
-    private static final DeviceRgb BORDER_COLOR = new DeviceRgb(0xC0, 0xC0, 0xC1);
-
-    // ----------------- Borders -----------------
-    private static final float BORDER_WIDTH = 0.8f;
-    private static final BorderRadius BORDER_RADIUS = new BorderRadius(8f);
-    private static final SolidBorder DEFAULT_BORDER = new SolidBorder(BORDER_COLOR, BORDER_WIDTH);
 
     // ----------------- Font Sizes -----------------
-    private static final float FONT_SIZE_HEADER = 12f;
     private static final float FONT_SIZE_MAIN_HEADING = 20f;
     private static final float FONT_SIZE_GROUP_TITLE = 15f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
 
     // ----------------- Spacing -----------------
-    private static final float PADDING_CONTAINER = 8f;
     private static final float MARGIN_TITLE_BOTTOM = 8f;
     private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
     private static final float CONTENT_INDENT = 15f;
     private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
-    private static final float DIVIDER_HEIGHT = 1f;
-    private static final float HEADER_SPACING = 5f;
-    private static final float HEADER_MARGIN_TOP = 20f;
     private static final float HEADER_MARGIN_BOTTOM = 16f;
     private static final float LINE_LEADING = 1.0f;
 
