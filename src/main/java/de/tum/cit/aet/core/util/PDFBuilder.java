@@ -185,6 +185,7 @@ public class PDFBuilder {
                     Paragraph groupTitle = new Paragraph(group.title)
                         .setFont(boldFont)
                         .setFontSize(FONT_SIZE_GROUP_TITLE)
+                        .setFontColor(PRIMARY_COLOR)
                         .setMarginBottom(MARGIN_TITLE_BOTTOM);
                     document.add(groupTitle);
                 }
@@ -209,7 +210,8 @@ public class PDFBuilder {
             Paragraph title = new Paragraph(overviewTitle)
                 .setFont(boldFont)
                 .setFontSize(FONT_SIZE_GROUP_TITLE)
-                .setMarginBottom(MARGIN_OVERVIEW_TITLE_BOTTOM);
+                .setFontColor(PRIMARY_COLOR)
+                .setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
             container.add(title);
         }
 
