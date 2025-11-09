@@ -144,6 +144,9 @@ export default class ApplicationCreationPage2Component {
     });
 
     this.page2Form.updateValueAndValidity();
+    queueMicrotask(() => {
+      this.changed.emit(false);
+    });
   });
 
   private updateEffect = effect(() => {
