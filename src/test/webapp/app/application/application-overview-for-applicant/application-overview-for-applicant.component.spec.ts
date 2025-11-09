@@ -1,68 +1,50 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
-import { computed, signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { provideTranslateMock } from 'util/translate.mock';
 import ApplicationOverviewForApplicantComponent from '../../../../../main/webapp/app/application/application-overview-for-applicant/application-overview-for-applicant.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { ToastService } from 'app/service/toast-service';
-import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { AccountService } from 'app/core/auth/account.service';
-import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
+import { provideRouter, Router } from '@angular/router';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
-
-const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDTO>): ApplicationOverviewDTO => ({
-  applicationId: '123',
-  jobTitle: 'Software Engineer',
-  researchGroup: 'Research Group A',
-  applicationState: 'SENT',
-  timeSinceCreation: '2 days ago',
-  ...overrides,
-});
+import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import {
+  ApplicationResourceApiServiceMock,
+  createApplicationResourceApiServiceMock,
+  createMockApplicationOverviewPages,
+  provideApplicationResourceApiServiceMock,
+} from 'util/application-resource-api.service.mock';
+import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 
 describe('ApplicationOverviewForApplicantComponent', () => {
-  let accountService: Pick<AccountService, 'loadedUser' | 'user' | 'loaded'>;
-  let applicationService: Pick<
-    ApplicationResourceApiService,
-    'getApplicationPages' | 'getApplicationPagesLength' | 'deleteApplication' | 'withdrawApplication'
-  >;
+  let accountService: AccountServiceMock;
+  let applicationService: ApplicationResourceApiServiceMock;
   let toastService: ToastServiceMock;
-  let router: RouterMock;
+  let router: Router;
   let fixture: ComponentFixture<ApplicationOverviewForApplicantComponent>;
   let comp: ApplicationOverviewForApplicantComponent;
 
   beforeEach(async () => {
-    accountService = {
-      loaded: signal(true),
-      user: signal({ id: 'user-123', email: 'test@example.com', name: 'Test User' }),
-      loadedUser: computed(() => (accountService.loaded() ? accountService.user() : undefined)),
-    };
+    accountService = createAccountServiceMock();
 
-    applicationService = {
-      getApplicationPages: vi.fn().mockReturnValue(of([])),
-      getApplicationPagesLength: vi.fn().mockReturnValue(of(0)),
-      deleteApplication: vi.fn().mockReturnValue(of({})),
-      withdrawApplication: vi.fn().mockReturnValue(of({})),
-    };
+    applicationService = createApplicationResourceApiServiceMock();
 
     toastService = createToastServiceMock();
-
-    router = createRouterMock();
 
     await TestBed.configureTestingModule({
       imports: [ApplicationOverviewForApplicantComponent],
       providers: [
-        { provide: AccountService, useValue: accountService }, // TODO move to AccountServiceMock when ApplicationCreationForm Tests are merged
-        { provide: ApplicationResourceApiService, useValue: applicationService }, // TODO move to ApplicationResourceMock when ApplicationCreationForm Tests are merged
+        provideAccountServiceMock(accountService),
+        provideApplicationResourceApiServiceMock(applicationService),
         provideToastServiceMock(toastService),
-        provideRouterMock(router),
+        provideRouter([]),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideActivatedRouteMock(createActivatedRouteMock()),
       ],
     }).compileComponents();
+
+    router = TestBed.inject(Router);
 
     fixture = TestBed.createComponent(ApplicationOverviewForApplicantComponent);
     comp = fixture.componentInstance;
@@ -77,15 +59,15 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     expect(comp).toBeTruthy();
   });
 
-  it('should initialize with default values', () => {
+  it('should initialize with default values', async () => {
     expect(comp.loading()).toBe(false);
-    expect(comp.pageData()).toEqual([]);
+    expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
     expect(comp.pageSize()).toBe(10);
-    expect(comp.total()).toBe(0);
+    expect(comp.total()).toBe(2);
   });
 
   it('should set applicantId from accountService on construction', () => {
-    expect(applicationService.getApplicationPagesLength).toHaveBeenCalledWith('user-123');
+    expect(applicationService.getApplicationPagesLength).toHaveBeenCalledWith('id-2');
   });
 
   describe('loadTotal', () => {
@@ -95,7 +77,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       await comp.loadTotal();
 
       expect(comp.total()).toBe(42);
-      expect(applicationService.getApplicationPagesLength).toHaveBeenCalledWith('user-123');
+      expect(applicationService.getApplicationPagesLength).toHaveBeenCalledWith('id-2');
     });
 
     it('should handle error when loading total fails', async () => {
@@ -116,9 +98,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     };
 
     it('should load page data successfully', async () => {
-      const mockData = [createMockApplicationOverview({ applicationId: '1' }), createMockApplicationOverview({ applicationId: '2' })];
-      applicationService.getApplicationPages = vi.fn().mockReturnValue(of(mockData));
-
       await comp.loadPage(mockLazyLoadEvent);
 
       expect(comp.loading()).toBe(false);
@@ -126,8 +105,8 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 0);
 
       // Wait for setTimeout to execute
-      await new Promise(resolve => setTimeout(resolve, 10));
-      expect(comp.pageData()).toEqual(mockData);
+      // await new Promise(resolve => setTimeout(resolve, 10));
+      expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
     });
 
     it('should calculate page number from first and rows', async () => {
@@ -152,9 +131,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     });
 
     it('should set loading to false after load completes', async () => {
-      const mockData = [createMockApplicationOverview()];
-      applicationService.getApplicationPages = vi.fn().mockReturnValue(of(mockData));
-
       await comp.loadPage(mockLazyLoadEvent);
 
       expect(comp.loading()).toBe(false);
@@ -174,17 +150,19 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
   describe('onViewApplication', () => {
     it('should navigate to application detail page', () => {
+      const navigateSpy = vi.spyOn(router, 'navigate');
       comp.onViewApplication('app-456');
 
-      expect(router.navigate).toHaveBeenCalledWith(['/application/detail/app-456']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/application/detail/app-456']);
     });
   });
 
   describe('onUpdateApplication', () => {
     it('should navigate to application form with query params', () => {
+      const navigateSpy = vi.spyOn(router, 'navigate');
       comp.onUpdateApplication('app-789');
 
-      expect(router.navigate).toHaveBeenCalledWith(['/application/form'], {
+      expect(navigateSpy).toHaveBeenCalledWith(['/application/form'], {
         queryParams: {
           application: 'app-789',
         },
@@ -207,7 +185,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       comp.onDeleteApplication('app-delete');
 
       // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(applicationService.deleteApplication).toHaveBeenCalledWith('app-delete');
       expect(toastService.showSuccess).toHaveBeenCalledWith({ detail: 'Application successfully deleted' });
@@ -221,7 +199,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       comp.onDeleteApplication('app-delete');
 
       // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(toastService.showError).toHaveBeenCalledWith({ detail: 'Error deleting the application' });
       expect(consoleErrorSpy).toHaveBeenCalledWith('Delete failed', expect.any(Error));
@@ -236,7 +214,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       comp.onDeleteApplication('app-delete');
 
       // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(loadPageSpy).not.toHaveBeenCalled();
     });
@@ -252,12 +230,10 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
     it('should withdraw application and show success toast', async () => {
       const loadPageSpy = vi.spyOn(comp, 'loadPage').mockResolvedValue();
-      applicationService.withdrawApplication = vi.fn().mockReturnValue(of({}));
-
       comp.onWithdrawApplication('app-withdraw');
 
       // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(applicationService.withdrawApplication).toHaveBeenCalledWith('app-withdraw');
       expect(toastService.showSuccess).toHaveBeenCalledWith({ detail: 'Application successfully withdrawn' });
@@ -271,7 +247,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
       comp.onWithdrawApplication('app-withdraw');
 
       // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(toastService.showError).toHaveBeenCalledWith({ detail: 'Error withdrawing the application' });
       expect(consoleErrorSpy).toHaveBeenCalledWith('Withdraw failed', expect.any(Error));
@@ -281,12 +257,11 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     it('should not reload page if lastLazyLoadEvent is undefined', async () => {
       comp.lastLazyLoadEvent.set(undefined);
       const loadPageSpy = vi.spyOn(comp, 'loadPage').mockResolvedValue();
-      applicationService.withdrawApplication = vi.fn().mockReturnValue(of({}));
 
       comp.onWithdrawApplication('app-withdraw');
 
       // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(loadPageSpy).not.toHaveBeenCalled();
     });
@@ -303,11 +278,9 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
     it('should handle undefined user', async () => {
       const loadTotalSpy = vi.spyOn(comp, 'loadTotal').mockResolvedValue();
-
       accountService.user.set(undefined);
-
       fixture.detectChanges();
-
+      expect(comp['applicantId']()).toBe('');
       expect(loadTotalSpy).toHaveBeenCalled();
     });
   });
