@@ -204,11 +204,7 @@ public class PDFBuilder {
     // ----------------- Helpers -----------------
 
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
-        Div container = new Div()
-            .setBorder(DEFAULT_BORDER)
-            .setPadding(PADDING_CONTAINER)
-            .setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM)
-            .setBorderRadius(BORDER_RADIUS);
+        Div container = new Div().setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
 
         if (overviewTitle != null) {
             Paragraph title = new Paragraph(overviewTitle)
@@ -230,20 +226,13 @@ public class PDFBuilder {
     }
 
     private void addInfoSection(Document document, InfoSection section, PdfFont normalFont, PdfFont boldFont) {
-        Div container = new Div()
-            .setBorder(DEFAULT_BORDER)
-            .setPadding(PADDING_CONTAINER)
-            .setMarginBottom(HEADER_MARGIN_BOTTOM)
-            .setBorderRadius(BORDER_RADIUS);
+        Div container = new Div();
 
         Paragraph title = new Paragraph(section.title)
             .setFont(boldFont)
             .setFontSize(FONT_SIZE_SECTION_TITLE)
             .setMarginBottom(MARGIN_TITLE_BOTTOM);
         container.add(title);
-
-        Div divider = new Div().setHeight(DIVIDER_HEIGHT).setBackgroundColor(BORDER_COLOR).setMarginBottom(MARGIN_TITLE_BOTTOM);
-        container.add(divider);
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont);
