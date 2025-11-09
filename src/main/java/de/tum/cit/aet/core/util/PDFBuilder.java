@@ -171,7 +171,6 @@ public class PDFBuilder {
                 .setFontColor(PRIMARY_COLOR)
                 .setFontSize(FONT_SIZE_MAIN_HEADING)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginTop(HEADER_MARGIN_TOP)
                 .setMarginBottom(HEADER_MARGIN_BOTTOM);
             document.add(mainHeadingParagraph);
 
@@ -230,6 +229,7 @@ public class PDFBuilder {
 
         Paragraph title = new Paragraph(section.title)
             .setFont(boldFont)
+            .setMarginTop(0)
             .setFontSize(FONT_SIZE_SECTION_TITLE)
             .setMarginBottom(MARGIN_TITLE_BOTTOM);
         container.add(title);
