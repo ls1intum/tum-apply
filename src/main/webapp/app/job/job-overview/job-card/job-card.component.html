@@ -34,16 +34,16 @@
     <!-- Info items -->
     <div class="space-y-2 mb-4 flex-shrink-0">
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon [icon]="['fas', 'user-tie']" class="icon w-4 flex-shrink-0" />
+        <fa-icon [icon]="['fas', 'user-tie']" class="icon w-4" />
         <span class="truncate">Prof. {{ professor() }}</span>
       </div>
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon [icon]="['fas', 'location-dot']" class="icon w-4 flex-shrink-0" />
+        <fa-icon [icon]="['fas', 'location-dot']" class="icon w-4" />
         <span class="truncate">{{ location() }}</span>
       </div>
       @if (formattedStartDate()) {
         <div class="flex items-center gap-2 text-sm">
-          <fa-icon [icon]="['fas', 'calendar']" class="icon w-4 flex-shrink-0" />
+          <fa-icon [icon]="['fas', 'calendar']" class="icon w-4" />
           <span class="truncate">Start: {{ formattedStartDate() }}</span>
         </div>
       }
