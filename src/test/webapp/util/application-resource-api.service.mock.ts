@@ -6,7 +6,14 @@ import { of } from 'rxjs';
 
 export type ApplicationResourceApiServiceMock = Pick<
   ApplicationResourceApiService,
-  'createApplication' | 'getApplicationById' | 'updateApplication' | 'getDocumentDictionaryIds' | 'deleteApplication'
+  | 'createApplication'
+  | 'getApplicationById'
+  | 'updateApplication'
+  | 'getDocumentDictionaryIds'
+  | 'deleteApplication'
+  | 'renameDocument'
+  | 'uploadDocuments'
+  | 'deleteDocumentFromApplication'
 >;
 
 export const createMockApplication = (applicationState: ApplicationForApplicantDTO.ApplicationStateEnum): ApplicationForApplicantDTO => ({
@@ -34,6 +41,9 @@ export function createApplicationResourceApiServiceMock(): ApplicationResourceAp
     updateApplication: vi.fn().mockReturnValue(of({})),
     getDocumentDictionaryIds: vi.fn().mockReturnValue(of({})),
     deleteApplication: vi.fn(),
+    uploadDocuments: vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }])),
+    deleteDocumentFromApplication: vi.fn().mockReturnValue(of(void 0)),
+    renameDocument: vi.fn().mockReturnValue(of(void 0)),
   };
 }
 
