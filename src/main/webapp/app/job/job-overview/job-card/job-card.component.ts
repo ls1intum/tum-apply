@@ -5,7 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateDirective, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import SharedModule from '../../../shared/shared.module';
@@ -21,7 +21,7 @@ export const ApplicationStatusExtended = {
 @Component({
   selector: 'jhi-job-card',
   templateUrl: './job-card.component.html',
-  imports: [FontAwesomeModule, CardModule, CommonModule, SharedModule, TooltipModule],
+  imports: [FontAwesomeModule, CardModule, CommonModule, SharedModule, TooltipModule, TranslateModule, TranslateDirective],
 })
 export class JobCardComponent {
   jobId = input<string>('');
@@ -66,8 +66,7 @@ export class JobCardComponent {
     if (duration === undefined) {
       return undefined;
     }
-    const yearsText = this.translate.instant('jobDetailPage.units.years');
-    return `${duration} ${yearsText}`;
+    return duration;
   });
 
   ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;

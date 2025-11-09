@@ -1,5 +1,5 @@
 <div
-  class="rounded-lg border border-gray-200 hover:scale-[1.02] hover:bg-blue-50 transition-all duration-200 overflow-hidden cursor-pointer w-full h-[22rem] flex flex-col"
+  class="rounded-lg border border-gray-200 hover:scale-[1.02] hover:bg-blue-50 transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
   (click)="onViewDetails()"
 >
   <!-- Header with background image or colored banner -->
@@ -10,6 +10,8 @@
     "
     [style.background-color]="!headerImageUrl() ? headerColor() : 'transparent'"
   >
+    <!-- Add heart icon to the top right corner for favorite feature -->
+
     <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
       {{ fieldOfStudies() }}
     </span>
@@ -39,20 +41,26 @@
         <fa-icon [icon]="['fas', 'location-dot']" class="icon w-4 flex-shrink-0" />
         <span class="truncate">{{ location() }}</span>
       </div>
+      @if (formattedStartDate()) {
+        <div class="flex items-center gap-2 text-sm">
+          <fa-icon [icon]="['fas', 'calendar-days']" class="icon w-4 flex-shrink-0" />
+          <span class="truncate">Start: {{ formattedStartDate() }}</span>
+        </div>
+      }
     </div>
 
     <!-- Tags/Badges section -->
     <div class="flex flex-wrap gap-2 mt-auto">
+      @if (formattedContractDuration()) {
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary">
+          {{ formattedContractDuration() }} <span jhiTranslate="jobDetailPage.units.years"></span>
+        </span>
+      }
       @if (formattedWorkload()) {
         <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary"> {{ formattedWorkload() }} </span>
       }
       @if (fundingType()) {
         <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary"> {{ fundingType() }} </span>
-      }
-      @if (formattedContractDuration()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary">
-          {{ formattedContractDuration() }}
-        </span>
       }
     </div>
   </div>
