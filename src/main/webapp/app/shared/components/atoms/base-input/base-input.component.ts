@@ -47,6 +47,8 @@ export abstract class BaseInputDirective<T> {
     return false;
   });
 
+  inputId = computed(() => this.id() ?? `jhi-input-${nextId++}`);
+
   inputState = computed(() => {
     this.formValidityVersion();
     if (!this.isTouched()) return 'untouched';
@@ -91,8 +93,6 @@ export abstract class BaseInputDirective<T> {
 
   private _isTouched = signal(false);
 
-  private autoId = `jhi-input-${nextId++}`;
-
   constructor() {
     effect(onCleanup => {
       const sub = this.formControl().statusChanges.subscribe(() => {
@@ -109,10 +109,6 @@ export abstract class BaseInputDirective<T> {
 
   onFocus(): void {
     this.isFocused.set(true);
-  }
-
-  getId(): string {
-    return this.id() ?? this.autoId;
   }
 
   protected markAsTouchedManually(): void {
