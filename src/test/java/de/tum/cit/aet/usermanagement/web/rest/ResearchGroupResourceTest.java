@@ -11,11 +11,14 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.*;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.web.ResearchGroupResource;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,54 +91,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
     }
 
-    /**
-     * Helper method to create a user without research group for authentication tests.
-     */
-    private User createUserWithoutResearchGroup(String email, String firstName, String lastName, String universityId) {
-        User user = new User();
-        user.setUserId(UUID.randomUUID());
-        user.setEmail(email);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setSelectedLanguage("en");
-        user.setUniversityId(universityId);
-        user.setResearchGroup(null);
-        return userRepository.save(user);
-    }
-
-    /**
-     * Helper method to create a ResearchGroupDTO with all fields.
-     */
-    private ResearchGroupDTO createResearchGroupDTO(
-        String name,
-        String abbreviation,
-        String head,
-        String email,
-        String website,
-        String university,
-        String description,
-        String field,
-        String street,
-        String postalCode,
-        String city,
-        ResearchGroupState state
-    ) {
-        return new ResearchGroupDTO(
-            name,
-            abbreviation,
-            head,
-            email,
-            website,
-            university,
-            description,
-            field,
-            street,
-            postalCode,
-            city,
-            state
-        );
-    }
-
     @Test
     void getResearchGroupDetailsExistingIdReturnsDetails() {
         ResearchGroupLargeDTO result = api
@@ -177,6 +132,14 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isNotEmpty();
         assertThat(result.getContent()).hasSize(2); // 2 research groups in setup
+
+        List<ResearchGroupDTO> contentList = new ArrayList<>(result.getContent());
+        assertThat(contentList.get(0).name()).isEqualTo("Machine Learning Lab");
+        assertThat(contentList.get(0).abbreviation()).isEqualTo("ML");
+        assertThat(contentList.get(0).email()).isEqualTo("contact@ml.tum.de");
+        assertThat(contentList.get(1).name()).isEqualTo("Other Lab");
+        assertThat(contentList.get(1).abbreviation()).isEqualTo("OL");
+        assertThat(contentList.get(1).email()).isEqualTo("contact@other.tum.de");
     }
 
     @Test
@@ -191,6 +154,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getTotalElements()).isEqualTo(2);
+
+        List<ResearchGroupDTO> contentList = new ArrayList<>(result.getContent());
+        assertThat(contentList.get(0).name()).isEqualTo("Machine Learning Lab");
+        assertThat(contentList.get(0).abbreviation()).isEqualTo("ML");
+        assertThat(contentList.get(0).email()).isEqualTo("contact@ml.tum.de");
     }
 
     // --- GET /api/research-groups/{id} (getResearchGroup) ---
@@ -268,7 +236,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Test
     void updateResearchGroupReturnsUpdatedGroup() {
-        ResearchGroupDTO updateDTO = createResearchGroupDTO(
+        ResearchGroupDTO updateDTO = ResearchGroupTestData.createResearchGroupDTO(
             "Updated ML Lab",
             "UML",
             "Prof. Smith",
@@ -295,7 +263,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Test
     void updateResearchGroupWithInvalidDataReturns400() {
-        ResearchGroupDTO invalidDTO = createResearchGroupDTO(
+        ResearchGroupDTO invalidDTO = ResearchGroupTestData.createResearchGroupDTO(
             "", // Invalid: empty name
             "ML",
             "",
@@ -319,7 +287,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Test
     void createProfessorResearchGroupRequestCreatesGroupInDraftState() {
-        User requestUser = createUserWithoutResearchGroup("john.doe@tum.de", "John", "Doe", "ab12cde");
+        User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "john.doe@tum.de", "John", "Doe", "ab12cde");
 
         ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
             "Dr.",
@@ -351,7 +319,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Test
     void createProfessorResearchGroupRequestWithMinimalDataWorks() {
-        User requestUser = createUserWithoutResearchGroup("minimal.user@tum.de", "Minimal", "User", "mn33zzz");
+        User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "minimal.user@tum.de", "Minimal", "User", "mn33zzz");
 
         ProfessorResearchGroupRequestDTO minimalRequest = new ProfessorResearchGroupRequestDTO(
             "Prof.",
@@ -407,7 +375,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Test
     void createEmployeeResearchGroupRequestReturnsNoContent() {
-        User employeeUser = createUserWithoutResearchGroup("employee@tum.de", "Employee", "User", "em11plp");
+        User employeeUser = UserTestData.createUserWithoutResearchGroup(userRepository, "employee@tum.de", "Employee", "User", "em11plp");
 
         EmployeeResearchGroupRequestDTO request = new EmployeeResearchGroupRequestDTO("Prof. Smith");
 
@@ -418,7 +386,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Test
     void createEmployeeResearchGroupRequestWithEmptyProfessorNameReturns400() {
-        User employeeUser = createUserWithoutResearchGroup("employee2@tum.de", "Employee2", "User", "em22plp");
+        User employeeUser = UserTestData.createUserWithoutResearchGroup(userRepository, "employee2@tum.de", "Employee2", "User", "em22plp");
 
         EmployeeResearchGroupRequestDTO invalidRequest = new EmployeeResearchGroupRequestDTO("");
 
