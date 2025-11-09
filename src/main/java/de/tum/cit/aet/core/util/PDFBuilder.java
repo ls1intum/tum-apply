@@ -215,14 +215,47 @@ public class PDFBuilder {
             container.add(title);
         }
 
-        Paragraph inlineParagraph = new Paragraph();
-        for (OverviewItem item : overviewItems) {
-            inlineParagraph.add(new Text(item.label + " ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT));
-            inlineParagraph.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
-            inlineParagraph.add(new Text("    "));
+        // For 3 or fewer Items: Inline design
+        if (overviewItems.size() <= 3) {
+            Paragraph inlineParagraph = new Paragraph();
+            for (OverviewItem item : overviewItems) {
+                inlineParagraph.add(new Text(item.label + " ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT));
+                inlineParagraph.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
+                inlineParagraph.add(new Text("    "));
+            }
+            inlineParagraph.setMarginLeft(CONTENT_INDENT);
+            container.add(inlineParagraph);
+        }
+        // For more than 3 Items: Table design
+        else {
+            Table table = new Table(2);
+            table.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
+            table.setBorder(Border.NO_BORDER);
+            table.setMarginLeft(CONTENT_INDENT);
+
+            for (int i = 0; i < overviewItems.size(); i++) {
+                OverviewItem item = overviewItems.get(i);
+
+                Paragraph cellContent = new Paragraph()
+                    .add(new Text(item.label + " ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT))
+                    .add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT))
+                    .setMargin(0);
+
+                Cell cell;
+                if (i == overviewItems.size() - 1 && overviewItems.size() % 2 == 1) {
+                    cell = new Cell(1, 2);
+                } else {
+                    cell = new Cell();
+                }
+
+                cell.add(cellContent).setBorder(Border.NO_BORDER).setPaddingRight(10f);
+
+                table.addCell(cell);
+            }
+
+            container.add(table);
         }
 
-        container.add(inlineParagraph);
         document.add(container);
     }
 
