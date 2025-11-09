@@ -47,7 +47,7 @@ public record ApplicationForApplicantDTO(
                 job.getWorkload(),
                 job.getStartDate(),
                 job.getEndDate(),
-                job.getFundingType() != null ? job.getFundingType().name() : null,
+                job.getFundingType(),
                 job.getContractDuration()
             ),
             application.getState(),
