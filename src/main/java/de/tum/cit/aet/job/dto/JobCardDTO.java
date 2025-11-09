@@ -51,7 +51,7 @@ public record JobCardDTO(
             startDate,
             UiTextFormatter.getTimeLeftLabelEnglish(endDate),
             UiTextFormatter.getTimeLeftLabelGerman(endDate),
-            FundingType.valueOf(fundingType),
+            fundingType != null ? FundingType.valueOf(fundingType) : null,
             contractDuration
         );
     }
