@@ -60,8 +60,8 @@ public class PDFBuilder {
     // ----------------- Spacing -----------------
     private static final float PADDING_CONTAINER = 8f;
     private static final float MARGIN_TITLE_BOTTOM = 8f;
-    private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 20f;
-    private static final float MARGIN_OVERVIEW_TITLE_BOTTOM = 12f;
+    private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
+    private static final float CONTENT_INDENT = 15f;
     private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
     private static final float DIVIDER_HEIGHT = 1f;
     private static final float HEADER_SPACING = 5f;
@@ -240,9 +240,11 @@ public class PDFBuilder {
             for (IBlockElement element : elements) {
                 if (element instanceof Paragraph para && first) {
                     para.setMarginTop(0);
+                    para.setMarginLeft(CONTENT_INDENT);
                     first = false;
                 } else if (element instanceof com.itextpdf.layout.element.List list && first) {
                     list.setMarginTop(0);
+                    list.setMarginLeft(CONTENT_INDENT);
                     first = false;
                 }
                 container.add(element);
@@ -256,6 +258,7 @@ public class PDFBuilder {
                 .setFontSize(FONT_SIZE_TEXT)
                 .setMargin(0)
                 .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+                .setMarginLeft(CONTENT_INDENT)
                 .setMultipliedLeading(LINE_LEADING);
             container.add(dataRow);
         }
