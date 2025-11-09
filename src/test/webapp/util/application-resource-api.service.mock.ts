@@ -15,6 +15,9 @@ export type ApplicationResourceApiServiceMock = Pick<
   | 'deleteApplication'
   | 'getApplicationPages'
   | 'getApplicationPagesLength'
+  | 'renameDocument'
+  | 'uploadDocuments'
+  | 'deleteDocumentFromApplication'
 >;
 
 export const createMockApplicationDTO = (
@@ -62,6 +65,9 @@ export function createApplicationResourceApiServiceMock(): ApplicationResourceAp
     deleteApplication: vi.fn(),
     getApplicationPagesLength: vi.fn().mockReturnValue(of(mockApplicationOverviewPages.length)),
     getApplicationPages: vi.fn().mockReturnValue(of(mockApplicationOverviewPages)),
+    uploadDocuments: vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }])),
+    deleteDocumentFromApplication: vi.fn().mockReturnValue(of(void 0)),
+    renameDocument: vi.fn().mockReturnValue(of(void 0)),
   };
 }
 
