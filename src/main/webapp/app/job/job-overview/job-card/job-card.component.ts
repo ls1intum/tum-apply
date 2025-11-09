@@ -5,7 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import dayjs from 'dayjs/esm';
-import { TranslateDirective, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import SharedModule from '../../../shared/shared.module';
@@ -21,7 +21,7 @@ export const ApplicationStatusExtended = {
 @Component({
   selector: 'jhi-job-card',
   templateUrl: './job-card.component.html',
-  imports: [FontAwesomeModule, CardModule, CommonModule, SharedModule, TooltipModule, TranslateModule, TranslateDirective],
+  imports: [FontAwesomeModule, CardModule, CommonModule, SharedModule, TooltipModule, TranslateModule],
 })
 export class JobCardComponent {
   jobId = input<string>('');
