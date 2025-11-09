@@ -116,7 +116,7 @@ export default class ApplicationCreationPage1Component {
     return this.formbuilder.group({
       firstName: [currentData.firstName, Validators.required],
       lastName: [currentData.lastName, Validators.required],
-      email: [currentData.email, [Validators.required, Validators.email]],
+      email: [{ value: currentData.email, disabled: this.disabledEmail() }, [Validators.required, Validators.email]],
       phoneNumber: [currentData.phoneNumber, Validators.required],
 
       street: [currentData.street, Validators.required],
