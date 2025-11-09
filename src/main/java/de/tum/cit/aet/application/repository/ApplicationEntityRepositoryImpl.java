@@ -13,19 +13,36 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 public class ApplicationEntityRepositoryImpl implements ApplicationEntityRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Finds all applications for a specific applicant with pagination and sorting
+     * support.
+     *
+     * @param applicantId the UUID of the applicant
+     * @param pageable    pagination and sorting parameters. Supported sort
+     *                    property:
+     *                    <ul>
+     *                    <li>{@code createdAt} - sorts by creation date
+     *                    (default)</li>
+     *                    </ul>
+     * @return a paginated list of application overview DTOs
+     */
     @Override
     public Page<ApplicationOverviewDTO> findApplicationsByApplicant(UUID applicantId, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -47,7 +64,26 @@ public class ApplicationEntityRepositoryImpl implements ApplicationEntityReposit
         );
 
         cq.where(cb.equal(application.get(Application_.applicant).get(Applicant_.userId), applicantId));
-        cq.orderBy(cb.desc(application.get(Application_.createdAt)));
+
+        List<Order> orders = new ArrayList<>();
+        if (pageable.getSort().isSorted()) {
+            for (Sort.Order sortOrder : pageable.getSort()) {
+                String property = sortOrder.getProperty();
+                boolean ascending = sortOrder.isAscending();
+
+                Expression<?> sortExpression = switch (property) {
+                    // TODO: add additional support to sort for more fields here, like this:
+                    // case "job.title" -> job.get(Job_.title);
+                    // case "job.researchGroup.name" -> researchGroup.get(ResearchGroup_.name);
+                    // case "state" -> application.get(Application_.state);
+                    default -> application.get(Application_.createdAt);
+                };
+
+                Order order = ascending ? cb.asc(sortExpression) : cb.desc(sortExpression);
+                orders.add(order);
+            }
+        }
+        cq.orderBy(orders);
 
         TypedQuery<ApplicationOverviewDTO> query = entityManager.createQuery(cq);
         query.setFirstResult((int) pageable.getOffset());
@@ -55,7 +91,6 @@ public class ApplicationEntityRepositoryImpl implements ApplicationEntityReposit
 
         List<ApplicationOverviewDTO> results = query.getResultList();
 
-        // Get total count for pagination
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<Application> countRoot = countQuery.from(Application.class);
         countQuery.select(cb.count(countRoot));
