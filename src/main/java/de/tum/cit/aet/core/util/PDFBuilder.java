@@ -46,7 +46,7 @@ public class PDFBuilder {
 
     // ----------------- Font Sizes -----------------
     private static final float FONT_SIZE_MAIN_HEADING = 20f;
-    private static final float FONT_SIZE_GROUP_TITLE = 15f;
+    private static final float FONT_SIZE_GROUP_TITLE = 14f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
     private static final float FONT_SIZE_METADATA = 8f;
