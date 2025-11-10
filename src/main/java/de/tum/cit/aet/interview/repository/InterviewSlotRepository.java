@@ -14,13 +14,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UUID> {
     /**
-     * Find all slots for a given interview process, ordered by start time.
+     * Finds all interview slots for a given interview process, ordered by start time.
+     *
+     * @param processId the ID of the interview process
+     * @return a list of {@link InterviewSlot} entities associated with the given process,
+     *         ordered by start date and time
      */
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     List<InterviewSlot> findByInterviewProcessIdOrderByStartDateTime(@Param("processId") UUID processId);
 
     /**
-     * Count slots for a given interview process.
+     * Counts all interview slots associated with a specific interview process.
+     *
+     * @param processId the ID of the interview process
+     * @return the number of slots linked to the given process
      */
     long countByInterviewProcessId(UUID processId);
 }
