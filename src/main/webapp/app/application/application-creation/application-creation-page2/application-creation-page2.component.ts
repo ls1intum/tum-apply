@@ -11,7 +11,6 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
-import { gradeFormatValidator } from 'app/core/util/grade-format.validator';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
@@ -90,8 +89,8 @@ export default class ApplicationCreationPage2Component {
     },
     {
       validators: [
-        gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
-        gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
+        // gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
+        // gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
       ],
     },
   );
@@ -144,6 +143,9 @@ export default class ApplicationCreationPage2Component {
     });
 
     this.page2Form.updateValueAndValidity();
+    queueMicrotask(() => {
+      this.changed.emit(false);
+    });
   });
 
   private updateEffect = effect(() => {

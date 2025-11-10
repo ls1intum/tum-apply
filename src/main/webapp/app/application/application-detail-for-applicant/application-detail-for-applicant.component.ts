@@ -39,7 +39,7 @@ export default class ApplicationDetailForApplicantComponent {
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
   isSummaryPage = input<boolean>(false);
 
-  // actual application data fetched from the backend
+  // actual application data fetched from the server
   actualDetailDataExists = signal<boolean>(false);
   actualDetailData = signal<ApplicationDetailDTO | null>(null);
   actualDocumentDataExists = signal<boolean>(false);
