@@ -127,7 +127,8 @@
     "tooltips": {
       "location": "Location",
       "supervisor": "Supervisor",
-      "startDate": "Start Date"
+      "startDate": "Start Date",
+      "workload": "Workload"
     },
     "hoursPerWeek": "{{workload}} h/week",
     "errors": {
