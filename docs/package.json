@@ -29,8 +29,8 @@
     "@docusaurus/module-type-aliases": "3.9.2",
     "@docusaurus/tsconfig": "3.9.2",
     "@docusaurus/types": "3.9.2",
-    "@tailwindcss/postcss": "4.1.16",
-    "tailwindcss": "4.1.16",
+    "@tailwindcss/postcss": "4.1.17",
+    "tailwindcss": "4.1.17",
     "typescript": "5.9.3"
   },
   "browserslist": {
