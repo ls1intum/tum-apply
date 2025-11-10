@@ -6,8 +6,8 @@ import { ToastService } from 'app/service/toast-service';
 import { RatingOverviewDTO } from 'app/generated/model/ratingOverviewDTO';
 import { RatingResourceApiService } from 'app/generated/api/ratingResourceApi.service';
 
-import TranslateDirective from '../../../shared/language/translate.directive';
-import { SubSection } from '../sub-section/sub-section';
+import TranslateDirective from '../../../language/translate.directive';
+import { SubSection } from '../../atoms/sub-section/sub-section';
 
 @Component({
   selector: 'jhi-rating-section',

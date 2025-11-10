@@ -30,7 +30,6 @@
         <input
           (blur)="onBlur()"
           (focus)="onFocus()"
-          [disabled]="disabled()"
           [id]="inputId()"
           [formControl]="formControl()"
           [pAutoFocus]="autofocus()"
@@ -46,7 +45,6 @@
           (blur)="onBlur()"
           (focus)="onFocus()"
           (ngModelChange)="onInputChange($event)"
-          [disabled]="disabled()"
           [id]="inputId()"
           [ngModel]="model()"
           [pAutoFocus]="autofocus()"

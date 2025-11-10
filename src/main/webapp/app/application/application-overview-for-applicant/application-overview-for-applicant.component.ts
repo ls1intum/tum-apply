@@ -9,7 +9,6 @@ import { BadgeModule } from 'primeng/badge';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { TranslateService } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
@@ -101,7 +100,6 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private readonly applicationService = inject(ApplicationResourceApiService);
   private readonly accountService = inject(AccountService);
-  private readonly translate = inject(TranslateService);
 
   private applicantId = signal<string>('');
 

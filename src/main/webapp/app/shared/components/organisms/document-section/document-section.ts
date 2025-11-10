@@ -6,15 +6,15 @@ import { TooltipModule } from 'primeng/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 
-import { DocumentViewerComponent } from '../../../shared/components/atoms/document-viewer/document-viewer.component';
-import { SubSection } from '../sub-section/sub-section';
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
-import TranslateDirective from '../../../shared/language/translate.directive';
-import { ToastService } from '../../../service/toast-service';
-import { ApplicationDocumentIdsDTO } from '../../../generated/model/applicationDocumentIdsDTO';
-import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { ApplicationEvaluationResourceApiService } from '../../../generated/api/applicationEvaluationResourceApi.service';
-import { DocumentDialog } from '../document-dialog/document-dialog';
+import { DocumentViewerComponent } from '../../atoms/document-viewer/document-viewer.component';
+import { SubSection } from '../../atoms/sub-section/sub-section';
+import { ButtonComponent } from '../../atoms/button/button.component';
+import TranslateDirective from '../../../language/translate.directive';
+import { ToastService } from '../../../../service/toast-service';
+import { ApplicationDocumentIdsDTO } from '../../../../generated/model/applicationDocumentIdsDTO';
+import { DocumentInformationHolderDTO } from '../../../../generated/model/documentInformationHolderDTO';
+import { ApplicationEvaluationResourceApiService } from '../../../../generated/api/applicationEvaluationResourceApi.service';
+import { DocumentDialog } from '../../molecules/document-dialog/document-dialog';
 
 export interface DocumentHolder {
   label: string;
