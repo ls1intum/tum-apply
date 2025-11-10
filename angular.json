@@ -41,6 +41,7 @@
               "src/main/webapp/manifest.webapp",
               "src/main/webapp/robots.txt",
               "src/main/webapp/sitemap.xml",
+              "src/main/webapp/googledd0b8a13f86d0918.html",
               "src/main/webapp/i18n",
               {
                 "glob": "silent-check-sso.html",
