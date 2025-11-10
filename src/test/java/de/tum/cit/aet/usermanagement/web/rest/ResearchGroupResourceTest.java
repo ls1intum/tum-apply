@@ -199,6 +199,13 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isNotEmpty();
+
+        List<UserShortDTO> contentList = new ArrayList<>(result.getContent());
+        assertThat(contentList).anyMatch(user -> user.getUserId().equals(researchGroupUser.getUserId()));
+        assertThat(contentList).hasSize(1);
+
+        assertThat(contentList.get(0).getUserId()).isEqualTo(researchGroupUser.getUserId());
+        assertThat(contentList.get(0).getEmail()).isEqualTo(researchGroupUser.getEmail());
     }
 
     @Test
@@ -426,6 +433,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isNotEmpty();
+
+        List<ResearchGroupAdminDTO> contentList = new ArrayList<>(result.getContent());
+        assertThat(contentList).hasSize(2); // 2 research groups in setup
+        assertThat(contentList).anyMatch(group -> group.researchGroup().equals("Machine Learning Lab"));
+        assertThat(contentList).anyMatch(group -> group.researchGroup().equals("Other Lab"));
     }
 
     @Test
