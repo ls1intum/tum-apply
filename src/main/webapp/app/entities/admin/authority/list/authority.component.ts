@@ -60,7 +60,7 @@ export class AuthorityComponent implements OnInit {
   }
 
   load(): void {
-    this.queryBackend().subscribe({
+    this.queryServer().subscribe({
       next: (res: EntityArrayResponseType) => {
         this.onResponseSuccess(res);
       },
@@ -89,7 +89,7 @@ export class AuthorityComponent implements OnInit {
     return data ?? [];
   }
 
-  protected queryBackend(): Observable<EntityArrayResponseType> {
+  protected queryServer(): Observable<EntityArrayResponseType> {
     this.isLoading = true;
     const queryObject: any = {
       sort: this.sortService.buildSortParam(this.sortState()),

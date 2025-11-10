@@ -475,6 +475,10 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   align-items: center;
   font-size: 0.875rem;
 
+  .label {
+    font-weight: 600;
+  }
+
   .value {
     text-align: right;
   }
@@ -552,4 +556,13 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   color: var(--p-primary-color);
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* -------------------------------
+   Research Group Detail Dialog Styling
+------------------------------- */
+.research-group-detail-dialog .p-dialog-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--p-primary-color);
 }

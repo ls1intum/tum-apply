@@ -89,18 +89,18 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 
 - `@Valid` annotations trigger Bean Validation framework.
 - Returns `400 Bad Request` with detailed error messages.
-- Frontend displays field-level validation errors.
+- User interface displays field-level validation errors.
 
 **Authorization Errors:**
 
 - `AccessDeniedException` returns `403 Forbidden`.
-- Frontend handles via global error interceptor.
+- Client handles via global error interceptor.
 - Displays user-friendly error toast message.
 
 **Not Found Errors:**
 
 - Returns `404 Not Found` for invalid application IDs.
-- Frontend gracefully handles missing resources.
+- User interface gracefully handles missing resources.
 
 **Conflict Errors:**
 
@@ -112,7 +112,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 
 - Unhandled exceptions return `500 Internal Server Error`.
 - Logged with full stack trace for debugging.
-- Frontend displays generic error message to user.
+- User interface displays generic error message to user.
 
 ## 5) Performance Optimizations
 
@@ -132,7 +132,7 @@ The following points are some of several strategies used across the TUMApply app
 
 **Lazy Loading:**
 
-- Frontend table component loads data on-demand via lazy load events.
+- Client table component loads data on-demand via lazy load events.
 - Supports infinite scroll and traditional pagination UI patterns.
 
 **Bulk Operations:**
