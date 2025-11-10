@@ -1,6 +1,6 @@
 <div class="login-card">
   <!-- Close Button -->
-  <jhi-button-group [data]="buttonGroupData" />
+  <jhi-button icon="xmark" variant="text" severity="contrast" [disabled]="false" (click)="onClose()" />
   <!--  Auth Mode   -->
   @if (authOrchestrator.mode() === 'login') {
     <jhi-login />
