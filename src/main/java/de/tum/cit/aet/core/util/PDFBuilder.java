@@ -37,6 +37,8 @@ public class PDFBuilder {
     private final String mainHeading;
     private final List<OverviewItem> overviewItems = new ArrayList<>();
     private String overviewTitle;
+    private String overviewDescriptionTitle;
+    private String overviewDescription;
     private final List<SectionGroup> sectionGroups = new ArrayList<>();
     private SectionGroup currentGroup;
     private String metadataText;
@@ -53,6 +55,7 @@ public class PDFBuilder {
 
     // ----------------- Spacing -----------------
     private static final float MARGIN_TITLE_BOTTOM = 8f;
+    private static final float MARGIN_JOB_DESCRIPTION_TOP = 10f;
     private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
     private static final float CONTENT_INDENT = 15f;
     private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
@@ -79,6 +82,16 @@ public class PDFBuilder {
 
     public PDFBuilder addOverviewItem(String label, String value) {
         overviewItems.add(new OverviewItem(label, value));
+        return this;
+    }
+
+    public PDFBuilder setOverviewDescriptionTitle(String title) {
+        this.overviewDescriptionTitle = title;
+        return this;
+    }
+
+    public PDFBuilder setOverviewDescription(String htmlDescription) {
+        this.overviewDescription = htmlDescription;
         return this;
     }
 
@@ -253,6 +266,29 @@ public class PDFBuilder {
         }
 
         container.add(table);
+
+        if (overviewDescription != null && !overviewDescription.isEmpty()) {
+            if (overviewDescriptionTitle != null && !overviewDescriptionTitle.isEmpty()) {
+                Paragraph descTitle = new Paragraph(overviewDescriptionTitle)
+                    .setFont(boldFont)
+                    .setFontSize(FONT_SIZE_SECTION_TITLE)
+                    .setMarginTop(MARGIN_JOB_DESCRIPTION_TOP)
+                    .setMarginBottom(MARGIN_TITLE_BOTTOM)
+                    .setMarginLeft(CONTENT_INDENT);
+                container.add(descTitle);
+            }
+            List<IBlockElement> elements = parseHtmlContent(overviewDescription, normalFont);
+            for (IBlockElement element : elements) {
+                if (element instanceof Paragraph para) {
+                    para.setMarginTop(0);
+                    para.setMarginLeft(CONTENT_INDENT);
+                } else if (element instanceof com.itextpdf.layout.element.List list) {
+                    list.setMarginTop(0);
+                    list.setMarginLeft(CONTENT_INDENT);
+                }
+                container.add(element);
+            }
+        }
 
         document.add(container);
     }

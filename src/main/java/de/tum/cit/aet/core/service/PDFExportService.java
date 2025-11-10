@@ -3,6 +3,8 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.util.PDFBuilder;
+import de.tum.cit.aet.job.dto.JobDetailDTO;
+import de.tum.cit.aet.job.service.JobService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -18,10 +20,12 @@ public class PDFExportService {
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     private final ApplicationService applicationService;
+    private final JobService jobService;
     private final CurrentUserService currentUserService;
 
-    public PDFExportService(ApplicationService applicationService, CurrentUserService currentUserService) {
+    public PDFExportService(ApplicationService applicationService, JobService jobService, CurrentUserService currentUserService) {
         this.applicationService = applicationService;
+        this.jobService = jobService;
         this.currentUserService = currentUserService;
     }
 
@@ -34,6 +38,8 @@ public class PDFExportService {
      */
     public Resource exportApplicationToPDF(UUID applicationId, Map<String, String> labels) {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
+        UUID jobId = app.jobId();
+        JobDetailDTO job = jobService.getJobDetails(jobId);
 
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
@@ -42,7 +48,15 @@ public class PDFExportService {
             .setOverviewTitle(labels.get("overview"))
             .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
             .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
-            .addOverviewItem(labels.get("location"), getValue(app.jobLocation()));
+            .addOverviewItem(labels.get("location"), getValue(app.jobLocation()))
+            .addOverviewItem(labels.get("fieldsOfStudies") + ":", getValue(job.fieldOfStudies()))
+            .addOverviewItem(labels.get("researchArea") + ":", getValue(job.researchArea()))
+            .addOverviewItem(labels.get("workload") + ":", formatWorkload(job.workload(), labels.get("hoursPerWeek")))
+            .addOverviewItem(labels.get("duration") + ":", formatContractDuration(job.contractDuration(), labels.get("years")))
+            .addOverviewItem(labels.get("fundingType") + ":", getValue(job.fundingType()))
+            .addOverviewItem(labels.get("startDate") + ":", formatDate(job.startDate()))
+            .setOverviewDescriptionTitle(labels.get("jobDescription"))
+            .setOverviewDescription(job.description());
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -164,6 +178,14 @@ public class PDFExportService {
             return localDate.format(DATE_FORMATTER);
         }
         return date.toString();
+    }
+
+    private String formatWorkload(Integer workload, String unit) {
+        return workload != null ? workload + (" " + unit) : "-";
+    }
+
+    private String formatContractDuration(Integer duration, String unit) {
+        return duration != null ? duration + (" " + unit) : "-";
     }
 
     private String sanitizeFilename(String filename) {
