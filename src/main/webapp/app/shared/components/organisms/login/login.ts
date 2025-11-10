@@ -38,7 +38,7 @@ export class Login {
 
   backButtonHandler = (): void => {
     this.authOrchestrator.previousStep();
-  }
+  };
 
   onEmailLogin = async (email: string, password?: string): Promise<boolean> => {
     if (password == null || password.trim() === '') {
