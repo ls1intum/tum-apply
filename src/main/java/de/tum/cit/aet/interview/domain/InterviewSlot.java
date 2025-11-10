@@ -13,7 +13,7 @@ import lombok.Setter;
  * Each slot can be booked by exactly one application.
  */
 @Entity
-@Table(name = "interview_slot")
+@Table(name = "interview_slots")
 @Getter
 @Setter
 public class InterviewSlot extends AbstractAuditingEntity {

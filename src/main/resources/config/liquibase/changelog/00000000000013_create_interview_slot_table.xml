@@ -5,8 +5,8 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="create-interview-slot-table" author="abinayasivaguru">
-    <createTable tableName="interview_slot">
+  <changeSet id="create-interview-slots-table" author="abinayasivaguru">
+    <createTable tableName="interview_slots">
       <column name="id" type="uuid">
         <constraints primaryKey="true" nullable="false"/>
       </column>
@@ -33,7 +33,7 @@
         <constraints nullable="false"/>
       </column>
 
-
+      <!-- Audit fields from AbstractAuditingEntity -->
       <column name="created_by" type="varchar(50)">
         <constraints nullable="false"/>
       </column>
@@ -43,19 +43,19 @@
     </createTable>
 
     <addForeignKeyConstraint
-      baseTableName="interview_slot"
+      baseTableName="interview_slots"
       baseColumnNames="interview_process_id"
       referencedTableName="interview_processes"
       referencedColumnNames="id"
-      constraintName="fk_interview_slot_process"
+      constraintName="fk_interview_slots_process"
       onDelete="CASCADE"/>
 
-    <createIndex tableName="interview_slot" indexName="idx_slot_process_start_time">
+    <createIndex tableName="interview_slots" indexName="idx_slots_process_start_time">
       <column name="interview_process_id"/>
       <column name="start_date_time"/>
     </createIndex>
 
-    <createIndex tableName="interview_slot" indexName="idx_slot_is_booked">
+    <createIndex tableName="interview_slots" indexName="idx_slots_is_booked">
       <column name="is_booked"/>
     </createIndex>
   </changeSet>
