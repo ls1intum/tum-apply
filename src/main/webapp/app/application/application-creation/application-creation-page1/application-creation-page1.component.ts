@@ -103,6 +103,7 @@ export default class ApplicationCreationPage1Component {
     const today = new Date();
     return new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
   })(); // ensures minimum age of 18
+  readonly defaultBirthDate = new Date(2000, 0, 1);
 
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
