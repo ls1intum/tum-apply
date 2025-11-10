@@ -3,10 +3,10 @@ package de.tum.cit.aet.interview.domain;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 import java.time.Instant;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Entity representing a time slot for an interview.
