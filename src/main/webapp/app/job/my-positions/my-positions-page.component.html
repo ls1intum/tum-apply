@@ -58,7 +58,7 @@
           <jhi-button
             icon="pencil"
             variant="text"
-            [tooltip]="'button.edit' | translate"
+            [tooltip]="job.state !== 'DRAFT' ? ('editDisabled' | translate) : ('button.edit' | translate)"
             severity="primary"
             variant="text"
             (click)="onEditJob(job.jobId)"
@@ -66,32 +66,31 @@
             [disabled]="job.state !== 'DRAFT'"
             [shouldTranslate]="true"
           />
-          @if (job.state === 'DRAFT') {
-            <jhi-confirm-dialog
-              [label]="'button.delete' | translate"
-              [iconOnly]="true"
-              [tooltip]="'button.delete' | translate"
-              severity="danger"
-              [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
-              [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
-              (confirmed)="onDeleteJob(job.jobId)"
-              confirmIcon="trash"
-              data-testid="delete"
-            />
-          }
-          @if (job.state === 'PUBLISHED') {
-            <jhi-confirm-dialog
-              [label]="'button.close' | translate"
-              [iconOnly]="true"
-              [tooltip]="'button.close' | translate"
-              severity="danger"
-              [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
-              [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
-              (confirmed)="onCloseJob(job.jobId)"
-              confirmIcon="xmark"
-              data-testid="delete"
-            />
-          }
+          <jhi-confirm-dialog
+            [label]="'button.delete' | translate"
+            [iconOnly]="true"
+            [tooltip]="'button.delete' | translate"
+            severity="danger"
+            [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
+            [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+            (confirmed)="onDeleteJob(job.jobId)"
+            confirmIcon="trash"
+            data-testid="delete"
+            [disabled]="job.state !== 'DRAFT'"
+          />
+
+          <jhi-confirm-dialog
+            [label]="'button.close' | translate"
+            [iconOnly]="true"
+            [tooltip]="'button.close' | translate"
+            severity="danger"
+            [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
+            [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
+            (confirmed)="onCloseJob(job.jobId)"
+            confirmIcon="xmark"
+            data-testid="delete"
+            [disabled]="job.state !== 'PUBLISHED'"
+          />
         </div>
       </ng-template>
 

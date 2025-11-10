@@ -219,6 +219,7 @@
   },
   "job": "Position",
   "jobs": "Positions",
+  "editDisabled": "A published or closed position cannot be edited anymore.",
   "toast": {
     "published": {
       "summary": "Published",
