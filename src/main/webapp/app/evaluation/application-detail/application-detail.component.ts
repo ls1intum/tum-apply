@@ -404,7 +404,7 @@ export class ApplicationDetailComponent {
   }
 
   /**
-   * Loads a page of applications from backend.
+   * Loads a page of applications from server.
    * Also updates total count of applications.
    */
   private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {
