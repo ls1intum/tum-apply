@@ -20,7 +20,7 @@
   <!-- Content section -->
   <div class="p-4 flex-1 flex flex-col">
     <!-- Job title -->
-    <h3 class="text-lg font-semibold mb-1">
+    <h3 class="text-lg font-semibold mb-1 line-clamp-1" [title]="jobTitle()">
       {{ jobTitle() }}
     </h3>
 
@@ -34,16 +34,31 @@
     <!-- Info items -->
     <div class="space-y-2 mb-4 flex-shrink-0">
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon [icon]="['fas', 'user-tie']" class="icon w-4" />
+        <fa-icon
+          [icon]="['fas', 'user-tie']"
+          class="icon w-4"
+          [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
+          tooltipPosition="top"
+        />
         <span class="truncate">Prof. {{ professor() }}</span>
       </div>
       <div class="flex items-center gap-2 text-sm">
-        <fa-icon [icon]="['fas', 'location-dot']" class="icon w-4" />
+        <fa-icon
+          [icon]="['fas', 'location-dot']"
+          class="icon w-4"
+          [pTooltip]="'jobOverviewPage.tooltips.location' | translate"
+          tooltipPosition="top"
+        />
         <span class="truncate">{{ location() }}</span>
       </div>
       @if (formattedStartDate()) {
         <div class="flex items-center gap-2 text-sm">
-          <fa-icon [icon]="['fas', 'calendar']" class="icon w-4" />
+          <fa-icon
+            [icon]="['fas', 'calendar']"
+            class="icon w-4"
+            [pTooltip]="'jobOverviewPage.tooltips.startDate' | translate"
+            tooltipPosition="top"
+          />
           <span class="truncate">Start: {{ formattedStartDate() }}</span>
         </div>
       }
