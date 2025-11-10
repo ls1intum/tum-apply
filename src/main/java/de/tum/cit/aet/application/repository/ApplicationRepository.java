@@ -65,7 +65,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.workload,
                     j.startDate,
                     j.endDate,
-                    j.fundingType,
                     j.contractDuration
                 ),
                 a.state,
@@ -130,7 +129,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                     j.workload,
                     j.startDate,
                     j.endDate,
-                    j.fundingType,
                     j.contractDuration
                 ),
                 a.state,

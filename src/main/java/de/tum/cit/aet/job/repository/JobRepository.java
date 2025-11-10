@@ -94,7 +94,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           j.workload as workload,
           j.startDate as startDate,
           j.endDate as endDate,
-          j.fundingType as fundingType,
           j.contractDuration as contractDuration
         )
         FROM Job j
@@ -173,7 +172,6 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             j.workload as workload,
             j.startDate as startDate,
             j.endDate as endDate,
-            j.fundingType as fundingType,
             j.contractDuration as contractDuration
           )
           FROM Job j

@@ -33,7 +33,6 @@ export class JobCardComponent {
   startDate = input<string | undefined>('');
   relativeTime = input<string>('');
   applicationId = input<string | undefined>(undefined);
-  fundingType = input<string | undefined>(undefined);
   contractDuration = input<number | undefined>(undefined);
 
   applicationState = input<ApplicationStatusExtended>(ApplicationStatusExtended.NotYetApplied);

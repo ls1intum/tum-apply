@@ -23,7 +23,6 @@ import * as DropdownOptions from '../.././dropdown-options';
   standalone: true,
   imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SharedModule, SearchFilterSortBar],
   templateUrl: './job-card-list.component.html',
-  styleUrls: ['./job-card-list.component.scss'],
 })
 export class JobCardListComponent {
   ApplicationStatusExtendedLocal = ApplicationStatusExtended;
