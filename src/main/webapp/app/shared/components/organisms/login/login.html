@@ -12,6 +12,17 @@
         class="login-credentials"
         secondButtonLabel="auth.login.buttons.continueWithPassword"
       />
+      @if (this.showPassword()) {
+        <div class="cancel-container">
+          <jhi-button
+            class="cancel"
+            [shouldTranslate]="true"
+            label="entity.action.cancel"
+            (click)="backButtonHandler()"
+            variant="outlined"
+          />
+        </div>
+      }
     } @else {
       <jhi-otp-input />
     }

@@ -7,10 +7,11 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { TranslateDirective } from '../../../language';
 import { OtpInput } from '../../atoms/otp-input/otp-input';
+import { ButtonComponent } from "app/shared/components/atoms/button/button.component";
 
 @Component({
   selector: 'jhi-login',
-  imports: [CredentialsGroupComponent, TranslateDirective, OtpInput],
+  imports: [CredentialsGroupComponent, TranslateDirective, OtpInput, ButtonComponent],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -34,6 +35,10 @@ export class Login {
   secondButtonHandler = (): void => {
     this.authOrchestrator.loginStep.set('password');
   };
+
+  backButtonHandler = (): void => {
+    this.authOrchestrator.previousStep();
+  }
 
   onEmailLogin = async (email: string, password?: string): Promise<boolean> => {
     if (password == null || password.trim() === '') {

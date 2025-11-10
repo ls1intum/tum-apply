@@ -3,10 +3,13 @@
   background: var(--p-background-surface);
   width: auto;
   max-width: 35rem;
+  position: relative;
+
+  .close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
 }
 
-.login-card jhi-button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-}
+
