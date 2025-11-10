@@ -126,13 +126,13 @@ The `ApplicationState` is marked like this in the following section.
 ### Submission
 1. Complete all steps + consents
 2. Confirmation dialog
-3. Backend: `SAVED` → set to `SENT`
+3. Server: `SAVED` → set to `SENT`
 4. Notification to professor
 
 ### Withdrawal
 1. Open `SENT`/`IN_REVIEW` application
 2. Click "Withdraw", confirm
-3. Backend: → set to `WITHDRAWN`
+3. Server: → set to `WITHDRAWN`
 4. Notification to professor
 
 ### Document Upload

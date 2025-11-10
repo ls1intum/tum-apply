@@ -1,16 +1,42 @@
 <!doctype html>
-<html class="no-js" lang="en" dir="ltr">
+<html class="no-js" dir="ltr" lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>TUMApply</title>
-    <meta name="description" content="Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM" />
-    <meta name="google" content="notranslate" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="theme-color" content="#000000" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <title>TUMApply – Doctoral Application Management Platform | Technical University of Munich</title>
+
+    <!-- SEO basics -->
+    <meta
+      content="TUMApply is the official application management system of the CIT school from the Technical University of Munich (TUM). It streamlines, simplifies, and unifies doctoral and research application processes for professors and applicants."
+      name="description"
+    />
+    <meta
+      content="TUMApply, TUM application portal, Technical University of Munich, TUM CIT, PhD application, research positions, doctoral recruitment, CIT school, TUM admissions, academic applications, university application system, TUM research opportunities"
+      name="keywords"
+    />
+    <meta content="index, follow" name="robots" />
+
+    <!-- Prevent unwanted auto-translation -->
+    <meta content="notranslate" name="google" />
+
+    <!-- Responsive + theme -->
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <meta content="#000000" name="theme-color" />
     <base href="/" />
-    <link rel="icon" type="image/svg+xml" href="content/images/tum-logo/tum-logo-blue.svg" />
-    <link rel="manifest" href="manifest.webapp" />
+
+    <!-- Open Graph (for Google, LinkedIn, etc.) -->
+    <meta content="TUMApply – Application Management Platform | TUM" property="og:title" />
+    <meta
+      content="Official TUM application management system for professors and applicants at the Technical University of Munich."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://tumapply.aet.cit.tum.de/" property="og:url" />
+    <meta content="https://tumapply.aet.cit.tum.de/content/images/tum-logo/tum-logo-blue.svg" property="og:image" />
+
+    <!-- Favicon + manifest -->
+    <link href="content/images/tum-logo/tum-logo-blue.svg" rel="icon" type="image/svg+xml" />
+    <link href="manifest.webapp" rel="manifest" />
   </head>
 
   <body>
@@ -23,8 +49,8 @@
           <p>1. Try to reload the page</p>
           <p>
             2. Please <a href="https://browsehappy.com">upgrade your browser</a>: the latest version of
-            <a href="https://www.chromium.org/getting-involved/download-chromium">Chromium</a> based browsers such as Google Chrome or
-            Microsoft Edge is always a good choice. The latest version of Firefox and Safari is also supported.
+            <a href="https://www.chromium.org/getting-involved/download-chromium">Chromium</a> based browsers such as Google Chrome is
+            always a good choice. The latest version of Firefox and Safari is also supported.
           </p>
           <p>3. Make sure you have a stable Internet connection.</p>
           <p>
@@ -43,6 +69,7 @@
       window.onload = function () {
         setTimeout(showError, 5000);
       };
+
       function showError() {
         const errorElm = document.getElementById('loading-error');
         if (errorElm && errorElm.style) {
