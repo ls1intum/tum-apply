@@ -27,5 +27,8 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
     upperGradeLimit: translate.instant('entity.detail_card.upper_passing_limit'),
     lowerGradeLimit: translate.instant('entity.detail_card.lower_passing_limit'),
     grade: translate.instant('entity.detail_card.grade'),
+    thisDocumentWasGeneratedOn: translate.instant('pdf.metaData.thisDocumentWasGeneratedOn'),
+    byUser: translate.instant('pdf.metaData.byUser'),
+    usingTumapply: translate.instant('pdf.metaData.usingTumapply'),
   };
 }

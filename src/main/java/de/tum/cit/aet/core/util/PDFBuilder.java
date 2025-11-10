@@ -6,8 +6,11 @@ import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.Cell;
@@ -19,6 +22,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import de.tum.cit.aet.core.exception.PDFGenerationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,14 +38,17 @@ public class PDFBuilder {
     private String overviewTitle;
     private final List<SectionGroup> sectionGroups = new ArrayList<>();
     private SectionGroup currentGroup;
+    private String metadataText;
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
+    private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
 
     // ----------------- Font Sizes -----------------
     private static final float FONT_SIZE_MAIN_HEADING = 20f;
     private static final float FONT_SIZE_GROUP_TITLE = 15f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
+    private static final float FONT_SIZE_METADATA = 8f;
 
     // ----------------- Spacing -----------------
     private static final float MARGIN_TITLE_BOTTOM = 8f;
@@ -50,6 +57,8 @@ public class PDFBuilder {
     private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
     private static final float HEADER_MARGIN_BOTTOM = 16f;
     private static final float LINE_LEADING = 1.0f;
+    private static final float METADATA_MARGIN_LEFT_RIGHT = 30f;
+    private static final float METADATA_MARGIN_BOTTOM = 30f;
 
     // ----------------- List & Text Layout -----------------
     private static final String BULLET_POINT_SYMBOL = "\u2022";
@@ -61,6 +70,7 @@ public class PDFBuilder {
     }
 
     // ----------------- Overview -----------------
+
     public PDFBuilder setOverviewTitle(String title) {
         this.overviewTitle = title;
         return this;
@@ -130,6 +140,19 @@ public class PDFBuilder {
         return this;
     }
 
+    // ----------------- Metadata -----------------
+
+    /**
+     * Sets metadata text to be displayed at the bottom of the PDF
+     *
+     * @param metadataText the complete metadata text to display
+     * @return this builder for method chaining
+     */
+    public PDFBuilder setMetadata(String metadataText) {
+        this.metadataText = metadataText;
+        return this;
+    }
+
     // ----------------- Build PDF -----------------
 
     /**
@@ -176,7 +199,13 @@ public class PDFBuilder {
                 }
             }
 
+            // Metadata
+            if (metadataText != null && !metadataText.isEmpty()) {
+                addMetadata(pdfDoc, normalFont);
+            }
+
             document.close();
+            pdfDoc.close();
             return new ByteArrayResource(baos.toByteArray());
         } catch (IOException e) {
             throw new PDFGenerationException("Failed to generate PDF", e);
@@ -281,6 +310,39 @@ public class PDFBuilder {
         }
 
         document.add(container);
+    }
+
+    /**
+     * Adds metadata text at the bottom of the last PDF page
+     */
+    private void addMetadata(PdfDocument pdfDoc, PdfFont normalFont) {
+        int lastPageNumber = pdfDoc.getNumberOfPages();
+        PdfPage lastPage = pdfDoc.getPage(lastPageNumber);
+
+        Rectangle pageSize = lastPage.getPageSize();
+
+        Canvas canvas = new Canvas(lastPage, pageSize);
+
+        // Metadaten-Paragraph erstellen
+        Paragraph metadata = new Paragraph(metadataText)
+            .setFont(normalFont)
+            .setFontSize(FONT_SIZE_METADATA)
+            .setFontColor(METADATA_COLOR)
+            .setTextAlignment(TextAlignment.CENTER)
+            .simulateItalic()
+            .setWidth(pageSize.getWidth() - METADATA_MARGIN_LEFT_RIGHT);
+
+        canvas.showTextAligned(
+            metadata,
+            pageSize.getWidth() / 2,
+            METADATA_MARGIN_BOTTOM,
+            lastPageNumber,
+            TextAlignment.CENTER,
+            VerticalAlignment.BOTTOM,
+            0
+        );
+
+        canvas.close();
     }
 
     private List<IBlockElement> parseHtmlContent(String html, PdfFont normalFont) {
