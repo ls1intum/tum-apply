@@ -10,3 +10,9 @@ Disallow: /api/users/
 Disallow: /management/
 Disallow: /v3/api-docs/
 Allow: /.well-known/
+
+# Allow Google and others to crawl all public pages
+Allow: /
+
+# Sitemap location
+Sitemap: https://tumapply.aet.cit.tum.de/sitemap.xml

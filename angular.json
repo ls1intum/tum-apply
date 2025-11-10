@@ -20,14 +20,19 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "allowedCommonJsDependencies": ["postal-codes-js", "quill-delta"],
+            "allowedCommonJsDependencies": [
+              "postal-codes-js",
+              "quill-delta"
+            ],
             "outputPath": {
               "base": "build/resources/main/static/",
               "browser": ""
             },
             "index": "src/main/webapp/index.html",
             "browser": "src/main/webapp/main.ts",
-            "polyfills": ["@angular/localize/init"],
+            "polyfills": [
+              "@angular/localize/init"
+            ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -35,6 +40,7 @@
               "src/main/webapp/favicon.ico",
               "src/main/webapp/manifest.webapp",
               "src/main/webapp/robots.txt",
+              "src/main/webapp/sitemap.xml",
               "src/main/webapp/i18n",
               {
                 "glob": "silent-check-sso.html",

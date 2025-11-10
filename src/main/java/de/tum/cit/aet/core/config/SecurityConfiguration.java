@@ -97,6 +97,8 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/manifest.webapp", "/robots.txt")
                     .permitAll()
+                    .requestMatchers("/sitemap.xml")
+                    .permitAll()
                     .requestMatchers("/assets/**")
                     .permitAll()
                     .requestMatchers("/content/**", "/i18n/*.json", "/logo/*")
