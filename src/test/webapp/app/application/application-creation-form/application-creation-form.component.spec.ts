@@ -34,7 +34,7 @@ import {
   createApplicationResourceApiServiceMock,
   provideApplicationResourceApiServiceMock,
   ApplicationResourceApiServiceMock,
-  createMockApplication,
+  createMockApplicationDTO,
 } from 'util/application-resource-api.service.mock';
 import {
   createJobResourceApiServiceMock,
@@ -222,7 +222,7 @@ describe('ApplicationForm', () => {
     const freshComp = freshFixture.componentInstance;
 
     const mockApp = {
-      ...createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+      ...createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
       applicationId: 'new-app',
     };
     const initCreateSpy = vi.spyOn(freshComp, 'initPageCreateApplication').mockResolvedValue(mockApp);
@@ -926,7 +926,7 @@ describe('ApplicationForm', () => {
       comp.applicationState.set('SAVED');
 
       const initPageSpy = spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(
-        createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+        createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
       );
       const sendDataSpy = spyOnPrivate(comp, 'sendCreateApplicationData').mockResolvedValue(true);
 
@@ -955,7 +955,10 @@ describe('ApplicationForm', () => {
       comp.jobId.set('job-789');
       comp.applicationId.set('old-app-id');
 
-      const mockApplication = { ...createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved), applicationId: undefined };
+      const mockApplication = {
+        ...createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+        applicationId: undefined,
+      };
 
       spyOnPrivate(comp, 'initPageCreateApplication').mockResolvedValue(mockApplication);
       spyOnPrivate(comp, 'sendCreateApplicationData').mockResolvedValue(true);
@@ -1631,11 +1634,11 @@ describe('ApplicationForm', () => {
       expect(toast.showErrorKey).not.toHaveBeenCalled();
 
       // Should return the application
-      expect(result).toEqual(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
+      expect(result).toEqual(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
     });
 
     it('should show error toast, navigate to detail page and throw error when application state is not SAVED', async () => {
-      const mockApplication = createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Sent);
+      const mockApplication = createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Sent);
 
       // Reconfigure the existing mock
       applicationResourceApiService.createApplication = vi.fn().mockReturnValue(of(mockApplication));
@@ -1651,7 +1654,10 @@ describe('ApplicationForm', () => {
 
     it('should handle application with undefined applicationId', async () => {
       // Reconfigure the existing mock
-      let mockApplication = { ...createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved), applicationId: undefined };
+      let mockApplication = {
+        ...createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved),
+        applicationId: undefined,
+      };
       applicationResourceApiService.createApplication = vi.fn().mockReturnValue(of(mockApplication));
 
       const result = await comp.initPageCreateApplication('job-456');
@@ -1674,7 +1680,7 @@ describe('ApplicationForm', () => {
     it('should handle SAVED state as non-editable', async () => {
       applicationResourceApiService.createApplication = vi
         .fn()
-        .mockReturnValue(of(createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Sent)));
+        .mockReturnValue(of(createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Sent)));
 
       await expect(comp.initPageCreateApplication('job-456')).rejects.toThrow('Application is not editable.');
 
@@ -1687,7 +1693,7 @@ describe('ApplicationForm', () => {
     it('should load application and return it when application state is SAVED', async () => {
       applicationResourceApiService.getApplicationById = vi
         .fn()
-        .mockReturnValue(of(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
+        .mockReturnValue(of(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved)));
 
       const result = await comp.initPageLoadExistingApplication('existing-app-123');
 
@@ -1698,11 +1704,11 @@ describe('ApplicationForm', () => {
       expect(toast.showErrorKey).not.toHaveBeenCalled();
       // Should NOT navigate away
       expect(router.navigate).not.toHaveBeenCalled();
-      expect(result).toEqual(createMockApplication(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
+      expect(result).toEqual(createMockApplicationDTO(ApplicationForApplicantDTO.ApplicationStateEnum.Saved));
     });
 
     it('should show error toast, navigate to detail page and throw error when application state is not SAVED', async () => {
-      const mockApplication = createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Sent);
+      const mockApplication = createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Sent);
 
       applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
@@ -1719,7 +1725,7 @@ describe('ApplicationForm', () => {
     });
 
     it('should handle REJECTED application state as not editable', async () => {
-      const mockApplication = createMockApplication(ApplicationDetailDTO.ApplicationStateEnum.Rejected);
+      const mockApplication = createMockApplicationDTO(ApplicationDetailDTO.ApplicationStateEnum.Rejected);
 
       applicationResourceApiService.getApplicationById = vi.fn().mockReturnValue(of(mockApplication));
 
