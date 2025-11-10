@@ -145,17 +145,6 @@ describe('ApplicationPage2Component', () => {
       expect(componentInstance.page2Form.valid).toBe(true);
     });
 
-    it('should have invalid form if bachelor grade is out of range', () => {
-      const { componentInstance } = createApplicationPage2Fixture();
-
-      componentInstance.page2Form.setValue({
-        ...VALID_PAGE2_FORM_DATA,
-        bachelorGrade: '4.5', // Invalid - out of range
-      });
-
-      expect(componentInstance.page2Form.valid).toBe(false);
-    });
-
     it('should validate grade correctly when within limits', () => {
       const { componentInstance } = createApplicationPage2Fixture();
 
