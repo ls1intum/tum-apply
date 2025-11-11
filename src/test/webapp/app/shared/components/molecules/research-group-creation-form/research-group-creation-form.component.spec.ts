@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { ProfessorRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/professor-request-access-form/professor-request-access-form.component';
+import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
@@ -13,22 +13,25 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 
-describe('ProfessorRequestAccessFormComponent', () => {
-  let component: ProfessorRequestAccessFormComponent;
-  let fixture: ComponentFixture<ProfessorRequestAccessFormComponent>;
+describe('ResearchGroupCreationFormComponent', () => {
+  let component: ResearchGroupCreationFormComponent;
+  let fixture: ComponentFixture<ResearchGroupCreationFormComponent>;
 
   let mockDialogRef: DynamicDialogRefMock;
+  let mockDialogConfig: Partial<DynamicDialogConfig>;
   let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
     mockDialogRef = createDynamicDialogRefMock();
+    mockDialogConfig = { data: { mode: 'professor' } };
 
     mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
       createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
+      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as any)),
     };
 
     mockProfOnboardingService = {
@@ -36,18 +39,19 @@ describe('ProfessorRequestAccessFormComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ProfessorRequestAccessFormComponent, ReactiveFormsModule],
+      imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
       providers: [
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideToastServiceMock(mockToastService),
         provideDynamicDialogRefMock(mockDialogRef),
+        { provide: DynamicDialogConfig, useValue: mockDialogConfig },
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ProfessorRequestAccessFormComponent);
+    fixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -60,7 +64,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
    * Helper function to fill the form with valid data
    */
   function fillValidForm(overrides: Record<string, unknown> = {}): void {
-    component.professorForm.patchValue({
+    component.form.patchValue({
       title: 'Prof.',
       firstName: 'Max',
       lastName: 'Mustermann',
@@ -77,25 +81,25 @@ describe('ProfessorRequestAccessFormComponent', () => {
 
   describe('Form Initialization', () => {
     it('should initialize with all required form fields', () => {
-      expect(component.professorForm.get('title')).toBeTruthy();
-      expect(component.professorForm.get('firstName')).toBeTruthy();
-      expect(component.professorForm.get('lastName')).toBeTruthy();
-      expect(component.professorForm.get('tumID')).toBeTruthy();
-      expect(component.professorForm.get('researchGroupHead')).toBeTruthy();
-      expect(component.professorForm.get('researchGroupName')).toBeTruthy();
+      expect(component.form.get('title')).toBeTruthy();
+      expect(component.form.get('firstName')).toBeTruthy();
+      expect(component.form.get('lastName')).toBeTruthy();
+      expect(component.form.get('tumID')).toBeTruthy();
+      expect(component.form.get('researchGroupHead')).toBeTruthy();
+      expect(component.form.get('researchGroupName')).toBeTruthy();
     });
 
     it('should initialize form with empty values', () => {
-      expect(component.professorForm.get('title')?.value).toBe('');
-      expect(component.professorForm.get('firstName')?.value).toBe('');
-      expect(component.professorForm.get('lastName')?.value).toBe('');
+      expect(component.form.get('title')?.value).toBe('');
+      expect(component.form.get('firstName')?.value).toBe('');
+      expect(component.form.get('lastName')?.value).toBe('');
     });
 
     it('should mark required fields as invalid when empty', () => {
-      const titleControl = component.professorForm.get('title');
-      const firstNameControl = component.professorForm.get('firstName');
-      const lastNameControl = component.professorForm.get('lastName');
-      const tumIDControl = component.professorForm.get('tumID');
+      const titleControl = component.form.get('title');
+      const firstNameControl = component.form.get('firstName');
+      const lastNameControl = component.form.get('lastName');
+      const tumIDControl = component.form.get('tumID');
 
       expect(titleControl?.valid).toBe(false);
       expect(firstNameControl?.valid).toBe(false);
@@ -104,8 +108,8 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should mark optional fields as valid when empty', () => {
-      const abbreviationControl = component.professorForm.get('researchGroupAbbreviation');
-      const websiteControl = component.professorForm.get('researchGroupWebsite');
+      const abbreviationControl = component.form.get('researchGroupAbbreviation');
+      const websiteControl = component.form.get('researchGroupWebsite');
 
       expect(abbreviationControl?.valid).toBe(true);
       expect(websiteControl?.valid).toBe(true);
@@ -114,7 +118,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
 
   describe('Form Validation', () => {
     it('should validate email format for contact email', () => {
-      const emailControl = component.professorForm.get('researchGroupContactEmail');
+      const emailControl = component.form.get('researchGroupContactEmail');
 
       emailControl?.setValue('invalid-email');
       expect(emailControl?.valid).toBe(false);
@@ -124,7 +128,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should enforce max length on description field', () => {
-      const descriptionControl = component.professorForm.get('researchGroupDescription');
+      const descriptionControl = component.form.get('researchGroupDescription');
       const longText = 'a'.repeat(1001);
 
       descriptionControl?.setValue(longText);
@@ -135,7 +139,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should validate TUM ID format', () => {
-      const tumIDControl = component.professorForm.get('tumID');
+      const tumIDControl = component.form.get('tumID');
 
       tumIDControl?.setValue('invalid');
       expect(tumIDControl?.valid).toBe(false);
@@ -147,7 +151,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     it('should validate form as valid when all required fields are filled', () => {
       fillValidForm();
 
-      expect(component.professorForm.valid).toBe(true);
+      expect(component.form.valid).toBe(true);
     });
   });
 
@@ -185,7 +189,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
     });
 
     it('should not submit when form is invalid', () => {
-      component.professorForm.patchValue({ title: '' }); // Make form invalid
+      component.form.patchValue({ title: '' }); // Make form invalid
 
       component.onConfirmSubmit();
 
@@ -231,7 +235,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
       });
 
       // Ensure form is valid
-      expect(component.professorForm.valid).toBe(true);
+      expect(component.form.valid).toBe(true);
 
       component.onConfirmSubmit();
 
@@ -387,7 +391,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
 
       const fixtureNoRef = TestBed.resetTestingModule()
         .configureTestingModule({
-          imports: [ProfessorRequestAccessFormComponent, ReactiveFormsModule],
+          imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
           providers: [
             provideTranslateMock(),
             provideFontAwesomeTesting(),
@@ -397,7 +401,7 @@ describe('ProfessorRequestAccessFormComponent', () => {
             { provide: ToastService, useValue: mockToastService },
           ],
         })
-        .createComponent(ProfessorRequestAccessFormComponent);
+        .createComponent(ResearchGroupCreationFormComponent);
 
       const componentNoRef = fixtureNoRef.componentInstance;
 
@@ -470,11 +474,252 @@ describe('ProfessorRequestAccessFormComponent', () => {
 
     it('should prevent multiple simultaneous submissions', () => {
       fillValidForm();
-
       component.isSubmitting.set(true);
+
       component.onConfirmSubmit();
 
       expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Admin Mode', () => {
+    beforeEach(async () => {
+      // Recreate component with admin mode
+      mockDialogConfig.data = { mode: 'admin' };
+
+      fixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
+
+    it('should set mode to admin when provided in dialog config', () => {
+      expect(component.mode()).toBe('admin');
+    });
+
+    it('should disable personal information fields in admin mode', () => {
+      expect(component.form.get('title')?.disabled).toBe(true);
+      expect(component.form.get('firstName')?.disabled).toBe(true);
+      expect(component.form.get('lastName')?.disabled).toBe(true);
+      expect(component.form.get('additionalNotes')?.disabled).toBe(true);
+    });
+
+    it('should not require tumID validation in admin mode', () => {
+      const tumIDControl = component.form.get('tumID');
+
+      tumIDControl?.setValue('');
+      expect(tumIDControl?.valid).toBe(true);
+
+      tumIDControl?.setValue('invalid-format');
+      expect(tumIDControl?.valid).toBe(true);
+    });
+
+    it('should mark form as valid without personal information in admin mode', () => {
+      component.form.patchValue({
+        researchGroupHead: 'Prof. Dr. Test',
+        researchGroupName: 'Test Research Group',
+      });
+
+      expect(component.form.valid).toBe(true);
+    });
+
+    it('should call createResearchGroupAsAdmin in admin mode', async () => {
+      component.form.patchValue({
+        researchGroupHead: 'Prof. Dr. Admin Test',
+        researchGroupName: 'Admin Research Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledOnce();
+      expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
+    });
+
+    it('should not call confirmOnboarding in admin mode', async () => {
+      component.form.patchValue({
+        researchGroupHead: 'Prof. Dr. Admin Test',
+        researchGroupName: 'Admin Research Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
+    });
+
+    it('should show admin success toast in admin mode', async () => {
+      component.form.patchValue({
+        researchGroupHead: 'Prof. Dr. Admin Test',
+        researchGroupName: 'Admin Research Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.create');
+    });
+
+    it('should show admin error toast when creation fails in admin mode', async () => {
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => new Error('Creation failed')));
+
+      component.form.patchValue({
+        researchGroupHead: 'Prof. Dr. Admin Test',
+        researchGroupName: 'Admin Research Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.create');
+    });
+
+    it('should handle empty personal fields gracefully in admin mode', async () => {
+      component.form.patchValue({
+        title: '',
+        firstName: '',
+        lastName: '',
+        tumID: '',
+        researchGroupHead: 'Prof. Dr. Admin Test',
+        researchGroupName: 'Admin Research Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: '',
+          firstName: '',
+          lastName: '',
+          universityId: '',
+          researchGroupHead: 'Prof. Dr. Admin Test',
+          researchGroupName: 'Admin Research Group',
+        }),
+      );
+    });
+
+    it('should close dialog with result after successful admin creation', async () => {
+      const expectedResult = { researchGroupId: 'admin-test-id' };
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => of(expectedResult as any));
+
+      component.form.patchValue({
+        researchGroupHead: 'Prof. Dr. Admin Test',
+        researchGroupName: 'Admin Research Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockDialogRef.close).toHaveBeenCalledWith(expectedResult);
+    });
+  });
+
+  describe('Professor Mode', () => {
+    it('should set mode to professor by default', () => {
+      expect(component.mode()).toBe('professor');
+    });
+
+    it('should enable personal information fields in professor mode', () => {
+      expect(component.form.get('title')?.disabled).toBe(false);
+      expect(component.form.get('firstName')?.disabled).toBe(false);
+      expect(component.form.get('lastName')?.disabled).toBe(false);
+      expect(component.form.get('additionalNotes')?.disabled).toBe(false);
+    });
+
+    it('should require tumID validation in professor mode', () => {
+      const tumIDControl = component.form.get('tumID');
+
+      tumIDControl?.setValue('');
+      expect(tumIDControl?.valid).toBe(false);
+
+      tumIDControl?.setValue('invalid-format');
+      expect(tumIDControl?.valid).toBe(false);
+
+      tumIDControl?.setValue('ab12cde');
+      expect(tumIDControl?.valid).toBe(true);
+    });
+
+    it('should call createProfessorResearchGroupRequest in professor mode', async () => {
+      fillValidForm();
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockResearchGroupService.createProfessorResearchGroupRequest).toHaveBeenCalledOnce();
+      expect(mockResearchGroupService.createResearchGroupAsAdmin).not.toHaveBeenCalled();
+    });
+
+    it('should call confirmOnboarding in professor mode', async () => {
+      fillValidForm();
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockProfOnboardingService.confirmOnboarding).toHaveBeenCalledOnce();
+    });
+
+    it('should show professor success toast in professor mode', async () => {
+      fillValidForm();
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('onboarding.professorRequest.success');
+    });
+
+    it('should show professor error toast when creation fails in professor mode', async () => {
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => new Error('Creation failed')));
+
+      fillValidForm();
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
+    });
+  });
+
+  describe('Mode Switching', () => {
+    it('should default to professor mode when no config is provided', () => {
+      // Create component without dialog config
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [ResearchGroupCreationFormComponent],
+        providers: [
+          provideTranslateMock(),
+          provideFontAwesomeTesting(),
+          provideToastServiceMock(mockToastService),
+          provideDynamicDialogRefMock(mockDialogRef),
+          { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
+          { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
+        ],
+      });
+
+      const newFixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
+      const newComponent = newFixture.componentInstance;
+      newFixture.detectChanges();
+
+      expect(newComponent.mode()).toBe('professor');
+    });
+
+    it('should use mode from dialog config data', () => {
+      mockDialogConfig.data = { mode: 'admin' };
+
+      const newFixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
+      const newComponent = newFixture.componentInstance;
+      newFixture.detectChanges();
+
+      expect(newComponent.mode()).toBe('admin');
     });
   });
 });

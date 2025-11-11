@@ -3,6 +3,16 @@
     <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
   </div>
   <div class="body">
+    <div class="mb-4">
+      <jhi-button
+        [label]="'researchGroup.adminView.createButton' | translate"
+        icon="plus"
+        severity="primary"
+        (click)="onCreateResearchGroup()"
+        [shouldTranslate]="false"
+      />
+    </div>
+
     <jhi-search-filter-sort-bar
       [searchText]="'researchGroup.adminView.searchFilterSortBar.searchText' | translate"
       [totalRecords]="totalRecords()"

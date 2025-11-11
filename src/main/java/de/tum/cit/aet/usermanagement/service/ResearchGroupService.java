@@ -420,7 +420,39 @@ public class ResearchGroupService {
     }
 
     /**
-     * Creates an employee research group access request.
+     * Creates a research group directly as ACTIVE state (admin only).
+     * Does not associate any user with the research group during creation.
+     * Note: universityId is not set as it's a personal field for professors, not research groups.
+     *
+     * @param request the research group creation request
+     * @return the created research group in ACTIVE state
+     */
+    @Transactional
+    public ResearchGroup createResearchGroupAsAdmin(ProfessorResearchGroupRequestDTO request) {
+        if (researchGroupRepository.existsByNameIgnoreCase(request.researchGroupName())) {
+            throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
+        }
+
+        ResearchGroup researchGroup = new ResearchGroup();
+        researchGroup.setName(StringUtil.normalize(request.researchGroupName(), false));
+        // Don't set universityId for admin-created groups - it's a professor's personal field
+        researchGroup.setHead(request.researchGroupHead());
+        researchGroup.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
+        researchGroup.setEmail(request.contactEmail());
+        researchGroup.setWebsite(request.website());
+        researchGroup.setSchool(request.school());
+        researchGroup.setDescription(request.description());
+        researchGroup.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
+        researchGroup.setStreet(request.street());
+        researchGroup.setPostalCode(request.postalCode());
+        researchGroup.setCity(request.city());
+        researchGroup.setState(ResearchGroupState.ACTIVE);
+
+        return researchGroupRepository.save(researchGroup);
+    }
+
+    /**
+     * Creates an employee research group access request during onboarding.
      * Sends an email to support/administrators with user information and professor name.
      * This is a temporary solution until the employee role is implemented.
      *

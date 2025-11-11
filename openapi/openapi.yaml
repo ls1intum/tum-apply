@@ -992,6 +992,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupAdminDTO'}
+  /api/research-groups/admin-create:
+    post:
+      tags: [research-group-resource]
+      operationId: createResearchGroupAsAdmin
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ProfessorResearchGroupRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]

@@ -143,6 +143,21 @@ public class ResearchGroupResource {
     }
 
     /**
+     * Creates a research group directly as ACTIVE state (admin only).
+     * Does not require user association during creation.
+     *
+     * @param request the research group creation request
+     * @return the created research group in ACTIVE state
+     */
+    @PostMapping("/admin-create")
+    @Admin
+    public ResponseEntity<ResearchGroupDTO> createResearchGroupAsAdmin(@Valid @RequestBody ProfessorResearchGroupRequestDTO request) {
+        log.info("POST /api/research-groups/admin-create name={}", request.researchGroupName());
+        ResearchGroup created = researchGroupService.createResearchGroupAsAdmin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
+    }
+
+    /**
      * Creates an employee research group access request during onboarding.
      * Sends an email to administrators with user and professor information.
      *
