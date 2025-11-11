@@ -5,6 +5,13 @@
 
   background: var(--p-accent-color);
   color: var(--p-text-on-accent);
+
+  .back-button {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    transform: scale(0.8);
+  }
 }
 
 .registration-steps {
@@ -54,6 +61,7 @@
     .password {
       width: 100%;
     }
+
   }
 
   .registration-footer {

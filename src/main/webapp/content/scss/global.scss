@@ -185,6 +185,27 @@
   }
 }
 
+/* -------------------------------
+   Custom Global Styles for Login
+---------------------------------- */
+.login-header-button .p-button-text.p-button-info {
+  color: white !important;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+}
+.login-header-button .p-button-text.p-button-info:hover {
+  background-color: lightsteelblue;
+}
+
+.registration-header-button .p-button-text {
+  color: white !important;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+}
+.registration-header-button .p-button-text:hover {
+  background-color: lightsteelblue;
+}
+
 /* --------------------------------------------------
    Custom Global Styles for Atomic Editor Component
 
@@ -495,6 +516,8 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 .icon {
   color: var(--p-primary-color);
 }
+
+
 
 /* ---------------------------
    PrimeNG Carousel Indicators (Hero)
