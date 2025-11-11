@@ -11,6 +11,7 @@ import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -19,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import de.tum.cit.aet.usermanagement.domain.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -178,20 +177,14 @@ public class InterviewService {
     }
 
     private void validateNoTimeConflicts(UUID professorId, List<InterviewSlot> newSlots) {
-        System.out.println("=== CONFLICT CHECK ===");
-        System.out.println("Professor ID: " + professorId);
-
         for (InterviewSlot newSlot : newSlots) {
-            System.out.println("Checking: " + newSlot.getStartDateTime() + " to " + newSlot.getEndDateTime());
+            User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
 
-            List<InterviewSlot> conflictingSlots = interviewSlotRepository
-                .findConflictingSlotsForProfessor(
-                    professorId,  // ← UUID direkt!
-                    newSlot.getStartDateTime(),
-                    newSlot.getEndDateTime()
-                );
-
-            System.out.println("Found: " + conflictingSlots.size() + " conflicts");
+            List<InterviewSlot> conflictingSlots = interviewSlotRepository.findConflictingSlotsForProfessor(
+                professor,
+                newSlot.getStartDateTime(),
+                newSlot.getEndDateTime()
+            );
 
             if (!conflictingSlots.isEmpty()) {
                 InterviewSlot conflict = conflictingSlots.get(0);
