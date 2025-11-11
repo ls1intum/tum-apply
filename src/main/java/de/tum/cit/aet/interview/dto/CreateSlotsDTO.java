@@ -1,6 +1,7 @@
 package de.tum.cit.aet.interview.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.core.exception.InvalidParameterException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public record CreateSlotsDTO(@NotEmpty List<@Valid SlotInput> slots) {
     ) {
         public SlotInput {
             if (endTime != null && startTime != null && !endTime.isAfter(startTime)) {
-                throw new IllegalArgumentException("End time must be after start time");
+                throw new InvalidParameterException("End time must be after start time");
             }
         }
     }
