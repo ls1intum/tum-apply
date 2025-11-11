@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { ProfessorResearchGroupRequestDTO } from 'app/generated/model/professorResearchGroupRequestDTO';
+import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupRequestDTO';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
@@ -68,7 +68,7 @@ export class ResearchGroupCreationFormComponent {
 
   onConfirmSubmit(): void {
     if (this.form.valid && !this.isSubmitting()) {
-      void this.submitProfessorRequest();
+      void this.submitRequest();
     }
   }
 
@@ -99,9 +99,9 @@ export class ResearchGroupCreationFormComponent {
     });
   }
 
-  private async submitProfessorRequest(): Promise<void> {
+  private async submitRequest(): Promise<void> {
     this.isSubmitting.set(true);
-    const requestData = this.createProfessorResearchGroupRequestDTO();
+    const requestData = this.createResearchGroupRequestDTO();
 
     try {
       const isAdminMode = this.mode() === 'admin';
@@ -128,7 +128,7 @@ export class ResearchGroupCreationFormComponent {
     }
   }
 
-  private createProfessorResearchGroupRequestDTO(): ProfessorResearchGroupRequestDTO {
+  private createResearchGroupRequestDTO(): ResearchGroupRequestDTO {
     const v = this.form.getRawValue();
 
     const s = (val: unknown): string => {

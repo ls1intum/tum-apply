@@ -24,11 +24,11 @@ import { PageResponseDTOResearchGroupDTO } from '../model/pageResponseDTOResearc
 // @ts-ignore
 import { PageResponseDTOUserShortDTO } from '../model/pageResponseDTOUserShortDTO';
 // @ts-ignore
-import { ProfessorResearchGroupRequestDTO } from '../model/professorResearchGroupRequestDTO';
-// @ts-ignore
 import { ResearchGroupDTO } from '../model/researchGroupDTO';
 // @ts-ignore
 import { ResearchGroupLargeDTO } from '../model/researchGroupLargeDTO';
+// @ts-ignore
+import { ResearchGroupRequestDTO } from '../model/researchGroupRequestDTO';
 
 // @ts-ignore
 import { BASE_PATH }                     from '../variables';
@@ -160,16 +160,16 @@ export class ResearchGroupResourceApiService extends BaseService {
     }
 
     /**
-     * @param professorResearchGroupRequestDTO 
+     * @param researchGroupRequestDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createProfessorResearchGroupRequest(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ResearchGroupDTO>;
-    public createProfessorResearchGroupRequest(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ResearchGroupDTO>>;
-    public createProfessorResearchGroupRequest(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ResearchGroupDTO>>;
-    public createProfessorResearchGroupRequest(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (professorResearchGroupRequestDTO === null || professorResearchGroupRequestDTO === undefined) {
-            throw new Error('Required parameter professorResearchGroupRequestDTO was null or undefined when calling createProfessorResearchGroupRequest.');
+    public createProfessorResearchGroupRequest(researchGroupRequestDTO: ResearchGroupRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ResearchGroupDTO>;
+    public createProfessorResearchGroupRequest(researchGroupRequestDTO: ResearchGroupRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ResearchGroupDTO>>;
+    public createProfessorResearchGroupRequest(researchGroupRequestDTO: ResearchGroupRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ResearchGroupDTO>>;
+    public createProfessorResearchGroupRequest(researchGroupRequestDTO: ResearchGroupRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (researchGroupRequestDTO === null || researchGroupRequestDTO === undefined) {
+            throw new Error('Required parameter researchGroupRequestDTO was null or undefined when calling createProfessorResearchGroupRequest.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -210,7 +210,7 @@ export class ResearchGroupResourceApiService extends BaseService {
         return this.httpClient.request<ResearchGroupDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: professorResearchGroupRequestDTO,
+                body: researchGroupRequestDTO,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -222,16 +222,16 @@ export class ResearchGroupResourceApiService extends BaseService {
     }
 
     /**
-     * @param professorResearchGroupRequestDTO 
+     * @param researchGroupRequestDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createResearchGroupAsAdmin(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ResearchGroupDTO>;
-    public createResearchGroupAsAdmin(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ResearchGroupDTO>>;
-    public createResearchGroupAsAdmin(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ResearchGroupDTO>>;
-    public createResearchGroupAsAdmin(professorResearchGroupRequestDTO: ProfessorResearchGroupRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (professorResearchGroupRequestDTO === null || professorResearchGroupRequestDTO === undefined) {
-            throw new Error('Required parameter professorResearchGroupRequestDTO was null or undefined when calling createResearchGroupAsAdmin.');
+    public createResearchGroupAsAdmin(researchGroupRequestDTO: ResearchGroupRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ResearchGroupDTO>;
+    public createResearchGroupAsAdmin(researchGroupRequestDTO: ResearchGroupRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ResearchGroupDTO>>;
+    public createResearchGroupAsAdmin(researchGroupRequestDTO: ResearchGroupRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ResearchGroupDTO>>;
+    public createResearchGroupAsAdmin(researchGroupRequestDTO: ResearchGroupRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (researchGroupRequestDTO === null || researchGroupRequestDTO === undefined) {
+            throw new Error('Required parameter researchGroupRequestDTO was null or undefined when calling createResearchGroupAsAdmin.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -272,7 +272,7 @@ export class ResearchGroupResourceApiService extends BaseService {
         return this.httpClient.request<ResearchGroupDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: professorResearchGroupRequestDTO,
+                body: researchGroupRequestDTO,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

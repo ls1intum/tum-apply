@@ -371,7 +371,7 @@ public class ResearchGroupService {
      * @return the created research group in DRAFT state
      */
     @Transactional
-    public ResearchGroup createProfessorResearchGroupRequest(ProfessorResearchGroupRequestDTO request) {
+    public ResearchGroup createProfessorResearchGroupRequest(ResearchGroupRequestDTO request) {
         User currentUser = currentUserService.getUser();
 
         if (currentUser.getResearchGroup() != null) {
@@ -428,7 +428,7 @@ public class ResearchGroupService {
      * @return the created research group in ACTIVE state
      */
     @Transactional
-    public ResearchGroup createResearchGroupAsAdmin(ProfessorResearchGroupRequestDTO request) {
+    public ResearchGroup createResearchGroupAsAdmin(ResearchGroupRequestDTO request) {
         if (researchGroupRepository.existsByNameIgnoreCase(request.researchGroupName())) {
             throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
         }
