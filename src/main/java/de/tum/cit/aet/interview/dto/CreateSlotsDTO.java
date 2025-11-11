@@ -12,7 +12,7 @@ import java.util.List;
  * Frontend generates the slots - backend validates and saves.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record CreateSlotsDTO(@NotEmpty(message = "At least one slot must be provided") @Valid List<SlotInput> slots) {
+public record CreateSlotsDTO(@NotEmpty List<@Valid SlotInput> slots) {
     /**
      * Definition of a single slot to be created.
      */
