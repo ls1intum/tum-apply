@@ -4,6 +4,10 @@
       "thisDocumentWasGeneratedOn": "This document was created on ",
       "byUser": " by ",
       "usingTumapply": " using TumApply (https://tumapply.aet.cit.tum.de)."
+    },
+    "pageCount": {
+      "page": "Page",
+      "of": "from"
     }
   }
 }

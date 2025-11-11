@@ -39,5 +39,7 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
     thisDocumentWasGeneratedOn: translate.instant('pdf.metaData.thisDocumentWasGeneratedOn'),
     byUser: translate.instant('pdf.metaData.byUser'),
     usingTumapply: translate.instant('pdf.metaData.usingTumapply'),
+    page: translate.instant('pdf.pageCount.page'),
+    of: translate.instant('pdf.pageCount.of'),
   };
 }

@@ -42,6 +42,8 @@ public class PDFBuilder {
     private final List<SectionGroup> sectionGroups = new ArrayList<>();
     private SectionGroup currentGroup;
     private String metadataText;
+    private String pageLabelPage;
+    private String pageLabelOf;
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
     private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
@@ -51,7 +53,7 @@ public class PDFBuilder {
     private static final float FONT_SIZE_GROUP_TITLE = 14f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
-    private static final float FONT_SIZE_METADATA = 8f;
+    private static final float FONT_SIZE_METADATA = 7f;
 
     // ----------------- Spacing -----------------
     private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
@@ -62,8 +64,7 @@ public class PDFBuilder {
     private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
     private static final float HEADER_MARGIN_BOTTOM = 16f;
     private static final float LINE_LEADING = 1.0f;
-    private static final float METADATA_MARGIN_LEFT_RIGHT = 30f;
-    private static final float METADATA_MARGIN_BOTTOM = 30f;
+    private static final float METADATA_MARGIN_LEFT_RIGHT = 15f;
 
     // ----------------- List & Text Layout -----------------
     private static final String BULLET_POINT_SYMBOL = "\u2022";
@@ -165,6 +166,19 @@ public class PDFBuilder {
      */
     public PDFBuilder setMetadata(String metadataText) {
         this.metadataText = metadataText;
+        return this;
+    }
+
+    /**
+     * Sets the labels for page numbering
+     *
+     * @param pageLabelPage label for "Page" (e.g., "Seite" or "Page")
+     * @param pageLabelOf   label for "of" (e.g., "von" or "of")
+     * @return this builder for method chaining
+     */
+    public PDFBuilder setPageLabels(String pageLabelPage, String pageLabelOf) {
+        this.pageLabelPage = pageLabelPage;
+        this.pageLabelOf = pageLabelOf;
         return this;
     }
 
@@ -343,33 +357,38 @@ public class PDFBuilder {
      * Adds metadata text at the bottom of the last PDF page
      */
     private void addMetadata(PdfDocument pdfDoc, PdfFont normalFont) {
-        int lastPageNumber = pdfDoc.getNumberOfPages();
-        PdfPage lastPage = pdfDoc.getPage(lastPageNumber);
+        int totalPages = pdfDoc.getNumberOfPages();
 
-        Rectangle pageSize = lastPage.getPageSize();
+        for (int i = 1; i <= totalPages; i++) {
+            PdfPage page = pdfDoc.getPage(i);
+            Rectangle pageSize = page.getPageSize();
 
-        Canvas canvas = new Canvas(lastPage, pageSize);
+            Canvas canvas = new Canvas(page, pageSize);
 
-        // Metadaten-Paragraph erstellen
-        Paragraph metadata = new Paragraph(metadataText)
-            .setFont(normalFont)
-            .setFontSize(FONT_SIZE_METADATA)
-            .setFontColor(METADATA_COLOR)
-            .setTextAlignment(TextAlignment.CENTER)
-            .simulateItalic()
-            .setWidth(pageSize.getWidth() - METADATA_MARGIN_LEFT_RIGHT);
+            Paragraph metadataParagraph = new Paragraph(metadataText != null ? metadataText : "")
+                .setFont(normalFont)
+                .setFontSize(FONT_SIZE_METADATA)
+                .setFontColor(METADATA_COLOR)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setWidth(pageSize.getWidth() - 8 * METADATA_MARGIN_LEFT_RIGHT);
 
-        canvas.showTextAligned(
-            metadata,
-            pageSize.getWidth() / 2,
-            METADATA_MARGIN_BOTTOM,
-            lastPageNumber,
-            TextAlignment.CENTER,
-            VerticalAlignment.BOTTOM,
-            0
-        );
+            canvas.showTextAligned(metadataParagraph, pageSize.getWidth() / 2, MARGIN_PDF_TOP_AND_BOTTOM, TextAlignment.CENTER);
 
-        canvas.close();
+            // --- Page Number ---
+            Paragraph pageNumber = new Paragraph(String.format("%s %d %s %d", pageLabelPage, i, pageLabelOf, totalPages))
+                .setFont(normalFont)
+                .setFontSize(FONT_SIZE_METADATA)
+                .setFontColor(METADATA_COLOR);
+
+            canvas.showTextAligned(
+                pageNumber,
+                pageSize.getRight() - METADATA_MARGIN_LEFT_RIGHT,
+                MARGIN_PDF_TOP_AND_BOTTOM,
+                TextAlignment.RIGHT
+            );
+
+            canvas.close();
+        }
     }
 
     private List<IBlockElement> parseHtmlContent(String html, PdfFont normalFont) {
