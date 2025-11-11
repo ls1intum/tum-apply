@@ -374,6 +374,39 @@ describe('ResearchGroupCreationFormComponent', () => {
 
       expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
     });
+
+    it('should show duplicate name error toast when creation fails with 409 status', async () => {
+      const error = { status: 409, error: { message: 'Research group already exists' } };
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.errorDuplicateName');
+    });
+
+    it('should show duplicate name error toast when error message includes "already exists"', async () => {
+      const error = { status: 500, error: { message: 'Research group already exists in database' } };
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.errorDuplicateName');
+    });
+
+    it('should show user not found error toast when creation fails with 404 status', async () => {
+      const error = { status: 404, error: { message: 'User with universityId "ab12abc" not found' } };
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.errorUserNotFound');
+    });
   });
 
   describe('onCancel', () => {
@@ -599,6 +632,40 @@ describe('ResearchGroupCreationFormComponent', () => {
       await new Promise(resolve => setTimeout(resolve, 0));
 
       expect(mockDialogRef.close).toHaveBeenCalledWith(expectedResult);
+    });
+
+    it('should show duplicate name error toast in admin mode when creation fails with 409', async () => {
+      const error = { status: 409, error: { message: 'Research group already exists' } };
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
+
+      component.form.patchValue({
+        tumID: 'ab12cde',
+        researchGroupHead: 'Prof. Dr. Admin Test',
+        researchGroupName: 'Duplicate Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.duplicateName');
+    });
+
+    it('should show user not found error toast in admin mode when TUM-ID is invalid', async () => {
+      const error = { status: 404, error: { message: 'User with universityId "invalid" not found' } };
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
+
+      component.form.patchValue({
+        tumID: 'ab12cde', // Use valid TUM-ID format
+        researchGroupHead: 'Prof. Dr. Test',
+        researchGroupName: 'Test Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 10)); // Increase timeout slightly
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.userNotFound');
     });
   });
 
