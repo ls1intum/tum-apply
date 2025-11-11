@@ -23,6 +23,7 @@ import de.tum.cit.aet.usermanagement.dto.*;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import de.tum.cit.aet.utility.testdata.PageTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDateTime;
@@ -65,11 +66,10 @@ class ResearchGroupServiceTest {
     private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
     private static final String SUPPORT_EMAIL = "support@test.com";
     private static final UUID OTHER_USER_ID = UUID.randomUUID();
-    private static final int DEFAULT_PAGE_NUMBER = 1;
-    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private User testUser;
     private ResearchGroup testResearchGroup;
+    private PageDTO pageDTO;
 
     @BeforeEach
     void setUp() {
@@ -94,48 +94,8 @@ class ResearchGroupServiceTest {
 
         // Initialize test user using utility class
         testUser = UserTestData.newUserAll(TEST_USER_ID, "test@example.com", "Test", "User");
-    }
 
-    // --- Helper Methods ---
-
-    private PageDTO createDefaultPageDTO() {
-        return new PageDTO(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
-    }
-
-    private User createUser(UUID userId, String email, ResearchGroup researchGroup) {
-        User user = new User();
-        user.setUserId(userId);
-        user.setEmail(email);
-        user.setResearchGroup(researchGroup);
-        return user;
-    }
-
-    private ResearchGroup createResearchGroup(UUID id, String name, ResearchGroupState state) {
-        ResearchGroup rg = new ResearchGroup();
-        rg.setResearchGroupId(id);
-        rg.setName(name);
-        rg.setState(state);
-        return rg;
-    }
-
-    private ProfessorResearchGroupRequestDTO createProfessorResearchGroupRequest(String researchGroupName) {
-        return new ProfessorResearchGroupRequestDTO(
-            "Prof.",
-            "John",
-            "Doe",
-            "ab12cde",
-            "Prof. New",
-            researchGroupName,
-            "NRG",
-            "nrg@test.com",
-            "https://nrg.com",
-            "Computer Science",
-            "Description",
-            "CS",
-            "Main St",
-            "12345",
-            "City"
-        );
+        pageDTO = PageTestData.createDefaultPageDTO(1, 10);
     }
 
     @Nested
@@ -149,13 +109,14 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnPaginatedMembersSuccessfully() {
             // Arrange
-            PageDTO pageDTO = createDefaultPageDTO();
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
 
             Page<UUID> userIdsPage = new PageImpl<>(List.of(TEST_USER_ID, OTHER_USER_ID));
             when(userRepository.findUserIdsByResearchGroupId(eq(TEST_RESEARCH_GROUP_ID), any(Pageable.class))).thenReturn(userIdsPage);
 
-            List<User> members = List.of(testUser, createUser(OTHER_USER_ID, "other@test.com", testResearchGroup));
+            User otherUser = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", null, null);
+            otherUser.setResearchGroup(testResearchGroup);
+            List<User> members = List.of(testUser, otherUser);
             when(userRepository.findUsersWithRolesByIdsForResearchGroup(anyList(), eq(TEST_USER_ID))).thenReturn(members);
 
             // Act
@@ -171,8 +132,6 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnEmptyListWhenNoMembers() {
             // Arrange
-            PageDTO pageDTO = createDefaultPageDTO();
-
             Page<UUID> emptyPage = new PageImpl<>(List.of());
             when(userRepository.findUserIdsByResearchGroupId(eq(TEST_RESEARCH_GROUP_ID), any(Pageable.class))).thenReturn(emptyPage);
 
@@ -196,7 +155,8 @@ class ResearchGroupServiceTest {
         @Test
         void shouldRemoveMemberSuccessfully() {
             // Arrange
-            User memberToRemove = createUser(OTHER_USER_ID, "member@test.com", testResearchGroup);
+            User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "member@test.com", null, null);
+            memberToRemove.setResearchGroup(testResearchGroup);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
 
@@ -223,8 +183,23 @@ class ResearchGroupServiceTest {
         @Test
         void shouldThrowExceptionWhenUserNotInSameResearchGroup() {
             // Arrange
-            ResearchGroup otherGroup = createResearchGroup(UUID.randomUUID(), "Other Group", ResearchGroupState.ACTIVE);
-            User memberFromOtherGroup = createUser(OTHER_USER_ID, "other@test.com", otherGroup);
+            ResearchGroup otherGroup = ResearchGroupTestData.newRgAll(
+                null,
+                "Other Group",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                ResearchGroupState.ACTIVE.toString()
+            );
+            otherGroup.setResearchGroupId(UUID.randomUUID());
+            User memberFromOtherGroup = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", null, null);
+            memberFromOtherGroup.setResearchGroup(otherGroup);
 
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberFromOtherGroup));
 
@@ -237,7 +212,8 @@ class ResearchGroupServiceTest {
         @Test
         void shouldThrowExceptionWhenRemovingSelf() {
             // Arrange
-            User currentUser = createUser(TEST_USER_ID, "current@test.com", testResearchGroup);
+            User currentUser = UserTestData.newUserAll(TEST_USER_ID, "current@test.com", null, null);
+            currentUser.setResearchGroup(testResearchGroup);
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(TEST_USER_ID)).thenReturn(Optional.of(currentUser));
 
@@ -347,7 +323,7 @@ class ResearchGroupServiceTest {
             String universityId = "ab12cde";
             ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO(universityId, TEST_RESEARCH_GROUP_ID);
 
-            User user = createUser(TEST_USER_ID, "user@test.com", null);
+            User user = UserTestData.newUserAll(TEST_USER_ID, "user@test.com", null, null);
             when(userRepository.findByUniversityIdIgnoreCase(universityId)).thenReturn(Optional.of(user));
             when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
             when(userResearchGroupRoleRepository.findByUserAndResearchGroup(user, testResearchGroup)).thenReturn(Optional.empty());
@@ -509,7 +485,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldCreateResearchGroupRequestSuccessfully() {
             // Arrange
-            ProfessorResearchGroupRequestDTO request = createProfessorResearchGroupRequest("New Research Group");
+            ProfessorResearchGroupRequestDTO request = ResearchGroupTestData.createProfessorResearchGroupRequest("New Research Group");
 
             testUser.setResearchGroup(null);
             when(currentUserService.getUser()).thenReturn(testUser);
@@ -535,7 +511,7 @@ class ResearchGroupServiceTest {
             testUser.setResearchGroup(testResearchGroup);
             when(currentUserService.getUser()).thenReturn(testUser);
 
-            ProfessorResearchGroupRequestDTO request = createProfessorResearchGroupRequest("New research group");
+            ProfessorResearchGroupRequestDTO request = ResearchGroupTestData.createProfessorResearchGroupRequest("New research group");
 
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
@@ -550,7 +526,7 @@ class ResearchGroupServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(true);
 
-            ProfessorResearchGroupRequestDTO request = createProfessorResearchGroupRequest("Existing Group");
+            ProfessorResearchGroupRequestDTO request = ResearchGroupTestData.createProfessorResearchGroupRequest("Existing Group");
 
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
@@ -590,7 +566,6 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnAllResearchGroupsPaginated() {
             // Arrange
-            PageDTO pageDTO = createDefaultPageDTO();
             Page<ResearchGroup> page = new PageImpl<>(List.of(testResearchGroup));
             when(researchGroupRepository.findAll(any(Pageable.class))).thenReturn(page);
 
@@ -610,7 +585,6 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnDraftResearchGroups() {
             // Arrange
-            PageDTO pageDTO = createDefaultPageDTO();
             testResearchGroup.setState(ResearchGroupState.DRAFT);
             Page<ResearchGroup> page = new PageImpl<>(List.of(testResearchGroup));
             when(researchGroupRepository.findByState(eq(ResearchGroupState.DRAFT), any(Pageable.class))).thenReturn(page);
@@ -631,7 +605,6 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnFilteredResearchGroupsForAdmin() {
             // Arrange
-            PageDTO pageDTO = createDefaultPageDTO();
             AdminResearchGroupFilterDTO filterDTO = new AdminResearchGroupFilterDTO(List.of(ResearchGroupState.ACTIVE), "Test");
             SortDTO sortDTO = new SortDTO("name", SortDTO.Direction.ASC);
 
