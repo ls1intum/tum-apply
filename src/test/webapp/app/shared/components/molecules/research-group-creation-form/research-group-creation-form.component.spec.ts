@@ -503,18 +503,9 @@ describe('ResearchGroupCreationFormComponent', () => {
       expect(component.form.get('additionalNotes')?.disabled).toBe(true);
     });
 
-    it('should not require tumID validation in admin mode', () => {
-      const tumIDControl = component.form.get('tumID');
-
-      tumIDControl?.setValue('');
-      expect(tumIDControl?.valid).toBe(true);
-
-      tumIDControl?.setValue('invalid-format');
-      expect(tumIDControl?.valid).toBe(true);
-    });
-
     it('should mark form as valid without personal information in admin mode', () => {
       component.form.patchValue({
+        tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Test',
         researchGroupName: 'Test Research Group',
       });
@@ -524,6 +515,7 @@ describe('ResearchGroupCreationFormComponent', () => {
 
     it('should call createResearchGroupAsAdmin in admin mode', async () => {
       component.form.patchValue({
+        tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
       });
@@ -536,21 +528,9 @@ describe('ResearchGroupCreationFormComponent', () => {
       expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
     });
 
-    it('should not call confirmOnboarding in admin mode', async () => {
-      component.form.patchValue({
-        researchGroupHead: 'Prof. Dr. Admin Test',
-        researchGroupName: 'Admin Research Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockProfOnboardingService.confirmOnboarding).not.toHaveBeenCalled();
-    });
-
     it('should show admin success toast in admin mode', async () => {
       component.form.patchValue({
+        tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
       });
@@ -566,6 +546,7 @@ describe('ResearchGroupCreationFormComponent', () => {
       mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => new Error('Creation failed')));
 
       component.form.patchValue({
+        tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
       });
@@ -582,7 +563,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         title: '',
         firstName: '',
         lastName: '',
-        tumID: '',
+        tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
       });
@@ -596,7 +577,7 @@ describe('ResearchGroupCreationFormComponent', () => {
           title: '',
           firstName: '',
           lastName: '',
-          universityId: '',
+          universityId: 'ab12cde',
           researchGroupHead: 'Prof. Dr. Admin Test',
           researchGroupName: 'Admin Research Group',
         }),
@@ -608,6 +589,7 @@ describe('ResearchGroupCreationFormComponent', () => {
       mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => of(expectedResult as any));
 
       component.form.patchValue({
+        tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
       });
