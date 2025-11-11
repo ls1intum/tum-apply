@@ -23,7 +23,6 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.layout.properties.VerticalAlignment;
 import de.tum.cit.aet.core.exception.PDFGenerationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,6 +33,7 @@ import org.springframework.core.io.Resource;
 
 public class PDFBuilder {
 
+    private final List<String> headerItems = new ArrayList<>();
     private final String mainHeading;
     private final List<OverviewItem> overviewItems = new ArrayList<>();
     private String overviewTitle;
@@ -57,6 +57,7 @@ public class PDFBuilder {
 
     // ----------------- Spacing -----------------
     private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
+    private static final float MARGIN_HEADER_ITEMS_BOTTOM = 8f;
     private static final float MARGIN_TITLE_BOTTOM = 8f;
     private static final float MARGIN_JOB_DESCRIPTION_TOP = 10f;
     private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
@@ -73,6 +74,19 @@ public class PDFBuilder {
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
+    }
+
+    // ----------------- Header -----------------
+
+    /**
+     * Adds a header item to be displayed below the main heading
+     *
+     * @param item the header item text
+     * @return this builder for method chaining
+     */
+    public PDFBuilder addHeaderItem(String item) {
+        headerItems.add(item);
+        return this;
     }
 
     // ----------------- Overview -----------------
@@ -202,6 +216,11 @@ public class PDFBuilder {
             PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
             PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
 
+            // Header Items
+            if (!headerItems.isEmpty()) {
+                addHeaderItems(document, normalFont);
+            }
+
             // Main Heading
             Paragraph mainHeadingParagraph = new Paragraph(mainHeading)
                 .setFont(boldFont)
@@ -245,6 +264,28 @@ public class PDFBuilder {
     }
 
     // ----------------- Helpers -----------------
+
+    /**
+     * Adds header items in a single line separated by |
+     */
+    private void addHeaderItems(Document document, PdfFont normalFont) {
+        Paragraph headerLine = new Paragraph()
+            .setFont(normalFont)
+            .setFontSize(FONT_SIZE_METADATA)
+            .setFontColor(METADATA_COLOR)
+            .setTextAlignment(TextAlignment.CENTER)
+            .setMarginTop(0f)
+            .setMarginBottom(MARGIN_HEADER_ITEMS_BOTTOM);
+
+        for (int i = 0; i < headerItems.size(); i++) {
+            headerLine.add(new Text(headerItems.get(i)));
+            if (i < headerItems.size() - 1) {
+                headerLine.add(new Text(" | "));
+            }
+        }
+
+        document.add(headerLine);
+    }
 
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
         Div container = new Div().setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);

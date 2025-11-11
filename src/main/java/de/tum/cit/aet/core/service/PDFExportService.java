@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.util.PDFBuilder;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.service.JobService;
@@ -40,8 +41,17 @@ public class PDFExportService {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
         UUID jobId = app.jobId();
         JobDetailDTO job = jobService.getJobDetails(jobId);
+        var user = currentUserService.getUser();
+        String firstName = user.getFirstName() != null ? user.getFirstName() : "";
+        String lastName = user.getLastName() != null ? user.getLastName() : "";
+
+        String fullName = (firstName + " " + lastName).trim();
 
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
+
+        builder
+            .addHeaderItem(labels.get("applicationBy") + fullName + labels.get("forPosition") + "'" + app.jobTitle() + "'")
+            .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
         // Overview Section
         builder
