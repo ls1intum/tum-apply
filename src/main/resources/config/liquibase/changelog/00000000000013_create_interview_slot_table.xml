@@ -34,9 +34,7 @@
       </column>
 
       <!-- Audit fields from AbstractAuditingEntity -->
-      <column name="created_by" type="varchar(50)">
-        <constraints nullable="false"/>
-      </column>
+      <column name="created_by" type="varchar(50)"/>
       <column name="created_at" type="timestamp"/>
       <column name="last_modified_by" type="varchar(50)"/>
       <column name="last_modified_at" type="timestamp"/>
