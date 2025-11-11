@@ -100,8 +100,8 @@
           "content": "Du wirst per E-Mail benachrichtigt, sobald sich der Status deiner Bewerbung ändert. Den Status kannst du auch im TUMApply-Dashboard verfolgen, sofern du einen Account erstellt hast."
         },
         "otherJobs": {
-          "title": "Wo finde ich weitere Stellenangebote?",
-          "content": "Zusätzlich zu den auf TUMApply ausgeschriebenen Stellen findest du weitere wissenschaftliche Stellenangebote auf der Plattform <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong>myTUM Jobs</strong></a>."
+          "title": "Sind das alle Stellenausschreibungen?",
+          "content": "Nein, auf TUMApply sind nur ausgewählte Ausschreibungen für die School of Computation, Information and Technology zu finden. Weitere Stellenanzeigen findest du auf anderen Kanälen wie der <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong><u>myTUM Jobplattform</u></strong></a> oder auf den Websites einzelner Forschungsgruppen."
         }
       }
     }
