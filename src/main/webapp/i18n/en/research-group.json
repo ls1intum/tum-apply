@@ -150,6 +150,14 @@
         "create": {
           "summary": "Error",
           "detail": "Failed to create research group. Please try again."
+        },
+        "duplicateName": {
+          "summary": "Name Already Exists",
+          "detail": "A research group with this name already exists. Please choose a different name."
+        },
+        "userNotFound": {
+          "summary": "User Not Found",
+          "detail": "No user was found with the provided TUM-ID. Please check the TUM-ID."
         }
       },
       "success": {

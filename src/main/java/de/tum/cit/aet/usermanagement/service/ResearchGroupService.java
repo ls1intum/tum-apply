@@ -444,11 +444,58 @@ public class ResearchGroupService {
             throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
         }
 
+        // Validate that the universityId belongs to a professor or eligible user
+        User professor = userRepository
+            .findByUniversityIdIgnoreCase(request.universityId())
+            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(request.universityId())));
+
+        // Check if user already has a research group
+        if (professor.getResearchGroup() != null) {
+            throw new AlreadyMemberOfResearchGroupException(
+                "User with universityId '%s' is already a member of research group '%s'".formatted(
+                    request.universityId(),
+                    professor.getResearchGroup().getName()
+                )
+            );
+        }
+
+        // Validate that the user has a PROFESSOR role or can be assigned one
+        var existingRoles = userResearchGroupRoleRepository.findAllByUser(professor);
+        boolean hasProfessorRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.PROFESSOR);
+        boolean hasApplicantRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.APPLICANT);
+
+        // User should either have PROFESSOR role already, or have APPLICANT role (can be upgraded), or no role yet
+        if (!hasProfessorRole && !hasApplicantRole && !existingRoles.isEmpty()) {
+            throw new IllegalArgumentException(
+                "User with universityId '%s' has incompatible roles and cannot be assigned as professor".formatted(request.universityId())
+            );
+        }
+
         ResearchGroup researchGroup = new ResearchGroup();
         populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.ACTIVE);
 
-        return researchGroupRepository.save(researchGroup);
+        ResearchGroup saved = researchGroupRepository.save(researchGroup);
+
+        // Assign the professor to the research group
+        professor.setResearchGroup(saved);
+        userRepository.save(professor);
+
+        // Update or create the PROFESSOR role
+        UserResearchGroupRole role = existingRoles
+            .stream()
+            .findFirst()
+            .orElseGet(() -> {
+                UserResearchGroupRole newRole = new UserResearchGroupRole();
+                newRole.setUser(professor);
+                return newRole;
+            });
+
+        role.setRole(UserRole.PROFESSOR);
+        role.setResearchGroup(saved);
+        userResearchGroupRoleRepository.save(role);
+
+        return saved;
     }
 
     /**

@@ -150,6 +150,14 @@
         "create": {
           "summary": "Fehler",
           "detail": "Fehler beim Erstellen der Forschungsgruppe. Bitte versuche es erneut."
+        },
+        "duplicateName": {
+          "summary": "Name bereits vergeben",
+          "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
+        },
+        "userNotFound": {
+          "summary": "Benutzer nicht gefunden",
+          "detail": "Es wurde kein Benutzer mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
         }
       },
       "success": {

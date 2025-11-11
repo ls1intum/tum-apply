@@ -120,9 +120,24 @@ export class ResearchGroupCreationFormComponent {
       }
 
       this.ref?.close(result);
-    } catch {
-      const errorKey = this.mode() === 'admin' ? 'researchGroup.adminView.errors.create' : 'onboarding.professorRequest.error';
-      this.toastService.showErrorKey(errorKey);
+    } catch (error: any) {
+      // Check if the error is about a duplicate research group name
+      if (error?.error?.message?.includes('already exists') || error?.status === 409) {
+        const errorKey =
+          this.mode() === 'admin' ? 'researchGroup.adminView.errors.duplicateName' : 'onboarding.professorRequest.errorDuplicateName';
+        this.toastService.showErrorKey(errorKey);
+      }
+      // Check if the error is about a user not found (invalid TUM-ID)
+      else if (error?.status === 404 && error?.error?.message?.includes('not found')) {
+        const errorKey =
+          this.mode() === 'admin' ? 'researchGroup.adminView.errors.userNotFound' : 'onboarding.professorRequest.errorUserNotFound';
+        this.toastService.showErrorKey(errorKey);
+      }
+      // Generic error
+      else {
+        const errorKey = this.mode() === 'admin' ? 'researchGroup.adminView.errors.create' : 'onboarding.professorRequest.error';
+        this.toastService.showErrorKey(errorKey);
+      }
     } finally {
       this.isSubmitting.set(false);
     }
