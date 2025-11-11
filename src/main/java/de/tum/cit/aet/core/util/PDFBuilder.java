@@ -47,7 +47,7 @@ public class PDFBuilder {
     private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
 
     // ----------------- Font Sizes -----------------
-    private static final float FONT_SIZE_MAIN_HEADING = 20f;
+    private static final float FONT_SIZE_MAIN_HEADING = 18f;
     private static final float FONT_SIZE_GROUP_TITLE = 14f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
