@@ -1,9 +1,9 @@
 {
   "pdf": {
     "metaData": {
-      "thisDocumentWasGeneratedOn": "Dieses Dokument wurde generiert am ",
-      "byUser": " von Benutzer ",
-      "usingTumapply": " unter Verwendung von TumApply (https://tumapply.aet.cit.tum.de)"
+      "thisDocumentWasGeneratedOn": "Dieses Dokument wurde am ",
+      "byUser": " von ",
+      "usingTumapply": " mit TumApply (https://tumapply.aet.cit.tum.de) erstellt."
     }
   }
 }
