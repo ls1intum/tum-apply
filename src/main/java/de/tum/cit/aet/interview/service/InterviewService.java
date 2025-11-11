@@ -147,7 +147,7 @@ public class InterviewService {
             .toList();
 
         // 4. Validate no time conflicts with professor's other interview processes
-        validateNoTimeConflicts(currentUserId, newSlots);
+        validateNoTimeConflicts(newSlots);
 
         // 5. Save all slots
         List<InterviewSlot> savedSlots = interviewSlotRepository.saveAll(newSlots);
@@ -176,7 +176,7 @@ public class InterviewService {
         return slot;
     }
 
-    private void validateNoTimeConflicts(UUID professorId, List<InterviewSlot> newSlots) {
+    private void validateNoTimeConflicts(List<InterviewSlot> newSlots) {
         for (InterviewSlot newSlot : newSlots) {
             User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
 
