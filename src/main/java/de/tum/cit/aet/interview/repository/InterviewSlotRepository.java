@@ -1,6 +1,8 @@
 package de.tum.cit.aet.interview.repository;
 
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +32,21 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @return the number of slots linked to the given process
      */
     long countByInterviewProcessId(UUID processId);
+
+    /**
+     * Find all slots of a professor that overlap with the given time range.
+     * Used for conflict detection across all interview processes.
+     */
+    @Query("""
+        SELECT s FROM InterviewSlot s
+        JOIN s.interviewProcess p
+        JOIN p.job j
+        WHERE j.supervisingProfessor.userId = :professorId
+        AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
+        """)
+    List<InterviewSlot> findConflictingSlotsForProfessor(
+        @Param("professorId") UUID professorId,
+        @Param("startDateTime") Instant startDateTime,
+        @Param("endDateTime") Instant endDateTime
+    );
 }

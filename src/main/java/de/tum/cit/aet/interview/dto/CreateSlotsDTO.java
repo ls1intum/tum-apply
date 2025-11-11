@@ -1,0 +1,36 @@
+package de.tum.cit.aet.interview.dto;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+/**
+ * DTO for creating multiple interview slots.
+ * Frontend generates the slots - backend validates and saves.
+ */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public record CreateSlotsDTO(@NotEmpty(message = "At least one slot must be provided") @Valid List<SlotInput> slots) {
+    /**
+     * Definition of a single slot to be created.
+     */
+    public record SlotInput(
+        @NotNull LocalDate date,
+
+        @NotNull LocalTime startTime,
+
+        @NotNull LocalTime endTime,
+
+        @NotBlank @Size(max = 255) String location,
+
+        @Size(max = 500) String streamLink
+    ) {
+        public SlotInput {
+            if (endTime != null && startTime != null && !endTime.isAfter(startTime)) {
+                throw new IllegalArgumentException("End time must be after start time");
+            }
+        }
+    }
+}
