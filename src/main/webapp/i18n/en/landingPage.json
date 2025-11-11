@@ -98,6 +98,10 @@
         "status": {
           "title": "How do I know my application status?",
           "content": "You will be notified by email once the status of your application changes. You can also track the status on your TUMApply dashboard, if you created an account."
+        },
+        "otherJobs": {
+          "title": "Where can I find more job postings?",
+          "content": "In addition to the positions advertised on TUMApply, you can find more academic job postings on the <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong>myTUM Jobs</strong> </a> platform."
         }
       }
     }
