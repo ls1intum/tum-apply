@@ -1,4 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -47,11 +48,15 @@ export class JobCardComponent {
 
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
   translate = inject(TranslateService);
+
+  currentLang = toSignal(this.translate.onLangChange);
+
   readonly formattedWorkload = computed(() => {
     const workloadValue = this.workload();
     if (workloadValue === undefined) {
       return undefined;
     }
+    void this.currentLang();
     if (workloadValue === 40) {
       return this.translate.instant('jobDetailPage.workload.fullTime');
     }
