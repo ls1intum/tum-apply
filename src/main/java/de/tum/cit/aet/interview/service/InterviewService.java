@@ -120,7 +120,7 @@ public class InterviewService {
      */
     @Transactional
     public InterviewProcessDTO createInterviewProcessForJob(UUID jobId) {
-        Optional<InterviewProcess> existing = interviewProcessRepository.findByJobJobId(jobId);
+        Optional<InterviewProcess> existing = interviewProcessRepository.findByJobId(jobId);
 
         if (existing.isPresent()) {
             return mapToDTO(existing.get());

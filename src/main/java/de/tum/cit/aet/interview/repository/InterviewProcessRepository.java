@@ -34,5 +34,5 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
      *         or an empty {@link Optional} if no process exists for the given job
      * @throws IllegalArgumentException if {@code jobId} is {@code null}
      */
-    Optional<InterviewProcess> findByJobJobId(UUID jobId);
+    Optional<InterviewProcess> findByJobId(UUID jobId);
 }
