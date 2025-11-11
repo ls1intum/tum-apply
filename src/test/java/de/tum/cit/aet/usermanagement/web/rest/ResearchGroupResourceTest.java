@@ -54,7 +54,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "TUM",
             "Arcisstr. 21",
-            "https://ml.tum.de"
+            "https://ml.tum.de",
+            "ACTIVE"
         );
         secondResearchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
@@ -68,7 +69,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80335",
             "TUM",
             "Otherstr. 10",
-            "https://other.tum.de"
+            "https://other.tum.de",
+            "ACTIVE"
         );
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);

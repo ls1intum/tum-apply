@@ -23,6 +23,8 @@ import de.tum.cit.aet.usermanagement.dto.*;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDateTime;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,8 +63,8 @@ class ResearchGroupServiceTest {
 
     private static final UUID TEST_USER_ID = UUID.randomUUID();
     private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
-    private static final UUID OTHER_USER_ID = UUID.randomUUID();
     private static final String SUPPORT_EMAIL = "support@test.com";
+    private static final UUID OTHER_USER_ID = UUID.randomUUID();
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_SIZE = 10;
 
@@ -73,19 +75,25 @@ class ResearchGroupServiceTest {
     void setUp() {
         ReflectionTestUtils.setField(researchGroupService, "supportEmail", SUPPORT_EMAIL);
 
-        // Initialize test user
-        testUser = new User();
-        testUser.setUserId(TEST_USER_ID);
-        testUser.setEmail("test@example.com");
-        testUser.setFirstName("Test");
-        testUser.setLastName("User");
-
-        // Initialize test research group
-        testResearchGroup = new ResearchGroup();
+        // Initialize test research group using utility class
+        testResearchGroup = ResearchGroupTestData.newRgAll(
+            "Prof. Test",
+            "Test Research Group",
+            "TRG",
+            "Test City",
+            "Computer Science",
+            "Test description",
+            "test@research.com",
+            "12345",
+            "Test University",
+            "Test Street",
+            "https://test.com",
+            ResearchGroupState.ACTIVE.toString()
+        );
         testResearchGroup.setResearchGroupId(TEST_RESEARCH_GROUP_ID);
-        testResearchGroup.setName("Test Research Group");
-        testResearchGroup.setHead("Prof. Test");
-        testResearchGroup.setState(ResearchGroupState.ACTIVE);
+
+        // Initialize test user using utility class
+        testUser = UserTestData.newUserAll(TEST_USER_ID, "test@example.com", "Test", "User");
     }
 
     // --- Helper Methods ---

@@ -1,5 +1,6 @@
 package de.tum.cit.aet.utility.testdata;
 
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.UUID;
@@ -27,6 +28,7 @@ public final class ResearchGroupTestData {
         rg.setStreet("123 Main St");
         rg.setWebsite("http://example.com");
         rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        rg.setState(ResearchGroupState.ACTIVE);
         return rg;
     }
 
@@ -42,7 +44,8 @@ public final class ResearchGroupTestData {
         String postalCode,
         String school,
         String street,
-        String website
+        String website,
+        String state
     ) {
         ResearchGroup rg = newRg();
         if (head != null) rg.setHead(head);
@@ -56,6 +59,7 @@ public final class ResearchGroupTestData {
         if (school != null) rg.setSchool(school);
         if (street != null) rg.setStreet(street);
         if (website != null) rg.setWebsite(website);
+        if (state != null) rg.setState(ResearchGroupState.valueOf(state));
         if (rg.getUniversityId() == null) {
             rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         }
@@ -79,10 +83,11 @@ public final class ResearchGroupTestData {
         String postalCode,
         String school,
         String street,
-        String website
+        String website,
+        String state
     ) {
         return repo.save(
-            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, school, street, website)
+            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, school, street, website, state)
         );
     }
 }
