@@ -11,7 +11,6 @@ import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.domain.Job;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -20,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import de.tum.cit.aet.usermanagement.domain.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -128,24 +129,21 @@ public class InterviewService {
      */
     public List<InterviewSlotDTO> createSlots(UUID processId, CreateSlotsDTO dto) {
         // 1. Load interview process
-        InterviewProcess process = interviewProcessRepository.findById(processId)
-            .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND,
-                "Interview process not found"
-            ));
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Interview process not found"));
 
         // 2. Security: Check if current user is the job owner
         UUID currentUserId = currentUserService.getUserId();
 
         if (!process.getJob().getSupervisingProfessor().getUserId().equals(currentUserId)) {
-            throw new ResponseStatusException(
-                HttpStatus.FORBIDDEN,
-                "You can only create slots for your own jobs"
-            );
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only create slots for your own jobs");
         }
 
         // 3. Convert DTOs to entities
-        List<InterviewSlot> newSlots = dto.slots().stream()
+        List<InterviewSlot> newSlots = dto
+            .slots()
+            .stream()
             .map(slotInput -> createSlotFromInput(process, slotInput))
             .toList();
 
@@ -155,9 +153,7 @@ public class InterviewService {
         // 5. Save all slots
         List<InterviewSlot> savedSlots = interviewSlotRepository.saveAll(newSlots);
 
-        return savedSlots.stream()
-            .map(InterviewSlotDTO::fromEntity)
-            .toList();
+        return savedSlots.stream().map(InterviewSlotDTO::fromEntity).toList();
     }
 
     /**
@@ -181,17 +177,21 @@ public class InterviewService {
         return slot;
     }
 
-    /**
-     * Validate that professor has no other slots at the same time
-     */
     private void validateNoTimeConflicts(UUID professorId, List<InterviewSlot> newSlots) {
+        System.out.println("=== CONFLICT CHECK ===");
+        System.out.println("Professor ID: " + professorId);
+
         for (InterviewSlot newSlot : newSlots) {
+            System.out.println("Checking: " + newSlot.getStartDateTime() + " to " + newSlot.getEndDateTime());
+
             List<InterviewSlot> conflictingSlots = interviewSlotRepository
                 .findConflictingSlotsForProfessor(
-                    professorId,
+                    professorId,  // ← UUID direkt!
                     newSlot.getStartDateTime(),
                     newSlot.getEndDateTime()
                 );
+
+            System.out.println("Found: " + conflictingSlots.size() + " conflicts");
 
             if (!conflictingSlots.isEmpty()) {
                 InterviewSlot conflict = conflictingSlots.get(0);
