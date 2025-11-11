@@ -208,6 +208,10 @@
         "confirm": "Zurückziehen"
       },
       "title": "Verwalte Forschungsgruppen",
+      "tumID": {
+        "label": "Professor TUM-ID",
+        "placeholder": "z.B. ab12cde"
+      },
       "createButton": "Forschungsgruppe erstellen",
       "createDialog": {
         "title": "Forschungsgruppe erstellen",

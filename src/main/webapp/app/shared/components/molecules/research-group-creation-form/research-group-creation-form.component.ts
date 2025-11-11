@@ -80,10 +80,10 @@ export class ResearchGroupCreationFormComponent {
     const isAdminMode = this.mode() === 'admin';
 
     return this.fb.group({
-      title: [{ value: '', disabled: isAdminMode }, [Validators.required]],
-      firstName: [{ value: '', disabled: isAdminMode }, [Validators.required]],
-      lastName: [{ value: '', disabled: isAdminMode }, [Validators.required]],
-      tumID: ['', isAdminMode ? [] : [Validators.required, tumIdValidator]],
+      title: [{ value: '', disabled: isAdminMode }, isAdminMode ? [] : [Validators.required]],
+      firstName: [{ value: '', disabled: isAdminMode }, isAdminMode ? [] : [Validators.required]],
+      lastName: [{ value: '', disabled: isAdminMode }, isAdminMode ? [] : [Validators.required]],
+      tumID: ['', [Validators.required, tumIdValidator]],
       researchGroupHead: ['', [Validators.required]],
       researchGroupName: ['', [Validators.required]],
       researchGroupAbbreviation: [''],
@@ -139,12 +139,12 @@ export class ResearchGroupCreationFormComponent {
     };
 
     return {
-      title: v.title.trim(),
-      firstName: v.firstName.trim(),
-      lastName: v.lastName.trim(),
-      universityId: v.tumID.trim(),
-      researchGroupHead: v.researchGroupHead.trim(),
-      researchGroupName: v.researchGroupName.trim(),
+      title: s(v.title),
+      firstName: s(v.firstName),
+      lastName: s(v.lastName),
+      universityId: s(v.tumID),
+      researchGroupHead: s(v.researchGroupHead),
+      researchGroupName: s(v.researchGroupName),
       abbreviation: s(v.researchGroupAbbreviation),
       contactEmail: s(v.researchGroupContactEmail),
       website: s(v.researchGroupWebsite),

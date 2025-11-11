@@ -102,6 +102,20 @@
       jhiTranslate="onboarding.professorRequest.sections.researchGroupInfo"
     ></h3>
 
+    @if (mode() === 'admin') {
+      <div>
+        <jhi-string-input
+          label="researchGroup.adminView.tumID.label"
+          placeholder="researchGroup.adminView.tumID.placeholder"
+          [required]="true"
+          [model]="form.get('tumID')?.value"
+          [control]="form.get('tumID') ?? undefined"
+          icon="id-card"
+          [shouldTranslate]="true"
+        />
+      </div>
+    }
+
     <div>
       <jhi-string-input
         label="onboarding.professorRequest.researchGroupHead.label"

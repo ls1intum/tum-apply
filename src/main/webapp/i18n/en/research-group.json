@@ -208,6 +208,10 @@
         "confirm": "Withdraw"
       },
       "title": "Manage Research Groups",
+      "tumID": {
+        "label": "Professor TUM-ID",
+        "placeholder": "e.g. ab12cde"
+      },
       "createButton": "Create Research Group",
       "createDialog": {
         "title": "Create Research Group",

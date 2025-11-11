@@ -435,7 +435,8 @@ public class ResearchGroupService {
 
         ResearchGroup researchGroup = new ResearchGroup();
         researchGroup.setName(StringUtil.normalize(request.researchGroupName(), false));
-        // Don't set universityId for admin-created groups - it's a professor's personal field
+        // Use the provided universityId from the admin
+        researchGroup.setUniversityId(StringUtil.normalize(request.universityId(), false));
         researchGroup.setHead(request.researchGroupHead());
         researchGroup.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
         researchGroup.setEmail(request.contactEmail());
