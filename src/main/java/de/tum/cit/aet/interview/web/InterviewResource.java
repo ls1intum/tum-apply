@@ -44,11 +44,17 @@ public class InterviewResource {
     }
 
     /**
-     * POST /api/interviews/processes/{processId}/slots/bulk
-     * Create multiple interview slots from frontend-generated definitions
+     * {@code POST /api/interviews/processes/{processId}/slots/create} :
+     * Creates one or more interview slots for a given interview process.
+     *
+     * Accessible only to users with the {@code PROFESSOR}
+     *
+     * @param processId the ID of the interview process to which the slots belong
+     * @param dto       the slot definitions sent from the frontend
+     * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing the created {@link InterviewSlotDTO}s
      */
     @PostMapping("/processes/{processId}/slots/create")
-    @ProfessorOrAdmin
+    @Professor
     public ResponseEntity<List<InterviewSlotDTO>> createSlots(@PathVariable UUID processId, @Valid @RequestBody CreateSlotsDTO dto) {
         List<InterviewSlotDTO> slots = interviewService.createSlots(processId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(slots);

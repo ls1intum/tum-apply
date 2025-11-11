@@ -20,6 +20,14 @@ public record InterviewSlotDTO(
     String streamLink,
     Boolean isBooked
 ) {
+    /**
+     * Converts an {@link InterviewSlot} entity into its corresponding {@link InterviewSlotDTO}.
+     * <p>
+     * Used to transfer interview slot data to the frontend without exposing the full entity.
+     *
+     * @param slot the {@link InterviewSlot} entity to convert
+     * @return the corresponding {@link InterviewSlotDTO} containing the slot's public data
+     */
     public static InterviewSlotDTO fromEntity(InterviewSlot slot) {
         return new InterviewSlotDTO(
             slot.getId(),
