@@ -54,6 +54,7 @@ public class PDFBuilder {
     private static final float FONT_SIZE_METADATA = 8f;
 
     // ----------------- Spacing -----------------
+    private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
     private static final float MARGIN_TITLE_BOTTOM = 8f;
     private static final float MARGIN_JOB_DESCRIPTION_TOP = 10f;
     private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
@@ -180,6 +181,9 @@ public class PDFBuilder {
             PdfWriter writer = new PdfWriter(baos);
             PdfDocument pdfDoc = new PdfDocument(writer);
             Document document = new Document(pdfDoc);
+
+            document.setTopMargin(MARGIN_PDF_TOP_AND_BOTTOM);
+            document.setBottomMargin(MARGIN_PDF_TOP_AND_BOTTOM * 3);
 
             PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
             PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
