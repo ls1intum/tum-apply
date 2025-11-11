@@ -2,7 +2,6 @@
   class="rounded-lg border border-gray-200 hover:scale-[1.02] hover:bg-blue-50 transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
   (click)="onViewDetails()"
 >
-  <!-- Header with background image or colored banner -->
   <div
     class="relative h-32 flex items-end px-4 pb-3 bg-cover bg-center flex-shrink-0"
     [style.background-image]="
@@ -10,8 +9,6 @@
     "
     [style.background-color]="!headerImageUrl() ? headerColor() : 'transparent'"
   >
-    <!-- Add heart icon to the top right corner for favorite feature -->
-
     <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
       {{ fieldOfStudies() }}
     </span>
@@ -20,13 +17,13 @@
   <!-- Content section -->
   <div class="p-4 flex-1 flex flex-col">
     <!-- Job title -->
-    <h3 class="text-lg font-semibold mb-1 line-clamp-1" [title]="jobTitle()">
+    <h3 class="text-lg font-semibold line-clamp-2 min-h-[3.5rem] flex items-center" [title]="jobTitle()">
       {{ jobTitle() }}
     </h3>
 
     <!-- Deadline -->
     @if (relativeTime()) {
-      <p class="text-sm italic text-gray-500 mb-3">
+      <p class="text-sm italic text-gray-500 mb-4">
         {{ relativeTime() }}
       </p>
     }

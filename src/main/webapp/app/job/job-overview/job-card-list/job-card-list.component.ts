@@ -147,7 +147,6 @@ export class JobCardListComponent {
 
   /**
    * Returns a randomly selected header image URL from a pool of 4 images
-   * Images show diverse students collaborating, lab research, and medicine settings
    */
   getExampleImageUrl(index: number): string {
     const headerImages = [
