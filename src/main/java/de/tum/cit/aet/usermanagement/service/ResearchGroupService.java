@@ -198,6 +198,28 @@ public class ResearchGroupService {
     }
 
     /**
+     * Populates a ResearchGroup entity with values from a ResearchGroupRequestDTO.
+     * Normalizes name, abbreviation, and universityId fields.
+     *
+     * @param entity the research group entity to populate
+     * @param request the request DTO containing the data
+     */
+    private void populateResearchGroupFromRequest(ResearchGroup entity, ResearchGroupRequestDTO request) {
+        entity.setName(StringUtil.normalize(request.researchGroupName(), false));
+        entity.setUniversityId(StringUtil.normalize(request.universityId(), false));
+        entity.setHead(request.researchGroupHead());
+        entity.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
+        entity.setEmail(request.contactEmail());
+        entity.setWebsite(request.website());
+        entity.setSchool(request.school());
+        entity.setDescription(request.description());
+        entity.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
+        entity.setStreet(request.street());
+        entity.setPostalCode(request.postalCode());
+        entity.setCity(request.city());
+    }
+
+    /**
      * Provisions a target user (professor) into an existing research group.
      * - Caller must be ADMIN (enforced in controller).
      * - Group must already exist (manual creation).
@@ -383,18 +405,7 @@ public class ResearchGroupService {
         }
 
         ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setName(StringUtil.normalize(request.researchGroupName(), false));
-        researchGroup.setUniversityId(request.universityId());
-        researchGroup.setHead(request.researchGroupHead());
-        researchGroup.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
-        researchGroup.setEmail(request.contactEmail());
-        researchGroup.setWebsite(request.website());
-        researchGroup.setSchool(request.school());
-        researchGroup.setDescription(request.description());
-        researchGroup.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
-        researchGroup.setStreet(request.street());
-        researchGroup.setPostalCode(request.postalCode());
-        researchGroup.setCity(request.city());
+        populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.DRAFT);
 
         ResearchGroup saved = researchGroupRepository.save(researchGroup);
@@ -434,19 +445,7 @@ public class ResearchGroupService {
         }
 
         ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setName(StringUtil.normalize(request.researchGroupName(), false));
-        // Use the provided universityId from the admin
-        researchGroup.setUniversityId(StringUtil.normalize(request.universityId(), false));
-        researchGroup.setHead(request.researchGroupHead());
-        researchGroup.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
-        researchGroup.setEmail(request.contactEmail());
-        researchGroup.setWebsite(request.website());
-        researchGroup.setSchool(request.school());
-        researchGroup.setDescription(request.description());
-        researchGroup.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
-        researchGroup.setStreet(request.street());
-        researchGroup.setPostalCode(request.postalCode());
-        researchGroup.setCity(request.city());
+        populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.ACTIVE);
 
         return researchGroupRepository.save(researchGroup);
