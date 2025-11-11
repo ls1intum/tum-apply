@@ -254,7 +254,7 @@ describe('ApplicationForm', () => {
     const freshComp = freshFixture.componentInstance;
 
     // Set up accountService to return a loaded user
-    // This ensures the code tries to load from backend and throws when no IDs provided
+    // This ensures the code tries to load from server and throws when no IDs provided
     accountService.loaded.set(true);
     accountService.user.set({ id: 'user-123', email: 'test@example.com', name: 'Test User' });
 
@@ -1576,7 +1576,7 @@ describe('ApplicationForm', () => {
       expect(comp.savingState()).toBe(SavingStates.FAILED);
     });
 
-    it('should save to backend and set state to SAVED when useLocalStorage is false and save succeeds', async () => {
+    it('should save to server and set state to SAVED when useLocalStorage is false and save succeeds', async () => {
       comp.savingState.set(SavingStates.SAVING);
       comp.useLocalStorage.set(false);
       comp.applicationState.set('SAVED'); // Example application state
@@ -1592,7 +1592,7 @@ describe('ApplicationForm', () => {
       expect(comp.savingState()).toBe(SavingStates.SAVED);
     });
 
-    it('should save to backend and set state to FAILED when useLocalStorage is false and save fails', async () => {
+    it('should save to server and set state to FAILED when useLocalStorage is false and save fails', async () => {
       comp.savingState.set(SavingStates.SAVING);
       comp.useLocalStorage.set(false);
       comp.applicationState.set('SAVED');

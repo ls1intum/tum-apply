@@ -13,8 +13,7 @@
   }
 
   &.active {
-    background-color: var(--p-primary-color);
-    color: var(--p-text-on-primary);
+    background-color: var(--p-primary-hover-color-outlined);
   }
 
   &.icon-only {
@@ -23,10 +22,10 @@
   }
 
   .icon {
-    color: var(--p-primary-color);
+    color: var(--p-text-color);
 
     &.active {
-      color: var(--p-text-on-primary);
+      color: var(--p-primary-color);
     }
   }
 
