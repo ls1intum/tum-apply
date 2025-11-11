@@ -695,6 +695,28 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
+  /api/interviews/processes/{processId}/slots/create:
+    post:
+      tags: [interview-resource]
+      operationId: createSlots
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateSlotsDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -1433,6 +1455,14 @@ components:
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
+    CreateSlotsDTO:
+      type: object
+      properties:
+        slots:
+          type: array
+          items: {$ref: '#/components/schemas/SlotInput'}
+          minItems: 1
+      required: [slots]
     CreatedJobDTO:
       type: object
       properties:
@@ -1580,6 +1610,16 @@ components:
         uncontactedCount: {type: integer, format: int64}
       required: [completedCount, invitedCount, jobId, jobTitle, scheduledCount, totalInterviews,
         uncontactedCount]
+    InterviewSlotDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        interviewProcessId: {type: string, format: uuid}
+        isBooked: {type: boolean}
+        location: {type: string}
+        startDateTime: {type: string, format: date-time}
+        streamLink: {type: string}
     Job:
       type: object
       properties:
@@ -1946,6 +1986,15 @@ components:
         email: {type: string, format: email, minLength: 1}
         registration: {type: boolean}
       required: [email]
+    SlotInput:
+      type: object
+      properties:
+        date: {type: string, format: date}
+        endTime: {type: string}
+        location: {type: string, maxLength: 255, minLength: 0}
+        startTime: {type: string}
+        streamLink: {type: string, maxLength: 500, minLength: 0}
+      required: [date, endTime, location, startTime]
     SortObject:
       type: object
       properties:
