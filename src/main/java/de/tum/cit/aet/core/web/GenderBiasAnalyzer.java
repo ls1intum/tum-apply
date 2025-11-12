@@ -423,24 +423,6 @@ public class GenderBiasAnalyzer {
             this.language = language;
         }
 
-        public List<String> getSuggestions() {
-            List<String> suggestions = new ArrayList<>();
-
-            if (masculineCount > feminineCount) {
-                suggestions.add("Consider using more inclusive, gender-neutral language");
-                suggestions.add("Replace masculine-coded words with neutral alternatives");
-            } else if (feminineCount > masculineCount) {
-                suggestions.add("Consider balancing the language with more assertive terms");
-                suggestions.add("Mix communal and agentic language for broader appeal");
-            } else if (masculineCount == 0 && feminineCount == 0) {
-                suggestions.add("Great! No gender-coded language detected");
-            } else {
-                suggestions.add("Good balance of language types");
-            }
-
-            return suggestions;
-        }
-
         // Getters
         public String getOriginalText() {
             return originalText;
