@@ -5,12 +5,14 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
+import de.tum.cit.aet.interview.dto.InterviewProcessDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.domain.Job;
@@ -24,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import de.tum.cit.aet.job.repository.JobRepository;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +39,7 @@ public class InterviewService {
     private final InterviewSlotRepository interviewSlotRepository;
     private final ApplicationRepository applicationRepository;
     private final CurrentUserService currentUserService;
+    private final JobRepository jobRepository;
     private static final ZoneId MUNICH_ZONE = ZoneId.of("Europe/Berlin");
 
     /**
@@ -122,6 +127,47 @@ public class InterviewService {
                 );
             })
             .toList();
+    }
+
+    /**
+     * Creates an interview process for a job (called automatically when job is published).
+     * This is called from JobService, so security checks are already done.
+     *
+     * @param jobId the ID of the job for which to create the interview process
+     * @return the created InterviewProcessDTO, or null if one already exists
+     */
+
+    public InterviewProcessDTO createInterviewProcessForJob(UUID jobId) {
+        Optional<InterviewProcess> existing = interviewProcessRepository.findByJobJobId(jobId);
+
+        if (existing.isPresent()) {
+            return mapToDTO(existing.get());
+        }
+
+        // Load the job
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+
+        // Create new process
+        InterviewProcess interviewProcess = new InterviewProcess();
+        interviewProcess.setJob(job);
+
+        InterviewProcess saved = interviewProcessRepository.save(interviewProcess);
+        return mapToDTO(saved);
+    }
+
+    /**
+     * Maps an {@link InterviewProcess} entity to its corresponding DTO representation.
+     *
+     * @param interviewProcess the interview process entity to map
+     * @return {@link InterviewProcessDTO} containing the interview process data
+     */
+    private InterviewProcessDTO mapToDTO(InterviewProcess interviewProcess) {
+        return new InterviewProcessDTO(
+            interviewProcess.getId(),
+            interviewProcess.getJob().getJobId(),
+            interviewProcess.getJob().getTitle(),
+            interviewProcess.getCreatedAt()
+        );
     }
 
     /**

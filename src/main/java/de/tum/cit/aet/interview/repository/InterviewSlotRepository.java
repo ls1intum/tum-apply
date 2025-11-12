@@ -16,24 +16,31 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UUID> {
     /**
+     * Finds all interview slots for a given interview process, ordered by start time.
      * Retrieves all interview slots belonging to a given interview process,
      * ordered chronologically by their start date and time.
      *
      * @param processId the ID of the interview process
+     * @return a list of {@link InterviewSlot} entities associated with the given process,
+     *         ordered by start date and time
      * @return a list of {@link InterviewSlot} entities sorted by start time
      */
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     List<InterviewSlot> findByInterviewProcessIdOrderByStartDateTime(@Param("processId") UUID processId);
 
     /**
+     * Counts all interview slots associated with a specific interview process.
      * Finds all interview slots of a given professor that overlap with a specified time range.
      * This is used to check for scheduling conflicts when creating or updating interview slots.
      *
+     * @param processId the ID of the interview process
+     * @return the number of slots linked to the given process
      * @param professor     the professor whose slots should be checked
      * @param startDateTime the start of the time range to check for conflicts
      * @param endDateTime   the end of the time range to check for conflicts
      * @return a list of {@link InterviewSlot} entities that overlap with the given time range
      */
+    long countByInterviewProcessId(UUID processId);
     @Query(
         """
         SELECT s FROM InterviewSlot s

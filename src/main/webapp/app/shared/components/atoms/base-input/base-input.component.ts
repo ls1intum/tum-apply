@@ -3,6 +3,8 @@ import { Directive, Signal, computed, effect, inject, input, output, signal } fr
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
+let nextId = 0;
+
 @Directive()
 export abstract class BaseInputDirective<T> {
   model = input<T>();
@@ -44,6 +46,8 @@ export abstract class BaseInputDirective<T> {
 
     return false;
   });
+
+  inputId = computed(() => this.id() ?? `jhi-input-${nextId++}`);
 
   inputState = computed(() => {
     this.formValidityVersion();
