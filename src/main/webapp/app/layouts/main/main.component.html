@@ -5,7 +5,11 @@
 
   <div [class.is-collapsed]="isSidebarCollapsed()" class="main-page">
     @if (loggedIn()) {
-      <jhi-sidebar class="sidebar" [isSidebarCollapsed]="isSidebarCollapsed()" (sidebarCollapsedChange)="isSidebarCollapsed.set($event)" />
+      <jhi-sidebar
+        class="sidebar shadow-[1px_0px_3px_0px_rgba(0,0,0,0.1)]"
+        [isSidebarCollapsed]="isSidebarCollapsed()"
+        (sidebarCollapsedChange)="isSidebarCollapsed.set($event)"
+      />
     }
     <div class="content">
       <div class="content-flex">
