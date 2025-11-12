@@ -2,10 +2,9 @@ package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisRequest;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +27,7 @@ public class GenderBiasAnalysisResource {
      * @param request the text to analyze
      * @return the analysis result
      */
+    @Professor
     @PostMapping("/analyze")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeText(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         // Default to English if no language specified
@@ -46,6 +46,7 @@ public class GenderBiasAnalysisResource {
      * @param request the HTML to analyze
      * @return the analysis result
      */
+    @Professor
     @PostMapping("/analyze-html")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         // Strip HTML tags to get plain text
