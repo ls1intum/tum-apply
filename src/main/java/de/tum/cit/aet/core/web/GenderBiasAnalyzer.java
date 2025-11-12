@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Gender Bias Analyzer - Port from Python Gender Decoder
  * Analyzes text for gender-coded language (masculine vs feminine stereotypes)
  */
 public class GenderBiasAnalyzer {
@@ -45,7 +44,7 @@ public class GenderBiasAnalyzer {
     }
 
     /**
-     * Clean text and split into words (port of clean_up_word_list)
+     * Clean text and split into words
      */
     private List<String> cleanAndTokenize(String text) {
         // Remove non-ASCII except German umlauts (ß, ä, ö, ü, Ä, Ö, Ü)
