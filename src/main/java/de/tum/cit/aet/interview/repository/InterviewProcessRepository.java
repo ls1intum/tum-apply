@@ -1,7 +1,6 @@
 package de.tum.cit.aet.interview.repository;
 
 import de.tum.cit.aet.interview.domain.InterviewProcess;
-import de.tum.cit.aet.job.domain.Job;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,13 +27,12 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
     List<InterviewProcess> findAllByProfessorId(@Param("professorId") UUID professorId);
 
     /**
-     * Checks whether at least one entity exists for the given job identifier.
+     * Finds an interview process by the associated job identifier.
      *
-     * @param jobId the UUID of the job to check; must not be {@code null}
-     * @return {@code true} if at least one record with the given {@code jobId} exists,
-     *         {@code false} otherwise
+     * @param jobId the UUID of the job to search for; must not be {@code null}
+     * @return an {@link Optional} containing the {@link InterviewProcess} if found,
+     *         or an empty {@link Optional} if no process exists for the given job
      * @throws IllegalArgumentException if {@code jobId} is {@code null}
-     *
      */
-    boolean existsByJobJobId(UUID jobId);
+    Optional<InterviewProcess> findByJobJobId(UUID jobId);
 }

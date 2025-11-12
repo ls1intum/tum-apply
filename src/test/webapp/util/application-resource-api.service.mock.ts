@@ -14,7 +14,6 @@ export type ApplicationResourceApiServiceMock = Pick<
   | 'getDocumentDictionaryIds'
   | 'deleteApplication'
   | 'getApplicationPages'
-  | 'getApplicationPagesLength'
   | 'renameDocument'
   | 'uploadDocuments'
   | 'deleteDocumentFromApplication'
@@ -63,8 +62,7 @@ export function createApplicationResourceApiServiceMock(): ApplicationResourceAp
     withdrawApplication: vi.fn().mockReturnValue(of({})),
     getDocumentDictionaryIds: vi.fn().mockReturnValue(of({})),
     deleteApplication: vi.fn(),
-    getApplicationPagesLength: vi.fn().mockReturnValue(of(mockApplicationOverviewPages.length)),
-    getApplicationPages: vi.fn().mockReturnValue(of(mockApplicationOverviewPages)),
+    getApplicationPages: vi.fn().mockReturnValue(of({ content: mockApplicationOverviewPages, totalElements: 2 })),
     uploadDocuments: vi.fn().mockReturnValue(of([{ id: '1', name: 'Doc1', size: 1234 }])),
     deleteDocumentFromApplication: vi.fn().mockReturnValue(of(void 0)),
     renameDocument: vi.fn().mockReturnValue(of(void 0)),
