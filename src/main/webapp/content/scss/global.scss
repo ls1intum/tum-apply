@@ -3,6 +3,8 @@
 @use './_layout.scss';
 @use './breakpoints' as bp;
 
+@import './prime-ng-overrides.scss';
+
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
 
@@ -341,8 +343,7 @@
 .link,
 .description-text a,
 .text-card a,
-.detail-card a,
-.section-detail-card a {
+.detail-card a {
   color: var(--p-primary-color);
 
   &:hover {
@@ -367,9 +368,7 @@
 .text-card ol,
 .text-card ul,
 .detail-card ol,
-.detail-card ul,
-.section-detail-card ul,
-.section-detail-card ol {
+.detail-card ul {
   margin-left: 2rem;
   list-style: initial;
 }

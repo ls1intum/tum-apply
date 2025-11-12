@@ -287,8 +287,9 @@
         "postcode": "Postcode"
       },
       "section": {
-        "userInformation": "User Information",
-        "address": "Address"
+        "contactInformation": "Contact Information",
+        "voluntaryInformation": "Voluntary Information",
+        "address": "Address Information"
       },
       "tooltip": {
         "language": "Choose your preferred communication language."
@@ -299,36 +300,36 @@
     },
     "applicationPage2": {
       "section": {
-        "bachelor": "Bachelor",
-        "master": "Master"
+        "bachelor": "Bachelor's Degree",
+        "master": "Master's Degree"
       },
       "label": {
         "gradeUpperLimit": "Highest Achievable Grade",
         "gradeLowerLimit": "Lowest Passing Grade",
-        "bachelorDegreeName": "Bachelor Degree Name",
-        "bachelorDegreeUniversity": "Bachelor Degree University",
-        "bachelorGrade": "Bachelor Grade",
-        "masterDegreeName": "Master Degree Name",
-        "masterDegreeUniversity": "Master Degree University",
-        "masterGrade": "Master Grade"
+        "bachelorCertificate": "Bachelor Certificate",
+        "bachelorDegreeName": "Bachelor’s Study Program",
+        "bachelorDegreeUniversity": "University of your Bachelor’s Degree",
+        "bachelorGrade": "Final Bachelor Grade",
+        "masterCertificate": "Master’s Certificate",
+        "masterDegreeName": "Master’s Study Program",
+        "masterDegreeUniversity": "University of your Master’s Degree",
+        "masterGrade": "Final Master Grade"
       },
       "tooltip": {
-        "bachelorDegreeName": "Specify the study program of your Bachelor's Degree.",
-        "bachelorDegreeUniversity": "Enter the name of the University where you completed your Bachelor's Degree.",
         "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
         "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
-        "masterDegreeName": "Specify the study program of your Master's Degree.",
-        "masterDegreeUniversity": "Enter the name of the University where you completed your Master's Degree.",
         "masterGradeUpperLimit": "Enter the highest achievable grade in your Master's degree grading system (e.g. 1.0 in Germany).",
         "masterGradeLowerLimit": "Enter the lowest passing grade in your Master's degree grading system (e.g. 4.0 in Germany)",
         "masterGrade": "Enter your final Master's Grade according to your institution's grading system.",
-        "filenamePrivacy": "File names stay private and are not shown to professors."
+        "filenamePrivacy": "File names stay private and are not visible during the application process."
       }
     },
     "applicationPage3": {
       "label": {
         "desiredStartDate": "Desired Start Date",
+        "curriculumVitae": "Curriculum Vitae",
+        "additionalReferences": "Additional References",
         "motivation": "What is your motivation to take this position?",
         "skills": "What are your skills?",
         "experiences": "If you already worked in research topics, what are your experiences?"
@@ -350,7 +351,8 @@
         "experiences": "Include your role, methods used, key findings, subjects, projects, ..."
       },
       "section": {
-        "uploads": "Uploads"
+        "startAndDocuments": "Start and Documents",
+        "motivationAndBackground": "Motivation and Background"
       },
       "placeholder": {
         "selectStartDate": "Select a Start Date..."

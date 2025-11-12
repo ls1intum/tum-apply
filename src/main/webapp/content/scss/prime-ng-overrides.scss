@@ -1,0 +1,10 @@
+:root {
+  // Stepper Styles
+  --p-stepper-step-number-size: 1.75rem;
+  --p-stepper-step-number-font-size: 1rem;
+  --p-stepper-step-title-font-weight: 500;
+}
+
+p-step[data-p-active='true'] .p-step-title {
+  font-weight: 700 !important;
+}
