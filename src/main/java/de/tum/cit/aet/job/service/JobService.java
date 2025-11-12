@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
+import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
@@ -36,19 +37,22 @@ public class JobService {
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
+    private final InterviewService interviewService;
 
     public JobService(
         JobRepository jobRepository,
         UserRepository userRepository,
         ApplicationRepository applicationRepository,
         AsyncEmailSender sender,
-        CurrentUserService currentUserService
+        CurrentUserService currentUserService,
+        InterviewService interviewService
     ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
         this.sender = sender;
         this.currentUserService = currentUserService;
+        this.interviewService = interviewService;
     }
 
     /**
@@ -321,6 +325,7 @@ public class JobService {
         // Ensure that the current user is either an admin or a research group member of
         // the supervising professor
         currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
+        JobState oldState = job.getState();
 
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
@@ -337,6 +342,11 @@ public class JobService {
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
         job.setState(dto.state());
+        if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
+            Job savedJob = jobRepository.save(job);
+            interviewService.createInterviewProcessForJob(savedJob.getJobId());
+            return JobFormDTO.getFromEntity(savedJob);
+        }
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
     }
