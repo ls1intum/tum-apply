@@ -24,6 +24,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -248,7 +249,7 @@ public class ResearchGroupService {
         }
         String roleOutcome = "unchanged";
 
-        var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
+        Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
             UserResearchGroupRole mapping = new UserResearchGroupRole();
             mapping.setUser(user);
@@ -432,8 +433,7 @@ public class ResearchGroupService {
 
     /**
      * Creates a research group directly as ACTIVE state (admin only).
-     * Does not associate any user with the research group during creation.
-     * Note: universityId is not set as it's a personal field for professors, not research groups.
+     * Associated with professor submitted in the request using universityId.
      *
      * @param request the research group creation request
      * @return the created research group in ACTIVE state
@@ -460,7 +460,7 @@ public class ResearchGroupService {
         }
 
         // Validate that the user has a PROFESSOR role or can be assigned one
-        var existingRoles = userResearchGroupRoleRepository.findAllByUser(professor);
+        Set<UserResearchGroupRole> existingRoles = userResearchGroupRoleRepository.findAllByUser(professor);
         boolean hasProfessorRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.PROFESSOR);
         boolean hasApplicantRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.APPLICANT);
 

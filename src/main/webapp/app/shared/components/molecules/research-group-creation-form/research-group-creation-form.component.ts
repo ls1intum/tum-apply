@@ -13,6 +13,7 @@ import { EditorComponent } from 'app/shared/components/atoms/editor/editor.compo
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
+import { InfoBoxComponent } from '../../atoms/info-box/info-box.component';
 import { ToastService } from '../../../../service/toast-service';
 import { tumIdValidator } from '../../../validators/custom-validators';
 import TranslateDirective from '../../../language/translate.directive';
@@ -32,6 +33,7 @@ type FormMode = 'professor' | 'admin';
     ConfirmDialog,
     EditorComponent,
     FontAwesomeModule,
+    InfoBoxComponent,
   ],
   templateUrl: './research-group-creation-form.component.html',
 })

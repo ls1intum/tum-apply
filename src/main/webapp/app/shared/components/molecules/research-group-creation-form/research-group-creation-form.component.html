@@ -29,12 +29,7 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
   <!-- Information Notice -->
   @if (mode() === 'professor') {
-    <div class="flex items-start gap-3 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-      <fa-icon [icon]="['fas', 'info-circle']" class="text-blue-500 text-xl mt-0.5" />
-      <div class="flex-1">
-        <p class="m-0 text-sm text-gray-700" jhiTranslate="onboarding.professorRequest.approvalNotice"></p>
-      </div>
-    </div>
+    <jhi-info-box severity="primary" message="onboarding.professorRequest.approvalNotice" [shouldTranslate]="true" />
   }
 
   <!-- Personal Information -->
