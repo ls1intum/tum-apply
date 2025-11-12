@@ -341,7 +341,8 @@
 .link,
 .description-text a,
 .text-card a,
-.detail-card a {
+.detail-card a,
+.section-detail-card a {
   color: var(--p-primary-color);
 
   &:hover {
@@ -366,7 +367,9 @@
 .text-card ol,
 .text-card ul,
 .detail-card ol,
-.detail-card ul {
+.detail-card ul,
+.section-detail-card ul,
+.section-detail-card ol {
   margin-left: 2rem;
   list-style: initial;
 }
@@ -475,6 +478,10 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   align-items: center;
   font-size: 0.875rem;
 
+  .label {
+    font-weight: 600;
+  }
+
   .value {
     text-align: right;
   }
@@ -512,8 +519,8 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 }
 
 .hero-carousel .p-carousel-indicator .p-carousel-indicator-button {
-  width: 0.8rem;
-  height: 0.8rem;
+  width: 0.6rem;
+  height: 0.6rem;
   border-radius: 50%;
 }
 
@@ -552,4 +559,13 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   color: var(--p-primary-color);
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* -------------------------------
+   Research Group Detail Dialog Styling
+------------------------------- */
+.research-group-detail-dialog .p-dialog-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--p-primary-color);
 }
