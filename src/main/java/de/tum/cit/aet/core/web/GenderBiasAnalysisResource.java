@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/gender-bias")
 public class GenderBiasAnalysisResource {
 
-    private static final Logger log = LoggerFactory.getLogger(GenderBiasAnalysisResource.class);
-
     private final GenderBiasAnalysisService analysisService;
 
     public GenderBiasAnalysisResource(GenderBiasAnalysisService analysisService) {
@@ -32,8 +30,6 @@ public class GenderBiasAnalysisResource {
      */
     @PostMapping("/analyze")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeText(@Valid @RequestBody GenderBiasAnalysisRequest request) {
-        log.debug("REST request to analyze text for gender bias: {} chars", request.getText().length());
-
         // Default to English if no language specified
         String language = request.getLanguage() != null ? request.getLanguage() : "en";
 
@@ -52,8 +48,6 @@ public class GenderBiasAnalysisResource {
      */
     @PostMapping("/analyze-html")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
-        log.debug("REST request to analyze HTML for gender bias");
-
         // Strip HTML tags to get plain text
         String plainText = stripHtml(request.getText());
 
