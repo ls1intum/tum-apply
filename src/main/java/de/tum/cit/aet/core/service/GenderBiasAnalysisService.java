@@ -24,12 +24,10 @@ public class GenderBiasAnalysisService {
      */
     public GenderBiasAnalysisResponse analyzeText(String text, String language) {
         // Default to English if no language specified
-        if (language == null || language.trim().isEmpty()) {
-            language = "en";
-        }
+        String effectiveLanguage = (language == null || language.trim().isEmpty()) ? "en" : language;
 
         // Perform analysis
-        GenderBiasAnalyzer.AnalysisResult result = analyzer.analyze(text, language);
+        GenderBiasAnalyzer.AnalysisResult result = analyzer.analyze(text, effectiveLanguage);
 
         // Convert to DTO
         List<BiasedWordDTO> biasedWords = convertToWordDTOs(result);
