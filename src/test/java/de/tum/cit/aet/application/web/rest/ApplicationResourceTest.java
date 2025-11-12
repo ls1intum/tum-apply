@@ -28,6 +28,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
+import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.ApplicationTestData;
@@ -314,11 +315,11 @@ class ApplicationResourceTest extends AbstractResourceTest {
         );
         ApplicationTestData.savedAccepted(applicationRepository, draftJob, applicant);
 
-        List<ApplicationOverviewDTO> applications = api
+        PageResponse<ApplicationOverviewDTO> applications = api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
             .getAndRead("/api/applications/pages?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 200);
 
-        assertThat(applications).hasSize(3);
+        assertThat(applications.content().size()).isEqualTo(3);
 
         // Verify one application has correct details
         ApplicationDetailDTO detailDTO = api
@@ -344,16 +345,16 @@ class ApplicationResourceTest extends AbstractResourceTest {
             ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
         }
 
-        List<ApplicationOverviewDTO> page1 = api
+        PageResponse<ApplicationOverviewDTO> page1 = api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
             .getAndRead("/api/applications/pages?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 200);
 
-        List<ApplicationOverviewDTO> page2 = api
+        PageResponse<ApplicationOverviewDTO> page2 = api
             .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
             .getAndRead("/api/applications/pages?pageSize=10&pageNumber=1", null, new TypeReference<>() {}, 200);
 
-        assertThat(page1).hasSize(10);
-        assertThat(page2).hasSize(10);
+        assertThat(page1.content().size()).isEqualTo(10);
+        assertThat(page2.content().size()).isEqualTo(10);
     }
 
     @Test
@@ -366,26 +367,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
     @Test
     void getApplicationPagesWithoutAuthReturnsForbidden() {
         api.getAndRead("/api/applications/pages?pageSize=10&pageNumber=0", null, new TypeReference<>() {}, 403);
-    }
-
-    // ===== GET APPLICATION PAGES LENGTH =====
-
-    @Test
-    void getApplicationPagesLengthReturnsCorrectCount() {
-        ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-        ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-        ApplicationTestData.savedAccepted(applicationRepository, draftJob, applicant);
-
-        Long count = api
-            .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
-            .getAndRead("/api/applications/pages/length/" + applicant.getUserId(), null, Long.class, 200);
-
-        assertThat(count).isEqualTo(3);
-    }
-
-    @Test
-    void getApplicationPagesLengthWithoutAuthReturnsForbidden() {
-        api.getAndRead("/api/applications/pages/length/" + applicant.getUserId().toString(), null, Void.class, 403);
     }
 
     // ===== GET APPLICATION DETAIL =====
