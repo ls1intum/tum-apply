@@ -14,7 +14,8 @@ import org.springframework.data.domain.PageRequest;
 public class PageUtil {
 
     /**
-     * Enum for grouping valid sortable column names for different pageable use cases.
+     * Enum for grouping valid sortable column names for different pageable use
+     * cases.
      * Helps ensure only supported fields are passed to sorting logic.
      */
     @Getter
@@ -50,7 +51,12 @@ public class PageUtil {
         /**
          * Sortable columns used in admin research group listings.
          */
-        RESEARCH_GROUPS_ADMIN(Set.of("name", "head", "state", "createdAt"));
+        RESEARCH_GROUPS_ADMIN(Set.of("name", "head", "state", "createdAt")),
+
+        /**
+         * Sortable columns used in applicant's application listings.
+         */
+        APPLICANT_APPLICATIONS(Set.of("createdAt"));
 
         private final Set<String> sortableColumns;
 
@@ -62,10 +68,10 @@ public class PageUtil {
     /**
      * Creates a {@link PageRequest} object for pagination with optional sorting.
      *
-     * @param pageDTO the pagination information (page number and size)
-     * @param sortDTO the sorting configuration (field and direction)
+     * @param pageDTO       the pagination information (page number and size)
+     * @param sortDTO       the sorting configuration (field and direction)
      * @param columnMapping the enum containing allowed sortable columns
-     * @param applySorting flag to determine whether sorting should be applied
+     * @param applySorting  flag to determine whether sorting should be applied
      * @return a configured {@link PageRequest} with or without sorting
      */
     @NotNull
