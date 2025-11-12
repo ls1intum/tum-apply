@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 /**
  * Gender Bias Analyzer - Port from Python Gender Decoder
  * Analyzes text for gender-coded language (masculine vs feminine stereotypes)
- * Supports German and English
  */
 public class GenderBiasAnalyzer {
 
@@ -14,14 +13,8 @@ public class GenderBiasAnalyzer {
 
     public GenderBiasAnalyzer() {
         wordListsByLanguage = new HashMap<>();
-        wordListsByLanguage.put(
-            "de",
-            new WordLists(initializeGermanMasculineWords(), initializeGermanFeminineWords(), initializeGermanHyphenatedWords())
-        );
-        wordListsByLanguage.put(
-            "en",
-            new WordLists(initializeEnglishMasculineWords(), initializeEnglishFeminineWords(), initializeEnglishHyphenatedWords())
-        );
+        wordListsByLanguage.put("de", new WordLists(initializeGermanMasculineWords(), initializeGermanFeminineWords()));
+        wordListsByLanguage.put("en", new WordLists(initializeEnglishMasculineWords(), initializeEnglishFeminineWords()));
     }
 
     /**
@@ -36,7 +29,7 @@ public class GenderBiasAnalyzer {
         WordLists lists = wordListsByLanguage.getOrDefault(language, wordListsByLanguage.get("en"));
 
         // Clean and tokenize
-        List<String> wordList = cleanAndTokenize(text, lists.hyphenated);
+        List<String> wordList = cleanAndTokenize(text);
 
         // Find coded words
         List<String> masculineWords = findCodedWords(wordList, lists.masculine);
@@ -53,7 +46,7 @@ public class GenderBiasAnalyzer {
     /**
      * Clean text and split into words (port of clean_up_word_list)
      */
-    private List<String> cleanAndTokenize(String text, Set<String> hyphenatedWords) {
+    private List<String> cleanAndTokenize(String text) {
         // Remove non-ASCII except German umlauts (ß, ä, ö, ü, Ä, Ö, Ü)
         String cleanedText = text
             .chars()
@@ -78,25 +71,18 @@ public class GenderBiasAnalyzer {
             .collect(Collectors.toList());
 
         // De-hyphenate non-coded words
-        return deHyphenNonCodedWords(words, hyphenatedWords);
+        return deHyphenNonCodedWords(words);
     }
 
     /**
      * Split hyphenated words unless they're in the coded words list
      */
-    private List<String> deHyphenNonCodedWords(List<String> wordList, Set<String> hyphenatedCodedWords) {
+    private List<String> deHyphenNonCodedWords(List<String> wordList) {
         List<String> result = new ArrayList<>();
 
         for (String word : wordList) {
             if (word.contains("-")) {
-                boolean isCodedWord = hyphenatedCodedWords.stream().anyMatch(word::startsWith);
-
-                if (isCodedWord) {
-                    result.add(word);
-                } else {
-                    // Split hyphenated word
-                    result.addAll(Arrays.asList(word.split("-")));
-                }
+                result.addAll(Arrays.asList(word.split("-")));
             } else {
                 result.add(word);
             }
@@ -399,12 +385,10 @@ public class GenderBiasAnalyzer {
 
         final Set<String> masculine;
         final Set<String> feminine;
-        final Set<String> hyphenated;
 
-        WordLists(Set<String> masculine, Set<String> feminine, Set<String> hyphenated) {
+        WordLists(Set<String> masculine, Set<String> feminine) {
             this.masculine = masculine;
             this.feminine = feminine;
-            this.hyphenated = hyphenated;
         }
     }
 
