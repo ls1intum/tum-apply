@@ -105,7 +105,6 @@ export class SidebarComponent {
             { icon: 'create-job', text: 'sidebar.manage.createposition', link: '/job/create' },
             // TODO: Uncomment when interview feature is fully implemented
             // { icon: 'calendar-check', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
-
           ],
         },
         {
