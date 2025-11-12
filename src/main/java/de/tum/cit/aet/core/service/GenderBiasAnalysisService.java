@@ -37,7 +37,6 @@ public class GenderBiasAnalysisService {
         return new GenderBiasAnalysisResponse(
             result.getOriginalText(),
             biasedWords,
-            result.getBiasScore(),
             result.getCoding(),
             result.getSuggestions(),
             result.getLanguage()

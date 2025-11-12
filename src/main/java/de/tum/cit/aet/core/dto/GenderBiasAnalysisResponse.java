@@ -9,7 +9,6 @@ public class GenderBiasAnalysisResponse {
 
     private String originalText;
     private List<BiasedWordDTO> biasedWords;
-    private double biasScore;
     private String coding;
     private List<String> suggestions;
     private String language;
@@ -20,14 +19,12 @@ public class GenderBiasAnalysisResponse {
     public GenderBiasAnalysisResponse(
         String originalText,
         List<BiasedWordDTO> biasedWords,
-        double biasScore,
         String coding,
         List<String> suggestions,
         String language
     ) {
         this.originalText = originalText;
         this.biasedWords = biasedWords;
-        this.biasScore = biasScore;
         this.coding = coding;
         this.suggestions = suggestions;
         this.language = language;
@@ -48,14 +45,6 @@ public class GenderBiasAnalysisResponse {
 
     public void setBiasedWords(List<BiasedWordDTO> biasedWords) {
         this.biasedWords = biasedWords;
-    }
-
-    public double getBiasScore() {
-        return biasScore;
-    }
-
-    public void setBiasScore(double biasScore) {
-        this.biasScore = biasScore;
     }
 
     public String getCoding() {
