@@ -439,15 +439,6 @@ public class GenderBiasAnalyzer {
             this.language = language;
         }
 
-        public double getBiasScore() {
-            int total = masculineCount + feminineCount;
-            if (total == 0) return 0.0;
-
-            // Return percentage of masculine bias
-            // Positive = masculine-coded, Negative = feminine-coded
-            return ((masculineCount - feminineCount) / (double) total) * 100.0;
-        }
-
         public List<String> getSuggestions() {
             List<String> suggestions = new ArrayList<>();
 
