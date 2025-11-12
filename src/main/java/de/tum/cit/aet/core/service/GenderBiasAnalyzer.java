@@ -19,7 +19,12 @@ public class GenderBiasAnalyzer {
     }
 
     /**
-     * Analyze text for gender bias in specified language
+     * Analyze text for gender bias in the specified language.
+     *
+     * @param text     the text to analyze
+     * @param language the language code (e.g., "en" or "de")
+     * @return an {@link AnalysisResult} containing counts of masculine and feminine
+     *         words and coding type
      */
     public AnalysisResult analyze(String text, String language) {
         if (text == null || text.trim().isEmpty()) {

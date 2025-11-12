@@ -19,7 +19,11 @@ public class GenderBiasAnalysisService {
     }
 
     /**
-     * Analyze text for gender bias
+     * Analyze the given text for gender bias.
+     *
+     * @param text     the text to analyze
+     * @param language the language code (e.g., "en" or "de")
+     * @return a response containing the analysis result and identified biased words
      */
     public GenderBiasAnalysisResponse analyzeText(String text, String language) {
         // Default to English if no language specified
