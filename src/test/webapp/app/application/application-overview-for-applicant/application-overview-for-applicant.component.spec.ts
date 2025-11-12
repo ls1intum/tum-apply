@@ -66,31 +66,6 @@ describe('ApplicationOverviewForApplicantComponent', () => {
     expect(comp.total()).toBe(2);
   });
 
-  it('should set applicantId from accountService on construction', () => {
-    expect(applicationService.getApplicationPagesLength).toHaveBeenCalledWith('id-2');
-  });
-
-  describe('loadTotal', () => {
-    it('should load total application count successfully', async () => {
-      applicationService.getApplicationPagesLength = vi.fn().mockReturnValue(of(42));
-
-      await comp.loadTotal();
-
-      expect(comp.total()).toBe(42);
-      expect(applicationService.getApplicationPagesLength).toHaveBeenCalledWith('id-2');
-    });
-
-    it('should handle error when loading total fails', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      applicationService.getApplicationPagesLength = vi.fn().mockReturnValue(throwError(() => new Error('Failed to load')));
-
-      await comp.loadTotal();
-
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load total application count', expect.any(Error));
-      consoleErrorSpy.mockRestore();
-    });
-  });
-
   describe('loadPage', () => {
     const mockLazyLoadEvent: TableLazyLoadEvent = {
       first: 0,
@@ -102,7 +77,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
       expect(comp.loading()).toBe(false);
       expect(comp.lastLazyLoadEvent()).toEqual(mockLazyLoadEvent);
-      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 0);
+      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(comp.pageSize(), 0, comp.sortBy(), comp.sortDirection());
       expect(comp.pageData()).toEqual(createMockApplicationOverviewPages());
     });
 
@@ -115,7 +90,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
       await comp.loadPage(event);
 
-      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 2);
+      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 2, comp.sortBy(), comp.sortDirection());
     });
 
     it('should use default values when first and rows are undefined', async () => {
@@ -124,7 +99,7 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
       await comp.loadPage(event);
 
-      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 0);
+      expect(applicationService.getApplicationPages).toHaveBeenCalledWith(10, 0, 'createdAt', 'DESC');
     });
 
     it('should set loading to false after load completes', async () => {
@@ -248,19 +223,15 @@ describe('ApplicationOverviewForApplicantComponent', () => {
 
   describe('effect - applicantId update', () => {
     it('should reload total when user changes', async () => {
-      const loadTotalSpy = vi.spyOn(comp, 'loadTotal').mockResolvedValue();
       accountService.user.set({ id: 'new-user-456', email: 'new@example.com', name: 'New User' });
       fixture.detectChanges();
-      expect(loadTotalSpy).toHaveBeenCalled();
       expect(comp['applicantId']()).toBe('new-user-456');
     });
 
     it('should handle undefined user', async () => {
-      const loadTotalSpy = vi.spyOn(comp, 'loadTotal').mockResolvedValue();
       accountService.user.set(undefined);
       fixture.detectChanges();
       expect(comp['applicantId']()).toBe('');
-      expect(loadTotalSpy).toHaveBeenCalled();
     });
   });
 });

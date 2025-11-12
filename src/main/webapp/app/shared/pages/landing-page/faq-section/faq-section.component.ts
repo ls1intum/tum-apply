@@ -35,6 +35,11 @@ export class FaqSectionComponent {
       title: 'landingPage.faq.questions.status.title',
       content: 'landingPage.faq.questions.status.content',
     },
+    {
+      value: 'otherJobs',
+      title: 'landingPage.faq.questions.otherJobs.title',
+      content: 'landingPage.faq.questions.otherJobs.content',
+    },
   ];
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;

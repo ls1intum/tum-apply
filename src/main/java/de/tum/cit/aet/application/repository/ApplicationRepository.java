@@ -192,24 +192,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     long countByApplicantId(@Param("applicantId") UUID applicantId);
 
     /**
-     * Count applications for a specific job with a given state.
-     *
-     * @param job the job to filter by
-     * @param state the application state to filter by
-     * @return count of applications matching the criteria
-     */
-    long countByJobAndState(Job job, ApplicationState state);
-
-    /**
-     * Count applications for a specific job with any of the given states.
-     *
-     * @param job the job to filter by
-     * @param states list of application states to filter by
-     * @return count of applications matching the criteria
-     */
-    long countByJobAndStateIn(Job job, List<ApplicationState> states);
-
-    /**
      * Counts applications grouped by job and state for jobs with interview processes
      * belonging to a specific professor.
      * This is optimized to fetch all counts in a single query instead of N×M queries.
