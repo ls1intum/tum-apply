@@ -132,6 +132,27 @@ public final class UserTestData {
         );
     }
 
+    /**
+     * Creates and saves a user without a research group.
+     */
+    public static User createUserWithoutResearchGroup(
+        UserRepository userRepository,
+        String email,
+        String firstName,
+        String lastName,
+        String universityId
+    ) {
+        User user = new User();
+        user.setUserId(UUID.randomUUID());
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setSelectedLanguage("en");
+        user.setUniversityId(universityId);
+        user.setResearchGroup(null);
+        return userRepository.save(user);
+    }
+
     private static void attachProfessorRole(User user, ResearchGroup rg) {
         UserResearchGroupRole link = new UserResearchGroupRole();
         link.setUser(user);

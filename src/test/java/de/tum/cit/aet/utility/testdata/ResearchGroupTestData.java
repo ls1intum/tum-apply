@@ -3,6 +3,7 @@ package de.tum.cit.aet.utility.testdata;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.UUID;
 
@@ -114,6 +115,39 @@ public final class ResearchGroupTestData {
             "Main St",
             "12345",
             "City"
+        );
+    }
+
+    /**
+     * Creates a ResearchGroupDTO with all fields.
+     */
+    public static ResearchGroupDTO createResearchGroupDTO(
+        String name,
+        String abbreviation,
+        String head,
+        String email,
+        String website,
+        String university,
+        String description,
+        String field,
+        String street,
+        String postalCode,
+        String city,
+        ResearchGroupState state
+    ) {
+        return new ResearchGroupDTO(
+            name,
+            abbreviation,
+            head,
+            email,
+            website,
+            university,
+            description,
+            field,
+            street,
+            postalCode,
+            city,
+            state
         );
     }
 }

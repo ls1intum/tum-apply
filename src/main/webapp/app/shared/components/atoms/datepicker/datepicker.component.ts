@@ -44,6 +44,11 @@ export class DatePickerComponent {
   maxDate = input<Date | undefined>(undefined);
 
   /**
+   * Default date to show in calendar when opening (does not set the value, just the view)
+   */
+  defaultDate = input<Date | null>(null);
+
+  /**
    * Emits ISO date string ('YYYY-MM-DD') when user selects a date
    */
   selectedDateChange = output<string | undefined>();

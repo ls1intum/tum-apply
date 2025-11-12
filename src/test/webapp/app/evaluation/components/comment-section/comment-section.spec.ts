@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { CommentSection } from 'app/evaluation/components/comment-section/comment-section';
+import { CommentSection } from 'app/shared/components/molecules/comment-section/comment-section';
 import { InternalCommentResourceApiService } from 'app/generated/api/internalCommentResourceApi.service';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
@@ -26,14 +26,9 @@ describe('CommentSection', () => {
 
   let mockToast = createToastServiceMock();
   const mockAccount = createAccountServiceMock();
+  mockAccount.user.set({ id: 'reviewer-1', name: 'Alice Reviewer', email: 'alice@test.com' });
 
   beforeEach(async () => {
-    mockAccount.setLoadedUser({
-      id: 'u1',
-      name: 'Alice Reviewer',
-      email: 'alice@test.com',
-    });
-
     mockCommentApi = {
       listComments: vi.fn(),
       createComment: vi.fn(),
@@ -71,7 +66,7 @@ describe('CommentSection', () => {
       TestBed.resetTestingModule();
 
       const accountServiceWithNoUser = createAccountServiceMock();
-      accountServiceWithNoUser.setLoadedUser(undefined);
+      accountServiceWithNoUser.user.set(undefined);
 
       TestBed.configureTestingModule({
         imports: [CommentSection],
