@@ -2,7 +2,6 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
-import de.tum.cit.aet.core.util.GenderNeutralSuggestions;
 import de.tum.cit.aet.core.web.GenderBiasAnalyzer;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +14,9 @@ import org.springframework.stereotype.Service;
 public class GenderBiasAnalysisService {
 
     private final GenderBiasAnalyzer analyzer;
-    private final GenderNeutralSuggestions suggestions;
 
     public GenderBiasAnalysisService() {
         this.analyzer = new GenderBiasAnalyzer();
-        this.suggestions = new GenderNeutralSuggestions();
     }
 
     /**
@@ -52,16 +49,15 @@ public class GenderBiasAnalysisService {
      */
     private List<BiasedWordDTO> convertToWordDTOs(GenderBiasAnalyzer.AnalysisResult result) {
         List<BiasedWordDTO> dtos = new ArrayList<>();
-        String language = result.getLanguage();
 
         // Add masculine words
         for (String word : result.getMasculineWords()) {
-            dtos.add(new BiasedWordDTO(word, "masculine", suggestions.getNeutralAlternative(word, "masculine", language)));
+            dtos.add(new BiasedWordDTO(word, "masculine"));
         }
 
         // Add feminine words
         for (String word : result.getFeminineWords()) {
-            dtos.add(new BiasedWordDTO(word, "feminine", suggestions.getNeutralAlternative(word, "feminine", language)));
+            dtos.add(new BiasedWordDTO(word, "feminine"));
         }
 
         return dtos;
