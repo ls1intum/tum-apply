@@ -1,4 +1,4 @@
-package de.tum.cit.aet.core.web;
+package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.constants.GenderBiasWordLists;
 import de.tum.cit.aet.core.util.StringUtil;
