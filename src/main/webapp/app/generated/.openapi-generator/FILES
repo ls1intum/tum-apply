@@ -63,6 +63,7 @@ model/jobFormDTO.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
+model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
