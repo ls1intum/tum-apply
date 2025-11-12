@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.constants.GenderBiasWordLists;
+import de.tum.cit.aet.core.util.StringUtil;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,30 +48,15 @@ public class GenderBiasAnalyzer {
      * Clean text and split into words
      */
     private List<String> cleanAndTokenize(String text) {
-        // Remove non-ASCII except German umlauts (ß, ä, ö, ü, Ä, Ö, Ü)
-        String cleanedText = text
-            .chars()
-            .mapToObj(c -> {
-                if (c < 128 || c == 223 || c == 228 || c == 246 || c == 252 || c == 196 || c == 214 || c == 220) {
-                    return String.valueOf((char) c);
-                }
-                return " ";
-            })
-            .collect(Collectors.joining());
+        String cleanedText = StringUtil.keepAsciiAndUmlauts(text);
+        cleanedText = StringUtil.normalizeWhitespace(cleanedText);
+        cleanedText = StringUtil.removePunctuation(cleanedText);
 
-        // Normalize whitespace
-        cleanedText = cleanedText.replaceAll("\\s+", " ");
-
-        // Remove punctuation
-        cleanedText = cleanedText.replaceAll("[.\\t,\"'<>*?!\\[\\]@:;()./&]", " ");
-
-        // Split and lowercase
         List<String> words = Arrays.stream(cleanedText.split(" "))
             .map(String::toLowerCase)
             .filter(word -> !word.isEmpty())
             .collect(Collectors.toList());
 
-        // De-hyphenate non-coded words
         return deHyphenNonCodedWords(words);
     }
 
