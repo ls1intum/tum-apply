@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.dto.GenderBiasAnalysisRequest;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
+import de.tum.cit.aet.core.util.HtmlTextExtractor;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,31 +51,12 @@ public class GenderBiasAnalysisResource {
     @PostMapping("/analyze-html")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         // Strip HTML tags to get plain text
-        String plainText = stripHtml(request.getText());
+        String plainText = HtmlTextExtractor.stripHtml(request.getText());
 
         String language = request.getLanguage() != null ? request.getLanguage() : "en";
 
         GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, language);
 
         return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Simple HTML tag stripper
-     * For production, consider using a library like Jsoup
-     */
-    private String stripHtml(String html) {
-        if (html == null) return "";
-
-        // Remove HTML tags
-        String text = html.replaceAll("<[^>]*>", " ");
-
-        // Decode common HTML entities
-        text = text.replace("&nbsp;", " ").replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"");
-
-        // Normalize whitespace
-        text = text.replaceAll("\\s+", " ").trim();
-
-        return text;
     }
 }
