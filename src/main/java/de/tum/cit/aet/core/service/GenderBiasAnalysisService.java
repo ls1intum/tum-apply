@@ -2,7 +2,6 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
-import de.tum.cit.aet.core.web.GenderBiasAnalyzer;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
