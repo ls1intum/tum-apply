@@ -3,17 +3,21 @@ package de.tum.cit.aet.application.web;
 import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -117,34 +121,18 @@ public class ApplicationResource {
     /**
      * Retrieves a paginated list of application overviews for the current user.
      *
-     * @param pageSize   The number of items per page (default: 25).
-     * @param pageNumber The page number to retrieve (default: 0).
-     * @return A list of {@link ApplicationOverviewDTO} representing the application
+     * @param pageDTO the pagination configuration
+     * @param sortDTO the sorting configuration
+     * @return A page of {@link ApplicationOverviewDTO} representing the application
      *         overview data.
      */
     @ApplicantOrAdmin
     @GetMapping("/pages")
-    public ResponseEntity<List<ApplicationOverviewDTO>> getApplicationPages(
-        @RequestParam(required = false, defaultValue = "25") @Min(1) int pageSize,
-        @RequestParam(required = false, defaultValue = "0") @Min(0) int pageNumber
+    public ResponseEntity<Page<ApplicationOverviewDTO>> getApplicationPages(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
-        // purposes
-        return ResponseEntity.ok(applicationService.getAllApplications(pageSize, pageNumber));
-    }
-
-    /**
-     * Retrieves the total number of applications submitted by a specific applicant.
-     * Can be removed once sorting and filtering demands using a ApplicationPageDTO,
-     * where this data can be directly included
-     *
-     * @param applicantId The UUID of the applicant.
-     * @return The total count of applications.
-     */
-    @ApplicantOrAdmin
-    @GetMapping("/pages/length/{applicantId}")
-    public ResponseEntity<Long> getApplicationPagesLength(@PathVariable UUID applicantId) {
-        // purposes
-        return ResponseEntity.ok(applicationService.getNumberOfTotalApplications(applicantId));
+        return ResponseEntity.ok(applicationService.getAllApplications(pageDTO, sortDTO));
     }
 
     /**
