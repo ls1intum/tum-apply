@@ -15,13 +15,7 @@ public class GenderBiasAnalysisResponse {
     // Constructors
     public GenderBiasAnalysisResponse() {}
 
-    public GenderBiasAnalysisResponse(
-        String originalText,
-        List<BiasedWordDTO> biasedWords,
-        String coding,
-        List<String> suggestions,
-        String language
-    ) {
+    public GenderBiasAnalysisResponse(String originalText, List<BiasedWordDTO> biasedWords, String coding, String language) {
         this.originalText = originalText;
         this.biasedWords = biasedWords;
         this.coding = coding;

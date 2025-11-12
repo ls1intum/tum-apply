@@ -34,13 +34,7 @@ public class GenderBiasAnalysisService {
         // Convert to DTO
         List<BiasedWordDTO> biasedWords = convertToWordDTOs(result);
 
-        return new GenderBiasAnalysisResponse(
-            result.getOriginalText(),
-            biasedWords,
-            result.getCoding(),
-            result.getSuggestions(),
-            result.getLanguage()
-        );
+        return new GenderBiasAnalysisResponse(result.getOriginalText(), biasedWords, result.getCoding(), result.getLanguage());
     }
 
     /**
