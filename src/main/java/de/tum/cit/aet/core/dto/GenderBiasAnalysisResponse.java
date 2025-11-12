@@ -10,7 +10,6 @@ public class GenderBiasAnalysisResponse {
     private String originalText;
     private List<BiasedWordDTO> biasedWords;
     private String coding;
-    private List<String> suggestions;
     private String language;
 
     // Constructors
@@ -26,7 +25,6 @@ public class GenderBiasAnalysisResponse {
         this.originalText = originalText;
         this.biasedWords = biasedWords;
         this.coding = coding;
-        this.suggestions = suggestions;
         this.language = language;
     }
 
@@ -53,14 +51,6 @@ public class GenderBiasAnalysisResponse {
 
     public void setCoding(String coding) {
         this.coding = coding;
-    }
-
-    public List<String> getSuggestions() {
-        return suggestions;
-    }
-
-    public void setSuggestions(List<String> suggestions) {
-        this.suggestions = suggestions;
     }
 
     public String getLanguage() {
