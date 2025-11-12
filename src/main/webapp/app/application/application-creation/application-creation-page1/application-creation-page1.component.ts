@@ -103,6 +103,7 @@ export default class ApplicationCreationPage1Component {
     const today = new Date();
     return new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
   })(); // ensures minimum age of 18
+  readonly defaultBirthDate = new Date(2000, 0, 1);
 
   selectGenderLocal = selectGender;
   selectLanguageLocal = selectLanguage;
@@ -116,7 +117,7 @@ export default class ApplicationCreationPage1Component {
     return this.formbuilder.group({
       firstName: [currentData.firstName, Validators.required],
       lastName: [currentData.lastName, Validators.required],
-      email: [currentData.email, [Validators.required, Validators.email]],
+      email: [{ value: currentData.email, disabled: this.disabledEmail() }, [Validators.required, Validators.email]],
       phoneNumber: [currentData.phoneNumber, Validators.required],
 
       street: [currentData.street, Validators.required],

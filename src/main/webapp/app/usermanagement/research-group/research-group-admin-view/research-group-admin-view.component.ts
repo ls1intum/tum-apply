@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DialogService } from 'primeng/dynamicdialog';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO';
 import { ToastService } from 'app/service/toast-service';
-import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
@@ -12,14 +15,22 @@ import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TranslateDirective } from 'app/shared/language';
-import { TableLazyLoadEvent } from 'primeng/table';
-import { firstValueFrom } from 'rxjs';
+import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 
 const I18N_BASE = 'researchGroup.adminView';
 
 @Component({
   selector: 'jhi-research-group-admin-view',
-  imports: [CommonModule, TagComponent, TranslateModule, TranslateDirective, SearchFilterSortBar, DynamicTableComponent, ConfirmDialog],
+  imports: [
+    ButtonComponent,
+    CommonModule,
+    TagComponent,
+    TranslateModule,
+    TranslateDirective,
+    SearchFilterSortBar,
+    DynamicTableComponent,
+    ConfirmDialog,
+  ],
   templateUrl: './research-group-admin-view.component.html',
 })
 export class ResearchGroupAdminView {
@@ -63,16 +74,16 @@ export class ResearchGroupAdminView {
     const buttonTpl = this.buttonTemplate();
 
     return [
-      { field: 'professorName', header: `${I18N_BASE}.tableColumn.professor`, width: '14rem' },
+      { field: 'professorName', header: `${I18N_BASE}.tableColumn.professor`, width: '20rem' },
       {
         field: 'status',
         header: `${I18N_BASE}.tableColumn.status`,
-        width: '8rem',
+        width: '6rem',
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'researchGroup', header: `${I18N_BASE}.tableColumn.researchGroup`, width: '26rem' },
-      { field: 'createdAt', header: `${I18N_BASE}.tableColumn.requestedAt`, type: 'date', width: '10rem' },
+      { field: 'researchGroup', header: `${I18N_BASE}.tableColumn.researchGroup`, width: '30rem' },
+      { field: 'createdAt', header: `${I18N_BASE}.tableColumn.requestedAt`, type: 'date', width: '16rem' },
       { field: 'actions', header: '', width: '5rem', template: buttonTpl },
     ];
   });
@@ -93,7 +104,9 @@ export class ResearchGroupAdminView {
   ];
 
   private toastService = inject(ToastService);
+  private readonly translate = inject(TranslateService);
   private researchGroupService = inject(ResearchGroupResourceApiService);
+  private readonly dialogService = inject(DialogService);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -128,11 +141,16 @@ export class ResearchGroupAdminView {
     void this.loadResearchGroups();
   }
 
-  // TODO: Will be implemented in a follow up
-  // onViewResearchGroup(researchGroupId: string): void {
-  //   // TODO: Navigate to research group detail
-  //   console.log('View research group:', researchGroupId);
-  // }
+  onViewResearchGroup(researchGroupId: string): void {
+    this.dialogService.open(ResearchGroupDetailViewComponent, {
+      header: this.translate.instant('researchGroup.detailView.title'),
+      data: { researchGroupId },
+      styleClass: 'research-group-detail-dialog',
+      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      closable: true,
+      modal: true,
+    });
+  }
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {
     try {
