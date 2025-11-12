@@ -82,34 +82,27 @@ paths:
       - name: pageSize
         in: query
         required: false
-        schema: {type: integer, format: int32, default: 25, minimum: 1}
+        schema: {type: integer, format: int32, minimum: 1}
       - name: pageNumber
         in: query
         required: false
-        schema: {type: integer, format: int32, default: 0, minimum: 0}
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ApplicationOverviewDTO'}
-  /api/applications/pages/length/{applicantId}:
-    get:
-      tags: [application-resource]
-      operationId: getApplicationPagesLength
-      parameters:
-      - name: applicantId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {type: integer, format: int64}
+              schema: {$ref: '#/components/schemas/PageApplicationOverviewDTO'}
   /api/applications/rename-document/{documentDictionaryId}:
     put:
       tags: [application-resource]
@@ -1762,6 +1755,22 @@ components:
           type: string
           enum: [LOGIN, REGISTER]
       required: [code, email, purpose]
+    PageApplicationOverviewDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/ApplicationOverviewDTO'}
+        empty: {type: boolean}
+        first: {type: boolean}
+        last: {type: boolean}
+        number: {type: integer, format: int32}
+        numberOfElements: {type: integer, format: int32}
+        pageable: {$ref: '#/components/schemas/PageableObject'}
+        size: {type: integer, format: int32}
+        sort: {$ref: '#/components/schemas/SortObject'}
+        totalElements: {type: integer, format: int64}
+        totalPages: {type: integer, format: int32}
     PageCreatedJobDTO:
       type: object
       properties:

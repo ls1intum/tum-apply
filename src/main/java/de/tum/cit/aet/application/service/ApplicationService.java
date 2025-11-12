@@ -10,12 +10,15 @@ import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
@@ -31,6 +34,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -243,24 +248,14 @@ public class ApplicationService {
     /**
      * Retrieves a paginated list of application overviews for a specific applicant.
      *
-     * @param pageSize   the number of applications per page
-     * @param pageNumber the page number to retrieve
-     * @return a list of application overview DTOs
+     * @param pageDTO the pagination information
+     * @param sortDTO the sorting configuration
+     * @return a page of application overview DTOs
      */
-    public List<ApplicationOverviewDTO> getAllApplications(int pageSize, int pageNumber) {
+    public Page<ApplicationOverviewDTO> getAllApplications(PageDTO pageDTO, SortDTO sortDTO) {
         UUID userId = currentUserService.getUserId();
-        return applicationRepository.findApplicationsByApplicant(userId, pageNumber, pageSize);
-    }
-
-    /**
-     * Returns the total number of applications submitted by a specific applicant.
-     *
-     * @param applicantId the ID of the applicant
-     * @return the total number of applications
-     */
-    public long getNumberOfTotalApplications(UUID applicantId) {
-        currentUserService.isCurrentUserOrAdmin(applicantId);
-        return this.applicationRepository.countByApplicantId(applicantId);
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.APPLICANT_APPLICATIONS, true);
+        return applicationRepository.findApplicationsByApplicant(userId, pageable);
     }
 
     /**

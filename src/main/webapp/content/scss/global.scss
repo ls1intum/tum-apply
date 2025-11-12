@@ -341,7 +341,8 @@
 .link,
 .description-text a,
 .text-card a,
-.detail-card a {
+.detail-card a,
+.section-detail-card a {
   color: var(--p-primary-color);
 
   &:hover {
@@ -366,7 +367,9 @@
 .text-card ol,
 .text-card ul,
 .detail-card ol,
-.detail-card ul {
+.detail-card ul,
+.section-detail-card ul,
+.section-detail-card ol {
   margin-left: 2rem;
   list-style: initial;
 }
