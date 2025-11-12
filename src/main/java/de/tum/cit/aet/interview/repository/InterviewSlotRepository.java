@@ -35,12 +35,10 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      *
      * @param processId the ID of the interview process
      * @return the number of slots linked to the given process
-     * @param professor     the professor whose slots should be checked
-     * @param startDateTime the start of the time range to check for conflicts
-     * @param endDateTime   the end of the time range to check for conflicts
      * @return a list of {@link InterviewSlot} entities that overlap with the given time range
      */
     long countByInterviewProcessId(UUID processId);
+
     @Query(
         """
         SELECT s FROM InterviewSlot s
