@@ -21,9 +21,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * ordered chronologically by their start date and time.
      *
      * @param processId the ID of the interview process
-     * @return a list of {@link InterviewSlot} entities associated with the given process,
-     *         ordered by start date and time
-     * @return a list of {@link InterviewSlot} entities sorted by start time
+     * @return a list of {@link InterviewSlot} entities associated with the given process
      */
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     List<InterviewSlot> findByInterviewProcessIdOrderByStartDateTime(@Param("processId") UUID processId);
@@ -35,7 +33,6 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      *
      * @param processId the ID of the interview process
      * @return the number of slots linked to the given process
-     * @return a list of {@link InterviewSlot} entities that overlap with the given time range
      */
     long countByInterviewProcessId(UUID processId);
 
