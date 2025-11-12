@@ -117,7 +117,7 @@ public class InterviewService {
      * @param jobId the ID of the job for which to create the interview process
      * @return the created InterviewProcessDTO, or null if one already exists
      */
- 
+
     public InterviewProcessDTO createInterviewProcessForJob(UUID jobId) {
         Optional<InterviewProcess> existing = interviewProcessRepository.findByJobJobId(jobId);
 
