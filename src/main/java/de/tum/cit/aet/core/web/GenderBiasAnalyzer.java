@@ -80,8 +80,16 @@ public class GenderBiasAnalyzer {
     private List<String> deHyphenNonCodedWords(List<String> wordList) {
         List<String> result = new ArrayList<>();
 
+        Set<String> allCodedWords = new HashSet<>();
+        wordListsByLanguage
+            .values()
+            .forEach(wl -> {
+                allCodedWords.addAll(wl.masculine);
+                allCodedWords.addAll(wl.feminine);
+            });
+
         for (String word : wordList) {
-            if (word.contains("-")) {
+            if (word.contains("-") && allCodedWords.stream().noneMatch(word::contains)) {
                 result.addAll(Arrays.asList(word.split("-")));
             } else {
                 result.add(word);
@@ -120,7 +128,7 @@ public class GenderBiasAnalyzer {
         }
     }
 
-    // ============= GERMAN WORD LISTS =============
+    // GERMAN WORD LISTS (From gender decoder code itself)
 
     private Set<String> initializeGermanMasculineWords() {
         return new HashSet<>(
@@ -262,13 +270,7 @@ public class GenderBiasAnalyzer {
         );
     }
 
-    private Set<String> initializeGermanHyphenatedWords() {
-        // Currently empty in original - can be extended if needed
-        return new HashSet<>();
-    }
-
-    // ============= ENGLISH WORD LISTS =============
-
+    // ENGLISH WORD LISTS (From https://gender-decoder.katmatfield.com/about)
     private Set<String> initializeEnglishMasculineWords() {
         return new HashSet<>(
             Arrays.asList(
@@ -276,48 +278,54 @@ public class GenderBiasAnalyzer {
                 "adventurous",
                 "aggress",
                 "ambitio",
-                "analytic",
+                "analy",
                 "assert",
                 "athlet",
                 "autonom",
+                "battle",
                 "boast",
                 "challeng",
                 "champion",
                 "compet",
-                "confiden",
+                "confident",
                 "courag",
                 "decid",
-                "decis",
+                "decision",
+                "decisive",
                 "defend",
                 "determin",
                 "domina",
+                "dominant",
                 "driven",
                 "fearless",
+                "fight",
                 "force",
-                "grenade",
+                "greedy",
+                "head-strong",
                 "headstrong",
                 "hierarch",
                 "hostil",
-                "impulsiv",
+                "impulsive",
                 "independen",
                 "individual",
                 "intellect",
                 "lead",
-                "leader",
                 "logic",
-                "objectiv",
+                "objective",
                 "opinion",
                 "outspoken",
                 "persist",
-                "principl",
+                "principle",
                 "reckless",
                 "self-confiden",
                 "self-relian",
                 "self-sufficien",
+                "selfconfiden",
+                "selfrelian",
+                "selfsufficien",
                 "stubborn",
                 "superior",
-                "competitiv",
-                "dominant"
+                "unreasonab"
             )
         );
     }
@@ -326,7 +334,7 @@ public class GenderBiasAnalyzer {
         return new HashSet<>(
             Arrays.asList(
                 "agree",
-                "affection",
+                "affectionate",
                 "child",
                 "cheer",
                 "collab",
@@ -334,34 +342,38 @@ public class GenderBiasAnalyzer {
                 "communal",
                 "compassion",
                 "connect",
-                "considerat",
+                "considerate",
                 "cooperat",
                 "co-operat",
                 "depend",
-                "emotion",
-                "empathet",
-                "empathy",
+                "emotiona",
+                "empath",
                 "feel",
-                "flatter",
+                "flatterable",
                 "gentle",
                 "honest",
-                "interpers",
+                "interpersonal",
                 "interdependen",
+                "interpersona",
+                "inter-personal",
+                "inter-dependen",
+                "inter-persona",
                 "kind",
                 "kinship",
                 "loyal",
-                "modest",
+                "modesty",
                 "nag",
                 "nurtur",
                 "pleasant",
                 "polite",
                 "quiet",
-                "responsibl",
+                "respon",
                 "sensitiv",
-                "submissiv",
+                "submissive",
                 "support",
-                "sympathy",
-                "sympathet",
+                "sympath",
+                "tender",
+                "together",
                 "trust",
                 "understand",
                 "warm",
@@ -370,13 +382,9 @@ public class GenderBiasAnalyzer {
                 "inclusive",
                 "yield",
                 "share",
-                "sharing"
+                "sharin"
             )
         );
-    }
-
-    private Set<String> initializeEnglishHyphenatedWords() {
-        return new HashSet<>(Arrays.asList("co-operat", "self-confiden", "self-relian", "self-sufficien"));
     }
 
     // ============= HELPER CLASSES =============
