@@ -33,6 +33,7 @@
         <div class="form-field flex-1">
           <label>
             <span jhiTranslate="entity.applicationPage3.label.curriculumVitae"></span>
+            <span class="required"> *</span>
             <fa-icon
               class="icon"
               [icon]="['fas', 'circle-info']"
@@ -46,7 +47,6 @@
             [applicationId]="applicationId"
             [documentIds]="computedDocumentIdsCvSet()"
             (documentIdsChange)="cvDocsSetValidity($event)"
-            [markAsRequired]="true"
           />
         </div>
 

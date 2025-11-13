@@ -3,7 +3,7 @@
 @use './_layout.scss';
 @use './breakpoints' as bp;
 
-@import './prime-ng-overrides.scss';
+@use './prime-ng-overrides.scss';
 
 @plugin "tailwindcss-primeui";
 @custom-variant dark (&:where(.tum-apply-dark-mode, .tum-apply-dark-mode *)); //dark mode configuration
