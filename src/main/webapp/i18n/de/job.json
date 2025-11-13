@@ -219,7 +219,6 @@
   },
   "job": "Stelle",
   "jobs": "Stellen",
-  "editDisabled": "Eine veröffentlichte oder geschlossene Stelle kann nicht mehr bearbeitet werden.",
   "toast": {
     "published": {
       "summary": "Veröffentlicht",

@@ -58,7 +58,7 @@
           <jhi-button
             icon="pencil"
             variant="text"
-            [tooltip]="job.state !== 'DRAFT' ? ('editDisabled' | translate) : ('button.edit' | translate)"
+            [tooltip]="job.state !== 'DRAFT' ? ('button.tooltip.editDisabled' | translate) : ('button.edit' | translate)"
             severity="primary"
             variant="text"
             (click)="onEditJob(job.jobId)"

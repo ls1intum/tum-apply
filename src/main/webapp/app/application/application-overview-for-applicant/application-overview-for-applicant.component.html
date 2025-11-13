@@ -32,7 +32,7 @@
         [icon]="'pencil'"
         severity="primary"
         variant="text"
-        [tooltip]="'button.edit' | translate"
+        [tooltip]="row.applicationState !== 'SAVED' ? ('button.tooltip.editDisabled' | translate) : ('button.edit' | translate)"
         (click)="onUpdateApplication(row.applicationId)"
         [disabled]="row.applicationState !== 'SAVED'"
       />
