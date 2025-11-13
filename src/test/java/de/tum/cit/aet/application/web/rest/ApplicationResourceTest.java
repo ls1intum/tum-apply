@@ -85,20 +85,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         databaseCleaner.clean();
 
         // Setup research group
-        researchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Prof. Smith",
-            "AI Research Group",
-            "ai@example.com",
-            "AI",
-            "CS",
-            "We do cutting edge AI research",
-            "ai@example.com",
-            "80333",
-            "CIT",
-            "Arcisstr. 21",
-            "https://ai.tum.de"
-        );
+        researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
 
         // Setup professor
         professor = UserTestData.savedProfessor(userRepository, researchGroup);
