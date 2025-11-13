@@ -217,7 +217,7 @@
       },
       "title": "Verwalte Forschungsgruppen",
       "tumID": {
-        "label": "Professor TUM-ID",
+        "label": "Professor:in TUM-ID",
         "placeholder": "z.B. ab12cde"
       },
       "createButton": "Forschungsgruppe erstellen",
