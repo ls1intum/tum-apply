@@ -66,7 +66,8 @@ class JobResourceTest extends AbstractResourceTest {
             "80333",
             "CIT",
             "Arcisstr. 21",
-            "https://alg.tum.de"
+            "https://alg.tum.de",
+            "ACTIVE"
         );
 
         professor = UserTestData.savedProfessorAll(

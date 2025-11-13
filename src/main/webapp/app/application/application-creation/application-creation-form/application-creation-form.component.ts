@@ -19,6 +19,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { MessageModule } from 'primeng/message';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -58,6 +59,7 @@ const applyflow = 'entity.toast.applyFlow';
     ConfirmDialog,
     ApplicationDetailForApplicantComponent,
     TranslateDirective,
+    MessageModule,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -89,13 +91,13 @@ export default class ApplicationCreationFormComponent {
   educationData = signal<ApplicationCreationPage2Data>({
     bachelorDegreeName: '',
     bachelorDegreeUniversity: '',
-    bachelorGradeUpperLimit: '',
-    bachelorGradeLowerLimit: '',
+    // bachelorGradeUpperLimit: '',
+    // bachelorGradeLowerLimit: '',
     bachelorGrade: '',
     masterDegreeName: '',
     masterDegreeUniversity: '',
-    masterGradeUpperLimit: '',
-    masterGradeLowerLimit: '',
+    // masterGradeUpperLimit: '',
+    // masterGradeLowerLimit: '',
     masterGrade: '',
   });
 
@@ -667,13 +669,13 @@ export default class ApplicationCreationFormComponent {
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
         bachelorGrade: p2.bachelorGrade,
-        bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
-        bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
+        // bachelorGradeUpperLimit: p2.bachelorGradeUpperLimit,
+        // bachelorGradeLowerLimit: p2.bachelorGradeLowerLimit,
         masterDegreeName: p2.masterDegreeName,
         masterUniversity: p2.masterDegreeUniversity,
         masterGrade: p2.masterGrade,
-        masterGradeUpperLimit: p2.masterGradeUpperLimit,
-        masterGradeLowerLimit: p2.masterGradeLowerLimit,
+        // masterGradeUpperLimit: p2.masterGradeUpperLimit,
+        // masterGradeLowerLimit: p2.masterGradeLowerLimit,
       },
       motivation: p3.motivation,
       specialSkills: p3.skills,

@@ -11,7 +11,7 @@
 />
 
 <ng-template #personalInfoPanel>
-  <div class="panel">
+  <div class="h-full flex px-4 xl:px-32 2xl:px-64">
     <jhi-application-creation-page1
       class="w-full"
       [(data)]="personalInfoData"
@@ -22,7 +22,7 @@
 </ng-template>
 
 <ng-template #educationPanel>
-  <div class="panel">
+  <div class="h-full flex px-4 xl:px-32 2xl:px-64">
     <jhi-application-creation-page2
       class="w-full"
       [(data)]="educationData"
@@ -36,7 +36,7 @@
 </ng-template>
 
 <ng-template #applicationDetailsPanel>
-  <div class="panel">
+  <div class="h-full flex px-4 xl:px-32 2xl:px-64">
     @if (applicationDetailsData()) {
       <jhi-application-creation-page3
         class="w-full"
@@ -52,7 +52,7 @@
 </ng-template>
 
 <ng-template #summaryPanel>
-  <p jhiTranslate="entity.applicationPage4.message"></p>
+  <p-message severity="warn" class="m-3"><p jhiTranslate="entity.applicationPage4.message"></p> </p-message>
   <!-- Summary panel -->
   <jhi-application-detail-for-applicant
     [previewDetailData]="previewData()"
