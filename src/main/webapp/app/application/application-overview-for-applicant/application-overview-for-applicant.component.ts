@@ -11,6 +11,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -45,6 +46,9 @@ export default class ApplicationOverviewForApplicantComponent {
   pageData = signal<ApplicationOverviewDTO[]>([]);
   pageSize = signal<number>(10);
   total = signal<number>(0);
+
+  sortBy = signal<string>('createdAt');
+  sortDirection = signal<'ASC' | 'DESC'>('DESC');
 
   // Stores the last lazy load event to enable data refresh after actions
   lastLazyLoadEvent = signal<TableLazyLoadEvent | undefined>(undefined);
@@ -95,6 +99,10 @@ export default class ApplicationOverviewForApplicantComponent {
     ];
   });
 
+  readonly sortableFields: SortOption[] = [
+    { displayName: 'entity.applicationOverview.columns.created', fieldName: 'createdAt', type: 'TEXT' },
+  ];
+
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
@@ -105,17 +113,7 @@ export default class ApplicationOverviewForApplicantComponent {
 
   private initEffect = effect(() => {
     this.applicantId.set(this.accountService.loadedUser()?.id ?? '');
-    void this.loadTotal();
   });
-
-  async loadTotal(): Promise<void> {
-    try {
-      const tempTotal = await firstValueFrom(this.applicationService.getApplicationPagesLength(this.applicantId()));
-      this.total.set(tempTotal);
-    } catch (error) {
-      console.error('Failed to load total application count', error);
-    }
-  }
 
   async loadPage(event: TableLazyLoadEvent): Promise<void> {
     this.lastLazyLoadEvent.set(event);
@@ -123,11 +121,14 @@ export default class ApplicationOverviewForApplicantComponent {
 
     const first = event.first ?? 0;
     const rows = event.rows ?? 10;
-    const page = first / rows;
+    const pageIndex = first / rows;
 
     try {
-      const res = await firstValueFrom(this.applicationService.getApplicationPages(rows, page).pipe());
-      this.pageData.set(res);
+      const page = await firstValueFrom(
+        this.applicationService.getApplicationPages(rows, pageIndex, this.sortBy(), this.sortDirection()).pipe(),
+      );
+      this.pageData.set(page.content ?? []);
+      this.total.set(page.totalElements ?? 0);
     } catch (error) {
       console.error('Failed to load applications:', error);
     } finally {
