@@ -296,7 +296,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     void createProfessorResearchGroupRequestCreatesGroupInDraftState() {
         User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "john.doe@tum.de", "John", "Doe", "ab12cde");
 
-        ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
+        ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
             "Dr.",
             "John",
             "Doe",
@@ -328,7 +328,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     void createProfessorResearchGroupRequestWithMinimalDataWorks() {
         User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "minimal.user@tum.de", "Minimal", "User", "mn33zzz");
 
-        ProfessorResearchGroupRequestDTO minimalRequest = new ProfessorResearchGroupRequestDTO(
+        ResearchGroupRequestDTO minimalRequest = new ResearchGroupRequestDTO(
             "Prof.",
             "Minimal",
             "User",
@@ -357,7 +357,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @Test
     void createProfessorResearchGroupRequestWithoutAuthenticationReturns403() {
-        ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
+        ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
             "Dr.",
             "John",
             "Doe",
