@@ -2,17 +2,18 @@ import { Component, TemplateRef, computed, effect, inject, signal, viewChild } f
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule, Location } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ButtonColor } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { Dialog } from 'primeng/dialog';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -27,6 +28,9 @@ import { JobDetailComponent } from '../job-detail/job-detail.component';
 import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
 import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
+// import { GenderBiasAnalysisResourceApiService } from 'app/generated/api/genderBiasAnalysisResourceApi.service';
+// import { GenderBiasAnalysisResponse } from 'app/generated/model/genderBiasAnalysisResponse';
+// import { GenderBiasAnalysisRequest } from 'app/generated/model/genderBiasAnalysisRequest';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -51,6 +55,8 @@ type JobFormMode = 'create' | 'edit';
     ConfirmDialog,
     JobDetailComponent,
     DividerModule,
+    ButtonComponent,
+    Dialog,
   ],
   providers: [JobResourceApiService],
 })
@@ -68,12 +74,21 @@ export class JobCreationFormComponent {
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
+  // private genderBiasService = inject(GenderBiasAnalysisResourceApiService);
+  protected readonly translate = inject(TranslateService);
   private autoSaveInitialized = false;
+
+  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
 
   constructor() {
     this.init();
     this.setupAutoSave();
   }
+
+  // analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
+  isAnalyzing = signal(false);
+  showAnalysisModal = signal(false);
+  currentAnalyzingField = signal<'description' | 'tasks' | 'requirements' | null>(null);
 
   // State signals
   mode = signal<JobFormMode>('create');
@@ -331,6 +346,57 @@ export class JobCreationFormComponent {
 
   onBack(): void {
     this.location.back();
+  }
+
+  /**
+   * Analyze a specific field for gender bias
+   */
+  analyzeField(fieldName: 'description' | 'tasks' | 'requirements'): void {
+    const fieldValue = this.positionDetailsForm.get(fieldName)?.value;
+
+    if (!fieldValue || fieldValue.trim() === '') {
+      this.toastService.showWarn({ detail: 'Please enter some text to analyze' });
+      return;
+    }
+
+    this.currentAnalyzingField.set(fieldName);
+    this.isAnalyzing.set(true);
+
+    /* const request: GenderBiasAnalysisRequest = {
+      text: fieldValue,
+      language: this.currentLang(),
+    };*/
+
+    /* firstValueFrom(
+      this.genderBiasService.analyzeHtmlContent(request)
+    )
+      .then(result => {
+        this.analysisResult.set(result);
+        this.showAnalysisModal.set(true);
+      })
+      .catch(() => {
+        this.toastService.showErrorKey('toast.genderBiasAnalysisFailed');
+      })
+      .finally(() => {
+        this.isAnalyzing.set(false);
+      });
+  }*/
+
+    /**
+     * Close analysis modal
+     */
+    /* closeAnalysisModal(): void {
+      this.showAnalysisModal.set(false);
+      this.analysisResult.set(null);
+      this.currentAnalyzingField.set(null);
+    }*/
+
+    /**
+     * Get CSS class for bias type badge
+     */
+    /* getBiasTypeClass(type: string): string {
+      return type === 'masculine' ? 'masculine-badge' : 'feminine-badge';
+    }*/
   }
 
   private createBasicInfoForm(): FormGroup {
