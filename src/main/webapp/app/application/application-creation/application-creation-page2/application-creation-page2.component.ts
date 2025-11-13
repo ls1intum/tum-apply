@@ -78,13 +78,13 @@ export default class ApplicationCreationPage2Component {
     {
       bachelorDegreeName: ['', Validators.required],
       bachelorDegreeUniversity: ['', Validators.required],
-      bachelorGradeUpperLimit: ['', Validators.required],
-      bachelorGradeLowerLimit: ['', Validators.required],
+      // bachelorGradeUpperLimit: ['', Validators.required],
+      // bachelorGradeLowerLimit: ['', Validators.required],
       bachelorGrade: ['', Validators.required],
       masterDegreeName: ['', Validators.required],
       masterDegreeUniversity: ['', Validators.required],
-      masterGradeUpperLimit: ['', Validators.required],
-      masterGradeLowerLimit: ['', Validators.required],
+      // masterGradeUpperLimit: ['', Validators.required],
+      // masterGradeLowerLimit: ['', Validators.required],
       masterGrade: ['', Validators.required],
     },
     {
@@ -113,13 +113,13 @@ export default class ApplicationCreationPage2Component {
     this.page2Form.patchValue({
       bachelorDegreeName: data.bachelorDegreeName,
       bachelorDegreeUniversity: data.bachelorDegreeUniversity,
-      bachelorGradeUpperLimit: data.bachelorGradeUpperLimit,
-      bachelorGradeLowerLimit: data.bachelorGradeLowerLimit,
+      // bachelorGradeUpperLimit: data.bachelorGradeUpperLimit,
+      // bachelorGradeLowerLimit: data.bachelorGradeLowerLimit,
       bachelorGrade: data.bachelorGrade,
       masterDegreeName: data.masterDegreeName,
       masterDegreeUniversity: data.masterDegreeUniversity,
-      masterGradeUpperLimit: data.masterGradeUpperLimit,
-      masterGradeLowerLimit: data.masterGradeLowerLimit,
+      // masterGradeUpperLimit: data.masterGradeUpperLimit,
+      // masterGradeLowerLimit: data.masterGradeLowerLimit,
       masterGrade: data.masterGrade,
     });
 
