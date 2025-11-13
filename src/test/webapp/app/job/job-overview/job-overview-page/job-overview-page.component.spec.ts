@@ -4,6 +4,9 @@ import { Component } from '@angular/core';
 
 import { JobOverviewPageComponent } from 'app/job/job-overview/job-overview-page/job-overview-page.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { createRouterMock, provideRouterMock } from 'util/router.mock';
 
 @Component({
   selector: 'jhi-job-card-list',
@@ -14,11 +17,21 @@ class StubJobCardListComponent {}
 describe('JobOverviewPageComponent', () => {
   let fixture: ComponentFixture<JobOverviewPageComponent>;
   let nativeElement: HTMLElement;
+  let routerMock: ReturnType<typeof createRouterMock>;
 
   beforeEach(async () => {
+    routerMock = createRouterMock();
+    const accountServiceMock = createAccountServiceMock();
+    accountServiceMock.hasAnyAuthority = (roles: string[]) => roles.includes('PROFESSOR');
+
     await TestBed.configureTestingModule({
       imports: [JobOverviewPageComponent, StubJobCardListComponent],
-      providers: [provideTranslateMock()],
+      providers: [
+        provideTranslateMock(),
+        provideHttpClientTesting(),
+        provideAccountServiceMock(accountServiceMock),
+        provideRouterMock(routerMock),
+      ],
     })
       .overrideComponent(JobOverviewPageComponent, {
         set: {
@@ -34,6 +47,10 @@ describe('JobOverviewPageComponent', () => {
 
   it('should create the component', () => {
     expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should redirect professor user to /professor', () => {
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/professor']);
   });
 
   it('should render the page title with correct translation key', () => {
