@@ -508,9 +508,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "Munich",
             "Draftstr. 1",
-            "https://draft.tum.de"
+            "https://draft.tum.de",
+            "DRAFT"
         );
-        draftGroup.setState(ResearchGroupState.DRAFT);
         researchGroupRepository.save(draftGroup);
 
         UUID adminUserId = UUID.randomUUID();
@@ -557,9 +557,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "Munich",
             "Activationstr. 1",
-            "https://activate.tum.de"
+            "https://activate.tum.de",
+            "DRAFT"
         );
-        draftGroup.setState(ResearchGroupState.DRAFT);
         researchGroupRepository.save(draftGroup);
 
         UUID adminUserId = UUID.randomUUID();
@@ -595,9 +595,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "Munich",
             "Denialstr. 1",
-            "https://deny.tum.de"
+            "https://deny.tum.de",
+            "DRAFT"
         );
-        draftGroup.setState(ResearchGroupState.DRAFT);
         researchGroupRepository.save(draftGroup);
 
         UUID adminUserId = UUID.randomUUID();
@@ -633,7 +633,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "TUM",
             "Withdrawstr. 1",
-            "https://withdraw.tum.de"
+            "https://withdraw.tum.de",
+            "ACTIVE"
         );
         activeGroup.setState(ResearchGroupState.ACTIVE);
         researchGroupRepository.save(activeGroup);
