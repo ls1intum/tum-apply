@@ -36,6 +36,7 @@ export * from './jobFiltersDTO';
 export * from './jobFormDTO';
 export * from './loginRequestDTO';
 export * from './otpCompleteDTO';
+export * from './pageApplicationOverviewDTO';
 export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
 export * from './pageResponseDTOEmailTemplateOverviewDTO';
