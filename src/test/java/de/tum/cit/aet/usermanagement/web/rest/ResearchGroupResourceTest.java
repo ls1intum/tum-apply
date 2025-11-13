@@ -292,10 +292,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .putAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId(), invalidDTO, ResearchGroupDTO.class, 400);
     }
 
-    // --- POST /api/research-groups/professor-request (createProfessorResearchGroupRequest) ---
+    // --- POST /api/research-groups/professor-request (createProfe`ssorResearchGroupRequest) ---
 
     @Test
-    void createProfessorResearchGroupRequestCreatesGroupInDraftState() {
+    void createResearchGroupRequestCreatesGroupInDraftState() {
         User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "john.doe@tum.de", "John", "Doe", "ab12cde");
 
         ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
@@ -327,7 +327,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void createProfessorResearchGroupRequestWithMinimalDataWorks() {
+    void createResearchGroupRequestWithMinimalDataWorks() {
         User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "minimal.user@tum.de", "Minimal", "User", "mn33zzz");
 
         ResearchGroupRequestDTO minimalRequest = new ResearchGroupRequestDTO(
@@ -358,7 +358,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void createProfessorResearchGroupRequestWithoutAuthenticationReturns403() {
+    void createResearchGroupRequestWithoutAuthenticationReturns403() {
         ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
             "Dr.",
             "John",

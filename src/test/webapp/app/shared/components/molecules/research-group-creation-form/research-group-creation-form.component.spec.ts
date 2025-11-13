@@ -14,6 +14,10 @@ import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } fro
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
 
+/**
+ * Test suite for ResearchGroupCreationFormComponent
+ * Tests both professor and admin modes for creating research groups
+ */
 describe('ResearchGroupCreationFormComponent', () => {
   let component: ResearchGroupCreationFormComponent;
   let fixture: ComponentFixture<ResearchGroupCreationFormComponent>;
@@ -331,6 +335,14 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Error Handling Tests
+   * Verifies proper error messages for different error scenarios including:
+   * - Duplicate research group names (409)
+   * - Invalid TUM-IDs (404)
+   * - Generic errors
+   * - Non-HTTP errors
+   */
   describe('Error Handling', () => {
     beforeEach(() => {
       fillValidForm();
@@ -569,6 +581,11 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Admin Mode Tests
+   * Admins can create research groups directly (ACTIVE state)
+   * Personal information fields are disabled in admin mode
+   */
   describe('Admin Mode', () => {
     beforeEach(async () => {
       // Recreate component with admin mode
@@ -725,6 +742,10 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Professor Mode Tests
+   * Professors create research group requests (DRAFT state) that require admin approval
+   */
   describe('Professor Mode', () => {
     it('should set mode to professor by default', () => {
       expect(component.mode()).toBe('professor');
