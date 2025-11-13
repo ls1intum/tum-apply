@@ -287,8 +287,9 @@
         "postcode": "Postleitzahl"
       },
       "section": {
-        "userInformation": "Benutzerinformationen",
-        "address": "Adresse"
+        "contactInformation": "Kontaktinformationen",
+        "voluntaryInformation": "Freiwillige Informationen",
+        "address": "Adressinformationen"
       },
       "tooltip": {
         "language": "Wähle deine bevorzugte Kommunikationssprache."
@@ -299,36 +300,36 @@
     },
     "applicationPage2": {
       "section": {
-        "bachelor": "Bachelor",
-        "master": "Master"
+        "bachelor": "Bachelor Studium",
+        "master": "Master Studium"
       },
       "label": {
         "gradeUpperLimit": "Höchstmögliche Note",
         "gradeLowerLimit": "Niedrigste Note zum Bestehen",
+        "bachelorCertificate": "Bachelor-Zeugnis",
         "bachelorDegreeName": "Bachelor-Studiengang",
         "bachelorDegreeUniversity": "Universität des Bachelors",
         "bachelorGrade": "Bachelor-Abschlussnote",
+        "masterCertificate": "Master-Zeugnis",
         "masterDegreeName": "Master-Studiengang",
         "masterDegreeUniversity": "Universität des Masters",
         "masterGrade": "Master-Abschlussnote"
       },
       "tooltip": {
-        "bachelorDegreeName": "Gib den Studiengang deines Bachelors an.",
-        "bachelorDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Bachelor absolviert hast.",
         "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
         "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
-        "masterDegreeName": "Gib den Studiengang deines Masters an.",
-        "masterDegreeUniversity": "Gib den Namen der Universität an, an der du deinen Master absolviert hast.",
         "masterGradeUpperLimit": "Gib die bestmögliche Note in deinem Master-Notensystem an (z. B. 1,0 in Deutschland).",
         "masterGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Master-Notensystem an (z. B. 4,0 in Deutschland).",
         "masterGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
-        "filenamePrivacy": "Dateinamen bleiben privat und werden den Professor:innen nicht angezeigt."
+        "filenamePrivacy": "Dateinamen bleiben privat und werden im Bewerbungsprozess nicht angezeigt."
       }
     },
     "applicationPage3": {
       "label": {
-        "desiredStartDate": "Gewünschter Starttermin",
+        "desiredStartDate": "Gewünschtes Startdatum",
+        "curriculumVitae": "Lebenslauf",
+        "additionalReferences": "Zusätzliche Referenzen",
         "motivation": "Was motiviert dich für diese Position?",
         "skills": "Welche Fähigkeiten bringst du mit?",
         "experiences": "Welche Forschungserfahrungen hast du bereits gesammelt?"
@@ -350,7 +351,8 @@
         "experiences": "Beschreibe deine Rolle, verwendete Methoden, Ergebnisse, Themen, Projekte usw."
       },
       "section": {
-        "uploads": "Dateiuploads"
+        "startAndDocuments": "Startdatum und Unterlagen",
+        "motivationAndBackground": "Motivation und Hintergrund"
       },
       "placeholder": {
         "selectStartDate": "Startdatum auswählen..."
