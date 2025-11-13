@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
     private static final Map<Class<? extends Exception>, ExceptionMetadata> EXCEPTION_METADATA = Map.ofEntries(
         Map.entry(EntityNotFoundException.class, new ExceptionMetadata(HttpStatus.NOT_FOUND, ErrorCode.ENTITY_NOT_FOUND)),
         Map.entry(ResourceAlreadyExistsException.class, new ExceptionMetadata(HttpStatus.CONFLICT, ErrorCode.RESOURCE_ALREADY_EXISTS)),
-        Map.entry(TimeConflictException.class, new ExceptionMetadata(HttpStatus.CONFLICT, ErrorCode.OPERATION_NOT_ALLOWED)),
+        Map.entry(TimeConflictException.class, new ExceptionMetadata(HttpStatus.CONFLICT, ErrorCode.TIME_CONFLICT)),
         Map.entry(InvalidParameterException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_PARAMETER)),
         Map.entry(OperationNotAllowedException.class, new ExceptionMetadata(HttpStatus.BAD_REQUEST, ErrorCode.OPERATION_NOT_ALLOWED)),
         Map.entry(

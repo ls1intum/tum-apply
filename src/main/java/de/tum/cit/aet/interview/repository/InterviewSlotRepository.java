@@ -1,9 +1,11 @@
 package de.tum.cit.aet.interview.repository;
 
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.dto.SlotConflictDTO;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,17 +38,52 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      */
     long countByInterviewProcessId(UUID processId);
 
+    /**
+     * Checks if a professor has any conflicting slots within the given time range.
+     *
+     * @param professor the professor to check
+     * @param startDateTime start of the time range
+     * @param endDateTime end of the time range
+     * @return true if at least one conflicting slot exists, false otherwise
+     */
     @Query(
         """
-        SELECT s FROM InterviewSlot s
-        JOIN FETCH s.interviewProcess ip
-        JOIN FETCH ip.job j
-        JOIN FETCH j.supervisingProfessor p
-        WHERE p = :professor
+        SELECT COUNT(s) > 0 FROM InterviewSlot s
+        JOIN s.interviewProcess ip
+        JOIN ip.job j
+        WHERE j.supervisingProfessor = :professor
         AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
         """
     )
-    List<InterviewSlot> findConflictingSlotsForProfessor(
+    boolean hasConflictingSlots(
+        @Param("professor") User professor,
+        @Param("startDateTime") Instant startDateTime,
+        @Param("endDateTime") Instant endDateTime
+    );
+
+    /**
+     * Finds the first conflicting slot for a professor within the given time range.
+     *
+     * @param professor the professor to check
+     * @param startDateTime start of the time range
+     * @param endDateTime end of the time range
+     * @return the first conflicting slot information, if any exists
+     */
+    @Query(
+        """
+        SELECT new de.tum.cit.aet.interview.dto.SlotConflictDTO(
+            s.startDateTime,
+            j.title
+        )
+        FROM InterviewSlot s
+        JOIN s.interviewProcess ip
+        JOIN ip.job j
+        WHERE j.supervisingProfessor = :professor
+        AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
+        ORDER BY s.startDateTime
+        """
+    )
+    Optional<SlotConflictDTO> findFirstConflictingSlot(
         @Param("professor") User professor,
         @Param("startDateTime") Instant startDateTime,
         @Param("endDateTime") Instant endDateTime
