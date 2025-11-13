@@ -29,22 +29,24 @@
   [sortableFields]="sortableFields"
 />
 @if (jobs().length > 0) {
-  <div class="grid grid-cols-[repeat(auto-fill,minmax(16.5rem,20rem))] gap-4 py-4 justify-center">
+  <div class="flex flex-wrap justify-center gap-4 py-4 mx-auto max-w-[104rem]">
     @for (job of jobs(); track job.jobId; let i = $index) {
-      <jhi-job-card
-        [jobId]="job.jobId"
-        [jobTitle]="job.title"
-        [fieldOfStudies]="job.fieldOfStudies"
-        [location]="job.location.toString()"
-        [professor]="job.professorName"
-        [workload]="job.workload || undefined"
-        [startDate]="job.startDate?.toString() || undefined"
-        [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"
-        [applicationId]="job.applicationId"
-        [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
-        [contractDuration]="job.contractDuration"
-        [headerImageUrl]="getExampleImageUrl(i)"
-      />
+      <div class="w-full min-w-[16.5rem] max-w-[20rem] flex-[1_1_16.5rem]">
+        <jhi-job-card
+          [jobId]="job.jobId"
+          [jobTitle]="job.title"
+          [fieldOfStudies]="job.fieldOfStudies"
+          [location]="job.location.toString()"
+          [professor]="job.professorName"
+          [workload]="job.workload || undefined"
+          [startDate]="job.startDate?.toString() || undefined"
+          [relativeTime]="(currentLanguage() === 'EN' ? job.relativeTimeEnglish : job.relativeTimeGerman) ?? ''"
+          [applicationId]="job.applicationId"
+          [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
+          [contractDuration]="job.contractDuration"
+          [headerImageUrl]="getExampleImageUrl(i)"
+        />
+      </div>
     }
   </div>
 } @else {
