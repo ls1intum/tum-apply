@@ -121,6 +121,7 @@ public class PDFExportService {
         // Metadata
         String metadataText = buildMetadataText(labels);
         builder.setMetadata(metadataText);
+        builder.setMetadataEnd(labels.get("metaEndText"));
 
         builder.setPageLabels(labels.get("page"), labels.get("of"));
 

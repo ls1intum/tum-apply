@@ -10,6 +10,7 @@ import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
@@ -17,6 +18,7 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
+import com.itextpdf.layout.element.Link;
 import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -42,8 +44,11 @@ public class PDFBuilder {
     private final List<SectionGroup> sectionGroups = new ArrayList<>();
     private SectionGroup currentGroup;
     private String metadataText;
+    private String metadataEndText;
     private String pageLabelPage;
     private String pageLabelOf;
+
+    private static final String TUMAPPLY_URL = "https://tumapply.aet.cit.tum.de";
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
     private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
@@ -173,13 +178,28 @@ public class PDFBuilder {
     // ----------------- Metadata -----------------
 
     /**
-     * Sets metadata text to be displayed at the bottom of the PDF
+     * Sets the beginning of the metadata text to be displayed at the bottom of the
+     * PDF
      *
-     * @param metadataText the complete metadata text to display
+     * @param metadataText the beginning of metadata text to display (before
+     *                     TumApply label)
      * @return this builder for method chaining
      */
     public PDFBuilder setMetadata(String metadataText) {
         this.metadataText = metadataText;
+        return this;
+    }
+
+    /**
+     * Sets the end of the metadata text to be displayed at the bottom of the
+     * PDF
+     *
+     * @param metadataEndText the end of metadata text to display (after TumApply
+     *                        label)
+     * @return this builder for method chaining
+     */
+    public PDFBuilder setMetadataEnd(String metadataEndText) {
+        this.metadataEndText = metadataEndText;
         return this;
     }
 
@@ -406,12 +426,24 @@ public class PDFBuilder {
 
             Canvas canvas = new Canvas(page, pageSize);
 
-            Paragraph metadataParagraph = new Paragraph(metadataText != null ? metadataText : "")
+            Paragraph metadataParagraph = new Paragraph()
                 .setFont(normalFont)
                 .setFontSize(FONT_SIZE_METADATA)
                 .setFontColor(METADATA_COLOR)
                 .setTextAlignment(TextAlignment.CENTER)
                 .setWidth(pageSize.getWidth() - 8 * METADATA_MARGIN_LEFT_RIGHT);
+
+            metadataParagraph.add(new Text(metadataText));
+
+            // add TumApply as clickable Link
+            Link tumapplyLink = new Link("TumApply", PdfAction.createURI(TUMAPPLY_URL));
+            tumapplyLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(normalFont).setFontSize(FONT_SIZE_METADATA);
+
+            metadataParagraph.add(tumapplyLink);
+
+            if (metadataEndText != null && !metadataEndText.isEmpty()) {
+                metadataParagraph.add(new Text(metadataEndText));
+            }
 
             canvas.showTextAligned(metadataParagraph, pageSize.getWidth() / 2, MARGIN_PDF_TOP_AND_BOTTOM, TextAlignment.CENTER);
 

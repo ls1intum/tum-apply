@@ -8,7 +8,8 @@
     "metaData": {
       "thisDocumentWasGeneratedOn": "Dieses Dokument wurde am ",
       "byUser": " von ",
-      "usingTumapply": " mit TumApply (https://tumapply.aet.cit.tum.de) erstellt."
+      "usingTumapply": " mit ",
+      "metaEndText": " erstellt."
     },
     "pageCount": {
       "page": "Seite",

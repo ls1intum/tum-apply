@@ -44,5 +44,6 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
     usingTumapply: translate.instant('pdf.metaData.usingTumapply'),
     page: translate.instant('pdf.pageCount.page'),
     of: translate.instant('pdf.pageCount.of'),
+    metaEndText: translate.instant('pdf.metaData.metaEndText'),
   };
 }
