@@ -60,7 +60,6 @@ describe('LandingPageComponent', () => {
         provideFontAwesomeTesting(),
         provideNoopAnimations(),
         provideHttpClientTesting(),
-        provideAccountServiceMock(),
         provideRouterMock(routerMock),
         provideAccountServiceMock(accountServiceMock),
       ],
