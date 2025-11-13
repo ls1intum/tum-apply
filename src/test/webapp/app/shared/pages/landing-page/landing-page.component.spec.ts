@@ -5,7 +5,10 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { LandingPageComponent } from 'app/shared/pages/landing-page/landing-page.component';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { createRouterMock, provideRouterMock } from 'util/router.mock';
 
 @Component({ selector: 'jhi-hero-section', standalone: true, template: '' })
 class StubHeroSection {
@@ -36,8 +39,13 @@ describe('LandingPageComponent', () => {
   let fixture: ComponentFixture<LandingPageComponent>;
   let component: LandingPageComponent;
   let nativeElement: HTMLElement;
+  let routerMock: ReturnType<typeof createRouterMock>;
 
   beforeEach(async () => {
+    routerMock = createRouterMock();
+    const accountServiceMock = createAccountServiceMock();
+    accountServiceMock.hasAnyAuthority = (roles: string[]) => roles.includes('PROFESSOR');
+
     await TestBed.configureTestingModule({
       imports: [
         LandingPageComponent,
@@ -47,7 +55,15 @@ describe('LandingPageComponent', () => {
         StubInformationSection,
         StubFaqSection,
       ],
-      providers: [provideTranslateMock(), provideFontAwesomeTesting(), provideNoopAnimations()],
+      providers: [
+        provideTranslateMock(),
+        provideFontAwesomeTesting(),
+        provideNoopAnimations(),
+        provideHttpClientTesting(),
+        provideAccountServiceMock(),
+        provideRouterMock(routerMock),
+        provideAccountServiceMock(accountServiceMock),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LandingPageComponent);
@@ -58,6 +74,10 @@ describe('LandingPageComponent', () => {
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should redirect professor user to /professor', () => {
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/professor']);
   });
 
   it('should render all main section components', () => {
