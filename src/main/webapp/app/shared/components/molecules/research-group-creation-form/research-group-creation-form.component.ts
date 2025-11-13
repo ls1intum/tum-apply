@@ -124,21 +124,26 @@ export class ResearchGroupCreationFormComponent {
 
       this.ref?.close(result);
     } catch (error) {
-      // Check if the error is about a duplicate research group name
-      const httpError = error as HttpErrorResponse;
-      if (httpError.error.message.includes('already exists') || httpError.status === 409) {
-        const errorKey =
-          this.mode() === 'admin' ? 'researchGroup.adminView.errors.duplicateName' : 'onboarding.professorRequest.errorDuplicateName';
-        this.toastService.showErrorKey(errorKey);
-      }
-      // Check if the error is about a user not found (invalid TUM-ID)
-      else if (httpError.status === 404 && httpError.error.message.includes('not found')) {
-        const errorKey =
-          this.mode() === 'admin' ? 'researchGroup.adminView.errors.userNotFound' : 'onboarding.professorRequest.errorUserNotFound';
-        this.toastService.showErrorKey(errorKey);
-      }
-      // Generic error
-      else {
+      // Type-safe error handling
+      if (error instanceof HttpErrorResponse) {
+        const errorMessage = error.error?.message ?? '';
+
+        // Check if the error is about a duplicate research group name
+        if (errorMessage.includes('already exists') || error.status === 409) {
+          const errorKey =
+            this.mode() === 'admin' ? 'researchGroup.adminView.errors.duplicateName' : 'onboarding.professorRequest.errorDuplicateName';
+          this.toastService.showErrorKey(errorKey);
+        }
+        // Check if the error is about a user not found (invalid TUM-ID)
+        else if (error.status === 404 && errorMessage.includes('not found')) {
+          const errorKey =
+            this.mode() === 'admin' ? 'researchGroup.adminView.errors.userNotFound' : 'onboarding.professorRequest.errorUserNotFound';
+          this.toastService.showErrorKey(errorKey);
+        } else {
+          const errorKey = this.mode() === 'admin' ? 'researchGroup.adminView.errors.create' : 'onboarding.professorRequest.error';
+          this.toastService.showErrorKey(errorKey);
+        }
+      } else {
         const errorKey = this.mode() === 'admin' ? 'researchGroup.adminView.errors.create' : 'onboarding.professorRequest.error';
         this.toastService.showErrorKey(errorKey);
       }

@@ -12,6 +12,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
+import { HttpErrorResponse } from '@angular/common/http';
 
 describe('ResearchGroupCreationFormComponent', () => {
   let component: ResearchGroupCreationFormComponent;
@@ -336,7 +337,9 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show error toast when research group creation fails', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => new Error('API Error')));
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
+        throwError(() => new HttpErrorResponse({ error: 'API Error' })),
+      );
 
       component.onConfirmSubmit();
 
@@ -346,7 +349,9 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should not close dialog when submission fails', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => new Error('API Error')));
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
+        throwError(() => new HttpErrorResponse({ error: 'API Error' })),
+      );
 
       component.onConfirmSubmit();
 
@@ -356,7 +361,9 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should set isSubmitting to false after failed submission', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => new Error('API Error')));
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
+        throwError(() => new HttpErrorResponse({ error: 'API Error' })),
+      );
 
       component.onConfirmSubmit();
 
@@ -366,7 +373,9 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should not call confirmOnboarding when research group creation fails', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => new Error('API Error')));
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
+        throwError(() => new HttpErrorResponse({ error: 'API Error' })),
+      );
 
       component.onConfirmSubmit();
 
@@ -376,7 +385,7 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show duplicate name error toast when creation fails with 409 status', async () => {
-      const error = { status: 409, error: { message: 'Research group already exists' } };
+      const error = new HttpErrorResponse({ status: 409, error: { message: 'Research group already exists' } });
       mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
 
       component.onConfirmSubmit();
@@ -387,7 +396,7 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show duplicate name error toast when error message includes "already exists"', async () => {
-      const error = { status: 500, error: { message: 'Research group already exists in database' } };
+      const error = new HttpErrorResponse({ status: 500, error: { message: 'Research group already exists in database' } });
       mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
 
       component.onConfirmSubmit();
@@ -398,7 +407,7 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show user not found error toast when creation fails with 404 status', async () => {
-      const error = { status: 404, error: { message: 'User with universityId "ab12abc" not found' } };
+      const error = new HttpErrorResponse({ status: 404, error: { message: 'User with universityId "ab12abc" not found' } });
       mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
 
       component.onConfirmSubmit();
@@ -406,6 +415,51 @@ describe('ResearchGroupCreationFormComponent', () => {
       await new Promise(resolve => setTimeout(resolve, 0));
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.errorUserNotFound');
+    });
+
+    it('should handle HttpErrorResponse without error.message property', async () => {
+      const error = new HttpErrorResponse({ status: 500 }); // No error.message
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
+    });
+
+    it('should handle non-HttpErrorResponse errors in professor mode', async () => {
+      const error = new Error('Network error'); // Not an HttpErrorResponse
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => error));
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
+    });
+
+    it('should handle non-HttpErrorResponse errors in admin mode', async () => {
+      // Switch to admin mode
+      mockDialogConfig.data = { mode: 'admin' };
+      fixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      const error = new TypeError('Unexpected error'); // Not an HttpErrorResponse
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
+
+      component.form.patchValue({
+        tumID: 'ab12cde',
+        researchGroupHead: 'Prof. Dr. Test',
+        researchGroupName: 'Test Group',
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.create');
     });
   });
 
@@ -576,7 +630,9 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show admin error toast when creation fails in admin mode', async () => {
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => new Error('Creation failed')));
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() =>
+        throwError(() => new HttpErrorResponse({ error: 'Creation failed' })),
+      );
 
       component.form.patchValue({
         tumID: 'ab12cde',
@@ -635,7 +691,7 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show duplicate name error toast in admin mode when creation fails with 409', async () => {
-      const error = { status: 409, error: { message: 'Research group already exists' } };
+      const error = new HttpErrorResponse({ status: 409, error: { message: 'Research group already exists' } });
       mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
 
       component.form.patchValue({
@@ -652,7 +708,7 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show user not found error toast in admin mode when TUM-ID is invalid', async () => {
-      const error = { status: 404, error: { message: 'User with universityId "invalid" not found' } };
+      const error = new HttpErrorResponse({ status: 404, error: { message: 'User with universityId "invalid" not found' } });
       mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
 
       component.form.patchValue({
@@ -726,7 +782,9 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
 
     it('should show professor error toast when creation fails in professor mode', async () => {
-      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() => throwError(() => new Error('Creation failed')));
+      mockResearchGroupService.createProfessorResearchGroupRequest = vi.fn(() =>
+        throwError(() => new HttpErrorResponse({ error: 'Creation failed' })),
+      );
 
       fillValidForm();
 
