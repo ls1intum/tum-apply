@@ -14,6 +14,16 @@ public final class UserTestData {
 
     private UserTestData() {}
 
+    /** Unsaved user with defaults. */
+    public static User newUser() {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setFirstName("John");
+        u.setLastName("Doe");
+        u.setEmail("john.doe@example.com");
+        return u;
+    }
+
     /** Unsaved professor with defaults. */
     public static User newProfessor(ResearchGroup rg) {
         User u = new User();
@@ -25,6 +35,16 @@ public final class UserTestData {
         u.setResearchGroup(rg);
         u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         attachProfessorRole(u, rg);
+        return u;
+    }
+
+    /** Unsaved user; all fields optional (null = keep default). */
+    public static User newUserAll(UUID userId, String email, String firstName, String lastName) {
+        User u = newUser();
+        if (userId != null) u.setUserId(userId);
+        if (email != null) u.setEmail(email);
+        if (firstName != null) u.setFirstName(firstName);
+        if (lastName != null) u.setLastName(lastName);
         return u;
     }
 
@@ -65,6 +85,14 @@ public final class UserTestData {
     }
 
     // --- Saved variants -------------------------------------------------------------------------
+    public static User savedUser(UserRepository repo) {
+        return repo.save(newUser());
+    }
+
+    public static User savedUserAll(UserRepository repo, UUID userId, String email, String firstName, String lastName) {
+        return repo.save(newUserAll(userId, email, firstName, lastName));
+    }
+
     public static User savedProfessor(UserRepository repo, ResearchGroup rg) {
         return repo.save(newProfessor(rg));
     }
