@@ -9,6 +9,7 @@ import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupReques
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -122,15 +123,16 @@ export class ResearchGroupCreationFormComponent {
       }
 
       this.ref?.close(result);
-    } catch (error: any) {
+    } catch (error) {
       // Check if the error is about a duplicate research group name
-      if (error?.error?.message?.includes('already exists') || error?.status === 409) {
+      const httpError = error as HttpErrorResponse;
+      if (httpError.error.message.includes('already exists') || httpError.status === 409) {
         const errorKey =
           this.mode() === 'admin' ? 'researchGroup.adminView.errors.duplicateName' : 'onboarding.professorRequest.errorDuplicateName';
         this.toastService.showErrorKey(errorKey);
       }
       // Check if the error is about a user not found (invalid TUM-ID)
-      else if (error?.status === 404 && error?.error?.message?.includes('not found')) {
+      else if (httpError.status === 404 && httpError.error.message.includes('not found')) {
         const errorKey =
           this.mode() === 'admin' ? 'researchGroup.adminView.errors.userNotFound' : 'onboarding.professorRequest.errorUserNotFound';
         this.toastService.showErrorKey(errorKey);

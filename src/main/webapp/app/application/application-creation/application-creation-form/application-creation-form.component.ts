@@ -398,7 +398,7 @@ export default class ApplicationCreationFormComponent {
         this.applicationDetailsData.set(getPage3FromApplication(application));
 
         this.updateDocumentInformation();
-      } catch (error: any) {
+      } catch (error) {
         const httpError = error as HttpErrorResponse;
         this.showInitErrorMessage(`${applyflow}.loadFailed`);
         throw new Error(`Init failed with HTTP ${httpError.status} ${httpError.statusText}: ${httpError.message}`);
