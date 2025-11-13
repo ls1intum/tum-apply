@@ -322,7 +322,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         assertThat(detailDTO.specialSkills()).isEqualTo("Machine Learning, Python, TensorFlow");
         assertThat(detailDTO.motivation()).isEqualTo("Passionate about AI research");
         assertThat(detailDTO.supervisingProfessorName()).isEqualTo("Alice Smith");
-        assertThat(detailDTO.researchGroup()).isEqualTo("AI Research Group");
+        assertThat(detailDTO.researchGroup()).isEqualTo("Test Group");
     }
 
     @Test
@@ -522,7 +522,11 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 200
             );
 
-        assertThat(uploadedDocs).isNotEmpty();
+        assertThat(uploadedDocs).hasSize(1);
+        DocumentInformationHolderDTO uploadedDoc = uploadedDocs.iterator().next();
+        assertThat(uploadedDoc.getId()).isNotNull();
+        assertThat(uploadedDoc.getName()).isEqualTo("bachelor_transcript.pdf");
+        assertThat(uploadedDoc.getSize()).isEqualTo("PDF content here".getBytes().length);
     }
 
     @Test
