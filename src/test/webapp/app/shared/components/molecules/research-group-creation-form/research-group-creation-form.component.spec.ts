@@ -67,6 +67,7 @@ describe('ResearchGroupCreationFormComponent', () => {
 
   /**
    * Helper function to fill the form with valid data
+   * @param overrides - Optional field overrides for specific test scenarios
    */
   function fillValidForm(overrides: Record<string, unknown> = {}): void {
     component.form.patchValue({
@@ -84,6 +85,10 @@ describe('ResearchGroupCreationFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  /**
+   * Form Initialization Tests
+   * Verifies that all form controls are properly created with correct initial states
+   */
   describe('Form Initialization', () => {
     it('should initialize with all required form fields', () => {
       expect(component.form.get('title')).toBeTruthy();
@@ -121,6 +126,10 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Form Validation Tests
+   * Tests email validation, max length constraints, and TUM ID format
+   */
   describe('Form Validation', () => {
     it('should validate email format for contact email', () => {
       const emailControl = component.form.get('researchGroupContactEmail');
@@ -160,6 +169,10 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Form Submission Tests
+   * Tests the onSubmit method which triggers the confirmation dialog
+   */
   describe('onSubmit', () => {
     it('should not submit when form is invalid', () => {
       const mockDialog = component.confirmDialog();
@@ -188,6 +201,11 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Confirmed Submission Tests
+   * Tests actual submission after user confirms in dialog
+   * Includes data transformation, trimming, and API calls
+   */
   describe('onConfirmSubmit', () => {
     beforeEach(() => {
       fillValidForm();
@@ -483,6 +501,10 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Edge Cases Tests
+   * Tests handling of null/undefined values, missing dependencies, and edge scenarios
+   */
   describe('Edge Cases', () => {
     it('should handle missing dialog ref gracefully', () => {
       // Create a separate TestBed configuration for this specific test
@@ -566,6 +588,10 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Loading State Tests
+   * Verifies isSubmitting signal prevents duplicate submissions
+   */
   describe('Loading State', () => {
     it('should initialize with isSubmitting as false', () => {
       expect(component.isSubmitting()).toBe(false);
@@ -817,6 +843,10 @@ describe('ResearchGroupCreationFormComponent', () => {
     });
   });
 
+  /**
+   * Mode Switching Tests
+   * Tests dynamic mode determination based on dialog config
+   */
   describe('Mode Switching', () => {
     it('should default to professor mode when no config is provided', () => {
       // Create component without dialog config
