@@ -1,70 +1,76 @@
-<p-card class="job-card cursor-pointer transition-all duration-200 ease-in-out hover:scale-102 hover:!bg-blue-50" (click)="onViewDetails()">
-  <ng-template #header>
-    <div [style.--header-color]="headerColor()" class="card-header">
-      <div class="card-icon">
-        <fa-icon [icon]="['fas', icon()]" />
-      </div>
-      <div class="timestamp">{{ relativeTime() }}</div>
-    </div>
-  </ng-template>
-
-  <ng-template #title>
-    <div class="card-title">{{ jobTitle() }}</div>
-  </ng-template>
-
-  <div class="card-body">
-    <ul class="card-info">
-      <ng-template #infoItem let-icon="icon" let-value="value" let-tooltip="tooltip">
-        <li class="info-item">
-          <fa-icon [icon]="['fas', icon]" [pTooltip]="tooltip" tooltipPosition="top" />
-          @if (value) {
-            @if (icon === 'calendar') {
-              Start:
-            }
-            @if (icon === 'user') {
-              Prof. Dr.
-            }
-            @if (icon === 'clock') {
-              <span jhiTranslate="jobOverviewPage.hoursPerWeek" [translateValues]="{ workload: value }"></span>
-            } @else {
-              {{ value }}
-            }
-          } @else {
-            @if (icon === 'calendar') {
-              Start:&nbsp;
-            }
-            <span jhiTranslate="jobDetailPage.noData"></span>
-          }
-        </li>
-      </ng-template>
-      <ng-container
-        [ngTemplateOutletContext]="{
-          icon: 'book-open',
-          value: fieldOfStudies(),
-          tooltip: ('jobOverviewPage.tooltips.fieldOfStudies' | translate),
-        }"
-        [ngTemplateOutlet]="infoItem"
-      />
-      <ng-container
-        [ngTemplateOutletContext]="{ icon: 'location-dot', value: location(), tooltip: ('jobOverviewPage.tooltips.location' | translate) }"
-        [ngTemplateOutlet]="infoItem"
-      />
-      <ng-container
-        [ngTemplateOutletContext]="{ icon: 'user', value: professor(), tooltip: ('jobOverviewPage.tooltips.supervisor' | translate) }"
-        [ngTemplateOutlet]="infoItem"
-      />
-      <ng-container
-        [ngTemplateOutletContext]="{ icon: 'clock', value: workload(), tooltip: ('jobOverviewPage.tooltips.workload' | translate) }"
-        [ngTemplateOutlet]="infoItem"
-      />
-      <ng-container
-        [ngTemplateOutletContext]="{
-          icon: 'calendar',
-          value: formattedStartDate(),
-          tooltip: ('jobOverviewPage.tooltips.startDate' | translate),
-        }"
-        [ngTemplateOutlet]="infoItem"
-      />
-    </ul>
+<div
+  class="rounded-lg border border-gray-200 hover:scale-[1.02] hover:bg-blue-50 transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  (click)="onViewDetails()"
+>
+  <div
+    class="relative h-32 flex items-end px-4 pb-3 bg-cover bg-center flex-shrink-0"
+    [style.background-image]="
+      headerImageUrl() ? 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(' + headerImageUrl() + ')' : 'none'
+    "
+    [style.background-color]="!headerImageUrl() ? headerColor() : 'transparent'"
+  >
+    <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
+      {{ fieldOfStudies() }}
+    </span>
   </div>
-</p-card>
+
+  <!-- Content section -->
+  <div class="p-4 flex-1 flex flex-col">
+    <!-- Job title -->
+    <h3 class="text-lg font-semibold line-clamp-2 min-h-[3.5rem] flex items-center" [title]="jobTitle()">
+      {{ jobTitle() }}
+    </h3>
+
+    <!-- Deadline -->
+    @if (relativeTime()) {
+      <p class="text-sm italic text-gray-500 mb-4">
+        {{ relativeTime() }}
+      </p>
+    }
+
+    <!-- Info items -->
+    <div class="space-y-2 mb-4 flex-shrink-0">
+      <div class="flex items-center gap-2 text-sm">
+        <fa-icon
+          [icon]="['fas', 'user-tie']"
+          class="icon w-4"
+          [pTooltip]="'jobOverviewPage.tooltips.supervisor' | translate"
+          tooltipPosition="top"
+        />
+        <span class="truncate">Prof. {{ professor() }}</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <fa-icon
+          [icon]="['fas', 'location-dot']"
+          class="icon w-4"
+          [pTooltip]="'jobOverviewPage.tooltips.location' | translate"
+          tooltipPosition="top"
+        />
+        <span class="truncate">{{ location() }}</span>
+      </div>
+      @if (formattedStartDate()) {
+        <div class="flex items-center gap-2 text-sm">
+          <fa-icon
+            [icon]="['fas', 'calendar']"
+            class="icon w-4"
+            [pTooltip]="'jobOverviewPage.tooltips.startDate' | translate"
+            tooltipPosition="top"
+          />
+          <span class="truncate">Start: {{ formattedStartDate() }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Tags/Badges section -->
+    <div class="flex flex-wrap gap-2 mt-auto">
+      @if (formattedContractDuration()) {
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary">
+          {{ formattedContractDuration() }} <span jhiTranslate="jobDetailPage.units.years"></span>
+        </span>
+      }
+      @if (formattedWorkload()) {
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary"> {{ formattedWorkload() }} </span>
+      }
+    </div>
+  </div>
+</div>

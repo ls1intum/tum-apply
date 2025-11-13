@@ -1666,6 +1666,7 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
+        contractDuration: {type: integer, format: int32}
         fieldOfStudies: {type: string}
         jobId: {type: string, format: uuid}
         location: {type: string}

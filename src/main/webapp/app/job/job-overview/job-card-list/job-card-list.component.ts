@@ -23,7 +23,6 @@ import * as DropdownOptions from '../.././dropdown-options';
   standalone: true,
   imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SharedModule, SearchFilterSortBar],
   templateUrl: './job-card-list.component.html',
-  styleUrls: ['./job-card-list.component.scss'],
 })
 export class JobCardListComponent {
   ApplicationStatusExtendedLocal = ApplicationStatusExtended;
@@ -31,7 +30,7 @@ export class JobCardListComponent {
   jobs = signal<JobCardDTO[]>([]);
   totalRecords = signal<number>(0);
   page = signal<number>(0);
-  pageSize = signal<number>(8);
+  pageSize = signal<number>(12);
   searchQuery = signal<string>('');
 
   sortBy = signal<string>('startDate');
@@ -144,5 +143,19 @@ export class JobCardListComponent {
       console.error('Failed to load jobs from API:', error);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
     }
+  }
+
+  /**
+   * Returns a randomly selected header image URL from a pool of 4 images
+   */
+  getExampleImageUrl(index: number): string {
+    const headerImages = [
+      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
+      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
+      'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&q=80',
+      'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80',
+    ];
+
+    return headerImages[index % headerImages.length];
   }
 }
