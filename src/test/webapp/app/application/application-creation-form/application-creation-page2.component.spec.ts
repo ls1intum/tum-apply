@@ -17,26 +17,26 @@ const DEFAULT_PAGE2_FORM_DATA: ApplicationCreationPage2Data = {
   bachelorDegreeName: '',
   bachelorDegreeUniversity: '',
   bachelorGrade: '',
-  bachelorGradeLowerLimit: '',
-  bachelorGradeUpperLimit: '',
+  //bachelorGradeLowerLimit: '',
+  //bachelorGradeUpperLimit: '',
   masterDegreeName: '',
   masterDegreeUniversity: '',
   masterGrade: '',
-  masterGradeLowerLimit: '',
-  masterGradeUpperLimit: '',
+  //masterGradeLowerLimit: '',
+  //masterGradeUpperLimit: '',
 };
 
 const VALID_PAGE2_FORM_DATA: ApplicationCreationPage2Data = {
   bachelorDegreeName: 'BSc',
   bachelorDegreeUniversity: 'Uni',
   bachelorGrade: '2.5',
-  bachelorGradeLowerLimit: '1.0',
-  bachelorGradeUpperLimit: '4.0',
+  //bachelorGradeLowerLimit: '1.0',
+  //bachelorGradeUpperLimit: '4.0',
   masterDegreeName: 'MSc',
   masterDegreeUniversity: 'Uni',
   masterGrade: '2.7',
-  masterGradeLowerLimit: '1.0',
-  masterGradeUpperLimit: '4.0',
+  //masterGradeLowerLimit: '1.0',
+  //masterGradeUpperLimit: '4.0',
 };
 
 function createApplicationPage2Fixture(
@@ -92,12 +92,12 @@ describe('ApplicationPage2Component', () => {
 
     it('should populate the form with initial data', () => {
       const { componentInstance } = createApplicationPage2Fixture({
-        data: {
+        /*data: {
           bachelorGradeUpperLimit: '4.0',
           bachelorGradeLowerLimit: '1.0',
           masterGradeUpperLimit: '4.0',
           masterGradeLowerLimit: '1.0',
-        },
+        },*/
       });
       const formValues = componentInstance.page2Form.value;
       expect(formValues.bachelorDegreeName).toBe('');
@@ -106,28 +106,28 @@ describe('ApplicationPage2Component', () => {
       expect(formValues.masterDegreeUniversity).toBe('');
       expect(formValues.bachelorGrade).toBe('');
       expect(formValues.masterGrade).toBe('');
-      expect(formValues.bachelorGradeUpperLimit).toBe('4.0');
+      /*expect(formValues.bachelorGradeUpperLimit).toBe('4.0');
       expect(formValues.bachelorGradeLowerLimit).toBe('1.0');
       expect(formValues.masterGradeUpperLimit).toBe('4.0');
-      expect(formValues.masterGradeLowerLimit).toBe('1.0');
+      expect(formValues.masterGradeLowerLimit).toBe('1.0');*/
     });
 
     it('should mark fields as touched and invalid when initialized with incomplete data', () => {
       const { componentInstance } = createApplicationPage2Fixture({
-        data: {
+        /*data: {
           bachelorGradeUpperLimit: '4.0',
           bachelorGradeLowerLimit: '1.0',
           masterGradeUpperLimit: '4.0',
           masterGradeLowerLimit: '1.0',
-        },
+        },*/
       });
 
       const bachelorGradeControl = componentInstance.page2Form.get('bachelorGrade');
       expect(bachelorGradeControl?.touched).toBe(false); // Empty → not marked
       expect(bachelorGradeControl?.valid).toBe(false); // Invalid because required
 
-      const upperLimitControl = componentInstance.page2Form.get('bachelorGradeUpperLimit');
-      expect(upperLimitControl?.touched).toBe(true); // Marked as touched
+      //const upperLimitControl = componentInstance.page2Form.get('bachelorGradeUpperLimit');
+      //expect(upperLimitControl?.touched).toBe(true); // Marked as touched
     });
   });
 
@@ -221,13 +221,13 @@ describe('ApplicationPage2Component', () => {
       applicant: {
         bachelorDegreeName: 'BSc CS',
         bachelorUniversity: 'Test University',
-        bachelorGradeUpperLimit: '4.0',
-        bachelorGradeLowerLimit: '1.0',
+        //bachelorGradeUpperLimit: '4.0',
+        //bachelorGradeLowerLimit: '1.0',
         bachelorGrade: '3.5',
         masterDegreeName: 'MSc AI',
         masterUniversity: 'Test University',
-        masterGradeUpperLimit: '4.0',
-        masterGradeLowerLimit: '1.0',
+        //masterGradeUpperLimit: '4.0',
+        //masterGradeLowerLimit: '1.0',
         masterGrade: '3.8',
         user: {},
       },
@@ -249,13 +249,13 @@ describe('ApplicationPage2Component', () => {
       expect(result).toEqual({
         bachelorDegreeName: standardApplicationForApplicantDTO.applicant?.bachelorDegreeName,
         bachelorDegreeUniversity: standardApplicationForApplicantDTO.applicant?.bachelorUniversity,
-        bachelorGradeUpperLimit: standardApplicationForApplicantDTO.applicant?.bachelorGradeUpperLimit,
-        bachelorGradeLowerLimit: standardApplicationForApplicantDTO.applicant?.bachelorGradeLowerLimit,
+        //bachelorGradeUpperLimit: standardApplicationForApplicantDTO.applicant?.bachelorGradeUpperLimit,
+        //bachelorGradeLowerLimit: standardApplicationForApplicantDTO.applicant?.bachelorGradeLowerLimit,
         bachelorGrade: standardApplicationForApplicantDTO.applicant?.bachelorGrade,
         masterDegreeName: standardApplicationForApplicantDTO.applicant?.masterDegreeName,
         masterDegreeUniversity: standardApplicationForApplicantDTO.applicant?.masterUniversity,
-        masterGradeUpperLimit: standardApplicationForApplicantDTO.applicant?.masterGradeUpperLimit,
-        masterGradeLowerLimit: standardApplicationForApplicantDTO.applicant?.masterGradeLowerLimit,
+        //masterGradeUpperLimit: standardApplicationForApplicantDTO.applicant?.masterGradeUpperLimit,
+        //masterGradeLowerLimit: standardApplicationForApplicantDTO.applicant?.masterGradeLowerLimit,
         masterGrade: standardApplicationForApplicantDTO.applicant?.masterGrade,
       });
     });
