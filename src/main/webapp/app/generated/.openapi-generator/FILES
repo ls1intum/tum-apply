@@ -1,6 +1,10 @@
 .gitignore
+.openapi-generator-ignore
+README.md
 api.base.service.ts
+api.module.ts
 api/adminResourceApi.service.ts
+api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
@@ -19,6 +23,8 @@ api/researchGroupResourceApi.service.ts
 api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
+git_push.sh
+index.ts
 model/acceptDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
@@ -56,6 +62,7 @@ model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/loginRequestDTO.ts
+model/models.ts
 model/otpCompleteDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts

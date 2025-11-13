@@ -53,7 +53,6 @@ public class PDFExportService {
 
         builder
             .startInfoSection(labels.get("applicantInfo"))
-            .addSectionData(labels.get("preferredLanguage"), getValue(app.applicant().user().preferredLanguage()))
             .addSectionData(labels.get("desiredStartDate"), formatDate(app.desiredDate()))
             .addSectionData(labels.get("gender"), getValue(app.applicant().user().gender()))
             .addSectionData(labels.get("nationality"), getValue(app.applicant().user().nationality()));

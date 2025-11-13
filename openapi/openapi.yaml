@@ -2035,7 +2035,6 @@ components:
         name: {type: string}
         nationality: {type: string}
         phoneNumber: {type: string}
-        preferredLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
       required: [userId]
