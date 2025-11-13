@@ -19,13 +19,13 @@ import { DocumentInformationHolderDTO } from '../../../generated/model/documentI
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradeUpperLimit: string;
-  bachelorGradeLowerLimit: string;
+  // bachelorGradeUpperLimit: string;
+  // bachelorGradeLowerLimit: string;
   bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
-  masterGradeUpperLimit: string;
-  masterGradeLowerLimit: string;
+  // masterGradeUpperLimit: string;
+  // masterGradeLowerLimit: string;
   masterGrade: string;
 };
 
@@ -33,13 +33,13 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   return {
     bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
     bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-    bachelorGradeUpperLimit: application.applicant?.bachelorGradeUpperLimit ?? '',
-    bachelorGradeLowerLimit: application.applicant?.bachelorGradeLowerLimit ?? '',
+    // bachelorGradeUpperLimit: application.applicant?.bachelorGradeUpperLimit ?? '',
+    // bachelorGradeLowerLimit: application.applicant?.bachelorGradeLowerLimit ?? '',
     bachelorGrade: application.applicant?.bachelorGrade ?? '',
     masterDegreeName: application.applicant?.masterDegreeName ?? '',
     masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
-    masterGradeUpperLimit: application.applicant?.masterGradeUpperLimit ?? '',
-    masterGradeLowerLimit: application.applicant?.masterGradeLowerLimit ?? '',
+    // masterGradeUpperLimit: application.applicant?.masterGradeUpperLimit ?? '',
+    // masterGradeLowerLimit: application.applicant?.masterGradeLowerLimit ?? '',
     masterGrade: application.applicant?.masterGrade ?? '',
   };
 };
