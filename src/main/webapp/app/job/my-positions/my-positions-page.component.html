@@ -66,31 +66,34 @@
             [disabled]="job.state !== 'DRAFT'"
             [shouldTranslate]="true"
           />
-          <jhi-confirm-dialog
-            [label]="'button.delete' | translate"
-            [iconOnly]="true"
-            [tooltip]="'button.delete' | translate"
-            severity="danger"
-            [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
-            [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
-            (confirmed)="onDeleteJob(job.jobId)"
-            confirmIcon="trash"
-            data-testid="delete"
-            [disabled]="job.state !== 'DRAFT'"
-          />
-
-          <jhi-confirm-dialog
-            [label]="'button.close' | translate"
-            [iconOnly]="true"
-            [tooltip]="'button.close' | translate"
-            severity="danger"
-            [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
-            [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
-            (confirmed)="onCloseJob(job.jobId)"
-            confirmIcon="xmark"
-            data-testid="delete"
-            [disabled]="job.state !== 'PUBLISHED'"
-          />
+          @if (job.state === 'DRAFT') {
+            <jhi-confirm-dialog
+              [label]="'button.delete' | translate"
+              [iconOnly]="true"
+              [tooltip]="'button.delete' | translate"
+              severity="danger"
+              [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
+              [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+              (confirmed)="onDeleteJob(job.jobId)"
+              confirmIcon="trash"
+              data-testid="delete"
+              [disabled]="job.state !== 'DRAFT'"
+            />
+          }
+          @if (job.state === 'PUBLISHED') {
+            <jhi-confirm-dialog
+              [label]="'button.close' | translate"
+              [iconOnly]="true"
+              [tooltip]="'button.close' | translate"
+              severity="danger"
+              [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
+              [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
+              (confirmed)="onCloseJob(job.jobId)"
+              confirmIcon="xmark"
+              data-testid="delete"
+              [disabled]="job.state !== 'PUBLISHED'"
+            />
+          }
         </div>
       </ng-template>
 
