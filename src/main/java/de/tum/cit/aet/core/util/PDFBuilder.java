@@ -75,7 +75,6 @@ public class PDFBuilder {
     // ----------------- List & Text Layout -----------------
     private static final String BULLET_POINT_SYMBOL = "\u2022";
     private static final float LIST_SYMBOL_INDENT = 12f;
-    private static final float LIST_MARGIN_LEFT = 8f;
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
@@ -384,16 +383,13 @@ public class PDFBuilder {
 
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont);
-            boolean first = true;
             for (IBlockElement element : elements) {
-                if (element instanceof Paragraph para && first) {
+                if (element instanceof Paragraph para) {
                     para.setMarginTop(0);
                     para.setMarginLeft(CONTENT_INDENT);
-                    first = false;
-                } else if (element instanceof com.itextpdf.layout.element.List list && first) {
+                } else if (element instanceof com.itextpdf.layout.element.List list) {
                     list.setMarginTop(0);
                     list.setMarginLeft(CONTENT_INDENT);
-                    first = false;
                 }
                 container.add(element);
             }
@@ -493,12 +489,12 @@ public class PDFBuilder {
                             .setFont(normalFont)
                             .setFontSize(FONT_SIZE_TEXT)
                             .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
-                            .setSymbolIndent(LIST_SYMBOL_INDENT)
-                            .setMarginLeft(LIST_MARGIN_LEFT);
+                            .setPaddingLeft(0f)
+                            .setSymbolIndent(LIST_SYMBOL_INDENT);
 
                         for (IElement item : list.getChildren()) {
                             if (item instanceof ListItem) {
-                                ((ListItem) item).setFont(normalFont).setFontSize(FONT_SIZE_TEXT);
+                                ((ListItem) item).setFont(normalFont).setFontSize(FONT_SIZE_TEXT).setMarginLeft(CONTENT_INDENT);
                             }
                         }
                     }
