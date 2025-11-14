@@ -93,6 +93,8 @@
       "noMembers": "No members found in this research group.",
       "me": "Me",
       "addMembers": "Add Members",
+      "addMembersButton": "Add members",
+      "searchPlaceholder": "Search for a member...",
 
       "tableColumns": {
         "name": "Name",

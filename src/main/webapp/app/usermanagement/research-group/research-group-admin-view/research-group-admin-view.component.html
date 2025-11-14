@@ -47,6 +47,14 @@
           variant="text"
           (click)="onViewResearchGroup(researchGroup.id)"
         />
+        <jhi-button
+          icon="user-plus"
+          [ariaLabel]="'researchGroup.members.addMembers' | translate"
+          [tooltip]="'researchGroup.members.addMembers' | translate"
+          severity="primary"
+          variant="text"
+          (click)="onAddMembers(researchGroup.id)"
+        />
         @if (researchGroup.status === 'ACTIVE') {
           <jhi-confirm-dialog
             [label]="'button.withdraw' | translate"
