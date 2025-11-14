@@ -24,6 +24,7 @@ export class ConfirmDialog {
   showOpenButton = input<boolean>(true);
   tooltip = input<string | undefined>(undefined);
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
+  disabled = input<boolean>(false);
 
   data = input<string | undefined>(undefined);
 

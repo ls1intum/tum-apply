@@ -1,7 +1,7 @@
 import { computed, signal, WritableSignal } from '@angular/core';
 import { AccountService, User } from 'app/core/auth/account.service';
 
-export type AccountServiceMock = Pick<AccountService, 'user' | 'loadedUser' | 'signedIn' | 'loaded'>;
+export type AccountServiceMock = Pick<AccountService, 'user' | 'loadedUser' | 'signedIn' | 'loaded' | 'hasAnyAuthority'>;
 
 export let defaultUser: User = {
   id: 'id-2',
@@ -11,11 +11,15 @@ export let defaultUser: User = {
 
 export function createAccountServiceMock(signedIn?: boolean, loaded?: boolean): AccountServiceMock {
   const userLocal: WritableSignal<User | undefined> = signal(defaultUser);
+
   return {
     user: userLocal,
     loadedUser: computed(() => (userLocal() ? userLocal() : undefined)),
     loaded: signal<boolean>(loaded ?? true),
     signedIn: signal<boolean>(signedIn ?? true),
+    hasAnyAuthority: (roles: string[]) => {
+      return false;
+    },
   };
 }
 
