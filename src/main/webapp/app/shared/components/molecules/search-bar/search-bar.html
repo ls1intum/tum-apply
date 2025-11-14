@@ -1,0 +1,6 @@
+<p-iconfield iconPosition="left" class="min-w-[15%] flex-1">
+  <p-inputicon>
+    <fa-icon class="icon" [icon]="['fas', 'search']" />
+  </p-inputicon>
+  <input class="focus:ring-0" type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
+</p-iconfield>
