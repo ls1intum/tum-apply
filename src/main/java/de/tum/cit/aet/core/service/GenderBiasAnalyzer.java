@@ -4,10 +4,12 @@ import de.tum.cit.aet.core.constants.GenderBiasWordLists;
 import de.tum.cit.aet.core.util.StringUtil;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 /**
  * Analyzes text for gender-coded language (masculine vs feminine stereotypes)
  */
+@Component
 public class GenderBiasAnalyzer {
 
     private final Map<String, WordLists> wordListsByLanguage;

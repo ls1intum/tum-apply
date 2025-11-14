@@ -6,6 +6,7 @@ import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import de.tum.cit.aet.core.util.HtmlTextExtractor;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,13 +15,10 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/gender-bias")
+@RequiredArgsConstructor
 public class GenderBiasAnalysisResource {
 
     private final GenderBiasAnalysisService analysisService;
-
-    public GenderBiasAnalysisResource(GenderBiasAnalysisService analysisService) {
-        this.analysisService = analysisService;
-    }
 
     /**
      * POST /api/gender-bias/analyze : Analyze text for gender bias

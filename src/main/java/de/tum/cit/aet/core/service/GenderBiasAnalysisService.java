@@ -4,19 +4,17 @@ import de.tum.cit.aet.core.dto.BiasedWordDTO;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
  * Service for gender bias analysis
  */
 @Service
+@RequiredArgsConstructor
 public class GenderBiasAnalysisService {
 
     private final GenderBiasAnalyzer analyzer;
-
-    public GenderBiasAnalysisService() {
-        this.analyzer = new GenderBiasAnalyzer();
-    }
 
     /**
      * Analyze the given text for gender bias.
