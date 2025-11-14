@@ -190,22 +190,19 @@
 ---------------------------------- */
 .login-header-button .p-button-text.p-button-info {
   color: white !important;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
-.login-header-button .p-button-text.p-button-info:hover {
-  background-color: floralwhite;
-  color: gray !important;
-}
+
 
 .registration-header-button .p-button-text {
   color: white !important;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
+
+.login-header-button .p-button-text.p-button-info:hover,
 .registration-header-button .p-button-text:hover {
-  background-color: floralwhite;
-  color: gray !important;
+  filter: drop-shadow(0 0 0.075rem white);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* --------------------------------------------------
