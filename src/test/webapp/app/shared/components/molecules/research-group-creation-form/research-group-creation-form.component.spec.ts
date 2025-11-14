@@ -12,6 +12,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
+import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
 
 /**
@@ -30,7 +31,7 @@ describe('ResearchGroupCreationFormComponent', () => {
 
   beforeEach(async () => {
     mockDialogRef = createDynamicDialogRefMock();
-    mockDialogConfig = { data: { mode: 'professor' } };
+    mockDialogConfig = createDynamicDialogConfigMock({ mode: 'professor' });
 
     mockToastService = createToastServiceMock();
 
@@ -50,7 +51,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         provideFontAwesomeTesting(),
         provideToastServiceMock(mockToastService),
         provideDynamicDialogRefMock(mockDialogRef),
-        { provide: DynamicDialogConfig, useValue: mockDialogConfig },
+        provideDynamicDialogConfigMock(mockDialogConfig),
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
       ],

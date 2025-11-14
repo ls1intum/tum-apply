@@ -1,10 +1,10 @@
-<div [class]="containerClasses">
-  <fa-icon [icon]="[iconPrefix, defaultIcon]" [class]="iconClasses" />
+<div [class]="containerClasses()">
+  <fa-icon [icon]="[iconPrefix(), defaultIcon()]" [class]="iconClasses()" />
   <div class="flex-1">
-    @if (shouldTranslate) {
-      <p [class]="'m-0 text-sm text-gray-700'" [jhiTranslate]="message"></p>
+    @if (shouldTranslate()) {
+      <p [class]="'m-0 text-sm text-gray-700'" [jhiTranslate]="message()"></p>
     } @else {
-      <p [class]="'m-0 text-sm text-gray-700'">{{ message }}</p>
+      <p [class]="'m-0 text-sm text-gray-700'">{{ message() }}</p>
     }
     <ng-content />
   </div>
