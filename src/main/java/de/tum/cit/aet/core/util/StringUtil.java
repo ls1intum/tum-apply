@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
  */
 public class StringUtil {
 
+    private static final String ALLOWED_UMLAUTS = "ßäöüÄÖÜ";
+
     private StringUtil() {}
 
     /**
@@ -62,7 +64,7 @@ public class StringUtil {
         if (input == null) return "";
         return input
             .chars()
-            .mapToObj(c -> (c < 128 || "ßäöüÄÖÜ".indexOf(c) >= 0) ? String.valueOf((char) c) : " ")
+            .mapToObj(c -> (c < 128 || ALLOWED_UMLAUTS.indexOf(c) >= 0) ? String.valueOf((char) c) : " ")
             .collect(Collectors.joining());
     }
 
