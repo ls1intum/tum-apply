@@ -16,6 +16,7 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TranslateDirective } from 'app/shared/language';
 import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
+import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 
 const I18N_BASE = 'researchGroup.adminView';
 
@@ -149,6 +150,23 @@ export class ResearchGroupAdminView {
       style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
       closable: true,
       modal: true,
+    });
+  }
+
+  onCreateResearchGroup(): void {
+    const dialogRef = this.dialogService.open(ResearchGroupCreationFormComponent, {
+      header: this.translate.instant('researchGroup.adminView.createDialog.title'),
+      data: { mode: 'admin' },
+      styleClass: 'research-group-create-dialog',
+      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      closable: true,
+      modal: true,
+    });
+
+    dialogRef?.onClose.subscribe(result => {
+      if (result) {
+        void this.loadResearchGroups();
+      }
     });
   }
 

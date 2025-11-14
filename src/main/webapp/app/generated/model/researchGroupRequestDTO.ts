@@ -9,7 +9,7 @@
  */
 
 
-export interface ProfessorResearchGroupRequestDTO { 
+export interface ResearchGroupRequestDTO { 
     abbreviation?: string;
     city?: string;
     contactEmail?: string;

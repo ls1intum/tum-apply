@@ -2,8 +2,8 @@ package de.tum.cit.aet.utility.testdata;
 
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.UUID;
 
@@ -15,7 +15,9 @@ public final class ResearchGroupTestData {
 
     private ResearchGroupTestData() {}
 
-    /** Unsaved ResearchGroup with sane defaults. */
+    /**
+     * Unsaved ResearchGroup with sane defaults.
+     */
     public static ResearchGroup newRg() {
         ResearchGroup rg = new ResearchGroup();
         rg.setHead("Alice");
@@ -34,7 +36,9 @@ public final class ResearchGroupTestData {
         return rg;
     }
 
-    /** Unsaved ResearchGroup; all fields optional (null = keep default). */
+    /**
+     * Unsaved ResearchGroup; all fields optional (null = keep default).
+     */
     public static ResearchGroup newRgAll(
         String head,
         String name,
@@ -96,10 +100,10 @@ public final class ResearchGroupTestData {
     // --- DTO creation helpers -------------------------------------------------------------------------
 
     /**
-     * Creates a ProfessorResearchGroupRequestDTO with the given research group name and default values for other fields.
+     * Creates a ResearchGroupRequestDTO with the given research group name and default values for other fields.
      */
-    public static ProfessorResearchGroupRequestDTO createProfessorResearchGroupRequest(String researchGroupName) {
-        return new ProfessorResearchGroupRequestDTO(
+    public static ResearchGroupRequestDTO createResearchGroupRequest(String researchGroupName) {
+        return new ResearchGroupRequestDTO(
             "Prof.",
             "John",
             "Doe",

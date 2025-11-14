@@ -18,6 +18,7 @@
           (click)="onAccept()"
           [severity]="severity()"
           [variant]="variant()"
+          [disabled]="disabled()"
         />
       </div>
     </div>
@@ -33,5 +34,6 @@
     [variant]="iconOnly() ? 'text' : variant()"
     [tooltip]="tooltip()"
     [tooltipPosition]="tooltipPosition()"
+    [disabled]="disabled()"
   />
 }
