@@ -4,9 +4,9 @@ import de.tum.cit.aet.core.dto.GenderBiasAnalysisRequest;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
-import de.tum.cit.aet.core.util.HtmlTextExtractor;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +40,6 @@ public class GenderBiasAnalysisResource {
     /**
      * POST /api/gender-bias/analyze-html : Analyze HTML content (extract text
      * first)
-     * Useful for Quill editor content
      *
      * @param request the HTML to analyze
      * @return the analysis result
@@ -49,7 +48,7 @@ public class GenderBiasAnalysisResource {
     @PostMapping("/analyze-html")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         // Strip HTML tags to get plain text
-        String plainText = HtmlTextExtractor.stripHtml(request.getText());
+        String plainText = Jsoup.parse(request.getText()).text();
 
         String language = request.getLanguage() != null ? request.getLanguage() : "en";
 
