@@ -6,6 +6,7 @@ import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -13,7 +14,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
-  imports: [TranslateModule, StringInputComponent, ButtonComponent, ReactiveFormsModule, DividerModule, EditorComponent],
+  imports: [TranslateModule, StringInputComponent, ButtonComponent, ReactiveFormsModule, DividerModule, EditorComponent, InfoBoxComponent],
   templateUrl: './research-group-detail-view.component.html',
 })
 export class ResearchGroupDetailViewComponent implements OnInit {

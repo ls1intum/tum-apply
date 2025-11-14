@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
 import { User } from 'app/core/auth/account.service';
@@ -132,6 +132,33 @@ describe('JobDetailComponent', () => {
     expect(consoleSpy).toHaveBeenCalled();
   });
 
+  it('should return false in hasResearchGroupDescription when description is missing', () => {
+    component.jobDetails.set({ researchGroupDescription: undefined } as unknown as JobDetails);
+    expect(component.hasResearchGroupDescription()).toBe(false);
+  });
+
+  it('should return false when description contains only empty HTML tags', () => {
+    component.jobDetails.set({ researchGroupDescription: '<p><br></p>' } as JobDetails);
+    expect(component.hasResearchGroupDescription()).toBe(false);
+  });
+
+  it('should return true when description contains text inside HTML', () => {
+    component.jobDetails.set({ researchGroupDescription: '<p>Hello</p>' } as JobDetails);
+    expect(component.hasResearchGroupDescription()).toBe(true);
+  });
+
+  it('should navigate to research group info on onEditResearchGroup()', () => {
+    const navigateSpy = vi.spyOn(mockRouter, 'navigate');
+    component.onEditResearchGroup();
+    expect(navigateSpy).toHaveBeenCalledWith(['/research-group/info']);
+  });
+
+  it('should call trimWebsiteUrl util function', () => {
+    const url = 'https://example.com';
+    const result = component.trimWebsiteUrl(url);
+    expect(result).toBe('example.com');
+  });
+
   it('should close job successfully', async () => {
     jobService.changeJobState.mockReturnValue(of({}));
     await component.onCloseJob();
@@ -241,11 +268,25 @@ describe('JobDetailComponent', () => {
   it('should compute rightActionButtons for PUBLISHED and trigger confirm()', () => {
     const confirmSpy = vi.fn();
     (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
+    // mock professor ownership
+    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
     const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.closeButtonLabel);
     btn?.onClick();
     expect(confirmSpy).toHaveBeenCalled();
+  });
+
+  it('should return null for PUBLISHED job when user is professor but not owner', () => {
+    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+
+    const job = {
+      belongsToResearchGroup: false,
+      jobState: 'PUBLISHED',
+    } as JobDetails;
+
+    component.jobDetails.set(job);
+    expect(component.rightActionButtons()).toBeNull();
   });
 
   it('should handle invalid job ID in init()', async () => {
@@ -272,6 +313,34 @@ describe('JobDetailComponent', () => {
     await comp2.init();
 
     expect(location.back).toHaveBeenCalled();
+  });
+
+  it('isOwnerOfJob should return false when user missing', () => {
+    mockAccountService.user.set(null as any);
+    const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: true } as JobDetails);
+    expect(result).toBe(false);
+  });
+
+  it('isOwnerOfJob should return false when not professor', () => {
+    vi.spyOn(component, 'isProfessor').mockReturnValue(false);
+    const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: true } as JobDetails);
+    expect(result).toBe(false);
+  });
+
+  it('isOwnerOfJob should return false when job does not belong to research group', () => {
+    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: false } as JobDetails);
+    expect(result).toBe(false);
+  });
+
+  it('should override researchGroup fields from researchGroupDetails in form mode', () => {
+    const form: JobFormDTO = { title: 'Test' } as JobFormDTO;
+
+    const result = (component as any).mapToJobDetails(form, undefined, { email: 'x@test.de', street: 'Main St', city: 'X' }, true);
+
+    expect(result.researchGroupEmail).toBe('x@test.de');
+    expect(result.researchGroupStreet).toBe('Main St');
+    expect(result.researchGroupCity).toBe('X');
   });
 
   it('should map job details in form mode (isForm = true)', () => {

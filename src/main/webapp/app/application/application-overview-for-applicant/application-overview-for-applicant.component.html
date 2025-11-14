@@ -26,6 +26,17 @@
         [tooltip]="'button.view' | translate"
         (click)="onViewApplication(row.applicationId)"
       />
+
+      <jhi-button
+        [ariaLabel]="'button.edit' | translate"
+        [icon]="'pencil'"
+        severity="primary"
+        variant="text"
+        [tooltip]="row.applicationState !== 'SAVED' ? ('button.tooltip.editDisabled' | translate) : ('button.edit' | translate)"
+        (click)="onUpdateApplication(row.applicationId)"
+        [disabled]="row.applicationState !== 'SAVED'"
+      />
+
       @if (['SENT', 'IN_REVIEW'].includes(row.applicationState)) {
         <jhi-confirm-dialog
           [label]="'button.withdraw' | translate"
@@ -37,17 +48,6 @@
           (confirmed)="onWithdrawApplication(row.applicationId)"
           severity="danger"
           [tooltip]="'button.withdraw' | translate"
-        />
-      }
-
-      @if (['SAVED'].includes(row.applicationState)) {
-        <jhi-button
-          [ariaLabel]="'button.edit' | translate"
-          [icon]="'pencil'"
-          severity="primary"
-          variant="text"
-          [tooltip]="'button.edit' | translate"
-          (click)="onUpdateApplication(row.applicationId)"
         />
       }
 

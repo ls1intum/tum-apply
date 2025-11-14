@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Contains all fields that a professor can fill in the onboarding form.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record ProfessorResearchGroupRequestDTO(
+public record ResearchGroupRequestDTO(
     // Required Personal Information
     String title,
     String firstName,
