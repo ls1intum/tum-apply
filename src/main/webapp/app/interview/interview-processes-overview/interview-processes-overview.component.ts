@@ -5,8 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
+import {InterviewResourceApiService} from "app/generated";
 
-import { InterviewService } from '../service/interview.service';
 
 @Component({
   selector: 'jhi-interview-processes-overview',
@@ -18,7 +18,7 @@ export class InterviewProcessesOverviewComponent implements OnInit {
   loading = signal<boolean>(true);
   error = signal<boolean>(false);
 
-  private readonly interviewService = inject(InterviewService);
+  private readonly interviewService = inject(InterviewResourceApiService);
   private readonly router = inject(Router);
 
   ngOnInit(): void {
