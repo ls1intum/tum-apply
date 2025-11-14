@@ -96,12 +96,12 @@ public class GenderBiasAnalyzer {
     }
 
     /**
-     * Find words that match coded word patterns (stem matching)
+     * Find words that start with any of the coded word stems
      */
     private List<String> findCodedWords(List<String> wordList, Set<String> codedWords) {
         return wordList
             .stream()
-            .filter(word -> codedWords.stream().anyMatch(word::contains))
+            .filter(word -> codedWords.stream().anyMatch(word::startsWith))
             .collect(Collectors.toList());
     }
 
