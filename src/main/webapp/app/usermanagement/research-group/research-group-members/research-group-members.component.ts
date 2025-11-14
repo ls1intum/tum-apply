@@ -8,6 +8,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -16,10 +18,12 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
 import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
+    ButtonComponent,
     TranslateDirective,
     FontAwesomeModule,
     TranslateModule,
@@ -69,6 +73,7 @@ export class ResearchGroupMembersComponent {
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
+  private readonly dialogService = inject(DialogService);
 
   private readonly translationKey: string = 'researchGroup.members';
 
@@ -106,6 +111,18 @@ export class ResearchGroupMembersComponent {
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
     }
+  }
+
+  openAddMembersModal(): void {
+    // Implementation for opening the add members modal goes here
+    // This could involve using a dialog service to open a component
+    // where users can be searched and added to the research group.
+    this.dialogService.open(ResearchGroupAddMembersComponent, {
+      header: this.translate.instant('researchGroup.members.addMembers'),
+      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      modal: true,
+      closable: true,
+    });
   }
 
   /** Internal methods */

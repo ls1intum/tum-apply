@@ -92,6 +92,7 @@
       "retry": "Retry",
       "noMembers": "No members found in this research group.",
       "me": "Me",
+      "addMembers": "Add Members",
 
       "tableColumns": {
         "name": "Name",
