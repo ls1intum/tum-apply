@@ -39,9 +39,12 @@ public class GenderBiasAnalyzer {
         // Clean and tokenize
         List<String> wordList = cleanAndTokenize(text);
 
+        // Explicitly handle hyphenated words
+        List<String> dehyphenWordList = deHyphenNonCodedWords(wordList);
+
         // Find coded words
-        List<String> masculineWords = findCodedWords(wordList, lists.masculine);
-        List<String> feminineWords = findCodedWords(wordList, lists.feminine);
+        List<String> masculineWords = findCodedWords(dehyphenWordList, lists.masculine);
+        List<String> feminineWords = findCodedWords(dehyphenWordList, lists.feminine);
 
         // Assess coding
         int masculineCount = masculineWords.size();
@@ -64,7 +67,7 @@ public class GenderBiasAnalyzer {
             .filter(word -> !word.isEmpty())
             .collect(Collectors.toList());
 
-        return deHyphenNonCodedWords(words);
+        return words;
     }
 
     /**
