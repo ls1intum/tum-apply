@@ -27,7 +27,7 @@
   <!-- Multi-segment Progress Bar -->
   <div class="h-2 bg-[var(--p-background-disabled)] rounded-md overflow-hidden flex mb-2">
     @for (stat of stats(); track stat.label) {
-      <div class="h-full transition-all duration-300" [ngClass]="stat.colorClass" [style.width.%]="calculateWidth(stat.count)"></div>
+      <div class="h-full transition-all duration-300" [ngClass]="stat.colorClass" [style.width.%]="stat.widthPercent"></div>
     }
   </div>
 
