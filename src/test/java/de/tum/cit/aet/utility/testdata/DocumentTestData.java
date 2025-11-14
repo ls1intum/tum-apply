@@ -103,4 +103,38 @@ public final class DocumentTestData {
         Document doc = savedDocument(storageRootConfig, documentRepository, professor, classpathResource, filename);
         return savedDictionary(documentDictionaryRepository, doc, application, applicant, type, name);
     }
+
+    /**
+     * Creates and persists a mock Document and DocumentDictionary without actual file resources.
+     * Useful for simple tests that don't require actual file content.
+     *
+     * @param documentRepository repo to persist Document
+     * @param documentDictionaryRepository repo to persist DocumentDictionary
+     * @param uploadedBy uploader user
+     * @param application linked application
+     * @param applicant linked applicant (can be null)
+     * @param documentType document type (e.g. CV, MOTIVATION_LETTER)
+     * @param fileName logical file name (e.g. "test_cv.pdf")
+     */
+    public static DocumentDictionary savedDictionaryWithMockDocument(
+        DocumentRepository documentRepository,
+        DocumentDictionaryRepository documentDictionaryRepository,
+        User uploadedBy,
+        Application application,
+        Applicant applicant,
+        DocumentType documentType,
+        String fileName
+    ) {
+        // Create mock document
+        Document document = new Document();
+        document.setSha256Id(UUID.randomUUID().toString());
+        document.setPath("/test/path/" + fileName);
+        document.setMimeType("application/pdf");
+        document.setSizeBytes(1024L);
+        document.setUploadedBy(uploadedBy);
+        document = documentRepository.save(document);
+
+        // Create document dictionary entry
+        return savedDictionary(documentDictionaryRepository, document, application, applicant, documentType, fileName);
+    }
 }

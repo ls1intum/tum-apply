@@ -65,11 +65,7 @@ public class ApplicationResource {
     @GetMapping("/{applicationId}")
     public ResponseEntity<ApplicationForApplicantDTO> getApplicationById(@PathVariable UUID applicationId) {
         ApplicationForApplicantDTO application = applicationService.getApplicationById(applicationId);
-        if (application != null) {
-            return ResponseEntity.ok(application);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(application);
     }
 
     /**

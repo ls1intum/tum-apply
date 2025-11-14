@@ -19,6 +19,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { MessageModule } from 'primeng/message';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -58,6 +59,7 @@ const applyflow = 'entity.toast.applyFlow';
     ConfirmDialog,
     ApplicationDetailForApplicantComponent,
     TranslateDirective,
+    MessageModule,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
