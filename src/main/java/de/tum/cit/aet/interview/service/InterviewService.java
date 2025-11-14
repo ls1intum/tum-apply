@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -176,6 +178,7 @@ public class InterviewService {
      * @throws AccessDeniedException if the user is not authorized
      * @throws TimeConflictException if any time conflicts are detected
      */
+    @Transactional
     public List<InterviewSlotDTO> createSlots(UUID processId, CreateSlotsDTO dto) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
