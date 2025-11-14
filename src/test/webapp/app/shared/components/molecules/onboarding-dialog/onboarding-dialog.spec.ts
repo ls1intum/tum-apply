@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
-import { ProfessorRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/professor-request-access-form/professor-request-access-form.component';
+import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 import { provideTranslateMock } from 'util/translate.mock';
 import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
@@ -56,7 +56,7 @@ describe('OnboardingDialog', () => {
 
       expect(mockDialogRef.close).toHaveBeenCalledOnce();
       expect(mockDialogService.open).toHaveBeenCalledWith(
-        ProfessorRequestAccessFormComponent,
+        ResearchGroupCreationFormComponent,
         expect.objectContaining({
           ...ONBOARDING_FORM_DIALOG_CONFIG,
           header: 'onboarding.professorRequest.dialogTitle',
