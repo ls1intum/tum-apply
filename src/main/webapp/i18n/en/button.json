@@ -16,6 +16,9 @@
     "back": "Back",
     "next": "Next",
     "apply": "Apply",
-    "publish": "Publish"
+    "publish": "Publish",
+    "tooltip": {
+      "editDisabled": "Only drafts can be edited"
+    }
   }
 }

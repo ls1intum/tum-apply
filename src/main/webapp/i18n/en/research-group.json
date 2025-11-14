@@ -146,6 +146,18 @@
         "withdraw": {
           "summary": "Error",
           "detail": "Error withdrawing approval. Please try refreshing the page, or contact us if the problem continues."
+        },
+        "create": {
+          "summary": "Error",
+          "detail": "Failed to create research group. Please try again."
+        },
+        "duplicateName": {
+          "summary": "Name Already Exists",
+          "detail": "A research group with this name already exists. Please choose a different name."
+        },
+        "userNotFound": {
+          "summary": "User Not Found",
+          "detail": "No user was found with the provided TUM-ID. Please check the TUM-ID."
         }
       },
       "success": {
@@ -160,6 +172,10 @@
         "withdraw": {
           "summary": "Success",
           "detail": "Approval withdrawn successfully"
+        },
+        "create": {
+          "summary": "Success",
+          "detail": "Research group created successfully"
         }
       },
       "filter": {
@@ -199,7 +215,21 @@
         "message": "Are you sure you want to withdraw approval for this research group?",
         "confirm": "Withdraw"
       },
-      "title": "Manage Research Groups"
+      "title": "Manage Research Groups",
+      "tumID": {
+        "label": "Professor TUM-ID",
+        "placeholder": "e.g. ab12cde"
+      },
+      "createButton": "Create Research Group",
+      "createDialog": {
+        "title": "Create Research Group",
+        "confirmHeader": "Create Research Group",
+        "confirmMessage": "Are you sure you want to create this research group? It will be immediately active.",
+        "confirmButton": "Create Research Group",
+        "submitting": "Creating...",
+        "success": "Research group created successfully",
+        "error": "Failed to create research group. Please try again."
+      }
     },
     "detailView": {
       "title": "Research Group Details",

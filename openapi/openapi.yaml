@@ -985,6 +985,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupAdminDTO'}
+  /api/research-groups/admin-create:
+    post:
+      tags: [research-group-resource]
+      operationId: createResearchGroupAsAdmin
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ResearchGroupRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]
@@ -1067,7 +1082,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: {$ref: '#/components/schemas/ProfessorResearchGroupRequestDTO'}
+            schema: {$ref: '#/components/schemas/ResearchGroupRequestDTO'}
         required: true
       responses:
         '200':
@@ -1617,6 +1632,7 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
+        contractDuration: {type: integer, format: int32}
         fieldOfStudies: {type: string}
         jobId: {type: string, format: uuid}
         location: {type: string}
@@ -1837,24 +1853,6 @@ components:
         lastName: {type: string}
         researchGroupName: {type: string}
         researchGroupWebsite: {type: string}
-    ProfessorResearchGroupRequestDTO:
-      type: object
-      properties:
-        abbreviation: {type: string}
-        city: {type: string}
-        contactEmail: {type: string}
-        defaultFieldOfStudies: {type: string}
-        description: {type: string}
-        firstName: {type: string}
-        lastName: {type: string}
-        postalCode: {type: string}
-        researchGroupHead: {type: string}
-        researchGroupName: {type: string}
-        school: {type: string}
-        street: {type: string}
-        title: {type: string}
-        universityId: {type: string}
-        website: {type: string}
     RatingDTO:
       type: object
       properties:
@@ -1944,6 +1942,24 @@ components:
         researchGroupId: {type: string, format: uuid}
         universityId: {type: string, maxLength: 7, minLength: 3}
       required: [universityId]
+    ResearchGroupRequestDTO:
+      type: object
+      properties:
+        abbreviation: {type: string}
+        city: {type: string}
+        contactEmail: {type: string}
+        defaultFieldOfStudies: {type: string}
+        description: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        postalCode: {type: string}
+        researchGroupHead: {type: string}
+        researchGroupName: {type: string}
+        school: {type: string}
+        street: {type: string}
+        title: {type: string}
+        universityId: {type: string}
+        website: {type: string}
     ResearchGroupShortDTO:
       type: object
       properties:

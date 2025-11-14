@@ -3,10 +3,8 @@
     <form [formGroup]="form">
       <div class="form-group">
         <!-- Information Notice -->
-        <div class="flex items-start gap-3 p-4 bg-blue-50 border-l-4 border-[var(--p-primary-color)] rounded-r-lg mt-2 mb-4">
-          <div class="flex-1">
-            <p class="m-0 text-sm">{{ 'researchGroup.detailView.infoMessage' | translate }}</p>
-          </div>
+        <div class="mt-2 mb-4">
+          <jhi-info-box severity="primary" message="researchGroup.detailView.infoMessage" [shouldTranslate]="true" />
         </div>
 
         <jhi-button

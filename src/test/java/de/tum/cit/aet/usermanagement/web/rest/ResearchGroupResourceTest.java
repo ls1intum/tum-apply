@@ -71,7 +71,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "TUM",
             "Arcisstr. 21",
-            "https://ml.tum.de"
+            "https://ml.tum.de",
+            "ACTIVE"
         );
         secondResearchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
@@ -85,7 +86,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80335",
             "TUM",
             "Otherstr. 10",
-            "https://other.tum.de"
+            "https://other.tum.de",
+            "ACTIVE"
         );
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
@@ -290,13 +292,13 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .putAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId(), invalidDTO, ResearchGroupDTO.class, 400);
     }
 
-    // --- POST /api/research-groups/professor-request (createProfessorResearchGroupRequest) ---
+    // --- POST /api/research-groups/professor-request (createProfe`ssorResearchGroupRequest) ---
 
     @Test
-    void createProfessorResearchGroupRequestCreatesGroupInDraftState() {
+    void createResearchGroupRequestCreatesGroupInDraftState() {
         User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "john.doe@tum.de", "John", "Doe", "ab12cde");
 
-        ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
+        ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
             "Dr.",
             "John",
             "Doe",
@@ -325,10 +327,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void createProfessorResearchGroupRequestWithMinimalDataWorks() {
+    void createResearchGroupRequestWithMinimalDataWorks() {
         User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "minimal.user@tum.de", "Minimal", "User", "mn33zzz");
 
-        ProfessorResearchGroupRequestDTO minimalRequest = new ProfessorResearchGroupRequestDTO(
+        ResearchGroupRequestDTO minimalRequest = new ResearchGroupRequestDTO(
             "Prof.",
             "Minimal",
             "User",
@@ -356,8 +358,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void createProfessorResearchGroupRequestWithoutAuthenticationReturns403() {
-        ProfessorResearchGroupRequestDTO request = new ProfessorResearchGroupRequestDTO(
+    void createResearchGroupRequestWithoutAuthenticationReturns403() {
+        ResearchGroupRequestDTO request = new ResearchGroupRequestDTO(
             "Dr.",
             "John",
             "Doe",
@@ -506,9 +508,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "Munich",
             "Draftstr. 1",
-            "https://draft.tum.de"
+            "https://draft.tum.de",
+            "DRAFT"
         );
-        draftGroup.setState(ResearchGroupState.DRAFT);
         researchGroupRepository.save(draftGroup);
 
         UUID adminUserId = UUID.randomUUID();
@@ -555,9 +557,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "Munich",
             "Activationstr. 1",
-            "https://activate.tum.de"
+            "https://activate.tum.de",
+            "DRAFT"
         );
-        draftGroup.setState(ResearchGroupState.DRAFT);
         researchGroupRepository.save(draftGroup);
 
         UUID adminUserId = UUID.randomUUID();
@@ -593,9 +595,9 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "Munich",
             "Denialstr. 1",
-            "https://deny.tum.de"
+            "https://deny.tum.de",
+            "DRAFT"
         );
-        draftGroup.setState(ResearchGroupState.DRAFT);
         researchGroupRepository.save(draftGroup);
 
         UUID adminUserId = UUID.randomUUID();
@@ -631,7 +633,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "80333",
             "TUM",
             "Withdrawstr. 1",
-            "https://withdraw.tum.de"
+            "https://withdraw.tum.de",
+            "ACTIVE"
         );
         activeGroup.setState(ResearchGroupState.ACTIVE);
         researchGroupRepository.save(activeGroup);
