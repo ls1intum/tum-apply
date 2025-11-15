@@ -47,6 +47,18 @@ public class ImageResource {
     }
 
     /**
+     * Get all images uploaded by the current user
+     */
+    @ProfessorOrAdmin
+    @GetMapping("/my-uploads")
+    public ResponseEntity<List<ImageDTO>> getMyUploadedImages() {
+        UUID userId = currentUserService.getUserId();
+        List<Image> images = imageService.getImagesByUploader(userId);
+        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
      * Upload a job banner image
      */
     @ProfessorOrAdmin

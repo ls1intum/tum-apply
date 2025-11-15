@@ -38,6 +38,7 @@ public class JobService {
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
     private final InterviewService interviewService;
+    private final JobImageHelper jobImageHelper;
 
     public JobService(
         JobRepository jobRepository,
@@ -45,7 +46,8 @@ public class JobService {
         ApplicationRepository applicationRepository,
         AsyncEmailSender sender,
         CurrentUserService currentUserService,
-        InterviewService interviewService
+        InterviewService interviewService,
+        JobImageHelper jobImageHelper
     ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
@@ -53,6 +55,7 @@ public class JobService {
         this.sender = sender;
         this.currentUserService = currentUserService;
         this.interviewService = interviewService;
+        this.jobImageHelper = jobImageHelper;
     }
 
     /**
@@ -170,7 +173,8 @@ public class JobService {
             job.getDescription(),
             job.getTasks(),
             job.getRequirements(),
-            job.getState()
+            job.getState(),
+            job.getImage() != null ? job.getImage().getUrl() : null
         );
     }
 
@@ -342,6 +346,17 @@ public class JobService {
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
         job.setState(dto.state());
+        
+        // Handle image update (replace old image if changed)
+        if (dto.imageId() != null) {
+            var newImage = jobImageHelper.getImageForJob(dto.imageId());
+            job.setImage(jobImageHelper.replaceJobImage(job.getImage(), newImage));
+        } else if (job.getImage() != null) {
+            // If imageId is null but job has image, remove it
+            jobImageHelper.replaceJobImage(job.getImage(), null);
+            job.setImage(null);
+        }
+        
         if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
             Job savedJob = jobRepository.save(job);
             interviewService.createInterviewProcessForJob(savedJob.getJobId());

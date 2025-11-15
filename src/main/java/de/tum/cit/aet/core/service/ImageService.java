@@ -113,6 +113,13 @@ public class ImageService {
     }
 
     /**
+     * Get all images uploaded by a specific user
+     */
+    public List<Image> getImagesByUploader(UUID userId) {
+        return imageRepository.findByUploaderId(userId);
+    }
+
+    /**
      * Delete an image (checks ownership)
      */
     @Transactional

@@ -94,10 +94,12 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           j.workload as workload,
           j.startDate as startDate,
           j.endDate as endDate,
-          j.contractDuration as contractDuration
+          j.contractDuration as contractDuration,
+          i.url as imageUrl
         )
         FROM Job j
         JOIN j.supervisingProfessor p
+        LEFT JOIN j.image i
         LEFT JOIN j.applications a
                WITH (:userId IS NOT NULL
                  AND a.applicant.userId = :userId
@@ -172,10 +174,12 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             j.workload as workload,
             j.startDate as startDate,
             j.endDate as endDate,
-            j.contractDuration as contractDuration
+            j.contractDuration as contractDuration,
+            i.url as imageUrl
           )
           FROM Job j
           JOIN j.supervisingProfessor p
+          LEFT JOIN j.image i
           LEFT JOIN j.applications a
                  WITH (:userId IS NOT NULL
                    AND a.applicant.userId = :userId

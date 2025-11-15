@@ -26,7 +26,8 @@ public record JobFormDTO(
     String description,
     String tasks,
     String requirements,
-    @NotNull JobState state
+    @NotNull JobState state,
+    UUID imageId  // Optional job banner image
 ) {
     /**
      * @param job The job entity to convert
@@ -51,7 +52,8 @@ public record JobFormDTO(
             job.getDescription(),
             job.getTasks(),
             job.getRequirements(),
-            job.getState()
+            job.getState(),
+            job.getImage() != null ? job.getImage().getImageId() : null
         );
     }
 }
