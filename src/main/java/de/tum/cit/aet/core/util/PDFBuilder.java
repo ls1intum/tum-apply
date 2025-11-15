@@ -309,6 +309,7 @@ public class PDFBuilder {
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
         Div container = new Div().setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
 
+        // Step 1: Add overview title if present
         if (overviewTitle != null) {
             Paragraph title = new Paragraph(overviewTitle)
                 .setFont(boldFont)
@@ -318,6 +319,7 @@ public class PDFBuilder {
             container.add(title);
         }
 
+        // Step 2: Create and populate overview items table
         Table table = new Table(2);
         table.setWidth(UnitValue.createPercentValue(100));
         table.setBorder(Border.NO_BORDER);
@@ -345,7 +347,9 @@ public class PDFBuilder {
 
         container.add(table);
 
+        // Step 3: Add overview description section if present
         if (overviewDescription != null && !overviewDescription.isEmpty()) {
+            // Step 3a: Add description title
             if (overviewDescriptionTitle != null && !overviewDescriptionTitle.isEmpty()) {
                 Paragraph descTitle = new Paragraph(overviewDescriptionTitle)
                     .setFont(boldFont)
@@ -355,6 +359,7 @@ public class PDFBuilder {
                     .setMarginLeft(CONTENT_INDENT);
                 container.add(descTitle);
             }
+            // Step 3b: Parse and add HTML description content
             List<IBlockElement> elements = parseHtmlContent(overviewDescription, normalFont);
             for (IBlockElement element : elements) {
                 if (element instanceof Paragraph para) {
