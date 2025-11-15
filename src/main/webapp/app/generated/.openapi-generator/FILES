@@ -77,7 +77,6 @@ model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
 model/profOnboardingDTO.ts
 model/professorDTO.ts
-model/professorResearchGroupRequestDTO.ts
 model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
@@ -86,6 +85,7 @@ model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts
+model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
 model/sortObject.ts
