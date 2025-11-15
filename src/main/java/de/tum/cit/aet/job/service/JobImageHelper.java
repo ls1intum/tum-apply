@@ -27,8 +27,7 @@ public class JobImageHelper {
      * @return the Image entity
      */
     public Image getImageForJob(UUID imageId) {
-        return imageRepository.findById(imageId)
-                .orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        return imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
     }
 
     /**

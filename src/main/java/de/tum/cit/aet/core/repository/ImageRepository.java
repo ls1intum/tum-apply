@@ -39,8 +39,7 @@ public interface ImageRepository extends JpaRepository<Image, UUID> {
      * @return a list of images with uploader information
      */
     @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.isDefault = :isDefault")
-    List<Image> findDefaultImagesWithUploader(@Param("imageType") ImageType imageType,
-            @Param("isDefault") Boolean isDefault);
+    List<Image> findDefaultImagesWithUploader(@Param("imageType") ImageType imageType, @Param("isDefault") Boolean isDefault);
 
     /**
      * Find default job banners by school with user information
@@ -50,11 +49,14 @@ public interface ImageRepository extends JpaRepository<Image, UUID> {
      * @param school    the school to filter by
      * @return a list of images with uploader information
      */
-    @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.isDefault = :isDefault AND i.school = :school")
+    @Query(
+        "SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.isDefault = :isDefault AND i.school = :school"
+    )
     List<Image> findDefaultImagesBySchoolWithUploader(
-            @Param("imageType") ImageType imageType,
-            @Param("isDefault") Boolean isDefault,
-            @Param("school") School school);
+        @Param("imageType") ImageType imageType,
+        @Param("isDefault") Boolean isDefault,
+        @Param("school") School school
+    );
 
     /**
      * Find images by uploader

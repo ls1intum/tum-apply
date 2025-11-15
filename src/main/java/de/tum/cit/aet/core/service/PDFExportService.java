@@ -34,10 +34,10 @@ public class PDFExportService {
 
         // Overview Section
         builder
-                .setOverviewTitle(labels.get("overview"))
-                .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
-                .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
-                .addOverviewItem(labels.get("location"), getValue(app.jobLocation()));
+            .setOverviewTitle(labels.get("overview"))
+            .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
+            .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
+            .addOverviewItem(labels.get("location"), getValue(app.jobLocation()));
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -52,11 +52,11 @@ public class PDFExportService {
         builder.startSectionGroup(labels.get("personalInformation"));
 
         builder
-                .startInfoSection(labels.get("applicantInfo"))
-                .addSectionData(labels.get("preferredLanguage"), getValue(app.applicant().user().preferredLanguage()))
-                .addSectionData(labels.get("desiredStartDate"), formatDate(app.desiredDate()))
-                .addSectionData(labels.get("gender"), getValue(app.applicant().user().gender()))
-                .addSectionData(labels.get("nationality"), getValue(app.applicant().user().nationality()));
+            .startInfoSection(labels.get("applicantInfo"))
+            .addSectionData(labels.get("preferredLanguage"), getValue(app.applicant().user().preferredLanguage()))
+            .addSectionData(labels.get("desiredStartDate"), formatDate(app.desiredDate()))
+            .addSectionData(labels.get("gender"), getValue(app.applicant().user().gender()))
+            .addSectionData(labels.get("nationality"), getValue(app.applicant().user().nationality()));
 
         if (app.applicant().user().website() != null) {
             builder.addSectionData(labels.get("website"), getValue(app.applicant().user().website()));
@@ -67,26 +67,26 @@ public class PDFExportService {
 
         // Bachelor Section
         builder
-                .startInfoSection(labels.get("bachelorInfo"))
-                .addSectionData(labels.get("degreeName"), getValue(app.applicant().bachelorDegreeName()))
-                .addSectionData(labels.get("university"), getValue(app.applicant().bachelorUniversity()))
-                // .addSectionData(labels.get("upperGradeLimit"),
-                // getValue(app.applicant().bachelorGradeUpperLimit()))
-                // .addSectionData(labels.get("lowerGradeLimit"),
-                // getValue(app.applicant().bachelorGradeLowerLimit()))
-                .addSectionData(labels.get("grade"), getValue(app.applicant().bachelorGrade()));
+            .startInfoSection(labels.get("bachelorInfo"))
+            .addSectionData(labels.get("degreeName"), getValue(app.applicant().bachelorDegreeName()))
+            .addSectionData(labels.get("university"), getValue(app.applicant().bachelorUniversity()))
+            // .addSectionData(labels.get("upperGradeLimit"),
+            // getValue(app.applicant().bachelorGradeUpperLimit()))
+            // .addSectionData(labels.get("lowerGradeLimit"),
+            // getValue(app.applicant().bachelorGradeLowerLimit()))
+            .addSectionData(labels.get("grade"), getValue(app.applicant().bachelorGrade()));
 
         // Master Section
         if (app.applicant().masterDegreeName() != null) {
             builder
-                    .startInfoSection(labels.get("masterInfo"))
-                    .addSectionData(labels.get("degreeName"), getValue(app.applicant().masterDegreeName()))
-                    .addSectionData(labels.get("university"), getValue(app.applicant().masterUniversity()))
-                    // .addSectionData(labels.get("upperGradeLimit"),
-                    // getValue(app.applicant().masterGradeUpperLimit()))
-                    // .addSectionData(labels.get("lowerGradeLimit"),
-                    // getValue(app.applicant().masterGradeLowerLimit()))
-                    .addSectionData(labels.get("grade"), getValue(app.applicant().masterGrade()));
+                .startInfoSection(labels.get("masterInfo"))
+                .addSectionData(labels.get("degreeName"), getValue(app.applicant().masterDegreeName()))
+                .addSectionData(labels.get("university"), getValue(app.applicant().masterUniversity()))
+                // .addSectionData(labels.get("upperGradeLimit"),
+                // getValue(app.applicant().masterGradeUpperLimit()))
+                // .addSectionData(labels.get("lowerGradeLimit"),
+                // getValue(app.applicant().masterGradeLowerLimit()))
+                .addSectionData(labels.get("grade"), getValue(app.applicant().masterGrade()));
         }
 
         return builder.build();

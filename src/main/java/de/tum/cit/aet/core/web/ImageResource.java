@@ -26,8 +26,7 @@ public class ImageResource {
     private final CurrentUserService currentUserService;
     private final UserRepository userRepository;
 
-    public ImageResource(ImageService imageService, CurrentUserService currentUserService,
-            UserRepository userRepository) {
+    public ImageResource(ImageService imageService, CurrentUserService currentUserService, UserRepository userRepository) {
         this.imageService = imageService;
         this.currentUserService = currentUserService;
         this.userRepository = userRepository;
@@ -88,8 +87,9 @@ public class ImageResource {
     @Admin
     @PostMapping(value = "/upload/default-job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadDefaultJobBanner(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("school") School school) {
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("school") School school
+    ) {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
