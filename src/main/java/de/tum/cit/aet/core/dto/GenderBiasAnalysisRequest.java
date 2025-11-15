@@ -1,8 +1,11 @@
 package de.tum.cit.aet.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Request DTO for gender bias analysis
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GenderBiasAnalysisRequest {
 
     private String text;
