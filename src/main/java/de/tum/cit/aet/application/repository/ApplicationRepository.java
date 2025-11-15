@@ -36,7 +36,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                         ap.user.phoneNumber,
                         ap.user.website,
                         ap.user.linkedinUrl,
-                        ap.user.selectedLanguage,
                         NULL
                     ),
                     ap.street,
@@ -100,7 +99,6 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                         ap.user.phoneNumber,
                         ap.user.website,
                         ap.user.linkedinUrl,
-                        ap.user.selectedLanguage,
                         NULL
                     ),
                     ap.street,

@@ -2,6 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/actuatorApi.service.ts
 api/adminResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
@@ -60,6 +61,7 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
+model/link.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts

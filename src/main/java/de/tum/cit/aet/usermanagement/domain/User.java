@@ -61,9 +61,6 @@ public class User extends AbstractAuditingEntity {
     @Column(name = "linkedin_url")
     private String linkedinUrl;
 
-    @Column(name = "selected_language", nullable = false)
-    private String selectedLanguage;
-
     @Column(name = "university_id", length = 7, unique = true)
     private String universityId;
 
@@ -80,10 +77,4 @@ public class User extends AbstractAuditingEntity {
     /**
      * Ensure defaults before persisting a new user.
      */
-    @PrePersist
-    public void prePersist() {
-        if (this.selectedLanguage == null) {
-            this.selectedLanguage = "en";
-        }
-    }
 }

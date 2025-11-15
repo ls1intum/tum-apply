@@ -512,7 +512,6 @@ public class ResearchGroupService {
         // Create a dummy admin user for sending the email to support
         User supportUser = new User();
         supportUser.setEmail(supportEmail);
-        supportUser.setSelectedLanguage(Language.ENGLISH.getCode());
 
         String emailBody = String.format(
             """

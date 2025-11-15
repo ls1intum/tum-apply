@@ -21,7 +21,6 @@ export interface UserDTO {
     nationality?: string;
     phoneNumber?: string;
     researchGroupShortDTO?: ResearchGroupShortDTO;
-    selectedLanguage?: string;
     userId?: string;
     website?: string;
 }

@@ -148,9 +148,6 @@ public class ApplicationService {
         user.setPhoneNumber(applicantDTO.user().phoneNumber());
         user.setWebsite(applicantDTO.user().website());
         user.setLinkedinUrl(applicantDTO.user().linkedinUrl());
-        if (applicantDTO.user().selectedLanguage() != null) {
-            applicant.getUser().setSelectedLanguage(applicantDTO.user().selectedLanguage());
-        }
 
         applicant.setStreet(applicantDTO.street());
         applicant.setPostalCode(applicantDTO.postalCode());
@@ -179,7 +176,6 @@ public class ApplicationService {
         User user = application.getApplicant().getUser();
         Email email = Email.builder()
             .to(user)
-            .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_SENT)
             .content(application)
             .researchGroup(application.getJob().getResearchGroup())
@@ -191,7 +187,6 @@ public class ApplicationService {
         User supervisingProfessor = application.getJob().getSupervisingProfessor();
         Email email = Email.builder()
             .to(supervisingProfessor)
-            .language(Language.fromCode(supervisingProfessor.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_RECEIVED)
             .content(application)
             .researchGroup(application.getJob().getResearchGroup())
@@ -216,7 +211,6 @@ public class ApplicationService {
 
         Email email = Email.builder()
             .to(user)
-            .language(Language.fromCode(user.getSelectedLanguage()))
             .emailType(EmailType.APPLICATION_WITHDRAWN)
             .content(application)
             .researchGroup(job.getResearchGroup())

@@ -77,7 +77,6 @@ class JobResourceTest extends AbstractResourceTest {
             "prof.doe@tum.de",
             "John",
             "Doe",
-            "en",
             "+49 89 1234",
             "https://doe.tum.de",
             "https://linkedin.com/in/doe",
