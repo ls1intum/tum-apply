@@ -2,6 +2,7 @@ package de.tum.cit.aet.job.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -36,6 +37,13 @@ public class Job extends AbstractAuditingEntity {
     @ManyToOne
     @JoinColumn(name = "research_group_id", nullable = false)
     private ResearchGroup researchGroup;
+
+    /**
+     * Optional banner image for the job posting
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     //TODO will be an enum
     @Column(name = "field_of_studies")
