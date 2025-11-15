@@ -120,3 +120,8 @@ security:
     max-attempts: 6
     resend-cooldown-seconds: 60
     hmac-secret: 3vWK1lE1FnrjAovOmWwn8O9xqq5WTtNOY/NUdSAKmoQ=
+
+aet:
+  storage:
+    image-root: ${java.io.tmpdir}/test-images
+    max-image-size-bytes: 5242880
