@@ -33,9 +33,9 @@ public class ImageService {
     private final long maxFileSize;
 
     public ImageService(
-            ImageRepository imageRepository,
-            @Value("${aet.storage.image-root:/data/images}") String imageRootDir,
-            @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize // 5MB default
+        ImageRepository imageRepository,
+        @Value("${aet.storage.image-root:/data/images}") String imageRootDir,
+        @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize // 5MB default
     ) {
         this.imageRepository = imageRepository;
         this.imageRoot = Paths.get(imageRootDir).toAbsolutePath().normalize();
@@ -52,8 +52,7 @@ public class ImageService {
             Files.createDirectories(imageRoot.resolve("profiles"));
             Files.createDirectories(imageRoot.resolve("defaults"));
         } catch (IOException ioe) {
-            log.warn("Cannot create image storage root: {}. Image upload functionality may be limited.", imageRoot,
-                    ioe);
+            log.warn("Cannot create image storage root: {}. Image upload functionality may be limited.", imageRoot, ioe);
         }
     }
 
@@ -203,8 +202,7 @@ public class ImageService {
      */
     @Transactional
     public void delete(UUID imageId, User user, boolean isAdmin) {
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
         // Only admins can delete default images
         if (image.isDefault() && !isAdmin) {
@@ -229,8 +227,7 @@ public class ImageService {
      */
     @Transactional
     public void deleteWithoutChecks(UUID imageId) {
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
         // Don't delete default images
         if (image.isDefault()) {
@@ -253,14 +250,14 @@ public class ImageService {
     public Image replaceImage(Image oldImage, Image newImage) {
         // If old image exists and is different from new image, delete it (but only if
         // not a default image)
-        if (oldImage != null && !oldImage.isDefault()
-                && (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))) {
+        if (oldImage != null && !oldImage.isDefault() && (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))) {
             try {
                 deleteWithoutChecks(oldImage.getImageId());
                 log.info(
-                        "Replaced old image: {} with new image: {}",
-                        oldImage.getImageId(),
-                        newImage != null ? newImage.getImageId() : "null");
+                    "Replaced old image: {} with new image: {}",
+                    oldImage.getImageId(),
+                    newImage != null ? newImage.getImageId() : "null"
+                );
             } catch (Exception e) {
                 log.error("Failed to delete old image during replacement: {}", oldImage.getImageId(), e);
             }
@@ -288,8 +285,7 @@ public class ImageService {
         }
 
         String mimeType = file.getContentType();
-        if (mimeType == null
-                || !List.of("image/jpeg", "image/png", "image/jpg", "image/webp").contains(mimeType.toLowerCase())) {
+        if (mimeType == null || !List.of("image/jpeg", "image/png", "image/jpg", "image/webp").contains(mimeType.toLowerCase())) {
             throw new UploadException("Invalid image type. Allowed: JPEG, PNG, WebP");
         }
     }
