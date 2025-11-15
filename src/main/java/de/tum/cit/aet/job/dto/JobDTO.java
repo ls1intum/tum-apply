@@ -25,5 +25,5 @@ public record JobDTO(
     String tasks,
     String requirements,
     @NotNull JobState state,
-    String imageUrl  // Job banner image URL
+    String imageUrl // Job banner image URL
 ) {}

@@ -22,7 +22,7 @@ public record JobCardDTO(
     String relativeTimeEnglish,
     String relativeTimeGerman,
     Integer contractDuration,
-    String imageUrl  // Job banner image URL (e.g., "/images/jobs/abc.jpg")
+    String imageUrl // Job banner image URL (e.g., "/images/jobs/abc.jpg")
 ) {
     public JobCardDTO(
         @NotNull UUID jobId,

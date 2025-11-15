@@ -346,7 +346,7 @@ public class JobService {
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
         job.setState(dto.state());
-        
+
         // Handle image update (replace old image if changed)
         if (dto.imageId() != null) {
             var newImage = jobImageHelper.getImageForJob(dto.imageId());
@@ -356,7 +356,7 @@ public class JobService {
             jobImageHelper.replaceJobImage(job.getImage(), null);
             job.setImage(null);
         }
-        
+
         if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
             Job savedJob = jobRepository.save(job);
             interviewService.createInterviewProcessForJob(savedJob.getJobId());

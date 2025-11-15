@@ -260,6 +260,8 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param state the job state
      * @return list of jobs with images loaded
      */
-    @Query("SELECT DISTINCT j FROM Job j LEFT JOIN FETCH j.image WHERE j.state = :state AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)")
+    @Query(
+        "SELECT DISTINCT j FROM Job j LEFT JOIN FETCH j.image WHERE j.state = :state AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)"
+    )
     List<Job> findAllByStateWithImages(@Param("state") JobState state);
 }

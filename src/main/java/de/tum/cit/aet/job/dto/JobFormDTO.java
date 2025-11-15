@@ -27,7 +27,7 @@ public record JobFormDTO(
     String tasks,
     String requirements,
     @NotNull JobState state,
-    UUID imageId  // Optional job banner image
+    UUID imageId // Optional job banner image
 ) {
     /**
      * @param job The job entity to convert

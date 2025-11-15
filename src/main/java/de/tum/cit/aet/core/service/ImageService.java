@@ -33,9 +33,9 @@ public class ImageService {
     private final long maxFileSize;
 
     public ImageService(
-        ImageRepository imageRepository,
-        @Value("${aet.storage.image-root:/data/images}") String imageRootDir,
-        @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize // 5MB default
+            ImageRepository imageRepository,
+            @Value("${aet.storage.image-root:/data/images}") String imageRootDir,
+            @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize // 5MB default
     ) {
         this.imageRepository = imageRepository;
         this.imageRoot = Paths.get(imageRootDir).toAbsolutePath().normalize();
@@ -55,8 +55,8 @@ public class ImageService {
     /**
      * Uploads an image file and stores it as a non-default image.
      *
-     * @param file the file to be uploaded
-     * @param uploader the user uploading the image
+     * @param file      the file to be uploaded
+     * @param uploader  the user uploading the image
      * @param imageType the type of image
      * @return the stored image
      * @throws UploadException if the file cannot be stored
@@ -105,10 +105,10 @@ public class ImageService {
     /**
      * Uploads a default system image for a specific school (admin only).
      *
-     * @param file the file to be uploaded
-     * @param uploader the admin user uploading the image
+     * @param file      the file to be uploaded
+     * @param uploader  the admin user uploading the image
      * @param imageType the type of default image
-     * @param school the school this image belongs to
+     * @param school    the school this image belongs to
      * @return the stored default image
      * @throws UploadException if the file cannot be stored
      */
@@ -189,15 +189,17 @@ public class ImageService {
     }
 
     /**
-     * Deletes an image with ownership checks. Admins can delete any image including defaults.
+     * Deletes an image with ownership checks. Admins can delete any image including
+     * defaults.
      *
      * @param imageId the ID of the image to delete
-     * @param user the user requesting the deletion
+     * @param user    the user requesting the deletion
      * @param isAdmin whether the user is an admin
      */
     @Transactional
     public void delete(UUID imageId, User user, boolean isAdmin) {
-        Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
         // Only admins can delete default images
         if (image.isDefault() && !isAdmin) {
@@ -222,7 +224,8 @@ public class ImageService {
      */
     @Transactional
     public void deleteWithoutChecks(UUID imageId) {
-        Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
         // Don't delete default images
         if (image.isDefault()) {
@@ -235,7 +238,8 @@ public class ImageService {
     }
 
     /**
-     * Replaces an old image with a new one, deleting the old image if it's not a default.
+     * Replaces an old image with a new one, deleting the old image if it's not a
+     * default.
      *
      * @param oldImage the current image to be replaced
      * @param newImage the new image to use
@@ -248,7 +252,10 @@ public class ImageService {
             if (!oldImage.isDefault()) {
                 try {
                     deleteWithoutChecks(oldImage.getImageId());
-                    log.info("Replaced old image: {} with new image: {}", oldImage.getImageId(), newImage != null ? newImage.getImageId() : "null");
+                    log.info(
+                            "Replaced old image: {} with new image: {}",
+                            oldImage.getImageId(),
+                            newImage != null ? newImage.getImageId() : "null");
                 } catch (Exception e) {
                     log.error("Failed to delete old image during replacement: {}", oldImage.getImageId(), e);
                 }
@@ -277,7 +284,8 @@ public class ImageService {
         }
 
         String mimeType = file.getContentType();
-        if (mimeType == null || !List.of("image/jpeg", "image/png", "image/jpg", "image/webp").contains(mimeType.toLowerCase())) {
+        if (mimeType == null
+                || !List.of("image/jpeg", "image/png", "image/jpg", "image/webp").contains(mimeType.toLowerCase())) {
             throw new UploadException("Invalid image type. Allowed: JPEG, PNG, WebP");
         }
     }
@@ -288,9 +296,15 @@ public class ImageService {
             // Fallback based on mime type
             String mimeType = file.getContentType();
             if (mimeType != null) {
-                if (mimeType.contains("jpeg") || mimeType.contains("jpg")) return ".jpg";
-                if (mimeType.contains("png")) return ".png";
-                if (mimeType.contains("webp")) return ".webp";
+                if (mimeType.contains("jpeg") || mimeType.contains("jpg")) {
+                    return ".jpg";
+                }
+                if (mimeType.contains("png")) {
+                    return ".png";
+                }
+                if (mimeType.contains("webp")) {
+                    return ".webp";
+                }
             }
             return ".jpg";
         }

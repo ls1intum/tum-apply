@@ -26,7 +26,8 @@ public class ImageResource {
     private final CurrentUserService currentUserService;
     private final UserRepository userRepository;
 
-    public ImageResource(ImageService imageService, CurrentUserService currentUserService, UserRepository userRepository) {
+    public ImageResource(ImageService imageService, CurrentUserService currentUserService,
+            UserRepository userRepository) {
         this.imageService = imageService;
         this.currentUserService = currentUserService;
         this.userRepository = userRepository;
@@ -35,8 +36,9 @@ public class ImageResource {
     /**
      * Get all default job banner images (publicly accessible)
      * Optionally filter by school
-     * 
+     *
      * @param school optional school filter (e.g., CIT)
+     * @return a list of default job banner images
      */
     @Public
     @GetMapping("/defaults/job-banners")
@@ -48,6 +50,8 @@ public class ImageResource {
 
     /**
      * Get all images uploaded by the current user
+     *
+     * @return a list of images uploaded by the current user
      */
     @ProfessorOrAdmin
     @GetMapping("/my-uploads")
@@ -60,8 +64,9 @@ public class ImageResource {
 
     /**
      * Upload a job banner image (for professors to use on their jobs)
-     * 
+     *
      * @param file the image file
+     * @return the uploaded image DTO
      */
     @ProfessorOrAdmin
     @PostMapping(value = "/upload/job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -75,15 +80,16 @@ public class ImageResource {
 
     /**
      * Upload a default job banner image (admin only)
-     * @param file the image file
+     *
+     * @param file   the image file
      * @param school the school this default image belongs to (e.g., CIT)
+     * @return the uploaded default image DTO
      */
     @Admin
     @PostMapping(value = "/upload/default-job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadDefaultJobBanner(
-        @RequestParam("file") MultipartFile file,
-        @RequestParam("school") School school
-    ) {
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("school") School school) {
         UUID userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -92,8 +98,9 @@ public class ImageResource {
     }
 
     /**
-     * Delete an image (professors can only delete their own, admins can delete any including defaults)
-     * 
+     * Delete an image (professors can only delete their own, admins can delete any
+     * including defaults)
+     *
      * @param imageId the ID of the image to delete
      * @return HTTP 204 NO CONTENT if the image is deleted successfully
      */

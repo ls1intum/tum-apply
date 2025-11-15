@@ -22,10 +22,10 @@ public class Image extends AbstractAuditingEntity {
     /**
      * Access URL for the image (e.g., "/images/jobs/abc-123.jpg")
      */
-    @Column(name = "url", length = 512,nullable = false)
+    @Column(name = "url", length = 512, nullable = false)
     private String url;
 
-    @Column(name = "mime_type", length = 128,nullable = false)
+    @Column(name = "mime_type", length = 128, nullable = false)
     private String mimeType;
 
     @Column(name = "size_bytes", nullable = false)

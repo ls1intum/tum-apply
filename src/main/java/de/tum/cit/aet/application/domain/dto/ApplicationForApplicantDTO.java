@@ -14,15 +14,16 @@ import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ApplicationForApplicantDTO(
-        UUID applicationId,
-        ApplicantDTO applicant,
-        @NotNull JobCardDTO job,
-        @NotNull ApplicationState applicationState,
-        LocalDate desiredDate,
-        String projects,
-        String specialSkills,
-        String motivation,
-        Set<CustomFieldAnswerDTO> customFields) {
+    UUID applicationId,
+    ApplicantDTO applicant,
+    @NotNull JobCardDTO job,
+    @NotNull ApplicationState applicationState,
+    LocalDate desiredDate,
+    String projects,
+    String specialSkills,
+    String motivation,
+    Set<CustomFieldAnswerDTO> customFields
+) {
     /**
      * @param application
      * @return
@@ -33,27 +34,28 @@ public record ApplicationForApplicantDTO(
         }
         Job job = application.getJob();
         return new ApplicationForApplicantDTO(
+            application.getApplicationId(),
+            ApplicantDTO.getFromEntity(application.getApplicant()),
+            new JobCardDTO(
+                job.getJobId(),
+                job.getTitle(),
+                job.getFieldOfStudies(),
+                job.getLocation(),
+                job.getSupervisingProfessor().getLastName(),
                 application.getApplicationId(),
-                ApplicantDTO.getFromEntity(application.getApplicant()),
-                new JobCardDTO(
-                        job.getJobId(),
-                        job.getTitle(),
-                        job.getFieldOfStudies(),
-                        job.getLocation(),
-                        job.getSupervisingProfessor().getLastName(),
-                        application.getApplicationId(),
-                        application.getState(),
-                        job.getWorkload(),
-                        job.getStartDate(),
-                        job.getEndDate(),
-                        job.getContractDuration(),
-                        job.getImage() != null ? job.getImage().getUrl() : null),
                 application.getState(),
-                application.getDesiredStartDate(),
-                application.getProjects(),
-                application.getSpecialSkills(),
-                application.getMotivation(),
-                application.getCustomFieldAnswers().stream().map(CustomFieldAnswerDTO::getFromEntity)
-                        .collect(Collectors.toSet()));
+                job.getWorkload(),
+                job.getStartDate(),
+                job.getEndDate(),
+                job.getContractDuration(),
+                job.getImage() != null ? job.getImage().getUrl() : null
+            ),
+            application.getState(),
+            application.getDesiredStartDate(),
+            application.getProjects(),
+            application.getSpecialSkills(),
+            application.getMotivation(),
+            application.getCustomFieldAnswers().stream().map(CustomFieldAnswerDTO::getFromEntity).collect(Collectors.toSet())
+        );
     }
 }
