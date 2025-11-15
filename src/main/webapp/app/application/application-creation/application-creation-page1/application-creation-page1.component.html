@@ -94,15 +94,15 @@
       <jhi-datepicker
         [selectedDate]="data().dateOfBirth"
         label=""
-        width="50%"
+        width="100%"
         (selectedDateChange)="setDateOfBirth($event)"
         [minDate]="minDate"
         [maxDate]="maxDate"
         [defaultDate]="defaultBirthDate"
       />
     </div>
+    <div class="form-field"></div>
   </div>
-
 
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.address"></span></p-divider>
 
