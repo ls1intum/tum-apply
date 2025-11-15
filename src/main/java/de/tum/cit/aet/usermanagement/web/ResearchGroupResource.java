@@ -12,10 +12,10 @@ import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
-import de.tum.cit.aet.usermanagement.dto.ProfessorResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
@@ -134,11 +134,24 @@ public class ResearchGroupResource {
      */
     @PostMapping("/professor-request")
     @Authenticated
-    public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(
-        @Valid @RequestBody ProfessorResearchGroupRequestDTO request
-    ) {
+    public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(@Valid @RequestBody ResearchGroupRequestDTO request) {
         log.info("POST /api/research-groups/professor-request name={} uniId={}", request.researchGroupName(), request.universityId());
         ResearchGroup created = researchGroupService.createProfessorResearchGroupRequest(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
+    }
+
+    /**
+     * Creates a research group directly as ACTIVE state (admin only).
+     * Does not require user association during creation.
+     *
+     * @param request the research group creation request
+     * @return the created research group in ACTIVE state
+     */
+    @PostMapping("/admin-create")
+    @Admin
+    public ResponseEntity<ResearchGroupDTO> createResearchGroupAsAdmin(@Valid @RequestBody ResearchGroupRequestDTO request) {
+        log.info("POST /api/research-groups/admin-create name={}", request.researchGroupName());
+        ResearchGroup created = researchGroupService.createResearchGroupAsAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
     }
 

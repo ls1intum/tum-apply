@@ -16,6 +16,9 @@
     "back": "Zurück",
     "next": "Weiter",
     "apply": "Bewerben",
-    "publish": "Veröffentlichen"
+    "publish": "Veröffentlichen",
+    "tooltip": {
+      "editDisabled": "Nur Entwürfe können bearbeitet werden"
+    }
   }
 }
