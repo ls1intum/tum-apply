@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="016_alter_jobs_add_image_id" author="bofanzhu">
+    <!-- Add image_id column to jobs table -->
+    <addColumn tableName="jobs">
+      <column name="image_id" type="CHAR(36)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+
+    <!-- Add foreign key constraint to images table -->
+    <addForeignKeyConstraint baseTableName="jobs"
+                             baseColumnNames="image_id"
+                             constraintName="fk_jobs_image"
+                             referencedTableName="images"
+                             referencedColumnNames="image_id"/>
+  </changeSet>
+
+</databaseChangeLog>
