@@ -4,7 +4,7 @@ import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.constants.School;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
-import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -59,7 +59,9 @@ public class ImageResource {
     }
 
     /**
-     * Upload a job banner image
+     * Upload a job banner image (for professors to use on their jobs)
+     * 
+     * @param file the image file
      */
     @ProfessorOrAdmin
     @PostMapping(value = "/upload/job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -72,12 +74,35 @@ public class ImageResource {
     }
 
     /**
-     * Delete an image
+     * Upload a default job banner image (admin only)
+     * @param file the image file
+     * @param school the school this default image belongs to (e.g., CIT)
      */
-    @Authenticated
+    @Admin
+    @PostMapping(value = "/upload/default-job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageDTO> uploadDefaultJobBanner(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("school") School school
+    ) {
+        UUID userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Image image = imageService.uploadDefaultImage(file, user, ImageType.DEFAULT_JOB_BANNER, school);
+        return ResponseEntity.ok(ImageDTO.fromEntity(image));
+    }
+
+    /**
+     * Delete an image (professors can only delete their own, admins can delete any including defaults)
+     * 
+     * @param imageId the ID of the image to delete
+     * @return HTTP 204 NO CONTENT if the image is deleted successfully
+     */
+    @ProfessorOrAdmin
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable UUID imageId) {
-        imageService.delete(imageId, currentUserService.getUser());
+        User user = currentUserService.getUser();
+        boolean isAdmin = currentUserService.isAdmin();
+        imageService.delete(imageId, user, isAdmin);
         return ResponseEntity.noContent().build();
     }
 }

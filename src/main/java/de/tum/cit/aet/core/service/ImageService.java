@@ -53,7 +53,13 @@ public class ImageService {
     }
 
     /**
-     * Upload an image file
+     * Uploads an image file and stores it as a non-default image.
+     *
+     * @param file the file to be uploaded
+     * @param uploader the user uploading the image
+     * @param imageType the type of image
+     * @return the stored image
+     * @throws UploadException if the file cannot be stored
      */
     @Transactional
     public Image upload(MultipartFile file, User uploader, ImageType imageType) {
@@ -88,6 +94,7 @@ public class ImageService {
             image.setImageType(imageType);
             image.setDefault(false);
             image.setUploadedBy(uploader);
+            image.setSchool(null); // User uploaded images don't belong to a specific school
 
             return imageRepository.save(image);
         } catch (IOException e) {
@@ -96,7 +103,64 @@ public class ImageService {
     }
 
     /**
-     * Get all default job banner images for a specific school
+     * Uploads a default system image for a specific school (admin only).
+     *
+     * @param file the file to be uploaded
+     * @param uploader the admin user uploading the image
+     * @param imageType the type of default image
+     * @param school the school this image belongs to
+     * @return the stored default image
+     * @throws UploadException if the file cannot be stored
+     */
+    @Transactional
+    public Image uploadDefaultImage(MultipartFile file, User uploader, ImageType imageType, School school) {
+        if (school == null) {
+            throw new IllegalArgumentException("School is required for default images");
+        }
+        validateImage(file);
+
+        try {
+            // Read the image to validate it's a real image
+            BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+            if (bufferedImage == null) {
+                throw new UploadException("Invalid image file");
+            }
+
+            // Generate unique filename
+            String extension = getExtension(file);
+            String filename = UUID.randomUUID() + extension;
+            String subdirectory = getSubdirectory(imageType);
+            String relativePath = subdirectory + "/" + filename;
+
+            // Full path on disk
+            Path fullPath = imageRoot.resolve(relativePath);
+
+            // Save original image
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, fullPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            // Create entity
+            Image image = new Image();
+            image.setUrl("/images/" + relativePath);
+            image.setMimeType(file.getContentType());
+            image.setSizeBytes(file.getSize());
+            image.setImageType(imageType);
+            image.setDefault(true);
+            image.setUploadedBy(uploader);
+            image.setSchool(school);
+
+            return imageRepository.save(image);
+        } catch (IOException e) {
+            throw new UploadException("Failed to store image", e);
+        }
+    }
+
+    /**
+     * Retrieves all default job banner images for a specific school.
+     *
+     * @param school the school to filter by, or null for all schools
+     * @return list of default job banner images
      */
     public List<Image> getDefaultJobBanners(School school) {
         if (school == null) {
@@ -106,33 +170,42 @@ public class ImageService {
     }
 
     /**
-     * Get all default job banner images (all schools)
+     * Retrieves all default job banner images across all schools.
+     *
+     * @return list of all default job banner images
      */
     public List<Image> getDefaultJobBanners() {
         return imageRepository.findDefaultJobBanners();
     }
 
     /**
-     * Get all images uploaded by a specific user
+     * Retrieves all images uploaded by a specific user.
+     *
+     * @param userId the ID of the user
+     * @return list of images uploaded by the user
      */
     public List<Image> getImagesByUploader(UUID userId) {
         return imageRepository.findByUploaderId(userId);
     }
 
     /**
-     * Delete an image (checks ownership)
+     * Deletes an image with ownership checks. Admins can delete any image including defaults.
+     *
+     * @param imageId the ID of the image to delete
+     * @param user the user requesting the deletion
+     * @param isAdmin whether the user is an admin
      */
     @Transactional
-    public void delete(UUID imageId, User user) {
+    public void delete(UUID imageId, User user, boolean isAdmin) {
         Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
-        // Don't delete default images
-        if (image.isDefault()) {
-            throw new IllegalArgumentException("Cannot delete default images");
+        // Only admins can delete default images
+        if (image.isDefault() && !isAdmin) {
+            throw new IllegalArgumentException("Only admins can delete default images");
         }
 
-        // Check ownership - only the uploader can delete
-        if (image.getUploadedBy() != null && !image.getUploadedBy().getUserId().equals(user.getUserId())) {
+        // Check ownership - only the uploader (or admin) can delete
+        if (!isAdmin && image.getUploadedBy() != null && !image.getUploadedBy().getUserId().equals(user.getUserId())) {
             throw new IllegalArgumentException("You can only delete images you uploaded");
         }
 
@@ -143,7 +216,9 @@ public class ImageService {
     }
 
     /**
-     * Delete an image without ownership checks (for internal use, e.g., when job is deleted)
+     * Deletes an image without ownership checks (for internal use only).
+     *
+     * @param imageId the ID of the image to delete
      */
     @Transactional
     public void deleteWithoutChecks(UUID imageId) {
@@ -160,11 +235,11 @@ public class ImageService {
     }
 
     /**
-     * Replace an old image with a new one (e.g., when updating a job)
+     * Replaces an old image with a new one, deleting the old image if it's not a default.
      *
-     * @param oldImage the current image to be replaced (can be null)
-     * @param newImage the new image to use (can be null)
-     * @return the new image to set
+     * @param oldImage the current image to be replaced
+     * @param newImage the new image to use
+     * @return the new image
      */
     public Image replaceImage(Image oldImage, Image newImage) {
         // If old image exists and is different from new image, delete it
@@ -182,9 +257,6 @@ public class ImageService {
         return newImage;
     }
 
-    /**
-     * Delete image file from disk
-     */
     private void deleteImageFile(Image image) {
         try {
             String relativePath = image.getUrl().replace("/images/", "");
