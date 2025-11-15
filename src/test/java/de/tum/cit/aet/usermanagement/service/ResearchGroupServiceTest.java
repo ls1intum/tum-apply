@@ -480,12 +480,12 @@ class ResearchGroupServiceTest {
     }
 
     @Nested
-    class CreateProfessorResearchGroupRequest {
+    class CreateResearchGroupRequest {
 
         @Test
         void shouldCreateResearchGroupRequestSuccessfully() {
             // Arrange
-            ProfessorResearchGroupRequestDTO request = ResearchGroupTestData.createProfessorResearchGroupRequest("New Research Group");
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("New Research Group");
 
             testUser.setResearchGroup(null);
             when(currentUserService.getUser()).thenReturn(testUser);
@@ -511,7 +511,7 @@ class ResearchGroupServiceTest {
             testUser.setResearchGroup(testResearchGroup);
             when(currentUserService.getUser()).thenReturn(testUser);
 
-            ProfessorResearchGroupRequestDTO request = ResearchGroupTestData.createProfessorResearchGroupRequest("New research group");
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("New research group");
 
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
@@ -526,7 +526,7 @@ class ResearchGroupServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(true);
 
-            ProfessorResearchGroupRequestDTO request = ResearchGroupTestData.createProfessorResearchGroupRequest("Existing Group");
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("Existing Group");
 
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.createProfessorResearchGroupRequest(request))
