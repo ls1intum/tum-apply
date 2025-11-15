@@ -281,6 +281,23 @@ public class ImageService {
         try {
             String relativePath = image.getUrl().replace("/images/", "");
             Path imagePath = imageRoot.resolve(relativePath);
+
+            if (!imagePath.isAbsolute()) {
+                if (imagePath.getNameCount() == 1) {
+                    imagePath = imageRoot.resolve(imagePath);
+                } else {
+                    Path workingDir = Paths.get("").toAbsolutePath();
+                    imagePath = workingDir.resolve(imagePath);
+                }
+            }
+
+            imagePath = imagePath.toAbsolutePath().normalize();
+            Path normalizedRoot = imageRoot.toAbsolutePath().normalize();
+
+            if (!imagePath.startsWith(normalizedRoot)) {
+                throw new IllegalStateException("Stored path lies outside storage root: " + imagePath);
+            }
+
             Files.deleteIfExists(imagePath);
         } catch (IOException e) {
             log.error("Failed to delete image file for: {}", image.getImageId(), e);

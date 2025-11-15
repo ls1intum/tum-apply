@@ -38,7 +38,12 @@
                              baseColumnNames="uploaded_by"
                              constraintName="fk_images_user"
                              referencedTableName="users"
-                             referencedColumnNames="user_id"/>
+                             referencedColumnNames="user_id"
+                             onDelete="CASCADE"/>
+
+    <createIndex indexName="idx_images_uploaded_by" tableName="images">
+      <column name="uploaded_by"/>
+    </createIndex>
 
     <sql>
       ALTER TABLE images MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
