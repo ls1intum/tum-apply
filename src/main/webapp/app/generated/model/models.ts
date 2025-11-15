@@ -24,6 +24,8 @@ export * from './emailTemplateDTO';
 export * from './emailTemplateOverviewDTO';
 export * from './emailTemplateTranslationDTO';
 export * from './employeeResearchGroupRequestDTO';
+export * from './image';
+export * from './imageDTO';
 export * from './internalComment';
 export * from './internalCommentDTO';
 export * from './internalCommentUpdateDTO';
