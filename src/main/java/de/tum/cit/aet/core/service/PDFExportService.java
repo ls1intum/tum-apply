@@ -6,6 +6,7 @@ import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.util.PDFBuilder;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
 import de.tum.cit.aet.job.service.JobService;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class PDFExportService {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
         UUID jobId = app.jobId();
         JobDetailDTO job = jobService.getJobDetails(jobId);
-        var user = currentUserService.getUser();
+        User user = currentUserService.getUser();
         String firstName = user.getFirstName() != null ? user.getFirstName() : "";
         String lastName = user.getLastName() != null ? user.getLastName() : "";
 
@@ -171,7 +172,7 @@ public class PDFExportService {
      */
     private Optional<String> getCurrentUserFullName() {
         try {
-            var user = currentUserService.getUser();
+            User user = currentUserService.getUser();
             String firstName = user.getFirstName() != null ? user.getFirstName() : "";
             String lastName = user.getLastName() != null ? user.getLastName() : "";
 
