@@ -279,6 +279,13 @@ aet:
   storage:
     root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400
+    # Image storage settings
+    image-root: ${AET_STORAGE_IMAGE_ROOT:storage/images}
+    # Maximum image file size in bytes (default: 5MB)
+    max-image-size-bytes: ${AET_STORAGE_MAX_IMAGE_SIZE_BYTES:5242880}
+    # Maximum image dimensions (width and height) in pixels
+    max-image-width: ${AET_STORAGE_MAX_IMAGE_WIDTH:4096}
+    max-image-height: ${AET_STORAGE_MAX_IMAGE_HEIGHT:4096}
   download:
     deterministic-zip: false
   client:

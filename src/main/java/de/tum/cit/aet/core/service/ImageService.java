@@ -31,15 +31,21 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final Path imageRoot;
     private final long maxFileSize;
+    private final int maxWidth;
+    private final int maxHeight;
 
     public ImageService(
         ImageRepository imageRepository,
         @Value("${aet.storage.image-root:/data/images}") String imageRootDir,
-        @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize // 5MB default
+        @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
+        @Value("${aet.storage.max-image-width:4096}") int maxWidth, // 4K width default
+        @Value("${aet.storage.max-image-height:4096}") int maxHeight // 4K height default
     ) {
         this.imageRepository = imageRepository;
         this.imageRoot = Paths.get(imageRootDir).toAbsolutePath().normalize();
         this.maxFileSize = maxFileSize;
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
 
         initializeImageDirectories();
     }
@@ -75,6 +81,9 @@ public class ImageService {
             if (bufferedImage == null) {
                 throw new UploadException("Invalid image file");
             }
+
+            // Validate image dimensions
+            validateImageDimensions(bufferedImage);
 
             // Generate unique filename
             String extension = getExtension(file);
@@ -129,6 +138,9 @@ public class ImageService {
             if (bufferedImage == null) {
                 throw new UploadException("Invalid image file");
             }
+
+            // Validate image dimensions
+            validateImageDimensions(bufferedImage);
 
             // Generate unique filename
             String extension = getExtension(file);
@@ -288,6 +300,19 @@ public class ImageService {
         if (mimeType == null || !List.of("image/jpeg", "image/png", "image/jpg", "image/webp").contains(mimeType.toLowerCase())) {
             throw new UploadException("Invalid image type. Allowed: JPEG, PNG, WebP");
         }
+    }
+
+    private void validateImageDimensions(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        if (width > maxWidth || height > maxHeight) {
+            throw new UploadException(
+                String.format("Image dimensions (%dx%d) exceed maximum allowed dimensions (%dx%d)", width, height, maxWidth, maxHeight)
+            );
+        }
+
+        log.debug("Image dimensions validated: {}x{}", width, height);
     }
 
     private String getExtension(MultipartFile file) {
