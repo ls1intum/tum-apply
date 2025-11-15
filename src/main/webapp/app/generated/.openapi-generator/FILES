@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.base.service.ts
 api.module.ts
@@ -64,6 +63,7 @@ model/jobFormDTO.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
+model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
@@ -73,7 +73,6 @@ model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
 model/profOnboardingDTO.ts
 model/professorDTO.ts
-model/professorResearchGroupRequestDTO.ts
 model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
@@ -82,6 +81,7 @@ model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts
+model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
 model/sortObject.ts

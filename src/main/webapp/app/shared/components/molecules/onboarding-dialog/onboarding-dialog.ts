@@ -11,8 +11,8 @@ import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-d
 import { ButtonComponent } from '../../atoms/button/button.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { ProfOnboardingResourceApiService } from '../../../../generated/api/profOnboardingResourceApi.service';
+import { ResearchGroupCreationFormComponent } from '../research-group-creation-form/research-group-creation-form.component';
 
-import { ProfessorRequestAccessFormComponent } from './professor-request-access-form/professor-request-access-form.component';
 import { EmployeeRequestAccessFormComponent } from './employee-request-access-form/employee-request-access-form.component';
 
 /**
@@ -35,7 +35,7 @@ export class OnboardingDialog {
     if (openForm) {
       this.ref?.close();
 
-      this.dialogService.open(ProfessorRequestAccessFormComponent, {
+      this.dialogService.open(ResearchGroupCreationFormComponent, {
         ...ONBOARDING_FORM_DIALOG_CONFIG,
         header: this.translate.instant('onboarding.professorRequest.dialogTitle'),
       });

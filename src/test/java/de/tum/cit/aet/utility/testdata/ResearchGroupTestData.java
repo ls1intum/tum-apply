@@ -1,6 +1,9 @@
 package de.tum.cit.aet.utility.testdata;
 
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.UUID;
 
@@ -12,7 +15,9 @@ public final class ResearchGroupTestData {
 
     private ResearchGroupTestData() {}
 
-    /** Unsaved ResearchGroup with sane defaults. */
+    /**
+     * Unsaved ResearchGroup with sane defaults.
+     */
     public static ResearchGroup newRg() {
         ResearchGroup rg = new ResearchGroup();
         rg.setHead("Alice");
@@ -27,10 +32,13 @@ public final class ResearchGroupTestData {
         rg.setStreet("123 Main St");
         rg.setWebsite("http://example.com");
         rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        rg.setState(ResearchGroupState.ACTIVE);
         return rg;
     }
 
-    /** Unsaved ResearchGroup; all fields optional (null = keep default). */
+    /**
+     * Unsaved ResearchGroup; all fields optional (null = keep default).
+     */
     public static ResearchGroup newRgAll(
         String head,
         String name,
@@ -42,7 +50,8 @@ public final class ResearchGroupTestData {
         String postalCode,
         String school,
         String street,
-        String website
+        String website,
+        String state
     ) {
         ResearchGroup rg = newRg();
         if (head != null) rg.setHead(head);
@@ -56,6 +65,7 @@ public final class ResearchGroupTestData {
         if (school != null) rg.setSchool(school);
         if (street != null) rg.setStreet(street);
         if (website != null) rg.setWebsite(website);
+        if (state != null) rg.setState(ResearchGroupState.valueOf(state));
         if (rg.getUniversityId() == null) {
             rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         }
@@ -79,10 +89,69 @@ public final class ResearchGroupTestData {
         String postalCode,
         String school,
         String street,
-        String website
+        String website,
+        String state
     ) {
         return repo.save(
-            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, school, street, website)
+            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, school, street, website, state)
+        );
+    }
+
+    // --- DTO creation helpers -------------------------------------------------------------------------
+
+    /**
+     * Creates a ResearchGroupRequestDTO with the given research group name and default values for other fields.
+     */
+    public static ResearchGroupRequestDTO createResearchGroupRequest(String researchGroupName) {
+        return new ResearchGroupRequestDTO(
+            "Prof.",
+            "John",
+            "Doe",
+            "ab12cde",
+            "Prof. New",
+            researchGroupName,
+            "NRG",
+            "nrg@test.com",
+            "https://nrg.com",
+            "Computer Science",
+            "Description",
+            "CS",
+            "Main St",
+            "12345",
+            "City"
+        );
+    }
+
+    /**
+     * Creates a ResearchGroupDTO with all fields.
+     */
+    public static ResearchGroupDTO createResearchGroupDTO(
+        String name,
+        String abbreviation,
+        String head,
+        String email,
+        String website,
+        String university,
+        String description,
+        String field,
+        String street,
+        String postalCode,
+        String city,
+        ResearchGroupState state
+    ) {
+        return new ResearchGroupDTO(
+            name,
+            abbreviation,
+            head,
+            email,
+            website,
+            university,
+            description,
+            field,
+            street,
+            postalCode,
+            city,
+            state
         );
     }
 }
