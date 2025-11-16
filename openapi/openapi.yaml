@@ -676,6 +676,36 @@ paths:
           content:
             application/pdf:
               schema: {type: string, format: binary}
+  /api/gender-bias/analyze:
+    post:
+      tags: [gender-bias-analysis-resource]
+      operationId: analyzeText
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
+  /api/gender-bias/analyze-html:
+    post:
+      tags: [gender-bias-analysis-resource]
+      operationId: analyzeHtmlContent
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -1441,6 +1471,11 @@ components:
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
+    BiasedWordDTO:
+      type: object
+      properties:
+        type: {type: string}
+        word: {type: string}
     CreatedJobDTO:
       type: object
       properties:
@@ -1554,6 +1589,20 @@ components:
       properties:
         professorName: {type: string, minLength: 1}
       required: [professorName]
+    GenderBiasAnalysisRequest:
+      type: object
+      properties:
+        language: {type: string}
+        text: {type: string}
+    GenderBiasAnalysisResponse:
+      type: object
+      properties:
+        biasedWords:
+          type: array
+          items: {$ref: '#/components/schemas/BiasedWordDTO'}
+        coding: {type: string}
+        language: {type: string}
+        originalText: {type: string}
     InternalComment:
       type: object
       properties:
