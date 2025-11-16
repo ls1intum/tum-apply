@@ -27,12 +27,12 @@ public class ImageStaticResourceConfiguration implements WebMvcConfigurer {
         // Serve job banners and default images as public static resources
         // These are publicly accessible for anyone browsing job listings
         registry
-            .addResourceHandler("/images/jobs/**", "/images/defaults/**")
-            .addResourceLocations("file:" + imagePath.toString() + "/")
-            .setCacheControl(
-                CacheControl.maxAge(Duration.ofDays(30)) // Cache for 30 days
-                    .cachePublic() // Allow CDN/proxy caching
-                    .mustRevalidate() // Check with server if expired
-            );
+                .addResourceHandler("/images/**")
+                .addResourceLocations("file:" + imagePath.toString() + "/")
+                .setCacheControl(
+                        CacheControl.maxAge(Duration.ofDays(30)) // Cache for 30 days
+                                .cachePublic() // Allow CDN/proxy caching
+                                .mustRevalidate() // Check with server if expired
+                );
     }
 }
