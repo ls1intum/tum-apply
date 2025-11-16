@@ -115,6 +115,7 @@ public class InterviewService {
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
                     jobId,
+                    interviewProcess.getId(),
                     job.getTitle(),
                     completedCount,
                     scheduledCount,
