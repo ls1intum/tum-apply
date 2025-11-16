@@ -1,0 +1,26 @@
+<p-card styleClass="w-full">
+  <div class="flex items-center justify-between cursor-pointer" (click)="toggleExpanded()">
+    <div class="flex items-center gap-4">
+      <jhi-date-header [date]="date()" />
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-sm font-medium bg-[var(--primary-color)] text-white">
+          {{ slots().length }} {{ slots().length === 1 ? 'slot' : 'slots' }}
+        </span>
+      </div>
+    </div>
+
+    <p-button
+      [icon]="expanded() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+      [text]="true"
+      [rounded]="true"
+      severity="secondary"
+    />
+  </div>
+
+  <div *ngIf="expanded()" class="mt-4 flex flex-col gap-2">
+    <jhi-slot-card
+      *ngFor="let slot of slots()"
+      [slot]="slot"
+    />
+  </div>
+</p-card>

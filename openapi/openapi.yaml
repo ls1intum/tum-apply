@@ -676,6 +676,36 @@ paths:
           content:
             application/pdf:
               schema: {type: string, format: binary}
+  /api/gender-bias/analyze:
+    post:
+      tags: [gender-bias-analysis-resource]
+      operationId: analyzeText
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
+  /api/gender-bias/analyze-html:
+    post:
+      tags: [gender-bias-analysis-resource]
+      operationId: analyzeHtmlContent
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -688,45 +718,6 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
-  /api/interviews/processes/{processId}/slots:
-    get:
-      tags: [interview-resource]
-      operationId: getSlotsByProcessId
-      parameters:
-      - name: processId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/InterviewSlotDTO'}
-  /api/interviews/processes/{processId}/slots/create:
-    post:
-      tags: [interview-resource]
-      operationId: createSlots
-      parameters:
-      - name: processId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/CreateSlotsDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -1480,14 +1471,11 @@ components:
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
-    CreateSlotsDTO:
+    BiasedWordDTO:
       type: object
       properties:
-        slots:
-          type: array
-          items: {$ref: '#/components/schemas/SlotInput'}
-          minItems: 1
-      required: [slots]
+        type: {type: string}
+        word: {type: string}
     CreatedJobDTO:
       type: object
       properties:
@@ -1601,6 +1589,20 @@ components:
       properties:
         professorName: {type: string, minLength: 1}
       required: [professorName]
+    GenderBiasAnalysisRequest:
+      type: object
+      properties:
+        language: {type: string}
+        text: {type: string}
+    GenderBiasAnalysisResponse:
+      type: object
+      properties:
+        biasedWords:
+          type: array
+          items: {$ref: '#/components/schemas/BiasedWordDTO'}
+        coding: {type: string}
+        language: {type: string}
+        originalText: {type: string}
     InternalComment:
       type: object
       properties:
@@ -1630,21 +1632,12 @@ components:
         invitedCount: {type: integer, format: int64}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
+        processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
-      required: [completedCount, invitedCount, jobId, jobTitle, scheduledCount, totalInterviews,
-        uncontactedCount]
-    InterviewSlotDTO:
-      type: object
-      properties:
-        endDateTime: {type: string, format: date-time}
-        id: {type: string, format: uuid}
-        interviewProcessId: {type: string, format: uuid}
-        isBooked: {type: boolean}
-        location: {type: string}
-        startDateTime: {type: string, format: date-time}
-        streamLink: {type: string}
+      required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
+        totalInterviews, uncontactedCount]
     Job:
       type: object
       properties:
@@ -2028,15 +2021,6 @@ components:
         email: {type: string, format: email, minLength: 1}
         registration: {type: boolean}
       required: [email]
-    SlotInput:
-      type: object
-      properties:
-        date: {type: string, format: date}
-        endTime: {type: string}
-        location: {type: string, maxLength: 255, minLength: 0}
-        startTime: {type: string}
-        streamLink: {type: string, maxLength: 500, minLength: 0}
-      required: [date, endTime, location, startTime]
     SortObject:
       type: object
       properties:

@@ -1,0 +1,19 @@
+{
+  "pdf": {
+    "headerItems": {
+      "applicationBy": "Bewerbung von ",
+      "forPosition": " auf die Stelle ",
+      "status": "Status: "
+    },
+    "metaData": {
+      "thisDocumentWasGeneratedOn": "Dieses Dokument wurde am ",
+      "byUser": " von ",
+      "usingTumapply": " mit ",
+      "metaEndText": " erstellt."
+    },
+    "pageCount": {
+      "page": "Seite",
+      "of": "von"
+    }
+  }
+}

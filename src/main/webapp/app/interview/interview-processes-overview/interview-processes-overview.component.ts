@@ -30,7 +30,10 @@ export class InterviewProcessesOverviewComponent {
   }
 
   viewDetails(jobId: string): void {
-    this.router.navigate(['/interviews', jobId]);
+    const process = this.interviewProcesses().find(p => p.jobId === jobId);
+    if (process?.processId) {
+      this.router.navigate(['/interviews', process.processId]);
+    }
   }
 
   private async loadInterviewProcesses(): Promise<void> {

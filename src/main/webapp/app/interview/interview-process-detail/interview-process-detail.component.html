@@ -1,0 +1,82 @@
+<div class="flex flex-col gap-4 p-4">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <p-button
+        icon="pi pi-arrow-left"
+        [text]="true"
+        [rounded]="true"
+        (onClick)="navigateBack()"
+        severity="secondary"
+      />
+      <h2 class="text-2xl font-semibold text-[var(--text-color)]">
+        {{ currentMonth() }}
+      </h2>
+    </div>
+
+    <div class="flex gap-2">
+      <p-button
+        icon="pi pi-calendar"
+        label="Subscribe"
+        [outlined]="true"
+        severity="secondary"
+        size="small"
+      />
+      <p-button
+        icon="pi pi-plus"
+        label="Add Slots"
+        severity="primary"
+        size="small"
+        (onClick)="openCreateSlotsModal()"
+      />
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="flex justify-center items-center py-12">
+    <p-progressSpinner styleClass="w-16 h-16" />
+  </div>
+
+  <div *ngIf="error() && !loading()" class="flex justify-center items-center py-12">
+    <p-card styleClass="w-full max-w-md">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
+        <h3 class="text-xl font-semibold">Failed to load slots</h3>
+        <p class="text-[var(--text-color-secondary)]">
+          There was an error loading the interview slots. Please try again.
+        </p>
+        <p-button
+          label="Retry"
+          icon="pi pi-refresh"
+          (onClick)="refreshSlots()"
+          severity="primary"
+        />
+      </div>
+    </p-card>
+  </div>
+
+  <div *ngIf="!loading() && !error() && groupedSlots().length === 0" class="flex justify-center items-center py-12">
+    <p-card styleClass="w-full max-w-md">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <i class="pi pi-calendar-times text-4xl text-[var(--text-color-secondary)]"></i>
+        <h3 class="text-xl font-semibold">No slots yet</h3>
+        <p class="text-[var(--text-color-secondary)]">
+          Create your first interview slots to get started.
+        </p>
+        <p-button
+          label="Add Slots"
+          icon="pi pi-plus"
+          (onClick)="openCreateSlotsModal()"
+          severity="primary"
+        />
+      </div>
+    </p-card>
+  </div>
+
+  <div *ngIf="!loading() && !error() && groupedSlots().length > 0" class="flex flex-col gap-3">
+    <jhi-collapsible-date-section
+      *ngFor="let group of groupedSlots()"
+      [date]="group.localDate"
+      [slots]="group.slots"
+      [defaultExpanded]="true"
+    />
+  </div>
+</div>

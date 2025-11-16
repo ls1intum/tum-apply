@@ -3,6 +3,9 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
 
 import { errorRoute } from './layouts/error/error.route';
 import { UserShortDTO } from './generated/model/userShortDTO';
+import {
+  InterviewProcessDetailComponent
+} from "app/interview/interview-process-detail/interview-process-detail.component";
 
 const routes: Routes = [
   // ======================================================================================
@@ -304,6 +307,11 @@ const routes: Routes = [
         data: {
           authorities: ['PROFESSOR', 'ADMIN'],
         },
+      },
+      {
+        path: ':processId',
+        component: InterviewProcessDetailComponent,
+        title: 'Interview Slots',
       },
     ],
   },

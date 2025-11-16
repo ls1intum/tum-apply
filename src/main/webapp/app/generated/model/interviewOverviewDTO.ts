@@ -14,6 +14,7 @@ export interface InterviewOverviewDTO {
     invitedCount: number;
     jobId: string;
     jobTitle: string;
+    processId: string;
     scheduledCount: number;
     totalInterviews: number;
     uncontactedCount: number;
