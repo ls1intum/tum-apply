@@ -96,6 +96,8 @@
       "uploadFormats": "PNG, JPG, WEBP formats accepted",
       "pendingUploadHint": "This image will be uploaded when you publish the job",
       "removeImage": "Remove Image",
+      "uploadSuccess": "Image uploaded successfully",
+      "uploadFailed": "Failed to upload image. Please try again.",
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",
       "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, PNG, GIF. Recommended dimensions: 800x400px",

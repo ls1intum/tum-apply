@@ -12,6 +12,7 @@ import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { DividerModule } from 'primeng/divider';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 
 import SharedModule from '../../shared/shared.module';
@@ -54,6 +55,7 @@ type JobFormMode = 'create' | 'edit';
     JobDetailComponent,
     DividerModule,
     ButtonComponent,
+    ProgressSpinnerModule,
   ],
   providers: [JobResourceApiService],
 })
@@ -135,6 +137,7 @@ export class JobCreationFormComponent {
   currentJobData = computed<JobFormDTO>(() => {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
+    this.imageFormValueSignal();
     return this.createJobDTO('DRAFT');
   });
 
@@ -324,6 +327,9 @@ export class JobCreationFormComponent {
   positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
     initialValue: this.positionDetailsForm.getRawValue(),
   });
+  imageFormValueSignal = toSignal(this.imageForm.valueChanges, {
+    initialValue: this.imageForm.getRawValue(),
+  });
 
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
@@ -335,36 +341,7 @@ export class JobCreationFormComponent {
     if (!jobData) return;
 
     try {
-      // Upload pending image if one exists
-      const pendingFile = this.pendingImageFile();
-      if (pendingFile !== undefined) {
-        this.isUploadingImage.set(true);
-        try {
-          const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(pendingFile));
-
-          // Update the job data with the uploaded image ID
-          jobData.imageId = uploadedImage.imageId;
-
-          // Clean up the preview URL
-          const previewUrl = this.pendingImagePreviewUrl();
-          if (previewUrl !== undefined && previewUrl !== '') {
-            URL.revokeObjectURL(previewUrl);
-          }
-          this.pendingImageFile.set(undefined);
-          this.pendingImagePreviewUrl.set(undefined);
-
-          // Add to uploaded images and select it
-          this.uploadedImages.update(images => [uploadedImage, ...images]);
-          this.selectedImage.set(uploadedImage);
-        } catch (error) {
-          console.error('Image upload failed during publish:', error);
-          this.toastService.showError({ summary: 'Error', detail: 'Failed to upload image. Job will be published without image.' });
-          // Continue with publishing even if image upload fails
-        } finally {
-          this.isUploadingImage.set(false);
-        }
-      }
-
+      // Image is already uploaded and saved with the draft, no need to upload again
       await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
       this.toastService.showSuccessKey('toast.published');
       void this.router.navigate(['/my-positions']);
@@ -377,7 +354,7 @@ export class JobCreationFormComponent {
     this.location.back();
   }
 
-  onImageSelected(event: Event): void {
+  async onImageSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
@@ -395,25 +372,33 @@ export class JobCreationFormComponent {
       return;
     }
 
-    // Clean up previous preview URL if it exists
-    const previousUrl = this.pendingImagePreviewUrl();
-    if (previousUrl !== undefined && previousUrl !== '') {
-      URL.revokeObjectURL(previousUrl);
+    // Upload the image immediately
+    this.isUploadingImage.set(true);
+
+    try {
+      // Upload to server
+      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
+
+      // Update the selected image and form
+      this.selectedImage.set(uploadedImage);
+      this.imageForm.patchValue({ imageId: uploadedImage.imageId });
+
+      // Add to uploaded images list
+      this.uploadedImages.update(images => [uploadedImage, ...images]);
+
+      // Clear pending image state (no longer needed)
+      this.pendingImageFile.set(undefined);
+      this.pendingImagePreviewUrl.set(undefined);
+
+      this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
+    } finally {
+      this.isUploadingImage.set(false);
+      // Reset input
+      input.value = '';
     }
-
-    // Create a local preview URL for the selected file
-    const previewUrl = URL.createObjectURL(file);
-    this.pendingImageFile.set(file);
-    this.pendingImagePreviewUrl.set(previewUrl);
-
-    // Clear any previously selected image from the gallery
-    this.selectedImage.set(undefined);
-    this.imageForm.patchValue({ imageId: undefined });
-
-    this.toastService.showSuccess({ summary: 'Success', detail: 'Image selected. It will be uploaded when you publish the job.' });
-
-    // Reset input
-    input.value = '';
   }
 
   selectImage(image: ImageDTO): void {
@@ -426,14 +411,7 @@ export class JobCreationFormComponent {
   clearImageSelection(): void {
     this.selectedImage.set(undefined);
     this.imageForm.patchValue({ imageId: undefined });
-
-    // Clean up pending image preview
-    const previewUrl = this.pendingImagePreviewUrl();
-    if (previewUrl !== undefined && previewUrl !== '') {
-      URL.revokeObjectURL(previewUrl);
-    }
-    this.pendingImageFile.set(undefined);
-    this.pendingImagePreviewUrl.set(undefined);
+    // Image deletion will be handled server-side when the job is auto-saved
   }
 
   onImageLoadError(event: Event): void {
@@ -606,6 +584,7 @@ export class JobCreationFormComponent {
     effect(() => {
       this.basicInfoFormValueSignal();
       this.positionDetailsFormValueSignal();
+      this.imageFormValueSignal();
 
       // Don't auto-save as soon as the form is opened
       if (!this.autoSaveInitialized) {
