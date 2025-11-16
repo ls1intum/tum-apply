@@ -32,7 +32,7 @@ VALUES
     -- Default job banners for each school
     (
         '00000000-0000-0000-0000-000001000001',
-        '/images/defaults/default-cit-banner.jpg',
+        '/content/images/default-job-banners/default-cit-banner1.jpeg',
         'image/jpeg',
         245678,
         'DEFAULT_JOB_BANNER',
@@ -44,7 +44,7 @@ VALUES
     ),
     (
         '00000000-0000-0000-0000-000001000002',
-        '/images/defaults/default-in-banner.jpg',
+        '/content/images/default-job-banners/default-cit-banner2.jpeg',
         'image/jpeg',
         234567,
         'DEFAULT_JOB_BANNER',
@@ -56,7 +56,7 @@ VALUES
     ),
     (
         '00000000-0000-0000-0000-000001000003',
-        '/images/defaults/default-ei-banner.jpg',
+        '/content/images/default-job-banners/default-cit-banner3.jpeg',
         'image/jpeg',
         256789,
         'DEFAULT_JOB_BANNER',
@@ -68,7 +68,7 @@ VALUES
     ),
     (
         '00000000-0000-0000-0000-000001000004',
-        '/images/defaults/default-mw-banner.jpg',
+        '/content/images/default-job-banners/default-cit-banner4.jpeg',
         'image/jpeg',
         267890,
         'DEFAULT_JOB_BANNER',
