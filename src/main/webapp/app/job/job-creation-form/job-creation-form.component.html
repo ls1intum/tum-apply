@@ -244,33 +244,48 @@
   </ng-template>
 
   <!-- Gender Bias Analysis Modal -->
-  <!--<p-dialog [(visible)]="showAnalysisModal" [header]="'Gender Bias Analysis'" [modal]="true" [style]="{ width: '50vw' }"
-  (onHide)="closeAnalysisModal()">
-  @if (analysisResult(); as result) {
-  <div class="analysis-results">
-    <div class="bias-score mb-4">
-    </div>
-
-    @if (result.biasedWords && result.biasedWords.length > 0) {
-    <h4 class="font-semibold mb-2">Biased Words Found:</h4>
-    <div class="biased-words-list space-y-2">
-      @for (word of result.biasedWords; track word.word) {
-      <div class="biased-word-item flex items-center justify-between p-3 border rounded">
-        <div class="flex items-center gap-3">
-          <span class="font-medium">{{ word.word }}</span>
-          <span [class]="getBiasTypeClass(word.type ?? '')" class="px-2 py-1 text-xs rounded">
-            {{ word.type }}
-          </span>
+  <p-dialog
+    [(visible)]="showAnalysisModal"
+    [header]="'jobCreationForm.positionDetailsSection.genderDecoder.resultTitle' | translate"
+    [modal]="true"
+    [draggable]="false"
+    [style]="{
+      'background-color': 'var(--p-background-default)',
+    }"
+    (onHide)="closeAnalysisModal()"
+  >
+    @if (analysisResult(); as result) {
+      <div class="analysis-results">
+        <div class="bias-score mb-4">
+          <p class="font-semibold text-lg">
+            {{ getCodingTranslationKey(result.coding ?? 'neutral') | translate }}
+          </p>
         </div>
+
+        <!-- 👇 Explanation Text (lang) -->
+        <div class="explanation-text mb-4 p-4 bg-gray-100 rounded">
+          <div [innerHTML]="getExplanationTranslationKey(result.coding ?? 'neutral') | translate"></div>
+        </div>
+        @if (result.biasedWords && result.biasedWords.length > 0) {
+          <h4 class="font-semibold mb-2">Biased Words Found:</h4>
+          <div class="biased-words-list space-y-2">
+            @for (word of result.biasedWords; track word.word) {
+              <div class="biased-word-item flex items-center justify-between p-3 border rounded">
+                <div class="flex items-center gap-3">
+                  <span class="font-medium">{{ word.word }}</span>
+                  <span [class]="getBiasTypeClass(word.type ?? '')" class="px-2 py-1 text-xs rounded">
+                    {{ word.type }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-green-600 font-medium">✓ No gender bias detected!</p>
+        }
       </div>
-      }
-    </div>
-    } @else {
-    <p class="text-green-600 font-medium">✓ No gender bias detected!</p>
     }
-  </div>
-  }
-</p-dialog>-->
+  </p-dialog>
 
   <!-- Step 3: Additional Information -->
   <ng-template #panel3>

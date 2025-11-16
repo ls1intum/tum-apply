@@ -14,6 +14,7 @@ import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/share
 import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { Dialog } from 'primeng/dialog';
+import { GenderBiasAnalysisRequest, GenderBiasAnalysisResourceApiService, GenderBiasAnalysisResponse } from 'app/generated';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -28,9 +29,6 @@ import { JobDetailComponent } from '../job-detail/job-detail.component';
 import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
 import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
-// import { GenderBiasAnalysisResourceApiService } from 'app/generated/api/genderBiasAnalysisResourceApi.service';
-// import { GenderBiasAnalysisResponse } from 'app/generated/model/genderBiasAnalysisResponse';
-// import { GenderBiasAnalysisRequest } from 'app/generated/model/genderBiasAnalysisRequest';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -74,7 +72,7 @@ export class JobCreationFormComponent {
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
-  // private genderBiasService = inject(GenderBiasAnalysisResourceApiService);
+  private genderBiasService = inject(GenderBiasAnalysisResourceApiService);
   protected readonly translate = inject(TranslateService);
   private autoSaveInitialized = false;
 
@@ -85,7 +83,7 @@ export class JobCreationFormComponent {
     this.setupAutoSave();
   }
 
-  // analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
+  analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
   isAnalyzing = signal(false);
   showAnalysisModal = signal(false);
   currentAnalyzingField = signal<'description' | 'tasks' | 'requirements' | null>(null);
@@ -362,14 +360,12 @@ export class JobCreationFormComponent {
     this.currentAnalyzingField.set(fieldName);
     this.isAnalyzing.set(true);
 
-    /* const request: GenderBiasAnalysisRequest = {
+    const request: GenderBiasAnalysisRequest = {
       text: fieldValue,
       language: this.currentLang(),
-    };*/
+    };
 
-    /* firstValueFrom(
-      this.genderBiasService.analyzeHtmlContent(request)
-    )
+    firstValueFrom(this.genderBiasService.analyzeHtmlContent(request))
       .then(result => {
         this.analysisResult.set(result);
         this.showAnalysisModal.set(true);
@@ -380,23 +376,48 @@ export class JobCreationFormComponent {
       .finally(() => {
         this.isAnalyzing.set(false);
       });
-  }*/
+  }
 
-    /**
-     * Close analysis modal
-     */
-    /* closeAnalysisModal(): void {
-      this.showAnalysisModal.set(false);
-      this.analysisResult.set(null);
-      this.currentAnalyzingField.set(null);
-    }*/
+  /**
+   * Close analysis modal
+   */
+  closeAnalysisModal(): void {
+    this.showAnalysisModal.set(false);
+    this.analysisResult.set(null);
+    this.currentAnalyzingField.set(null);
+  }
 
-    /**
-     * Get CSS class for bias type badge
-     */
-    /* getBiasTypeClass(type: string): string {
-      return type === 'masculine' ? 'masculine-badge' : 'feminine-badge';
-    }*/
+  /**
+   * Get CSS class for bias type badge
+   */
+  getBiasTypeClass(type: string): string {
+    return type === 'masculine' ? 'masculine-badge' : 'feminine-badge';
+  }
+
+  /**
+   * Map backend coding to formulationText translation key
+   */
+  getCodingTranslationKey(coding: string): string {
+    const mapping: Record<string, string> = {
+      'masculine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.manly',
+      'feminine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.feminine',
+      neutral: 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.neutral',
+      empty: 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.neutral', // Empty = neutral
+    };
+    return mapping[coding] || mapping['neutral'];
+  }
+
+  /**
+   * Map backend coding to explanation translation key
+   */
+  getExplanationTranslationKey(coding: string): string {
+    const mapping: Record<string, string> = {
+      'masculine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.mostly_agentic',
+      'feminine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.mostly_communal',
+      neutral: 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.neutral',
+      empty: 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.empty',
+    };
+    return mapping[coding] || mapping['neutral'];
   }
 
   private createBasicInfoForm(): FormGroup {
