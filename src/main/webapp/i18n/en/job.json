@@ -104,6 +104,18 @@
         "summary": "Upload Failed",
         "detail": "Failed to upload image. Please try again."
       },
+      "fileTooLarge": {
+        "summary": "File Too Large",
+        "detail": "Image must be smaller than 5MB"
+      },
+      "invalidFileType": {
+        "summary": "Invalid File Type",
+        "detail": "Please select an image file (JPG, PNG, GIF, WEBP)"
+      },
+      "loadImagesFailed": {
+        "summary": "Load Failed",
+        "detail": "Failed to load images. Please refresh the page."
+      },
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",
       "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, PNG, GIF. Recommended dimensions: 800x400px",

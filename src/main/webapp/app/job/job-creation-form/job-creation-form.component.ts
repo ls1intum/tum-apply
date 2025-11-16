@@ -362,13 +362,13 @@ export class JobCreationFormComponent {
 
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      this.toastService.showError({ summary: 'Error', detail: 'Image must be smaller than 5MB' });
+      this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      this.toastService.showError({ summary: 'Error', detail: 'Please select an image file' });
+      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
       return;
     }
 
@@ -386,13 +386,8 @@ export class JobCreationFormComponent {
       // Add to uploaded images list
       this.uploadedImages.update(images => [uploadedImage, ...images]);
 
-      // Clear pending image state (no longer needed)
-      this.pendingImageFile.set(undefined);
-      this.pendingImagePreviewUrl.set(undefined);
-
       this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
-    } catch (error) {
-      console.error('Image upload failed:', error);
+    } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
     } finally {
       this.isUploadingImage.set(false);
@@ -402,22 +397,13 @@ export class JobCreationFormComponent {
   }
 
   selectImage(image: ImageDTO): void {
-    console.error('Selecting image:', image);
-    console.error('Image URL:', image.url);
     this.selectedImage.set(image);
     this.imageForm.patchValue({ imageId: image.imageId });
   }
 
   clearImageSelection(): void {
     this.selectedImage.set(undefined);
-    this.imageForm.patchValue({ imageId: undefined });
-    // Image deletion will be handled server-side when the job is auto-saved
-  }
-
-  onImageLoadError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    console.error('Failed to load image:', img.src);
-    console.error('Selected image data:', this.selectedImage());
+    this.imageForm.patchValue({ imageId: null });
   }
 
   async loadImages(): Promise<void> {
@@ -428,8 +414,8 @@ export class JobCreationFormComponent {
       ]);
       this.uploadedImages.set(myImages);
       this.defaultImages.set(defaults);
-    } catch (error) {
-      console.error('Failed to load images:', error);
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
     }
   }
 
@@ -460,7 +446,7 @@ export class JobCreationFormComponent {
 
   private createImageForm(): FormGroup {
     return this.fb.group({
-      imageId: [undefined], // UUID of selected/uploaded image
+      imageId: [undefined],
     });
   }
 
@@ -489,7 +475,7 @@ export class JobCreationFormComponent {
       description: positionDetailsValue.description?.trim() ?? '',
       tasks: positionDetailsValue.tasks?.trim() ?? '',
       requirements: positionDetailsValue.requirements?.trim() ?? '',
-      imageId: imageValue.imageId ?? undefined,
+      imageId: imageValue.imageId ?? null,
       state,
     };
   }
@@ -559,8 +545,6 @@ export class JobCreationFormComponent {
       requirements: job?.requirements ?? '',
     });
 
-    // Image form - note: JobDTO has imageUrl, but we need to find the corresponding imageId
-    // If editing a job with an image, try to find it in loaded images by URL
     if (job?.imageUrl !== undefined && job.imageUrl !== null && job.imageUrl !== '') {
       const allImages = [...this.uploadedImages(), ...this.defaultImages()];
       const selectedImg = allImages.find(img => img.url === job.imageUrl);
