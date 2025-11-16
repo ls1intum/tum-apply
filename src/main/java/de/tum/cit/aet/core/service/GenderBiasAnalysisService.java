@@ -33,7 +33,7 @@ public class GenderBiasAnalysisService {
         // Convert to DTO
         List<BiasedWordDTO> biasedWords = convertToWordDTOs(result);
 
-        return new GenderBiasAnalysisResponse(result.getOriginalText(), biasedWords, result.getCoding(), result.getLanguage());
+        return new GenderBiasAnalysisResponse(result.originalText(), biasedWords, result.coding(), result.language());
     }
 
     /**
@@ -43,12 +43,12 @@ public class GenderBiasAnalysisService {
         List<BiasedWordDTO> dtos = new ArrayList<>();
 
         // Add masculine words
-        for (String word : result.getMasculineWords()) {
+        for (String word : result.masculineWords()) {
             dtos.add(new BiasedWordDTO(word, "masculine"));
         }
 
         // Add feminine words
-        for (String word : result.getFeminineWords()) {
+        for (String word : result.feminineWords()) {
             dtos.add(new BiasedWordDTO(word, "feminine"));
         }
 

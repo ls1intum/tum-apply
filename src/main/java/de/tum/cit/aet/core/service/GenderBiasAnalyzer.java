@@ -140,61 +140,13 @@ public class GenderBiasAnalyzer {
     /**
      * Analysis result container
      */
-    public static class AnalysisResult {
-
-        private final String originalText;
-        private final List<String> masculineWords;
-        private final List<String> feminineWords;
-        private final int masculineCount;
-        private final int feminineCount;
-        private final String coding;
-        private final String language;
-
-        public AnalysisResult(
-            String originalText,
-            List<String> masculineWords,
-            List<String> feminineWords,
-            int masculineCount,
-            int feminineCount,
-            String coding,
-            String language
-        ) {
-            this.originalText = originalText;
-            this.masculineWords = masculineWords;
-            this.feminineWords = feminineWords;
-            this.masculineCount = masculineCount;
-            this.feminineCount = feminineCount;
-            this.coding = coding;
-            this.language = language;
-        }
-
-        // Getters
-        public String getOriginalText() {
-            return originalText;
-        }
-
-        public List<String> getMasculineWords() {
-            return masculineWords;
-        }
-
-        public List<String> getFeminineWords() {
-            return feminineWords;
-        }
-
-        public int getMasculineCount() {
-            return masculineCount;
-        }
-
-        public int getFeminineCount() {
-            return feminineCount;
-        }
-
-        public String getCoding() {
-            return coding;
-        }
-
-        public String getLanguage() {
-            return language;
-        }
-    }
+    public record AnalysisResult(
+        String originalText,
+        List<String> masculineWords,
+        List<String> feminineWords,
+        int masculineCount,
+        int feminineCount,
+        String coding,
+        String language
+    ) {}
 }
