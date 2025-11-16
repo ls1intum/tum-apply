@@ -219,83 +219,80 @@
 
   <!-- Step 3: Image Selection/Upload -->
   <ng-template #panel3>
-    <div class="max-w-4xl">
-      <h2 class="text-2xl font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.title"></h2>
-      <p class="text-gray-600 mb-8" jhiTranslate="jobCreationForm.imageSection.description"></p>
+    <h2 class="text-2xl font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.title"></h2>
+    <p class="text-gray-600 mb-8" jhiTranslate="jobCreationForm.imageSection.description"></p>
 
-      <!-- Default Images -->
-      @if (defaultImages().length > 0) {
-        <div class="mb-8">
-          <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            @for (image of defaultImages(); track image.imageId; let idx = $index) {
-              <div class="relative cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1" (click)="selectImage(image)">
-                <div
-                  class="relative rounded-xl overflow-hidden border-[3px] transition-colors h-40"
-                  [style.border-color]="
-                    selectedImage()?.imageId === image.imageId && !pendingImagePreviewUrl() ? 'var(--p-primary-color)' : 'transparent'
-                  "
-                >
-                  <img [src]="image.url" [alt]="'Default job banner'" class="w-full h-full object-cover" />
-                  @if (selectedImage()?.imageId === image.imageId && !pendingImagePreviewUrl()) {
-                    <div class="absolute inset-0 bg-white bg-opacity-30 flex items-center justify-center">
-                      <div
-                        class="text-white rounded-full w-16 h-16 flex items-center justify-center"
-                        [style.background-color]="'var(--p-primary-color)'"
-                      >
-                        <fa-icon [icon]="['fas', 'check']" [size]="'2x'" />
-                      </div>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
-
-      <!-- Divider -->
-      <div class="flex items-center text-center my-8">
-        <div class="flex-1 border-t border-gray-300"></div>
-        <span class="px-4 text-gray-500 font-medium lowercase" jhiTranslate="jobCreationForm.imageSection.orDivider"></span>
-        <div class="flex-1 border-t border-gray-300"></div>
-      </div>
-
-      <!-- Upload Custom Image -->
-      <div>
-        <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.uploadCustom"></h3>
-
-        @if (pendingImagePreviewUrl()) {
-          <!-- Preview of pending upload -->
-          <div class="border rounded-xl p-4 bg-white">
-            <div class="relative rounded-lg overflow-hidden mb-4">
-              <img [src]="pendingImagePreviewUrl()" [alt]="'Selected custom image'" class="w-full h-64 object-cover" />
-              <button
-                type="button"
-                (click)="clearImageSelection()"
-                class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors"
-                [attr.aria-label]="'Remove image'"
+    <!-- Default Images -->
+    @if (defaultImages().length > 0) {
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+          @for (image of defaultImages(); track image.imageId; let idx = $index) {
+            <div
+              class="relative rounded-xl cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+              (click)="selectImage(image)"
+            >
+              <div
+                class="relative rounded-xl overflow-hidden border-[3px] transition-colors aspect-video"
+                [style.border-color]="
+                  selectedImage()?.imageId === image.imageId && !pendingImagePreviewUrl() ? 'var(--p-primary-color)' : 'transparent'
+                "
               >
-                <fa-icon [icon]="['fas', 'times']" />
-              </button>
+                <img [src]="image.url" [alt]="'Default job banner'" class="w-full h-full object-cover" />
+                @if (selectedImage()?.imageId === image.imageId && !pendingImagePreviewUrl()) {
+                  <div class="absolute inset-0 flex items-center justify-center" style="background-color: rgba(255, 255, 255, 0.3)">
+                    <fa-icon [icon]="['fas', 'check']" [size]="'2x'" />
+                  </div>
+                }
+              </div>
             </div>
-            <div class="flex items-center gap-2 p-3 rounded-lg text-sm info-banner">
+          }
+        </div>
+      </div>
+    }
+
+    <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.imageSection.orDivider"></span></p-divider>
+
+    <!-- Upload Custom Image -->
+    <div>
+      <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.uploadCustom"></h3>
+
+      <!-- Preview of pending upload or upload area with consistent sizing -->
+      <div class="flex justify-center w-full max-w-xl mx-auto">
+        @if (pendingImagePreviewUrl()) {
+          <!-- Preview -->
+          <div class="w-full">
+            <div class="border rounded-xl p-4 bg-white">
+              <div class="relative rounded-lg overflow-hidden aspect-[3/2]">
+                <img [src]="pendingImagePreviewUrl()" [alt]="'Selected custom image'" class="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div class="flex items-center gap-2 p-3 rounded-lg text-sm info-banner mt-4 mb-4">
               <fa-icon [icon]="['fas', 'info-circle']" class="flex-shrink-0" />
               <span jhiTranslate="jobCreationForm.imageSection.pendingUploadHint"></span>
+            </div>
+            <div class="flex justify-center">
+              <jhi-button
+                (click)="clearImageSelection()"
+                severity="danger"
+                variant="outlined"
+                icon="trash"
+                [label]="'jobCreationForm.imageSection.removeImage' | translate"
+              ></jhi-button>
             </div>
           </div>
         } @else {
           <!-- Upload area -->
           <div
-            class="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer transition-all upload-area"
+            class="w-full aspect-[3/2] border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer transition-all upload-area flex flex-col items-center justify-center"
             (click)="fileInput.click()"
           >
             <input type="file" accept="image/*" (change)="onImageSelected($event)" #fileInput class="hidden" />
             <div class="text-gray-400 mb-4">
-              <fa-icon [icon]="['fas', 'image']" size="3x" />
+              <fa-icon [icon]="['fas', 'image']" size="3x" class="text-gray-400" />
             </div>
             <div class="flex items-center justify-center gap-2 text-base font-medium text-gray-700 mb-2">
-              <fa-icon [icon]="['fas', 'arrow-up']" class="upload-arrow" />
+              <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="text-gray-400" />
               <span jhiTranslate="jobCreationForm.imageSection.clickToUpload"></span>
             </div>
             <div class="text-sm text-gray-500 mb-1">

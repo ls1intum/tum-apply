@@ -95,6 +95,7 @@
       "uploadRecommendation": "Empfohlen: 1200x675px (16:9 Format) · Max 5MB",
       "uploadFormats": "PNG, JPG, WEBP Formate akzeptiert",
       "pendingUploadHint": "Dieses Bild wird hochgeladen, wenn du die Stelle veröffentlichst",
+      "removeImage": "Bild entfernen",
       "uploadNew": "Neues Bild hochladen",
       "uploading": "Wird hochgeladen...",
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, PNG, GIF. Empfohlene Abmessungen: 800x400px",

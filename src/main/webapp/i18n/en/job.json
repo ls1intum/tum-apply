@@ -95,6 +95,7 @@
       "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
       "uploadFormats": "PNG, JPG, WEBP formats accepted",
       "pendingUploadHint": "This image will be uploaded when you publish the job",
+      "removeImage": "Remove Image",
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",
       "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, PNG, GIF. Recommended dimensions: 800x400px",
