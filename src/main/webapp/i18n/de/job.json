@@ -86,14 +86,20 @@
       }
     },
     "imageSection": {
-      "title": "Stellenbannerbild (Optional)",
-      "description": "Füge ein Bannerbild hinzu, um deine Stellenanzeige visuell ansprechender zu gestalten. Du kannst dein eigenes Bild hochladen oder aus den Standardoptionen auswählen.",
+      "title": "Wähle ein Bannerbild",
+      "description": "Wähle ein Bannerbild aus, das oben in deiner Stellenanzeige angezeigt wird. Du kannst aus unseren Standardbildern wählen oder dein eigenes hochladen.",
+      "defaultImages": "Standardbilder",
+      "orDivider": "oder",
+      "uploadCustom": "Benutzerdefiniertes Bild hochladen",
+      "clickToUpload": "Klicke, um ein Bild hochzuladen",
+      "uploadRecommendation": "Empfohlen: 1200x675px (16:9 Format) · Max 5MB",
+      "uploadFormats": "PNG, JPG, WEBP Formate akzeptiert",
+      "pendingUploadHint": "Dieses Bild wird hochgeladen, wenn du die Stelle veröffentlichst",
       "uploadNew": "Neues Bild hochladen",
       "uploading": "Wird hochgeladen...",
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, PNG, GIF. Empfohlene Abmessungen: 800x400px",
       "selectedImage": "Ausgewähltes Bild",
-      "myUploads": "Meine hochgeladenen Bilder",
-      "defaultImages": "Standardbilder"
+      "myUploads": "Meine hochgeladenen Bilder"
     },
     "additionalInformationSection": {
       "extras": {

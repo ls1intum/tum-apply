@@ -94,6 +94,9 @@ export class JobCreationFormComponent {
   defaultImages = signal<ImageDTO[]>([]);
   selectedImage = signal<ImageDTO | undefined>(undefined);
   isUploadingImage = signal<boolean>(false);
+  // Pending image upload (not yet uploaded to server)
+  pendingImageFile = signal<File | undefined>(undefined);
+  pendingImagePreviewUrl = signal<string | undefined>(undefined);
 
   // Forms
   basicInfoForm = this.createBasicInfoForm();
@@ -333,9 +336,39 @@ export class JobCreationFormComponent {
     if (!jobData) return;
 
     try {
+      // Upload pending image if one exists
+      const pendingFile = this.pendingImageFile();
+      if (pendingFile !== undefined) {
+        this.isUploadingImage.set(true);
+        try {
+          const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(pendingFile));
+
+          // Update the job data with the uploaded image ID
+          jobData.imageId = uploadedImage.imageId;
+
+          // Clean up the preview URL
+          const previewUrl = this.pendingImagePreviewUrl();
+          if (previewUrl !== undefined && previewUrl !== '') {
+            URL.revokeObjectURL(previewUrl);
+          }
+          this.pendingImageFile.set(undefined);
+          this.pendingImagePreviewUrl.set(undefined);
+
+          // Add to uploaded images and select it
+          this.uploadedImages.update(images => [uploadedImage, ...images]);
+          this.selectedImage.set(uploadedImage);
+        } catch (error) {
+          console.error('Image upload failed during publish:', error);
+          this.toastService.showError({ summary: 'Error', detail: 'Failed to upload image. Job will be published without image.' });
+          // Continue with publishing even if image upload fails
+        } finally {
+          this.isUploadingImage.set(false);
+        }
+      }
+
       await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
       this.toastService.showSuccessKey('toast.published');
-      this.router.navigate(['/my-positions']);
+      void this.router.navigate(['/my-positions']);
     } catch {
       this.toastService.showErrorKey('toast.publishFailed');
     }
@@ -345,7 +378,7 @@ export class JobCreationFormComponent {
     this.location.back();
   }
 
-  async onImageSelected(event: Event): Promise<void> {
+  onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
@@ -363,33 +396,25 @@ export class JobCreationFormComponent {
       return;
     }
 
-    this.isUploadingImage.set(true);
-    try {
-      console.error('Uploading file:', file.name, 'size:', file.size, 'type:', file.type);
-      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
-      console.error('Upload response:', uploadedImage);
-      
-      // Debug: Check if image URL is present
-      if (uploadedImage.url === undefined || uploadedImage.url === '') {
-        console.error('Uploaded image missing URL:', uploadedImage);
-        this.toastService.showError({ summary: 'Error', detail: 'Server did not return image URL' });
-        return;
-      }
-      
-      this.uploadedImages.update(images => [uploadedImage, ...images]);
-      this.selectImage(uploadedImage);
-      this.toastService.showSuccess({ summary: 'Success', detail: 'Image uploaded successfully' });
-    } catch (error: any) {
-      console.error('Image upload failed:', error);
-      console.error('Error status:', error?.status);
-      console.error('Error body:', error?.error);
-      const errorMessage = error?.error?.message || error?.message || 'Failed to upload image';
-      this.toastService.showError({ summary: 'Error', detail: errorMessage });
-    } finally {
-      this.isUploadingImage.set(false);
-      // Reset input
-      input.value = '';
+    // Clean up previous preview URL if it exists
+    const previousUrl = this.pendingImagePreviewUrl();
+    if (previousUrl !== undefined && previousUrl !== '') {
+      URL.revokeObjectURL(previousUrl);
     }
+
+    // Create a local preview URL for the selected file
+    const previewUrl = URL.createObjectURL(file);
+    this.pendingImageFile.set(file);
+    this.pendingImagePreviewUrl.set(previewUrl);
+
+    // Clear any previously selected image from the gallery
+    this.selectedImage.set(undefined);
+    this.imageForm.patchValue({ imageId: undefined });
+
+    this.toastService.showSuccess({ summary: 'Success', detail: 'Image selected. It will be uploaded when you publish the job.' });
+
+    // Reset input
+    input.value = '';
   }
 
   selectImage(image: ImageDTO): void {
@@ -402,6 +427,14 @@ export class JobCreationFormComponent {
   clearImageSelection(): void {
     this.selectedImage.set(undefined);
     this.imageForm.patchValue({ imageId: undefined });
+
+    // Clean up pending image preview
+    const previewUrl = this.pendingImagePreviewUrl();
+    if (previewUrl !== undefined && previewUrl !== '') {
+      URL.revokeObjectURL(previewUrl);
+    }
+    this.pendingImageFile.set(undefined);
+    this.pendingImagePreviewUrl.set(undefined);
   }
 
   onImageLoadError(event: Event): void {
@@ -622,5 +655,10 @@ export class JobCreationFormComponent {
 
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
+  }
+
+  getDefaultImageLabel(index: number): string {
+    const labels = ['University Campus', 'Research Laboratory', 'Library Study', 'Academic Achievement'];
+    return labels[index] ?? `Image ${index + 1}`;
   }
 }

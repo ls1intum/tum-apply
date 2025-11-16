@@ -197,3 +197,20 @@ input:disabled {
     color: inherit;
   }
 }
+
+// Info banner using primary color
+.info-banner {
+  background-color: var(--p-primary-50, #eff6ff);
+  color: var(--p-primary-800, #1e40af);
+}
+
+.upload-area {
+  &:hover {
+    border-color: var(--p-primary-color);
+    background-color: var(--p-primary-50, #eff6ff);
+  }
+
+  .upload-arrow {
+    color: var(--p-primary-color);
+  }
+}

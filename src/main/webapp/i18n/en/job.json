@@ -86,14 +86,20 @@
       }
     },
     "imageSection": {
-      "title": "Job Banner Image (Optional)",
-      "description": "Add a banner image to make your job posting more visually appealing. You can upload your own image or select from default options.",
+      "title": "Choose a Banner Image",
+      "description": "Select a banner image that will be displayed at the top of your job posting. You can choose from our default images or upload your own.",
+      "defaultImages": "Default Images",
+      "orDivider": "or",
+      "uploadCustom": "Upload Custom Image",
+      "clickToUpload": "Click to upload an image",
+      "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
+      "uploadFormats": "PNG, JPG, WEBP formats accepted",
+      "pendingUploadHint": "This image will be uploaded when you publish the job",
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",
       "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, PNG, GIF. Recommended dimensions: 800x400px",
       "selectedImage": "Selected Image",
-      "myUploads": "My Uploaded Images",
-      "defaultImages": "Default Images"
+      "myUploads": "My Uploaded Images"
     },
     "additionalInformationSection": {
       "extras": {
