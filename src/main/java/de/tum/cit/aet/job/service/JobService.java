@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -349,7 +350,7 @@ public class JobService {
 
         // Handle image update (replace old image if changed)
         if (dto.imageId() != null) {
-            var newImage = jobImageHelper.getImageForJob(dto.imageId());
+            Image newImage = jobImageHelper.getImageForJob(dto.imageId());
             job.setImage(jobImageHelper.replaceJobImage(job.getImage(), newImage));
         } else if (job.getImage() != null) {
             // If imageId is null but job has image, remove it

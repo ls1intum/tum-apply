@@ -13,11 +13,13 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/images")
 public class ImageResource {
@@ -74,6 +76,7 @@ public class ImageResource {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Image image = imageService.upload(file, user, ImageType.JOB_BANNER);
+        log.info("User {} uploaded job banner image: {}", userId, image.getImageId());
         return ResponseEntity.ok(ImageDTO.fromEntity(image));
     }
 

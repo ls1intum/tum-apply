@@ -36,7 +36,7 @@ public class ImageService {
 
     public ImageService(
         ImageRepository imageRepository,
-        @Value("${aet.storage.image-root:/data/images}") String imageRootDir,
+        @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
         @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
         @Value("${aet.storage.max-image-width:4096}") int maxWidth, // 4K width default
         @Value("${aet.storage.max-image-height:4096}") int maxHeight // 4K height default
@@ -265,11 +265,6 @@ public class ImageService {
         if (oldImage != null && !oldImage.isDefault() && (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))) {
             try {
                 deleteWithoutChecks(oldImage.getImageId());
-                log.info(
-                    "Replaced old image: {} with new image: {}",
-                    oldImage.getImageId(),
-                    newImage != null ? newImage.getImageId() : "null"
-                );
             } catch (Exception e) {
                 log.error("Failed to delete old image during replacement: {}", oldImage.getImageId(), e);
             }
@@ -328,8 +323,6 @@ public class ImageService {
                 String.format("Image dimensions (%dx%d) exceed maximum allowed dimensions (%dx%d)", width, height, maxWidth, maxHeight)
             );
         }
-
-        log.debug("Image dimensions validated: {}x{}", width, height);
     }
 
     private String getExtension(MultipartFile file) {
