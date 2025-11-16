@@ -676,91 +676,36 @@ paths:
           content:
             application/pdf:
               schema: {type: string, format: binary}
-  /api/images/defaults/job-banners:
-    get:
-      tags: [image-resource]
-      operationId: getDefaultJobBanners
-      parameters:
-      - name: school
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [CIT]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ImageDTO'}
-  /api/images/my-uploads:
-    get:
-      tags: [image-resource]
-      operationId: getMyUploadedImages
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/ImageDTO'}
-  /api/images/upload/default-job-banner:
+  /api/gender-bias/analyze:
     post:
-      tags: [image-resource]
-      operationId: uploadDefaultJobBanner
-      parameters:
-      - name: school
-        in: query
-        required: true
-        schema:
-          type: string
-          enum: [CIT]
+      tags: [gender-bias-analysis-resource]
+      operationId: analyzeText
       requestBody:
         content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file: {type: string, format: binary}
-              required: [file]
+          application/json:
+            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
+        required: true
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/ImageDTO'}
-  /api/images/upload/job-banner:
+              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
+  /api/gender-bias/analyze-html:
     post:
-      tags: [image-resource]
-      operationId: uploadJobBanner
+      tags: [gender-bias-analysis-resource]
+      operationId: analyzeHtmlContent
       requestBody:
         content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file: {type: string, format: binary}
-              required: [file]
+          application/json:
+            schema: {$ref: '#/components/schemas/GenderBiasAnalysisRequest'}
+        required: true
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/ImageDTO'}
-  /api/images/{imageId}:
-    delete:
-      tags: [image-resource]
-      operationId: deleteImage
-      parameters:
-      - name: imageId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
+              schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -1526,6 +1471,11 @@ components:
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
+    BiasedWordDTO:
+      type: object
+      properties:
+        type: {type: string}
+        word: {type: string}
     CreatedJobDTO:
       type: object
       properties:
@@ -1639,37 +1589,20 @@ components:
       properties:
         professorName: {type: string, minLength: 1}
       required: [professorName]
-    Image:
+    GenderBiasAnalysisRequest:
       type: object
       properties:
-        createdAt: {type: string, format: date-time}
-        default: {type: boolean}
-        imageId: {type: string, format: uuid}
-        imageType:
-          type: string
-          enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
-        lastModifiedAt: {type: string, format: date-time}
-        mimeType: {type: string}
-        school:
-          type: string
-          enum: [CIT]
-        sizeBytes: {type: integer, format: int64}
-        uploadedBy: {$ref: '#/components/schemas/User'}
-        url: {type: string}
-    ImageDTO:
+        language: {type: string}
+        text: {type: string}
+    GenderBiasAnalysisResponse:
       type: object
       properties:
-        imageId: {type: string, format: uuid}
-        imageType:
-          type: string
-          enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
-        isDefault: {type: boolean}
-        school:
-          type: string
-          enum: [CIT]
-        sizeBytes: {type: integer, format: int64}
-        uploadedById: {type: string, format: uuid}
-        url: {type: string}
+        biasedWords:
+          type: array
+          items: {$ref: '#/components/schemas/BiasedWordDTO'}
+        coding: {type: string}
+        language: {type: string}
+        originalText: {type: string}
     InternalComment:
       type: object
       properties:

@@ -3,32 +3,31 @@ package de.tum.cit.aet.core.util;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.action.PdfAction;
+import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
-import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Link;
 import com.itextpdf.layout.element.ListItem;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
-import com.itextpdf.layout.properties.BorderRadius;
-import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.VerticalAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import de.tum.cit.aet.core.exception.PDFGenerationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.core.io.ByteArrayResource;
@@ -36,51 +35,66 @@ import org.springframework.core.io.Resource;
 
 public class PDFBuilder {
 
-    private static final String LOGO_PATH = "images/tum-logo-blue.png";
-
+    private final List<String> headerItems = new ArrayList<>();
     private final String mainHeading;
     private final List<OverviewItem> overviewItems = new ArrayList<>();
     private String overviewTitle;
+    private String overviewDescriptionTitle;
+    private String overviewDescription;
     private final List<SectionGroup> sectionGroups = new ArrayList<>();
     private SectionGroup currentGroup;
+    private String metadataText;
+    private String metadataEndText;
+    private String pageLabelPage;
+    private String pageLabelOf;
+
+    private static final String TUMAPPLY_URL = "https://tumapply.aet.cit.tum.de";
 
     private static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0x18, 0x72, 0xDD);
-    private static final DeviceRgb BORDER_COLOR = new DeviceRgb(0xC0, 0xC0, 0xC1);
-
-    // ----------------- Borders -----------------
-    private static final float BORDER_WIDTH = 0.8f;
-    private static final BorderRadius BORDER_RADIUS = new BorderRadius(8f);
-    private static final SolidBorder DEFAULT_BORDER = new SolidBorder(BORDER_COLOR, BORDER_WIDTH);
+    private static final DeviceRgb METADATA_COLOR = new DeviceRgb(0x8d, 0x8d, 0x8f);
 
     // ----------------- Font Sizes -----------------
-    private static final float FONT_SIZE_HEADER = 12f;
-    private static final float FONT_SIZE_MAIN_HEADING = 20f;
-    private static final float FONT_SIZE_GROUP_TITLE = 15f;
+    private static final float FONT_SIZE_MAIN_HEADING = 18f;
+    private static final float FONT_SIZE_GROUP_TITLE = 14f;
     private static final float FONT_SIZE_SECTION_TITLE = 12f;
     private static final float FONT_SIZE_TEXT = 10f;
+    private static final float FONT_SIZE_METADATA = 7f;
 
     // ----------------- Spacing -----------------
-    private static final float PADDING_CONTAINER = 8f;
+    private static final float MARGIN_PDF_TOP_AND_BOTTOM = 8f;
+    private static final float MARGIN_HEADER_ITEMS_BOTTOM = 8f;
     private static final float MARGIN_TITLE_BOTTOM = 8f;
-    private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 20f;
-    private static final float MARGIN_OVERVIEW_TITLE_BOTTOM = 12f;
+    private static final float MARGIN_JOB_DESCRIPTION_TOP = 10f;
+    private static final float MARGIN_OVERVIEW_SECTION_BOTTOM = 0f;
+    private static final float CONTENT_INDENT = 15f;
     private static final float MARGIN_DATA_ROW_BOTTOM = 6f;
-    private static final float DIVIDER_HEIGHT = 1f;
-    private static final float HEADER_SPACING = 5f;
-    private static final float HEADER_MARGIN_TOP = 20f;
     private static final float HEADER_MARGIN_BOTTOM = 16f;
     private static final float LINE_LEADING = 1.0f;
+    private static final float METADATA_MARGIN_LEFT_RIGHT = 15f;
 
     // ----------------- List & Text Layout -----------------
     private static final String BULLET_POINT_SYMBOL = "\u2022";
     private static final float LIST_SYMBOL_INDENT = 12f;
-    private static final float LIST_MARGIN_LEFT = 8f;
 
     public PDFBuilder(String mainHeading) {
         this.mainHeading = mainHeading;
     }
 
+    // ----------------- Header -----------------
+
+    /**
+     * Adds a header item to be displayed below the main heading
+     *
+     * @param item the header item text
+     * @return this builder for method chaining
+     */
+    public PDFBuilder addHeaderItem(String item) {
+        headerItems.add(item);
+        return this;
+    }
+
     // ----------------- Overview -----------------
+
     public PDFBuilder setOverviewTitle(String title) {
         this.overviewTitle = title;
         return this;
@@ -88,6 +102,16 @@ public class PDFBuilder {
 
     public PDFBuilder addOverviewItem(String label, String value) {
         overviewItems.add(new OverviewItem(label, value));
+        return this;
+    }
+
+    public PDFBuilder setOverviewDescriptionTitle(String title) {
+        this.overviewDescriptionTitle = title;
+        return this;
+    }
+
+    public PDFBuilder setOverviewDescription(String htmlDescription) {
+        this.overviewDescription = htmlDescription;
         return this;
     }
 
@@ -150,6 +174,47 @@ public class PDFBuilder {
         return this;
     }
 
+    // ----------------- Metadata -----------------
+
+    /**
+     * Sets the beginning of the metadata text to be displayed at the bottom of the
+     * PDF
+     *
+     * @param metadataText the beginning of metadata text to display (before
+     *                     TumApply label)
+     * @return this builder for method chaining
+     */
+    public PDFBuilder setMetadata(String metadataText) {
+        this.metadataText = metadataText;
+        return this;
+    }
+
+    /**
+     * Sets the end of the metadata text to be displayed at the bottom of the
+     * PDF
+     *
+     * @param metadataEndText the end of metadata text to display (after TumApply
+     *                        label)
+     * @return this builder for method chaining
+     */
+    public PDFBuilder setMetadataEnd(String metadataEndText) {
+        this.metadataEndText = metadataEndText;
+        return this;
+    }
+
+    /**
+     * Sets the labels for page numbering
+     *
+     * @param pageLabelPage label for "Page" (e.g., "Seite" or "Page")
+     * @param pageLabelOf   label for "of" (e.g., "von" or "of")
+     * @return this builder for method chaining
+     */
+    public PDFBuilder setPageLabels(String pageLabelPage, String pageLabelOf) {
+        this.pageLabelPage = pageLabelPage;
+        this.pageLabelOf = pageLabelOf;
+        return this;
+    }
+
     // ----------------- Build PDF -----------------
 
     /**
@@ -164,10 +229,16 @@ public class PDFBuilder {
             PdfDocument pdfDoc = new PdfDocument(writer);
             Document document = new Document(pdfDoc);
 
+            document.setTopMargin(MARGIN_PDF_TOP_AND_BOTTOM);
+            document.setBottomMargin(MARGIN_PDF_TOP_AND_BOTTOM * 3);
+
             PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
             PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
 
-            addLogoHeader(document, boldFont);
+            // Header Items
+            if (!headerItems.isEmpty()) {
+                addHeaderItems(document, normalFont);
+            }
 
             // Main Heading
             Paragraph mainHeadingParagraph = new Paragraph(mainHeading)
@@ -175,7 +246,6 @@ public class PDFBuilder {
                 .setFontColor(PRIMARY_COLOR)
                 .setFontSize(FONT_SIZE_MAIN_HEADING)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginTop(HEADER_MARGIN_TOP)
                 .setMarginBottom(HEADER_MARGIN_BOTTOM);
             document.add(mainHeadingParagraph);
 
@@ -190,6 +260,7 @@ public class PDFBuilder {
                     Paragraph groupTitle = new Paragraph(group.title)
                         .setFont(boldFont)
                         .setFontSize(FONT_SIZE_GROUP_TITLE)
+                        .setFontColor(PRIMARY_COLOR)
                         .setMarginBottom(MARGIN_TITLE_BOTTOM);
                     document.add(groupTitle);
                 }
@@ -198,7 +269,13 @@ public class PDFBuilder {
                 }
             }
 
+            // Metadata
+            if (metadataText != null && !metadataText.isEmpty()) {
+                addMetadata(pdfDoc, normalFont);
+            }
+
             document.close();
+            pdfDoc.close();
             return new ByteArrayResource(baos.toByteArray());
         } catch (IOException e) {
             throw new PDFGenerationException("Failed to generate PDF", e);
@@ -206,96 +283,118 @@ public class PDFBuilder {
     }
 
     // ----------------- Helpers -----------------
-    private void addLogoHeader(Document document, PdfFont boldFont) throws IOException {
-        float logoSize = 35;
-        Table headerTable = new Table(new float[] { 1, 4 });
-        headerTable.setBorder(Border.NO_BORDER);
-        headerTable.setHorizontalAlignment(HorizontalAlignment.LEFT);
 
-        try {
-            URL logoUrl = getClass().getClassLoader().getResource(LOGO_PATH);
-            if (logoUrl != null) {
-                Image logo = new Image(ImageDataFactory.create(logoUrl));
-                logo.scaleToFit(logoSize, logoSize);
-                Cell logoCell = new Cell()
-                    .add(logo)
-                    .setBorder(Border.NO_BORDER)
-                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                    .setPaddingRight(HEADER_SPACING);
-                headerTable.addCell(logoCell);
-            } else {
-                headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
+    /**
+     * Adds header items in a single line separated by |
+     */
+    private void addHeaderItems(Document document, PdfFont normalFont) {
+        Paragraph headerLine = new Paragraph()
+            .setFont(normalFont)
+            .setFontSize(FONT_SIZE_METADATA)
+            .setFontColor(METADATA_COLOR)
+            .setTextAlignment(TextAlignment.CENTER)
+            .setMarginTop(0f)
+            .setMarginBottom(MARGIN_HEADER_ITEMS_BOTTOM);
+
+        for (int i = 0; i < headerItems.size(); i++) {
+            headerLine.add(new Text(headerItems.get(i)));
+            if (i < headerItems.size() - 1) {
+                headerLine.add(new Text(" | "));
             }
-        } catch (Exception e) {
-            headerTable.addCell(new Cell().setBorder(Border.NO_BORDER));
         }
 
-        Paragraph appNamePara = new Paragraph(new Text("Apply").setFont(boldFont).setFontSize(FONT_SIZE_HEADER))
-            .setFontColor(PRIMARY_COLOR)
-            .setMargin(0);
-
-        Cell textCell = new Cell()
-            .add(appNamePara)
-            .setBorder(Border.NO_BORDER)
-            .setVerticalAlignment(VerticalAlignment.MIDDLE)
-            .setPaddingLeft(0);
-        headerTable.addCell(textCell);
-
-        document.add(headerTable);
+        document.add(headerLine);
     }
 
     private void addOverviewSection(Document document, PdfFont normalFont, PdfFont boldFont) {
-        Div container = new Div()
-            .setBorder(DEFAULT_BORDER)
-            .setPadding(PADDING_CONTAINER)
-            .setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM)
-            .setBorderRadius(BORDER_RADIUS);
+        Div container = new Div().setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
 
+        // Step 1: Add overview title if present
         if (overviewTitle != null) {
             Paragraph title = new Paragraph(overviewTitle)
                 .setFont(boldFont)
                 .setFontSize(FONT_SIZE_GROUP_TITLE)
-                .setMarginBottom(MARGIN_OVERVIEW_TITLE_BOTTOM);
+                .setFontColor(PRIMARY_COLOR)
+                .setMarginBottom(MARGIN_OVERVIEW_SECTION_BOTTOM);
             container.add(title);
         }
 
-        Paragraph inlineParagraph = new Paragraph();
-        for (OverviewItem item : overviewItems) {
-            inlineParagraph.add(new Text(item.label + " ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT));
-            inlineParagraph.add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT));
-            inlineParagraph.add(new Text("    "));
+        // Step 2: Create and populate overview items table
+        Table table = new Table(2);
+        table.setWidth(UnitValue.createPercentValue(100));
+        table.setBorder(Border.NO_BORDER);
+        table.setMarginLeft(CONTENT_INDENT);
+
+        for (int i = 0; i < overviewItems.size(); i++) {
+            OverviewItem item = overviewItems.get(i);
+
+            Paragraph cellContent = new Paragraph()
+                .add(new Text(item.label + " ").setFont(boldFont).setFontSize(FONT_SIZE_TEXT))
+                .add(new Text(item.value).setFont(normalFont).setFontSize(FONT_SIZE_TEXT))
+                .setMargin(0);
+
+            Cell cell;
+            if (i == overviewItems.size() - 1 && overviewItems.size() % 2 == 1) {
+                cell = new Cell(1, 2);
+            } else {
+                cell = new Cell();
+            }
+
+            cell.add(cellContent).setBorder(Border.NO_BORDER).setPaddingRight(10f);
+
+            table.addCell(cell);
         }
 
-        container.add(inlineParagraph);
+        container.add(table);
+
+        // Step 3: Add overview description section if present
+        if (overviewDescription != null && !overviewDescription.isEmpty()) {
+            // Step 3a: Add description title
+            if (overviewDescriptionTitle != null && !overviewDescriptionTitle.isEmpty()) {
+                Paragraph descTitle = new Paragraph(overviewDescriptionTitle)
+                    .setFont(boldFont)
+                    .setFontSize(FONT_SIZE_SECTION_TITLE)
+                    .setMarginTop(MARGIN_JOB_DESCRIPTION_TOP)
+                    .setMarginBottom(MARGIN_TITLE_BOTTOM)
+                    .setMarginLeft(CONTENT_INDENT);
+                container.add(descTitle);
+            }
+            // Step 3b: Parse and add HTML description content
+            List<IBlockElement> elements = parseHtmlContent(overviewDescription, normalFont);
+            for (IBlockElement element : elements) {
+                if (element instanceof Paragraph para) {
+                    para.setMarginTop(0);
+                    para.setMarginLeft(CONTENT_INDENT);
+                } else if (element instanceof com.itextpdf.layout.element.List list) {
+                    list.setMarginTop(0);
+                    list.setMarginLeft(CONTENT_INDENT);
+                }
+                container.add(element);
+            }
+        }
+
         document.add(container);
     }
 
     private void addInfoSection(Document document, InfoSection section, PdfFont normalFont, PdfFont boldFont) {
-        Div container = new Div()
-            .setBorder(DEFAULT_BORDER)
-            .setPadding(PADDING_CONTAINER)
-            .setMarginBottom(HEADER_MARGIN_BOTTOM)
-            .setBorderRadius(BORDER_RADIUS);
+        Div container = new Div();
 
         Paragraph title = new Paragraph(section.title)
             .setFont(boldFont)
+            .setMarginTop(0)
             .setFontSize(FONT_SIZE_SECTION_TITLE)
             .setMarginBottom(MARGIN_TITLE_BOTTOM);
         container.add(title);
 
-        Div divider = new Div().setHeight(DIVIDER_HEIGHT).setBackgroundColor(BORDER_COLOR).setMarginBottom(MARGIN_TITLE_BOTTOM);
-        container.add(divider);
-
         if (section.htmlContent != null && !section.htmlContent.isEmpty()) {
             List<IBlockElement> elements = parseHtmlContent(section.htmlContent, normalFont);
-            boolean first = true;
             for (IBlockElement element : elements) {
-                if (element instanceof Paragraph para && first) {
+                if (element instanceof Paragraph para) {
                     para.setMarginTop(0);
-                    first = false;
-                } else if (element instanceof com.itextpdf.layout.element.List list && first) {
+                    para.setMarginLeft(CONTENT_INDENT);
+                } else if (element instanceof com.itextpdf.layout.element.List list) {
                     list.setMarginTop(0);
-                    first = false;
+                    list.setMarginLeft(CONTENT_INDENT);
                 }
                 container.add(element);
             }
@@ -308,11 +407,62 @@ public class PDFBuilder {
                 .setFontSize(FONT_SIZE_TEXT)
                 .setMargin(0)
                 .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
+                .setMarginLeft(CONTENT_INDENT)
                 .setMultipliedLeading(LINE_LEADING);
             container.add(dataRow);
         }
 
         document.add(container);
+    }
+
+    /**
+     * Adds metadata text at the bottom of the last PDF page
+     */
+    private void addMetadata(PdfDocument pdfDoc, PdfFont normalFont) {
+        int totalPages = pdfDoc.getNumberOfPages();
+
+        for (int i = 1; i <= totalPages; i++) {
+            PdfPage page = pdfDoc.getPage(i);
+            Rectangle pageSize = page.getPageSize();
+
+            Canvas canvas = new Canvas(page, pageSize);
+
+            Paragraph metadataParagraph = new Paragraph()
+                .setFont(normalFont)
+                .setFontSize(FONT_SIZE_METADATA)
+                .setFontColor(METADATA_COLOR)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setWidth(pageSize.getWidth() - 8 * METADATA_MARGIN_LEFT_RIGHT);
+
+            metadataParagraph.add(new Text(metadataText));
+
+            // add TumApply as clickable Link
+            Link tumapplyLink = new Link("TumApply", PdfAction.createURI(TUMAPPLY_URL));
+            tumapplyLink.setFontColor(PRIMARY_COLOR).setUnderline().setFont(normalFont).setFontSize(FONT_SIZE_METADATA);
+
+            metadataParagraph.add(tumapplyLink);
+
+            if (metadataEndText != null && !metadataEndText.isEmpty()) {
+                metadataParagraph.add(new Text(metadataEndText));
+            }
+
+            canvas.showTextAligned(metadataParagraph, pageSize.getWidth() / 2, MARGIN_PDF_TOP_AND_BOTTOM, TextAlignment.CENTER);
+
+            // --- Page Number ---
+            Paragraph pageNumber = new Paragraph(String.format("%s %d %s %d", pageLabelPage, i, pageLabelOf, totalPages))
+                .setFont(normalFont)
+                .setFontSize(FONT_SIZE_METADATA)
+                .setFontColor(METADATA_COLOR);
+
+            canvas.showTextAligned(
+                pageNumber,
+                pageSize.getRight() - METADATA_MARGIN_LEFT_RIGHT,
+                MARGIN_PDF_TOP_AND_BOTTOM,
+                TextAlignment.RIGHT
+            );
+
+            canvas.close();
+        }
     }
 
     private List<IBlockElement> parseHtmlContent(String html, PdfFont normalFont) {
@@ -344,12 +494,12 @@ public class PDFBuilder {
                             .setFont(normalFont)
                             .setFontSize(FONT_SIZE_TEXT)
                             .setMarginBottom(MARGIN_DATA_ROW_BOTTOM)
-                            .setSymbolIndent(LIST_SYMBOL_INDENT)
-                            .setMarginLeft(LIST_MARGIN_LEFT);
+                            .setPaddingLeft(0f)
+                            .setSymbolIndent(LIST_SYMBOL_INDENT);
 
                         for (IElement item : list.getChildren()) {
                             if (item instanceof ListItem) {
-                                ((ListItem) item).setFont(normalFont).setFontSize(FONT_SIZE_TEXT);
+                                ((ListItem) item).setFont(normalFont).setFontSize(FONT_SIZE_TEXT).setMarginLeft(CONTENT_INDENT);
                             }
                         }
                     }
