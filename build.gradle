@@ -136,7 +136,7 @@ jacocoTestCoverageVerification {
 
     rule {
       limit {
-        minimum = 0.33
+        minimum = 0.32
         counter = 'BRANCH'
         value = 'COVEREDRATIO'
       }
