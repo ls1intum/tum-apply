@@ -27,6 +27,8 @@ import { JobDetailComponent } from '../job-detail/job-detail.component';
 import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
 import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
+import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
+import { ImageDTO } from '../../generated/model/imageDTO';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -62,6 +64,7 @@ export class JobCreationFormComponent {
   // Services
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceApiService);
+  private imageResourceService = inject(ImageResourceApiService);
   private accountService = inject(AccountService);
   private autoSaveTimer: number | undefined;
   private router = inject(Router);
@@ -84,9 +87,16 @@ export class JobCreationFormComponent {
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
   publishAttempted = signal<boolean>(false);
 
+  // Image upload state
+  uploadedImages = signal<ImageDTO[]>([]);
+  defaultImages = signal<ImageDTO[]>([]);
+  selectedImage = signal<ImageDTO | undefined>(undefined);
+  isUploadingImage = signal<boolean>(false);
+
   // Forms
   basicInfoForm = this.createBasicInfoForm();
   positionDetailsForm = this.createPositionDetailsForm();
+  imageForm = this.createImageForm();
   additionalInfoForm = this.createAdditionalInfoForm();
 
   // Template references
@@ -230,11 +240,10 @@ export class JobCreationFormComponent {
       });
     }
 
-    // TODO: Add additional info step back in if needed
-
-    /* if (templates.panel3) {
+    // Step 3: Image Upload/Selection
+    if (templates.panel3) {
       steps.push({
-        name: 'jobCreationForm.header.steps.additionalInfo',
+        name: 'jobCreationForm.header.steps.imageSelection',
         panelTemplate: templates.panel3,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -254,15 +263,16 @@ export class JobCreationFormComponent {
             severity: 'primary',
             icon: 'chevron-right',
             onClick() {},
-            disabled: !this.positionDetailsValid(),
+            disabled: false, // Image is optional
             label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
           },
         ],
+        disabled: !this.positionDetailsValid(),
         status: templates.status,
       });
-    }*/
+    }
 
     if (templates.panel4) {
       steps.push({
@@ -333,6 +343,73 @@ export class JobCreationFormComponent {
     this.location.back();
   }
 
+  async onImageSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      this.toastService.showError({ summary: 'Error', detail: 'Image must be smaller than 5MB' });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      this.toastService.showError({ summary: 'Error', detail: 'Please select an image file' });
+      return;
+    }
+
+    this.isUploadingImage.set(true);
+    try {
+      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
+      // Debug: Check if image URL is present
+      if (uploadedImage.url === undefined || uploadedImage.url === '') {
+        console.error('Uploaded image missing URL:', uploadedImage);
+      }
+      this.uploadedImages.update(images => [uploadedImage, ...images]);
+      this.selectImage(uploadedImage);
+      this.toastService.showSuccess({ summary: 'Success', detail: 'Image uploaded successfully' });
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      this.toastService.showError({ summary: 'Error', detail: 'Failed to upload image' });
+    } finally {
+      this.isUploadingImage.set(false);
+      // Reset input
+      input.value = '';
+    }
+  }
+
+  selectImage(image: ImageDTO): void {
+    this.selectedImage.set(image);
+    this.imageForm.patchValue({ imageId: image.imageId });
+  }
+
+  clearImageSelection(): void {
+    this.selectedImage.set(undefined);
+    this.imageForm.patchValue({ imageId: undefined });
+  }
+
+  onImageLoadError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    console.error('Failed to load image:', img.src);
+    console.error('Selected image data:', this.selectedImage());
+  }
+
+  async loadImages(): Promise<void> {
+    try {
+      const [myImages, defaults] = await Promise.all([
+        firstValueFrom(this.imageResourceService.getMyUploadedImages()),
+        firstValueFrom(this.imageResourceService.getDefaultJobBanners()),
+      ]);
+      this.uploadedImages.set(myImages);
+      this.defaultImages.set(defaults);
+    } catch (error) {
+      console.error('Failed to load images:', error);
+    }
+  }
+
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
       // Basic Info Form: Currently required for saving a job
@@ -358,6 +435,12 @@ export class JobCreationFormComponent {
     });
   }
 
+  private createImageForm(): FormGroup {
+    return this.fb.group({
+      imageId: [undefined], // UUID of selected/uploaded image
+    });
+  }
+
   private createAdditionalInfoForm(): FormGroup {
     return this.fb.group({
       privacyAccepted: [false, [Validators.required]],
@@ -367,6 +450,7 @@ export class JobCreationFormComponent {
   private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
+    const imageValue = this.imageForm.getRawValue();
 
     return {
       title: this.basicInfoForm.get('title')?.value ?? '',
@@ -382,6 +466,7 @@ export class JobCreationFormComponent {
       description: positionDetailsValue.description?.trim() ?? '',
       tasks: positionDetailsValue.tasks?.trim() ?? '',
       requirements: positionDetailsValue.requirements?.trim() ?? '',
+      imageId: imageValue.imageId ?? undefined,
       state,
     };
   }
@@ -397,6 +482,9 @@ export class JobCreationFormComponent {
         return;
       }
       this.userId.set(userId);
+
+      // Load images for selection
+      await this.loadImages();
 
       const segments = await firstValueFrom(this.route.url);
       const mode = segments[1]?.path as JobFormMode;
@@ -447,6 +535,17 @@ export class JobCreationFormComponent {
       tasks: job?.tasks ?? '',
       requirements: job?.requirements ?? '',
     });
+
+    // Image form - note: JobDTO has imageUrl, but we need to find the corresponding imageId
+    // If editing a job with an image, try to find it in loaded images by URL
+    if (job?.imageUrl !== undefined && job.imageUrl !== null && job.imageUrl !== '') {
+      const allImages = [...this.uploadedImages(), ...this.defaultImages()];
+      const selectedImg = allImages.find(img => img.url === job.imageUrl);
+      if (selectedImg) {
+        this.selectedImage.set(selectedImg);
+        this.imageForm.patchValue({ imageId: selectedImg.imageId });
+      }
+    }
 
     this.additionalInfoForm.patchValue({
       privacyAccepted: false,

@@ -17,6 +17,7 @@
     "next": "Next",
     "apply": "Apply",
     "publish": "Publish",
+    "chooseFile": "Choose File",
     "tooltip": {
       "editDisabled": "Only drafts can be edited"
     }

@@ -8,6 +8,7 @@
       "steps": {
         "basicInfo": "Grundlegende Informationen",
         "positionDetails": "Stellenbeschreibung",
+        "imageSelection": "Bannerbild",
         "additionalInfo": "Zusätzliche Informationen",
         "summary": "Zusammenfassung"
       },
@@ -83,6 +84,16 @@
         "descriptionHelper": "Gib die Mindestanforderungen an, die erfüllt sein müssen (z. B. Abschluss, Noten, Sprachkenntnisse).",
         "toolTipText": "Stelle sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
       }
+    },
+    "imageSection": {
+      "title": "Stellenbannerbild (Optional)",
+      "description": "Füge ein Bannerbild hinzu, um deine Stellenanzeige visuell ansprechender zu gestalten. Du kannst dein eigenes Bild hochladen oder aus den Standardoptionen auswählen.",
+      "uploadNew": "Neues Bild hochladen",
+      "uploading": "Wird hochgeladen...",
+      "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, PNG, GIF. Empfohlene Abmessungen: 800x400px",
+      "selectedImage": "Ausgewähltes Bild",
+      "myUploads": "Meine hochgeladenen Bilder",
+      "defaultImages": "Standardbilder"
     },
     "additionalInformationSection": {
       "extras": {

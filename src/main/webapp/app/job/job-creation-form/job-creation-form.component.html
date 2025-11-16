@@ -217,20 +217,114 @@
     </form>
   </ng-template>
 
-  <!-- Step 3: Additional Information -->
+  <!-- Step 3: Image Selection/Upload -->
   <ng-template #panel3>
-    <form [formGroup]="additionalInfoForm">
-      <section class="extras-section">
-        <h2 jhiTranslate="jobCreationForm.additionalInformationSection.extras.title"></h2>
-        <p jhiTranslate="jobCreationForm.additionalInformationSection.extras.description"></p>
-        <br />
-        <!--        Not implemented yet-->
-        <!--        Custom Questions Selection-->
-      </section>
-    </form>
+    <div class="image-selection-section">
+      <h2 jhiTranslate="jobCreationForm.imageSection.title"></h2>
+      <p jhiTranslate="jobCreationForm.imageSection.description"></p>
+
+      <!-- Upload New Image -->
+      <div class="upload-section mb-6">
+        <h3 jhiTranslate="jobCreationForm.imageSection.uploadNew"></h3>
+        <div class="flex items-center gap-4">
+          <input type="file" accept="image/*" (change)="onImageSelected($event)" #fileInput class="hidden" id="imageUpload" />
+          <label
+            for="imageUpload"
+            class="cursor-pointer inline-flex items-center px-4 py-2 border border-primary rounded-md bg-primary text-white hover:bg-primary-dark transition-colors"
+          >
+            <fa-icon [icon]="['fas', 'upload']" class="mr-2" />
+            <span jhiTranslate="button.chooseFile"></span>
+          </label>
+          @if (isUploadingImage()) {
+            <span class="text-sm" jhiTranslate="jobCreationForm.imageSection.uploading"></span>
+          }
+        </div>
+        <p class="text-xs text-muted mt-2" jhiTranslate="jobCreationForm.imageSection.uploadHint"></p>
+      </div>
+
+      <!-- Selected Image Preview -->
+      @if (selectedImage()) {
+        <div class="selected-image-preview mb-6">
+          <h3 jhiTranslate="jobCreationForm.imageSection.selectedImage"></h3>
+          <div class="relative inline-block">
+            <img
+              [src]="selectedImage()?.url"
+              [alt]="'Selected job banner'"
+              class="w-full max-w-md h-48 object-cover rounded-lg border-2 border-primary"
+              (error)="onImageLoadError($event)"
+            />
+            <button
+              type="button"
+              (click)="clearImageSelection()"
+              class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors"
+            >
+              <fa-icon [icon]="['fas', 'times']" />
+            </button>
+          </div>
+          <!-- Debug info -->
+          <div class="text-xs text-gray-500 mt-2">Image URL: {{ selectedImage()?.url }}</div>
+        </div>
+      }
+
+      <!-- My Uploaded Images -->
+      @if (uploadedImages().length > 0) {
+        <div class="my-images-section mb-6">
+          <h3 jhiTranslate="jobCreationForm.imageSection.myUploads"></h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @for (image of uploadedImages(); track image.imageId) {
+              <div
+                class="cursor-pointer relative group"
+                (click)="selectImage(image)"
+                [class.ring-2]="selectedImage()?.imageId === image.imageId"
+                [class.ring-primary]="selectedImage()?.imageId === image.imageId"
+              >
+                <img
+                  [src]="image.url"
+                  [alt]="'Job banner'"
+                  class="w-full h-32 object-cover rounded-lg hover:opacity-80 transition-opacity"
+                />
+                @if (selectedImage()?.imageId === image.imageId) {
+                  <div class="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                    <fa-icon [icon]="['fas', 'check']" />
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Default Images -->
+      @if (defaultImages().length > 0) {
+        <div class="default-images-section">
+          <h3 jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            @for (image of defaultImages(); track image.imageId) {
+              <div
+                class="cursor-pointer relative group"
+                (click)="selectImage(image)"
+                [class.ring-2]="selectedImage()?.imageId === image.imageId"
+                [class.ring-primary]="selectedImage()?.imageId === image.imageId"
+              >
+                <img
+                  [src]="image.url"
+                  [alt]="'Default job banner'"
+                  class="w-full h-32 object-cover rounded-lg hover:opacity-80 transition-opacity"
+                />
+                @if (selectedImage()?.imageId === image.imageId) {
+                  <div class="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                    <fa-icon [icon]="['fas', 'check']" />
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
   </ng-template>
 
-  <!-- Step 4: Review Page -->
+  <!-- Step 4: Review Page (formerly panel4, now actually panel4 but step 4) -->
   <ng-template #panel4>
     <div class="extras-section">
       <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>

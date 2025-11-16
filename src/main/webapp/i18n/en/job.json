@@ -8,6 +8,7 @@
       "steps": {
         "basicInfo": "Basic Information",
         "positionDetails": "Position Details",
+        "imageSelection": "Job Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
       },
@@ -83,6 +84,16 @@
         "descriptionHelper": "Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.",
         "toolTipText": "Ensure the applicant knows what qualifications are expected."
       }
+    },
+    "imageSection": {
+      "title": "Job Banner Image (Optional)",
+      "description": "Add a banner image to make your job posting more visually appealing. You can upload your own image or select from default options.",
+      "uploadNew": "Upload New Image",
+      "uploading": "Uploading...",
+      "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, PNG, GIF. Recommended dimensions: 800x400px",
+      "selectedImage": "Selected Image",
+      "myUploads": "My Uploaded Images",
+      "defaultImages": "Default Images"
     },
     "additionalInformationSection": {
       "extras": {
