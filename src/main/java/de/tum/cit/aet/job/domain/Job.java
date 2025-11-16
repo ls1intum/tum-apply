@@ -41,11 +41,11 @@ public class Job extends AbstractAuditingEntity {
     /**
      * Optional banner image for the job posting
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id")
     private Image image;
 
-    //TODO will be an enum
+    // TODO will be an enum
     @Column(name = "field_of_studies")
     private String fieldOfStudies;
 
