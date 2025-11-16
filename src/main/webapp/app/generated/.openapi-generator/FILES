@@ -12,6 +12,7 @@ api/emailSettingResourceApi.service.ts
 api/emailTemplateResourceApi.service.ts
 api/emailVerificationResourceApi.service.ts
 api/genderBiasAnalysisResourceApi.service.ts
+api/imageResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
 api/interviewResourceApi.service.ts
 api/jobResourceApi.service.ts
@@ -54,6 +55,8 @@ model/emailTemplateTranslationDTO.ts
 model/employeeResearchGroupRequestDTO.ts
 model/genderBiasAnalysisRequest.ts
 model/genderBiasAnalysisResponse.ts
+model/image.ts
+model/imageDTO.ts
 model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts

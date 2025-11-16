@@ -706,6 +706,91 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
+  /api/images/defaults/job-banners:
+    get:
+      tags: [image-resource]
+      operationId: getDefaultJobBanners
+      parameters:
+      - name: school
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [CIT]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/my-uploads:
+    get:
+      tags: [image-resource]
+      operationId: getMyUploadedImages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/default-job-banner:
+    post:
+      tags: [image-resource]
+      operationId: uploadDefaultJobBanner
+      parameters:
+      - name: school
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [CIT]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/job-banner:
+    post:
+      tags: [image-resource]
+      operationId: uploadJobBanner
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/{imageId}:
+    delete:
+      tags: [image-resource]
+      operationId: deleteImage
+      parameters:
+      - name: imageId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -1603,6 +1688,37 @@ components:
         coding: {type: string}
         language: {type: string}
         originalText: {type: string}
+    Image:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        default: {type: boolean}
+        imageId: {type: string, format: uuid}
+        imageType:
+          type: string
+          enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
+        lastModifiedAt: {type: string, format: date-time}
+        mimeType: {type: string}
+        school:
+          type: string
+          enum: [CIT]
+        sizeBytes: {type: integer, format: int64}
+        uploadedBy: {$ref: '#/components/schemas/User'}
+        url: {type: string}
+    ImageDTO:
+      type: object
+      properties:
+        imageId: {type: string, format: uuid}
+        imageType:
+          type: string
+          enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
+        isDefault: {type: boolean}
+        school:
+          type: string
+          enum: [CIT]
+        sizeBytes: {type: integer, format: int64}
+        uploadedById: {type: string, format: uuid}
+        url: {type: string}
     InternalComment:
       type: object
       properties:

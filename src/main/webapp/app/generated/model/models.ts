@@ -27,6 +27,8 @@ export * from './emailTemplateTranslationDTO';
 export * from './employeeResearchGroupRequestDTO';
 export * from './genderBiasAnalysisRequest';
 export * from './genderBiasAnalysisResponse';
+export * from './image';
+export * from './imageDTO';
 export * from './internalComment';
 export * from './internalCommentDTO';
 export * from './internalCommentUpdateDTO';
