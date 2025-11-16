@@ -227,17 +227,15 @@
       <div class="upload-section mb-6">
         <h3 jhiTranslate="jobCreationForm.imageSection.uploadNew"></h3>
         <div class="flex items-center gap-4">
-          <input type="file" accept="image/*" (change)="onImageSelected($event)" #fileInput class="hidden" id="imageUpload" />
-          <label
-            for="imageUpload"
-            class="cursor-pointer inline-flex items-center px-4 py-2 border border-primary rounded-md bg-primary text-white hover:bg-primary-dark transition-colors"
-          >
-            <fa-icon [icon]="['fas', 'upload']" class="mr-2" />
-            <span jhiTranslate="button.chooseFile"></span>
-          </label>
-          @if (isUploadingImage()) {
-            <span class="text-sm" jhiTranslate="jobCreationForm.imageSection.uploading"></span>
-          }
+          <input type="file" accept="image/*" (change)="onImageSelected($event)" #fileInput class="hidden" />
+          <jhi-button
+            [icon]="'cloud-arrow-up'"
+            [label]="'button.chooseFile'"
+            [loading]="isUploadingImage()"
+            [disabled]="isUploadingImage()"
+            [shouldTranslate]="true"
+            (click)="fileInput.click()"
+          />
         </div>
         <p class="text-xs text-muted mt-2" jhiTranslate="jobCreationForm.imageSection.uploadHint"></p>
       </div>
@@ -263,34 +261,6 @@
           </div>
           <!-- Debug info -->
           <div class="text-xs text-gray-500 mt-2">Image URL: {{ selectedImage()?.url }}</div>
-        </div>
-      }
-
-      <!-- My Uploaded Images -->
-      @if (uploadedImages().length > 0) {
-        <div class="my-images-section mb-6">
-          <h3 jhiTranslate="jobCreationForm.imageSection.myUploads"></h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            @for (image of uploadedImages(); track image.imageId) {
-              <div
-                class="cursor-pointer relative group"
-                (click)="selectImage(image)"
-                [class.ring-2]="selectedImage()?.imageId === image.imageId"
-                [class.ring-primary]="selectedImage()?.imageId === image.imageId"
-              >
-                <img
-                  [src]="image.url"
-                  [alt]="'Job banner'"
-                  class="w-full h-32 object-cover rounded-lg hover:opacity-80 transition-opacity"
-                />
-                @if (selectedImage()?.imageId === image.imageId) {
-                  <div class="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
-                    <fa-icon [icon]="['fas', 'check']" />
-                  </div>
-                }
-              </div>
-            }
-          </div>
         </div>
       }
 

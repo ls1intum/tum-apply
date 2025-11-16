@@ -29,6 +29,7 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
+import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -53,6 +54,7 @@ type JobFormMode = 'create' | 'edit';
     ConfirmDialog,
     JobDetailComponent,
     DividerModule,
+    ButtonComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -363,17 +365,26 @@ export class JobCreationFormComponent {
 
     this.isUploadingImage.set(true);
     try {
+      console.error('Uploading file:', file.name, 'size:', file.size, 'type:', file.type);
       const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
+      console.error('Upload response:', uploadedImage);
+      
       // Debug: Check if image URL is present
       if (uploadedImage.url === undefined || uploadedImage.url === '') {
         console.error('Uploaded image missing URL:', uploadedImage);
+        this.toastService.showError({ summary: 'Error', detail: 'Server did not return image URL' });
+        return;
       }
+      
       this.uploadedImages.update(images => [uploadedImage, ...images]);
       this.selectImage(uploadedImage);
       this.toastService.showSuccess({ summary: 'Success', detail: 'Image uploaded successfully' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Image upload failed:', error);
-      this.toastService.showError({ summary: 'Error', detail: 'Failed to upload image' });
+      console.error('Error status:', error?.status);
+      console.error('Error body:', error?.error);
+      const errorMessage = error?.error?.message || error?.message || 'Failed to upload image';
+      this.toastService.showError({ summary: 'Error', detail: errorMessage });
     } finally {
       this.isUploadingImage.set(false);
       // Reset input
@@ -382,6 +393,8 @@ export class JobCreationFormComponent {
   }
 
   selectImage(image: ImageDTO): void {
+    console.error('Selecting image:', image);
+    console.error('Image URL:', image.url);
     this.selectedImage.set(image);
     this.imageForm.patchValue({ imageId: image.imageId });
   }
