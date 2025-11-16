@@ -1,9 +1,13 @@
 package de.tum.cit.aet.core.util;
 
+import java.util.stream.Collectors;
+
 /**
  * Helpers for string manipulation and normalization.
  */
 public class StringUtil {
+
+    private static final String ALLOWED_UMLAUTS = "ßäöüÄÖÜ";
 
     private StringUtil() {}
 
@@ -46,5 +50,46 @@ public class StringUtil {
         }
         String normalized = searchQuery.trim().replaceAll("\\s+", " ").toLowerCase();
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    /**
+     * Keeps only ASCII characters and German umlauts in the input string.
+     * All other characters are replaced with a space.
+     *
+     * @param input the original string
+     * @return a string containing only ASCII and German umlaut characters, other
+     *         characters replaced with space
+     */
+    public static String keepAsciiAndUmlauts(String input) {
+        if (input == null) return "";
+        return input
+            .chars()
+            .mapToObj(c -> (c < 128 || ALLOWED_UMLAUTS.indexOf(c) >= 0) ? String.valueOf((char) c) : " ")
+            .collect(Collectors.joining());
+    }
+
+    /**
+     * Removes common punctuation characters from the input string.
+     * Useful for tokenizing words without extra symbols.
+     *
+     * @param input the original string
+     * @return a string with punctuation replaced by spaces
+     */
+    public static String removePunctuation(String input) {
+        if (input == null) return "";
+        return input.replaceAll("[.\\t,\"'<>*?!\\[\\]@:;()./&]", " ");
+    }
+
+    /**
+     * Normalizes whitespace in a string by collapsing multiple spaces into a single
+     * space.
+     * Leading and trailing whitespace are also removed.
+     *
+     * @param input the original string
+     * @return a string with normalized whitespace
+     */
+    public static String normalizeWhitespace(String input) {
+        if (input == null) return "";
+        return input.replaceAll("\\s+", " ").trim();
     }
 }
