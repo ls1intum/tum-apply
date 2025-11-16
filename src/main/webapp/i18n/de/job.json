@@ -82,6 +82,20 @@
         "placeholder": "Liste die Mindestanforderungen für Bewerber auf...",
         "descriptionHelper": "Gib die Mindestanforderungen an, die erfüllt sein müssen (z. B. Abschluss, Noten, Sprachkenntnisse).",
         "toolTipText": "Stelle sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
+      },
+      "genderDecoder": {
+        "resultTitle": "Gender-Bias-Analyse",
+        "formulationTexts": {
+          "manly": "Überwiegend agentisch (stereotyp männlich) formuliert",
+          "feminine": "Überwiegend kommunal (stereotyp weiblich) formuliert",
+          "neutral": "Neutral formuliert"
+        },
+        "explanations": {
+          "mostly_agentic": "Nach unserer Auswertung enthält Ihre Stellenanzeige mehr agentische (stereotyp männliche) als kommunale (stereotyp weibliche) Worte. Empirischen Studien zufolge spricht diese Wortwahl eher Männer als Frauen an und kann Frauen davon abhalten, sich zu bewerben.<br><br>Durch eine agentische Formulierung Ihrer Stellenanzeige kann der Eindruck entstehen, dass die Anforderungen der Stelle vorwiegend agentische Eigenschaften beinhalten und auch eher Personen, die diesem Profil entsprechen, gesucht werden.",
+          "mostly_communal": "Nach unserer Auswertung enthält Ihre Stellenanzeige mehr kommunale (stereotyp weibliche) als agentische (stereotyp männliche) Worte. Ihre Stellenanzeige könnte daher Frauen darin bestätigen, sich zu bewerben.<br><br>Forschungsergebnisse zeigen, dass eine kommunale Formulierung einer Stellenanzeige kaum Effekte darauf hat, wie attraktiv Männer eine Stelle wahrnehmen, sodass die kommunale Formulierung Ihrer Stellenanzeige Männer vermutlich nicht davon abhalten wird, sich zu bewerben.",
+          "empty": "Nach unserer Auswertung enthält Ihre Stellenanzeige weder agentische (stereotyp männliche) noch kommunale (stereotyp weibliche) Worte. Folglich wird durch Ihre Stellenanzeige weder suggeriert, dass vorrangig agentische Eigenschaften gesucht und gefordert werden, noch dass vorrangig kommunale Eigenschaften gesucht und gefordert werden. Die sprachliche Gestaltung Ihrer Stellenanzeige ist demnach gender-fair.",
+          "neutral": "Nach unserer Auswertung enthält Ihre Stellenanzeige gleichermaßen agentische (stereotyp männliche) und kommunale (stereotyp weibliche) Worte. Folglich wird durch Ihre Stellenanzeige weder suggeriert, dass vorrangig agentische Eigenschaften gesucht und gefordert werden, noch dass vorrangig kommunale Eigenschaften gesucht und gefordert werden. Die sprachliche Gestaltung Ihrer Stellenanzeige ist demnach gender-fair."
+        }
       }
     },
     "additionalInformationSection": {
