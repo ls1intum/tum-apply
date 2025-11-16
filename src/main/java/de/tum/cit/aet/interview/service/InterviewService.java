@@ -271,4 +271,34 @@ public class InterviewService {
             }
         }
     }
+
+    /**
+     * Retrieves all interview slots for a given interview process.
+     * Slots are returned ordered by start time (ascending).
+     *
+     * @param processId the ID of the interview process
+     * @return a list of interview slots ordered by start time
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException if the user is not authorized to view these slots
+     */
+    public List<InterviewSlotDTO> getSlotsByProcessId(UUID processId) {
+        // 1.Load Interview Process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
+
+        // 2. Security: Verify current user is the job owner
+        Job job = process.getJob();
+        User supervisingProfessor = job.getSupervisingProfessor();
+        UUID currentUserId = currentUserService.getUserId();
+
+        if (!supervisingProfessor.getUserId().equals(currentUserId)) {
+            throw new AccessDeniedException("You can only create slots for your own jobs");
+        }
+
+        // 3. Load and return slots
+        List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
+
+        return slots.stream().map(InterviewSlotDTO::fromEntity).toList();
+    }
 }
