@@ -306,7 +306,7 @@ dependencies {
   implementation "org.keycloak:keycloak-authz-client:${keycloakVersion}"
 
   // Used for pdf creation
-  implementation 'com.itextpdf:html2pdf:6.2.1'
+  implementation 'com.itextpdf:html2pdf:6.3.0'
 }
 
 tasks.register("cleanResources", Delete) {
