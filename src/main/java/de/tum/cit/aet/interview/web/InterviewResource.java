@@ -2,13 +2,16 @@ package de.tum.cit.aet.interview.web;
 
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
+import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
+import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for managing interview processes.
@@ -38,5 +41,22 @@ public class InterviewResource {
     public ResponseEntity<List<InterviewOverviewDTO>> getInterviewOverview() {
         List<InterviewOverviewDTO> overview = interviewService.getInterviewOverview();
         return ResponseEntity.ok(overview);
+    }
+
+    /**
+     * {@code POST /api/interviews/processes/{processId}/slots/create} :
+     * Creates one or more interview slots for a given interview process.
+     *
+     * Accessible only to users with the {@code PROFESSOR}
+     *
+     * @param processId the ID of the interview process to which the slots belong
+     * @param dto       the slot definitions sent from the frontend
+     * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing the created {@link InterviewSlotDTO}s
+     */
+    @PostMapping("/processes/{processId}/slots/create")
+    @Professor
+    public ResponseEntity<List<InterviewSlotDTO>> createSlots(@PathVariable UUID processId, @Valid @RequestBody CreateSlotsDTO dto) {
+        List<InterviewSlotDTO> slots = interviewService.createSlots(processId, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(slots);
     }
 }

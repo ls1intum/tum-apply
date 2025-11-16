@@ -2,15 +2,29 @@ package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
-import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
-import de.tum.cit.aet.interview.dto.InterviewProcessDTO;
+import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.dto.*;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
+import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.User;
+import jakarta.transaction.Transactional;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +33,11 @@ import org.springframework.stereotype.Service;
 public class InterviewService {
 
     private final InterviewProcessRepository interviewProcessRepository;
+    private final InterviewSlotRepository interviewSlotRepository;
     private final ApplicationRepository applicationRepository;
     private final CurrentUserService currentUserService;
     private final JobRepository jobRepository;
+    private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
     /**
      * Get overview of all interview processes with statistics per job.
@@ -149,5 +165,110 @@ public class InterviewService {
             interviewProcess.getJob().getTitle(),
             interviewProcess.getCreatedAt()
         );
+    }
+
+    /**
+     * Creates and persists new interview slots for a given interview process.
+     *
+     * @param processId the ID of the interview process
+     * @param dto the data transfer object containing slot definitions
+     * @return a list of created interview slots
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException if the user is not authorized
+     * @throws TimeConflictException if any time conflicts are detected
+     */
+    @Transactional
+    public List<InterviewSlotDTO> createSlots(UUID processId, CreateSlotsDTO dto) {
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
+
+        // 2. Security: Verify current user is the job owner
+        Job job = process.getJob();
+        User supervisingProfessor = job.getSupervisingProfessor();
+        UUID currentUserId = currentUserService.getUserId();
+
+        if (!supervisingProfessor.getUserId().equals(currentUserId)) {
+            throw new AccessDeniedException("You can only create slots for your own jobs");
+        }
+
+        // 3. Convert DTOs to entities
+        List<InterviewSlot> newSlots = dto
+            .slots()
+            .stream()
+            .map(slotInput -> createSlotFromInput(process, slotInput))
+            .toList();
+
+        // 4. Validate no time conflicts
+        validateNoTimeConflicts(newSlots);
+
+        // 5. Save all slots
+        List<InterviewSlot> savedSlots = interviewSlotRepository.saveAll(newSlots);
+
+        return savedSlots.stream().map(InterviewSlotDTO::fromEntity).toList();
+    }
+
+    /**
+     * Converts a single {@link CreateSlotsDTO.SlotInput} entry into an {@link InterviewSlot} entity.
+     * <p>
+     * Combines the provided date and time values into {@link Instant}s using the Munich time zone.
+     *
+     * @param process the interview process the slot belongs to
+     * @param input the slot definition from the frontend
+     * @return a populated {@link InterviewSlot} entity ready for persistence
+     */
+    private InterviewSlot createSlotFromInput(InterviewProcess process, CreateSlotsDTO.SlotInput input) {
+        InterviewSlot slot = new InterviewSlot();
+        slot.setInterviewProcess(process);
+
+        // Convert LocalDate + LocalTime to Instant with Munich timezone
+        ZonedDateTime startZdt = ZonedDateTime.of(input.date(), input.startTime(), CET_TIMEZONE);
+        slot.setStartDateTime(startZdt.toInstant());
+
+        ZonedDateTime endZdt = ZonedDateTime.of(input.date(), input.endTime(), CET_TIMEZONE);
+        slot.setEndDateTime(endZdt.toInstant());
+
+        slot.setLocation(input.location());
+        slot.setStreamLink(input.streamLink());
+        slot.setIsBooked(false);
+
+        return slot;
+    }
+
+    /**
+     * Validates that none of the new slots conflict with existing slots of the same professor.
+     *
+     * @param newSlots the slots to validate
+     * @throws TimeConflictException if a time conflict is detected
+     */
+    private void validateNoTimeConflicts(List<InterviewSlot> newSlots) {
+        for (InterviewSlot newSlot : newSlots) {
+            User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
+
+            // First: Quick check if any conflicts exist
+            boolean hasConflict = interviewSlotRepository.hasConflictingSlots(
+                professor,
+                newSlot.getStartDateTime(),
+                newSlot.getEndDateTime()
+            );
+
+            if (hasConflict) {
+                // Second: Fetch details for error message
+                SlotConflictDTO conflict = interviewSlotRepository
+                    .findFirstConflictingSlot(professor, newSlot.getStartDateTime(), newSlot.getEndDateTime())
+                    .orElseThrow(); // Should always exist since hasConflict is true
+
+                ZonedDateTime conflictTime = conflict.startDateTime().atZone(CET_TIMEZONE);
+
+                throw new TimeConflictException(
+                    String.format(
+                        "Time conflict: You already have an interview slot at %s for job '%s'",
+                        conflictTime.toLocalDateTime(),
+                        conflict.jobTitle()
+                    )
+                );
+            }
+        }
     }
 }
