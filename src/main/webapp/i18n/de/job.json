@@ -96,8 +96,14 @@
       "uploadFormats": "PNG, JPG, WEBP Formate akzeptiert",
       "pendingUploadHint": "Dieses Bild wird hochgeladen, wenn du die Stelle veröffentlichst",
       "removeImage": "Bild entfernen",
-      "uploadSuccess": "Bild erfolgreich hochgeladen",
-      "uploadFailed": "Bild konnte nicht hochgeladen werden. Bitte versuche es erneut.",
+      "uploadSuccess": {
+        "summary": "Upload erfolgreich",
+        "detail": "Bild erfolgreich hochgeladen"
+      },
+      "uploadFailed": {
+        "summary": "Upload fehlgeschlagen",
+        "detail": "Bild konnte nicht hochgeladen werden. Bitte versuche es erneut."
+      },
       "uploadNew": "Neues Bild hochladen",
       "uploading": "Wird hochgeladen...",
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, PNG, GIF. Empfohlene Abmessungen: 800x400px",
