@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
+import { CarouselModule } from 'primeng/carousel';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { DateSectionComponent } from 'app/interview/interview-process-detail/date-section/date-section.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DateColumnComponent } from './date-column/date-column.component';
 
 interface GroupedSlots {
   date: string;
@@ -22,10 +22,10 @@ interface GroupedSlots {
   imports: [
     CommonModule,
     TranslateModule,
-    ButtonModule,
-    CardModule,
+    ButtonComponent,
+    CarouselModule,
     ProgressSpinnerModule,
-    DateSectionComponent,
+    DateColumnComponent,
   ],
   templateUrl: './interview-process-detail.component.html',
 })
@@ -34,12 +34,13 @@ export class InterviewProcessDetailComponent {
   private readonly router = inject(Router);
   private readonly interviewService = inject(InterviewResourceApiService);
 
-  private readonly TIMEZONE = 'Europe/Berlin';
-
   processId = signal<string | null>(null);
+  jobTitle = signal<string>('');
   slots = signal<InterviewSlotDTO[]>([]);
   loading = signal(true);
   error = signal(false);
+
+  currentMonthOffset = signal(0);
 
   groupedSlots = computed<GroupedSlots[]>(() => {
     const slotsData = this.slots();
@@ -68,36 +69,67 @@ export class InterviewProcessDetailComponent {
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
 
-  currentMonth = computed(() => {
+  filteredSlots = computed(() => {
     const groups = this.groupedSlots();
-    if (!groups.length) return '';
+    const offset = this.currentMonthOffset();
 
-    return groups[0].localDate.toLocaleDateString('de-DE', {
+    if (offset === 0) return groups;
+
+    const targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + offset);
+    const targetMonth = targetDate.getMonth();
+    const targetYear = targetDate.getFullYear();
+
+    return groups.filter(group => {
+      return group.localDate.getMonth() === targetMonth &&
+        group.localDate.getFullYear() === targetYear;
+    });
+  });
+
+  currentMonth = computed(() => {
+    const targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
+
+    return targetDate.toLocaleDateString('en-US', {
       month: 'long',
       year: 'numeric',
     });
   });
 
+  responsiveOptions = [
+    { breakpoint: '1400px', numVisible: 4, numScroll: 1 },
+    { breakpoint: '1200px', numVisible: 3, numScroll: 1 },
+    { breakpoint: '768px', numVisible: 2, numScroll: 1 },
+    { breakpoint: '576px', numVisible: 1, numScroll: 1 },
+  ];
+
   constructor() {
     const id = this.route.snapshot.paramMap.get('processId');
     if (id) {
       this.processId.set(id);
-      void this.loadSlots(id);
+      void this.loadData(id);
     }
   }
 
-  private async loadSlots(processId: string): Promise<void> {
+  private async loadData(processId: string): Promise<void> {
     try {
       this.loading.set(true);
       this.error.set(false);
 
-      const data = await firstValueFrom(
+      const slotsData = await firstValueFrom(
         this.interviewService.getSlotsByProcessId(processId)
       );
+      this.slots.set(slotsData);
 
-      this.slots.set(data);
+      const overviewData = await firstValueFrom(
+        this.interviewService.getInterviewOverview()
+      );
+      const process = overviewData.find(p => p.processId === processId);
+      if (process) {
+        this.jobTitle.set(process.jobTitle || 'Interview Slots');
+      }
     } catch (error) {
-      console.error('Failed to load interview slots', error);
+      console.error('Failed to load interview data', error);
       this.error.set(true);
     } finally {
       this.loading.set(false);
@@ -105,7 +137,7 @@ export class InterviewProcessDetailComponent {
   }
 
   navigateBack(): void {
-    this.router.navigate(['/interviews.overview']);
+    this.router.navigate(['/interviews']);
   }
 
   openCreateSlotsModal(): void {
@@ -115,7 +147,18 @@ export class InterviewProcessDetailComponent {
   async refreshSlots(): Promise<void> {
     const id = this.processId();
     if (id) {
-      await this.loadSlots(id);
+      await this.loadData(id);
     }
   }
+
+  previousMonth(): void {
+    this.currentMonthOffset.update(v => v - 1);
+  }
+
+  nextMonth(): void {
+    this.currentMonthOffset.update(v => v + 1);
+  }
+
+  canGoPrevious = computed(() => true);
+  canGoNext = computed(() => true);
 }

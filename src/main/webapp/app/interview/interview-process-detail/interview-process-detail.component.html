@@ -1,82 +1,115 @@
-<div class="flex flex-col gap-4 p-4">
-  <div class="flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <p-button
-        icon="pi pi-arrow-left"
-        [text]="true"
-        [rounded]="true"
-        (onClick)="navigateBack()"
-        severity="secondary"
-      />
-      <h2 class="text-2xl font-semibold text-[var(--text-color)]">
-        {{ currentMonth() }}
-      </h2>
-    </div>
+<div class="page-container">
 
-    <div class="flex gap-2">
-      <p-button
-        icon="pi pi-calendar"
-        label="Subscribe"
-        [outlined]="true"
-        severity="secondary"
-        size="small"
-      />
-      <p-button
-        icon="pi pi-plus"
-        label="Add Slots"
-        severity="primary"
-        size="small"
-        (onClick)="openCreateSlotsModal()"
-      />
+  <!-- Header -->
+  <div class="page-header">
+    <div class="flex left">
+      <!--  <jhi-button
+          [icon]="'arrow-left'"
+          [variant]="'text'"
+          size="sm"
+          (click)="navigateBack()"
+        />-->
+      <h1 class="h1-text">{{ jobTitle() }}</h1>
     </div>
   </div>
 
-  <div *ngIf="loading()" class="flex justify-center items-center py-12">
-    <p-progressSpinner styleClass="w-16 h-16" />
-  </div>
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex justify-center items-center py-12">
+      <p-progressSpinner styleClass="w-16 h-16" />
+    </div>
+  }
 
-  <div *ngIf="error() && !loading()" class="flex justify-center items-center py-12">
-    <p-card styleClass="w-full max-w-md">
-      <div class="flex flex-col items-center gap-4 text-center">
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="flex justify-center items-center py-12">
+      <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
         <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
         <h3 class="text-xl font-semibold">Failed to load slots</h3>
-        <p class="text-[var(--text-color-secondary)]">
+        <p class="text-gray-600">
           There was an error loading the interview slots. Please try again.
         </p>
-        <p-button
-          label="Retry"
-          icon="pi pi-refresh"
-          (onClick)="refreshSlots()"
-          severity="primary"
+        <jhi-button
+          [label]="'Retry'"
+          [icon]="'refresh'"
+          (click)="refreshSlots()"
         />
       </div>
-    </p-card>
-  </div>
+    </div>
+  }
 
-  <div *ngIf="!loading() && !error() && groupedSlots().length === 0" class="flex justify-center items-center py-12">
-    <p-card styleClass="w-full max-w-md">
-      <div class="flex flex-col items-center gap-4 text-center">
-        <i class="pi pi-calendar-times text-4xl text-[var(--text-color-secondary)]"></i>
+  <!-- Empty State -->
+  @if (!loading() && !error() && groupedSlots().length === 0) {
+    <div class="flex justify-center items-center py-12">
+      <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
+        <i class="pi pi-calendar-times text-4xl text-gray-400"></i>
         <h3 class="text-xl font-semibold">No slots yet</h3>
-        <p class="text-[var(--text-color-secondary)]">
-          Create your first interview slots to get started.
-        </p>
-        <p-button
-          label="Add Slots"
-          icon="pi pi-plus"
-          (onClick)="openCreateSlotsModal()"
-          severity="primary"
+        <p class="text-gray-600">Create your first interview slots to get started.</p>
+        <jhi-button
+          [label]="'Add Slots'"
+          [icon]="'plus'"
+          (click)="openCreateSlotsModal()"
         />
       </div>
-    </p-card>
-  </div>
+    </div>
+  }
 
-  <div *ngIf="!loading() && !error() && groupedSlots().length > 0" class="flex flex-col gap-3">
-    <jhi-collapsible-date-section
-      *ngFor="let group of groupedSlots()"
-      [date]="group.localDate"
-      [slots]="group.slots"
-      [defaultExpanded]="true"
-    />
-  </div>
+  <!-- Carousel Section -->
+  @if (!loading() && !error() && groupedSlots().length > 0) {
+    <div>
+      <!-- Month Navigation Bar -->
+      <div class="bg-primary-400 text-white p-3 rounded-lg flex items-center justify-between mb-4">
+        <div class="flex items-center gap-5">
+          <jhi-button
+            [icon]="'chevron-left'"
+            [variant]="'text'"
+            [severity]="'contrast'"
+            size="sm"
+            (click)="previousMonth()"
+          />
+          <h3 class="text-xl font-semibold">{{ currentMonth() }}</h3>
+          <jhi-button
+            [icon]="'chevron-right'"
+            [variant]="'text'"
+            [severity]="'contrast'"
+            size="sm"
+            (click)="nextMonth()"
+          />
+        </div>
+
+        <jhi-button
+          [icon]="'plus'"
+          [label]="'Add Slots'"
+          [severity]="'contrast'"
+          size="sm"
+          (click)="openCreateSlotsModal()"
+        />
+      </div>
+
+      <!-- Carousel -->
+      @if (filteredSlots().length > 0) {
+        <p-carousel
+          [value]="filteredSlots()"
+          [numVisible]="5"
+          [numScroll]="1"
+          [responsiveOptions]="responsiveOptions"
+          [circular]="false"
+          [showIndicators]="false"
+        >
+          <ng-template let-group pTemplate="item">
+            <div class="px-2">
+              <jhi-date-column [date]="group.localDate" [slots]="group.slots" />
+            </div>
+          </ng-template>
+        </p-carousel>
+      }
+
+      <!-- No slots in this month -->
+      @if (filteredSlots().length === 0) {
+        <div class="text-center py-8 text-gray-500">
+          No slots in {{ currentMonth() }}
+        </div>
+      }
+    </div>
+  }
 </div>

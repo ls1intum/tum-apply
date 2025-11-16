@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { CardModule } from 'primeng/card';
-import { ChipModule } from 'primeng/chip';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
-  selector: 'jhi-slot-card',
+  selector: 'jhi-slot-mini-card',
   standalone: true,
-  imports: [CommonModule, CardModule, ChipModule],
+  imports: [CommonModule, ButtonComponent],
   templateUrl: './slot-card.component.html',
 })
 export class SlotCardComponent {
@@ -29,13 +28,11 @@ export class SlotCardComponent {
     return `${start} - ${end}`;
   };
 
-  duration = () => {
-    const start = new Date(this.slot().startDateTime!).getTime();
-    const end = new Date(this.slot().endDateTime!).getTime();
-    return Math.round((end - start) / 60000);
-  };
-
   isVirtual = () => {
     return this.slot().location === 'virtual';
+  };
+
+  isBooked = () => {
+    return this.slot().isBooked ?? false;
   };
 }

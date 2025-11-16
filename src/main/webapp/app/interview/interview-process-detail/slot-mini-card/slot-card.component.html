@@ -1,0 +1,36 @@
+<div class="relative bg-white border border-gray-200 rounded-lg p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+  <!-- Time -->
+  <div class="text-sm font-semibold text-gray-900">
+    {{ timeRange() }}
+  </div>
+
+  <!-- Booked candidate or Assign button -->
+  @if (isBooked()) {
+    <div class="text-xs text-gray-600">
+      Max Mustermann
+    </div>
+  }
+
+
+  <!-- Location -->
+  <div class="flex items-center gap-1.5 text-xs text-gray-600">
+    <i [class]="isVirtual() ? 'pi pi-video' : 'pi pi-map-marker'"></i>
+    <span>{{ isVirtual() ? 'virtual' : slot().location }}</span>
+  </div>
+
+  @if (!isBooked()) {
+    <jhi-button
+      [label]="'+ Assign'"
+      [variant]="'outlined'"
+      [size]="'sm'"
+      [fullWidth]="true"
+    />
+  }
+
+  <!-- Booked badge -->
+  @if (isBooked()) {
+    <span class="absolute top-2 right-2 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+      booked
+    </span>
+  }
+</div>
