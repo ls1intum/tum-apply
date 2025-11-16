@@ -4,7 +4,8 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="015_create_images_table" author="bofanzhu">
+  <changeSet id="014_create_images_table_and_add_to_jobs" author="bofan">
+    <!-- Create images table -->
     <createTable tableName="images">
       <column name="image_id" type="CHAR(36)">
         <constraints nullable="false" primaryKey="true"/>
@@ -48,6 +49,20 @@
     <sql>
       ALTER TABLE images MODIFY last_modified_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3);
     </sql>
+
+    <!-- Add image_id column to jobs table -->
+    <addColumn tableName="jobs">
+      <column name="image_id" type="CHAR(36)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+
+    <!-- Add foreign key constraint from jobs to images table -->
+    <addForeignKeyConstraint baseTableName="jobs"
+                             baseColumnNames="image_id"
+                             constraintName="fk_jobs_image"
+                             referencedTableName="images"
+                             referencedColumnNames="image_id"/>
   </changeSet>
 
 </databaseChangeLog>
