@@ -83,9 +83,12 @@ public class ResearchGroupService {
 
     /**
      * Removes a member from the current user's research group.
-     * This operation removes both associated roles and direct research group membership.
+     * This operation removes both associated roles and direct research group
+     * membership.
+     *
      * @param userId the ID of the user to remove from the research group
-     * @throws EntityNotFoundException if the user is not found or not in the same research group
+     * @throws EntityNotFoundException if the user is not found or not in the same
+     *                                 research group
      */
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
@@ -133,6 +136,7 @@ public class ResearchGroupService {
     /**
      * Retrieves the details of a research group by its ID.
      * Only users belonging to the research group can access its details.
+     *
      * @param researchGroupId the unique identifier of the research group
      * @return a {@link ResearchGroupLargeDTO} containing detailed information about
      *         the research group
@@ -170,7 +174,7 @@ public class ResearchGroupService {
     /**
      * Updates an existing research group.
      *
-     * @param researchGroupId the ID of the research group to update
+     * @param researchGroupId  the ID of the research group to update
      * @param researchGroupDTO the research group data to apply
      * @return the updated research group DTO
      */
@@ -202,7 +206,7 @@ public class ResearchGroupService {
      * Populates a ResearchGroup entity with values from a ResearchGroupRequestDTO.
      * Normalizes name, abbreviation, and universityId fields.
      *
-     * @param entity the research group entity to populate
+     * @param entity  the research group entity to populate
      * @param request the request DTO containing the data
      */
     private void populateResearchGroupFromRequest(ResearchGroup entity, ResearchGroupRequestDTO request) {
@@ -214,6 +218,7 @@ public class ResearchGroupService {
         entity.setWebsite(request.website());
         entity.setSchool(request.school());
         entity.setDescription(request.description());
+        entity.setDepartment(request.researchGroupDepartment());
         entity.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
         entity.setStreet(request.street());
         entity.setPostalCode(request.postalCode());
@@ -268,13 +273,15 @@ public class ResearchGroupService {
 
     /**
      * Activates a DRAFT research group (admin only).
-     * Changes the state from DRAFT to ACTIVE, allowing the research group to be used.
+     * Changes the state from DRAFT to ACTIVE, allowing the research group to be
+     * used.
      * This operation can only be performed on research groups in DRAFT state.
      *
-     * @param researchGroupId the unique identifier of the research group to activate
+     * @param researchGroupId the unique identifier of the research group to
+     *                        activate
      * @return the activated research group with updated state
      * @throws EntityNotFoundException if the research group does not exist
-     * @throws IllegalStateException if the research group is not in DRAFT state
+     * @throws IllegalStateException   if the research group is not in DRAFT state
      */
     @Transactional
     public ResearchGroup activateResearchGroup(UUID researchGroupId) {
@@ -305,13 +312,14 @@ public class ResearchGroupService {
 
     /**
      * Denies a DRAFT research group (admin only).
-     * Changes the state from DRAFT to DENIED, preventing the research group from being used.
+     * Changes the state from DRAFT to DENIED, preventing the research group from
+     * being used.
      * This operation can only be performed on research groups in DRAFT state.
      *
      * @param researchGroupId the unique identifier of the research group to deny
      * @return the denied research group with updated state
      * @throws EntityNotFoundException if the research group does not exist
-     * @throws IllegalStateException if the research group is not in DRAFT state
+     * @throws IllegalStateException   if the research group is not in DRAFT state
      */
     @Transactional
     public ResearchGroup denyResearchGroup(UUID researchGroupId) {
@@ -327,13 +335,15 @@ public class ResearchGroupService {
 
     /**
      * Withdraws an ACTIVE research group back to DRAFT state (admin only).
-     * Changes the state from ACTIVE to DRAFT, allowing the research group to be reviewed again.
+     * Changes the state from ACTIVE to DRAFT, allowing the research group to be
+     * reviewed again.
      * This operation can only be performed on research groups in ACTIVE state.
      *
-     * @param researchGroupId the unique identifier of the research group to withdraw
+     * @param researchGroupId the unique identifier of the research group to
+     *                        withdraw
      * @return the withdrawn research group with updated state
      * @throws EntityNotFoundException if the research group does not exist
-     * @throws IllegalStateException if the research group is not in ACTIVE state
+     * @throws IllegalStateException   if the research group is not in ACTIVE state
      */
     @Transactional
     public ResearchGroup withdrawResearchGroup(UUID researchGroupId) {
@@ -348,11 +358,12 @@ public class ResearchGroupService {
     }
 
     /**
-     * Retrieves research groups for admin view with filtering, sorting, and pagination.
+     * Retrieves research groups for admin view with filtering, sorting, and
+     * pagination.
      *
-     * @param pageDTO the pagination parameters
+     * @param pageDTO   the pagination parameters
      * @param filterDTO the filter parameters including status and search query
-     * @param sortDTO the sorting parameters
+     * @param sortDTO   the sorting parameters
      *
      * @return a paginated response containing research groups matching the criteria
      */
@@ -374,7 +385,8 @@ public class ResearchGroupService {
 
     /**
      * Gets all DRAFT research groups for admin review.
-     * Returns a paginated list of research groups that are waiting for admin approval.
+     * Returns a paginated list of research groups that are waiting for admin
+     * approval.
      * Research groups are sorted by name in ascending order.
      *
      * @param pageDTO pagination information including page number and page size
@@ -464,7 +476,8 @@ public class ResearchGroupService {
         boolean hasProfessorRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.PROFESSOR);
         boolean hasApplicantRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.APPLICANT);
 
-        // User should either have PROFESSOR role already, or have APPLICANT role (can be upgraded), or no role yet
+        // User should either have PROFESSOR role already, or have APPLICANT role (can
+        // be upgraded), or no role yet
         if (!hasProfessorRole && !hasApplicantRole && !existingRoles.isEmpty()) {
             throw new IllegalArgumentException(
                 "User with universityId '%s' has incompatible roles and cannot be assigned as professor".formatted(request.universityId())
@@ -500,10 +513,12 @@ public class ResearchGroupService {
 
     /**
      * Creates an employee research group access request during onboarding.
-     * Sends an email to support/administrators with user information and professor name.
+     * Sends an email to support/administrators with user information and professor
+     * name.
      * This is a temporary solution until the employee role is implemented.
      *
-     * @param request the employee's research group request containing professor name
+     * @param request the employee's research group request containing professor
+     *                name
      */
     @Transactional
     public void createEmployeeResearchGroupRequest(EmployeeResearchGroupRequestDTO request) {

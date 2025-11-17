@@ -132,6 +132,18 @@
         [shouldTranslate]="true"
       />
     </div>
+
+    <div>
+      <jhi-select
+        [selected]="form.get('researchGroupDepartment')?.value"
+        (selectedChange)="form.get('researchGroupDepartment')?.setValue($event)"
+        [items]="departmentOptions"
+        [label]="'onboarding.professorRequest.researchGroupDepartment.label' | translate"
+        [placeholder]="'onboarding.professorRequest.researchGroupDepartment.placeholder' | translate"
+        [required]="true"
+        [width]="'100%'"
+      />
+    </div>
   </div>
 
   <!-- Optional Information -->

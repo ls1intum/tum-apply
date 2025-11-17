@@ -15,11 +15,20 @@ import { StringInputComponent } from '../../atoms/string-input/string-input.comp
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
 import { InfoBoxComponent } from '../../atoms/info-box/info-box.component';
+import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ToastService } from '../../../../service/toast-service';
 import { tumIdValidator } from '../../../validators/custom-validators';
 import TranslateDirective from '../../../language/translate.directive';
 
 type FormMode = 'professor' | 'admin';
+
+// Department options matching the Java enum
+const DEPARTMENT_OPTIONS: SelectOption[] = [
+  { name: 'Mathematics', value: 'MATHEMATICS' },
+  { name: 'Informatics', value: 'INFORMATICS' },
+  { name: 'Electrical Engineering', value: 'ELECTRICAL_ENGINEERING' },
+  { name: 'Information Technology', value: 'INFORMATION_TECHNOLOGY' },
+];
 
 @Component({
   selector: 'jhi-professor-request-access-form',
@@ -29,6 +38,7 @@ type FormMode = 'professor' | 'admin';
     ReactiveFormsModule,
     StringInputComponent,
     ButtonComponent,
+    SelectComponent,
     TranslateModule,
     TranslateDirective,
     ConfirmDialog,
@@ -41,6 +51,9 @@ type FormMode = 'professor' | 'admin';
 export class ResearchGroupCreationFormComponent {
   // Input to determine if this is admin mode or professor mode
   mode = computed<FormMode>(() => this.config?.data?.mode ?? 'professor');
+
+  // Department options
+  departmentOptions = DEPARTMENT_OPTIONS;
 
   // Form
   form: FormGroup;
@@ -89,6 +102,7 @@ export class ResearchGroupCreationFormComponent {
       tumID: ['', [Validators.required, tumIdValidator]],
       researchGroupHead: ['', [Validators.required]],
       researchGroupName: ['', [Validators.required]],
+      researchGroupDepartment: [null, [Validators.required]],
       researchGroupAbbreviation: [''],
       researchGroupContactEmail: ['', [Validators.email, Validators.pattern(/.+\..{2,}$/)]],
       researchGroupWebsite: [''],
@@ -169,6 +183,7 @@ export class ResearchGroupCreationFormComponent {
       universityId: s(v.tumID),
       researchGroupHead: s(v.researchGroupHead),
       researchGroupName: s(v.researchGroupName),
+      researchGroupDepartment: v.researchGroupDepartment?.value,
       abbreviation: s(v.researchGroupAbbreviation),
       contactEmail: s(v.researchGroupContactEmail),
       website: s(v.researchGroupWebsite),
