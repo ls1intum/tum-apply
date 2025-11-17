@@ -42,16 +42,11 @@ public class PDFExportService {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
         UUID jobId = app.jobId();
         JobDetailDTO job = jobService.getJobDetails(jobId);
-        User user = currentUserService.getUser();
-        String firstName = user.getFirstName() != null ? user.getFirstName() : "";
-        String lastName = user.getLastName() != null ? user.getLastName() : "";
-
-        String fullName = (firstName + " " + lastName).trim();
 
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
         builder
-            .addHeaderItem(labels.get("applicationBy") + fullName + labels.get("forPosition") + "'" + app.jobTitle() + "'")
+            .addHeaderItem(labels.get("applicationBy") + getCurrentUserFullName() + labels.get("forPosition") + "'" + app.jobTitle() + "'")
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
         // Overview Section
@@ -181,11 +176,9 @@ public class PDFExportService {
                     formatAddress(job.researchGroup().getStreet(), job.researchGroup().getPostalCode(), job.researchGroup().getCity())
                 );
             }
-
             if (emailExists) {
                 builder.addSectionData(labels.get("email"), getValue(job.researchGroup().getEmail()));
             }
-
             if (websiteExists) {
                 builder.addSectionData(labels.get("website"), getValue(job.researchGroup().getWebsite()));
             }
