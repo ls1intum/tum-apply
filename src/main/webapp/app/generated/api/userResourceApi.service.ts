@@ -16,6 +16,8 @@ import { HttpClient, HttpParams,
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { PageResponseDTOUserShortDTO } from '../model/pageResponseDTOUserShortDTO';
+// @ts-ignore
 import { UpdatePasswordDTO } from '../model/updatePasswordDTO';
 // @ts-ignore
 import { UpdateUserNameDTO } from '../model/updateUserNameDTO';
@@ -39,16 +41,22 @@ export class UserResourceApiService extends BaseService {
     }
 
     /**
+     * @param pageSize 
+     * @param pageNumber 
      * @param searchQuery 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAvailableUsersForResearchGroup(searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<UserShortDTO>>;
-    public getAvailableUsersForResearchGroup(searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<UserShortDTO>>>;
-    public getAvailableUsersForResearchGroup(searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<UserShortDTO>>>;
-    public getAvailableUsersForResearchGroup(searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOUserShortDTO>;
+    public getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOUserShortDTO>>;
+    public getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOUserShortDTO>>;
+    public getAvailableUsersForResearchGroup(pageSize?: number, pageNumber?: number, searchQuery?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageSize, 'pageSize');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageNumber, 'pageNumber');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>searchQuery, 'searchQuery');
 
@@ -78,7 +86,7 @@ export class UserResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/users/available-for-research-group`;
-        return this.httpClient.request<Array<UserShortDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageResponseDTOUserShortDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

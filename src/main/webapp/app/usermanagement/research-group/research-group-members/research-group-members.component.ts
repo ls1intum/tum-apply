@@ -114,14 +114,17 @@ export class ResearchGroupMembersComponent {
   }
 
   openAddMembersModal(): void {
-    // Implementation for opening the add members modal goes here
-    // This could involve using a dialog service to open a component
-    // where users can be searched and added to the research group.
-    this.dialogService.open(ResearchGroupAddMembersComponent, {
+    const ref = this.dialogService.open(ResearchGroupAddMembersComponent, {
       header: this.translate.instant('researchGroup.members.addMembers'),
       style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
       modal: true,
       closable: true,
+    });
+
+    ref?.onClose.subscribe((added: boolean) => {
+      if (added) {
+        void this.loadMembers();
+      }
     });
   }
 

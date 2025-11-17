@@ -6,14 +6,17 @@
 
   <!-- User List -->
   <div class="flex flex-col max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+    @if (filteredUserSelections.length === 0) {
+      <div class="p-8 text-center text-gray-500">
+        {{ 'researchGroup.members.noUsers' | translate }}
+      </div>
+    }
     @for (selection of filteredUserSelections; track selection.user.userId) {
       <div
         class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
         role="button"
         tabindex="0"
-        (click)="selection.selected = !selection.selected"
-        (keydown.enter)="selection.selected = !selection.selected"
-        (keydown.space)="selection.selected = !selection.selected; $event.preventDefault()"
+        (click)="toggleUserSelection(selection)"
       >
         <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
           {{ selection.user.firstName?.charAt(0) }}{{ selection.user.lastName?.charAt(0) }}
@@ -22,10 +25,23 @@
           <div class="font-medium">{{ selection.user.firstName }} {{ selection.user.lastName }}</div>
           <div class="text-sm text-gray-600">{{ selection.user.email }}</div>
         </div>
-        <p-checkbox [(ngModel)]="selection.selected" [binary]="true" (click)="$event.stopPropagation()" />
+        <p-checkbox [ngModel]="selection.selected" [binary]="true" (click)="$event.stopPropagation()" />
       </div>
     }
   </div>
+
+  <!-- Pagination -->
+  @if (totalRecords() > 0) {
+    <div class="flex justify-center">
+      <p-paginator
+        [rows]="pageSize()"
+        [totalRecords]="totalRecords()"
+        [first]="page() * pageSize()"
+        (onPageChange)="onPageChange($event)"
+        [rowsPerPageOptions]="[10, 25, 50]"
+      />
+    </div>
+  }
 
   <!-- Action Buttons -->
   <div class="flex justify-end gap-2 pt-4">

@@ -91,10 +91,11 @@
       "loading": "Loading members...",
       "retry": "Retry",
       "noMembers": "No members found in this research group.",
+      "noUsers": "No available users found.",
       "me": "Me",
       "addMembers": "Add Members",
       "addMembersButton": "Add members",
-      "searchPlaceholder": "Search for a member...",
+      "searchPlaceholder": "Search for a member using their name or email...",
 
       "tableColumns": {
         "name": "Name",
@@ -111,6 +112,18 @@
         "loadFailed": {
           "summary": "Load Failed",
           "detail": "Failed to load. Please try again or contact an admin."
+        },
+        "loadUsersFailed": {
+          "summary": "Load Failed",
+          "detail": "Failed to load available users. Please try again."
+        },
+        "addMembersSuccess": {
+          "summary": "Members Added",
+          "detail": "The selected members have been successfully added to the research group."
+        },
+        "addMembersFailed": {
+          "summary": "Add Failed",
+          "detail": "Failed to add members. Please try again."
         },
         "addSuccess": {
           "summary": "Member Added",

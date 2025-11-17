@@ -25,6 +25,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/acceptDTO.ts
+model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts

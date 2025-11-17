@@ -91,10 +91,11 @@
       "loading": "Mitglieder werden geladen...",
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
+      "noUsers": "Keine verfügbaren Benutzer gefunden.",
       "me": "Ich",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
-      "searchPlaceholder": "Nach Mitglied suchen...",
+      "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
 
       "tableColumns": {
         "name": "Name",
@@ -111,6 +112,18 @@
         "loadFailed": {
           "summary": "Fehler beim Laden",
           "detail": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "loadUsersFailed": {
+          "summary": "Fehler beim Laden",
+          "detail": "Verfügbare Benutzer konnten nicht geladen werden. Bitte versuche es erneut."
+        },
+        "addMembersSuccess": {
+          "summary": "Mitglieder hinzugefügt",
+          "detail": "Die ausgewählten Mitglieder wurden erfolgreich zur Forschungsgruppe hinzugefügt."
+        },
+        "addMembersFailed": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mitglieder konnten nicht hinzugefügt werden. Bitte versuche es erneut."
         },
         "addSuccess": {
           "summary": "Mitglied hinzugefügt",

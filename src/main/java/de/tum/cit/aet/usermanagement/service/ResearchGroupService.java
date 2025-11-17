@@ -563,17 +563,14 @@ public class ResearchGroupService {
 
         for (UUID userId : userIds) {
             User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-            UserResearchGroupRole role = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, researchGroup).orElse(null);
-
-            if (user.getResearchGroup() != null && user.getResearchGroup().getResearchGroupId().equals(targetGroupId)) {
-                log.info("User {} is already a member of research group {}, skipping", userId, targetGroupId);
-                continue;
-            }
-
-            if (role.getResearchGroup() != null) {
-                log.info("User is already a member of research group {}, skipping", role.getResearchGroup().getResearchGroupId());
-                continue;
-            }
+            UserResearchGroupRole role = userResearchGroupRoleRepository
+                .findByUserAndResearchGroup(user, researchGroup)
+                .orElseGet(() -> {
+                    UserResearchGroupRole newRole = new UserResearchGroupRole();
+                    newRole.setUser(user);
+                    newRole.setRole(UserRole.APPLICANT);
+                    return newRole;
+                });
 
             user.setResearchGroup(researchGroup);
             userRepository.save(user);
