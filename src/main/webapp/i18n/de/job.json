@@ -89,6 +89,7 @@
       "title": "Wähle ein Bannerbild",
       "description": "Wähle ein Bannerbild aus, das oben in deiner Stellenanzeige angezeigt wird. Du kannst aus unseren Standardbildern wählen oder dein eigenes hochladen.",
       "defaultImages": "Standardbilder",
+      "defaultImagesDisabledHint": "Lösche das benutzerdefinierte Bild um ein Standardbild auszuwählen.",
       "orDivider": "oder",
       "uploadCustom": "Benutzerdefiniertes Bild hochladen",
       "clickToUpload": "Klicke, um ein Bild hochzuladen",
