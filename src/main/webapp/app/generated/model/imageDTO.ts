@@ -12,7 +12,6 @@
 export interface ImageDTO { 
     imageId?: string;
     imageType?: ImageDTO.ImageTypeEnum;
-    isDefault?: boolean;
     school?: ImageDTO.SchoolEnum;
     sizeBytes?: number;
     uploadedById?: string;

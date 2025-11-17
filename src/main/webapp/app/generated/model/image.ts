@@ -12,7 +12,6 @@ import { User } from './user';
 
 export interface Image { 
     createdAt?: string;
-    'default'?: boolean;
     imageId?: string;
     imageType?: Image.ImageTypeEnum;
     lastModifiedAt?: string;
