@@ -62,7 +62,8 @@
                              baseColumnNames="image_id"
                              constraintName="fk_jobs_image"
                              referencedTableName="images"
-                             referencedColumnNames="image_id"/>
+                             referencedColumnNames="image_id"
+                             onDelete="SET NULL"/>
   </changeSet>
 
 </databaseChangeLog>

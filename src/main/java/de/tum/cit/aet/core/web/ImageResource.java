@@ -112,6 +112,7 @@ public class ImageResource {
     public ResponseEntity<Void> deleteImage(@PathVariable UUID imageId) {
         User user = currentUserService.getUser();
         boolean isAdmin = currentUserService.isAdmin();
+
         imageService.delete(imageId, user, isAdmin);
         return ResponseEntity.noContent().build();
     }
