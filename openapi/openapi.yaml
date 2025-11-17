@@ -1930,6 +1930,9 @@ components:
         city: {type: string}
         createdAt: {type: string, format: date-time}
         defaultFieldOfStudies: {type: string}
+        department:
+          type: string
+          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY]
         description: {type: string}
         email: {type: string}
         head: {type: string}
@@ -2002,6 +2005,9 @@ components:
         firstName: {type: string}
         lastName: {type: string}
         postalCode: {type: string}
+        researchGroupDepartment:
+          type: string
+          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY]
         researchGroupHead: {type: string}
         researchGroupName: {type: string}
         school: {type: string}

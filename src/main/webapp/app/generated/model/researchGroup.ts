@@ -15,6 +15,7 @@ export interface ResearchGroup {
     city?: string;
     createdAt?: string;
     defaultFieldOfStudies?: string;
+    department?: ResearchGroup.DepartmentEnum;
     description?: string;
     email?: string;
     head?: string;
@@ -30,6 +31,13 @@ export interface ResearchGroup {
     website?: string;
 }
 export namespace ResearchGroup {
+    export type DepartmentEnum = 'MATHEMATICS' | 'INFORMATICS' | 'ELECTRICAL_ENGINEERING' | 'INFORMATION_TECHNOLOGY';
+    export const DepartmentEnum = {
+        Mathematics: 'MATHEMATICS' as DepartmentEnum,
+        Informatics: 'INFORMATICS' as DepartmentEnum,
+        ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as DepartmentEnum,
+        InformationTechnology: 'INFORMATION_TECHNOLOGY' as DepartmentEnum
+    };
     export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
     export const StateEnum = {
         Draft: 'DRAFT' as StateEnum,

@@ -18,6 +18,7 @@ export interface ResearchGroupRequestDTO {
     firstName?: string;
     lastName?: string;
     postalCode?: string;
+    researchGroupDepartment?: ResearchGroupRequestDTO.ResearchGroupDepartmentEnum;
     researchGroupHead?: string;
     researchGroupName?: string;
     school?: string;
@@ -26,4 +27,14 @@ export interface ResearchGroupRequestDTO {
     universityId?: string;
     website?: string;
 }
+export namespace ResearchGroupRequestDTO {
+    export type ResearchGroupDepartmentEnum = 'MATHEMATICS' | 'INFORMATICS' | 'ELECTRICAL_ENGINEERING' | 'INFORMATION_TECHNOLOGY';
+    export const ResearchGroupDepartmentEnum = {
+        Mathematics: 'MATHEMATICS' as ResearchGroupDepartmentEnum,
+        Informatics: 'INFORMATICS' as ResearchGroupDepartmentEnum,
+        ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as ResearchGroupDepartmentEnum,
+        InformationTechnology: 'INFORMATION_TECHNOLOGY' as ResearchGroupDepartmentEnum
+    };
+}
+
 
