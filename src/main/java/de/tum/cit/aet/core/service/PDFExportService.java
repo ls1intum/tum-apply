@@ -72,11 +72,8 @@ public class PDFExportService {
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
-
         builder.startInfoSection(labels.get("motivation")).addSectionContent(getValue(app.motivation()));
-
         builder.startInfoSection(labels.get("skills")).addSectionContent(getValue(app.specialSkills()));
-
         builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
 
         // Personal Information Group
@@ -148,63 +145,42 @@ public class PDFExportService {
             .addOverviewItem(labels.get("workload"), formatWorkload(job.workload()))
             .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration()))
             .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
-            .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()));
+            .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
+            .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()));
 
-        if (job.endDate() != null) {
-            builder.addOverviewItem(labels.get("endDate"), formatDate(job.endDate()));
-        }
+        // Job Details Section
+        builder.startSectionGroup(labels.get("jobDetails"));
+        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(job.description()));
+        builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(getValue(job.tasks()));
+        builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(getValue(job.requirements()));
 
-        boolean jobDescriptionExists = job.description() != null && !job.description().isEmpty();
-        boolean tasksExists = job.tasks() != null && !job.tasks().isEmpty();
-        boolean requirementsExists = job.requirements() != null && !job.requirements().isEmpty();
+        // Research Group Section
+        builder.startSectionGroup(labels.get("researchGroup"));
+        builder.startInfoSection(job.researchGroup().getName()).addSectionContent(getValue(job.researchGroup().getDescription()));
 
-        if (jobDescriptionExists || tasksExists || requirementsExists) {
-            builder.startSectionGroup(labels.get("jobDetails"));
-
-            if (jobDescriptionExists) {
-                builder.startInfoSection(labels.get("description")).addSectionContent(job.description());
-            }
-
-            if (tasksExists) {
-                builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(job.tasks());
-            }
-
-            if (requirementsExists) {
-                builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(job.requirements());
-            }
-        }
-
-        boolean groupDescriptionExists = job.researchGroup().getDescription() != null && !job.researchGroup().getDescription().isEmpty();
+        // Contact Details (only shown if at least one detail exists)
         boolean emailExists = job.researchGroup().getEmail() != null && !job.researchGroup().getEmail().isEmpty();
         boolean websiteExists = job.researchGroup().getWebsite() != null && !job.researchGroup().getWebsite().isEmpty();
         boolean streetExists = job.researchGroup().getStreet() != null && !job.researchGroup().getStreet().isEmpty();
         boolean postalCodeExists = job.researchGroup().getPostalCode() != null && !job.researchGroup().getPostalCode().isEmpty();
         boolean cityExists = job.researchGroup().getCity() != null && !job.researchGroup().getCity().isEmpty();
 
-        if (groupDescriptionExists || emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
-            builder.startSectionGroup(labels.get("researchGroup"));
+        if (emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
+            builder.startInfoSection(labels.get("contactDetails"));
 
-            if (groupDescriptionExists) {
-                builder.startInfoSection(job.researchGroup().getName()).addSectionContent(job.researchGroup().getDescription());
+            if (streetExists || postalCodeExists || cityExists) {
+                builder.addSectionData(
+                    labels.get("address"),
+                    formatAddress(job.researchGroup().getStreet(), job.researchGroup().getPostalCode(), job.researchGroup().getCity())
+                );
             }
 
-            if (emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
-                builder.startInfoSection(labels.get("contactDetails"));
+            if (emailExists) {
+                builder.addSectionData(labels.get("email"), getValue(job.researchGroup().getEmail()));
+            }
 
-                if (streetExists || postalCodeExists || cityExists) {
-                    builder.addSectionData(
-                        labels.get("address"),
-                        formatAddress(job.researchGroup().getStreet(), job.researchGroup().getPostalCode(), job.researchGroup().getCity())
-                    );
-                }
-
-                if (emailExists) {
-                    builder.addSectionData(labels.get("email"), getValue(job.researchGroup().getEmail()));
-                }
-
-                if (websiteExists) {
-                    builder.addSectionData(labels.get("website"), getValue(job.researchGroup().getWebsite()));
-                }
+            if (websiteExists) {
+                builder.addSectionData(labels.get("website"), getValue(job.researchGroup().getWebsite()));
             }
         }
 
