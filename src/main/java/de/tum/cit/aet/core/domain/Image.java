@@ -39,7 +39,7 @@ public class Image extends AbstractAuditingEntity {
     private ImageType imageType;
 
     /**
-     * School/department this image belongs to (only relevant for default images)
+     * School this image belongs to (only relevant for default images)
      * Null for user-uploaded images
      */
     @Enumerated(EnumType.STRING)

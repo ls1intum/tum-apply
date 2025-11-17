@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.constants;
 
 /**
- * Represents the different schools/departments at TUM
+ * Represents the different schools
  */
 public enum School {
     CIT("CIT - School of Computation, Information and Technology");
