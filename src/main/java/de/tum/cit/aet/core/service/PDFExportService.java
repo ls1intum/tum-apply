@@ -142,8 +142,8 @@ public class PDFExportService {
             .addOverviewItem(labels.get("location"), getValue(job.location()))
             .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
             .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
-            .addOverviewItem(labels.get("workload"), formatWorkload(job.workload()))
-            .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration()))
+            .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
+            .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
             .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
             .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
             .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()));
