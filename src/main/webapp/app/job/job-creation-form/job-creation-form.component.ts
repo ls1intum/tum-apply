@@ -359,7 +359,11 @@ export class JobCreationFormComponent {
   }
 
   async onImageSelected(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+    const input = target;
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
@@ -435,14 +439,14 @@ export class JobCreationFormComponent {
   }
 
   async deleteSelectedImage(): Promise<void> {
-    const imageToDelete = this.selectedImage();
-    if (!imageToDelete) {
+    const imageId = this.selectedImage()?.imageId ?? '';
+    if (imageId.length === 0) {
       return;
     }
 
     try {
       // Delete from server
-      await firstValueFrom(this.imageResourceService.deleteImage(imageToDelete.imageId!));
+      await firstValueFrom(this.imageResourceService.deleteImage(imageId));
 
       // Clear selection
       this.clearImageSelection();
@@ -589,7 +593,7 @@ export class JobCreationFormComponent {
     });
 
     // Set image if available - reconstruct ImageDTO from job data
-    if (job?.imageId !== undefined && job.imageId !== null && job.imageUrl !== undefined && job.imageUrl !== null) {
+    if (job?.imageId !== undefined && job.imageUrl !== undefined) {
       this.imageForm.patchValue({ imageId: job.imageId });
 
       // Check if this image is a default image (exists in defaultImages array)
@@ -666,10 +670,5 @@ export class JobCreationFormComponent {
 
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
-  }
-
-  getDefaultImageLabel(index: number): string {
-    const labels = ['University Campus', 'Research Laboratory', 'Library Study', 'Academic Achievement'];
-    return labels[index] ?? `Image ${index + 1}`;
   }
 }
