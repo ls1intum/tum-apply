@@ -38,8 +38,8 @@ public class ImageService {
         ImageRepository imageRepository,
         @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
         @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
-        @Value("${aet.storage.max-image-width:4096}") int maxWidth, // 4K width default
-        @Value("${aet.storage.max-image-height:4096}") int maxHeight // 4K height default
+        @Value("${aet.storage.max-image-width:1920}") int maxWidth, // 1920px width default
+        @Value("${aet.storage.max-image-height:1080}") int maxHeight // 1080px height default
     ) {
         this.imageRepository = imageRepository;
         this.imageRoot = Paths.get(imageRootDir).toAbsolutePath().normalize();
@@ -309,8 +309,8 @@ public class ImageService {
         }
 
         String mimeType = file.getContentType();
-        if (mimeType == null || !List.of("image/jpeg", "image/png", "image/jpg", "image/webp").contains(mimeType.toLowerCase())) {
-            throw new UploadException("Invalid image type. Allowed: JPEG, PNG, WebP");
+        if (mimeType == null || !List.of("image/jpeg", "image/png", "image/jpg").contains(mimeType.toLowerCase())) {
+            throw new UploadException("Invalid image type. Allowed: JPG, JPEG, PNG");
         }
     }
 
