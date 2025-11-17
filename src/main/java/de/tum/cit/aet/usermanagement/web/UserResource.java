@@ -80,8 +80,8 @@ public class UserResource {
 
     @ProfessorOrAdmin
     @GetMapping("/available-for-research-group")
-    public ResponseEntity<List<UserShortDTO>> getAvailableUsersForResearchGroup() {
-        return ResponseEntity.ok(userService.getAvailableUsersForResearchGroup());
+    public ResponseEntity<List<UserShortDTO>> getAvailableUsersForResearchGroup(@RequestParam(required = false) String searchQuery) {
+        return ResponseEntity.ok(userService.getAvailableUsersForResearchGroup(searchQuery));
     }
 
     public record UpdatePasswordDTO(@NotBlank String newPassword) {}

@@ -1206,6 +1206,11 @@ paths:
     get:
       tags: [user-resource]
       operationId: getAvailableUsersForResearchGroup
+      parameters:
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
       responses:
         '200':
           description: OK

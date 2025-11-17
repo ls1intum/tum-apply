@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { SearchBar } from 'app/shared/components/molecules/search-bar/search-bar';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UserDTO } from 'app/generated/model/userDTO';
+import { UserResourceApiService } from 'app/generated';
+import { lastValueFrom } from 'rxjs';
 
 interface UserSelection {
   user: UserDTO;
@@ -21,24 +23,23 @@ interface UserSelection {
 export class ResearchGroupAddMembersComponent {
   searchQuery = signal<string>('');
   userSelections = signal<UserSelection[]>([]);
-
-  // Mock data - replace with actual API call
-  availableUsers: UserDTO[] = [
-    { userId: '1', firstName: 'Sofia', lastName: 'Ricci', email: 'sofia.ricci@tum.de' },
-    { userId: '2', firstName: 'Ines', lastName: 'Fernandez', email: 'ines.fernandez@tum.de' },
-    { userId: '3', firstName: 'Elena', lastName: 'Kovalenko', email: 'elena.kovalenko@tum.de' },
-    { userId: '4', firstName: 'Hassan', lastName: 'Mohammed', email: 'hassan.mohammed@tum.de' },
-  ];
+  userService = inject(UserResourceApiService);
 
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);
 
   constructor() {
-    this.userSelections.set(this.availableUsers.map(user => ({ user, selected: false })));
+    this.loadAvailableUsers();
+  }
+
+  async loadAvailableUsers(searchQuery?: string): Promise<void> {
+    const users = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(searchQuery));
+    this.userSelections.set(users.map(user => ({ user, selected: false })));
   }
 
   onSearch(query: string): void {
     this.searchQuery.set(query);
+    this.loadAvailableUsers(query || undefined);
   }
 
   get selectedUsers(): UserDTO[] {
@@ -48,19 +49,7 @@ export class ResearchGroupAddMembersComponent {
   }
 
   get filteredUserSelections(): UserSelection[] {
-    const query = this.searchQuery().toLowerCase();
-    if (!query) {
-      return this.userSelections();
-    }
-
-    return this.userSelections().filter(selection => {
-      const user = selection.user;
-      return (
-        (user.firstName?.toLowerCase().includes(query) ?? false) ||
-        (user.lastName?.toLowerCase().includes(query) ?? false) ||
-        (user.email?.toLowerCase().includes(query) ?? false)
-      );
-    });
+    return this.userSelections();
   }
 
   onCancel(): void {

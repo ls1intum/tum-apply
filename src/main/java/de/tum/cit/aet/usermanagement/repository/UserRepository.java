@@ -112,16 +112,22 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      */
     @Query(
         """
-            SELECT u FROM User u
+            SELECT DISTINCT u FROM User u
+            LEFT JOIN FETCH u.researchGroupRoles
             WHERE u.researchGroup IS NULL
             AND NOT EXISTS(
                 SELECT 1 FROM UserResearchGroupRole rgr
                 WHERE rgr.user.userId = u.userId
                 AND rgr.role = 'ADMIN'
             )
+            AND (:searchQuery IS NULL OR
+                 LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+            )
         """
     )
-    List<User> findUsersWithoutResearchGroupAndNotAdmin();
+    List<User> findUsersWithoutResearchGroupAndNotAdmin(@Param("searchQuery") String searchQuery);
 
     String email(String email);
 }

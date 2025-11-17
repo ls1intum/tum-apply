@@ -115,13 +115,14 @@ public class UserService {
      * excludes users with administrative privileges. Each returned entry is converted to a
      * UserShortDTO to provide a concise representation suitable for selection or display
      * in UI components.</p>
-     *
-     * @return a list of UserShortDTO instances representing non-admin users who are not
-     *         currently assigned to any research group; the list will be empty if no such
-     *         users exist
+     * @param searchQuery       an optional search query to filter users by name or email (currently not implemented)
+     * @return                  a list of UserShortDTO instances representing non-admin users who are not
+     *                          currently assigned to any research group; the list will be empty if no such
+     *                          users exist
      */
-    public List<UserShortDTO> getAvailableUsersForResearchGroup() {
-        return userRepository.findUsersWithoutResearchGroupAndNotAdmin().stream().map(UserShortDTO::new).toList();
+    public List<UserShortDTO> getAvailableUsersForResearchGroup(String searchQuery) {
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+        return userRepository.findUsersWithoutResearchGroupAndNotAdmin(normalizedSearchQuery).stream().map(UserShortDTO::new).toList();
     }
 
     /**

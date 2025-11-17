@@ -4,7 +4,6 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.dto.SortDTO.Direction;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
