@@ -105,7 +105,6 @@ public class ImageService {
             image.setMimeType(file.getContentType());
             image.setSizeBytes(file.getSize());
             image.setImageType(imageType);
-            image.setDefault(false);
             image.setUploadedBy(uploader);
             image.setSchool(null); // User uploaded images don't belong to a specific school
 
@@ -162,7 +161,6 @@ public class ImageService {
             image.setMimeType(file.getContentType());
             image.setSizeBytes(file.getSize());
             image.setImageType(imageType);
-            image.setDefault(true);
             image.setUploadedBy(uploader);
             image.setSchool(school);
 
@@ -217,7 +215,7 @@ public class ImageService {
         Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
         // Only admins can delete default images
-        if (image.isDefault() && !isAdmin) {
+        if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER && !isAdmin) {
             throw new IllegalArgumentException("Only admins can delete default images");
         }
 
@@ -242,7 +240,7 @@ public class ImageService {
         Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
         // Don't delete default images
-        if (image.isDefault()) {
+        if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER) {
             log.warn("Attempted to delete default image: {}", imageId);
             return;
         }
@@ -262,7 +260,11 @@ public class ImageService {
     public Image replaceImage(Image oldImage, Image newImage) {
         // If old image exists and is different from new image, delete it (but only if
         // not a default image)
-        if (oldImage != null && !oldImage.isDefault() && (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))) {
+        if (
+            oldImage != null &&
+            oldImage.getImageType() != ImageType.DEFAULT_JOB_BANNER &&
+            (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))
+        ) {
             try {
                 deleteWithoutChecks(oldImage.getImageId());
             } catch (Exception e) {
