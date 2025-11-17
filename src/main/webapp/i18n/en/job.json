@@ -93,7 +93,7 @@
       "uploadCustom": "Upload Custom Image",
       "clickToUpload": "Click to upload an image",
       "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
-      "uploadFormats": "PNG, JPG, WEBP formats accepted",
+      "uploadFormats": "JPG, JPEG, PNG formats accepted",
       "pendingUploadHint": "This image will be uploaded when you publish the job",
       "removeImage": "Remove Image",
       "uploadSuccess": {
@@ -110,7 +110,7 @@
       },
       "invalidFileType": {
         "summary": "Invalid File Type",
-        "detail": "Please select an image file (JPG, PNG, GIF, WEBP)"
+        "detail": "Please select an image file (JPG, JPEG, PNG)"
       },
       "loadImagesFailed": {
         "summary": "Load Failed",
@@ -118,7 +118,8 @@
       },
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",
-      "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, PNG, GIF. Recommended dimensions: 800x400px",
+      "noDefaultImages": "No default banners available. Please upload your own image.",
+      "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG. Recommended dimensions: 1200x675px",
       "selectedImage": "Selected Image",
       "myUploads": "My Uploaded Images"
     },

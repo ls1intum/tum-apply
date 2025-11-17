@@ -93,7 +93,7 @@
       "uploadCustom": "Benutzerdefiniertes Bild hochladen",
       "clickToUpload": "Klicke, um ein Bild hochzuladen",
       "uploadRecommendation": "Empfohlen: 1200x675px (16:9 Format) · Max 5MB",
-      "uploadFormats": "PNG, JPG, WEBP Formate akzeptiert",
+      "uploadFormats": "JPG, JPEG, PNG Formate akzeptiert",
       "pendingUploadHint": "Dieses Bild wird hochgeladen, wenn du die Stelle veröffentlichst",
       "removeImage": "Bild entfernen",
       "uploadSuccess": {
@@ -110,7 +110,7 @@
       },
       "invalidFileType": {
         "summary": "Ungültiger Dateityp",
-        "detail": "Bitte wähle eine Bilddatei (JPG, PNG, GIF, WEBP)"
+        "detail": "Bitte wähle eine Bilddatei (JPG, JPEG, PNG)"
       },
       "loadImagesFailed": {
         "summary": "Laden fehlgeschlagen",
@@ -118,7 +118,8 @@
       },
       "uploadNew": "Neues Bild hochladen",
       "uploading": "Wird hochgeladen...",
-      "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, PNG, GIF. Empfohlene Abmessungen: 800x400px",
+      "noDefaultImages": "Keine Standard-Banner verfügbar. Bitte lade dein eigenes Bild hoch.",
+      "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, JPEG, PNG. Empfohlene Abmessungen: 1200x675px",
       "selectedImage": "Ausgewähltes Bild",
       "myUploads": "Meine hochgeladenen Bilder"
     },

@@ -236,7 +236,7 @@
                 class="relative rounded-xl overflow-hidden border-[3px] transition-colors aspect-video"
                 [style.border-color]="selectedImage()?.imageId === image.imageId ? 'var(--p-primary-color)' : 'transparent'"
               >
-                <img [src]="image.url" [alt]="'Default job banner'" class="w-full h-full object-cover" />
+                <img [src]="image.url" class="w-full h-full object-cover" />
                 @if (selectedImage()?.imageId === image.imageId) {
                   <div class="absolute inset-0 flex items-center justify-center" style="background-color: rgba(255, 255, 255, 0.3)">
                     <fa-icon [icon]="['fas', 'check']" [size]="'2x'" />
@@ -246,6 +246,11 @@
             </div>
           }
         </div>
+      </div>
+    } @else {
+      <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
+      <div class="p-3 text-center border border-gray-200 rounded-lg bg-gray-50">
+        <p class="text-sm text-gray-700" jhiTranslate="jobCreationForm.imageSection.noDefaultImages"></p>
       </div>
     }
 
@@ -260,9 +265,9 @@
         @if (selectedImage() && selectedImage()?.isDefault === false) {
           <!-- Preview of uploaded custom image -->
           <div class="w-full">
-            <div class="border rounded-xl p-4 bg-white">
+            <div class="border rounded-xl p-4">
               <div class="relative rounded-lg overflow-hidden aspect-[3/2]">
-                <img [src]="selectedImage()?.url" [alt]="'Selected custom image'" class="w-full h-full object-cover" />
+                <img [src]="selectedImage()?.url" class="w-full h-full object-cover" />
               </div>
             </div>
             <div class="flex justify-center mt-4">
@@ -278,29 +283,29 @@
         } @else {
           <!-- Upload area -->
           <div
-            class="w-full aspect-[3/2] border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer transition-all upload-area flex flex-col items-center justify-center"
+            class="w-full aspect-[3/2] border-2 border-dashed border-gray-200 rounded-xl p-12 text-center cursor-pointer transition-all upload-area flex flex-col items-center justify-center"
             [class.opacity-50]="isUploadingImage()"
             [class.pointer-events-none]="isUploadingImage()"
             (click)="fileInput.click()"
           >
-            <input type="file" accept="image/*" (change)="onImageSelected($event)" #fileInput class="hidden" />
+            <input type="file" accept="image/jpeg,image/jpg,image/png" (change)="onImageSelected($event)" #fileInput class="hidden" />
             @if (isUploadingImage()) {
               <div class="flex flex-col items-center">
                 <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
-                <p class="mt-4 text-gray-600" jhiTranslate="jobCreationForm.imageSection.uploading"></p>
+                <p class="mt-4 text-gray-700" jhiTranslate="jobCreationForm.imageSection.uploading"></p>
               </div>
             } @else {
-              <div class="text-gray-400 mb-4">
-                <fa-icon [icon]="['fas', 'image']" size="3x" class="text-gray-400" />
+              <div class="mb-4">
+                <fa-icon [icon]="['fas', 'image']" size="3x" />
               </div>
-              <div class="flex items-center justify-center gap-2 text-base font-medium text-gray-700 mb-2">
-                <fa-icon [icon]="['fas', 'cloud-arrow-up']" class="text-gray-400" />
+              <div class="flex items-center justify-center gap-2 font-medium mb-2">
+                <fa-icon [icon]="['fas', 'cloud-arrow-up']" />
                 <span jhiTranslate="jobCreationForm.imageSection.clickToUpload"></span>
               </div>
-              <div class="text-sm text-gray-500 mb-1">
+              <div class="text-sm mb-1">
                 <span jhiTranslate="jobCreationForm.imageSection.uploadRecommendation"></span>
               </div>
-              <div class="text-sm text-gray-400">
+              <div class="text-sm">
                 <span jhiTranslate="jobCreationForm.imageSection.uploadFormats"></span>
               </div>
             }

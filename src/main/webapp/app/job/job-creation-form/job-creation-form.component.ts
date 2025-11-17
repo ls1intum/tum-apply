@@ -366,8 +366,9 @@ export class JobCreationFormComponent {
       return;
     }
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
+    // Validate file type - allow only specific image formats (no SVG)
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
       this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
       return;
     }
@@ -376,14 +377,11 @@ export class JobCreationFormComponent {
     this.isUploadingImage.set(true);
 
     try {
-      // Upload to server
       const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
 
-      // Update the selected image and form
       this.selectedImage.set(uploadedImage);
       this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
-      // Add to uploaded images list
       this.uploadedImages.update(images => [uploadedImage, ...images]);
 
       this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
@@ -391,7 +389,6 @@ export class JobCreationFormComponent {
       this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
     } finally {
       this.isUploadingImage.set(false);
-      // Reset input
       input.value = '';
     }
   }
