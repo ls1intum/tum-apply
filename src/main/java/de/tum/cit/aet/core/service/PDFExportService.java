@@ -288,14 +288,6 @@ public class PDFExportService {
         return filename.replaceAll("[^a-zA-Z0-9-_]", "_").substring(0, Math.min(filename.length(), 50));
     }
 
-    private String formatWorkload(Integer workload) {
-        return workload != null ? workload + " hours/week" : "-";
-    }
-
-    private String formatContractDuration(Integer duration) {
-        return duration != null ? duration + " years" : "-";
-    }
-
     private String formatAddress(String street, String postalCode, String city) {
         StringBuilder address = new StringBuilder();
         boolean streetExists = street != null && !street.isEmpty();
