@@ -10,6 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
+import { FileSelectEvent } from 'primeng/fileupload';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -21,7 +22,7 @@ const DocumentType = {
   CUSTOM: 'CUSTOM',
 } as const;
 
-type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',
@@ -49,7 +50,7 @@ export class UploadButtonComponent {
   private applicationService = inject(ApplicationResourceApiService);
   private toastService = inject(ToastService);
 
-  async onFileSelected(event: any): Promise<void> {
+  async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;
     const selectedFile = this.selectedFiles();
     if (selectedFile === undefined) {
@@ -68,14 +69,16 @@ export class UploadButtonComponent {
 
   async onUpload(): Promise<void> {
     const files: File[] | undefined = this.selectedFiles();
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
     this.isUploading.set(true);
     try {
-      const uploadedIds: DocumentInformationHolderDTO[] = await firstValueFrom(
-        this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), files),
+      const uploadedPromises = files.map(file =>
+        firstValueFrom(this.applicationService.uploadDocuments(this.applicationId(), this.documentType(), file)),
       );
-      this.documentIds.set(uploadedIds);
+      const uploadResults = await Promise.all(uploadedPromises);
+      const allUploadedIds = uploadResults.flat();
+      this.documentIds.set(allUploadedIds);
       this.selectedFiles.set([]);
     } catch (err) {
       console.error('Upload failed', err);

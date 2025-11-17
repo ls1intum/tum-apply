@@ -1,0 +1,12 @@
+<section>
+  <header class="flex items-center gap-2">
+    @if (icon(); as icon) {
+      <fa-icon class="text-[var(--p-primary-color)]" [icon]="icon" />
+    }
+    <h2 class="text-lg font-bold">{{ titleKey() | translate }}</h2>
+    <ng-content select="[actions]" />
+  </header>
+  <div class="ml-3 mt-3">
+    <ng-content />
+  </div>
+</section>

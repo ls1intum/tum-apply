@@ -11,7 +11,6 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
-import { gradeFormatValidator } from 'app/core/util/grade-format.validator';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
@@ -20,13 +19,13 @@ import { DocumentInformationHolderDTO } from '../../../generated/model/documentI
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
   bachelorDegreeUniversity: string;
-  bachelorGradeUpperLimit: string;
-  bachelorGradeLowerLimit: string;
+  // bachelorGradeUpperLimit: string;
+  // bachelorGradeLowerLimit: string;
   bachelorGrade: string;
   masterDegreeName: string;
   masterDegreeUniversity: string;
-  masterGradeUpperLimit: string;
-  masterGradeLowerLimit: string;
+  // masterGradeUpperLimit: string;
+  // masterGradeLowerLimit: string;
   masterGrade: string;
 };
 
@@ -34,13 +33,13 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   return {
     bachelorDegreeName: application.applicant?.bachelorDegreeName ?? '',
     bachelorDegreeUniversity: application.applicant?.bachelorUniversity ?? '',
-    bachelorGradeUpperLimit: application.applicant?.bachelorGradeUpperLimit ?? '',
-    bachelorGradeLowerLimit: application.applicant?.bachelorGradeLowerLimit ?? '',
+    // bachelorGradeUpperLimit: application.applicant?.bachelorGradeUpperLimit ?? '',
+    // bachelorGradeLowerLimit: application.applicant?.bachelorGradeLowerLimit ?? '',
     bachelorGrade: application.applicant?.bachelorGrade ?? '',
     masterDegreeName: application.applicant?.masterDegreeName ?? '',
     masterDegreeUniversity: application.applicant?.masterUniversity ?? '',
-    masterGradeUpperLimit: application.applicant?.masterGradeUpperLimit ?? '',
-    masterGradeLowerLimit: application.applicant?.masterGradeLowerLimit ?? '',
+    // masterGradeUpperLimit: application.applicant?.masterGradeUpperLimit ?? '',
+    // masterGradeLowerLimit: application.applicant?.masterGradeLowerLimit ?? '',
     masterGrade: application.applicant?.masterGrade ?? '',
   };
 };
@@ -79,24 +78,24 @@ export default class ApplicationCreationPage2Component {
     {
       bachelorDegreeName: ['', Validators.required],
       bachelorDegreeUniversity: ['', Validators.required],
-      bachelorGradeUpperLimit: ['', Validators.required],
-      bachelorGradeLowerLimit: ['', Validators.required],
+      // bachelorGradeUpperLimit: ['', Validators.required],
+      // bachelorGradeLowerLimit: ['', Validators.required],
       bachelorGrade: ['', Validators.required],
       masterDegreeName: ['', Validators.required],
       masterDegreeUniversity: ['', Validators.required],
-      masterGradeUpperLimit: ['', Validators.required],
-      masterGradeLowerLimit: ['', Validators.required],
+      // masterGradeUpperLimit: ['', Validators.required],
+      // masterGradeLowerLimit: ['', Validators.required],
       masterGrade: ['', Validators.required],
     },
     {
       validators: [
-        gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
-        gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
+        // gradeFormatValidator('bachelorGradeUpperLimit', 'bachelorGradeLowerLimit', 'bachelorGrade'),
+        // gradeFormatValidator('masterGradeUpperLimit', 'masterGradeLowerLimit', 'masterGrade'),
       ],
     },
   );
 
-  private hasInitialized = signal(false);
+  hasInitialized = signal(false);
 
   private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
     initialValue: this.page2Form.value,
@@ -114,13 +113,13 @@ export default class ApplicationCreationPage2Component {
     this.page2Form.patchValue({
       bachelorDegreeName: data.bachelorDegreeName,
       bachelorDegreeUniversity: data.bachelorDegreeUniversity,
-      bachelorGradeUpperLimit: data.bachelorGradeUpperLimit,
-      bachelorGradeLowerLimit: data.bachelorGradeLowerLimit,
+      // bachelorGradeUpperLimit: data.bachelorGradeUpperLimit,
+      // bachelorGradeLowerLimit: data.bachelorGradeLowerLimit,
       bachelorGrade: data.bachelorGrade,
       masterDegreeName: data.masterDegreeName,
       masterDegreeUniversity: data.masterDegreeUniversity,
-      masterGradeUpperLimit: data.masterGradeUpperLimit,
-      masterGradeLowerLimit: data.masterGradeLowerLimit,
+      // masterGradeUpperLimit: data.masterGradeUpperLimit,
+      // masterGradeLowerLimit: data.masterGradeLowerLimit,
       masterGrade: data.masterGrade,
     });
 
@@ -144,6 +143,9 @@ export default class ApplicationCreationPage2Component {
     });
 
     this.page2Form.updateValueAndValidity();
+    queueMicrotask(() => {
+      this.changed.emit(false);
+    });
   });
 
   private updateEffect = effect(() => {

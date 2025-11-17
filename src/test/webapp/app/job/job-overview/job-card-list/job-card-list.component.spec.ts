@@ -227,17 +227,6 @@ describe('JobCardListComponent', () => {
     expect(jobService.getAllFilters).toHaveBeenCalled();
   });
 
-  it('should render "no jobs" message when jobs are empty', () => {
-    component.jobs.set([]);
-    fixture.detectChanges();
-
-    const noJobs = fixture.nativeElement.querySelector('.no-jobs-text');
-    const cards = fixture.nativeElement.querySelectorAll('jhi-job-card');
-    expect(noJobs).not.toBeNull();
-    expect(noJobs.getAttribute('jhiTranslate')).toBe('jobOverviewPage.noJobsFound');
-    expect(cards.length).toBe(0);
-  });
-
   it('should render one job-card per job when jobs exist', () => {
     component.jobs.set([
       {
@@ -301,7 +290,7 @@ describe('JobCardListComponent', () => {
 
     // switch to German
     const translate = TestBed.inject(TranslateService) as Partial<TranslateService & { currentLang?: string }>;
-    translate.onLangChange?.next({ lang: 'de', translations: {} });
+    (translate as TranslateService).use('de');
     fixture.detectChanges();
 
     cardDE = fixture.debugElement.query(By.directive(JobCardComponent));

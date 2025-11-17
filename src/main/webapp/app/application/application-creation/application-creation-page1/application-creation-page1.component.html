@@ -1,4 +1,5 @@
 <form [formGroup]="page1Form()">
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
@@ -19,8 +20,6 @@
       />
     </div>
   </div>
-
-  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.userInformation"></span></p-divider>
 
   <div class="form-row">
     <div class="form-field">
@@ -43,7 +42,7 @@
       />
     </div>
   </div>
-
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.voluntaryInformation"></span></p-divider>
   <div class="form-row mb-6">
     <div class="form-field">
       <jhi-select
@@ -93,6 +92,7 @@
         (selectedDateChange)="setDateOfBirth($event)"
         [minDate]="minDate"
         [maxDate]="maxDate"
+        [defaultDate]="defaultBirthDate"
       />
     </div>
   </div>

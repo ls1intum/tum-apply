@@ -128,8 +128,8 @@ export class JobDetailComponent {
       return [...buttons, this.pdfButton];
     };
 
-    // Case 1: Not a research group member → show Apply button
-    if (!job.belongsToResearchGroup) {
+    // Case 1: Not a research group member or professor → show Apply button
+    if (!job.belongsToResearchGroup && !this.isProfessor()) {
       switch (job.applicationState) {
         case undefined:
           return {
@@ -202,8 +202,8 @@ export class JobDetailComponent {
         ]),
       };
     }
-    // Case 3: PUBLISHED → show Close button
-    if (job.jobState === 'PUBLISHED') {
+    // Case 3: PUBLISHED and belongs to professor → show Close button
+    if (job.jobState === 'PUBLISHED' && this.isOwnerOfJob(job)) {
       return {
         direction: 'horizontal',
         buttons: addPdfButton([
@@ -408,6 +408,11 @@ export class JobDetailComponent {
   get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
     const jobState = this.currentJobState;
     return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
+  }
+
+  private isOwnerOfJob(job: JobDetails): boolean {
+    const user = this.accountService.loadedUser();
+    return !!user && this.isProfessor() && job.belongsToResearchGroup;
   }
 
   private mapToJobDetails(
