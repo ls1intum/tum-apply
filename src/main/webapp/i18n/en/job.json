@@ -104,6 +104,14 @@
         "summary": "Upload Failed",
         "detail": "Failed to upload image. Please try again."
       },
+      "deleteImageSuccess": {
+        "summary": "Image Deleted",
+        "detail": "Image deleted successfully"
+      },
+      "deleteImageFailed": {
+        "summary": "Delete Failed",
+        "detail": "Failed to delete image. Please try again."
+      },
       "fileTooLarge": {
         "summary": "File Too Large",
         "detail": "Image must be smaller than 5MB"

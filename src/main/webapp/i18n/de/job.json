@@ -104,6 +104,14 @@
         "summary": "Upload fehlgeschlagen",
         "detail": "Bild konnte nicht hochgeladen werden. Bitte versuche es erneut."
       },
+      "deleteImageSuccess": {
+        "summary": "Bild gelöscht",
+        "detail": "Bild erfolgreich gelöscht"
+      },
+      "deleteImageFailed": {
+        "summary": "Löschen fehlgeschlagen",
+        "detail": "Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
+      },
       "fileTooLarge": {
         "summary": "Datei zu groß",
         "detail": "Das Bild muss kleiner als 5MB sein"

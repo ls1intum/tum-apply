@@ -91,7 +91,7 @@ export class JobCreationFormComponent {
   publishAttempted = signal<boolean>(false);
 
   // Image upload state
-  uploadedImages = signal<ImageDTO[]>([]);
+  uploadedImage = signal<ImageDTO | undefined>(undefined);
   defaultImages = signal<ImageDTO[]>([]);
   selectedImage = signal<ImageDTO | undefined>(undefined);
   isUploadingImage = signal<boolean>(false);
@@ -394,7 +394,7 @@ export class JobCreationFormComponent {
       this.selectedImage.set(uploadedImage);
       this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
-      this.uploadedImages.update(images => [uploadedImage, ...images]);
+      this.uploadedImage.set(uploadedImage);
 
       this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
     } catch {
@@ -428,13 +428,36 @@ export class JobCreationFormComponent {
     this.imageForm.patchValue({ imageId: null });
   }
 
+  async deleteSelectedImage(): Promise<void> {
+    const imageToDelete = this.selectedImage();
+    if (!imageToDelete) {
+      return;
+    }
+
+    try {
+      // Delete from server
+      await firstValueFrom(this.imageResourceService.deleteImage(imageToDelete.imageId!));
+
+      // Clear the uploaded image
+      this.uploadedImage.set(undefined);
+
+      // Clear selection
+      this.clearImageSelection();
+
+      this.toastService.showSuccessKey('jobCreationForm.imageSection.deleteImageSuccess');
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.deleteImageFailed');
+    }
+  }
+
   async loadImages(): Promise<void> {
     try {
       const [myImages, defaults] = await Promise.all([
         firstValueFrom(this.imageResourceService.getMyUploadedImages()),
         firstValueFrom(this.imageResourceService.getDefaultJobBanners()),
       ]);
-      this.uploadedImages.set(myImages);
+      // Only keep the most recent uploaded image
+      this.uploadedImage.set(myImages.length > 0 ? myImages[0] : undefined);
       this.defaultImages.set(defaults);
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
@@ -568,9 +591,10 @@ export class JobCreationFormComponent {
     });
 
     if (job?.imageUrl !== undefined && job.imageUrl !== null && job.imageUrl !== '') {
-      const allImages = [...this.uploadedImages(), ...this.defaultImages()];
+      // Combine uploaded image (if exists) with default images to find the selected one
+      const allImages = this.uploadedImage() ? [this.uploadedImage()!, ...this.defaultImages()] : [...this.defaultImages()];
       const selectedImg = allImages.find(img => img.url === job.imageUrl);
-      if (selectedImg) {
+      if (selectedImg !== undefined) {
         this.selectedImage.set(selectedImg);
         this.imageForm.patchValue({ imageId: selectedImg.imageId });
       }
