@@ -24,6 +24,7 @@ export function getJobPDFLabels(translate: TranslateService): Record<string, str
     ...getOverviewItemLabel(translate),
     ...getJobDetailLabel(translate),
     ...getResearchGroupDetailsLabel(translate),
+    ...getFooterLabels(translate),
 
     overview: translate.instant('jobDetailPage.cards.positionOverview'),
   };
