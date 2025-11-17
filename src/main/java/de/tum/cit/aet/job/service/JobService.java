@@ -190,6 +190,7 @@ public class JobService {
             job.getTasks(),
             job.getRequirements(),
             job.getState(),
+            job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null
         );
     }
