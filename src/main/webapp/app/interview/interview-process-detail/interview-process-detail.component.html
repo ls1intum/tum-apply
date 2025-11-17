@@ -1,14 +1,13 @@
 <div class="page-container">
-
   <!-- Header -->
-  <div class="page-header">
+  <div class="page-header flex flex-row items-center">
+    <jhi-button
+      [icon]="'arrow-left'"
+      [variant]="'text'"
+      [severity]="'secondary'"
+      (click)="navigateBack()"
+    />
     <div class="flex left">
-      <!--  <jhi-button
-          [icon]="'arrow-left'"
-          [variant]="'text'"
-          size="sm"
-          (click)="navigateBack()"
-        />-->
       <h1 class="h1-text">{{ jobTitle() }}</h1>
     </div>
   </div>
@@ -54,62 +53,85 @@
     </div>
   }
 
-  <!-- Carousel Section -->
+  <!-- Slots Grid -->
   @if (!loading() && !error() && groupedSlots().length > 0) {
     <div>
-      <!-- Month Navigation Bar -->
-      <div class="bg-primary-400 text-white p-3 rounded-lg flex items-center justify-between mb-4">
-        <div class="flex items-center gap-5">
-          <jhi-button
-            [icon]="'chevron-left'"
-            [variant]="'text'"
-            [severity]="'contrast'"
-            size="sm"
-            (click)="previousMonth()"
-          />
-          <h3 class="text-xl font-semibold">{{ currentMonth() }}</h3>
-          <jhi-button
-            [icon]="'chevron-right'"
-            [variant]="'text'"
-            [severity]="'contrast'"
-            size="sm"
-            (click)="nextMonth()"
-          />
+      <!-- Month Navigation (oben - wechselt Monat) -->
+      <jhi-month-navigation
+        [currentMonth]="currentMonth()"
+        (previousMonth)="previousMonth()"
+        (nextMonth)="nextMonth()"
+        (addSlots)="openCreateSlotsModal()"
+      />
+
+      <!-- Date Grid mit seitlichen Pfeilen (paginiert durch Tage) -->
+      @if (currentMonthSlots().length > 0) {
+        <div class="flex items-start gap-4">
+          <!-- Left Arrow (paginiert Tage) -->
+          <div class="flex-shrink-0 pt-12">
+            <jhi-button
+              [icon]="'chevron-left'"
+              [variant]="'text'"
+              [disabled]="!canGoPreviousDate()"
+              (click)="previousDatePage()"
+            />
+          </div>
+
+          <!-- Grid Layout (maximal 5 Tage) -->
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            @for (group of paginatedSlots(); track group.date) {
+              <!-- Date Column -->
+              <div class="flex flex-col gap-3">
+                <!-- Date Header -->
+                <jhi-date-header
+                  [date]="group.localDate"
+                  [slotCount]="group.slots.length"
+                />
+
+                <!-- Slots -->
+                <div class="flex flex-col gap-2">
+                  @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
+                    <jhi-slot-card [slot]="slot" />
+                  }
+
+                  <!-- Show More/Less Button -->
+                  @if (group.slots.length > 3) {
+                    <button
+                      class="w-full py-2 border border-gray-300 rounded-md bg-white text-gray-600 text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-gray-50 hover:border-gray-400 transition-all"
+                      (click)="toggleExpanded(group.date)"
+                    >
+                      @if (!isExpanded(group.date)) {
+                        <i class="pi pi-chevron-down text-xs"></i>
+                        <span>Show {{ getRemainingCount(group.date, group.slots.length) }} more slots</span>
+                      } @else {
+                        <i class="pi pi-chevron-up text-xs"></i>
+                        <span>Show less</span>
+                      }
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Right Arrow (paginiert Tage) -->
+          <div class="flex-shrink-0 pt-12">
+            <jhi-button
+              [icon]="'chevron-right'"
+              [variant]="'text'"
+              [disabled]="!canGoNextDate()"
+              (click)="nextDatePage()"
+            />
+          </div>
         </div>
-
-        <jhi-button
-          [icon]="'plus'"
-          [label]="'Add Slots'"
-          [severity]="'contrast'"
-          size="sm"
-          (click)="openCreateSlotsModal()"
-        />
-      </div>
-
-      <!-- Carousel -->
-      @if (filteredSlots().length > 0) {
-        <p-carousel
-          [value]="filteredSlots()"
-          [numVisible]="5"
-          [numScroll]="1"
-          [responsiveOptions]="responsiveOptions"
-          [circular]="false"
-          [showIndicators]="false"
-        >
-          <ng-template let-group pTemplate="item">
-            <div class="px-2">
-              <jhi-date-column [date]="group.localDate" [slots]="group.slots" />
-            </div>
-          </ng-template>
-        </p-carousel>
-      }
-
-      <!-- No slots in this month -->
-      @if (filteredSlots().length === 0) {
-        <div class="text-center py-8 text-gray-500">
-          No slots in {{ currentMonth() }}
+      } @else {
+        <!-- No slots in this month -->
+        <div class="text-center py-16 text-gray-500">
+          <i class="pi pi-calendar-times text-5xl mb-4 block"></i>
+          <p class="text-lg">No slots in {{ currentMonth() }}</p>
         </div>
       }
     </div>
   }
+
 </div>

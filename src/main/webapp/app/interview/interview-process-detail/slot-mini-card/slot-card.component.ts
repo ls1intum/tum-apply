@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
-  selector: 'jhi-slot-mini-card',
+  selector: 'jhi-slot-card',
   standalone: true,
-  imports: [CommonModule, ButtonComponent],
+  imports: [CommonModule],
   templateUrl: './slot-card.component.html',
 })
 export class SlotCardComponent {
@@ -34,5 +33,10 @@ export class SlotCardComponent {
 
   isBooked = () => {
     return this.slot().isBooked ?? false;
+  };
+
+  applicantName = () => {
+    // TODO: Wird später mit Application.scheduledInterviewSlot implementiert
+    return 'Applicant Name';
   };
 }

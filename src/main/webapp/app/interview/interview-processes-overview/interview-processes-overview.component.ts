@@ -32,7 +32,9 @@ export class InterviewProcessesOverviewComponent {
   viewDetails(jobId: string): void {
     const process = this.interviewProcesses().find(p => p.jobId === jobId);
     if (process?.processId) {
-      this.router.navigate(['/interviews', process.processId]);
+      this.router.navigate(['/interviews', process.processId], {
+        state: { jobTitle: process.jobTitle }
+      });
     }
   }
 
