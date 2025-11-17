@@ -91,7 +91,6 @@ export class JobCreationFormComponent {
   publishAttempted = signal<boolean>(false);
 
   // Image upload state
-  uploadedImage = signal<ImageDTO | undefined>(undefined);
   defaultImages = signal<ImageDTO[]>([]);
   selectedImage = signal<ImageDTO | undefined>(undefined);
   isUploadingImage = signal<boolean>(false);
@@ -394,8 +393,6 @@ export class JobCreationFormComponent {
       this.selectedImage.set(uploadedImage);
       this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
-      this.uploadedImage.set(uploadedImage);
-
       this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
@@ -438,9 +435,6 @@ export class JobCreationFormComponent {
       // Delete from server
       await firstValueFrom(this.imageResourceService.deleteImage(imageToDelete.imageId!));
 
-      // Clear the uploaded image
-      this.uploadedImage.set(undefined);
-
       // Clear selection
       this.clearImageSelection();
 
@@ -452,12 +446,7 @@ export class JobCreationFormComponent {
 
   async loadImages(): Promise<void> {
     try {
-      const [myImages, defaults] = await Promise.all([
-        firstValueFrom(this.imageResourceService.getMyUploadedImages()),
-        firstValueFrom(this.imageResourceService.getDefaultJobBanners()),
-      ]);
-      // Only keep the most recent uploaded image
-      this.uploadedImage.set(myImages.length > 0 ? myImages[0] : undefined);
+      const defaults = await firstValueFrom(this.imageResourceService.getDefaultJobBanners());
       this.defaultImages.set(defaults);
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
@@ -590,14 +579,18 @@ export class JobCreationFormComponent {
       requirements: job?.requirements ?? '',
     });
 
-    if (job?.imageUrl !== undefined && job.imageUrl !== null && job.imageUrl !== '') {
-      // Combine uploaded image (if exists) with default images to find the selected one
-      const allImages = this.uploadedImage() ? [this.uploadedImage()!, ...this.defaultImages()] : [...this.defaultImages()];
-      const selectedImg = allImages.find(img => img.url === job.imageUrl);
-      if (selectedImg !== undefined) {
-        this.selectedImage.set(selectedImg);
-        this.imageForm.patchValue({ imageId: selectedImg.imageId });
-      }
+    // Set image if available - reconstruct ImageDTO from job data
+    if (job?.imageId !== undefined && job.imageId !== null && job.imageUrl !== undefined && job.imageUrl !== null) {
+      this.imageForm.patchValue({ imageId: job.imageId });
+
+      // Check if this image is a default image (exists in defaultImages array)
+      const isDefaultImage = this.defaultImages().some(img => img.imageId === job.imageId);
+
+      this.selectedImage.set({
+        imageId: job.imageId,
+        url: job.imageUrl,
+        isDefault: isDefaultImage,
+      });
     }
 
     this.additionalInfoForm.patchValue({
