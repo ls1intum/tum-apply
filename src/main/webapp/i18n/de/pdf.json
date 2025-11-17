@@ -5,6 +5,11 @@
       "forPosition": " auf die Stelle ",
       "status": "Status: "
     },
+    "sections": {
+      "jobDetails": "Details zur Stelle",
+      "description": "Beschreibung",
+      "contactDetails": "Kontaktdaten"
+    },
     "metaData": {
       "thisDocumentWasGeneratedOn": "Dieses Dokument wurde am ",
       "byUser": " von ",

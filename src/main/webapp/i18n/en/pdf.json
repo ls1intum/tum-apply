@@ -5,6 +5,11 @@
       "forPosition": " for the position ",
       "status": "Status: "
     },
+    "sections": {
+      "jobDetails": "Job Details",
+      "description": "Description",
+      "contactDetails": "Contact Details"
+    },
     "metaData": {
       "thisDocumentWasGeneratedOn": "This document was created on ",
       "byUser": " by ",

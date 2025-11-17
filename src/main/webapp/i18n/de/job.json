@@ -180,12 +180,9 @@
       "location": "Standort:"
     },
     "sections": {
-      "jobDetails": "Details zur Stelle",
-      "description": "Beschreibung",
       "jobDescription": "Stellenbeschreibung",
       "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
       "eligibilityCriteria": "Zulassungsvoraussetzungen",
-      "contactDetails": "Kontaktdaten",
       "dataProtection": "Hinweis zum Datenschutz"
     },
     "cards": {
