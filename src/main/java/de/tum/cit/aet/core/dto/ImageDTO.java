@@ -7,7 +7,7 @@ import de.tum.cit.aet.core.domain.Image;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ImageDTO(UUID imageId, String url, ImageType imageType, School school, Long sizeBytes, Boolean isDefault, UUID uploadedById) {
+public record ImageDTO(UUID imageId, String url, ImageType imageType, School school, Long sizeBytes, UUID uploadedById) {
     /**
      * Convert an Image entity to an ImageDTO
      *
@@ -27,7 +27,6 @@ public record ImageDTO(UUID imageId, String url, ImageType imageType, School sch
             image.getImageType(),
             image.getSchool(),
             image.getSizeBytes(),
-            image.isDefault(),
             uploadedById
         );
     }

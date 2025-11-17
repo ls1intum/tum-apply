@@ -39,12 +39,6 @@ public class Image extends AbstractAuditingEntity {
     private ImageType imageType;
 
     /**
-     * True for system-provided default images
-     */
-    @Column(name = "is_default", nullable = false)
-    private boolean isDefault = false;
-
-    /**
      * School/department this image belongs to (only relevant for default images)
      * Null for user-uploaded images
      */

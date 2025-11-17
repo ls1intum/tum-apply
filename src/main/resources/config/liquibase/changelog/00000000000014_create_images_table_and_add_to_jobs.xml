@@ -22,9 +22,6 @@
       <column name="image_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="is_default" type="BOOLEAN" defaultValueBoolean="false">
-        <constraints nullable="false"/>
-      </column>
       <column name="school" type="VARCHAR(255)"/>
       <column name="uploaded_by" type="CHAR(36)"/>
       <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">

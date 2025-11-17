@@ -1692,7 +1692,6 @@ components:
       type: object
       properties:
         createdAt: {type: string, format: date-time}
-        default: {type: boolean}
         imageId: {type: string, format: uuid}
         imageType:
           type: string
@@ -1712,7 +1711,6 @@ components:
         imageType:
           type: string
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
-        isDefault: {type: boolean}
         school:
           type: string
           enum: [CIT]
