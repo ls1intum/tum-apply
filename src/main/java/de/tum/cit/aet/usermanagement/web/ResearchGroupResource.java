@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.AddMembersToResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
@@ -252,5 +253,19 @@ public class ResearchGroupResource {
         log.info("POST /api/research-groups/{}/withdraw", researchGroupId);
         ResearchGroup withdrawn = researchGroupService.withdrawResearchGroup(researchGroupId);
         return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(withdrawn));
+    }
+
+    /**
+     * Adds members to the current user's research group.
+     *
+     * @param dto the DTO containing user IDs to add
+     * @return no content response
+     */
+    @PostMapping("/members")
+    @ProfessorOrAdmin
+    public ResponseEntity<Void> addMembersToResearchGroup(@Valid @RequestBody AddMembersToResearchGroupDTO dto) {
+        log.info("POST /api/research-groups/members - adding {} members", dto.userIds().size());
+        researchGroupService.addMembersToResearchGroup(dto.userIds(), dto.researchGroupId());
+        return ResponseEntity.noContent().build();
     }
 }

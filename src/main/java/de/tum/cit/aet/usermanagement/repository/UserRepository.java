@@ -105,15 +105,16 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     boolean existsByEmailIgnoreCase(String email);
 
     /**
-     * Returns all users who are not assigned to any research group and who do not hold the
-     * 'ADMIN' role in any UserResearchGroupRole association.
+     * Finds user IDs for users available to be added to a research group.
+     * Returns only IDs without JOIN FETCH for safe pagination.
      *
-     * @return a List of User entities matching the criteria; never null (may be empty)
+     * @param searchQuery optional search query to filter by name or email
+     * @param pageable pagination information
+     * @return a Page of user IDs matching the criteria
      */
     @Query(
         """
-            SELECT DISTINCT u FROM User u
-            LEFT JOIN FETCH u.researchGroupRoles
+            SELECT DISTINCT u.userId FROM User u
             WHERE u.researchGroup IS NULL
             AND NOT EXISTS(
                 SELECT 1 FROM UserResearchGroupRole rgr
@@ -127,7 +128,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             )
         """
     )
-    List<User> findUsersWithoutResearchGroupAndNotAdmin(@Param("searchQuery") String searchQuery);
+    Page<UUID> findAvailableUserIdsForResearchGroup(@Param("searchQuery") String searchQuery, Pageable pageable);
 
     String email(String email);
 }

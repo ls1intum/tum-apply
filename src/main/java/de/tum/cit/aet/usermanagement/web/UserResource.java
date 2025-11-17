@@ -1,5 +1,7 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
@@ -12,24 +14,23 @@ import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserResource {
 
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final KeycloakUserService keycloakUserService;
-
-    public UserResource(AuthenticationService authenticationService, UserService userService, KeycloakUserService keycloakUserService) {
-        this.authenticationService = authenticationService;
-        this.userService = userService;
-        this.keycloakUserService = keycloakUserService;
-    }
 
     /**
      * Returns information about the currently authenticated user.
@@ -80,8 +81,12 @@ public class UserResource {
 
     @ProfessorOrAdmin
     @GetMapping("/available-for-research-group")
-    public ResponseEntity<List<UserShortDTO>> getAvailableUsersForResearchGroup(@RequestParam(required = false) String searchQuery) {
-        return ResponseEntity.ok(userService.getAvailableUsersForResearchGroup(searchQuery));
+    public ResponseEntity<PageResponseDTO<UserShortDTO>> getAvailableUsersForResearchGroup(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @RequestParam(required = false) String searchQuery
+    ) {
+        log.info("Fetching available users for research group with search query: {}", searchQuery);
+        return ResponseEntity.ok(userService.getAvailableUsersForResearchGroup(pageDTO, searchQuery));
     }
 
     public record UpdatePasswordDTO(@NotBlank String newPassword) {}

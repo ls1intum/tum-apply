@@ -172,19 +172,13 @@ export class ResearchGroupAdminView {
   }
 
   onAddMembers(researchGroupId: string): void {
-    const dialogRef = this.dialogService.open(ResearchGroupAddMembersComponent, {
+    this.dialogService.open(ResearchGroupAddMembersComponent, {
       header: this.translate.instant('researchGroup.members.addMembers'),
       data: { researchGroupId },
       styleClass: 'research-group-add-members-dialog',
       style: { background: 'var(--p-background-default)', maxWidth: '40rem' },
       closable: true,
       modal: true,
-    });
-
-    dialogRef?.onClose.subscribe(selectedUsers => {
-      if (selectedUsers !== null && selectedUsers !== undefined && selectedUsers.length > 0) {
-        // Handle adding members here
-      }
     });
   }
 

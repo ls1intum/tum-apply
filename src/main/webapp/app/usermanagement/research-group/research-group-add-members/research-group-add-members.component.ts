@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -24,6 +24,7 @@ export class ResearchGroupAddMembersComponent {
   searchQuery = signal<string>('');
   userSelections = signal<UserSelection[]>([]);
   userService = inject(UserResourceApiService);
+  researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
 
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);

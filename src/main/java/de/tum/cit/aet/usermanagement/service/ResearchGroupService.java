@@ -556,4 +556,32 @@ public class ResearchGroupService {
         emailSender.sendAsync(email);
         log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
+
+    public void addMembersToResearchGroup(List<UUID> userIds, UUID researchGroupId) {
+        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfProfessor();
+        ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
+
+        for (UUID userId : userIds) {
+            User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+            UserResearchGroupRole role = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, researchGroup).orElse(null);
+
+            if (user.getResearchGroup() != null && user.getResearchGroup().getResearchGroupId().equals(targetGroupId)) {
+                log.info("User {} is already a member of research group {}, skipping", userId, targetGroupId);
+                continue;
+            }
+
+            if (role.getResearchGroup() != null) {
+                log.info("User is already a member of research group {}, skipping", role.getResearchGroup().getResearchGroupId());
+                continue;
+            }
+
+            user.setResearchGroup(researchGroup);
+            userRepository.save(user);
+
+            role.setResearchGroup(researchGroup);
+            userResearchGroupRoleRepository.save(role);
+
+            log.info("Added user {} to research group {}", userId, targetGroupId);
+        }
+    }
 }
