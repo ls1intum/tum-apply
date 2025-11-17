@@ -43,15 +43,15 @@ function getOverviewItemLabel(translate: TranslateService): Record<string, strin
   return {
     supervisor: translate.instant('jobDetailPage.header.supervisor'),
     location: translate.instant('jobDetailPage.header.location'),
-    fieldsOfStudies: translate.instant('jobDetailPage.labels.fieldOfStudies'),
-    researchArea: translate.instant('jobDetailPage.labels.researchArea'),
-    workload: translate.instant('jobDetailPage.labels.workload'),
+    fieldsOfStudies: `${translate.instant('jobDetailPage.labels.fieldOfStudies')}:`,
+    researchArea: `${translate.instant('jobDetailPage.labels.researchArea')}:`,
+    workload: `${translate.instant('jobDetailPage.labels.workload')}:`,
     hoursPerWeek: translate.instant('jobDetailPage.units.hoursPerWeek'),
-    duration: translate.instant('jobDetailPage.labels.contractDuration'),
+    duration: `${translate.instant('jobDetailPage.labels.contractDuration')}:`,
     years: translate.instant('jobDetailPage.units.years'),
-    fundingType: translate.instant('jobDetailPage.labels.fundingType'),
-    startDate: translate.instant('jobDetailPage.labels.startDate'),
-    endDate: translate.instant('jobDetailPage.labels.applicationEndDate'),
+    fundingType: `${translate.instant('jobDetailPage.labels.fundingType')}:`,
+    startDate: `${translate.instant('jobDetailPage.labels.startDate')}:`,
+    endDate: `${translate.instant('jobDetailPage.labels.applicationEndDate')}:`,
   };
 }
 
