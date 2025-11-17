@@ -54,7 +54,7 @@ public class PDFExportResource {
     @PostMapping(value = "/job/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
         Resource pdf = pdfExportService.exportJobToPDF(id, labels);
-        String filename = pdfExportService.generateJobFilename(id, "jobPlaceHolder");
+        String filename = pdfExportService.generateJobFilename(id, labels.get("jobPdfEnding"));
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")

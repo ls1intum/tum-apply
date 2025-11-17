@@ -1,5 +1,6 @@
 {
   "pdf": {
+    "jobPdfEnding": "jobangebot",
     "headerItems": {
       "applicationBy": "Bewerbung von ",
       "forPosition": " auf die Stelle ",

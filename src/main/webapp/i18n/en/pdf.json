@@ -1,5 +1,6 @@
 {
   "pdf": {
+    "jobPdfEnding": "job_posting",
     "headerItems": {
       "applicationBy": "Application by ",
       "forPosition": " for the position ",

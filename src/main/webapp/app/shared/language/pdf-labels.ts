@@ -27,6 +27,7 @@ export function getJobPDFLabels(translate: TranslateService): Record<string, str
     ...getResearchGroupDetailsLabel(translate),
     ...getFooterLabels(translate),
 
+    jobPdfEnding: translate.instant('pdf.jobPdfEnding'),
     overview: translate.instant('jobDetailPage.cards.positionOverview'),
   };
 }
