@@ -89,6 +89,7 @@
       "title": "Choose a Banner Image",
       "description": "Select a banner image that will be displayed at the top of your job posting. You can choose from our default images or upload your own.",
       "defaultImages": "Default Images",
+      "defaultImagesDisabledHint": "Delete your custom image to select a default image",
       "orDivider": "or",
       "uploadCustom": "Upload Custom Image",
       "clickToUpload": "Click to upload an image",

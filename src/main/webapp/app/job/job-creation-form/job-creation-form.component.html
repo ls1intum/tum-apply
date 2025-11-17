@@ -226,10 +226,20 @@
     @if (defaultImages().length > 0) {
       <div class="mb-8">
         <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
+        @if (hasCustomImage()) {
+          <div class="mb-4 p-3 border border-primary rounded-lg bg-blue-50">
+            <p class="text-sm text-primary" jhiTranslate="jobCreationForm.imageSection.defaultImagesDisabledHint"></p>
+          </div>
+        }
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
           @for (image of defaultImages(); track image.imageId; let idx = $index) {
             <div
-              class="relative rounded-xl cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+              class="relative rounded-xl transition-all"
+              [class.cursor-pointer]="!hasCustomImage()"
+              [class.hover:shadow-lg]="!hasCustomImage()"
+              [class.hover:-translate-y-1]="!hasCustomImage()"
+              [class.opacity-50]="hasCustomImage()"
+              [class.cursor-not-allowed]="hasCustomImage()"
               (click)="selectImage(image)"
             >
               <div
@@ -262,7 +272,7 @@
 
       <!-- Preview of uploaded custom image or upload area -->
       <div class="flex justify-center w-full max-w-xl mx-auto">
-        @if (selectedImage() && selectedImage()?.isDefault === false) {
+        @if (selectedImage() && selectedImage()?.imageType !== 'DEFAULT_JOB_BANNER') {
           <!-- Preview of uploaded custom image -->
           <div class="w-full">
             <div class="border rounded-xl p-4">

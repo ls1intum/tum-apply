@@ -97,6 +97,11 @@ export class JobCreationFormComponent {
   // Pending image upload (not yet uploaded to server)
   pendingImageFile = signal<File | undefined>(undefined);
   pendingImagePreviewUrl = signal<string | undefined>(undefined);
+  // Check if there's a custom uploaded image (not a default image)
+  hasCustomImage = computed(() => {
+    const image = this.selectedImage();
+    return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
+  });
 
   // Forms
   basicInfoForm = this.createBasicInfoForm();
@@ -416,6 +421,10 @@ export class JobCreationFormComponent {
   }
 
   selectImage(image: ImageDTO): void {
+    // Prevent selecting default images if a custom image is already uploaded
+    if (this.hasCustomImage()) {
+      return;
+    }
     this.selectedImage.set(image);
     this.imageForm.patchValue({ imageId: image.imageId });
   }
@@ -585,11 +594,12 @@ export class JobCreationFormComponent {
 
       // Check if this image is a default image (exists in defaultImages array)
       const isDefaultImage = this.defaultImages().some(img => img.imageId === job.imageId);
+      const imageType = isDefaultImage ? 'DEFAULT_JOB_BANNER' : 'JOB_BANNER';
 
       this.selectedImage.set({
         imageId: job.imageId,
         url: job.imageUrl,
-        isDefault: isDefaultImage,
+        imageType: imageType as 'JOB_BANNER' | 'DEFAULT_JOB_BANNER' | 'PROFILE_PICTURE',
       });
     }
 
