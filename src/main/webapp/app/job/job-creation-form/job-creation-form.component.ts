@@ -373,6 +373,18 @@ export class JobCreationFormComponent {
       return;
     }
 
+    // Validate image dimensions (1920x1080 max)
+    try {
+      const dimensions = await this.getImageDimensions(file);
+      if (dimensions.width > 4096 || dimensions.height > 4096) {
+        this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
+        return;
+      }
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidImage');
+      return;
+    }
+
     // Upload the image immediately
     this.isUploadingImage.set(true);
 
@@ -391,6 +403,19 @@ export class JobCreationFormComponent {
       this.isUploadingImage.set(false);
       input.value = '';
     }
+  }
+
+  private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve({ width: img.width, height: img.height });
+      };
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+      img.src = URL.createObjectURL(file);
+    });
   }
 
   selectImage(image: ImageDTO): void {

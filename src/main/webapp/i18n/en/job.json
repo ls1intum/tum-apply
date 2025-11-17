@@ -116,10 +116,18 @@
         "summary": "Load Failed",
         "detail": "Failed to load images. Please refresh the page."
       },
+      "dimensionsTooLarge": {
+        "summary": "Image Too Large",
+        "detail": "Image dimensions must not exceed 4096x4096 pixels"
+      },
+      "invalidImage": {
+        "summary": "Invalid Image",
+        "detail": "Unable to read image file. Please select a valid image."
+      },
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",
       "noDefaultImages": "No default banners available. Please upload your own image.",
-      "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG. Recommended dimensions: 1200x675px",
+      "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG. Maximum dimensions: 1920x1080px",
       "selectedImage": "Selected Image",
       "myUploads": "My Uploaded Images"
     },
