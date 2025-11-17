@@ -66,6 +66,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("duration") + ":", formatContractDuration(job.contractDuration(), labels.get("years")))
             .addOverviewItem(labels.get("fundingType") + ":", getValue(job.fundingType()))
             .addOverviewItem(labels.get("startDate") + ":", formatDate(job.startDate()))
+            .addOverviewItem(labels.get("endDate") + ":", formatDate(job.endDate()))
             .setOverviewDescriptionTitle(labels.get("jobDescription"))
             .setOverviewDescription(job.description());
 
