@@ -135,6 +135,13 @@ public class PDFExportService {
 
         PDFBuilder builder = new PDFBuilder(job.title());
 
+        builder.addHeaderItem(labels.get("jobBy") + job.supervisingProfessorName() + labels.get("forJob") + "'" + job.title() + "'");
+        try {
+            if (currentUserService.isProfessor()) {
+                builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
+            }
+        } catch (Exception e) {}
+
         // Overview Section
         builder
             .setOverviewTitle(labels.get("overview"))

@@ -21,6 +21,7 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
 
 export function getJobPDFLabels(translate: TranslateService): Record<string, string> {
   return {
+    ...getJobHeaderLabel(translate),
     ...getOverviewItemLabel(translate),
     ...getJobDetailLabel(translate),
     ...getResearchGroupDetailsLabel(translate),
@@ -36,6 +37,14 @@ function getApplicationHeaderLabel(translate: TranslateService): Record<string, 
   return {
     applicationBy: translate.instant('pdf.headerItems.applicationBy'),
     forPosition: translate.instant('pdf.headerItems.forPosition'),
+    status: translate.instant('pdf.headerItems.status'),
+  };
+}
+
+function getJobHeaderLabel(translate: TranslateService): Record<string, string> {
+  return {
+    jobBy: translate.instant('pdf.headerItems.jobBy'),
+    forJob: translate.instant('pdf.headerItems.forJob'),
     status: translate.instant('pdf.headerItems.status'),
   };
 }

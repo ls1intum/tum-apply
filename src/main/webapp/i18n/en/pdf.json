@@ -3,6 +3,8 @@
     "headerItems": {
       "applicationBy": "Application by ",
       "forPosition": " for the position ",
+      "jobBy": "Job posting by ",
+      "forJob": " for the position ",
       "status": "Status: "
     },
     "sections": {

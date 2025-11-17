@@ -3,6 +3,8 @@
     "headerItems": {
       "applicationBy": "Bewerbung von ",
       "forPosition": " auf die Stelle ",
+      "jobBy": "Jobangebot von ",
+      "forJob": " für die Stelle ",
       "status": "Status: "
     },
     "sections": {
