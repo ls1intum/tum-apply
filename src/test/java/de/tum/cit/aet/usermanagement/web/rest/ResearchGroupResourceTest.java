@@ -308,6 +308,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "ab12cde",
             "Dr. John Doe",
             "New Research Lab",
+            ResearchGroupDepartment.INFORMATICS,
             "NRL",
             "contact@newlab.tum.de",
             "https://newlab.tum.de",
