@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
@@ -40,6 +41,7 @@ public class JobService {
     private final ApplicationRepository applicationRepository;
     private final InterviewService interviewService;
     private final JobImageHelper jobImageHelper;
+    private final ImageService imageService;
 
     public JobService(
         JobRepository jobRepository,
@@ -48,7 +50,8 @@ public class JobService {
         AsyncEmailSender sender,
         CurrentUserService currentUserService,
         InterviewService interviewService,
-        JobImageHelper jobImageHelper
+        JobImageHelper jobImageHelper,
+        ImageService imageService
     ) {
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
@@ -57,6 +60,7 @@ public class JobService {
         this.currentUserService = currentUserService;
         this.interviewService = interviewService;
         this.jobImageHelper = jobImageHelper;
+        this.imageService = imageService;
     }
 
     /**
@@ -148,6 +152,17 @@ public class JobService {
      */
     public void deleteJob(UUID jobId) {
         assertCanManageJob(jobId);
+
+        // Get the job to check if it has an associated image
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("Job not found"));
+
+        // Delete associated image if it exists and is not a default image
+        if (job.getImage() != null && !job.getImage().isDefault()) {
+            try {
+                imageService.deleteWithoutChecks(job.getImage().getImageId());
+            } catch (Exception e) {}
+        }
+
         jobRepository.deleteById(jobId);
     }
 
