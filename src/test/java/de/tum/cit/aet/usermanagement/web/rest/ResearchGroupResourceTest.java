@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -220,7 +221,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         );
     }
 
-    // --- DELETE /api/research-groups/members/{userId} (removeMemberFromResearchGroup) ---
+    // --- DELETE /api/research-groups/members/{userId}
+    // (removeMemberFromResearchGroup) ---
 
     @Test
     void removeMemberFromResearchGroupReturnsNoContent() {
@@ -292,7 +294,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .putAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId(), invalidDTO, ResearchGroupDTO.class, 400);
     }
 
-    // --- POST /api/research-groups/professor-request (createProfe`ssorResearchGroupRequest) ---
+    // --- POST /api/research-groups/professor-request
+    // (createProfe`ssorResearchGroupRequest) ---
 
     @Test
     void createResearchGroupRequestCreatesGroupInDraftState() {
@@ -337,6 +340,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "mn33zzz",
             "Prof. Minimal User",
             "Minimal Research Lab",
+            ResearchGroupDepartment.MATHEMATICS,
             "",
             "",
             "",
@@ -366,6 +370,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "ab12cde",
             "Dr. John Doe",
             "New Research Lab",
+            ResearchGroupDepartment.ELECTRICAL_ENGINEERING,
             "NRL",
             "contact@newlab.tum.de",
             "https://newlab.tum.de",
@@ -380,7 +385,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         api.postAndRead(API_BASE_PATH + "/professor-request", request, ResearchGroupDTO.class, 403);
     }
 
-    // --- POST /api/research-groups/employee-request (createEmployeeResearchGroupRequest) ---
+    // --- POST /api/research-groups/employee-request
+    // (createEmployeeResearchGroupRequest) ---
 
     @Test
     void createEmployeeResearchGroupRequestReturnsNoContent() {
@@ -540,7 +546,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             );
     }
 
-    // --- POST /api/research-groups/{researchGroupId}/activate (activateResearchGroup) ---
+    // --- POST /api/research-groups/{researchGroupId}/activate
+    // (activateResearchGroup) ---
 
     @Test
     void activateResearchGroupChangesStateToDraftToActive() {
@@ -616,7 +623,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .postAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId() + "/deny", null, Void.class, 403);
     }
 
-    // --- POST /api/research-groups/{researchGroupId}/withdraw (withdrawResearchGroup) ---
+    // --- POST /api/research-groups/{researchGroupId}/withdraw
+    // (withdrawResearchGroup) ---
 
     @Test
     void withdrawResearchGroupChangesStateBackToDraft() {

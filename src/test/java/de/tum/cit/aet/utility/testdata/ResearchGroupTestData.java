@@ -1,5 +1,6 @@
 package de.tum.cit.aet.utility.testdata;
 
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
@@ -72,7 +73,8 @@ public final class ResearchGroupTestData {
         return rg;
     }
 
-    // --- Save to Repository variants -------------------------------------------------------------------------
+    // --- Save to Repository variants
+    // -------------------------------------------------------------------------
     public static ResearchGroup saved(ResearchGroupRepository repo) {
         return repo.save(newRg());
     }
@@ -97,10 +99,12 @@ public final class ResearchGroupTestData {
         );
     }
 
-    // --- DTO creation helpers -------------------------------------------------------------------------
+    // --- DTO creation helpers
+    // -------------------------------------------------------------------------
 
     /**
-     * Creates a ResearchGroupRequestDTO with the given research group name and default values for other fields.
+     * Creates a ResearchGroupRequestDTO with the given research group name and
+     * default values for other fields.
      */
     public static ResearchGroupRequestDTO createResearchGroupRequest(String researchGroupName) {
         return new ResearchGroupRequestDTO(
@@ -110,6 +114,7 @@ public final class ResearchGroupTestData {
             "ab12cde",
             "Prof. New",
             researchGroupName,
+            ResearchGroupDepartment.INFORMATICS,
             "NRG",
             "nrg@test.com",
             "https://nrg.com",
