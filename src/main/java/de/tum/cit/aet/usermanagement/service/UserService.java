@@ -5,8 +5,10 @@ import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -104,6 +106,22 @@ public class UserService {
 
             userRepository.save(user);
         }
+    }
+
+    /**
+     * Retrieves all users that are eligible to be added to a research group.
+     *
+     * <p>The result excludes any users who are already associated with a research group and
+     * excludes users with administrative privileges. Each returned entry is converted to a
+     * UserShortDTO to provide a concise representation suitable for selection or display
+     * in UI components.</p>
+     *
+     * @return a list of UserShortDTO instances representing non-admin users who are not
+     *         currently assigned to any research group; the list will be empty if no such
+     *         users exist
+     */
+    public List<UserShortDTO> getAvailableUsersForResearchGroup() {
+        return userRepository.findUsersWithoutResearchGroupAndNotAdmin().stream().map(UserShortDTO::new).toList();
     }
 
     /**

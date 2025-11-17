@@ -1,6 +1,7 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -10,6 +11,7 @@ import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -74,6 +76,12 @@ public class UserResource {
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
         boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
         return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
+    }
+
+    @ProfessorOrAdmin
+    @GetMapping("/available-for-research-group")
+    public ResponseEntity<List<UserShortDTO>> getAvailableUsersForResearchGroup() {
+        return ResponseEntity.ok(userService.getAvailableUsersForResearchGroup());
     }
 
     public record UpdatePasswordDTO(@NotBlank String newPassword) {}

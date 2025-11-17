@@ -1202,6 +1202,18 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/EmailSettingDTO'}
                 uniqueItems: true
+  /api/users/available-for-research-group:
+    get:
+      tags: [user-resource]
+      operationId: getAvailableUsersForResearchGroup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/users/me:
     get:
       tags: [user-resource]

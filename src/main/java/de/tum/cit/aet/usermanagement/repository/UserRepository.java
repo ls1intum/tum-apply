@@ -104,5 +104,24 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      */
     boolean existsByEmailIgnoreCase(String email);
 
+    /**
+     * Returns all users who are not assigned to any research group and who do not hold the
+     * 'ADMIN' role in any UserResearchGroupRole association.
+     *
+     * @return a List of User entities matching the criteria; never null (may be empty)
+     */
+    @Query(
+        """
+            SELECT u FROM User u
+            WHERE u.researchGroup IS NULL
+            AND NOT EXISTS(
+                SELECT 1 FROM UserResearchGroupRole rgr
+                WHERE rgr.user.userId = u.userId
+                AND rgr.role = 'ADMIN'
+            )
+        """
+    )
+    List<User> findUsersWithoutResearchGroupAndNotAdmin();
+
     String email(String email);
 }
