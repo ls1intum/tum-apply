@@ -19,18 +19,52 @@ export interface ResearchGroupDTO {
     head: string;
     name: string;
     postalCode?: string;
-    school?: string;
+    school?: ResearchGroupDTO.SchoolEnum;
     state?: ResearchGroupDTO.StateEnum;
     street?: string;
     website?: string;
 }
 export namespace ResearchGroupDTO {
-    export type DepartmentEnum = 'MATHEMATICS' | 'INFORMATICS' | 'ELECTRICAL_ENGINEERING' | 'INFORMATION_TECHNOLOGY';
+    export type DepartmentEnum = 'MATHEMATICS' | 'INFORMATICS' | 'ELECTRICAL_ENGINEERING' | 'INFORMATION_TECHNOLOGY' | 'AEROSPACE_AND_GEODESY' | 'ARCHITECTURE' | 'CIVIL_AND_ENVIRONMENTAL_ENGINEERING' | 'ENERGY_AND_PROCESS_ENGINEERING' | 'MATERIALS_ENGINEERING' | 'MECHANICAL_ENGINEERING' | 'MOBILITY_SYSTEMS_ENGINEERING' | 'BIOSCIENCES' | 'CHEMISTRY' | 'PHYSICS' | 'MOLECULAR_LIFE_SCIENCES' | 'LIFE_SCIENCE_SYSTEMS' | 'LIFE_SCIENCE_ENGINEERING' | 'HEALTH_AND_SPORT_SCIENCES' | 'CLINICAL_MEDICINE' | 'PRECLINICAL_MEDICINE' | 'ECONOMICS_AND_POLICY' | 'FINANCE_AND_ACCOUNTING' | 'INNOVATION_AND_ENTREPRENEURSHIP' | 'MARKETING_STRATEGY_AND_LEADERSHIP' | 'OPERATIONS_AND_TECHNOLOGY' | 'SCIENCE_TECHNOLOGY_AND_SOCIETY' | 'GOVERNANCE' | 'EDUCATIONAL_SCIENCES';
     export const DepartmentEnum = {
         Mathematics: 'MATHEMATICS' as DepartmentEnum,
         Informatics: 'INFORMATICS' as DepartmentEnum,
         ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as DepartmentEnum,
-        InformationTechnology: 'INFORMATION_TECHNOLOGY' as DepartmentEnum
+        InformationTechnology: 'INFORMATION_TECHNOLOGY' as DepartmentEnum,
+        AerospaceAndGeodesy: 'AEROSPACE_AND_GEODESY' as DepartmentEnum,
+        Architecture: 'ARCHITECTURE' as DepartmentEnum,
+        CivilAndEnvironmentalEngineering: 'CIVIL_AND_ENVIRONMENTAL_ENGINEERING' as DepartmentEnum,
+        EnergyAndProcessEngineering: 'ENERGY_AND_PROCESS_ENGINEERING' as DepartmentEnum,
+        MaterialsEngineering: 'MATERIALS_ENGINEERING' as DepartmentEnum,
+        MechanicalEngineering: 'MECHANICAL_ENGINEERING' as DepartmentEnum,
+        MobilitySystemsEngineering: 'MOBILITY_SYSTEMS_ENGINEERING' as DepartmentEnum,
+        Biosciences: 'BIOSCIENCES' as DepartmentEnum,
+        Chemistry: 'CHEMISTRY' as DepartmentEnum,
+        Physics: 'PHYSICS' as DepartmentEnum,
+        MolecularLifeSciences: 'MOLECULAR_LIFE_SCIENCES' as DepartmentEnum,
+        LifeScienceSystems: 'LIFE_SCIENCE_SYSTEMS' as DepartmentEnum,
+        LifeScienceEngineering: 'LIFE_SCIENCE_ENGINEERING' as DepartmentEnum,
+        HealthAndSportSciences: 'HEALTH_AND_SPORT_SCIENCES' as DepartmentEnum,
+        ClinicalMedicine: 'CLINICAL_MEDICINE' as DepartmentEnum,
+        PreclinicalMedicine: 'PRECLINICAL_MEDICINE' as DepartmentEnum,
+        EconomicsAndPolicy: 'ECONOMICS_AND_POLICY' as DepartmentEnum,
+        FinanceAndAccounting: 'FINANCE_AND_ACCOUNTING' as DepartmentEnum,
+        InnovationAndEntrepreneurship: 'INNOVATION_AND_ENTREPRENEURSHIP' as DepartmentEnum,
+        MarketingStrategyAndLeadership: 'MARKETING_STRATEGY_AND_LEADERSHIP' as DepartmentEnum,
+        OperationsAndTechnology: 'OPERATIONS_AND_TECHNOLOGY' as DepartmentEnum,
+        ScienceTechnologyAndSociety: 'SCIENCE_TECHNOLOGY_AND_SOCIETY' as DepartmentEnum,
+        Governance: 'GOVERNANCE' as DepartmentEnum,
+        EducationalSciences: 'EDUCATIONAL_SCIENCES' as DepartmentEnum
+    };
+    export type SchoolEnum = 'CIT' | 'ED' | 'NAT' | 'LS' | 'MH' | 'MGT' | 'SOT';
+    export const SchoolEnum = {
+        Cit: 'CIT' as SchoolEnum,
+        Ed: 'ED' as SchoolEnum,
+        Nat: 'NAT' as SchoolEnum,
+        Ls: 'LS' as SchoolEnum,
+        Mh: 'MH' as SchoolEnum,
+        Mgt: 'MGT' as SchoolEnum,
+        Sot: 'SOT' as SchoolEnum
     };
     export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
     export const StateEnum = {

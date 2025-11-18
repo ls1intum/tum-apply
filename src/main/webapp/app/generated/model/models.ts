@@ -25,6 +25,7 @@ export * from './emailTemplateDTO';
 export * from './emailTemplateOverviewDTO';
 export * from './emailTemplateTranslationDTO';
 export * from './employeeResearchGroupRequestDTO';
+export * from './enumDisplayDTO';
 export * from './genderBiasAnalysisRequest';
 export * from './genderBiasAnalysisResponse';
 export * from './internalComment';

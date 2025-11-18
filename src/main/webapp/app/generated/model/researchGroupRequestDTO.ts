@@ -21,19 +21,53 @@ export interface ResearchGroupRequestDTO {
     researchGroupDepartment?: ResearchGroupRequestDTO.ResearchGroupDepartmentEnum;
     researchGroupHead?: string;
     researchGroupName?: string;
-    school?: string;
+    school?: ResearchGroupRequestDTO.SchoolEnum;
     street?: string;
     title?: string;
     universityId?: string;
     website?: string;
 }
 export namespace ResearchGroupRequestDTO {
-    export type ResearchGroupDepartmentEnum = 'MATHEMATICS' | 'INFORMATICS' | 'ELECTRICAL_ENGINEERING' | 'INFORMATION_TECHNOLOGY';
+    export type ResearchGroupDepartmentEnum = 'MATHEMATICS' | 'INFORMATICS' | 'ELECTRICAL_ENGINEERING' | 'INFORMATION_TECHNOLOGY' | 'AEROSPACE_AND_GEODESY' | 'ARCHITECTURE' | 'CIVIL_AND_ENVIRONMENTAL_ENGINEERING' | 'ENERGY_AND_PROCESS_ENGINEERING' | 'MATERIALS_ENGINEERING' | 'MECHANICAL_ENGINEERING' | 'MOBILITY_SYSTEMS_ENGINEERING' | 'BIOSCIENCES' | 'CHEMISTRY' | 'PHYSICS' | 'MOLECULAR_LIFE_SCIENCES' | 'LIFE_SCIENCE_SYSTEMS' | 'LIFE_SCIENCE_ENGINEERING' | 'HEALTH_AND_SPORT_SCIENCES' | 'CLINICAL_MEDICINE' | 'PRECLINICAL_MEDICINE' | 'ECONOMICS_AND_POLICY' | 'FINANCE_AND_ACCOUNTING' | 'INNOVATION_AND_ENTREPRENEURSHIP' | 'MARKETING_STRATEGY_AND_LEADERSHIP' | 'OPERATIONS_AND_TECHNOLOGY' | 'SCIENCE_TECHNOLOGY_AND_SOCIETY' | 'GOVERNANCE' | 'EDUCATIONAL_SCIENCES';
     export const ResearchGroupDepartmentEnum = {
         Mathematics: 'MATHEMATICS' as ResearchGroupDepartmentEnum,
         Informatics: 'INFORMATICS' as ResearchGroupDepartmentEnum,
         ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as ResearchGroupDepartmentEnum,
-        InformationTechnology: 'INFORMATION_TECHNOLOGY' as ResearchGroupDepartmentEnum
+        InformationTechnology: 'INFORMATION_TECHNOLOGY' as ResearchGroupDepartmentEnum,
+        AerospaceAndGeodesy: 'AEROSPACE_AND_GEODESY' as ResearchGroupDepartmentEnum,
+        Architecture: 'ARCHITECTURE' as ResearchGroupDepartmentEnum,
+        CivilAndEnvironmentalEngineering: 'CIVIL_AND_ENVIRONMENTAL_ENGINEERING' as ResearchGroupDepartmentEnum,
+        EnergyAndProcessEngineering: 'ENERGY_AND_PROCESS_ENGINEERING' as ResearchGroupDepartmentEnum,
+        MaterialsEngineering: 'MATERIALS_ENGINEERING' as ResearchGroupDepartmentEnum,
+        MechanicalEngineering: 'MECHANICAL_ENGINEERING' as ResearchGroupDepartmentEnum,
+        MobilitySystemsEngineering: 'MOBILITY_SYSTEMS_ENGINEERING' as ResearchGroupDepartmentEnum,
+        Biosciences: 'BIOSCIENCES' as ResearchGroupDepartmentEnum,
+        Chemistry: 'CHEMISTRY' as ResearchGroupDepartmentEnum,
+        Physics: 'PHYSICS' as ResearchGroupDepartmentEnum,
+        MolecularLifeSciences: 'MOLECULAR_LIFE_SCIENCES' as ResearchGroupDepartmentEnum,
+        LifeScienceSystems: 'LIFE_SCIENCE_SYSTEMS' as ResearchGroupDepartmentEnum,
+        LifeScienceEngineering: 'LIFE_SCIENCE_ENGINEERING' as ResearchGroupDepartmentEnum,
+        HealthAndSportSciences: 'HEALTH_AND_SPORT_SCIENCES' as ResearchGroupDepartmentEnum,
+        ClinicalMedicine: 'CLINICAL_MEDICINE' as ResearchGroupDepartmentEnum,
+        PreclinicalMedicine: 'PRECLINICAL_MEDICINE' as ResearchGroupDepartmentEnum,
+        EconomicsAndPolicy: 'ECONOMICS_AND_POLICY' as ResearchGroupDepartmentEnum,
+        FinanceAndAccounting: 'FINANCE_AND_ACCOUNTING' as ResearchGroupDepartmentEnum,
+        InnovationAndEntrepreneurship: 'INNOVATION_AND_ENTREPRENEURSHIP' as ResearchGroupDepartmentEnum,
+        MarketingStrategyAndLeadership: 'MARKETING_STRATEGY_AND_LEADERSHIP' as ResearchGroupDepartmentEnum,
+        OperationsAndTechnology: 'OPERATIONS_AND_TECHNOLOGY' as ResearchGroupDepartmentEnum,
+        ScienceTechnologyAndSociety: 'SCIENCE_TECHNOLOGY_AND_SOCIETY' as ResearchGroupDepartmentEnum,
+        Governance: 'GOVERNANCE' as ResearchGroupDepartmentEnum,
+        EducationalSciences: 'EDUCATIONAL_SCIENCES' as ResearchGroupDepartmentEnum
+    };
+    export type SchoolEnum = 'CIT' | 'ED' | 'NAT' | 'LS' | 'MH' | 'MGT' | 'SOT';
+    export const SchoolEnum = {
+        Cit: 'CIT' as SchoolEnum,
+        Ed: 'ED' as SchoolEnum,
+        Nat: 'NAT' as SchoolEnum,
+        Ls: 'LS' as SchoolEnum,
+        Mh: 'MH' as SchoolEnum,
+        Mgt: 'MGT' as SchoolEnum,
+        Sot: 'SOT' as SchoolEnum
     };
 }
 

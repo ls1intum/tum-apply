@@ -1030,6 +1030,35 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/departments:
+    get:
+      tags: [research-group-resource]
+      operationId: getAvailableDepartments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/EnumDisplayDTO'}
+  /api/research-groups/departments/{school}:
+    get:
+      tags: [research-group-resource]
+      operationId: getDepartmentsBySchool
+      parameters:
+      - name: school
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/EnumDisplayDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]
@@ -1120,6 +1149,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/schools:
+    get:
+      tags: [research-group-resource]
+      operationId: getAvailableSchools
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/EnumDisplayDTO'}
   /api/research-groups/{id}:
     get:
       tags: [research-group-resource]
@@ -1589,6 +1630,11 @@ components:
       properties:
         professorName: {type: string, minLength: 1}
       required: [professorName]
+    EnumDisplayDTO:
+      type: object
+      properties:
+        displayName: {type: string}
+        value: {type: string}
     GenderBiasAnalysisRequest:
       type: object
       properties:
@@ -1932,7 +1978,14 @@ components:
         defaultFieldOfStudies: {type: string}
         department:
           type: string
-          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY]
+          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY,
+            AEROSPACE_AND_GEODESY, ARCHITECTURE, CIVIL_AND_ENVIRONMENTAL_ENGINEERING,
+            ENERGY_AND_PROCESS_ENGINEERING, MATERIALS_ENGINEERING, MECHANICAL_ENGINEERING,
+            MOBILITY_SYSTEMS_ENGINEERING, BIOSCIENCES, CHEMISTRY, PHYSICS, MOLECULAR_LIFE_SCIENCES,
+            LIFE_SCIENCE_SYSTEMS, LIFE_SCIENCE_ENGINEERING, HEALTH_AND_SPORT_SCIENCES,
+            CLINICAL_MEDICINE, PRECLINICAL_MEDICINE, ECONOMICS_AND_POLICY, FINANCE_AND_ACCOUNTING,
+            INNOVATION_AND_ENTREPRENEURSHIP, MARKETING_STRATEGY_AND_LEADERSHIP, OPERATIONS_AND_TECHNOLOGY,
+            SCIENCE_TECHNOLOGY_AND_SOCIETY, GOVERNANCE, EDUCATIONAL_SCIENCES]
         description: {type: string}
         email: {type: string}
         head: {type: string}
@@ -1940,7 +1993,9 @@ components:
         name: {type: string}
         postalCode: {type: string}
         researchGroupId: {type: string, format: uuid}
-        school: {type: string}
+        school:
+          type: string
+          enum: [CIT, ED, NAT, LS, MH, MGT, SOT]
         state:
           type: string
           enum: [DRAFT, ACTIVE, DENIED]
@@ -1969,13 +2024,22 @@ components:
         defaultFieldOfStudies: {type: string}
         department:
           type: string
-          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY]
+          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY,
+            AEROSPACE_AND_GEODESY, ARCHITECTURE, CIVIL_AND_ENVIRONMENTAL_ENGINEERING,
+            ENERGY_AND_PROCESS_ENGINEERING, MATERIALS_ENGINEERING, MECHANICAL_ENGINEERING,
+            MOBILITY_SYSTEMS_ENGINEERING, BIOSCIENCES, CHEMISTRY, PHYSICS, MOLECULAR_LIFE_SCIENCES,
+            LIFE_SCIENCE_SYSTEMS, LIFE_SCIENCE_ENGINEERING, HEALTH_AND_SPORT_SCIENCES,
+            CLINICAL_MEDICINE, PRECLINICAL_MEDICINE, ECONOMICS_AND_POLICY, FINANCE_AND_ACCOUNTING,
+            INNOVATION_AND_ENTREPRENEURSHIP, MARKETING_STRATEGY_AND_LEADERSHIP, OPERATIONS_AND_TECHNOLOGY,
+            SCIENCE_TECHNOLOGY_AND_SOCIETY, GOVERNANCE, EDUCATIONAL_SCIENCES]
         description: {type: string}
         email: {type: string, format: email}
         head: {type: string, minLength: 1}
         name: {type: string, minLength: 1}
         postalCode: {type: string}
-        school: {type: string}
+        school:
+          type: string
+          enum: [CIT, ED, NAT, LS, MH, MGT, SOT]
         state:
           type: string
           enum: [DRAFT, ACTIVE, DENIED]
@@ -2010,10 +2074,19 @@ components:
         postalCode: {type: string}
         researchGroupDepartment:
           type: string
-          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY]
+          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY,
+            AEROSPACE_AND_GEODESY, ARCHITECTURE, CIVIL_AND_ENVIRONMENTAL_ENGINEERING,
+            ENERGY_AND_PROCESS_ENGINEERING, MATERIALS_ENGINEERING, MECHANICAL_ENGINEERING,
+            MOBILITY_SYSTEMS_ENGINEERING, BIOSCIENCES, CHEMISTRY, PHYSICS, MOLECULAR_LIFE_SCIENCES,
+            LIFE_SCIENCE_SYSTEMS, LIFE_SCIENCE_ENGINEERING, HEALTH_AND_SPORT_SCIENCES,
+            CLINICAL_MEDICINE, PRECLINICAL_MEDICINE, ECONOMICS_AND_POLICY, FINANCE_AND_ACCOUNTING,
+            INNOVATION_AND_ENTREPRENEURSHIP, MARKETING_STRATEGY_AND_LEADERSHIP, OPERATIONS_AND_TECHNOLOGY,
+            SCIENCE_TECHNOLOGY_AND_SOCIETY, GOVERNANCE, EDUCATIONAL_SCIENCES]
         researchGroupHead: {type: string}
         researchGroupName: {type: string}
-        school: {type: string}
+        school:
+          type: string
+          enum: [CIT, ED, NAT, LS, MH, MGT, SOT]
         street: {type: string}
         title: {type: string}
         universityId: {type: string}
