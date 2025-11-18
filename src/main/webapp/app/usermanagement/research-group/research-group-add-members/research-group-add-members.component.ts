@@ -119,7 +119,7 @@ export class ResearchGroupAddMembersComponent {
   isUserSelected(user: UserDTO): boolean {
     const userId = user.userId;
     if (!userId) {
-      return false; // Return false if userId is undefined
+      return false;
     }
 
     return this.selectedUserIds().has(userId);
