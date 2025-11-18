@@ -131,10 +131,6 @@
           "summary": "Add Failed",
           "detail": "Failed to add members. Please try again."
         },
-        "addSuccess": {
-          "summary": "Member Added",
-          "detail": "{{memberName}} has been added to the research group."
-        },
         "removeSuccess": {
           "summary": "Member Removed",
           "detail": "{{memberName}} has been removed from the research group."

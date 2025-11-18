@@ -131,10 +131,6 @@
           "summary": "Fehler beim Hinzufügen",
           "detail": "Mitglieder konnten nicht hinzugefügt werden. Bitte versuche es erneut."
         },
-        "addSuccess": {
-          "summary": "Mitglied hinzugefügt",
-          "detail": "{{memberName}} wurde zur Forschungsgruppe hinzugefügt."
-        },
         "removeSuccess": {
           "summary": "Mitglied entfernt",
           "detail": "{{memberName}} wurde aus der Forschungsgruppe entfernt."
