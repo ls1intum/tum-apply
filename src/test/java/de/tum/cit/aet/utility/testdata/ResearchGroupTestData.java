@@ -166,6 +166,7 @@ public final class ResearchGroupTestData {
             name,
             abbreviation,
             head,
+            ResearchGroupDepartment.INFORMATICS,
             email,
             website,
             university,

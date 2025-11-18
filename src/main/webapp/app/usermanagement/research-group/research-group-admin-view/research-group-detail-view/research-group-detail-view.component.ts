@@ -75,7 +75,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         name: formValue.name ?? '',
         abbreviation: formValue.abbreviation ?? '',
         head: formValue.head ?? '',
-        department: formValue.department ?? '',
         email: formValue.email ?? '',
         website: formValue.website ?? '',
         school: formValue.school ?? '',
