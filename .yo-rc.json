@@ -20,8 +20,6 @@
     "gradleEnterpriseHost": null,
     "jhipsterVersion": "8.9.0",
     "languages": ["en", "de"],
-    "microfrontend": null,
-    "microfrontends": [],
     "nativeLanguage": "en",
     "packageName": "de.tum.cit.aet",
     "prodDatabaseType": "mysql",

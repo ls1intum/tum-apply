@@ -146,6 +146,18 @@
         "withdraw": {
           "summary": "Fehler",
           "detail": "Fehler beim Zurückziehen der Genehmigung. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        },
+        "create": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Erstellen der Forschungsgruppe. Bitte versuche es erneut."
+        },
+        "duplicateName": {
+          "summary": "Name bereits vergeben",
+          "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
+        },
+        "userNotFound": {
+          "summary": "Benutzer nicht gefunden",
+          "detail": "Es wurde kein Benutzer mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
         }
       },
       "success": {
@@ -160,6 +172,10 @@
         "withdraw": {
           "summary": "Erfolg",
           "detail": "Genehmigung erfolgreich zurückgezogen"
+        },
+        "create": {
+          "summary": "Erfolg",
+          "detail": "Forschungsgruppe erfolgreich erstellt"
         }
       },
       "filter": {
@@ -199,7 +215,72 @@
         "message": "Bist du sicher, dass du die Genehmigung für diese Forschungsgruppe zurückziehen möchtest?",
         "confirm": "Zurückziehen"
       },
-      "title": "Verwalte Forschungsgruppen"
+      "title": "Verwalte Forschungsgruppen",
+      "tumID": {
+        "label": "Professor:in TUM-ID",
+        "placeholder": "z.B. ab12cde"
+      },
+      "createButton": "Forschungsgruppe erstellen",
+      "createDialog": {
+        "title": "Forschungsgruppe erstellen",
+        "confirmHeader": "Forschungsgruppe erstellen",
+        "confirmMessage": "Möchtest du diese Forschungsgruppe wirklich erstellen? Sie wird sofort aktiv sein.",
+        "confirmButton": "Forschungsgruppe erstellen",
+        "submitting": "Wird erstellt...",
+        "success": "Forschungsgruppe erfolgreich erstellt",
+        "error": "Fehler beim Erstellen der Forschungsgruppe. Bitte versuche es erneut."
+      }
+    },
+    "detailView": {
+      "title": "Forschungsgruppen Details",
+      "infoMessage": "Du kannst die Informationen der Forschungsgruppe bearbeiten. Beachte, dass Professor:innen über diese Änderungen nicht benachrichtigt werden.",
+      "errors": {
+        "view": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Anzeigen der Informationen zur Forschungsgruppe. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+        },
+        "noId": {
+          "summary": "Fehler",
+          "detail": "Keine Forschungsgruppe gefunden. Bitte aktualisiere die Seite und versuche es erneut."
+        },
+        "save": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
+      },
+      "success": {
+        "updated": {
+          "summary": "Erfolg",
+          "detail": "Forschungsgruppeninformationen erfolgreich aktualisiert."
+        }
+      },
+      "generalSection": "Grundlegende Informationen",
+      "descriptionSection": "Beschreibung",
+      "addressSection": "Adresse",
+      "abbreviation": "Abkürzung",
+      "name": "Name",
+      "school": "School",
+      "defaultFieldOfStudies": "Studienrichtung",
+      "head": "Leitung",
+      "email": "E-Mail",
+      "website": "Webseite",
+      "description": "Beschreibung",
+      "city": "Stadt",
+      "postalCode": "Postleitzahl",
+      "street": "Straße",
+      "placeholders": {
+        "abbreviation": "z.B. KI",
+        "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",
+        "school": "z.B. Informatik",
+        "defaultFieldOfStudies": "z.B. Computer Science",
+        "head": "z.B. Prof. Dr. Max Mustermann",
+        "email": "z.B. kontakt@forschung.de",
+        "website": "z.B. https://www.forschung.de/gruppe",
+        "description": "Beschreibe kurz die Forschungsrichtung, Ziele und Schwerpunkte der Gruppe.",
+        "city": "z.B. Berlin",
+        "postalCode": "z.B. 12345",
+        "street": "z.B. Musterstraße 123"
+      }
     }
   }
 }

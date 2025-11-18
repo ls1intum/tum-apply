@@ -2,12 +2,24 @@ import { TranslateService } from '@ngx-translate/core';
 
 export function getApplicationPDFLabels(translate: TranslateService): Record<string, string> {
   return {
+    applicationBy: translate.instant('pdf.headerItems.applicationBy'),
+    forPosition: translate.instant('pdf.headerItems.forPosition'),
+    status: translate.instant('pdf.headerItems.status'),
     application: translate.instant('evaluation.application'),
     headline: translate.instant('entity.application_detail.headline'),
     overview: translate.instant('entity.application_detail.position_overview'),
     supervisor: translate.instant('jobDetailPage.header.supervisor'),
     researchGroup: translate.instant('jobDetailPage.header.researchGroup'),
     location: translate.instant('jobDetailPage.header.location'),
+    fieldsOfStudies: translate.instant('jobDetailPage.labels.fieldOfStudies'),
+    researchArea: translate.instant('jobDetailPage.labels.researchArea'),
+    workload: translate.instant('jobDetailPage.labels.workload'),
+    hoursPerWeek: translate.instant('jobDetailPage.units.hoursPerWeek'),
+    duration: translate.instant('jobDetailPage.labels.contractDuration'),
+    years: translate.instant('jobDetailPage.units.years'),
+    fundingType: translate.instant('jobDetailPage.labels.fundingType'),
+    startDate: translate.instant('jobDetailPage.labels.startDate'),
+    jobDescription: translate.instant('jobDetailPage.sections.jobDescription'),
     personalStatements: translate.instant('entity.application_detail.personal_statements'),
     motivation: translate.instant('entity.applicationDetail.motivation'),
     skills: translate.instant('entity.applicationDetail.skills'),
@@ -27,5 +39,11 @@ export function getApplicationPDFLabels(translate: TranslateService): Record<str
     upperGradeLimit: translate.instant('entity.detail_card.upper_passing_limit'),
     lowerGradeLimit: translate.instant('entity.detail_card.lower_passing_limit'),
     grade: translate.instant('entity.detail_card.grade'),
+    thisDocumentWasGeneratedOn: translate.instant('pdf.metaData.thisDocumentWasGeneratedOn'),
+    byUser: translate.instant('pdf.metaData.byUser'),
+    usingTumapply: translate.instant('pdf.metaData.usingTumapply'),
+    page: translate.instant('pdf.pageCount.page'),
+    of: translate.instant('pdf.pageCount.of'),
+    metaEndText: translate.instant('pdf.metaData.metaEndText'),
   };
 }

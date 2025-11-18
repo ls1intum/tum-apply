@@ -1,5 +1,5 @@
-<p-stepper [value]="currentStep()" (valueChange)="currentStep.set($event ?? 1)" class="basis-[50rem]">
-  <p-step-list>
+<p-stepper [value]="currentStep()" (valueChange)="currentStep.set($event ?? 1)" class="basis-[40rem]">
+  <p-step-list class="[&_.p-step-header]:cursor-pointer">
     @for (step of steps(); track $index) {
       @if (step.shouldTranslate) {
         <p-step [value]="$index + 1" [class]="$index < currentStep() ? 'p-step-active' : ''" [disabled]="step?.disabled ?? false">
@@ -17,8 +17,8 @@
   <ng-container [ngTemplateOutlet]="steps()[currentStep() - 1].panelTemplate" />
 </div>
 
-<div class="sticky bottom-0 mt-auto py-4 bg-white transition-all duration-300 ease-in-out">
-  <div class="flex pt-6 justify-between transition-opacity duration-200 ease-in-out">
+<div class="sticky bottom-0 mt-auto py-4 bg-white transition-all duration-300 w-full z-[1000] ease-in-out">
+  <div class="flex justify-between transition-opacity duration-200 ease-in-out">
     <div>
       <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
     </div>

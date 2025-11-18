@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Prose } from 'app/evaluation/components/prose/prose';
+import { Prose } from 'app/shared/components/atoms/prose/prose';
 import { SecurityContext } from '@angular/core';
 
 describe('Prose', () => {

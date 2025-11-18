@@ -22,7 +22,7 @@ const DocumentType = {
   CUSTOM: 'CUSTOM',
 } as const;
 
-type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
 
 @Component({
   selector: 'jhi-upload-button',

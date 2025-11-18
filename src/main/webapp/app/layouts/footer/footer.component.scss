@@ -3,9 +3,10 @@
   background-color: var(--background-default);
   color: var(--p-text-primary);
   padding: 1rem 0;
-  border-top: 0.1rem solid var(--p-border-default);
+  border-top: 0.07rem solid var(--p-divider-border-color);
   font-size: 0.9rem;
   align-items: center;
+  margin: 0 1rem;
 
   .logo-section {
     display: flex;
@@ -15,8 +16,7 @@
 
     .app-name {
       text-align: start;
-      color: var(--p-primary-color);
-      font-weight: 700;
+      font-weight: 600;
       padding-right: 0.5rem;
     }
   }
@@ -40,6 +40,10 @@
     margin-left: auto;
     padding-right: 1rem;
     gap: 0.3rem;
+
+    .footer-links {
+      color: var(--p-primary-color);
+    }
   }
 }
 
