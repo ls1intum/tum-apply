@@ -406,7 +406,7 @@ export class JobDetailComponent {
         }
       });
     } catch {
-      this.toastService.showErrorKey('pdf.error.couldNotGeneratePdf');
+      this.toastService.showErrorKey('pdf.couldNotGeneratePdf');
     }
   }
 
