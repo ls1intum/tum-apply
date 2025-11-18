@@ -122,6 +122,12 @@ public class CurrentUserService {
         return user.getFirstName() + " " + user.getLastName();
     }
 
+    /**
+     * Returns the full name of the current user if available.
+     *
+     * @return an {@link Optional} containing the full name, or empty if access is
+     *         denied
+     */
     public Optional<String> getCurrentUserFullNameIfAvailable() {
         try {
             return Optional.of(getCurrentUserFullName());
