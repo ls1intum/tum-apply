@@ -66,13 +66,7 @@
       },
       "researchGroupName": {
         "label": "Name",
-        "placeholder": "e.g. Research Group for Artificial Intelligence",
-        "options": {
-          "mathematics": "Mathematics",
-          "informatics": "Informatics",
-          "electricalEngineering": "Electrical Engineering",
-          "informationTechnology": "Information Technology"
-        }
+        "placeholder": "e.g. Research Group for Artificial Intelligence"
       },
       "researchGroupDepartment": {
         "label": "Department",
