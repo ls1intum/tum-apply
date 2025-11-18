@@ -148,6 +148,10 @@ public class PDFExportService {
 
     /**
      * Exports job details to PDF
+     *
+     * @param jobId  the job ID
+     * @param labels translation labels for PDF content
+     * @return the PDF file as Resource
      */
     public Resource exportJobToPDF(UUID jobId, Map<String, String> labels) {
         JobDetailDTO job = jobService.getJobDetails(jobId);
@@ -194,6 +198,13 @@ public class PDFExportService {
         return builder.build();
     }
 
+    /**
+     * Exports job details to PDF
+     *
+     * @param jobFormDTO the job form data
+     * @param labels     translation labels for PDF content
+     * @return the PDF file as Resource
+     */
     public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(jobFormDTO.title());
 
