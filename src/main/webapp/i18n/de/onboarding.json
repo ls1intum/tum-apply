@@ -70,13 +70,7 @@
       },
       "researchGroupDepartment": {
         "label": "Fachbereich",
-        "placeholder": "Wählen...",
-        "options": {
-          "mathematics": "Mathematik",
-          "informatics": "Informatik",
-          "electricalEngineering": "Elektrotechnik",
-          "informationTechnology": "Informationstechnik"
-        }
+        "placeholder": "Wählen..."
       },
       "researchGroupAbbreviation": {
         "label": "Abkürzung",

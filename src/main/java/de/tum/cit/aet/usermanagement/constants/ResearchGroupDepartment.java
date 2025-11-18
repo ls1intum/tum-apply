@@ -2,8 +2,8 @@ package de.tum.cit.aet.usermanagement.constants;
 
 public enum ResearchGroupDepartment {
     MATHEMATICS("Mathematics"),
-    INFORMATICS("Informatics"),
-    ELECTRICAL_ENGINEERING("Electrical Engineering"),
+    INFORMATICS("Computer Engineering"),
+    ELECTRICAL_ENGINEERING("Computer Science"),
     INFORMATION_TECHNOLOGY("Information Technology");
 
     private final String displayName;

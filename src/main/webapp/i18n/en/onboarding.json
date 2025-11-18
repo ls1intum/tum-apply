@@ -70,13 +70,7 @@
       },
       "researchGroupDepartment": {
         "label": "Department",
-        "placeholder": "Select...",
-        "options": {
-          "mathematics": "Mathematics",
-          "informatics": "Informatics",
-          "electricalEngineering": "Electrical Engineering",
-          "informationTechnology": "Information Technology"
-        }
+        "placeholder": "Select..."
       },
       "researchGroupAbbreviation": {
         "label": "Abbreviation",
