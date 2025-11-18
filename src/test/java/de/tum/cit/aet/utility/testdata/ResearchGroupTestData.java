@@ -34,6 +34,7 @@ public final class ResearchGroupTestData {
         rg.setWebsite("http://example.com");
         rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         rg.setState(ResearchGroupState.ACTIVE);
+        rg.setDepartment(ResearchGroupDepartment.INFORMATICS);
         return rg;
     }
 
@@ -52,7 +53,8 @@ public final class ResearchGroupTestData {
         String school,
         String street,
         String website,
-        String state
+        String state,
+        ResearchGroupDepartment department
     ) {
         ResearchGroup rg = newRg();
         if (head != null) rg.setHead(head);
@@ -67,6 +69,7 @@ public final class ResearchGroupTestData {
         if (street != null) rg.setStreet(street);
         if (website != null) rg.setWebsite(website);
         if (state != null) rg.setState(ResearchGroupState.valueOf(state));
+        if (department != null) rg.setDepartment(department);
         if (rg.getUniversityId() == null) {
             rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         }
@@ -92,10 +95,25 @@ public final class ResearchGroupTestData {
         String school,
         String street,
         String website,
-        String state
+        String state,
+        ResearchGroupDepartment department
     ) {
         return repo.save(
-            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, school, street, website, state)
+            newRgAll(
+                head,
+                name,
+                abbreviation,
+                city,
+                defaultFieldOfStudies,
+                description,
+                email,
+                postalCode,
+                school,
+                street,
+                website,
+                state,
+                department
+            )
         );
     }
 

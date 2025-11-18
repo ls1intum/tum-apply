@@ -14,6 +14,7 @@ import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -88,7 +89,8 @@ class ResearchGroupServiceTest {
             "Test University",
             "Test Street",
             "https://test.com",
-            ResearchGroupState.ACTIVE.toString()
+            ResearchGroupState.ACTIVE.toString(),
+            ResearchGroupDepartment.INFORMATICS
         );
         testResearchGroup.setResearchGroupId(TEST_RESEARCH_GROUP_ID);
 
@@ -195,7 +197,8 @@ class ResearchGroupServiceTest {
                 null,
                 null,
                 null,
-                ResearchGroupState.ACTIVE.toString()
+                ResearchGroupState.ACTIVE.toString(),
+                ResearchGroupDepartment.INFORMATICS
             );
             otherGroup.setResearchGroupId(UUID.randomUUID());
             User memberFromOtherGroup = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", null, null);

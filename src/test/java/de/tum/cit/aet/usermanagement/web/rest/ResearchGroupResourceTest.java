@@ -73,7 +73,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "TUM",
             "Arcisstr. 21",
             "https://ml.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.INFORMATICS
         );
         secondResearchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
@@ -88,7 +89,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "TUM",
             "Otherstr. 10",
             "https://other.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.INFORMATICS
         );
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
@@ -516,7 +518,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Munich",
             "Draftstr. 1",
             "https://draft.tum.de",
-            "DRAFT"
+            "DRAFT",
+            ResearchGroupDepartment.INFORMATICS
         );
         researchGroupRepository.save(draftGroup);
 
@@ -566,7 +569,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Munich",
             "Activationstr. 1",
             "https://activate.tum.de",
-            "DRAFT"
+            "DRAFT",
+            ResearchGroupDepartment.INFORMATICS
         );
         researchGroupRepository.save(draftGroup);
 
@@ -604,7 +608,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Munich",
             "Denialstr. 1",
             "https://deny.tum.de",
-            "DRAFT"
+            "DRAFT",
+            ResearchGroupDepartment.INFORMATICS
         );
         researchGroupRepository.save(draftGroup);
 
@@ -643,7 +648,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "TUM",
             "Withdrawstr. 1",
             "https://withdraw.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.INFORMATICS
         );
         activeGroup.setState(ResearchGroupState.ACTIVE);
         researchGroupRepository.save(activeGroup);
