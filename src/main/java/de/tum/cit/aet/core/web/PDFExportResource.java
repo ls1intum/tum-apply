@@ -1,8 +1,10 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.PDFExportService;
+import de.tum.cit.aet.job.dto.JobPreviewRequest;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.core.io.Resource;
@@ -55,6 +57,26 @@ public class PDFExportResource {
     public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
         Resource pdf = pdfExportService.exportJobToPDF(id, labels);
         String filename = pdfExportService.generateJobFilename(id, labels.get("jobPdfEnding"));
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(pdf);
+    }
+
+    /**
+     * POST /api/export/job/preview/pdf : Export job details in the preview view as
+     * PDF
+     *
+     * @param jobFormDTO the job form data
+     * @param labels     translation labels for PDF content
+     * @return the PDF file as downloadable attachment
+     */
+    @Professor
+    @PostMapping(value = "/job/preview/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<Resource> exportJobPreviewToPDF(@RequestBody JobPreviewRequest request) {
+        Resource pdf = pdfExportService.exportJobPreviewToPDF(request.job(), request.labels());
+        String filename = pdfExportService.generateJobFilenameForPreview(request.job(), request.labels().get("jobPdfEnding"));
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
