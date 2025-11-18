@@ -344,7 +344,7 @@ export class JobDetailComponent {
     }
   }
 
-  onDownloadPDF(): void {
+  async onDownloadPDF(): Promise<void> {
     const labels = getJobPDFLabels(this.translate);
 
     if (this.previewData()?.()) {
@@ -354,40 +354,14 @@ export class JobDetailComponent {
         return;
       }
 
-      const safeFormData = formData;
       const req: JobPreviewRequest = {
-        job: safeFormData,
+        job: formData,
         labels,
       };
+
       try {
-        this.pdfExportService.exportJobPreviewToPDF(req, 'response').subscribe(response => {
-          const contentDisposition = response.headers.get('Content-Disposition');
-          let filename = 'job.pdf';
+        const response = await firstValueFrom(this.pdfExportService.exportJobPreviewToPDF(req, 'response'));
 
-          if (contentDisposition) {
-            filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
-          }
-
-          const blob = response.body;
-          if (blob) {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            window.URL.revokeObjectURL(url);
-          }
-        });
-      } catch {
-        this.toastService.showErrorKey('pdf.error.couldNotGeneratePdf');
-      }
-      return;
-    }
-
-    const jobId = this.jobId();
-
-    try {
-      this.pdfExportService.exportJobToPDF(jobId, labels, 'response').subscribe(response => {
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = 'job.pdf';
 
@@ -404,7 +378,33 @@ export class JobDetailComponent {
           a.click();
           window.URL.revokeObjectURL(url);
         }
-      });
+      } catch {
+        this.toastService.showErrorKey('pdf.couldNotGeneratePdf');
+      }
+      return;
+    }
+
+    const jobId = this.jobId();
+
+    try {
+      const response = await firstValueFrom(this.pdfExportService.exportJobToPDF(jobId, labels, 'response'));
+
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'job.pdf';
+
+      if (contentDisposition) {
+        filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
+      }
+
+      const blob = response.body;
+      if (blob) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
     } catch {
       this.toastService.showErrorKey('pdf.couldNotGeneratePdf');
     }
