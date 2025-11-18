@@ -107,6 +107,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     /**
      * Finds user IDs for users available to be added to a research group.
      * Returns only IDs without JOIN FETCH for safe pagination.
+     * Only includes TUM-affiliated users (email domain contains 'tum').
      *
      * @param searchQuery optional search query to filter by name or email
      * @param pageable pagination information
@@ -121,6 +122,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
                 WHERE rgr.user.userId = u.userId
                 AND rgr.role = 'ADMIN'
             )
+            AND u.email LIKE '%@%tum%'
             AND (:searchQuery IS NULL OR
                  LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
                  LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR

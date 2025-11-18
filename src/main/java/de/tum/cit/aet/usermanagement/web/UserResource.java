@@ -79,6 +79,13 @@ public class UserResource {
         return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
     }
 
+    /**
+     * Retrieves a paginated list of users who are TUM-affiliated and not currently assigned to any research group.
+     *
+     * @param pageDTO     pagination parameters
+     * @param searchQuery optional search query to filter users by name or email
+     * @return paginated list of available users as {@link UserShortDTO}
+     */
     @ProfessorOrAdmin
     @GetMapping("/available-for-research-group")
     public ResponseEntity<PageResponseDTO<UserShortDTO>> getAvailableUsersForResearchGroup(
