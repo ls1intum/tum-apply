@@ -557,6 +557,14 @@ public class ResearchGroupService {
         log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
 
+    /**
+     * Adds multiple members to a research group.
+     * Sends an email notification to each added user.
+     *
+     * @param userIds the IDs of the users to be added to the research group
+     * @param researchGroupId the ID of the research group to add members to; if null, uses current user's group
+     */
+    @Transactional
     public void addMembersToResearchGroup(List<UUID> userIds, UUID researchGroupId) {
         UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfProfessor();
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
@@ -578,7 +586,34 @@ public class ResearchGroupService {
             role.setResearchGroup(researchGroup);
             userResearchGroupRoleRepository.save(role);
 
-            log.info("Added user {} to research group {}", userId, targetGroupId);
+            String emailBody = String.format(
+                """
+                <html>
+                <body>
+                    <h2>Welcome to the Research Group!</h2>
+                    <p>Dear %s %s,</p>
+                    <p>You have been successfully added to the research group <strong>%s</strong>.</p>
+                    <p>Feel free to contact your head or our support.</p>
+                    <p>Best regards,<br>The TumApply Team</p>
+                </body>
+                </html>
+                """,
+                user.getFirstName(),
+                user.getLastName(),
+                researchGroup.getName()
+            );
+
+            Email email = Email.builder()
+                .to(user)
+                .customSubject("You have been added to the research group " + researchGroup.getName())
+                .customBody(emailBody)
+                .sendAlways(true)
+                .language(Language.ENGLISH)
+                .build();
+
+            emailSender.sendAsync(email);
+
+            log.info("Added user {} to research group {} and sent notification email", userId, targetGroupId);
         }
     }
 }
