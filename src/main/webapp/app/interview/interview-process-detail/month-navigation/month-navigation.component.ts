@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component,ViewEncapsulation, input, output } from '@angular/core';
 import {ButtonComponent} from "app/shared/components/atoms/button/button.component";
 
 @Component({
   selector: 'jhi-month-navigation',
   standalone: true,
   imports: [CommonModule, ButtonComponent],
+  encapsulation: ViewEncapsulation.None,
   templateUrl: './month-navigation.component.html',
 })
 export class MonthNavigationComponent {

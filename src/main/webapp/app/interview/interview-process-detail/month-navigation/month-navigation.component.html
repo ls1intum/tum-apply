@@ -1,9 +1,9 @@
-<div class="bg-primary-500 text-white p-3 rounded-lg flex items-center justify-between mb-4">
+<div class="bg-[var(--p-pastel-500)] text-white p-3 rounded-lg flex items-center justify-between mb-4">
   <div class="flex items-center gap-5">
     <jhi-button
       [icon]="'chevron-left'"
       [variant]="'text'"
-      [severity]="'secondary'"
+      [severity]="'primary'"
       size="sm"
       (click)="previousMonth.emit()"
     />
@@ -15,7 +15,7 @@
     <jhi-button
       [icon]="'chevron-right'"
       [variant]="'text'"
-      [severity]="'secondary'"
+      [severity]="'primary'"
       size="sm"
       (click)="nextMonth.emit()"
     />
@@ -26,6 +26,9 @@
     [label]="'Add Slots'"
     [severity]="'primary'"
     size="sm"
+    [style]="{ '--p-button-primary-background': 'var(--p-primary-300)',
+    '--p-button-primary-border-color': 'var(--p-primary-300)' }"
     (click)="addSlots.emit()"
-  />
+  ></jhi-button>
+
 </div>

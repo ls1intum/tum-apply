@@ -1,4 +1,4 @@
-<div class="relative bg-white border border-gray-200 rounded-lg p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
+<div class="relative bg-white border border-[var(--p-neutral-400)] rounded-lg p-3 flex flex-col gap-2 hover:shadow-md transition-shadow">
 
   @if (isBooked()) {
     <!-- Wenn gebucht: Zeit alleine -->
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Booked badge -->
-    <span class="absolute top-2 right-2 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+    <span class="absolute top-2 right-2 bg-[var(--p-success-400)] text-black px-2 py-0.5 rounded-full text-[10px] font-semibold">
       booked
     </span>
   }
@@ -38,5 +38,4 @@
       + Assign
     </button>
   }
-
 </div>

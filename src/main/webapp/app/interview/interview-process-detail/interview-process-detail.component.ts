@@ -10,7 +10,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from "app/shared/components/atoms/button/button.component";
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
-import { SlotCardComponent } from "app/interview/interview-process-detail/slot-mini-card/slot-card.component";
+import { SlotCardComponent } from "app/interview/interview-process-detail/slot-card/slot-card.component";
 
 interface GroupedSlots {
   date: string;
@@ -40,7 +40,7 @@ export class InterviewProcessDetailComponent {
   private readonly translateService = inject(TranslateService);
 
   readonly MAX_VISIBLE_SLOTS = 3;
-  private readonly DATES_PER_PAGE = 5; // Maximal 5 Tage auf einmal
+  private readonly DATES_PER_PAGE = 5;
 
   processId = signal<string | null>(null);
   jobTitle = signal<string>('Interview Slots');
