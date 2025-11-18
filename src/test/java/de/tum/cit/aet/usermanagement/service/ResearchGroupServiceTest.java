@@ -292,6 +292,7 @@ class ResearchGroupServiceTest {
                 "Updated Name",
                 "UN",
                 "Prof. Updated",
+                ResearchGroupDepartment.INFORMATICS,
                 "updated@test.com",
                 "https://updated.com",
                 "Updated School",

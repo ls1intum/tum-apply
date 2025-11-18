@@ -7,10 +7,18 @@ import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
+
+const DEPARTMENT_OPTIONS: SelectOption[] = [
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.mathematics', value: 'MATHEMATICS' },
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.electricalEngineering', value: 'ELECTRICAL_ENGINEERING' },
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informationTechnology', value: 'INFORMATION_TECHNOLOGY' },
+];
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
@@ -22,6 +30,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
     school: new FormControl(''),
+    department: new FormControl('', [Validators.required]),
     defaultFieldOfStudies: new FormControl(''),
     head: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email, Validators.pattern(/.+\..{2,}$/)]),
@@ -33,6 +42,8 @@ export class ResearchGroupDetailViewComponent implements OnInit {
   });
 
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
+
+  departmentOptions = DEPARTMENT_OPTIONS;
 
   isSaving = signal<boolean>(false);
   isLoading = signal<boolean>(true);
@@ -64,6 +75,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         name: formValue.name ?? '',
         abbreviation: formValue.abbreviation ?? '',
         head: formValue.head ?? '',
+        department: formValue.department ?? '',
         email: formValue.email ?? '',
         website: formValue.website ?? '',
         school: formValue.school ?? '',
