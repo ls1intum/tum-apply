@@ -14,6 +14,7 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -284,28 +285,17 @@ public class PDFExportService {
     }
 
     private void addResearchGroupContactInfo(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
-        boolean emailExists = hasValue(group.getEmail());
-        boolean websiteExists = hasValue(group.getWebsite());
-        boolean streetExists = hasValue(group.getStreet());
-        boolean postalCodeExists = hasValue(group.getPostalCode());
-        boolean cityExists = hasValue(group.getCity());
+        String address = formatAddress(group.getStreet(), group.getPostalCode(), group.getCity());
+        Map<String, String> items = new LinkedHashMap<>();
 
-        boolean hasAddress = streetExists || postalCodeExists || cityExists;
-        boolean hasAnyContact = emailExists || websiteExists || hasAddress;
+        if (hasValue(address)) items.put(labels.get("address"), address);
+        if (hasValue(group.getEmail())) items.put(labels.get("email"), group.getEmail());
+        if (hasValue(group.getWebsite())) items.put(labels.get("website"), group.getWebsite());
 
-        if (!hasAnyContact) return;
+        if (items.isEmpty()) return;
 
         builder.startInfoSection(labels.get("contactDetails"));
-
-        if (hasAddress) {
-            builder.addSectionData(labels.get("address"), formatAddress(group.getStreet(), group.getPostalCode(), group.getCity()));
-        }
-        if (emailExists) {
-            builder.addSectionData(labels.get("email"), group.getEmail());
-        }
-        if (websiteExists) {
-            builder.addSectionData(labels.get("website"), group.getWebsite());
-        }
+        items.forEach(builder::addSectionData);
     }
 
     private boolean hasValue(String value) {
