@@ -13,11 +13,6 @@ import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
-interface UserSelection {
-  user: UserDTO;
-  selected: boolean;
-}
-
 const I18N_BASE = 'researchGroup.members';
 
 @Component({
@@ -33,8 +28,9 @@ export class ResearchGroupAddMembersComponent {
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
 
-  userSelections = signal<UserSelection[]>([]);
-  selectedUserCount = signal<number>(0);
+  users = signal<UserDTO[]>([]);
+  selectedUserCount = computed(() => this.selectedUserIds().size);
+
   userService = inject(UserResourceApiService);
   researchGroupService = inject(ResearchGroupResourceApiService);
   toastService = inject(ToastService);
@@ -42,7 +38,7 @@ export class ResearchGroupAddMembersComponent {
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);
   private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
-  private selectedUserIds = new Set<string>();
+  private selectedUserIds = signal<Set<string>>(new Set());
 
   constructor() {
     this.loadAvailableUsers();
@@ -52,12 +48,7 @@ export class ResearchGroupAddMembersComponent {
     try {
       const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), searchQuery));
       this.totalRecords.set(response.totalElements ?? 0);
-      this.userSelections.set(
-        (response.content ?? []).map(user => ({
-          user,
-          selected: this.selectedUserIds.has(user.userId!),
-        })),
-      );
+      this.users.set(response.content ?? []);
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
     }
@@ -86,14 +77,17 @@ export class ResearchGroupAddMembersComponent {
     void this.loadAvailableUsers(this.searchQuery() || undefined);
   }
 
-  toggleUserSelection(selection: UserSelection): void {
-    selection.selected = !selection.selected;
-    if (selection.selected) {
-      this.selectedUserIds.add(selection.user.userId!);
+  toggleUserSelection(user: UserDTO): void {
+    const userId = user.userId!;
+    const currentSet = new Set(this.selectedUserIds());
+
+    if (currentSet.has(userId)) {
+      currentSet.delete(userId);
     } else {
-      this.selectedUserIds.delete(selection.user.userId!);
+      currentSet.add(userId);
     }
-    this.selectedUserCount.set(this.selectedUserIds.size);
+
+    this.selectedUserIds.set(currentSet);
   }
 
   onCancel(): void {
@@ -101,7 +95,7 @@ export class ResearchGroupAddMembersComponent {
   }
 
   async onAddMembers(): Promise<void> {
-    const userIds = Array.from(this.selectedUserIds);
+    const userIds = Array.from(this.selectedUserIds());
     const researchGroupId = this.researchGroupId();
 
     if (userIds.length === 0) {
@@ -118,7 +112,7 @@ export class ResearchGroupAddMembersComponent {
     }
   }
 
-  get filteredUserSelections(): UserSelection[] {
-    return this.userSelections();
+  isUserSelected(user: UserDTO): boolean {
+    return this.selectedUserIds().has(user.userId!);
   }
 }
