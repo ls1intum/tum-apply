@@ -1,13 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { TranslateDirective } from '../../../language';
 import { OtpInput } from '../../atoms/otp-input/otp-input';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-login',
