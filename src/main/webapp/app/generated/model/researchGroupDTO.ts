@@ -13,7 +13,7 @@ export interface ResearchGroupDTO {
     abbreviation?: string;
     city?: string;
     defaultFieldOfStudies?: string;
-    department: ResearchGroupDTO.DepartmentEnum;
+    department?: ResearchGroupDTO.DepartmentEnum;
     description?: string;
     email?: string;
     head: string;
