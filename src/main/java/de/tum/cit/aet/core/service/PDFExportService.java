@@ -364,8 +364,8 @@ public class PDFExportService {
     /**
      * Generates filename for job PDF
      *
-     * @param jobId    the job ID
-     * @param jobLabel label for application used as ending of the filename
+     * @param jobFormDTO the job form data
+     * @param jobLabel   label for application used as ending of the filename
      * @return sanitized filename for the PDF
      */
     public String generateJobFilenameForPreview(JobFormDTO jobFormDTO, String jobLabel) {
