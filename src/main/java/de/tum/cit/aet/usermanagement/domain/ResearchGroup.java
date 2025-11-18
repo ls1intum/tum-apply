@@ -2,6 +2,7 @@ package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -43,7 +44,8 @@ public class ResearchGroup extends AbstractAuditingEntity {
     private String website;
 
     @Column(name = "school")
-    private String school;
+    @Enumerated(EnumType.STRING)
+    private ResearchGroupSchool school;
 
     @Column(name = "description")
     private String description;

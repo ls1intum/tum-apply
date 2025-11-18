@@ -14,6 +14,8 @@ import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -23,6 +25,7 @@ import de.tum.cit.aet.usermanagement.dto.*;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -76,7 +79,8 @@ public class ResearchGroupService {
 
         // Second query: Fetch full user data with collections for the paginated IDs
         UUID currentUserId = currentUserService.getUserId();
-        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), currentUserId);
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(),
+                currentUserId);
 
         return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
     }
@@ -97,14 +101,12 @@ public class ResearchGroupService {
 
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
-            .findWithResearchGroupRolesByUserId(userId)
-            .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+                .findWithResearchGroupRolesByUserId(userId)
+                .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
         // Ensure user belongs to the same research group
-        if (
-            userToRemove.getResearchGroup() == null ||
-            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)
-        ) {
+        if (userToRemove.getResearchGroup() == null ||
+                !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)) {
             throw new AccessDeniedException("User is not a member of your research group");
         }
 
@@ -146,17 +148,16 @@ public class ResearchGroupService {
 
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
         ResearchGroup researchGroup = researchGroupRepository
-            .findById(researchGroupId)
-            .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
+                .findById(researchGroupId)
+                .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
 
         return new ResearchGroupLargeDTO(
-            researchGroup.getDescription(),
-            researchGroup.getEmail(),
-            researchGroup.getWebsite(),
-            researchGroup.getStreet(),
-            researchGroup.getPostalCode(),
-            researchGroup.getCity()
-        );
+                researchGroup.getDescription(),
+                researchGroup.getEmail(),
+                researchGroup.getWebsite(),
+                researchGroup.getStreet(),
+                researchGroup.getPostalCode(),
+                researchGroup.getCity());
     }
 
     /**
@@ -166,7 +167,8 @@ public class ResearchGroupService {
      * @return list of all research group DTOs
      */
     public PageResponseDTO<ResearchGroupDTO> getAllResearchGroups(PageDTO pageDTO) {
-        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), Sort.by(Sort.Direction.ASC, "name"));
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(),
+                Sort.by(Sort.Direction.ASC, "name"));
         Page<ResearchGroup> page = researchGroupRepository.findAll(pageable);
         return new PageResponseDTO<>(page.get().map(ResearchGroupDTO::getFromEntity).toList(), page.getTotalElements());
     }
@@ -239,22 +241,26 @@ public class ResearchGroupService {
     @Transactional
     public ResearchGroup provisionResearchGroup(ResearchGroupProvisionDTO dto) {
         User user = userRepository
-            .findByUniversityIdIgnoreCase(dto.universityId())
-            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(dto.universityId())));
+                .findByUniversityIdIgnoreCase(dto.universityId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User with universityId '%s' not found".formatted(dto.universityId())));
 
         ResearchGroup group = researchGroupRepository
-            .findById(dto.researchGroupId())
-            .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
+                .findById(dto.researchGroupId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
 
         boolean userGroupChanged = false;
-        if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
+        if (user.getResearchGroup() == null
+                || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
             userGroupChanged = true;
         }
         String roleOutcome = "unchanged";
 
-        Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
+        Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user,
+                group);
         if (existing.isEmpty()) {
             UserResearchGroupRole mapping = new UserResearchGroupRole();
             mapping.setUser(user);
@@ -299,13 +305,14 @@ public class ResearchGroupService {
         }
 
         roles
-            .stream()
-            .filter(role -> role.getRole() == UserRole.APPLICANT)
-            .forEach(role -> {
-                role.setRole(UserRole.PROFESSOR);
-                userResearchGroupRoleRepository.save(role);
-                log.info("Upgraded user {} to PROFESSOR for research group {}", role.getUser().getUserId(), group.getResearchGroupId());
-            });
+                .stream()
+                .filter(role -> role.getRole() == UserRole.APPLICANT)
+                .forEach(role -> {
+                    role.setRole(UserRole.PROFESSOR);
+                    userResearchGroupRoleRepository.save(role);
+                    log.info("Upgraded user {} to PROFESSOR for research group {}", role.getUser().getUserId(),
+                            group.getResearchGroupId());
+                });
 
         return saved;
     }
@@ -368,18 +375,17 @@ public class ResearchGroupService {
      * @return a paginated response containing research groups matching the criteria
      */
     public PageResponseDTO<ResearchGroupAdminDTO> getResearchGroupsForAdmin(
-        PageDTO pageDTO,
-        AdminResearchGroupFilterDTO filterDTO,
-        SortDTO sortDTO
-    ) {
-        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.RESEARCH_GROUPS_ADMIN, true);
+            PageDTO pageDTO,
+            AdminResearchGroupFilterDTO filterDTO,
+            SortDTO sortDTO) {
+        Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.RESEARCH_GROUPS_ADMIN,
+                true);
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(filterDTO.getSearchQuery());
 
         Page<ResearchGroupAdminDTO> pageResult = researchGroupRepository.findAllForAdmin(
-            filterDTO.getStatus(),
-            normalizedSearchQuery,
-            pageable
-        );
+                filterDTO.getStatus(),
+                normalizedSearchQuery,
+                pageable);
         return new PageResponseDTO<>(pageResult.getContent(), pageResult.getTotalElements());
     }
 
@@ -393,7 +399,8 @@ public class ResearchGroupService {
      * @return paginated response containing DRAFT research groups and total count
      */
     public PageResponseDTO<ResearchGroupDTO> getDraftResearchGroups(PageDTO pageDTO) {
-        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(), Sort.by(Sort.Direction.ASC, "name"));
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize(),
+                Sort.by(Sort.Direction.ASC, "name"));
         Page<ResearchGroup> page = researchGroupRepository.findByState(ResearchGroupState.DRAFT, pageable);
         return new PageResponseDTO<>(page.get().map(ResearchGroupDTO::getFromEntity).toList(), page.getTotalElements());
     }
@@ -414,7 +421,8 @@ public class ResearchGroupService {
         }
 
         if (researchGroupRepository.existsByNameIgnoreCase(request.researchGroupName())) {
-            throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
+            throw new ResourceAlreadyExistsException(
+                    "Research group with name '" + request.researchGroupName() + "' already exists");
         }
 
         ResearchGroup researchGroup = new ResearchGroup();
@@ -428,14 +436,14 @@ public class ResearchGroupService {
         userRepository.save(currentUser);
 
         UserResearchGroupRole role = userResearchGroupRoleRepository
-            .findAllByUser(currentUser)
-            .stream()
-            .findFirst()
-            .orElseGet(() -> {
-                UserResearchGroupRole newRole = new UserResearchGroupRole();
-                newRole.setUser(currentUser);
-                return newRole;
-            });
+                .findAllByUser(currentUser)
+                .stream()
+                .findFirst()
+                .orElseGet(() -> {
+                    UserResearchGroupRole newRole = new UserResearchGroupRole();
+                    newRole.setUser(currentUser);
+                    return newRole;
+                });
         role.setRole(UserRole.APPLICANT);
         role.setResearchGroup(researchGroup);
         userResearchGroupRoleRepository.save(role);
@@ -453,22 +461,22 @@ public class ResearchGroupService {
     @Transactional
     public ResearchGroup createResearchGroupAsAdmin(ResearchGroupRequestDTO request) {
         if (researchGroupRepository.existsByNameIgnoreCase(request.researchGroupName())) {
-            throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
+            throw new ResourceAlreadyExistsException(
+                    "Research group with name '" + request.researchGroupName() + "' already exists");
         }
 
         // Validate that the universityId belongs to a professor or eligible user
         User professor = userRepository
-            .findByUniversityIdIgnoreCase(request.universityId())
-            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(request.universityId())));
+                .findByUniversityIdIgnoreCase(request.universityId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User with universityId '%s' not found".formatted(request.universityId())));
 
         // Check if user already has a research group
         if (professor.getResearchGroup() != null) {
             throw new AlreadyMemberOfResearchGroupException(
-                "User with universityId '%s' is already a member of research group '%s'".formatted(
-                    request.universityId(),
-                    professor.getResearchGroup().getName()
-                )
-            );
+                    "User with universityId '%s' is already a member of research group '%s'".formatted(
+                            request.universityId(),
+                            professor.getResearchGroup().getName()));
         }
 
         // Validate that the user has a PROFESSOR role or can be assigned one
@@ -480,8 +488,8 @@ public class ResearchGroupService {
         // be upgraded), or no role yet
         if (!hasProfessorRole && !hasApplicantRole && !existingRoles.isEmpty()) {
             throw new IllegalArgumentException(
-                "User with universityId '%s' has incompatible roles and cannot be assigned as professor".formatted(request.universityId())
-            );
+                    "User with universityId '%s' has incompatible roles and cannot be assigned as professor"
+                            .formatted(request.universityId()));
         }
 
         ResearchGroup researchGroup = new ResearchGroup();
@@ -496,13 +504,13 @@ public class ResearchGroupService {
 
         // Update or create the PROFESSOR role
         UserResearchGroupRole role = existingRoles
-            .stream()
-            .findFirst()
-            .orElseGet(() -> {
-                UserResearchGroupRole newRole = new UserResearchGroupRole();
-                newRole.setUser(professor);
-                return newRole;
-            });
+                .stream()
+                .findFirst()
+                .orElseGet(() -> {
+                    UserResearchGroupRole newRole = new UserResearchGroupRole();
+                    newRole.setUser(professor);
+                    return newRole;
+                });
 
         role.setRole(UserRole.PROFESSOR);
         role.setResearchGroup(saved);
@@ -530,46 +538,88 @@ public class ResearchGroupService {
         supportUser.setSelectedLanguage(Language.ENGLISH.getCode());
 
         String emailBody = String.format(
-            """
-            <html>
-            <body>
-                <h2>Employee Research Group Access Request</h2>
-                <p>A user has requested access to a research group as an employee.</p>
+                """
+                        <html>
+                        <body>
+                            <h2>Employee Research Group Access Request</h2>
+                            <p>A user has requested access to a research group as an employee.</p>
 
-                <h3>User Information:</h3>
-                <ul>
-                    <li><strong>Name:</strong> %s %s</li>
-                    <li><strong>Email:</strong> %s</li>
-                    <li><strong>User ID:</strong> %s</li>
-                    <li><strong>University ID:</strong> %s</li>
-                </ul>
+                            <h3>User Information:</h3>
+                            <ul>
+                                <li><strong>Name:</strong> %s %s</li>
+                                <li><strong>Email:</strong> %s</li>
+                                <li><strong>User ID:</strong> %s</li>
+                                <li><strong>University ID:</strong> %s</li>
+                            </ul>
 
-                <h3>Professor Information:</h3>
-                <ul>
-                    <li><strong>Professor Name:</strong> %s</li>
-                </ul>
+                            <h3>Professor Information:</h3>
+                            <ul>
+                                <li><strong>Professor Name:</strong> %s</li>
+                            </ul>
 
-                <p>Please assign this user to the appropriate research group.</p>
-            </body>
-            </html>
-            """,
-            currentUser.getFirstName() != null ? currentUser.getFirstName() : "N/A",
-            currentUser.getLastName() != null ? currentUser.getLastName() : "N/A",
-            currentUser.getEmail(),
-            currentUser.getUserId(),
-            currentUser.getUniversityId() != null ? currentUser.getUniversityId() : "Not provided",
-            request.professorName()
-        );
+                            <p>Please assign this user to the appropriate research group.</p>
+                        </body>
+                        </html>
+                        """,
+                currentUser.getFirstName() != null ? currentUser.getFirstName() : "N/A",
+                currentUser.getLastName() != null ? currentUser.getLastName() : "N/A",
+                currentUser.getEmail(),
+                currentUser.getUserId(),
+                currentUser.getUniversityId() != null ? currentUser.getUniversityId() : "Not provided",
+                request.professorName());
 
         Email email = Email.builder()
-            .to(supportUser)
-            .customSubject("Employee Research Group Access Request - " + currentUser.getEmail())
-            .customBody(emailBody)
-            .sendAlways(true)
-            .language(Language.ENGLISH)
-            .build();
+                .to(supportUser)
+                .customSubject("Employee Research Group Access Request - " + currentUser.getEmail())
+                .customBody(emailBody)
+                .sendAlways(true)
+                .language(Language.ENGLISH)
+                .build();
 
         emailSender.sendAsync(email);
-        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
+        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(),
+                request.professorName());
+    }
+
+    /**
+     * Get all available research group schools with their display names.
+     *
+     * @return list of school enum values with display names
+     */
+    public List<EnumDisplayDTO> getAvailableSchools() {
+        return Arrays.stream(ResearchGroupSchool.values())
+                .map(school -> new EnumDisplayDTO(school.name(), school.getDisplayName()))
+                .toList();
+    }
+
+    /**
+     * Get all available research group departments with their display names.
+     *
+     * @return list of department enum values with display names
+     */
+    public List<EnumDisplayDTO> getAvailableDepartments() {
+        return Arrays.stream(ResearchGroupDepartment.values())
+                .map(dept -> new EnumDisplayDTO(dept.name(), dept.getDisplayName()))
+                .toList();
+    }
+
+    /**
+     * Get departments filtered by school with their display names.
+     *
+     * @param schoolName the school name to filter by
+     * @return list of department enum values with display names for the given
+     *         school
+     */
+    public List<EnumDisplayDTO> getDepartmentsBySchool(String schoolName) {
+        try {
+            ResearchGroupSchool school = ResearchGroupSchool.valueOf(schoolName);
+            return ResearchGroupDepartment.getDepartmentsBySchool(school)
+                    .stream()
+                    .map(dept -> new EnumDisplayDTO(dept.name(), dept.getDisplayName()))
+                    .toList();
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid school name provided: {}", schoolName);
+            return List.of();
+        }
     }
 }

@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
@@ -7,7 +8,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupRequestDTO';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -22,12 +23,10 @@ import TranslateDirective from '../../../language/translate.directive';
 
 type FormMode = 'professor' | 'admin';
 
-const DEPARTMENT_OPTIONS: SelectOption[] = [
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.mathematics', value: 'MATHEMATICS' },
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.electricalEngineering', value: 'ELECTRICAL_ENGINEERING' },
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informationTechnology', value: 'INFORMATION_TECHNOLOGY' },
-];
+interface EnumDisplayDTO {
+  value: string;
+  displayName: string;
+}
 
 @Component({
   selector: 'jhi-professor-request-access-form',
@@ -48,11 +47,19 @@ const DEPARTMENT_OPTIONS: SelectOption[] = [
   templateUrl: './research-group-creation-form.component.html',
 })
 export class ResearchGroupCreationFormComponent {
+  // Services
+  private readonly fb = inject(FormBuilder);
+  private readonly config = inject(DynamicDialogConfig, { optional: true });
+  private readonly ref = inject(DynamicDialogRef, { optional: true });
+  private readonly researchGroupService = inject(ResearchGroupResourceApiService);
+  private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
+  private readonly toastService = inject(ToastService);
+
   // Input to determine if this is admin mode or professor mode
   mode = computed<FormMode>(() => this.config?.data?.mode ?? 'professor');
 
-  // Department options
-  departmentOptions = DEPARTMENT_OPTIONS;
+  // Track selected school
+  selectedSchool = signal<SelectOption | null>(null);
 
   // Form
   form: FormGroup;
@@ -63,16 +70,77 @@ export class ResearchGroupCreationFormComponent {
   // Template references
   confirmDialog = viewChild<ConfirmDialog>('confirmDialog');
 
-  // Services
-  private readonly fb = inject(FormBuilder);
-  private readonly config = inject(DynamicDialogConfig, { optional: true });
-  private readonly ref = inject(DynamicDialogRef, { optional: true });
-  private readonly researchGroupService = inject(ResearchGroupResourceApiService);
-  private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
-  private readonly toastService = inject(ToastService);
+  // Fetch school options from backend with display names
+  schoolOptions = toSignal(
+    this.researchGroupService
+      .getAvailableSchools()
+      .pipe(map(schools => schools.map(school => ({ name: school.displayName, value: school.value })))),
+    { initialValue: [] },
+  );
+
+  // Fetch all department options from backend with display names
+  private readonly allDepartmentOptions = toSignal(
+    this.researchGroupService
+      .getAvailableDepartments()
+      .pipe(map(departments => departments.map(dept => ({ name: dept.displayName, value: dept.value })))),
+    { initialValue: [] },
+  );
+
+  // Department options - dynamically filtered based on selected school
+  departmentOptions = computed<SelectOption[]>(() => {
+    const selectedSchool = this.selectedSchool();
+    const allDepartments = this.allDepartmentOptions();
+
+    if (!selectedSchool?.value) {
+      return allDepartments;
+    }
+
+    // Fetch filtered departments from backend based on school
+    void firstValueFrom(
+      this.researchGroupService
+        .getDepartmentsBySchool(selectedSchool.value)
+        .pipe(map(departments => departments.map(dept => ({ name: dept.displayName, value: dept.value })))),
+    ).then(filtered => {
+      // Update the signal with filtered departments
+      this.filteredDepartments.set(filtered);
+    });
+
+    return this.filteredDepartments();
+  });
+
+  // Store filtered departments
+  private filteredDepartments = signal<SelectOption[]>([]);
 
   constructor() {
     this.form = this.createForm();
+  }
+
+  onSchoolChange(selectedSchool: SelectOption | null): void {
+    this.selectedSchool.set(selectedSchool);
+
+    if (selectedSchool?.value) {
+      // Fetch departments for the selected school
+      void firstValueFrom(
+        this.researchGroupService
+          .getDepartmentsBySchool(selectedSchool.value)
+          .pipe(map(departments => departments.map(dept => ({ name: dept.displayName, value: dept.value })))),
+      ).then(filtered => {
+        this.filteredDepartments.set(filtered);
+
+        // Clear department selection if it's not in the filtered list
+        const currentDepartment = this.form.get('researchGroupDepartment')?.value;
+        if (currentDepartment?.value) {
+          const isDepartmentValid = filtered.some(dept => dept.value === currentDepartment.value);
+          if (!isDepartmentValid) {
+            this.form.get('researchGroupDepartment')?.setValue(null);
+          }
+        }
+      });
+    } else {
+      // No school selected, show all departments
+      this.filteredDepartments.set(this.allDepartmentOptions());
+      this.form.get('researchGroupDepartment')?.setValue(null);
+    }
   }
 
   onSubmit(): void {
@@ -105,7 +173,7 @@ export class ResearchGroupCreationFormComponent {
       researchGroupAbbreviation: [''],
       researchGroupContactEmail: ['', [Validators.email, Validators.pattern(/.+\..{2,}$/)]],
       researchGroupWebsite: [''],
-      researchGroupSchool: [''],
+      researchGroupSchool: [null],
       researchGroupDescription: ['', [Validators.maxLength(1000)]],
       researchGroupFieldOfStudies: [''],
       researchGroupStreetAndNumber: [''],
@@ -186,7 +254,7 @@ export class ResearchGroupCreationFormComponent {
       abbreviation: s(v.researchGroupAbbreviation),
       contactEmail: s(v.researchGroupContactEmail),
       website: s(v.researchGroupWebsite),
-      school: s(v.researchGroupSchool),
+      school: v.researchGroupSchool?.value ?? undefined,
       description: s(v.researchGroupDescription),
       defaultFieldOfStudies: s(v.researchGroupFieldOfStudies),
       street: s(v.researchGroupStreetAndNumber),
