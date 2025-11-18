@@ -16,7 +16,7 @@ public record ResearchGroupDTO(
     @NotBlank String name,
     String abbreviation,
     @NotBlank String head,
-    @NotBlank ResearchGroupDepartment department,
+    ResearchGroupDepartment department,
     @Email String email,
     String website,
     String school,

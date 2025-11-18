@@ -53,7 +53,17 @@
               placeholder="{{ 'researchGroup.detailView.placeholders.head' | translate }}"
             />
           </div>
-          <div class="form-field"></div>
+          <div class="form-field">
+            <jhi-select-input
+              [selected]="form.controls.department.value as ResearchGroupDTO.DepartmentEnum"
+              (selectedChange)="form.controls.department.setValue($event)"
+              [items]="departmentOptions"
+              [label]="'researchGroup.detailView.department' | translate"
+              [placeholder]="'researchGroup.detailView.placeholders.department' | translate"
+              [required]="true"
+              [translateItems]="true"
+            />
+          </div>
         </div>
 
         <!-- School and website section -->

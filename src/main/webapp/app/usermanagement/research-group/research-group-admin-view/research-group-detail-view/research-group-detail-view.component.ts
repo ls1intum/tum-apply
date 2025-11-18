@@ -83,6 +83,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         postalCode: formValue.postalCode ?? '',
         city: formValue.city ?? '',
         defaultFieldOfStudies: formValue.defaultFieldOfStudies ?? '',
+        department: formValue.department as ResearchGroupDTO.DepartmentEnum,
       };
 
       await firstValueFrom(this.ResearchGroupService.updateResearchGroup(researchGroupId, updateData));
