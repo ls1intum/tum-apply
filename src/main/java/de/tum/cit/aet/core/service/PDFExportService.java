@@ -3,10 +3,13 @@ package de.tum.cit.aet.core.service;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.util.PDFBuilder;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
-import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -25,11 +28,21 @@ public class PDFExportService {
     private final JobService jobService;
     private final CurrentUserService currentUserService;
 
-    public PDFExportService(ApplicationService applicationService, JobService jobService, CurrentUserService currentUserService) {
+    private final UserRepository userRepository;
+
+    public PDFExportService(
+        ApplicationService applicationService,
+        JobService jobService,
+        CurrentUserService currentUserService,
+        UserRepository userRepository
+    ) {
         this.applicationService = applicationService;
         this.jobService = jobService;
         this.currentUserService = currentUserService;
+        this.userRepository = userRepository;
     }
+
+    // ------------------- Main methods -------------------
 
     /**
      * Exports application details to PDF
@@ -46,7 +59,14 @@ public class PDFExportService {
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
         builder
-            .addHeaderItem(labels.get("applicationBy") + getCurrentUserFullName() + labels.get("forPosition") + "'" + app.jobTitle() + "'")
+            .addHeaderItem(
+                labels.get("applicationBy") +
+                    currentUserService.getCurrentUserFullName() +
+                    labels.get("forPosition") +
+                    "'" +
+                    app.jobTitle() +
+                    "'"
+            )
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
         // Overview Section
@@ -138,51 +158,25 @@ public class PDFExportService {
         } catch (Exception e) {}
 
         // Overview Section
-        builder
-            .setOverviewTitle(labels.get("overview"))
-            .addOverviewItem(labels.get("supervisor"), getValue(job.supervisingProfessorName()))
-            .addOverviewItem(labels.get("location"), getValue(job.location()))
-            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
-            .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
-            .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
-            .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
-            .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
-            .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
-            .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()));
+        addJobOverview(
+            builder,
+            labels,
+            job.supervisingProfessorName(),
+            job.location(),
+            job.fieldOfStudies(),
+            job.researchArea(),
+            formatWorkload(job.workload(), labels.get("hoursPerWeek")),
+            formatContractDuration(job.contractDuration(), labels.get("years")),
+            getValue(job.fundingType()),
+            formatDate(job.startDate()),
+            formatDate(job.endDate())
+        );
 
         // Job Details Section
-        builder.startSectionGroup(labels.get("jobDetails"));
-        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(job.description()));
-        builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(getValue(job.tasks()));
-        builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(getValue(job.requirements()));
+        addJobDetailsSection(builder, labels, job.description(), job.tasks(), job.requirements());
 
         // Research Group Section
-        builder.startSectionGroup(labels.get("researchGroup"));
-        builder.startInfoSection(job.researchGroup().getName()).addSectionContent(getValue(job.researchGroup().getDescription()));
-
-        // Contact Details (only shown if at least one detail exists)
-        boolean emailExists = job.researchGroup().getEmail() != null && !job.researchGroup().getEmail().isEmpty();
-        boolean websiteExists = job.researchGroup().getWebsite() != null && !job.researchGroup().getWebsite().isEmpty();
-        boolean streetExists = job.researchGroup().getStreet() != null && !job.researchGroup().getStreet().isEmpty();
-        boolean postalCodeExists = job.researchGroup().getPostalCode() != null && !job.researchGroup().getPostalCode().isEmpty();
-        boolean cityExists = job.researchGroup().getCity() != null && !job.researchGroup().getCity().isEmpty();
-
-        if (emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
-            builder.startInfoSection(labels.get("contactDetails"));
-
-            if (streetExists || postalCodeExists || cityExists) {
-                builder.addSectionData(
-                    labels.get("address"),
-                    formatAddress(job.researchGroup().getStreet(), job.researchGroup().getPostalCode(), job.researchGroup().getCity())
-                );
-            }
-            if (emailExists) {
-                builder.addSectionData(labels.get("email"), getValue(job.researchGroup().getEmail()));
-            }
-            if (websiteExists) {
-                builder.addSectionData(labels.get("website"), getValue(job.researchGroup().getWebsite()));
-            }
-        }
+        addResearchGroupSection(builder, job.researchGroup(), labels);
 
         // Metadata
         String metadataText = buildMetadataText(labels);
@@ -192,6 +186,116 @@ public class PDFExportService {
         builder.setPageLabels(labels.get("page"), labels.get("of"));
 
         return builder.build();
+    }
+
+    public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels) {
+        PDFBuilder builder = new PDFBuilder(jobFormDTO.title());
+
+        String supervisingProfessorName = userRepository
+            .findById(jobFormDTO.supervisingProfessor())
+            .map(user -> (user.getFirstName() + " " + user.getLastName()).trim())
+            .orElse("-");
+
+        builder
+            .addHeaderItem(labels.get("jobBy") + supervisingProfessorName + labels.get("forJob") + "'" + jobFormDTO.title() + "'")
+            .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(jobFormDTO.state()));
+
+        // Overview Section
+        addJobOverview(
+            builder,
+            labels,
+            supervisingProfessorName,
+            UiTextFormatter.formatEnumValue(jobFormDTO.location()),
+            jobFormDTO.fieldOfStudies(),
+            jobFormDTO.researchArea(),
+            jobFormDTO.workload() != null ? jobFormDTO.workload() + " h" : "-",
+            jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + " years" : "-",
+            jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
+            jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
+            jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
+        );
+
+        // Job Details Section
+        addJobDetailsSection(builder, labels, jobFormDTO.description(), jobFormDTO.tasks(), jobFormDTO.requirements());
+
+        // Metadata
+        builder.setMetadata(buildMetadataText(labels));
+        builder.setMetadataEnd(labels.get("metaEndText"));
+        builder.setPageLabels(labels.get("page"), labels.get("of"));
+
+        try {
+            ResearchGroup group = currentUserService.getResearchGroupIfProfessor();
+            addResearchGroupSection(builder, group, labels);
+        } catch (AccessDeniedException ignored) {
+            // no research group → nothing added
+        }
+
+        return builder.build();
+    }
+
+    // ------------------- Helper methods -------------------
+
+    private void addJobOverview(
+        PDFBuilder builder,
+        Map<String, String> labels,
+        String supervisor,
+        String location,
+        String fieldsOfStudies,
+        String researchArea,
+        String workload,
+        String duration,
+        String fundingType,
+        String startDate,
+        String endDate
+    ) {
+        builder
+            .setOverviewTitle(labels.get("overview"))
+            .addOverviewItem(labels.get("supervisor"), getValue(supervisor))
+            .addOverviewItem(labels.get("location"), getValue(location))
+            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(fieldsOfStudies))
+            .addOverviewItem(labels.get("researchArea"), getValue(researchArea))
+            .addOverviewItem(labels.get("workload"), getValue(workload))
+            .addOverviewItem(labels.get("duration"), getValue(duration))
+            .addOverviewItem(labels.get("fundingType"), getValue(fundingType))
+            .addOverviewItem(labels.get("startDate"), getValue(startDate))
+            .addOverviewItem(labels.get("endDate"), getValue(endDate));
+    }
+
+    private void addJobDetailsSection(
+        PDFBuilder builder,
+        Map<String, String> labels,
+        String description,
+        String tasks,
+        String requirements
+    ) {
+        builder.startSectionGroup(labels.get("jobDetails"));
+
+        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(description));
+
+        builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(getValue(tasks));
+
+        builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(getValue(requirements));
+    }
+
+    private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
+        builder.startSectionGroup(labels.get("researchGroup"));
+        builder.startInfoSection(group.getName()).addSectionContent(getValue(group.getDescription()));
+
+        boolean emailExists = group.getEmail() != null && !group.getEmail().isEmpty();
+        boolean websiteExists = group.getWebsite() != null && !group.getWebsite().isEmpty();
+        boolean streetExists = group.getStreet() != null && !group.getStreet().isEmpty();
+        boolean postalCodeExists = group.getPostalCode() != null && !group.getPostalCode().isEmpty();
+        boolean cityExists = group.getCity() != null && !group.getCity().isEmpty();
+
+        if (emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
+            builder.startInfoSection(labels.get("contactDetails"));
+
+            if (streetExists || postalCodeExists || cityExists) {
+                builder.addSectionData(labels.get("address"), formatAddress(group.getStreet(), group.getPostalCode(), group.getCity()));
+            }
+            if (emailExists) builder.addSectionData(labels.get("email"), group.getEmail());
+            if (websiteExists) builder.addSectionData(labels.get("website"), group.getWebsite());
+        }
     }
 
     /**
@@ -219,7 +323,7 @@ public class PDFExportService {
         metadata.append(labels.get("thisDocumentWasGeneratedOn"));
         metadata.append(currentDateTime);
 
-        Optional<String> userName = getCurrentUserFullName();
+        Optional<String> userName = currentUserService.getCurrentUserFullNameIfAvailable();
         if (userName.isPresent()) {
             metadata.append(labels.get("byUser"));
             metadata.append(userName.get());
@@ -228,25 +332,6 @@ public class PDFExportService {
         metadata.append(labels.get("usingTumapply"));
 
         return metadata.toString();
-    }
-
-    /**
-     * Gets the full name of the current user if available
-     *
-     * @return Optional containing the user's full name, or empty if not available
-     */
-    private Optional<String> getCurrentUserFullName() {
-        try {
-            User user = currentUserService.getUser();
-            String firstName = user.getFirstName() != null ? user.getFirstName() : "";
-            String lastName = user.getLastName() != null ? user.getLastName() : "";
-
-            String fullName = (firstName + " " + lastName).trim();
-
-            return fullName.isEmpty() ? Optional.empty() : Optional.of(fullName);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
     }
 
     /**
@@ -259,6 +344,17 @@ public class PDFExportService {
     public String generateJobFilename(UUID jobId, String jobLabel) {
         JobDetailDTO job = jobService.getJobDetails(jobId);
         return sanitizeFilename(job.title()) + "_" + jobLabel + ".pdf";
+    }
+
+    /**
+     * Generates filename for job PDF
+     *
+     * @param jobId    the job ID
+     * @param jobLabel label for application used as ending of the filename
+     * @return sanitized filename for the PDF
+     */
+    public String generateJobFilenameForPreview(JobFormDTO jobFormDTO, String jobLabel) {
+        return sanitizeFilename(jobFormDTO.title()) + "_" + jobLabel + ".pdf";
     }
 
     // Helper methods
