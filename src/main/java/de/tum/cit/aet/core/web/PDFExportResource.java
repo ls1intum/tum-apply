@@ -68,8 +68,7 @@ public class PDFExportResource {
      * POST /api/export/job/preview/pdf : Export job details in the preview view as
      * PDF
      *
-     * @param jobFormDTO the job form data
-     * @param labels     translation labels for PDF content
+     * @param request the JobPreviewRequest containing job data and labels
      * @return the PDF file as downloadable attachment
      */
     @Professor
