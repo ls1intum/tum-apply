@@ -117,6 +117,10 @@
           "summary": "Fehler beim Laden",
           "detail": "Verfügbare Benutzer konnten nicht geladen werden. Bitte versuche es erneut."
         },
+        "invalidUser": {
+          "summary": "Ungültiger Benutzer",
+          "detail": "Der ausgewählte Benutzer ist ungültig. Bitte aktualisiere die Seite und versuche es erneut."
+        },
         "addMembersSuccess": {
           "summary": "Mitglieder hinzugefügt",
           "detail": "Die ausgewählten Mitglieder wurden erfolgreich zur Forschungsgruppe hinzugefügt."

@@ -41,7 +41,7 @@ export class ResearchGroupAddMembersComponent {
   private selectedUserIds = signal<Set<string>>(new Set());
 
   constructor() {
-    this.loadAvailableUsers();
+    void this.loadAvailableUsers();
   }
 
   async loadAvailableUsers(searchQuery?: string): Promise<void> {
@@ -78,7 +78,11 @@ export class ResearchGroupAddMembersComponent {
   }
 
   toggleUserSelection(user: UserDTO): void {
-    const userId = user.userId!;
+    const userId = user.userId;
+    if (!userId) {
+      this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
+      return;
+    }
     const currentSet = new Set(this.selectedUserIds());
 
     if (currentSet.has(userId)) {
@@ -113,6 +117,11 @@ export class ResearchGroupAddMembersComponent {
   }
 
   isUserSelected(user: UserDTO): boolean {
-    return this.selectedUserIds().has(user.userId!);
+    const userId = user.userId;
+    if (!userId) {
+      return false; // Return false if userId is undefined
+    }
+
+    return this.selectedUserIds().has(userId);
   }
 }

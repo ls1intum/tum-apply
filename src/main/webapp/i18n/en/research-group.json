@@ -117,6 +117,10 @@
           "summary": "Load Failed",
           "detail": "Failed to load available users. Please try again."
         },
+        "invalidUser": {
+          "summary": "Invalid User",
+          "detail": "The selected user is invalid. Please refresh the page and try again."
+        },
         "addMembersSuccess": {
           "summary": "Members Added",
           "detail": "The selected members have been successfully added to the research group."
