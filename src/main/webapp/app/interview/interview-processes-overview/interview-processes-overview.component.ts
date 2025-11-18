@@ -33,7 +33,7 @@ export class InterviewProcessesOverviewComponent {
     const process = this.interviewProcesses().find(p => p.jobId === jobId);
     if (process?.processId) {
       this.router.navigate(['/interviews', process.processId], {
-        state: { jobTitle: process.jobTitle }
+        state: { jobTitle: process.jobTitle },
       });
     }
   }

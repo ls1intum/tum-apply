@@ -12,126 +12,15 @@
     </div>
   </div>
 
-  <!-- Loading State -->
-  @if (loading()) {
-    <div class="flex justify-center items-center py-12">
-      <p-progressSpinner styleClass="w-16 h-16" />
-    </div>
+  <!-- Slots Section -->
+  @if (processId()) {
+    <jhi-slots-section [processId]="processId()!" />
   }
 
-  <!-- Error State -->
-  @if (error() && !loading()) {
-    <div class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
-        <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
-        <h3 class="text-xl font-semibold">Failed to load slots</h3>
-        <p class="text-gray-600">
-          There was an error loading the interview slots. Please try again.
-        </p>
-        <jhi-button
-          [label]="'Retry'"
-          [icon]="'refresh'"
-          (click)="refreshSlots()"
-        />
-      </div>
-    </div>
+  <!-- Interviewees Section (TODO: Issue #9) -->
+  <!--
+  @if (processId()) {
+    <jhi-interviewees-section [processId]="processId()!" />
   }
-
-  <!-- Empty State -->
-  @if (!loading() && !error() && groupedSlots().length === 0) {
-    <div class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
-        <i class="pi pi-calendar-times text-4xl text-gray-400"></i>
-        <h3 class="text-xl font-semibold">No slots yet</h3>
-        <p class="text-gray-600">Create your first interview slots to get started.</p>
-        <jhi-button
-          [label]="'Add Slots'"
-          [icon]="'plus'"
-          (click)="openCreateSlotsModal()"
-        />
-      </div>
-    </div>
-  }
-
-  <!-- Slots Grid -->
-  @if (!loading() && !error() && groupedSlots().length > 0) {
-    <div>
-      <!-- Month Navigation (oben - wechselt Monat) -->
-      <jhi-month-navigation
-        [currentMonth]="currentMonth()"
-        (previousMonth)="previousMonth()"
-        (nextMonth)="nextMonth()"
-        (addSlots)="openCreateSlotsModal()"
-      />
-
-      <!-- Date Grid mit seitlichen Pfeilen (paginiert durch Tage) -->
-      @if (currentMonthSlots().length > 0) {
-        <div class="flex items-start gap-4">
-          <!-- Left Arrow (paginiert Tage) -->
-          <div class="flex-shrink-0 pt-12">
-            <jhi-button
-              [icon]="'chevron-left'"
-              [variant]="'text'"
-              [disabled]="!canGoPreviousDate()"
-              (click)="previousDatePage()"
-            />
-          </div>
-
-          <!-- Grid Layout (maximal 5 Tage) -->
-          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-            @for (group of paginatedSlots(); track group.date) {
-              <!-- Date Column -->
-              <div class="flex flex-col gap-3">
-                <!-- Date Header -->
-                <jhi-date-header
-                  [date]="group.localDate"
-                  [slotCount]="group.slots.length"
-                />
-
-                <!-- Slots -->
-                <div class="flex flex-col gap-2">
-                  @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
-                    <jhi-slot-card [slot]="slot" />
-                  }
-
-                  <!-- Show More/Less Button -->
-                  @if (group.slots.length > 3) {
-                    <button
-                      class="w-full py-2 border border-gray-300 rounded-md bg-white text-gray-600 text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-gray-50 hover:border-gray-400 transition-all"
-                      (click)="toggleExpanded(group.date)"
-                    >
-                      @if (!isExpanded(group.date)) {
-                        <i class="pi pi-chevron-down text-xs"></i>
-                        <span>Show {{ getRemainingCount(group.date, group.slots.length) }} more slots</span>
-                      } @else {
-                        <i class="pi pi-chevron-up text-xs"></i>
-                        <span>Show less</span>
-                      }
-                    </button>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-
-          <!-- Right Arrow (paginiert Tage) -->
-          <div class="flex-shrink-0 pt-12">
-            <jhi-button
-              [icon]="'chevron-right'"
-              [variant]="'text'"
-              [disabled]="!canGoNextDate()"
-              (click)="nextDatePage()"
-            />
-          </div>
-        </div>
-      } @else {
-        <!-- No slots in this month -->
-        <div class="text-center py-16 text-gray-500">
-          <i class="pi pi-calendar-times text-5xl mb-4 block"></i>
-          <p class="text-lg">No slots in {{ currentMonth() }}</p>
-        </div>
-      }
-    </div>
-  }
-
+  -->
 </div>

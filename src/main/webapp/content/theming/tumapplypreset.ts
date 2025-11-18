@@ -42,9 +42,9 @@ export const TUMApplyPreset = definePreset(Lara, {
       900: '#04182F',
       950: '#020C17',
     },
-    pastel:{
+    pastel: {
       50: '#F3F6FC',
-      100:'#E5EDF9',
+      100: '#E5EDF9',
       200: '#C6D9F1',
       300: '#93BAE6',
       400: '#5A97D6',
@@ -53,7 +53,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       700: '#1F4D85',
       800: '#1D426F',
       900: '#1D385D',
-      950: '#13243E'
+      950: '#13243E',
     },
     success: {
       50: '#E6FAEE',

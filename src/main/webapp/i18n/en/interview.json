@@ -3,12 +3,12 @@
     "overview": {
       "title": "Interviews",
       "positions": {
-        "title": "Positionen"
+        "title": "Positions"
       },
       "loading": "Loading interview processes...",
       "empty": {
         "title": "No Interview Processes",
-        "description": "You haven't created any interview processes yet. Click \"New Interview Process\" to get started."
+        "description": "You haven't created any interview processes yet. Click on \"New Interview Process\" to get started."
       },
       "actions": {
         "newProcess": "New Interview Process",
@@ -19,7 +19,7 @@
         "scheduled": "Scheduled",
         "invited": "Invited",
         "uncontacted": "Uncontacted",
-        "totalInterviews": "Total interviews"
+        "totalInterviews": "Total Interviews"
       },
       "upcoming": {
         "title": "Upcoming",
@@ -27,6 +27,38 @@
       },
       "error": {
         "failedToLoad": "Failed to load interview processes."
+      }
+    },
+    "detail": {
+      "error": {
+        "title": "Failed to load slots",
+        "description": "There was an error loading the interview slots. Please try again.",
+        "retry": "Retry"
+      },
+      "empty": {
+        "title": "No slots yet",
+        "description": "Create your first interview slots to get started."
+      },
+      "noSlotsInMonth": "No slots in {{month}}",
+      "showLess": "Show less"
+    },
+    "slots": {
+      "addSlots": "Add Slots",
+      "slotsCountSingular": "slot",
+      "slotsCountPlural": "slots",
+      "showMoreSingular": "more slot",
+      "showMorePlural": "more slots",
+      "status": {
+        "booked": "booked"
+      },
+      "location": {
+        "virtual": "virtual",
+        "inPerson": "in-person"
+      },
+      "actions": {
+        "edit": "Edit",
+        "assign": "Assign",
+        "delete": "Delete"
       }
     }
   }

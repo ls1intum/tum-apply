@@ -1,17 +1,32 @@
 import { CommonModule } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, HostListener, input, signal, output, ElementRef } from '@angular/core';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-slot-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateDirective],
   templateUrl: './slot-card.component.html',
 })
 export class SlotCardComponent {
   slot = input.required<InterviewSlotDTO>();
+  constructor(private el: ElementRef) {}
+
+  showMenu = signal(false);
+
+  editSlot = output<InterviewSlotDTO>();
+  deleteSlot = output<InterviewSlotDTO>();
+  assignApplicant = output<InterviewSlotDTO>();
 
   private readonly TIMEZONE = 'Europe/Berlin';
+
+  @HostListener('document:click', ['$event'])
+  handleOutsideClick(event: Event) {
+    if (!this.el.nativeElement.contains(event.target)) {
+      this.showMenu.set(false);
+    }
+  }
 
   formatTime(date: string): string {
     return new Date(date).toLocaleTimeString('de-DE', {
@@ -39,4 +54,22 @@ export class SlotCardComponent {
     // TODO: Wird später mit Application.scheduledInterviewSlot implementiert
     return 'Applicant Name';
   };
+  toggleMenu(): void {
+    this.showMenu.update(v => !v);
+  }
+
+  onEdit(): void {
+    this.editSlot.emit(this.slot());
+    this.showMenu.set(false);
+  }
+
+  onDelete(): void {
+    this.deleteSlot.emit(this.slot());
+    this.showMenu.set(false);
+  }
+
+  onAssign(): void {
+    this.assignApplicant.emit(this.slot());
+    this.showMenu.set(false);
+  }
 }

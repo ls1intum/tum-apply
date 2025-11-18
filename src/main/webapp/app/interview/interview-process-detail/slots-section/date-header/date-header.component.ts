@@ -1,0 +1,46 @@
+import { CommonModule } from '@angular/common';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+
+@Component({
+  selector: 'jhi-date-header',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './date-header.component.html',
+})
+export class DateHeaderComponent {
+  private readonly translateService = inject(TranslateService);
+
+  date = input.required<Date>();
+  slotCount = input.required<number>();
+
+  private currentLang = signal<string>(this.translateService.currentLang || 'en');
+
+  constructor() {
+    effect(() => {
+      this.translateService.onLangChange.subscribe(event => {
+        this.currentLang.set(event.lang);
+      });
+    }, { allowSignalWrites: true });
+  }
+
+  private locale = computed(() => {
+    const lang = this.currentLang();
+    return lang === 'de' ? 'de-DE' : 'en-US';
+  });
+
+  weekday = () => {
+    return this.date().toLocaleDateString(this.locale(), { weekday: 'short' }).toUpperCase();
+  };
+
+  day = () => {
+    return this.date().toLocaleDateString(this.locale(), { day: '2-digit' });
+  };
+
+  // Saubere Pluralisierung
+  slotsText = () => {
+    const count = this.slotCount();
+    const key = count === 1 ? 'interview.slots.slotsCountSingular' : 'interview.slots.slotsCountPlural';
+    return `${count} ${this.translateService.instant(key)}`;
+  };
+}

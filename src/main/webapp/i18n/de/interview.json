@@ -28,6 +28,38 @@
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
       }
+    },
+    "detail": {
+      "error": {
+        "title": "Termine konnten nicht geladen werden",
+        "description": "Beim Laden der Interviewtermine ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+        "retry": "Erneut versuchen"
+      },
+      "empty": {
+        "title": "Noch keine Termine",
+        "description": "Erstelle deine ersten Interviewtermine."
+      },
+      "noSlotsInMonth": "Keine Termine in {{month}}",
+      "showLess": "Weniger anzeigen"
+    },
+    "slots": {
+      "addSlots": "Termine hinzufügen",
+      "slotsCountSingular": "Termin",
+      "slotsCountPlural": "Termine",
+      "showMoreSingular": "weiteren Termin anzeigen",
+      "showMorePlural": "weitere Termine anzeigen",
+      "status": {
+        "booked": "Gebucht"
+      },
+      "location": {
+        "virtual": "virtuell",
+        "inPerson": "vor Ort"
+      },
+      "actions": {
+        "edit": "Bearbeiten",
+        "assign": "Zuweisen",
+        "delete": "Löschen"
+      }
     }
   }
 }
