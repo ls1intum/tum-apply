@@ -350,7 +350,7 @@ export class JobDetailComponent {
     if (this.previewData()?.()) {
       const formData = this.previewData()?.();
       if (!formData) {
-        this.toastService.showErrorKey('pdf.error.couldNotGeneratePdf');
+        this.toastService.showErrorKey('pdf.couldNotGeneratePdf');
         return;
       }
 
