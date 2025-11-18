@@ -11,6 +11,7 @@ import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTO
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideDialogServiceMock } from 'util/dialog.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
@@ -56,6 +57,7 @@ describe('ResearchGroupMembersComponent', () => {
         provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
+        provideFontAwesomeTesting(),
       ],
     }).compileComponents();
 
