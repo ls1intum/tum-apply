@@ -279,23 +279,42 @@ public class PDFExportService {
 
     private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
         builder.startSectionGroup(labels.get("researchGroup"));
+
+        addResearchGroupMainInfo(builder, group);
+        addResearchGroupContactInfo(builder, group, labels);
+    }
+
+    private void addResearchGroupMainInfo(PDFBuilder builder, ResearchGroup group) {
         builder.startInfoSection(group.getName()).addSectionContent(getValue(group.getDescription()));
+    }
 
-        boolean emailExists = group.getEmail() != null && !group.getEmail().isEmpty();
-        boolean websiteExists = group.getWebsite() != null && !group.getWebsite().isEmpty();
-        boolean streetExists = group.getStreet() != null && !group.getStreet().isEmpty();
-        boolean postalCodeExists = group.getPostalCode() != null && !group.getPostalCode().isEmpty();
-        boolean cityExists = group.getCity() != null && !group.getCity().isEmpty();
+    private void addResearchGroupContactInfo(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
+        boolean emailExists = hasValue(group.getEmail());
+        boolean websiteExists = hasValue(group.getWebsite());
+        boolean streetExists = hasValue(group.getStreet());
+        boolean postalCodeExists = hasValue(group.getPostalCode());
+        boolean cityExists = hasValue(group.getCity());
 
-        if (emailExists || websiteExists || streetExists || postalCodeExists || cityExists) {
-            builder.startInfoSection(labels.get("contactDetails"));
+        boolean hasAddress = streetExists || postalCodeExists || cityExists;
+        boolean hasAnyContact = emailExists || websiteExists || hasAddress;
 
-            if (streetExists || postalCodeExists || cityExists) {
-                builder.addSectionData(labels.get("address"), formatAddress(group.getStreet(), group.getPostalCode(), group.getCity()));
-            }
-            if (emailExists) builder.addSectionData(labels.get("email"), group.getEmail());
-            if (websiteExists) builder.addSectionData(labels.get("website"), group.getWebsite());
+        if (!hasAnyContact) return;
+
+        builder.startInfoSection(labels.get("contactDetails"));
+
+        if (hasAddress) {
+            builder.addSectionData(labels.get("address"), formatAddress(group.getStreet(), group.getPostalCode(), group.getCity()));
         }
+        if (emailExists) {
+            builder.addSectionData(labels.get("email"), group.getEmail());
+        }
+        if (websiteExists) {
+            builder.addSectionData(labels.get("website"), group.getWebsite());
+        }
+    }
+
+    private boolean hasValue(String value) {
+        return value != null && !value.isEmpty();
     }
 
     /**
