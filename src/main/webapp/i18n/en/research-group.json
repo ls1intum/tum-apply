@@ -139,6 +139,11 @@
         }
       },
 
+      "confirmDialog": {
+        "header": "Add Members",
+        "message": "Are you sure you want to add the selected members to the research group? They will be notified via email."
+      },
+
       "noRole": "No Role"
     },
     "adminView": {

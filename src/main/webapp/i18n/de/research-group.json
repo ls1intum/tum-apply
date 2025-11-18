@@ -139,6 +139,11 @@
         }
       },
 
+      "confirmDialog": {
+        "header": "Mitglieder hinzufügen",
+        "message": "Möchtest du die ausgewählten Mitglieder wirklich zur Forschungsgruppe hinzufügen? Sie werden per E-Mail benachrichtigt."
+      },
+
       "noRole": "Keine Rolle"
     },
     "adminView": {
