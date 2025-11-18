@@ -37,14 +37,13 @@
     @if (!member.isCurrentUser) {
       <jhi-confirm-dialog
         [label]="'button.remove' | translate"
-        [tooltip]="'button.remove' | translate"
-        [iconOnly]="true"
-        severity="danger"
-        variant="text"
         [header]="'researchGroup.members.removeMemberModal.title' | translate"
         [message]="'researchGroup.members.removeMemberModal.message' | translate"
-        (confirmed)="removeMember(member)"
         confirmIcon="circle-minus"
+        (confirmed)="removeMember(member)"
+        severity="danger"
+        [tooltip]="'button.remove' | translate"
+        [iconOnly]="true"
       />
     }
   </ng-template>
