@@ -110,7 +110,9 @@ export class JobDetailComponent {
     label: 'button.downloadPDF',
     severity: 'secondary',
     variant: 'outlined',
-    onClick: () => this.onDownloadPDF(),
+    onClick: () => {
+      this.onDownloadPDF();
+    },
     disabled: false,
     shouldTranslate: true,
   };
