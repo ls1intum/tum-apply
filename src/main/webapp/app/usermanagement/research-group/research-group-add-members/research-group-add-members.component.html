@@ -28,7 +28,9 @@
         tabindex="0"
         (click)="toggleUserSelection(user)"
       >
-        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+        <div
+          class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--p-primary-color)] flex items-center justify-center text-white font-semibold"
+        >
           {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
         </div>
         <div class="flex-1">
