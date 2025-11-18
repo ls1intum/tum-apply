@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { ParseLinks } from './parse-links.service';
+import { ParseLinks } from 'app/core/util/parse-links.service';
 
 describe('Parse links service test', () => {
   describe('parse', () => {

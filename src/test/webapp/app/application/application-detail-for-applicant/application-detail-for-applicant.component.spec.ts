@@ -34,7 +34,9 @@ class MockRouter {
   navigate = vi.fn(() => Promise.resolve(true));
 }
 
-class MockLocation { back = vi.fn(); }
+class MockLocation {
+  back = vi.fn();
+}
 
 function setupTest(paramId: string | null, appServiceOverrides?: Partial<MockApplicationService>) {
   const applicationService = Object.assign(new MockApplicationService(), appServiceOverrides);

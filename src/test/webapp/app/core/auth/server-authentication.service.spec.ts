@@ -53,7 +53,12 @@ describe('ServerAuthenticationService', () => {
 
   it('should verify OTP', async () => {
     const result = await service.verifyOtp('test@example.com', '123456', OtpCompleteDTO.PurposeEnum.Login);
-    expect(authApi.otpComplete).toHaveBeenCalledWith({ email: 'test@example.com', code: '123456', profile: undefined, purpose: OtpCompleteDTO.PurposeEnum.Login });
+    expect(authApi.otpComplete).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      code: '123456',
+      profile: undefined,
+      purpose: OtpCompleteDTO.PurposeEnum.Login,
+    });
     expect(result).toEqual(mockSessionInfo);
   });
 
@@ -101,11 +106,11 @@ describe('ServerAuthenticationService', () => {
   it('should verify OTP with registration purpose and profile', async () => {
     const profile = { firstName: 'Test', lastName: 'User' };
     const result = await service.verifyOtp('test@example.com', '123456', OtpCompleteDTO.PurposeEnum.Register, profile);
-    expect(authApi.otpComplete).toHaveBeenCalledWith({ 
-      email: 'test@example.com', 
-      code: '123456', 
-      profile, 
-      purpose: OtpCompleteDTO.PurposeEnum.Register 
+    expect(authApi.otpComplete).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      code: '123456',
+      profile,
+      purpose: OtpCompleteDTO.PurposeEnum.Register,
     });
     expect(result).toEqual(mockSessionInfo);
   });
@@ -148,13 +153,13 @@ describe('ServerAuthenticationService', () => {
     service['refreshTimerId'] = 999;
     const clearSpy = vi.spyOn(window, 'clearTimeout');
     const setSpy = vi.spyOn(window, 'setTimeout');
-    
+
     // @ts-ignore
     service['startTokenRefreshTimeout'](60);
-    
+
     expect(clearSpy).toHaveBeenCalledWith(999);
     expect(setSpy).toHaveBeenCalled();
-    
+
     clearSpy.mockRestore();
     setSpy.mockRestore();
   });
@@ -174,10 +179,10 @@ describe('ServerAuthenticationService', () => {
     // @ts-ignore
     service['windowListenersActive'] = true;
     const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     expect(addEventListenerSpy).not.toHaveBeenCalled();
     addEventListenerSpy.mockRestore();
   });
@@ -187,14 +192,14 @@ describe('ServerAuthenticationService', () => {
     service['windowListenersActive'] = false;
     const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
     const windowAddEventListenerSpy = vi.spyOn(window, 'addEventListener');
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     expect(addEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
     expect(windowAddEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
     expect(windowAddEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
-    
+
     addEventListenerSpy.mockRestore();
     windowAddEventListenerSpy.mockRestore();
   });
@@ -203,10 +208,10 @@ describe('ServerAuthenticationService', () => {
     // @ts-ignore
     service['windowListenersActive'] = false;
     const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
-    
+
     // @ts-ignore
     service['unbindWindowListeners']();
-    
+
     expect(removeEventListenerSpy).not.toHaveBeenCalled();
     removeEventListenerSpy.mockRestore();
   });
@@ -220,17 +225,17 @@ describe('ServerAuthenticationService', () => {
     service['onFocus'] = () => {};
     // @ts-ignore
     service['onOnline'] = () => {};
-    
+
     const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
     const windowRemoveEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-    
+
     // @ts-ignore
     service['unbindWindowListeners']();
-    
+
     expect(removeEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
     expect(windowRemoveEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
     expect(windowRemoveEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
-    
+
     removeEventListenerSpy.mockRestore();
     windowRemoveEventListenerSpy.mockRestore();
   });
@@ -238,17 +243,17 @@ describe('ServerAuthenticationService', () => {
   it('should trigger refreshTokens on visibility change when document becomes visible', async () => {
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     // Simulate document becoming visible
     Object.defineProperty(document, 'hidden', { value: false, writable: true });
     const refreshTokensSpy = vi.spyOn(service, 'refreshTokens').mockResolvedValue(true);
-    
+
     // @ts-ignore
     service['onVisibilityChange']?.();
-    
+
     expect(refreshTokensSpy).toHaveBeenCalled();
     refreshTokensSpy.mockRestore();
   });
@@ -256,17 +261,17 @@ describe('ServerAuthenticationService', () => {
   it('should not trigger refreshTokens on visibility change when document is hidden', async () => {
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     // Simulate document being hidden
     Object.defineProperty(document, 'hidden', { value: true, writable: true });
     const refreshTokensSpy = vi.spyOn(service, 'refreshTokens').mockResolvedValue(true);
-    
+
     // @ts-ignore
     service['onVisibilityChange']?.();
-    
+
     expect(refreshTokensSpy).not.toHaveBeenCalled();
     refreshTokensSpy.mockRestore();
   });
@@ -274,15 +279,15 @@ describe('ServerAuthenticationService', () => {
   it('should trigger refreshTokens on window focus', async () => {
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     const refreshTokensSpy = vi.spyOn(service, 'refreshTokens').mockResolvedValue(true);
-    
+
     // @ts-ignore
     service['onFocus']?.();
-    
+
     expect(refreshTokensSpy).toHaveBeenCalled();
     refreshTokensSpy.mockRestore();
   });
@@ -290,15 +295,15 @@ describe('ServerAuthenticationService', () => {
   it('should trigger refreshTokens on online event', async () => {
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     const refreshTokensSpy = vi.spyOn(service, 'refreshTokens').mockResolvedValue(true);
-    
+
     // @ts-ignore
     service['onOnline']?.();
-    
+
     expect(refreshTokensSpy).toHaveBeenCalled();
     refreshTokensSpy.mockRestore();
   });

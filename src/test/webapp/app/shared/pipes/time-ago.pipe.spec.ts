@@ -1,4 +1,3 @@
-
 import { TestBed } from '@angular/core/testing';
 import { TimeAgoPipe } from '../../../../../../src/main/webapp/app/shared/pipes/time-ago.pipe';
 import { TranslateService } from '@ngx-translate/core';

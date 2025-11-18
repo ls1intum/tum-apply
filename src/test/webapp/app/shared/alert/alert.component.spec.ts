@@ -4,9 +4,7 @@ import { AlertService, Alert } from '../../../../../../src/main/webapp/app/core/
 import { Component } from '@angular/core';
 
 class MockAlertService {
-  get = vi.fn().mockReturnValue([
-    { id: 1, type: 'success', message: 'Test', toast: false, position: 'top-right' },
-  ]);
+  get = vi.fn().mockReturnValue([{ id: 1, type: 'success', message: 'Test', toast: false, position: 'top-right' }]);
   clear = vi.fn();
 }
 
@@ -32,7 +30,7 @@ describe('AlertComponent', () => {
   it('should load alerts on init', () => {
     component.ngOnInit();
     expect(component.alerts().length).toBe(1);
-  expect(component.alerts()[0].message).toBe('Test');
+    expect(component.alerts()[0].message).toBe('Test');
   });
 
   it('should call alertService.clear on destroy', () => {

@@ -41,7 +41,6 @@ describe('AlertErrorComponent', () => {
     eventManager = TestBed.inject(EventManager) as any;
   });
 
-
   it('should handle default error with error.message', () => {
     const httpErrorResponse = { error: { message: 'err', params: { foo: 'bar' } } };
     component['addErrorAlert'] = vi.fn();
@@ -59,27 +58,38 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should handle fields error in handleFieldsError', () => {
-    const httpErrorResponse = { error: { fieldErrors: [
-      { message: 'Min', field: 'foo[1].bar', objectName: 'obj' },
-      { message: 'Other', field: 'baz', objectName: 'obj2' },
-    ] } };
+    const httpErrorResponse = {
+      error: {
+        fieldErrors: [
+          { message: 'Min', field: 'foo[1].bar', objectName: 'obj' },
+          { message: 'Other', field: 'baz', objectName: 'obj2' },
+        ],
+      },
+    };
     component['addErrorAlert'] = vi.fn();
     component['translateService'].instant = vi.fn(() => 'translatedField');
     // @ts-ignore
     component['handleFieldsError'](httpErrorResponse);
-    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Size', { fieldName: 'translatedField' });
-    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Other', { fieldName: 'translatedField' });
+    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Size', {
+      fieldName: 'translatedField',
+    });
+    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Other', {
+      fieldName: 'translatedField',
+    });
   });
 
   it('should handle bad request with fieldErrors', () => {
-    const httpErrorResponse = { headers: { keys: () => [], get: () => null }, error: { fieldErrors: [
-      { message: 'Min', field: 'foo[1].bar', objectName: 'obj' },
-    ] } };
+    const httpErrorResponse = {
+      headers: { keys: () => [], get: () => null },
+      error: { fieldErrors: [{ message: 'Min', field: 'foo[1].bar', objectName: 'obj' }] },
+    };
     component['addErrorAlert'] = vi.fn();
     component['translateService'].instant = vi.fn(() => 'translatedField');
     // @ts-ignore
     component['handleBadRequest'](httpErrorResponse);
-    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Size', { fieldName: 'translatedField' });
+    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Size', {
+      fieldName: 'translatedField',
+    });
   });
 
   it('should handle bad request with empty error', () => {
@@ -91,7 +101,10 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should handle bad request with error.detail', () => {
-    const httpErrorResponse = { headers: { keys: () => [], get: () => null }, error: { message: 'err', detail: 'detail', params: { foo: 'bar' } } };
+    const httpErrorResponse = {
+      headers: { keys: () => [], get: () => null },
+      error: { message: 'err', detail: 'detail', params: { foo: 'bar' } },
+    };
     component['addErrorAlert'] = vi.fn();
     // @ts-ignore
     component['handleBadRequest'](httpErrorResponse);
@@ -172,7 +185,9 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should handle http error with default case (status 500)', () => {
-    const response = { content: { status: 500, headers: new HttpHeaders(), error: { message: 'internal error', detail: 'detailed error' } } };
+    const response = {
+      content: { status: 500, headers: new HttpHeaders(), error: { message: 'internal error', detail: 'detailed error' } },
+    };
     component['addErrorAlert'] = vi.fn();
     // @ts-ignore
     component['handleHttpError'](response);
@@ -207,9 +222,9 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should handle fields error with multiple bracket replacements', () => {
-    const httpErrorResponse = { error: { fieldErrors: [
-      { message: 'Max', field: 'items[0].subitems[5].value[2]', objectName: 'myObject' },
-    ] } };
+    const httpErrorResponse = {
+      error: { fieldErrors: [{ message: 'Max', field: 'items[0].subitems[5].value[2]', objectName: 'myObject' }] },
+    };
     component['addErrorAlert'] = vi.fn();
     component['translateService'].instant = vi.fn((key: string) => {
       if (key === 'tumApplyApp.myObject.items[].subitems[].value[]') {
@@ -220,13 +235,13 @@ describe('AlertErrorComponent', () => {
     // @ts-ignore
     component['handleFieldsError'](httpErrorResponse);
     expect(component['translateService'].instant).toHaveBeenCalledWith('tumApplyApp.myObject.items[].subitems[].value[]');
-    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "Translated Field"', 'error.Size', { fieldName: 'Translated Field' });
+    expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "Translated Field"', 'error.Size', {
+      fieldName: 'Translated Field',
+    });
   });
 
   it('should handle fields error with DecimalMin message', () => {
-    const httpErrorResponse = { error: { fieldErrors: [
-      { message: 'DecimalMin', field: 'price', objectName: 'product' },
-    ] } };
+    const httpErrorResponse = { error: { fieldErrors: [{ message: 'DecimalMin', field: 'price', objectName: 'product' }] } };
     component['addErrorAlert'] = vi.fn();
     component['translateService'].instant = vi.fn(() => 'Price');
     // @ts-ignore
@@ -235,9 +250,7 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should handle fields error with DecimalMax message', () => {
-    const httpErrorResponse = { error: { fieldErrors: [
-      { message: 'DecimalMax', field: 'discount', objectName: 'product' },
-    ] } };
+    const httpErrorResponse = { error: { fieldErrors: [{ message: 'DecimalMax', field: 'discount', objectName: 'product' }] } };
     component['addErrorAlert'] = vi.fn();
     component['translateService'].instant = vi.fn(() => 'Discount');
     // @ts-ignore
@@ -254,7 +267,7 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should call close with undefined when alert.close is undefined', () => {
-    const alert: any = { };
+    const alert: any = {};
     expect(() => component.close(alert)).not.toThrow();
   });
 
@@ -283,14 +296,12 @@ describe('AlertErrorComponent', () => {
     component['addErrorAlert']('Test Message', 'test.key', { param: 'value' });
     expect(alertService.addAlert).toHaveBeenCalledWith(
       { type: 'danger', message: 'Test Message', translationKey: 'test.key', translationParams: { param: 'value' } },
-      mockAlerts
+      mockAlerts,
     );
   });
 
   it('should handle field error with no brackets in field name', () => {
-    const httpErrorResponse = { error: { fieldErrors: [
-      { message: 'NotNull', field: 'username', objectName: 'user' },
-    ] } };
+    const httpErrorResponse = { error: { fieldErrors: [{ message: 'NotNull', field: 'username', objectName: 'user' }] } };
     component['addErrorAlert'] = vi.fn();
     component['translateService'].instant = vi.fn(() => 'Username');
     // @ts-ignore

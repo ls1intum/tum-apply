@@ -69,7 +69,8 @@ describe('LocalStorageService', () => {
   });
 
   it('rethrows error when JSON.stringify fails (circular data)', () => {
-    const circular: any = {}; circular.self = circular; // circular reference triggers JSON.stringify error
+    const circular: any = {};
+    circular.self = circular; // circular reference triggers JSON.stringify error
     const draft: ApplicationDraftData = {
       personalInfoData: circular,
       applicationId: 'AERR',

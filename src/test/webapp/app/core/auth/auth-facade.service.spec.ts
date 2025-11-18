@@ -33,10 +33,17 @@ class MockAuthOrchestrator {
   authSuccess = vi.fn();
   clearError = vi.fn();
   setError = vi.fn();
-  isBusy = Object.assign(vi.fn(() => false), { set: vi.fn() });
+  isBusy = Object.assign(
+    vi.fn(() => false),
+    { set: vi.fn() },
+  );
 }
-class MockDocumentCache { clear = vi.fn(); }
-class MockRouter { navigate = vi.fn(); }
+class MockDocumentCache {
+  clear = vi.fn();
+}
+class MockRouter {
+  navigate = vi.fn();
+}
 
 function setup() {
   const server = new MockServerAuth();
@@ -172,7 +179,10 @@ describe('AuthFacadeService', () => {
 
   it('runAuthAction throws when busy', async () => {
     const { facade, orchestrator } = setup();
-    orchestrator.isBusy = Object.assign(vi.fn(() => true), { set: vi.fn() });
+    orchestrator.isBusy = Object.assign(
+      vi.fn(() => true),
+      { set: vi.fn() },
+    );
     await expect(facade.loginWithEmail('a', 'b')).rejects.toThrow('AuthOrchestrator is busy');
   });
 });

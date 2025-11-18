@@ -48,10 +48,7 @@ describe('AuthOrchestratorService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        AuthOrchestratorService,
-        { provide: ApplicationConfigService, useClass: MockApplicationConfigService },
-      ],
+      providers: [AuthOrchestratorService, { provide: ApplicationConfigService, useClass: MockApplicationConfigService }],
     });
     service = TestBed.inject(AuthOrchestratorService);
   });

@@ -138,10 +138,10 @@ describe('Translation Config', () => {
 
     it('should create different loader instances for different HttpClient instances', () => {
       const mockHttpClient2 = { get: vi.fn(() => of({})) } as any;
-      
+
       const loader1 = translatePartialLoader(mockHttpClient);
       const loader2 = translatePartialLoader(mockHttpClient2);
-      
+
       expect(loader1).not.toBe(loader2);
       expect((loader1 as any).http).toBe(mockHttpClient);
       expect((loader2 as any).http).toBe(mockHttpClient2);
@@ -151,21 +151,21 @@ describe('Translation Config', () => {
       const mockTranslations = { 'test.key': 'Test Value' };
       const getMock = vi.fn(() => of(mockTranslations));
       mockHttpClient = { get: getMock } as any;
-      
+
       const loader = translatePartialLoader(mockHttpClient);
-      
+
       loader.getTranslation('en').subscribe(translations => {
         expect(translations).toEqual(mockTranslations);
       });
-      
+
       expect(getMock).toHaveBeenCalled();
     });
 
     it('should construct correct URL for language', () => {
       const loader = translatePartialLoader(mockHttpClient);
-      
+
       loader.getTranslation('de').subscribe();
-      
+
       expect(mockHttpClient.get).toHaveBeenCalled();
       const callArgs = (mockHttpClient.get as any).mock.calls[0];
       expect(callArgs[0]).toMatch(/^\/i18n\/de\.json\?_=/);
@@ -173,11 +173,11 @@ describe('Translation Config', () => {
 
     it('should construct correct URL for different languages', () => {
       const loader = translatePartialLoader(mockHttpClient);
-      
+
       loader.getTranslation('en').subscribe();
       loader.getTranslation('de').subscribe();
       loader.getTranslation('fr').subscribe();
-      
+
       expect(mockHttpClient.get).toHaveBeenCalledTimes(3);
       const calls = (mockHttpClient.get as any).mock.calls;
       expect(calls[0][0]).toMatch(/^\/i18n\/en\.json\?_=/);
@@ -196,7 +196,7 @@ describe('Translation Config', () => {
     it('should create new instance on each call', () => {
       const handler1 = missingTranslationHandler();
       const handler2 = missingTranslationHandler();
-      
+
       expect(handler1).not.toBe(handler2);
       expect(handler1).toBeInstanceOf(MissingTranslationHandlerImpl);
       expect(handler2).toBeInstanceOf(MissingTranslationHandlerImpl);
@@ -208,20 +208,20 @@ describe('Translation Config', () => {
         key: 'some.missing.key',
         translateService: {} as any,
       };
-      
+
       const result = handler.handle(params);
       expect(result).toBe('translation-not-found[some.missing.key]');
     });
 
     it('should return handler with correct behavior', () => {
       const handler = missingTranslationHandler();
-      
+
       const testCases = [
         { key: 'test1', expected: 'translation-not-found[test1]' },
         { key: 'test.nested.key', expected: 'translation-not-found[test.nested.key]' },
         { key: '', expected: 'translation-not-found[]' },
       ];
-      
+
       testCases.forEach(testCase => {
         const result = handler.handle({
           key: testCase.key,
@@ -237,10 +237,10 @@ describe('Translation Config', () => {
       const mockHttpClient = { get: vi.fn(() => of({})) } as any;
       const loader = translatePartialLoader(mockHttpClient);
       const handler = missingTranslationHandler();
-      
+
       expect(loader).toBeTruthy();
       expect(handler).toBeTruthy();
-      
+
       // Handler should work independently of loader
       const result = handler.handle({
         key: 'missing.key',
@@ -252,15 +252,15 @@ describe('Translation Config', () => {
     it('should maintain consistent translation not found format', () => {
       const handler1 = new MissingTranslationHandlerImpl();
       const handler2 = missingTranslationHandler();
-      
+
       const params: MissingTranslationHandlerParams = {
         key: 'test.key',
         translateService: {} as any,
       };
-      
+
       const result1 = handler1.handle(params);
       const result2 = handler2.handle(params);
-      
+
       expect(result1).toBe(result2);
       expect(result1).toBe('translation-not-found[test.key]');
     });

@@ -14,10 +14,31 @@ describe('getApplicationPDFLabels', () => {
     const labels = getApplicationPDFLabels(translate);
     // Expected keys from implementation
     const expectedKeys = [
-      'application','headline','overview','supervisor','researchGroup','location','personalStatements',
-      'motivation','skills','researchExperience','personalInformation','applicantInfo','preferredLanguage',
-      'desiredStartDate','gender','nationality','website','linkedIn','bachelorInfo','masterInfo','degreeName',
-      'university','upperGradeLimit','lowerGradeLimit','grade'
+      'application',
+      'headline',
+      'overview',
+      'supervisor',
+      'researchGroup',
+      'location',
+      'personalStatements',
+      'motivation',
+      'skills',
+      'researchExperience',
+      'personalInformation',
+      'applicantInfo',
+      'preferredLanguage',
+      'desiredStartDate',
+      'gender',
+      'nationality',
+      'website',
+      'linkedIn',
+      'bachelorInfo',
+      'masterInfo',
+      'degreeName',
+      'university',
+      'upperGradeLimit',
+      'lowerGradeLimit',
+      'grade',
     ];
     expect(Object.keys(labels)).toEqual(expectedKeys);
     // Each value should be translation wrapper

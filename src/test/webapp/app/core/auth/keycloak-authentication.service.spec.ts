@@ -1,6 +1,8 @@
-
 import { TestBed } from '@angular/core/testing';
-import { KeycloakAuthenticationService, IdpProvider } from '../../../../../../src/main/webapp/app/core/auth/keycloak-authentication.service';
+import {
+  KeycloakAuthenticationService,
+  IdpProvider,
+} from '../../../../../../src/main/webapp/app/core/auth/keycloak-authentication.service';
 import { ApplicationConfigService } from '../../../../../../src/main/webapp/app/core/config/application-config.service';
 
 // Mock Keycloak class
@@ -36,10 +38,7 @@ describe('KeycloakAuthenticationService', () => {
     vi.resetAllMocks();
     keycloakInstance = new MockKeycloak();
     TestBed.configureTestingModule({
-      providers: [
-        KeycloakAuthenticationService,
-        { provide: ApplicationConfigService, useClass: MockApplicationConfigService },
-      ],
+      providers: [KeycloakAuthenticationService, { provide: ApplicationConfigService, useClass: MockApplicationConfigService }],
     });
     service = TestBed.inject(KeycloakAuthenticationService);
     // Setze das Mock-Objekt direkt
@@ -108,24 +107,30 @@ describe('KeycloakAuthenticationService', () => {
 
   it('should call loginWithProvider with redirectUri', async () => {
     await service.loginWithProvider(IdpProvider.Google, '/redirect');
-    expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({
-      redirectUri: expect.stringContaining('/redirect'),
-      idpHint: 'google',
-    }));
+    expect(keycloakInstance.login).toHaveBeenCalledWith(
+      expect.objectContaining({
+        redirectUri: expect.stringContaining('/redirect'),
+        idpHint: 'google',
+      }),
+    );
   });
 
   it('should call loginWithProvider with Microsoft provider', async () => {
     await service.loginWithProvider(IdpProvider.Microsoft);
-    expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({
-      idpHint: 'microsoft',
-    }));
+    expect(keycloakInstance.login).toHaveBeenCalledWith(
+      expect.objectContaining({
+        idpHint: 'microsoft',
+      }),
+    );
   });
 
   it('should call loginWithProvider with Apple provider', async () => {
     await service.loginWithProvider(IdpProvider.Apple);
-    expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({
-      idpHint: 'apple',
-    }));
+    expect(keycloakInstance.login).toHaveBeenCalledWith(
+      expect.objectContaining({
+        idpHint: 'apple',
+      }),
+    );
   });
 
   it('should call loginWithProvider with TUM provider and no idpHint', async () => {
@@ -144,9 +149,11 @@ describe('KeycloakAuthenticationService', () => {
   it('should call logout with redirectUri', async () => {
     keycloakInstance.authenticated = true;
     await service.logout('/bye');
-    expect(keycloakInstance.logout).toHaveBeenCalledWith(expect.objectContaining({
-      redirectUri: expect.stringContaining('/bye'),
-    }));
+    expect(keycloakInstance.logout).toHaveBeenCalledWith(
+      expect.objectContaining({
+        redirectUri: expect.stringContaining('/bye'),
+      }),
+    );
   });
 
   it('should call logout', async () => {
@@ -237,15 +244,15 @@ describe('KeycloakAuthenticationService', () => {
     service['windowListenersActive'] = false;
     const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
     const windowAddEventListenerSpy = vi.spyOn(window, 'addEventListener');
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     expect(service['windowListenersActive']).toBe(true);
     expect(addEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
     expect(windowAddEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
     expect(windowAddEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
-    
+
     addEventListenerSpy.mockRestore();
     windowAddEventListenerSpy.mockRestore();
   });
@@ -254,10 +261,10 @@ describe('KeycloakAuthenticationService', () => {
     // @ts-ignore
     service['windowListenersActive'] = true;
     const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     expect(addEventListenerSpy).not.toHaveBeenCalled();
     addEventListenerSpy.mockRestore();
   });
@@ -271,18 +278,18 @@ describe('KeycloakAuthenticationService', () => {
     service['onFocus'] = () => {};
     // @ts-ignore
     service['onOnline'] = () => {};
-    
+
     const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
     const windowRemoveEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-    
+
     // @ts-ignore
     service['unbindWindowListeners']();
-    
+
     expect(service['windowListenersActive']).toBe(false);
     expect(removeEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
     expect(windowRemoveEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
     expect(windowRemoveEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
-    
+
     removeEventListenerSpy.mockRestore();
     windowRemoveEventListenerSpy.mockRestore();
   });
@@ -291,10 +298,10 @@ describe('KeycloakAuthenticationService', () => {
     // @ts-ignore
     service['windowListenersActive'] = false;
     const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
-    
+
     // @ts-ignore
     service['unbindWindowListeners']();
-    
+
     expect(removeEventListenerSpy).not.toHaveBeenCalled();
     removeEventListenerSpy.mockRestore();
   });
@@ -303,17 +310,17 @@ describe('KeycloakAuthenticationService', () => {
     keycloakInstance.authenticated = true;
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     // Simulate document becoming visible
     Object.defineProperty(document, 'hidden', { value: false, writable: true });
     const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
-    
+
     // @ts-ignore
     service['onVisibilityChange']?.();
-    
+
     expect(ensureFreshTokenSpy).toHaveBeenCalled();
     ensureFreshTokenSpy.mockRestore();
   });
@@ -322,17 +329,17 @@ describe('KeycloakAuthenticationService', () => {
     keycloakInstance.authenticated = true;
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     // Simulate document being hidden
     Object.defineProperty(document, 'hidden', { value: true, writable: true });
     const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
-    
+
     // @ts-ignore
     service['onVisibilityChange']?.();
-    
+
     expect(ensureFreshTokenSpy).not.toHaveBeenCalled();
     ensureFreshTokenSpy.mockRestore();
   });
@@ -341,15 +348,15 @@ describe('KeycloakAuthenticationService', () => {
     keycloakInstance.authenticated = true;
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
-    
+
     // @ts-ignore
     service['onFocus']?.();
-    
+
     expect(ensureFreshTokenSpy).toHaveBeenCalled();
     ensureFreshTokenSpy.mockRestore();
   });
@@ -358,17 +365,16 @@ describe('KeycloakAuthenticationService', () => {
     keycloakInstance.authenticated = true;
     // @ts-ignore
     service['windowListenersActive'] = false;
-    
+
     // @ts-ignore
     service['bindWindowListeners']();
-    
+
     const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
-    
+
     // @ts-ignore
     service['onOnline']?.();
-    
+
     expect(ensureFreshTokenSpy).toHaveBeenCalled();
     ensureFreshTokenSpy.mockRestore();
   });
 });
-
