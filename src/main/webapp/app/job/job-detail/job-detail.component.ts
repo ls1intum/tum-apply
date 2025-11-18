@@ -21,6 +21,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
+import { JobPreviewRequest } from 'app/generated';
 
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../shared/language/translate.directive';
@@ -342,28 +343,69 @@ export class JobDetailComponent {
   }
 
   onDownloadPDF(): void {
-    const jobId = this.jobId();
-
     const labels = getJobPDFLabels(this.translate);
 
-    this.pdfExportService.exportJobToPDF(jobId, labels, 'response').subscribe(response => {
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = 'job.pdf';
-
-      if (contentDisposition) {
-        filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
+    if (this.previewData()?.()) {
+      const formData = this.previewData()?.();
+      if (!formData) {
+        this.toastService.showErrorKey('pdf.error.couldNotGeneratePdf');
+        return;
       }
 
-      const blob = response.body;
-      if (blob) {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        window.URL.revokeObjectURL(url);
+      const safeFormData = formData;
+      const req: JobPreviewRequest = {
+        job: safeFormData,
+        labels,
+      };
+      try {
+        this.pdfExportService.exportJobPreviewToPDF(req, 'response').subscribe(response => {
+          const contentDisposition = response.headers.get('Content-Disposition');
+          let filename = 'job.pdf';
+
+          if (contentDisposition) {
+            filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
+          }
+
+          const blob = response.body;
+          if (blob) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+          }
+        });
+      } catch {
+        this.toastService.showErrorKey('pdf.error.couldNotGeneratePdf');
       }
-    });
+      return;
+    }
+
+    const jobId = this.jobId();
+
+    try {
+      this.pdfExportService.exportJobToPDF(jobId, labels, 'response').subscribe(response => {
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'job.pdf';
+
+        if (contentDisposition) {
+          filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'job.pdf';
+        }
+
+        const blob = response.body;
+        if (blob) {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        }
+      });
+    } catch {
+      this.toastService.showErrorKey('pdf.error.couldNotGeneratePdf');
+    }
   }
 
   async init(): Promise<void> {
