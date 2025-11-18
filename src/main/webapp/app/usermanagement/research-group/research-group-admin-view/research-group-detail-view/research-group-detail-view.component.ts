@@ -7,7 +7,7 @@ import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
-import { SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -22,7 +22,16 @@ const DEPARTMENT_OPTIONS: SelectOption[] = [
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
-  imports: [TranslateModule, StringInputComponent, ButtonComponent, ReactiveFormsModule, DividerModule, EditorComponent, InfoBoxComponent],
+  imports: [
+    TranslateModule,
+    StringInputComponent,
+    ButtonComponent,
+    ReactiveFormsModule,
+    DividerModule,
+    EditorComponent,
+    InfoBoxComponent,
+    SelectComponent,
+  ],
   templateUrl: './research-group-detail-view.component.html',
 })
 export class ResearchGroupDetailViewComponent implements OnInit {
@@ -45,6 +54,11 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   departmentOptions = DEPARTMENT_OPTIONS;
 
+  selectedDepartment = computed(() => {
+    const value = this.form.controls.department.value;
+    return this.departmentOptions.find(option => option.value === value);
+  });
+
   isSaving = signal<boolean>(false);
   isLoading = signal<boolean>(true);
 
@@ -54,6 +68,10 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   ngOnInit(): void {
     void this.init();
+  }
+
+  onDepartmentChange(option: SelectOption): void {
+    this.form.controls.department.setValue(option.value as string);
   }
 
   async onSave(): Promise<void> {
@@ -119,6 +137,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
       abbreviation: data?.abbreviation,
       name: data?.name,
       school: data?.school,
+      department: data?.department,
       defaultFieldOfStudies: data?.defaultFieldOfStudies,
       head: data?.head,
       email: data?.email,
