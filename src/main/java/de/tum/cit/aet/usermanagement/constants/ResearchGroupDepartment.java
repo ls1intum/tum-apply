@@ -8,9 +8,9 @@ import java.util.List;
 
 public enum ResearchGroupDepartment {
     MATHEMATICS("Mathematics", ResearchGroupSchool.CIT),
-    INFORMATICS("Computer Engineering", ResearchGroupSchool.CIT),
-    ELECTRICAL_ENGINEERING("Computer Science", ResearchGroupSchool.CIT),
-    INFORMATION_TECHNOLOGY("Electrical Engineering", ResearchGroupSchool.CIT),
+    COMPUTER_ENGINEERING("Computer Engineering", ResearchGroupSchool.CIT),
+    COMPUTER_SCIENCE("Computer Science", ResearchGroupSchool.CIT),
+    ELECTRICAL_ENGINEERING("Electrical Engineering", ResearchGroupSchool.CIT),
 
     AEROSPACE_AND_GEODESY("Aerospace & Geodesy", ResearchGroupSchool.ED),
     ARCHITECTURE("Architecture", ResearchGroupSchool.ED),
