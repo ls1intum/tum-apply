@@ -2,6 +2,7 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.dto.JobOverviewData;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.util.PDFBuilder;
@@ -163,15 +164,17 @@ public class PDFExportService {
         addJobOverview(
             builder,
             labels,
-            job.supervisingProfessorName(),
-            job.location(),
-            job.fieldOfStudies(),
-            job.researchArea(),
-            formatWorkload(job.workload(), labels.get("hoursPerWeek")),
-            formatContractDuration(job.contractDuration(), labels.get("years")),
-            getValue(job.fundingType()),
-            formatDate(job.startDate()),
-            formatDate(job.endDate())
+            new JobOverviewData(
+                job.supervisingProfessorName(),
+                job.location(),
+                job.fieldOfStudies(),
+                job.researchArea(),
+                formatWorkload(job.workload(), labels.get("hoursPerWeek")),
+                formatContractDuration(job.contractDuration(), labels.get("years")),
+                getValue(job.fundingType()),
+                formatDate(job.startDate()),
+                formatDate(job.endDate())
+            )
         );
 
         // Job Details Section
@@ -206,15 +209,17 @@ public class PDFExportService {
         addJobOverview(
             builder,
             labels,
-            supervisingProfessorName,
-            UiTextFormatter.formatEnumValue(jobFormDTO.location()),
-            jobFormDTO.fieldOfStudies(),
-            jobFormDTO.researchArea(),
-            jobFormDTO.workload() != null ? jobFormDTO.workload() + " h" : "-",
-            jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + " years" : "-",
-            jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
-            jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
-            jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
+            new JobOverviewData(
+                supervisingProfessorName,
+                UiTextFormatter.formatEnumValue(jobFormDTO.location()),
+                jobFormDTO.fieldOfStudies(),
+                jobFormDTO.researchArea(),
+                jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
+                jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
+                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
+                jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
+                jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
+            )
         );
 
         // Job Details Section
@@ -237,30 +242,18 @@ public class PDFExportService {
 
     // ------------------- Helper methods -------------------
 
-    private void addJobOverview(
-        PDFBuilder builder,
-        Map<String, String> labels,
-        String supervisor,
-        String location,
-        String fieldsOfStudies,
-        String researchArea,
-        String workload,
-        String duration,
-        String fundingType,
-        String startDate,
-        String endDate
-    ) {
+    private void addJobOverview(PDFBuilder builder, Map<String, String> labels, JobOverviewData data) {
         builder
             .setOverviewTitle(labels.get("overview"))
-            .addOverviewItem(labels.get("supervisor"), getValue(supervisor))
-            .addOverviewItem(labels.get("location"), getValue(location))
-            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(fieldsOfStudies))
-            .addOverviewItem(labels.get("researchArea"), getValue(researchArea))
-            .addOverviewItem(labels.get("workload"), getValue(workload))
-            .addOverviewItem(labels.get("duration"), getValue(duration))
-            .addOverviewItem(labels.get("fundingType"), getValue(fundingType))
-            .addOverviewItem(labels.get("startDate"), getValue(startDate))
-            .addOverviewItem(labels.get("endDate"), getValue(endDate));
+            .addOverviewItem(labels.get("supervisor"), getValue(data.supervisor()))
+            .addOverviewItem(labels.get("location"), getValue(data.location()))
+            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(data.fieldsOfStudies()))
+            .addOverviewItem(labels.get("researchArea"), getValue(data.researchArea()))
+            .addOverviewItem(labels.get("workload"), getValue(data.workload()))
+            .addOverviewItem(labels.get("duration"), getValue(data.duration()))
+            .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
+            .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
+            .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
 
     private void addJobDetailsSection(
