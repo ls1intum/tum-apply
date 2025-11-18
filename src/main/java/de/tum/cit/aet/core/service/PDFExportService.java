@@ -12,6 +12,8 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -404,25 +406,24 @@ public class PDFExportService {
     }
 
     private String formatAddress(String street, String postalCode, String city) {
-        StringBuilder address = new StringBuilder();
-        boolean streetExists = street != null && !street.isEmpty();
-        boolean postalCodeExists = postalCode != null && !postalCode.isEmpty();
-        boolean cityExists = city != null && !city.isEmpty();
-        if (streetExists) {
-            address.append(street);
-            if (postalCodeExists || cityExists) {
-                address.append(", ");
-            }
+        List<String> parts = new ArrayList<>();
+
+        if (hasValue(street)) {
+            parts.add(street);
         }
-        if (postalCodeExists) {
-            address.append(postalCode);
-            if (cityExists) {
-                address.append(" ");
-            }
+
+        List<String> postalCodeParts = new ArrayList<>();
+        if (hasValue(postalCode)) {
+            postalCodeParts.add(postalCode);
         }
-        if (cityExists) {
-            address.append(city);
+        if (hasValue(city)) {
+            postalCodeParts.add(city);
         }
-        return address.toString();
+
+        if (!postalCodeParts.isEmpty()) {
+            parts.add(String.join(" ", postalCodeParts));
+        }
+
+        return String.join(", ", parts);
     }
 }
