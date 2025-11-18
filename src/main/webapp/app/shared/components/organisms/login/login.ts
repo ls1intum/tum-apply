@@ -7,7 +7,7 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { TranslateDirective } from '../../../language';
 import { OtpInput } from '../../atoms/otp-input/otp-input';
-import { ButtonComponent } from "app/shared/components/atoms/button/button.component";
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-login',

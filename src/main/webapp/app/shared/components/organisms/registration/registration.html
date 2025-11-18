@@ -1,6 +1,13 @@
 <div class="registration-header">
   @if (authOrchestrator.registerStep() !== 'email') {
-    <jhi-button class="registration-header-button back-button" (click)="onBack()" variant="text" icon="chevron-left" style="font-weight: bold" [shouldTranslate]="true"  />
+    <jhi-button
+      class="registration-header-button back-button"
+      (click)="onBack()"
+      variant="text"
+      icon="chevron-left"
+      style="font-weight: bold"
+      [shouldTranslate]="true"
+    />
   }
   <h1 jhiTranslate="auth.common.title"></h1>
 </div>
