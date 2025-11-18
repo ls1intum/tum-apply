@@ -13,6 +13,7 @@ export interface ResearchGroupDTO {
     abbreviation?: string;
     city?: string;
     defaultFieldOfStudies?: string;
+    department: ResearchGroupDTO.DepartmentEnum;
     description?: string;
     email?: string;
     head: string;
@@ -24,6 +25,13 @@ export interface ResearchGroupDTO {
     website?: string;
 }
 export namespace ResearchGroupDTO {
+    export type DepartmentEnum = 'MATHEMATICS' | 'INFORMATICS' | 'ELECTRICAL_ENGINEERING' | 'INFORMATION_TECHNOLOGY';
+    export const DepartmentEnum = {
+        Mathematics: 'MATHEMATICS' as DepartmentEnum,
+        Informatics: 'INFORMATICS' as DepartmentEnum,
+        ElectricalEngineering: 'ELECTRICAL_ENGINEERING' as DepartmentEnum,
+        InformationTechnology: 'INFORMATION_TECHNOLOGY' as DepartmentEnum
+    };
     export type StateEnum = 'DRAFT' | 'ACTIVE' | 'DENIED';
     export const StateEnum = {
         Draft: 'DRAFT' as StateEnum,

@@ -1967,6 +1967,10 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         defaultFieldOfStudies: {type: string}
+        department:
+          type: string
+          enum: [MATHEMATICS, INFORMATICS, ELECTRICAL_ENGINEERING, INFORMATION_TECHNOLOGY]
+          minLength: 1
         description: {type: string}
         email: {type: string, format: email}
         head: {type: string, minLength: 1}
@@ -1978,7 +1982,7 @@ components:
           enum: [DRAFT, ACTIVE, DENIED]
         street: {type: string}
         website: {type: string}
-      required: [head, name]
+      required: [department, head, name]
     ResearchGroupLargeDTO:
       type: object
       properties:
