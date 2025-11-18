@@ -5,7 +5,7 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
-import { SearchBar } from 'app/shared/components/molecules/search-bar/search-bar';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { UserDTO } from 'app/generated/model/userDTO';
 import { ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
@@ -17,7 +17,16 @@ const I18N_BASE = 'researchGroup.members';
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
-  imports: [CommonModule, TranslateModule, SearchBar, ButtonComponent, CheckboxModule, FormsModule, PaginatorModule, ConfirmDialog],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    SearchFilterSortBar,
+    ButtonComponent,
+    CheckboxModule,
+    FormsModule,
+    PaginatorModule,
+    ConfirmDialog,
+  ],
   templateUrl: './research-group-add-members.component.html',
 })
 export class ResearchGroupAddMembersComponent {
@@ -37,7 +46,6 @@ export class ResearchGroupAddMembersComponent {
 
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);
-  private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
   private selectedUserIds = signal<Set<string>>(new Set());
 
   constructor() {
@@ -55,17 +63,11 @@ export class ResearchGroupAddMembersComponent {
   }
 
   onSearch(searchQuery: string): void {
-    if (this.debounceTimeout) {
-      clearTimeout(this.debounceTimeout);
+    if (searchQuery !== this.searchQuery()) {
+      this.page.set(0);
+      this.searchQuery.set(searchQuery);
+      void this.loadAvailableUsers(searchQuery);
     }
-
-    this.debounceTimeout = setTimeout(() => {
-      if (searchQuery !== this.searchQuery()) {
-        this.page.set(0);
-        this.searchQuery.set(searchQuery);
-        void this.loadAvailableUsers(searchQuery);
-      }
-    }, 300);
   }
 
   onPageChange(event: { first?: number; rows?: number }): void {

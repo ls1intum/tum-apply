@@ -1,7 +1,14 @@
 <div class="flex flex-col gap-4">
   <!-- Search Bar -->
   <div class="w-full">
-    <jhi-search-bar [searchText]="'researchGroup.members.searchPlaceholder' | translate" (searchOutput)="onSearch($event)" />
+    <jhi-search-filter-sort-bar
+      [searchText]="'researchGroup.members.searchPlaceholder' | translate"
+      [totalRecords]="totalRecords()"
+      [filters]="[]"
+      [singleEntity]="'researchGroup.members.singleEntity' | translate"
+      [multipleEntities]="'researchGroup.members.multipleEntities' | translate"
+      (searchOutput)="onSearch($event)"
+    />
   </div>
 
   <!-- User List -->
@@ -46,7 +53,7 @@
   }
 
   <!-- Action Buttons -->
-  <div class="flex justify-end gap-2 pt-4">
+  <div class="flex justify-end gap-2">
     <jhi-button [label]="'button.cancel' | translate" severity="secondary" variant="outlined" (click)="onCancel()" />
 
     <jhi-confirm-dialog

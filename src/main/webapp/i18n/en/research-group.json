@@ -96,6 +96,8 @@
       "addMembers": "Add Members",
       "addMembersButton": "Add members",
       "searchPlaceholder": "Search for a member using their name or email...",
+      "singleEntity": "User",
+      "multipleEntities": "Users",
 
       "tableColumns": {
         "name": "Name",
