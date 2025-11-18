@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -11,14 +12,7 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { firstValueFrom } from 'rxjs';
-
-const DEPARTMENT_OPTIONS: SelectOption[] = [
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.mathematics', value: 'MATHEMATICS' },
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.electricalEngineering', value: 'ELECTRICAL_ENGINEERING' },
-  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informationTechnology', value: 'INFORMATION_TECHNOLOGY' },
-];
+import { firstValueFrom, map } from 'rxjs';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
@@ -35,6 +29,10 @@ const DEPARTMENT_OPTIONS: SelectOption[] = [
   templateUrl: './research-group-detail-view.component.html',
 })
 export class ResearchGroupDetailViewComponent implements OnInit {
+  readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
+  readonly config = inject(DynamicDialogConfig);
+  toastService = inject(ToastService);
+
   form = new FormGroup({
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
@@ -52,19 +50,22 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
 
-  departmentOptions = DEPARTMENT_OPTIONS;
+  // Fetch department options from backend with display names
+  departmentOptions = toSignal(
+    this.ResearchGroupService.getAvailableDepartments().pipe(
+      map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' }))),
+    ),
+    { initialValue: [] as { name: string; value: string }[] },
+  );
 
   selectedDepartment = computed(() => {
     const value = this.form.controls.department.value;
-    return this.departmentOptions.find(option => option.value === value);
+    const options = this.departmentOptions();
+    return options?.find((option: { value: string }) => option.value === value);
   });
 
   isSaving = signal<boolean>(false);
   isLoading = signal<boolean>(true);
-
-  readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
-  private readonly config = inject(DynamicDialogConfig);
-  private toastService = inject(ToastService);
 
   ngOnInit(): void {
     void this.init();
@@ -95,7 +96,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         head: formValue.head ?? '',
         email: formValue.email ?? '',
         website: formValue.website ?? '',
-        school: formValue.school ?? '',
+        school: (formValue.school as ResearchGroupDTO.SchoolEnum) ?? undefined,
         description: formValue.description ?? '',
         street: formValue.street ?? '',
         postalCode: formValue.postalCode ?? '',

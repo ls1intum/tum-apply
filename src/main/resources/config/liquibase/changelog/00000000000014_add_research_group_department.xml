@@ -7,6 +7,7 @@
     <changeSet id="add-research-group-department" author="bofanzhu">
         <addColumn tableName="research_groups">
             <column name="department" type="varchar(50)" defaultValue="INFORMATICS">
+            <column name="school" type="varchar(50)" defaultValue="CIT">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

@@ -137,7 +137,7 @@
       <jhi-select
         [selected]="form.get('researchGroupSchool')?.value"
         (selectedChange)="form.get('researchGroupSchool')?.setValue($event); onSchoolChange($event)"
-        [items]="schoolOptions"
+        [items]="schoolOptions()"
         [label]="'onboarding.professorRequest.researchGroupSchool.label' | translate"
         [placeholder]="'onboarding.professorRequest.researchGroupSchool.placeholder' | translate"
         [translateItems]="true"

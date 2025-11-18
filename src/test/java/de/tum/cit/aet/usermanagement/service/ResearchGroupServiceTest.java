@@ -15,6 +15,7 @@ import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -293,7 +294,7 @@ class ResearchGroupServiceTest {
                 "UN",
                 "Prof. Updated",
                 ResearchGroupDepartment.INFORMATICS,
-                "updated@test.com",
+                ResearchGroupSchool.CIT,
                 "https://updated.com",
                 "Updated School",
                 "Updated description",

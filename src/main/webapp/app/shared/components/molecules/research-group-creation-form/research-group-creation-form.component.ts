@@ -23,11 +23,6 @@ import TranslateDirective from '../../../language/translate.directive';
 
 type FormMode = 'professor' | 'admin';
 
-interface EnumDisplayDTO {
-  value: string;
-  displayName: string;
-}
-
 @Component({
   selector: 'jhi-professor-request-access-form',
   standalone: true,
@@ -47,13 +42,8 @@ interface EnumDisplayDTO {
   templateUrl: './research-group-creation-form.component.html',
 })
 export class ResearchGroupCreationFormComponent {
-  // Services
-  private readonly fb = inject(FormBuilder);
-  private readonly config = inject(DynamicDialogConfig, { optional: true });
-  private readonly ref = inject(DynamicDialogRef, { optional: true });
-  private readonly researchGroupService = inject(ResearchGroupResourceApiService);
-  private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
-  private readonly toastService = inject(ToastService);
+  // Form
+  form: FormGroup;
 
   // Input to determine if this is admin mode or professor mode
   mode = computed<FormMode>(() => this.config?.data?.mode ?? 'professor');
@@ -61,29 +51,19 @@ export class ResearchGroupCreationFormComponent {
   // Track selected school
   selectedSchool = signal<SelectOption | null>(null);
 
-  // Form
-  form: FormGroup;
-
   // Loading state
   isSubmitting = signal(false);
 
   // Template references
   confirmDialog = viewChild<ConfirmDialog>('confirmDialog');
+  readonly researchGroupService = inject(ResearchGroupResourceApiService);
 
   // Fetch school options from backend with display names
   schoolOptions = toSignal(
     this.researchGroupService
       .getAvailableSchools()
-      .pipe(map(schools => schools.map(school => ({ name: school.displayName, value: school.value })))),
-    { initialValue: [] },
-  );
-
-  // Fetch all department options from backend with display names
-  private readonly allDepartmentOptions = toSignal(
-    this.researchGroupService
-      .getAvailableDepartments()
-      .pipe(map(departments => departments.map(dept => ({ name: dept.displayName, value: dept.value })))),
-    { initialValue: [] },
+      .pipe(map(schools => schools.map(school => ({ name: school.displayName ?? '', value: school.value ?? '' })))),
+    { initialValue: [] as { name: string; value: string }[] },
   );
 
   // Department options - dynamically filtered based on selected school
@@ -91,15 +71,15 @@ export class ResearchGroupCreationFormComponent {
     const selectedSchool = this.selectedSchool();
     const allDepartments = this.allDepartmentOptions();
 
-    if (!selectedSchool?.value) {
-      return allDepartments;
+    if (!selectedSchool?.value || typeof selectedSchool.value !== 'string') {
+      return allDepartments ?? [];
     }
 
     // Fetch filtered departments from backend based on school
     void firstValueFrom(
       this.researchGroupService
         .getDepartmentsBySchool(selectedSchool.value)
-        .pipe(map(departments => departments.map(dept => ({ name: dept.displayName, value: dept.value })))),
+        .pipe(map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' })))),
     ).then(filtered => {
       // Update the signal with filtered departments
       this.filteredDepartments.set(filtered);
@@ -108,8 +88,23 @@ export class ResearchGroupCreationFormComponent {
     return this.filteredDepartments();
   });
 
+  // Services
+  private readonly fb = inject(FormBuilder);
+  private readonly config = inject(DynamicDialogConfig, { optional: true });
+  private readonly ref = inject(DynamicDialogRef, { optional: true });
+  private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
+  private readonly toastService = inject(ToastService);
+
   // Store filtered departments
   private filteredDepartments = signal<SelectOption[]>([]);
+
+  // Fetch all department options from backend with display names
+  private readonly allDepartmentOptions = toSignal(
+    this.researchGroupService
+      .getAvailableDepartments()
+      .pipe(map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' })))),
+    { initialValue: [] as { name: string; value: string }[] },
+  );
 
   constructor() {
     this.form = this.createForm();
@@ -118,27 +113,27 @@ export class ResearchGroupCreationFormComponent {
   onSchoolChange(selectedSchool: SelectOption | null): void {
     this.selectedSchool.set(selectedSchool);
 
-    if (selectedSchool?.value) {
+    if (selectedSchool && typeof selectedSchool.value === 'string') {
       // Fetch departments for the selected school
       void firstValueFrom(
         this.researchGroupService
           .getDepartmentsBySchool(selectedSchool.value)
-          .pipe(map(departments => departments.map(dept => ({ name: dept.displayName, value: dept.value })))),
+          .pipe(map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' })))),
       ).then(filtered => {
         this.filteredDepartments.set(filtered);
 
         // Clear department selection if it's not in the filtered list
-        const currentDepartment = this.form.get('researchGroupDepartment')?.value;
-        if (currentDepartment?.value) {
+        const currentDepartment = this.form.get('researchGroupDepartment')?.value as SelectOption | null;
+        if (currentDepartment?.value != null) {
           const isDepartmentValid = filtered.some(dept => dept.value === currentDepartment.value);
-          if (!isDepartmentValid) {
+          if (isDepartmentValid === false) {
             this.form.get('researchGroupDepartment')?.setValue(null);
           }
         }
       });
     } else {
       // No school selected, show all departments
-      this.filteredDepartments.set(this.allDepartmentOptions());
+      this.filteredDepartments.set(this.allDepartmentOptions() ?? []);
       this.form.get('researchGroupDepartment')?.setValue(null);
     }
   }

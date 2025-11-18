@@ -109,7 +109,7 @@ export class ResearchGroupInfoComponent {
         head: formValue.head ?? '',
         email: formValue.email ?? '',
         website: formValue.website ?? '',
-        school: formValue.school ?? '',
+        school: (formValue.school as ResearchGroupDTO.SchoolEnum) ?? undefined,
         description: formValue.description ?? '',
         street: formValue.address ?? '',
         postalCode: formValue.postalCode ?? '',
