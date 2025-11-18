@@ -54,7 +54,7 @@
       confirmIcon="user-plus"
       (confirmed)="onAddMembers()"
       severity="primary"
-      [disabled]="selectedUsers.length === 0"
+      [disabled]="selectedUserCount() === 0"
       [tooltip]="'researchGroup.members.addMembersButton' | translate"
     />
   </div>

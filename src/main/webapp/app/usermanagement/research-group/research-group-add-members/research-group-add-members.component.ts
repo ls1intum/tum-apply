@@ -34,6 +34,7 @@ export class ResearchGroupAddMembersComponent {
   searchQuery = signal<string>('');
 
   userSelections = signal<UserSelection[]>([]);
+  selectedUserCount = signal<number>(0);
   userService = inject(UserResourceApiService);
   researchGroupService = inject(ResearchGroupResourceApiService);
   toastService = inject(ToastService);
@@ -57,8 +58,7 @@ export class ResearchGroupAddMembersComponent {
           selected: this.selectedUserIds.has(user.userId!),
         })),
       );
-    } catch (error) {
-      console.error('Failed to load available users:', error);
+    } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
     }
   }
@@ -93,6 +93,7 @@ export class ResearchGroupAddMembersComponent {
     } else {
       this.selectedUserIds.delete(selection.user.userId!);
     }
+    this.selectedUserCount.set(this.selectedUserIds.size);
   }
 
   onCancel(): void {
@@ -100,7 +101,7 @@ export class ResearchGroupAddMembersComponent {
   }
 
   async onAddMembers(): Promise<void> {
-    const userIds = this.selectedUsers.map(user => user.userId!);
+    const userIds = Array.from(this.selectedUserIds);
     const researchGroupId = this.researchGroupId();
 
     if (userIds.length === 0) {
@@ -111,17 +112,10 @@ export class ResearchGroupAddMembersComponent {
       await lastValueFrom(this.researchGroupService.addMembersToResearchGroup({ userIds, researchGroupId }));
       this.toastService.showSuccessKey(`${I18N_BASE}.toastMessages.addMembersSuccess`);
       this.dialogRef.close(true);
-    } catch (error) {
-      console.error('Failed to add members:', error);
+    } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailed`);
       this.dialogRef.close(false);
     }
-  }
-
-  get selectedUsers(): UserDTO[] {
-    return this.userSelections()
-      .filter(selection => selection.selected)
-      .map(selection => selection.user);
   }
 
   get filteredUserSelections(): UserSelection[] {
