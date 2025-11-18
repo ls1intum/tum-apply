@@ -22,6 +22,9 @@
     "pageCount": {
       "page": "Page",
       "of": "from"
+    },
+    "error": {
+      "couldNotGeneratePdf": "The PDF could not be generated. Please try again later or contact us if the problem persists."
     }
   }
 }
