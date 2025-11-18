@@ -68,6 +68,16 @@
         "label": "Name",
         "placeholder": "z.B. Forschungsgruppe für Künstliche Intelligenz"
       },
+      "researchGroupDepartment": {
+        "label": "Fachbereich",
+        "placeholder": "Wählen...",
+        "options": {
+          "mathematics": "Mathematik",
+          "informatics": "Informatik",
+          "electricalEngineering": "Elektrotechnik",
+          "informationTechnology": "Informationstechnik"
+        }
+      },
       "researchGroupAbbreviation": {
         "label": "Abkürzung",
         "placeholder": "z.B. KI"

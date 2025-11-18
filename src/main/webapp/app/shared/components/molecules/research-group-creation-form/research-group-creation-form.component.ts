@@ -22,12 +22,11 @@ import TranslateDirective from '../../../language/translate.directive';
 
 type FormMode = 'professor' | 'admin';
 
-// Department options matching the Java enum
 const DEPARTMENT_OPTIONS: SelectOption[] = [
-  { name: 'Mathematics', value: 'MATHEMATICS' },
-  { name: 'Informatics', value: 'INFORMATICS' },
-  { name: 'Electrical Engineering', value: 'ELECTRICAL_ENGINEERING' },
-  { name: 'Information Technology', value: 'INFORMATION_TECHNOLOGY' },
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.mathematics', value: 'MATHEMATICS' },
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.electricalEngineering', value: 'ELECTRICAL_ENGINEERING' },
+  { name: 'onboarding.professorRequest.researchGroupDepartment.options.informationTechnology', value: 'INFORMATION_TECHNOLOGY' },
 ];
 
 @Component({

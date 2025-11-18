@@ -78,6 +78,7 @@ describe('ResearchGroupCreationFormComponent', () => {
       tumID: 'ab12cde',
       researchGroupHead: 'Prof. Dr. Max Mustermann',
       researchGroupName: 'AI Research Group',
+      researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       ...overrides,
     });
   }
@@ -484,6 +485,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Test',
         researchGroupName: 'Test Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
@@ -639,6 +641,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Test',
         researchGroupName: 'Test Research Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       expect(component.form.valid).toBe(true);
@@ -649,6 +652,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
@@ -664,6 +668,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
@@ -682,6 +687,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
@@ -699,6 +705,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
@@ -725,6 +732,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Admin Research Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
@@ -742,6 +750,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde',
         researchGroupHead: 'Prof. Dr. Admin Test',
         researchGroupName: 'Duplicate Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
@@ -759,6 +768,7 @@ describe('ResearchGroupCreationFormComponent', () => {
         tumID: 'ab12cde', // Use valid TUM-ID format
         researchGroupHead: 'Prof. Dr. Test',
         researchGroupName: 'Test Group',
+        researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       });
 
       component.onConfirmSubmit();
