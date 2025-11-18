@@ -9,10 +9,12 @@
             <column name="department" type="varchar(50)" defaultValue="INFORMATICS">
                 <constraints nullable="false"/>
             </column>
-            <column name="school" type="varchar(50)" defaultValue="CIT">
-                <constraints nullable="false"/>
-            </column>
         </addColumn>
+        
+        <!-- Modify school column to have proper type and constraints -->
+        <modifyDataType tableName="research_groups" columnName="school" newDataType="varchar(50)"/>
+        <addDefaultValue tableName="research_groups" columnName="school" defaultValue="CIT"/>
+        <addNotNullConstraint tableName="research_groups" columnName="school" defaultNullValue="CIT"/>
     </changeSet>
 
 </databaseChangeLog>
