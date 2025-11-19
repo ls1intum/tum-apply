@@ -86,18 +86,18 @@ export class ImageResourceApiService extends BaseService {
     }
 
     /**
-     * @param school 
+     * @param researchGroupId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDefaultJobBanners(school?: 'CIT', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ImageDTO>>;
-    public getDefaultJobBanners(school?: 'CIT', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ImageDTO>>>;
-    public getDefaultJobBanners(school?: 'CIT', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ImageDTO>>>;
-    public getDefaultJobBanners(school?: 'CIT', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getDefaultJobBanners(researchGroupId?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ImageDTO>>;
+    public getDefaultJobBanners(researchGroupId?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ImageDTO>>>;
+    public getDefaultJobBanners(researchGroupId?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ImageDTO>>>;
+    public getDefaultJobBanners(researchGroupId?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>school, 'school');
+          <any>researchGroupId, 'researchGroupId');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -188,25 +188,17 @@ export class ImageResourceApiService extends BaseService {
     }
 
     /**
-     * @param school 
      * @param file 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public uploadDefaultJobBanner(school: 'CIT', file: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ImageDTO>;
-    public uploadDefaultJobBanner(school: 'CIT', file: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ImageDTO>>;
-    public uploadDefaultJobBanner(school: 'CIT', file: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ImageDTO>>;
-    public uploadDefaultJobBanner(school: 'CIT', file: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (school === null || school === undefined) {
-            throw new Error('Required parameter school was null or undefined when calling uploadDefaultJobBanner.');
-        }
+    public uploadDefaultJobBanner(file: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ImageDTO>;
+    public uploadDefaultJobBanner(file: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ImageDTO>>;
+    public uploadDefaultJobBanner(file: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ImageDTO>>;
+    public uploadDefaultJobBanner(file: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (file === null || file === undefined) {
             throw new Error('Required parameter file was null or undefined when calling uploadDefaultJobBanner.');
         }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>school, 'school');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -260,7 +252,6 @@ export class ImageResourceApiService extends BaseService {
             {
                 context: localVarHttpContext,
                 body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

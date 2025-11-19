@@ -711,12 +711,10 @@ paths:
       tags: [image-resource]
       operationId: getDefaultJobBanners
       parameters:
-      - name: school
+      - name: researchGroupId
         in: query
         required: false
-        schema:
-          type: string
-          enum: [CIT]
+        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -741,13 +739,6 @@ paths:
     post:
       tags: [image-resource]
       operationId: uploadDefaultJobBanner
-      parameters:
-      - name: school
-        in: query
-        required: true
-        schema:
-          type: string
-          enum: [CIT]
       requestBody:
         content:
           multipart/form-data:
@@ -1698,9 +1689,7 @@ components:
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
         lastModifiedAt: {type: string, format: date-time}
         mimeType: {type: string}
-        school:
-          type: string
-          enum: [CIT]
+        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         sizeBytes: {type: integer, format: int64}
         uploadedBy: {$ref: '#/components/schemas/User'}
         url: {type: string}
@@ -1711,9 +1700,7 @@ components:
         imageType:
           type: string
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
-        school:
-          type: string
-          enum: [CIT]
+        researchGroupId: {type: string, format: uuid}
         sizeBytes: {type: integer, format: int64}
         uploadedById: {type: string, format: uuid}
         url: {type: string}

@@ -12,7 +12,7 @@
 export interface ImageDTO { 
     imageId?: string;
     imageType?: ImageDTO.ImageTypeEnum;
-    school?: ImageDTO.SchoolEnum;
+    researchGroupId?: string;
     sizeBytes?: number;
     uploadedById?: string;
     url?: string;
@@ -23,10 +23,6 @@ export namespace ImageDTO {
         JobBanner: 'JOB_BANNER' as ImageTypeEnum,
         ProfilePicture: 'PROFILE_PICTURE' as ImageTypeEnum,
         DefaultJobBanner: 'DEFAULT_JOB_BANNER' as ImageTypeEnum
-    };
-    export type SchoolEnum = 'CIT';
-    export const SchoolEnum = {
-        Cit: 'CIT' as SchoolEnum
     };
 }
 
