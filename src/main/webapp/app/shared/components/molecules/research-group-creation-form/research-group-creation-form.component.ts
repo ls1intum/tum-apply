@@ -42,11 +42,11 @@ type FormMode = 'professor' | 'admin';
   templateUrl: './research-group-creation-form.component.html',
 })
 export class ResearchGroupCreationFormComponent {
-  // Form
-  form: FormGroup;
-
   // Input to determine if this is admin mode or professor mode
   mode = computed<FormMode>(() => this.config?.data?.mode ?? 'professor');
+
+  // Form
+  form: FormGroup;
 
   // Track selected school
   selectedSchool = signal<SelectOption | null>(null);
@@ -58,34 +58,35 @@ export class ResearchGroupCreationFormComponent {
   confirmDialog = viewChild<ConfirmDialog>('confirmDialog');
   readonly researchGroupService = inject(ResearchGroupResourceApiService);
 
-  // Fetch school options from backend with display names
   schoolOptions = toSignal(
     this.researchGroupService
       .getAvailableSchools()
-      .pipe(map(schools => schools.map(school => ({ name: school.displayName ?? '', value: school.value ?? '' })))),
-    { initialValue: [] as { name: string; value: string }[] },
+      .pipe(map(schools => schools.map(school => ({ name: school.displayName ?? '', value: school.value ?? '' }) as SelectOption))),
+    { initialValue: [] as SelectOption[] },
   );
 
-  // Department options - dynamically filtered based on selected school
+  readonly allDepartmentOptions = toSignal(
+    this.researchGroupService
+      .getAvailableDepartments()
+      .pipe(map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' }) as SelectOption))),
+    { initialValue: [] as SelectOption[] },
+  );
+
+  // Store filtered departments based on selected school
+  filteredDepartments = signal<SelectOption[]>([]);
+
+  // Department options - pure computed signal that returns filtered or all departments
   departmentOptions = computed<SelectOption[]>(() => {
     const selectedSchool = this.selectedSchool();
-    const allDepartments = this.allDepartmentOptions();
 
-    if (!selectedSchool?.value || typeof selectedSchool.value !== 'string') {
-      return allDepartments ?? [];
+    // If no school selected, return all departments
+    if (!selectedSchool) {
+      return this.allDepartmentOptions() ?? [];
     }
 
-    // Fetch filtered departments from backend based on school
-    void firstValueFrom(
-      this.researchGroupService
-        .getDepartmentsBySchool(selectedSchool.value)
-        .pipe(map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' })))),
-    ).then(filtered => {
-      // Update the signal with filtered departments
-      this.filteredDepartments.set(filtered);
-    });
-
-    return this.filteredDepartments();
+    // Return filtered departments
+    const filtered = this.filteredDepartments();
+    return filtered.length > 0 ? filtered : (this.allDepartmentOptions() ?? []);
   });
 
   // Services
@@ -95,45 +96,36 @@ export class ResearchGroupCreationFormComponent {
   private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
   private readonly toastService = inject(ToastService);
 
-  // Store filtered departments
-  private filteredDepartments = signal<SelectOption[]>([]);
-
-  // Fetch all department options from backend with display names
-  private readonly allDepartmentOptions = toSignal(
-    this.researchGroupService
-      .getAvailableDepartments()
-      .pipe(map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' })))),
-    { initialValue: [] as { name: string; value: string }[] },
-  );
-
   constructor() {
     this.form = this.createForm();
   }
 
-  onSchoolChange(selectedSchool: SelectOption | null): void {
+  async onSchoolChange(selectedSchool: SelectOption | null): Promise<void> {
     this.selectedSchool.set(selectedSchool);
 
     if (selectedSchool && typeof selectedSchool.value === 'string') {
-      // Fetch departments for the selected school
-      void firstValueFrom(
-        this.researchGroupService
-          .getDepartmentsBySchool(selectedSchool.value)
-          .pipe(map(departments => departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' })))),
-      ).then(filtered => {
+      try {
+        // Fetch departments for the selected school - using firstValueFrom for cleaner async/await
+        const departments = await firstValueFrom(this.researchGroupService.getDepartmentsBySchool(selectedSchool.value));
+        const filtered = departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' }) as SelectOption);
+
         this.filteredDepartments.set(filtered);
 
         // Clear department selection if it's not in the filtered list
         const currentDepartment = this.form.get('researchGroupDepartment')?.value as SelectOption | null;
-        if (currentDepartment?.value != null) {
+        if (currentDepartment) {
           const isDepartmentValid = filtered.some(dept => dept.value === currentDepartment.value);
-          if (isDepartmentValid === false) {
+          if (!isDepartmentValid) {
             this.form.get('researchGroupDepartment')?.setValue(null);
           }
         }
-      });
+      } catch {
+        // On error, show all departments
+        this.filteredDepartments.set(this.allDepartmentOptions() ?? []);
+      }
     } else {
-      // No school selected, show all departments
-      this.filteredDepartments.set(this.allDepartmentOptions() ?? []);
+      // No school selected, clear filtered departments to show all
+      this.filteredDepartments.set([]);
       this.form.get('researchGroupDepartment')?.setValue(null);
     }
   }
@@ -168,7 +160,7 @@ export class ResearchGroupCreationFormComponent {
       researchGroupAbbreviation: [''],
       researchGroupContactEmail: ['', [Validators.email, Validators.pattern(/.+\..{2,}$/)]],
       researchGroupWebsite: [''],
-      researchGroupSchool: [null],
+      researchGroupSchool: [null, [Validators.required]],
       researchGroupDescription: ['', [Validators.maxLength(1000)]],
       researchGroupFieldOfStudies: [''],
       researchGroupStreetAndNumber: [''],
@@ -205,13 +197,13 @@ export class ResearchGroupCreationFormComponent {
         const errorMessage = error.error?.message ?? '';
 
         // Check if the error is about a duplicate research group name
-        if (errorMessage.includes('already exists') || error.status === 409) {
+        if (errorMessage.includes('already exists') === true || error.status === 409) {
           const errorKey =
             this.mode() === 'admin' ? 'researchGroup.adminView.errors.duplicateName' : 'onboarding.professorRequest.errorDuplicateName';
           this.toastService.showErrorKey(errorKey);
         }
         // Check if the error is about a user not found (invalid TUM-ID)
-        else if (error.status === 404 && errorMessage.includes('not found')) {
+        else if (error.status === 404 && errorMessage.includes('not found') === true) {
           const errorKey =
             this.mode() === 'admin' ? 'researchGroup.adminView.errors.userNotFound' : 'onboarding.professorRequest.errorUserNotFound';
           this.toastService.showErrorKey(errorKey);

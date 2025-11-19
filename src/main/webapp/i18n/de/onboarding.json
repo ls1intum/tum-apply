@@ -86,7 +86,7 @@
       },
       "researchGroupSchool": {
         "label": "School",
-        "placeholder": "z.B. Informatik"
+        "placeholder": "Wählen..."
       },
       "researchGroupDescription": {
         "label": "Beschreibung",

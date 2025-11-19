@@ -61,7 +61,6 @@
               [label]="'researchGroup.detailView.department' | translate"
               [placeholder]="'researchGroup.detailView.placeholders.department' | translate"
               [required]="true"
-              [translateItems]="true"
             />
           </div>
         </div>
@@ -73,12 +72,14 @@
 
         <div class="form-row">
           <div class="form-field">
-            <jhi-string-input
+            <jhi-select
+              [selected]="selectedSchool()"
+              (selectedChange)="onSchoolChange($event)"
               [id]="'rg-school'"
               label="{{ 'researchGroup.detailView.school' | translate }}"
-              [control]="form.controls.school"
-              [model]="form.controls.school.value || ''"
               placeholder="{{ 'researchGroup.detailView.placeholders.school' | translate }}"
+              [required]="true"
+              [items]="schoolOptions()"
             />
           </div>
           <div class="form-field">

@@ -189,6 +189,7 @@ public class ResearchGroupService {
 
     /**
      * Updates a ResearchGroup entity with values from the provided DTO.
+     * Only updates fields that are provided (non-null) in the DTO.
      */
     private void updateEntityFromDTO(ResearchGroup entity, ResearchGroupDTO dto) {
         entity.setName(dto.name());
@@ -196,7 +197,12 @@ public class ResearchGroupService {
         entity.setHead(dto.head());
         entity.setEmail(dto.email());
         entity.setWebsite(dto.website());
-        entity.setSchool(dto.school());
+        if (dto.school() != null) {
+            entity.setSchool(dto.school());
+        }
+        if (dto.department() != null) {
+            entity.setDepartment(dto.department());
+        }
         entity.setDescription(dto.description());
         entity.setStreet(dto.street());
         entity.setPostalCode(dto.postalCode());

@@ -58,9 +58,22 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     { initialValue: [] as { name: string; value: string }[] },
   );
 
+  schoolOptions = toSignal(
+    this.ResearchGroupService.getAvailableSchools().pipe(
+      map(schools => schools.map(school => ({ name: school.displayName ?? '', value: school.value ?? '' }))),
+    ),
+    { initialValue: [] as { name: string; value: string }[] },
+  );
+
   selectedDepartment = computed(() => {
     const value = this.form.controls.department.value;
     const options = this.departmentOptions();
+    return options?.find((option: { value: string }) => option.value === value);
+  });
+
+  selectedSchool = computed(() => {
+    const value = this.form.controls.school.value;
+    const options = this.schoolOptions();
     return options?.find((option: { value: string }) => option.value === value);
   });
 
@@ -73,6 +86,10 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   onDepartmentChange(option: SelectOption): void {
     this.form.controls.department.setValue(option.value as string);
+  }
+
+  onSchoolChange(option: SelectOption): void {
+    this.form.controls.school.setValue(option.value as string);
   }
 
   async onSave(): Promise<void> {
@@ -96,7 +113,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         head: formValue.head ?? '',
         email: formValue.email ?? '',
         website: formValue.website ?? '',
-        school: (formValue.school as ResearchGroupDTO.SchoolEnum) ?? undefined,
+        school: formValue.school as ResearchGroupDTO.SchoolEnum,
         description: formValue.description ?? '',
         street: formValue.street ?? '',
         postalCode: formValue.postalCode ?? '',

@@ -133,18 +133,18 @@
       />
     </div>
 
-    <div>
+    <div class="mb-6">
       <jhi-select
         [selected]="form.get('researchGroupSchool')?.value"
         (selectedChange)="form.get('researchGroupSchool')?.setValue($event); onSchoolChange($event)"
         [items]="schoolOptions()"
         [label]="'onboarding.professorRequest.researchGroupSchool.label' | translate"
         [placeholder]="'onboarding.professorRequest.researchGroupSchool.placeholder' | translate"
-        [translateItems]="true"
+        [required]="true"
       />
     </div>
 
-    <div>
+    <div class="mb-6">
       <jhi-select
         [selected]="form.get('researchGroupDepartment')?.value"
         (selectedChange)="form.get('researchGroupDepartment')?.setValue($event)"
@@ -152,7 +152,6 @@
         [label]="'onboarding.professorRequest.researchGroupDepartment.label' | translate"
         [placeholder]="'onboarding.professorRequest.researchGroupDepartment.placeholder' | translate"
         [required]="true"
-        [translateItems]="true"
       />
     </div>
   </div>

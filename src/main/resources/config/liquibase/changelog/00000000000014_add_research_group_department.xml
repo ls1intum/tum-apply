@@ -6,15 +6,14 @@
 
     <changeSet id="add-research-group-department" author="bofanzhu">
         <addColumn tableName="research_groups">
-            <column name="department" type="varchar(50)" defaultValue="INFORMATICS">
+            <column name="department" type="varchar(50)" defaultValue="COMPUTER_SCIENCE">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
         
-        <!-- Modify school column to have proper type and constraints -->
         <modifyDataType tableName="research_groups" columnName="school" newDataType="varchar(50)"/>
         <addDefaultValue tableName="research_groups" columnName="school" defaultValue="CIT"/>
-        <addNotNullConstraint tableName="research_groups" columnName="school" defaultNullValue="CIT"/>
+        <addNotNullConstraint tableName="research_groups" columnName="school" columnDataType="varchar(50)" defaultNullValue="CIT"/>
     </changeSet>
 
 </databaseChangeLog>
