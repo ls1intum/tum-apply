@@ -22,7 +22,7 @@
       <column name="image_type" type="VARCHAR(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="school" type="VARCHAR(255)"/>
+      <column name="research_group_id" type="CHAR(36)"/>
       <column name="uploaded_by" type="CHAR(36)"/>
       <column name="created_at" type="DATETIME(3)" defaultValueComputed="CURRENT_TIMESTAMP(3)">
         <constraints nullable="false"/>
@@ -33,11 +33,22 @@
     </createTable>
 
     <addForeignKeyConstraint baseTableName="images"
+                             baseColumnNames="research_group_id"
+                             constraintName="fk_images_research_group"
+                             referencedTableName="research_groups"
+                             referencedColumnNames="research_group_id"
+                             onDelete="CASCADE"/>
+
+    <addForeignKeyConstraint baseTableName="images"
                              baseColumnNames="uploaded_by"
                              constraintName="fk_images_user"
                              referencedTableName="users"
                              referencedColumnNames="user_id"
                              onDelete="CASCADE"/>
+
+    <createIndex indexName="idx_images_research_group_id" tableName="images">
+      <column name="research_group_id"/>
+    </createIndex>
 
     <createIndex indexName="idx_images_uploaded_by" tableName="images">
       <column name="uploaded_by"/>

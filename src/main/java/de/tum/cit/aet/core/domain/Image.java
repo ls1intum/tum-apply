@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.domain;
 
 import de.tum.cit.aet.core.constants.ImageType;
-import de.tum.cit.aet.core.constants.School;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -18,6 +18,10 @@ public class Image extends AbstractAuditingEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "image_id", nullable = false)
     private UUID imageId;
+
+    @ManyToOne
+    @JoinColumn(name = "research_group_id")
+    private ResearchGroup researchGroup;
 
     /**
      * Access URL for the image (e.g., "/images/jobs/abc-123.jpg")
@@ -37,14 +41,6 @@ public class Image extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "image_type", nullable = false)
     private ImageType imageType;
-
-    /**
-     * School this image belongs to (only relevant for default images)
-     * Null for user-uploaded images
-     */
-    @Enumerated(EnumType.STRING)
-    @Column(name = "school")
-    private School school;
 
     @ManyToOne
     @JoinColumn(name = "uploaded_by")
