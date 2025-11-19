@@ -129,16 +129,20 @@ class InterviewResourceTest extends AbstractResourceTest {
             UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
 
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, InterviewOverviewDTO.class, 403);
+            .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, Void.class, 403);
+
+        assertThat(result).isNull();
     }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")
-    void getInterviewProcessDetails_notFoundForNonExistentId() {
-        api
+    void getInterviewProcessDetailsNotFoundForNonExistentId() {
+        Void result = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + UUID.randomUUID(), null, InterviewOverviewDTO.class, 404);
+            .getAndRead("/api/interviews/processes/" + UUID.randomUUID(), null, Void.class, 404);
+
+        assertThat(result).isNull();
     }
 }
