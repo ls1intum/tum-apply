@@ -40,8 +40,8 @@ model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
 model/authSessionInfoDTO.ts
-model/createSlotsDTO.ts
 model/biasedWordDTO.ts
+model/createSlotsDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts

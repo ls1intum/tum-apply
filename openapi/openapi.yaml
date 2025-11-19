@@ -1510,6 +1510,11 @@ components:
         expiresIn: {type: integer, format: int64}
         profileRequired: {type: boolean}
         refreshExpiresIn: {type: integer, format: int64}
+    BiasedWordDTO:
+      type: object
+      properties:
+        type: {type: string}
+        word: {type: string}
     CreateSlotsDTO:
       type: object
       properties:
@@ -1518,11 +1523,6 @@ components:
           items: {$ref: '#/components/schemas/SlotInput'}
           minItems: 1
       required: [slots]
-    BiasedWordDTO:
-      type: object
-      properties:
-        type: {type: string}
-        word: {type: string}
     CreatedJobDTO:
       type: object
       properties:
