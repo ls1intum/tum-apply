@@ -191,7 +191,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         void exportApplicationToPDFReturns401ForUnauthenticatedUser() {
             Map<String, String> labels = createCompleteLabelsMap();
 
-            api
+            Void result = api
                 .withoutPostProcessors()
                 .postAndRead(
                     BASE_URL + "/application/" + application.getApplicationId() + "/pdf",
@@ -200,6 +200,8 @@ class PDFExportResourceTest extends AbstractResourceTest {
                     401,
                     MediaType.APPLICATION_PDF
                 );
+
+            assertThat(result).isNull();
         }
     }
 
@@ -259,7 +261,15 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Map<String, String> labels = createCompleteLabelsMap();
             JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, labels);
 
-            asApplicant(applicant).postAndRead(BASE_URL + "/job/preview/pdf", request, Void.class, 403, MediaType.APPLICATION_PDF);
+            Void result = asApplicant(applicant).postAndRead(
+                BASE_URL + "/job/preview/pdf",
+                request,
+                Void.class,
+                403,
+                MediaType.APPLICATION_PDF
+            );
+
+            assertThat(result).isNull();
         }
 
         @Test
@@ -267,7 +277,11 @@ class PDFExportResourceTest extends AbstractResourceTest {
             JobFormDTO jobFormDTO = JobFormDTO.getFromEntity(job);
             JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, createCompleteLabelsMap());
 
-            api.withoutPostProcessors().postAndRead(BASE_URL + "/job/preview/pdf", request, Void.class, 401, MediaType.APPLICATION_PDF);
+            Void result = api
+                .withoutPostProcessors()
+                .postAndRead(BASE_URL + "/job/preview/pdf", request, Void.class, 401, MediaType.APPLICATION_PDF);
+
+            assertThat(result).isNull();
         }
     }
 
@@ -276,7 +290,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
         @Test
         void unauthenticatedReturns401ForApplicationExport() {
-            api
+            Void result = api
                 .withoutPostProcessors()
                 .postAndRead(
                     BASE_URL + "/application/" + application.getApplicationId() + "/pdf",
@@ -285,6 +299,8 @@ class PDFExportResourceTest extends AbstractResourceTest {
                     401,
                     MediaType.APPLICATION_PDF
                 );
+
+            assertThat(result).isNull();
         }
 
         @Test
@@ -292,7 +308,11 @@ class PDFExportResourceTest extends AbstractResourceTest {
             JobFormDTO jobFormDTO = JobFormDTO.getFromEntity(job);
             JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, Map.of());
 
-            api.withoutPostProcessors().postAndRead(BASE_URL + "/job/preview/pdf", request, Void.class, 401, MediaType.APPLICATION_PDF);
+            Void result = api
+                .withoutPostProcessors()
+                .postAndRead(BASE_URL + "/job/preview/pdf", request, Void.class, 401, MediaType.APPLICATION_PDF);
+
+            assertThat(result).isNull();
         }
     }
 }
