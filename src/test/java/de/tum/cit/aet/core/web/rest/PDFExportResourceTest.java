@@ -101,6 +101,14 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
     private Map<String, String> createCompleteLabelsMap() {
         Map<String, String> labels = new java.util.HashMap<>();
+        addHeaderAndOverviewLabels(labels);
+        addPersonalLabels(labels);
+        addEducationAndMetadataLabels(labels);
+        addJobSpecificLabels(labels);
+        return labels;
+    }
+
+    private void addHeaderAndOverviewLabels(Map<String, String> labels) {
         // Application header
         labels.put("application", "Application");
         labels.put("headline", "Application for ");
@@ -123,7 +131,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("startDate", "Start Date");
         labels.put("endDate", "End Date");
         labels.put("jobDescription", "Job Description");
+    }
 
+    private void addPersonalLabels(Map<String, String> labels) {
         // Personal Statements
         labels.put("personalStatements", "Personal Statements");
         labels.put("motivation", "Motivation");
@@ -139,7 +149,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("nationality", "Nationality");
         labels.put("website", "Website");
         labels.put("linkedIn", "LinkedIn");
+    }
 
+    private void addEducationAndMetadataLabels(Map<String, String> labels) {
         // Education
         labels.put("bachelorInfo", "Bachelor Information");
         labels.put("masterInfo", "Master Information");
@@ -154,7 +166,9 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("metaEndText", "End of document");
         labels.put("page", "Page");
         labels.put("of", "of");
+    }
 
+    private void addJobSpecificLabels(Map<String, String> labels) {
         // Job specific
         labels.put("jobPdfEnding", "Job_Posting");
         labels.put("jobBy", "Job by ");
@@ -166,8 +180,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("contactDetails", "Contact Details");
         labels.put("address", "Address");
         labels.put("email", "Email");
-
-        return labels;
     }
 
     @Nested
