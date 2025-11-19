@@ -347,8 +347,9 @@ export class JobDetailComponent {
   async onDownloadPDF(): Promise<void> {
     const labels = getJobPDFLabels(this.translate);
 
-    if (this.previewData()?.()) {
-      const formData = this.previewData()?.();
+    const previewSignal = this.previewData();
+    if (previewSignal) {
+      const formData = previewSignal();
       if (!formData) {
         this.toastService.showErrorKey('pdf.couldNotGeneratePdf');
         return;
