@@ -85,8 +85,6 @@ public class ImageService {
     @Transactional
     public Image upload(MultipartFile file, ImageType imageType) {
         User uploader = currentUserService.getUser();
-        log.info("User {} attempting to upload image of type {}", uploader.getUserId(), imageType);
-        log.info("User's research group: {}", uploader.getResearchGroup() != null ? uploader.getResearchGroup().getResearchGroupId() : "null");
         return uploadImage(file, uploader, imageType, uploader.getResearchGroup());
     }
 
@@ -164,9 +162,7 @@ public class ImageService {
             image.setResearchGroup(researchGroup);
 
             Image savedImage = imageRepository.save(image);
-            log.info("Successfully saved image: {} (type: {}, researchGroup: {})", 
-                     savedImage.getImageId(), savedImage.getImageType(), 
-                     savedImage.getResearchGroup() != null ? savedImage.getResearchGroup().getResearchGroupId() : "null");
+
             return savedImage;
         } catch (IOException e) {
             throw new UploadException("Failed to store image", e);
@@ -209,7 +205,6 @@ public class ImageService {
     public List<Image> getResearchGroupJobBanners() {
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
         List<Image> images = imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, researchGroupId);
-        log.debug("Found {} job banner images for research group: {}", images.size(), researchGroupId);
         images.forEach(img -> log.debug("  - Image ID: {} (url: {})", img.getImageId(), img.getUrl()));
         return images;
     }
@@ -231,9 +226,6 @@ public class ImageService {
 
         Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
 
-        log.info("Attempting to delete image: {} (type: {}, uploadedBy: {})", imageId, image.getImageType(), 
-                 image.getUploadedBy() != null ? image.getUploadedBy().getUserId() : "null");
-
         if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER && !isAdmin) {
             throw new IllegalArgumentException("Only admins can delete default images");
         }
@@ -245,7 +237,6 @@ public class ImageService {
         deleteImageFile(image);
 
         imageRepository.delete(image);
-        log.info("Successfully deleted image: {}", imageId);
     }
 
     /**

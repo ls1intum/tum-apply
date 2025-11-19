@@ -18,7 +18,9 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @param researchGroupId the specific research group ID to filter by
      * @return a list of images belonging to that specific research group, ordered by creation date ascending
      */
-    @Query("SELECT i FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId ORDER BY i.createdAt ASC")
+    @Query(
+        "SELECT i FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId ORDER BY i.createdAt ASC"
+    )
     List<Image> findByImageTypeAndResearchGroup(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
 
     /**
