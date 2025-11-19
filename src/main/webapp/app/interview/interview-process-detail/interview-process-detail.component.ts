@@ -17,7 +17,7 @@ import { SlotsSectionComponent } from './slots-section/slots-section.component';
     TranslateDirective,
     ButtonComponent,
     SlotsSectionComponent,
-    // IntervieweesSectionComponent, // ← TODO: Später hinzufügen
+    // TODO: Add IntervieweesSectionComponent (Issue #9)
   ],
   templateUrl: './interview-process-detail.component.html',
 })
@@ -27,25 +27,27 @@ export class InterviewProcessDetailComponent {
   private readonly interviewService = inject(InterviewResourceApiService);
 
   processId = signal<string | null>(null);
-  jobTitle = signal<string>('Interview Process'); // Fallback Title
+  jobTitle = signal<string>('Interview Process');
 
   constructor() {
-    // Get processId from route
     const id = this.route.snapshot.paramMap.get('processId');
     if (id) {
       this.processId.set(id);
 
-      // Versuche jobTitle aus router state zu holen
+      // Try to get jobTitle from router state (faster on navigation)
       const state = window.history.state;
       if (state?.jobTitle) {
         this.jobTitle.set(state.jobTitle);
       } else {
-        // Lade im Hintergrund vom Backend (bei Refresh)
+        // Fallback: Load from backend (e.g., on page refresh)
         void this.loadJobTitle(id);
       }
     }
   }
 
+  /**
+   * Loads job title from backend when router state is not available
+   */
   private async loadJobTitle(processId: string): Promise<void> {
     try {
       const overviews = await firstValueFrom(
@@ -59,7 +61,6 @@ export class InterviewProcessDetailComponent {
       }
     } catch (error) {
       console.error('Failed to load job title', error);
-      // Behalte Fallback "Interview Process"
     }
   }
 

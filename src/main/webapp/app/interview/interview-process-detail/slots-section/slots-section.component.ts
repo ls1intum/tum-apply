@@ -36,7 +36,6 @@ export class SlotsSectionComponent {
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly translateService = inject(TranslateService);
 
-  // Input vom Parent Component
   processId = input.required<string>();
 
   readonly MAX_VISIBLE_SLOTS = 3;
@@ -45,15 +44,18 @@ export class SlotsSectionComponent {
   slots = signal<InterviewSlotDTO[]>([]);
   loading = signal(true);
   error = signal(false);
-  currentMonthOffset = signal(0);
-  currentDatePage = signal(0);
-  expandedDates = signal<Set<string>>(new Set());
+  currentMonthOffset = signal(0); // 0 = current month, -1 = previous month, +1 = next month
+  currentDatePage = signal(0); // Pagination within the current month
+  expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
 
   private locale = computed(() => {
     const currentLang = this.translateService.currentLang || 'en';
     return currentLang === 'de' ? 'de-DE' : 'en-US';
   });
 
+  /**
+   * Groups slots by date and sorts them chronologically
+   */
   groupedSlots = computed<GroupedSlots[]>(() => {
     const slotsData = this.slots();
     if (!slotsData.length) return [];
@@ -81,6 +83,9 @@ export class SlotsSectionComponent {
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
 
+  /**
+   * Filters grouped slots to only show the current selected month
+   */
   currentMonthSlots = computed(() => {
     const allDates = this.groupedSlots();
     const offset = this.currentMonthOffset();
@@ -96,6 +101,9 @@ export class SlotsSectionComponent {
     });
   });
 
+  /**
+   * Paginates the current month's slots to show max 5 dates at a time
+   */
   paginatedSlots = computed(() => {
     const monthDates = this.currentMonthSlots();
     const page = this.currentDatePage();
@@ -122,7 +130,7 @@ export class SlotsSectionComponent {
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
   constructor() {
-    // Effect um Slots zu laden wenn processId sich ändert
+    // Load slots whenever processId changes
     effect(() => {
       const id = this.processId();
       if (id) {
@@ -150,7 +158,7 @@ export class SlotsSectionComponent {
   }
 
   openCreateSlotsModal(): void {
-    console.log('Create slots modal - Issue #8');
+    console.log('Create slots modal - TODO: Issue #8');
   }
 
   async refreshSlots(): Promise<void> {
@@ -210,6 +218,9 @@ export class SlotsSectionComponent {
     this.expandedDates.set(expanded);
   }
 
+  /**
+   * Returns properly pluralized "show more" text based on count
+   */
   getShowMoreText(count: number): string {
     const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
     return `${count} ${this.translateService.instant(key)}`;
@@ -217,16 +228,16 @@ export class SlotsSectionComponent {
 
   onEditSlot(slot: InterviewSlotDTO): void {
     console.log('Edit slot:', slot);
-    // TODO: Open Edit Modal
+    // TODO: Open Edit Modal (Issue #10)
   }
 
   onDeleteSlot(slot: InterviewSlotDTO): void {
     console.log('Delete slot:', slot);
-    // TODO: Open Delete Confirmation
+    // TODO: Open Delete Confirmation (Issue #10)
   }
 
   onAssignApplicant(slot: InterviewSlotDTO): void {
     console.log('Assign applicant to slot:', slot);
-    // TODO: Open Assign Modal
+    // TODO: Open Assign Modal (Issue #9)
   }
 }

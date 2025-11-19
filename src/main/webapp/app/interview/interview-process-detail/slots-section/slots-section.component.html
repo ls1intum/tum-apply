@@ -1,13 +1,13 @@
 <!-- Loading State -->
 @if (loading()) {
-  <div class="flex justify-center items-center py-12">
-    <p-progressSpinner styleClass="w-16 h-16" />
+  <div class="flex justify-center items-center py-8">
+    <p-progressSpinner styleClass="w-12 h-12" />
   </div>
 }
 
 <!-- Error State -->
 @if (error() && !loading()) {
-  <div class="flex justify-center items-center py-12">
+  <div class="flex justify-center items-center py-8">
     <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
       <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
       <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.error.title">Failed to load slots</h3>
@@ -26,7 +26,7 @@
 
 <!-- Empty State -->
 @if (!loading() && !error() && groupedSlots().length === 0) {
-  <div class="flex justify-center items-center py-12">
+  <div class="flex justify-center items-center py-8">
     <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
       <i class="pi pi-calendar-times text-4xl text-gray-400"></i>
       <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
@@ -52,11 +52,10 @@
       (addSlots)="openCreateSlotsModal()"
     />
 
-    <!-- Date Grid mit seitlichen Pfeilen -->
     @if (currentMonthSlots().length > 0) {
       <div class="flex items-start gap-4">
-        <!-- Left Arrow -->
-        <div class="flex-shrink-0 pt-12">
+        <!-- Left Pagination Arrow -->
+        <div class="flex-shrink-0 pt-8">
           <jhi-button
             [icon]="'chevron-left'"
             [variant]="'text'"
@@ -65,18 +64,17 @@
           />
         </div>
 
-        <!-- Grid Layout -->
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <!-- Date Grid (max 5 dates visible) -->
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
           @for (group of paginatedSlots(); track group.date) {
-            <!-- Date Column -->
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-2">
               <!-- Date Header -->
               <jhi-date-header
                 [date]="group.localDate"
                 [slotCount]="group.slots.length"
               />
 
-              <!-- Slots -->
+              <!-- Slot Cards -->
               <div class="flex flex-col gap-2">
                 @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
                   <jhi-slot-card
@@ -107,8 +105,8 @@
           }
         </div>
 
-        <!-- Right Arrow -->
-        <div class="flex-shrink-0 pt-12">
+        <!-- Right Pagination Arrow -->
+        <div class="flex-shrink-0 pt-8">
           <jhi-button
             [icon]="'chevron-right'"
             [variant]="'text'"
@@ -118,8 +116,8 @@
         </div>
       </div>
     } @else {
-      <!-- No slots in this month -->
-      <div class="text-center py-16 text-gray-500">
+      <!-- No slots in current month -->
+      <div class="text-center py-12 text-gray-500">
         <i class="pi pi-calendar-times text-5xl mb-4 block"></i>
         <p class="text-lg" [jhiTranslate]="'interview.detail.noSlotsInMonth'" [translateValues]="{month: currentMonth()}">
           No slots in {{ currentMonth() }}

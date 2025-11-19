@@ -11,7 +11,6 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 })
 export class SlotCardComponent {
   slot = input.required<InterviewSlotDTO>();
-  constructor(private el: ElementRef) {}
 
   showMenu = signal(false);
 
@@ -21,6 +20,11 @@ export class SlotCardComponent {
 
   private readonly TIMEZONE = 'Europe/Berlin';
 
+  constructor(private el: ElementRef) {}
+
+  /**
+   * Closes the dropdown menu when clicking outside the component
+   */
   @HostListener('document:click', ['$event'])
   handleOutsideClick(event: Event) {
     if (!this.el.nativeElement.contains(event.target)) {
@@ -51,9 +55,10 @@ export class SlotCardComponent {
   };
 
   applicantName = () => {
-    // TODO: Wird später mit Application.scheduledInterviewSlot implementiert
+    // TODO: Will be implemented later with Application.scheduledInterviewSlot relationship
     return 'Applicant Name';
   };
+
   toggleMenu(): void {
     this.showMenu.update(v => !v);
   }

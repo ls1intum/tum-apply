@@ -17,6 +17,7 @@ export class DateHeaderComponent {
   private currentLang = signal<string>(this.translateService.currentLang || 'en');
 
   constructor() {
+    // Track language changes for reactive locale updates
     effect(() => {
       this.translateService.onLangChange.subscribe(event => {
         this.currentLang.set(event.lang);
@@ -37,7 +38,9 @@ export class DateHeaderComponent {
     return this.date().toLocaleDateString(this.locale(), { day: '2-digit' });
   };
 
-  // Saubere Pluralisierung
+  /**
+   * Returns properly pluralized slot count text
+   */
   slotsText = () => {
     const count = this.slotCount();
     const key = count === 1 ? 'interview.slots.slotsCountSingular' : 'interview.slots.slotsCountPlural';
