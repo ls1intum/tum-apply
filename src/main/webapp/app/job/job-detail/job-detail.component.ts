@@ -111,7 +111,7 @@ export class JobDetailComponent {
     severity: 'secondary',
     variant: 'outlined',
     onClick: () => {
-      this.onDownloadPDF();
+      void this.onDownloadPDF();
     },
     disabled: false,
     shouldTranslate: true,
