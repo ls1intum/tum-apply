@@ -735,10 +735,27 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/research-group/job-banners:
+    get:
+      tags: [image-resource]
+      operationId: getResearchGroupJobBanners
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
   /api/images/upload/default-job-banner:
     post:
       tags: [image-resource]
       operationId: uploadDefaultJobBanner
+      parameters:
+      - name: researchGroupId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           multipart/form-data:
