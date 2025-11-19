@@ -508,11 +508,6 @@ public class ResearchGroupService {
     public void createEmployeeResearchGroupRequest(EmployeeResearchGroupRequestDTO request) {
         User currentUser = currentUserService.getUser();
 
-        // Create a dummy admin user for sending the email to support
-        User supportUser = new User();
-        supportUser.setEmail(supportEmail);
-        supportUser.setSelectedLanguage(Language.ENGLISH.getCode());
-
         String emailBody = String.format(
             """
             <html>
@@ -545,15 +540,8 @@ public class ResearchGroupService {
             request.professorName()
         );
 
-        Email email = Email.builder()
-            .to(supportUser)
-            .customSubject("Employee Research Group Access Request - " + currentUser.getEmail())
-            .customBody(emailBody)
-            .sendAlways(true)
-            .language(Language.ENGLISH)
-            .build();
+        sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
 
-        emailSender.sendAsync(email);
         log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
 
@@ -603,17 +591,33 @@ public class ResearchGroupService {
                 researchGroup.getName()
             );
 
-            Email email = Email.builder()
-                .to(user)
-                .customSubject("You have been added to the research group " + researchGroup.getName())
-                .customBody(emailBody)
-                .sendAlways(true)
-                .language(Language.ENGLISH)
-                .build();
-
-            emailSender.sendAsync(email);
+            sendEmail(
+                user.getEmail(),
+                "You have been added to the research group " + researchGroup.getName(),
+                emailBody,
+                Language.fromCode(user.getSelectedLanguage())
+            );
 
             log.info("Added user {} to research group {} and sent notification email", userId, targetGroupId);
         }
+    }
+
+    /**
+     * Sends an email with custom subject and body to a recipient.
+     * This is a general-purpose email sending method that can be reused for various notification types.
+     *
+     * @param recipientEmail the email address of the recipient
+     * @param subject the email subject
+     * @param body the HTML email body
+     * @param language the language preference for the email
+     */
+    private void sendEmail(String recipientEmail, String subject, String body, Language language) {
+        User recipient = new User();
+        recipient.setEmail(recipientEmail);
+        recipient.setSelectedLanguage(language.getCode());
+
+        Email email = Email.builder().to(recipient).customSubject(subject).customBody(body).sendAlways(true).language(language).build();
+
+        emailSender.sendAsync(email);
     }
 }
