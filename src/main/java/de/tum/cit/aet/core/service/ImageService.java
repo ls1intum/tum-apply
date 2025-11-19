@@ -161,7 +161,9 @@ public class ImageService {
             image.setUploadedBy(uploader);
             image.setResearchGroup(researchGroup);
 
-            return imageRepository.save(image);
+            Image savedImage = imageRepository.save(image);
+
+            return savedImage;
         } catch (IOException e) {
             throw new UploadException("Failed to store image", e);
         }
@@ -202,7 +204,9 @@ public class ImageService {
      */
     public List<Image> getResearchGroupJobBanners() {
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
-        return imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, researchGroupId);
+        List<Image> images = imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, researchGroupId);
+        images.forEach(img -> log.debug("  - Image ID: {} (url: {})", img.getImageId(), img.getUrl()));
+        return images;
     }
 
     /**
@@ -261,18 +265,22 @@ public class ImageService {
      * This is typically used when updating a job's banner image. The old image will only be deleted if:
      * - It exists and is not null
      * - It is not a default school image (DEFAULT_JOB_BANNER)
+     * - It is not a research group job banner (JOB_BANNER) - these are kept in the research group's image library
      * - It is different from the new image
      *
-     * Default school images are never deleted during replacement to preserve system assets.
+     * Default school images and research group job banners are never automatically deleted during replacement
+     * to preserve the image library for reuse.
      *
      * @param oldImage the current image to be replaced (can be null)
      * @param newImage the new image to use (can be null)
      * @return the new image (unchanged)
      */
     public Image replaceImage(Image oldImage, Image newImage) {
+        // Don't auto-delete default images or research group job banners (they're part of the reusable library)
         if (
             oldImage != null &&
             oldImage.getImageType() != ImageType.DEFAULT_JOB_BANNER &&
+            oldImage.getImageType() != ImageType.JOB_BANNER &&
             (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))
         ) {
             try {
