@@ -68,6 +68,7 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     /**
      * Find all default job banner images for a specific school
      *
+     * @param imageType the type of images to find (typically DEFAULT_JOB_BANNER)
      * @param school the school to find banners for (e.g., "CIT", "CS")
      * @return a list of default job banners for the school
      */
