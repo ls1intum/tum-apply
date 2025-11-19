@@ -87,16 +87,13 @@
     },
     "imageSection": {
       "title": "Wähle ein Bannerbild",
-      "description": "Wähle ein Bannerbild aus, das oben in deiner Stellenanzeige angezeigt wird. Du kannst aus unseren Standardbildern wählen oder dein eigenes hochladen.",
+      "description": "Wähle ein optionales Bannerbild aus, das in deiner Jobkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe. Hochgeladene Bilder werden innerhalb deiner Forschungsgruppe geteilt und können für mehrere Stellenausschreibungen wiederverwendet werden.",
       "defaultImages": "Standardbilder",
-      "defaultImagesDisabledHint": "Lösche das benutzerdefinierte Bild um ein Standardbild auszuwählen.",
       "orDivider": "oder",
-      "uploadCustom": "Benutzerdefiniertes Bild hochladen",
-      "clickToUpload": "Klicke, um ein Bild hochzuladen",
+      "researchGroupImages": "Forschungsgruppen-Bildbibliothek",
+      "researchGroupImagesDescription": "Diese Bilder werden innerhalb deiner Forschungsgruppe geteilt. Lade neue Bilder hoch, um sie zur Bibliothek hinzuzufügen, und wähle ein beliebiges Bild für diese Stelle aus.",
       "uploadRecommendation": "Empfohlen: 1200x675px (16:9 Format) · Max 5MB",
       "uploadFormats": "JPG, JPEG, PNG Formate akzeptiert",
-      "pendingUploadHint": "Dieses Bild wird hochgeladen, wenn du die Stelle veröffentlichst",
-      "removeImage": "Bild entfernen",
       "uploadSuccess": {
         "summary": "Upload erfolgreich",
         "detail": "Bild erfolgreich hochgeladen"
@@ -138,7 +135,9 @@
       "noDefaultImages": "Keine Standard-Banner verfügbar. Bitte lade dein eigenes Bild hoch.",
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, JPEG, PNG. Maximale Abmessungen: 1920x1080px",
       "selectedImage": "Ausgewähltes Bild",
-      "myUploads": "Meine hochgeladenen Bilder"
+      "myUploads": "Meine hochgeladenen Bilder",
+      "maxImagesReached": "Maximal 10 Bilder erreicht. Bitte lösche ein vorhandenes Bild, bevor du ein neues hochlädst.",
+      "noImage": "Kein Bild"
     },
     "additionalInformationSection": {
       "extras": {

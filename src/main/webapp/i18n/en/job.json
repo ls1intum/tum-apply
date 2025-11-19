@@ -87,16 +87,13 @@
     },
     "imageSection": {
       "title": "Choose a Banner Image",
-      "description": "Select a banner image that will be displayed at the top of your job posting. You can choose from our default images or upload your own.",
+      "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library. Uploaded images are shared across your research group and can be reused for multiple job postings.",
       "defaultImages": "Default Images",
-      "defaultImagesDisabledHint": "Delete your custom image to select a default image",
       "orDivider": "or",
-      "uploadCustom": "Upload Custom Image",
-      "clickToUpload": "Click to upload an image",
+      "researchGroupImages": "Research Group Image Library",
+      "researchGroupImagesDescription": "These images are shared across your research group. Upload new images to add them to the library, and select any image to use for this job.",
       "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
       "uploadFormats": "JPG, JPEG, PNG formats accepted",
-      "pendingUploadHint": "This image will be uploaded when you publish the job",
-      "removeImage": "Remove Image",
       "uploadSuccess": {
         "summary": "Upload Successful",
         "detail": "Image uploaded successfully"
@@ -138,7 +135,9 @@
       "noDefaultImages": "No default banners available. Please upload your own image.",
       "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG. Maximum dimensions: 1920x1080px",
       "selectedImage": "Selected Image",
-      "myUploads": "My Uploaded Images"
+      "myUploads": "My Uploaded Images",
+      "maxImagesReached": "Maximum of 10 images reached. Please delete an existing image before uploading a new one.",
+      "noImage": "No Image"
     },
     "additionalInformationSection": {
       "extras": {

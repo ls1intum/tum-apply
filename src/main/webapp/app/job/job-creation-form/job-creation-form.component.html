@@ -217,107 +217,124 @@
     </form>
   </ng-template>
 
+  <!-- Reusable Image Card Template -->
+  <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage" let-isSelected="isSelected">
+    <div
+      [class]="'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
+      (click)="isNoImage ? clearImageSelection() : selectImage(image)"
+    >
+      <div
+        class="relative rounded-xl overflow-hidden border-[0.2rem] transition-colors aspect-video"
+        [style.border-color]="isSelected ? 'var(--p-primary-color)' : 'transparent'"
+      >
+        @if (isNoImage) {
+          <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100">
+            <fa-icon [icon]="['fas', 'image']" [size]="'3x'" class="text-gray-300" />
+            <span class="text-sm text-gray-600" jhiTranslate="jobCreationForm.imageSection.noImage"></span>
+          </div>
+        } @else {
+          <img [src]="image.url" class="w-full h-full object-cover" [attr.alt]="showDelete ? 'Research group banner' : 'Default banner'" />
+        }
+        @if (isSelected) {
+          <div class="absolute inset-0 flex items-center justify-center bg-white/30">
+            <fa-icon [icon]="['fas', 'check']" [size]="'2x'" class="text-primary" />
+          </div>
+        }
+      </div>
+      @if (showDelete) {
+        <div class="absolute top-2 right-2">
+          <jhi-button
+            (click)="deleteImage(image.imageId); $event.stopPropagation()"
+            severity="danger"
+            icon="trash-can"
+            size="sm"
+            class="shadow-lg"
+          />
+        </div>
+      }
+    </div>
+  </ng-template>
+
   <!-- Step 3: Image Selection/Upload -->
   <ng-template #panel3>
     <h2 class="text-2xl font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.title"></h2>
     <p class="text-gray-600 mb-8" jhiTranslate="jobCreationForm.imageSection.description"></p>
 
-    <!-- Default Images -->
-    @if (defaultImages().length > 0) {
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
-        @if (hasCustomImage()) {
-          <div class="mb-4 p-3 border border-primary rounded-lg bg-blue-50">
-            <p class="text-sm text-primary" jhiTranslate="jobCreationForm.imageSection.defaultImagesDisabledHint"></p>
-          </div>
-        }
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-          @for (image of defaultImages(); track image.imageId; let idx = $index) {
-            <div
-              class="relative rounded-xl transition-all"
-              [class.cursor-pointer]="!hasCustomImage()"
-              [class.hover:shadow-lg]="!hasCustomImage()"
-              [class.hover:-translate-y-1]="!hasCustomImage()"
-              [class.opacity-50]="hasCustomImage()"
-              [class.cursor-not-allowed]="hasCustomImage()"
-              (click)="selectImage(image)"
-            >
-              <div
-                class="relative rounded-xl overflow-hidden border-[3px] transition-colors aspect-video"
-                [style.border-color]="selectedImage()?.imageId === image.imageId ? 'var(--p-primary-color)' : 'transparent'"
-              >
-                <img [src]="image.url" class="w-full h-full object-cover" />
-                @if (selectedImage()?.imageId === image.imageId) {
-                  <div class="absolute inset-0 flex items-center justify-center" style="background-color: rgba(255, 255, 255, 0.3)">
-                    <fa-icon [icon]="['fas', 'check']" [size]="'2x'" />
-                  </div>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    } @else {
+    <!-- Default Image Section -->
+    <div class="mb-8">
       <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
-      <div class="p-3 text-center border border-gray-200 rounded-lg bg-gray-50">
-        <p class="text-sm text-gray-700" jhiTranslate="jobCreationForm.imageSection.noDefaultImages"></p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+        <!-- No Image Option -->
+        <ng-container
+          *ngTemplateOutlet="
+            imageCard;
+            context: { image: null, showDelete: false, isNoImage: true, isSelected: selectedImage() === undefined }
+          "
+        />
+
+        <!-- Default Images -->
+        @if (defaultImages().length > 0) {
+          @for (image of defaultImages(); track image.imageId) {
+            <ng-container
+              *ngTemplateOutlet="
+                imageCard;
+                context: { image: image, showDelete: false, isNoImage: false, isSelected: selectedImage()?.imageId === image.imageId }
+              "
+            />
+          }
+        }
       </div>
-    }
+    </div>
 
     <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.imageSection.orDivider"></span></p-divider>
 
-    <!-- Custom Images Section -->
+    <!-- Research Group Image Section -->
     <div>
-      <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.uploadCustom"></h3>
+      <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
+      <p class="text-gray-600 mb-4 text-sm" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
+
+      <!-- Info message when limit is reached -->
+      @if (isResearchGroupImageLimitReached()) {
+        <div class="p-3 mb-4 border border-blue-300 rounded-lg bg-blue-50 flex items-center gap-2">
+          <fa-icon [icon]="['fas', 'circle-info']" class="text-primary" />
+          <p class="text-sm" [innerHTML]="'jobCreationForm.imageSection.maxImagesReached' | translate"></p>
+        </div>
+      }
 
       <!-- Grid of research group images + upload button -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-        <!-- Existing Research Group Images -->
         @for (image of researchGroupImages(); track image.imageId) {
-          <div
-            class="relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group"
-            (click)="selectImage(image)"
-          >
-            <div
-              class="relative rounded-xl overflow-hidden border-[3px] transition-colors aspect-video"
-              [style.border-color]="selectedImage()?.imageId === image.imageId ? 'var(--p-primary-color)' : 'transparent'"
-            >
-              <img [src]="image.url" class="w-full h-full object-cover" alt="Research group banner" />
-              @if (selectedImage()?.imageId === image.imageId) {
-                <div class="absolute inset-0 flex items-center justify-center" style="background-color: rgba(255, 255, 255, 0.3)">
-                  <fa-icon [icon]="['fas', 'check']" [size]="'2x'" />
-                </div>
-              }
-            </div>
-            <!-- Delete button - always visible, but more prominent on hover -->
-            <div class="absolute top-2 right-2 opacity-70 group-hover:opacity-100 transition-opacity">
-              <jhi-button
-                (click)="deleteImage(image.imageId); $event.stopPropagation()"
-                severity="danger"
-                variant="text"
-                icon="trash"
-                [label]="''"
-                class="shadow-lg"
-              />
-            </div>
-          </div>
+          <ng-container
+            *ngTemplateOutlet="
+              imageCard;
+              context: { image: image, showDelete: true, isNoImage: false, isSelected: selectedImage()?.imageId === image.imageId }
+            "
+          />
         }
 
         <!-- Upload New Image Button -->
         <div
-          class="relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1"
-          [class.opacity-50]="isUploadingImage()"
-          [class.pointer-events-none]="isUploadingImage()"
-          (click)="fileInput.click()"
+          [class]="
+            'relative rounded-xl transition-all ' +
+            (isUploadingImage() || isResearchGroupImageLimitReached()
+              ? 'opacity-50 pointer-events-none ' + (isResearchGroupImageLimitReached() && !isUploadingImage() ? 'cursor-not-allowed' : '')
+              : 'cursor-pointer hover:shadow-lg hover:-translate-y-1')
+          "
+          (click)="!isResearchGroupImageLimitReached() && fileInput.click()"
         >
           <input type="file" accept="image/jpeg,image/jpg,image/png" (change)="onImageSelected($event)" #fileInput class="hidden" />
           <div
-            class="aspect-video border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center transition-all hover:border-primary hover:bg-blue-50 group"
+            [class]="
+              'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all ' +
+              (isResearchGroupImageLimitReached()
+                ? 'border-gray-200 bg-gray-50'
+                : 'border-gray-300 ' + (!isUploadingImage() ? 'hover:border-primary hover:bg-blue-50' : ''))
+            "
           >
             @if (isUploadingImage()) {
               <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
             } @else {
-              <fa-icon [icon]="['fas', 'plus']" [size]="'3x'" class="text-primary transition-transform group-hover:scale-110" />
+              <fa-icon [icon]="['fas', 'plus']" [size]="'3x'" class="text-primary" />
             }
           </div>
         </div>
