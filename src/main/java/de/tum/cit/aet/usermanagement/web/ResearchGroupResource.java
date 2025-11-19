@@ -48,8 +48,7 @@ public class ResearchGroupResource {
      * @return the list of research groups
      */
     @GetMapping
-    public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getAllResearchGroups(
-            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+    public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getAllResearchGroups(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         log.info("GET /api/research-groups?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<ResearchGroupDTO> researchGroups = researchGroupService.getAllResearchGroups(pageDTO);
         return ResponseEntity.ok(researchGroups);
@@ -63,10 +62,8 @@ public class ResearchGroupResource {
      */
     @GetMapping("/members")
     @ProfessorOrAdmin
-    public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(
-            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
-        log.info("GET /api/research-groups/members?pageNumber={}&pageSize={}", pageDTO.pageNumber(),
-                pageDTO.pageSize());
+    public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+        log.info("GET /api/research-groups/members?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembers(pageDTO);
         return ResponseEntity.ok(members);
     }
@@ -121,8 +118,9 @@ public class ResearchGroupResource {
     @PutMapping("/{id}")
     @CheckAccess
     public ResponseEntity<ResearchGroupDTO> updateResearchGroup(
-            @PathVariable UUID id,
-            @Valid @RequestBody ResearchGroupDTO researchGroupDTO) {
+        @PathVariable UUID id,
+        @Valid @RequestBody ResearchGroupDTO researchGroupDTO
+    ) {
         log.info("PUT /api/research-groups/{}", id);
         ResearchGroupDTO updatedResearchGroup = researchGroupService.updateResearchGroup(id, researchGroupDTO);
         return ResponseEntity.ok(updatedResearchGroup);
@@ -137,10 +135,8 @@ public class ResearchGroupResource {
      */
     @PostMapping("/professor-request")
     @Authenticated
-    public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(
-            @Valid @RequestBody ResearchGroupRequestDTO request) {
-        log.info("POST /api/research-groups/professor-request name={} uniId={}", request.researchGroupName(),
-                request.universityId());
+    public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(@Valid @RequestBody ResearchGroupRequestDTO request) {
+        log.info("POST /api/research-groups/professor-request name={} uniId={}", request.researchGroupName(), request.universityId());
         ResearchGroup created = researchGroupService.createProfessorResearchGroupRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
     }
@@ -154,8 +150,7 @@ public class ResearchGroupResource {
      */
     @PostMapping("/admin-create")
     @Admin
-    public ResponseEntity<ResearchGroupDTO> createResearchGroupAsAdmin(
-            @Valid @RequestBody ResearchGroupRequestDTO request) {
+    public ResponseEntity<ResearchGroupDTO> createResearchGroupAsAdmin(@Valid @RequestBody ResearchGroupRequestDTO request) {
         log.info("POST /api/research-groups/admin-create name={}", request.researchGroupName());
         ResearchGroup created = researchGroupService.createResearchGroupAsAdmin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
@@ -170,8 +165,7 @@ public class ResearchGroupResource {
      */
     @PostMapping("/employee-request")
     @Authenticated
-    public ResponseEntity<Void> createEmployeeResearchGroupRequest(
-            @Valid @RequestBody EmployeeResearchGroupRequestDTO request) {
+    public ResponseEntity<Void> createEmployeeResearchGroupRequest(@Valid @RequestBody EmployeeResearchGroupRequestDTO request) {
         log.info("POST /api/research-groups/employee-request professorName={}", request.professorName());
         researchGroupService.createEmployeeResearchGroupRequest(request);
         return ResponseEntity.noContent().build();
@@ -190,19 +184,20 @@ public class ResearchGroupResource {
     @GetMapping("/admin")
     @Admin
     public ResponseEntity<PageResponseDTO<ResearchGroupAdminDTO>> getResearchGroupsForAdmin(
-            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
-            @ParameterObject @Valid @ModelAttribute AdminResearchGroupFilterDTO filterDTO,
-            @ParameterObject @Valid @ModelAttribute SortDTO sortDTO) {
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute AdminResearchGroupFilterDTO filterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+    ) {
         log.info(
-                "GET /api/research-groups/admin called with pageNumber={}, pageSize={}, status={}, sortBy={}, direction={}, searchQuery={}",
-                pageDTO.pageNumber(),
-                pageDTO.pageSize(),
-                filterDTO.getStatus(),
-                sortDTO.sortBy(),
-                sortDTO.direction(),
-                filterDTO.getSearchQuery());
-        PageResponseDTO<ResearchGroupAdminDTO> response = researchGroupService.getResearchGroupsForAdmin(pageDTO,
-                filterDTO, sortDTO);
+            "GET /api/research-groups/admin called with pageNumber={}, pageSize={}, status={}, sortBy={}, direction={}, searchQuery={}",
+            pageDTO.pageNumber(),
+            pageDTO.pageSize(),
+            filterDTO.getStatus(),
+            sortDTO.sortBy(),
+            sortDTO.direction(),
+            filterDTO.getSearchQuery()
+        );
+        PageResponseDTO<ResearchGroupAdminDTO> response = researchGroupService.getResearchGroupsForAdmin(pageDTO, filterDTO, sortDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -215,7 +210,8 @@ public class ResearchGroupResource {
     @GetMapping("/draft")
     @Admin
     public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getDraftResearchGroups(
-            @ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+    ) {
         log.info("GET /api/research-groups/draft?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<ResearchGroupDTO> draftGroups = researchGroupService.getDraftResearchGroups(pageDTO);
         return ResponseEntity.ok(draftGroups);

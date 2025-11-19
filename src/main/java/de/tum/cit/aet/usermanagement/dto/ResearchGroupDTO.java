@@ -14,19 +14,20 @@ import jakarta.validation.constraints.NotBlank;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ResearchGroupDTO(
-        @NotBlank String name,
-        String abbreviation,
-        @NotBlank String head,
-        ResearchGroupDepartment department,
-        ResearchGroupSchool school,
-        @Email String email,
-        String website,
-        String description,
-        String defaultFieldOfStudies,
-        String street,
-        String postalCode,
-        String city,
-        ResearchGroupState state) {
+    @NotBlank String name,
+    String abbreviation,
+    @NotBlank String head,
+    ResearchGroupDepartment department,
+    ResearchGroupSchool school,
+    @Email String email,
+    String website,
+    String description,
+    String defaultFieldOfStudies,
+    String street,
+    String postalCode,
+    String city,
+    ResearchGroupState state
+) {
     /**
      * @param researchGroup the ResearchGroup entity
      * @return the ResearchGroupDTO from the entity
@@ -38,18 +39,19 @@ public record ResearchGroupDTO(
         }
 
         return new ResearchGroupDTO(
-                researchGroup.getName(),
-                researchGroup.getAbbreviation(),
-                researchGroup.getHead(),
-                researchGroup.getDepartment(),
-                researchGroup.getSchool(),
-                researchGroup.getEmail(),
-                researchGroup.getWebsite(),
-                researchGroup.getDescription(),
-                researchGroup.getDefaultFieldOfStudies(),
-                researchGroup.getStreet(),
-                researchGroup.getPostalCode(),
-                researchGroup.getCity(),
-                researchGroup.getState());
+            researchGroup.getName(),
+            researchGroup.getAbbreviation(),
+            researchGroup.getHead(),
+            researchGroup.getDepartment(),
+            researchGroup.getSchool(),
+            researchGroup.getEmail(),
+            researchGroup.getWebsite(),
+            researchGroup.getDescription(),
+            researchGroup.getDefaultFieldOfStudies(),
+            researchGroup.getStreet(),
+            researchGroup.getPostalCode(),
+            researchGroup.getCity(),
+            researchGroup.getState()
+        );
     }
 }

@@ -272,7 +272,7 @@
       "placeholders": {
         "abbreviation": "e.g. AI",
         "name": "e.g. Research Group for Artificial Intelligence",
-        "school": "e.g. Informatics",
+        "school": "Select...",
         "defaultFieldOfStudies": "e.g. Computer Science",
         "head": "e.g. Prof. Dr. Max Mustermann",
         "email": "e.g. contact@researchgroup.com",

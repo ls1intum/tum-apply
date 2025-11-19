@@ -1,10 +1,8 @@
 package de.tum.cit.aet.usermanagement.constants;
 
-import java.util.stream.Collectors;
-
 import java.util.Arrays;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 public enum ResearchGroupDepartment {
     MATHEMATICS("Mathematics", ResearchGroupSchool.CIT),
@@ -60,7 +58,7 @@ public enum ResearchGroupDepartment {
 
     public static List<ResearchGroupDepartment> getDepartmentsBySchool(ResearchGroupSchool school) {
         return Arrays.stream(ResearchGroupDepartment.values())
-                .filter(department -> department.getSchool().equals(school))
-                .collect(Collectors.toList());
+            .filter(department -> department.getSchool().equals(school))
+            .collect(Collectors.toList());
     }
 }

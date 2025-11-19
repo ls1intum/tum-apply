@@ -272,7 +272,7 @@
       "placeholders": {
         "abbreviation": "z.B. KI",
         "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",
-        "school": "z.B. Informatik",
+        "school": "Wählen...",
         "defaultFieldOfStudies": "z.B. Computer Science",
         "head": "z.B. Prof. Dr. Max Mustermann",
         "department": "Wählen...",

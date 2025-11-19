@@ -10,27 +10,27 @@ import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ResearchGroupRequestDTO(
-        // Required Personal Information
-        String title,
-        String firstName,
-        String lastName,
-        String universityId,
+    // Required Personal Information
+    String title,
+    String firstName,
+    String lastName,
+    String universityId,
 
-        // Required Research Group Information
-        String researchGroupHead,
-        String researchGroupName,
-        ResearchGroupDepartment researchGroupDepartment,
-        ResearchGroupSchool school,
+    // Required Research Group Information
+    String researchGroupHead,
+    String researchGroupName,
+    ResearchGroupDepartment researchGroupDepartment,
+    ResearchGroupSchool school,
 
-        // Optional Research Group Information
-        String abbreviation,
-        String contactEmail,
-        String website,
-        String description,
-        String defaultFieldOfStudies,
+    // Optional Research Group Information
+    String abbreviation,
+    String contactEmail,
+    String website,
+    String description,
+    String defaultFieldOfStudies,
 
-        // Optional Address Information
-        String street,
-        String postalCode,
-        String city) {
-}
+    // Optional Address Information
+    String street,
+    String postalCode,
+    String city
+) {}
