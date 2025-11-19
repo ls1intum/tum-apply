@@ -171,58 +171,74 @@ class PDFExportServiceTest {
     }
 
     private Map<String, String> createTestLabels() {
-        return Map.ofEntries(
-            Map.entry("headline", "Application for "),
-            Map.entry("applicationBy", "Application by "),
-            Map.entry("forPosition", " for position "),
-            Map.entry("status", "Status: "),
-            Map.entry("overview", "Overview"),
-            Map.entry("supervisor", "Supervisor"),
-            Map.entry("researchGroup", "Research Group"),
-            Map.entry("location", "Location"),
-            Map.entry("fieldsOfStudies", "Fields of Studies"),
-            Map.entry("researchArea", "Research Area"),
-            Map.entry("workload", "Workload"),
-            Map.entry("hoursPerWeek", " hours/week"),
-            Map.entry("duration", "Duration"),
-            Map.entry("years", " years"),
-            Map.entry("fundingType", "Funding Type"),
-            Map.entry("startDate", "Start Date"),
-            Map.entry("endDate", "End Date"),
-            Map.entry("jobDescription", "Job Description"),
-            Map.entry("personalStatements", "Personal Statements"),
-            Map.entry("motivation", "Motivation"),
-            Map.entry("skills", "Skills"),
-            Map.entry("researchExperience", "Research Experience"),
-            Map.entry("personalInformation", "Personal Information"),
-            Map.entry("applicantInfo", "Applicant Info"),
-            Map.entry("preferredLanguage", "Preferred Language"),
-            Map.entry("desiredStartDate", "Desired Start Date"),
-            Map.entry("gender", "Gender"),
-            Map.entry("nationality", "Nationality"),
-            Map.entry("website", "Website"),
-            Map.entry("linkedIn", "LinkedIn"),
-            Map.entry("bachelorInfo", "Bachelor Info"),
-            Map.entry("masterInfo", "Master Info"),
-            Map.entry("degreeName", "Degree Name"),
-            Map.entry("university", "University"),
-            Map.entry("grade", "Grade"),
-            Map.entry("page", "Page "),
-            Map.entry("of", " of "),
-            Map.entry("thisDocumentWasGeneratedOn", "This document was generated on "),
-            Map.entry("byUser", " by user "),
-            Map.entry("usingTumapply", " using TUMapply."),
-            Map.entry("metaEndText", "End of document"),
-            Map.entry("jobBy", "Job by "),
-            Map.entry("forJob", " for job "),
-            Map.entry("jobDetails", "Job Details"),
-            Map.entry("description", "Description"),
-            Map.entry("tasksResponsibilities", "Tasks & Responsibilities"),
-            Map.entry("eligibilityCriteria", "Eligibility Criteria"),
-            Map.entry("contactDetails", "Contact Details"),
-            Map.entry("address", "Address"),
-            Map.entry("email", "Email")
-        );
+        Map<String, String> labels = new java.util.HashMap<>();
+        addApplicationHeaderLabels(labels);
+        addOverviewLabels(labels);
+        addPersonalAndEducationLabels(labels);
+        addMetadataAndJobLabels(labels);
+        return labels;
+    }
+
+    private void addApplicationHeaderLabels(Map<String, String> labels) {
+        labels.put("headline", "Application for ");
+        labels.put("applicationBy", "Application by ");
+        labels.put("forPosition", " for position ");
+        labels.put("status", "Status: ");
+    }
+
+    private void addOverviewLabels(Map<String, String> labels) {
+        labels.put("overview", "Overview");
+        labels.put("supervisor", "Supervisor");
+        labels.put("researchGroup", "Research Group");
+        labels.put("location", "Location");
+        labels.put("fieldsOfStudies", "Fields of Studies");
+        labels.put("researchArea", "Research Area");
+        labels.put("workload", "Workload");
+        labels.put("hoursPerWeek", " hours/week");
+        labels.put("duration", "Duration");
+        labels.put("years", " years");
+        labels.put("fundingType", "Funding Type");
+        labels.put("startDate", "Start Date");
+        labels.put("endDate", "End Date");
+        labels.put("jobDescription", "Job Description");
+    }
+
+    private void addPersonalAndEducationLabels(Map<String, String> labels) {
+        labels.put("personalStatements", "Personal Statements");
+        labels.put("motivation", "Motivation");
+        labels.put("skills", "Skills");
+        labels.put("researchExperience", "Research Experience");
+        labels.put("personalInformation", "Personal Information");
+        labels.put("applicantInfo", "Applicant Info");
+        labels.put("preferredLanguage", "Preferred Language");
+        labels.put("desiredStartDate", "Desired Start Date");
+        labels.put("gender", "Gender");
+        labels.put("nationality", "Nationality");
+        labels.put("website", "Website");
+        labels.put("linkedIn", "LinkedIn");
+        labels.put("bachelorInfo", "Bachelor Info");
+        labels.put("masterInfo", "Master Info");
+        labels.put("degreeName", "Degree Name");
+        labels.put("university", "University");
+        labels.put("grade", "Grade");
+    }
+
+    private void addMetadataAndJobLabels(Map<String, String> labels) {
+        labels.put("page", "Page ");
+        labels.put("of", " of ");
+        labels.put("thisDocumentWasGeneratedOn", "This document was generated on ");
+        labels.put("byUser", " by user ");
+        labels.put("usingTumapply", " using TUMapply.");
+        labels.put("metaEndText", "End of document");
+        labels.put("jobBy", "Job by ");
+        labels.put("forJob", " for job ");
+        labels.put("jobDetails", "Job Details");
+        labels.put("description", "Description");
+        labels.put("tasksResponsibilities", "Tasks & Responsibilities");
+        labels.put("eligibilityCriteria", "Eligibility Criteria");
+        labels.put("contactDetails", "Contact Details");
+        labels.put("address", "Address");
+        labels.put("email", "Email");
     }
 
     @Nested
