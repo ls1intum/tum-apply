@@ -61,8 +61,17 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     /**
      * Find all default job banner images for a specific school
      *
-     * @param school the school to find banners for
+     * @param school the school to find banners for (e.g., "CIT", "CS")
      * @return a list of default job banners for the school
+     */
+    @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.school = :school")
+    List<Image> findDefaultJobBannersBySchool(@Param("imageType") ImageType imageType, @Param("school") String school);
+
+    /**
+     * Find all default job banner images for a specific research group
+     *
+     * @param researchGroupId the research group ID to find banners for
+     * @return a list of default job banners for the research group
      */
     default List<Image> findDefaultJobBannersByResearchGroup(UUID researchGroupId) {
         return findByImageTypeAndResearchGroup(ImageType.DEFAULT_JOB_BANNER, researchGroupId);
@@ -75,5 +84,15 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      */
     default List<Image> findDefaultJobBanners() {
         return findImagesWithUploader(ImageType.DEFAULT_JOB_BANNER);
+    }
+
+    /**
+     * Convenience method to find default job banners by school
+     *
+     * @param school the school to find banners for (e.g., "CIT", "CS")
+     * @return a list of default job banners for the school
+     */
+    default List<Image> findDefaultJobBannersBySchool(String school) {
+        return findDefaultJobBannersBySchool(ImageType.DEFAULT_JOB_BANNER, school);
     }
 }
