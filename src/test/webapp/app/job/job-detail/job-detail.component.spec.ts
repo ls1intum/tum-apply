@@ -19,6 +19,7 @@ import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
+import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
@@ -36,6 +37,10 @@ describe('JobDetailComponent', () => {
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockToastService = createToastServiceMock();
   let researchGroupService: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
+  let pdfExportService: {
+    exportJobToPDF: ReturnType<typeof vi.fn>;
+    exportJobPreviewToPDF: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     location = { back: vi.fn() } as unknown as Location;
@@ -50,12 +55,18 @@ describe('JobDetailComponent', () => {
       getResourceGroupDetails: vi.fn().mockReturnValue(of({ description: 'RG Desc' })),
     };
 
+    pdfExportService = {
+      exportJobToPDF: vi.fn(),
+      exportJobPreviewToPDF: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [JobDetailComponent],
       providers: [
         { provide: Location, useValue: location },
         { provide: JobResourceApiService, useValue: jobService },
         { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
+        { provide: PdfExportResourceApiService, useValue: pdfExportService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
         provideToastServiceMock(mockToastService),
         provideRouterMock(mockRouter),
@@ -672,5 +683,120 @@ describe('JobDetailComponent', () => {
       }
     ).mapToJobDetails(dto, user as User);
     expect(result.belongsToResearchGroup).toBe(true);
+  });
+
+  describe('PDF Download functionality', () => {
+    it('should call onDownloadPDF when pdfButton is clicked', async () => {
+      const spy = vi.spyOn(component, 'onDownloadPDF');
+      component.pdfButton.onClick();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should show error when preview formData is missing', async () => {
+      const signalReturningUndefined = signal<JobFormDTO | undefined>(undefined);
+
+      vi.spyOn(component, 'previewData').mockReturnValue(signalReturningUndefined);
+
+      await component.onDownloadPDF();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
+    });
+
+    it('should download PDF for normal job', async () => {
+      const mockResponse = {
+        headers: { get: vi.fn().mockReturnValue('attachment; filename="test.pdf"') },
+        body: new Blob(['pdf content'], { type: 'application/pdf' }),
+      };
+      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+
+      component.jobId.set('job123');
+      await component.onDownloadPDF();
+
+      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object), 'response');
+    });
+
+    it('should download PDF for preview job', async () => {
+      const mockResponse = {
+        headers: { get: vi.fn().mockReturnValue('attachment; filename="preview.pdf"') },
+        body: new Blob(['pdf content'], { type: 'application/pdf' }),
+      };
+      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
+
+      const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
+      fixture.componentRef.setInput('previewData', signal(previewJob));
+
+      await component.onDownloadPDF();
+
+      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalled();
+    });
+
+    it('should show error when preview formData is missing', async () => {
+      fixture.componentRef.setInput('previewData', signal(undefined));
+
+      await component.onDownloadPDF();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
+    });
+
+    it('should handle error in preview PDF generation', async () => {
+      pdfExportService.exportJobPreviewToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
+
+      const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
+      fixture.componentRef.setInput('previewData', signal(previewJob));
+
+      await component.onDownloadPDF();
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
+    });
+
+    it('should handle error in normal PDF generation', async () => {
+      pdfExportService.exportJobToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
+
+      component.jobId.set('job123');
+      await component.onDownloadPDF();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
+    });
+
+    it('should handle missing Content-Disposition header', async () => {
+      const mockResponse = {
+        headers: { get: vi.fn().mockReturnValue(null) },
+        body: new Blob(['pdf content'], { type: 'application/pdf' }),
+      };
+      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+
+      component.jobId.set('job123');
+      await component.onDownloadPDF();
+
+      expect(pdfExportService.exportJobToPDF).toHaveBeenCalled();
+    });
+
+    it('should use default filename when regex does not match Content-Disposition', async () => {
+      const mockResponse = {
+        headers: { get: vi.fn().mockReturnValue('attachment; badformat') },
+        body: new Blob(['pdf content'], { type: 'application/pdf' }),
+      };
+      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
+
+      component.jobId.set('job123');
+      await component.onDownloadPDF();
+
+      expect(pdfExportService.exportJobToPDF).toHaveBeenCalled();
+    });
+
+    it('should use default filename when regex does not match in preview mode', async () => {
+      const mockResponse = {
+        headers: { get: vi.fn().mockReturnValue('attachment; badformat') },
+        body: new Blob(['pdf content'], { type: 'application/pdf' }),
+      };
+      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
+
+      const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
+      const signalWithData = signal(previewJob);
+      vi.spyOn(component, 'previewData').mockReturnValue(signalWithData);
+
+      await component.onDownloadPDF();
+
+      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalled();
+    });
   });
 });
