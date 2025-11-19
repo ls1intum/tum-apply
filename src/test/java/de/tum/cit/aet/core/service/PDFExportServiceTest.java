@@ -618,7 +618,6 @@ class PDFExportServiceTest {
         @Test
         void shouldFormatLocalDateCorrectly() throws Exception {
             var formatDateMethod = PDFExportService.class.getDeclaredMethod("formatDate", Object.class);
-            formatDateMethod.setAccessible(true);
 
             LocalDate testDate = LocalDate.of(2024, 3, 15);
             String result = (String) formatDateMethod.invoke(pdfExportService, testDate);
@@ -629,7 +628,6 @@ class PDFExportServiceTest {
         @Test
         void shouldHandleNullDate() throws Exception {
             var formatDateMethod = PDFExportService.class.getDeclaredMethod("formatDate", Object.class);
-            formatDateMethod.setAccessible(true);
 
             String result = (String) formatDateMethod.invoke(pdfExportService, (Object) null);
 
@@ -639,7 +637,6 @@ class PDFExportServiceTest {
         @Test
         void shouldHandleNonLocalDateObjectWithToString() throws Exception {
             var formatDateMethod = PDFExportService.class.getDeclaredMethod("formatDate", Object.class);
-            formatDateMethod.setAccessible(true);
 
             Date utilDate = new Date(1710460800000L);
             String result = (String) formatDateMethod.invoke(pdfExportService, utilDate);
@@ -651,7 +648,6 @@ class PDFExportServiceTest {
         @Test
         void shouldHandleArbitraryObjectWithToString() throws Exception {
             var formatDateMethod = PDFExportService.class.getDeclaredMethod("formatDate", Object.class);
-            formatDateMethod.setAccessible(true);
 
             String arbitraryString = "2024-03-15";
             String result = (String) formatDateMethod.invoke(pdfExportService, arbitraryString);

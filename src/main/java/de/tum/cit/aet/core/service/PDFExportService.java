@@ -378,14 +378,6 @@ public class PDFExportService {
         return (value != null && !value.isEmpty()) ? value : "-";
     }
 
-    private String formatDate(Object date) {
-        if (date == null) return "-";
-        if (date instanceof java.time.LocalDate localDate) {
-            return localDate.format(DATE_FORMATTER);
-        }
-        return date.toString();
-    }
-
     private String formatWorkload(Integer workload, String unit) {
         return workload != null ? workload + (" " + unit) : "-";
     }
@@ -419,5 +411,13 @@ public class PDFExportService {
         }
 
         return String.join(", ", parts);
+    }
+
+    String formatDate(Object date) {
+        if (date == null) return "-";
+        if (date instanceof java.time.LocalDate localDate) {
+            return localDate.format(DATE_FORMATTER);
+        }
+        return date.toString();
     }
 }
