@@ -266,61 +266,61 @@
 
     <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.imageSection.orDivider"></span></p-divider>
 
-    <!-- Upload Custom Image -->
+    <!-- Custom Images Section -->
     <div>
       <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.uploadCustom"></h3>
 
-      <!-- Preview of uploaded custom image or upload area -->
-      <div class="flex justify-center w-full max-w-xl mx-auto">
-        @if (selectedImage() && selectedImage()?.imageType !== 'DEFAULT_JOB_BANNER') {
-          <!-- Preview of uploaded custom image -->
-          <div class="w-full">
-            <div class="border rounded-xl p-4">
-              <div class="relative rounded-lg overflow-hidden aspect-[3/2]">
-                <img [src]="selectedImage()?.url" class="w-full h-full object-cover" />
-              </div>
+      <!-- Grid of research group images + upload button -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+        <!-- Existing Research Group Images -->
+        @for (image of researchGroupImages(); track image.imageId) {
+          <div
+            class="relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group"
+            (click)="selectImage(image)"
+          >
+            <div
+              class="relative rounded-xl overflow-hidden border-[3px] transition-colors aspect-video"
+              [style.border-color]="selectedImage()?.imageId === image.imageId ? 'var(--p-primary-color)' : 'transparent'"
+            >
+              <img [src]="image.url" class="w-full h-full object-cover" alt="Research group banner" />
+              @if (selectedImage()?.imageId === image.imageId) {
+                <div class="absolute inset-0 flex items-center justify-center" style="background-color: rgba(255, 255, 255, 0.3)">
+                  <fa-icon [icon]="['fas', 'check']" [size]="'2x'" />
+                </div>
+              }
             </div>
-            <div class="flex justify-center mt-4">
+            <!-- Delete button - always visible, but more prominent on hover -->
+            <div class="absolute top-2 right-2 opacity-70 group-hover:opacity-100 transition-opacity">
               <jhi-button
-                (click)="deleteSelectedImage()"
+                (click)="deleteImage(image.imageId); $event.stopPropagation()"
                 severity="danger"
-                variant="outlined"
+                variant="text"
                 icon="trash"
-                [label]="'jobCreationForm.imageSection.removeImage' | translate"
+                [label]="''"
+                class="shadow-lg"
               />
             </div>
           </div>
-        } @else {
-          <!-- Upload area -->
+        }
+
+        <!-- Upload New Image Button -->
+        <div
+          class="relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1"
+          [class.opacity-50]="isUploadingImage()"
+          [class.pointer-events-none]="isUploadingImage()"
+          (click)="fileInput.click()"
+        >
+          <input type="file" accept="image/jpeg,image/jpg,image/png" (change)="onImageSelected($event)" #fileInput class="hidden" />
           <div
-            class="w-full aspect-[3/2] border-2 border-dashed border-gray-200 rounded-xl p-12 text-center cursor-pointer transition-all upload-area flex flex-col items-center justify-center"
-            [class.opacity-50]="isUploadingImage()"
-            [class.pointer-events-none]="isUploadingImage()"
-            (click)="fileInput.click()"
+            class="aspect-video border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center transition-all hover:border-primary hover:bg-blue-50 group"
           >
-            <input type="file" accept="image/jpeg,image/jpg,image/png" (change)="onImageSelected($event)" #fileInput class="hidden" />
             @if (isUploadingImage()) {
-              <div class="flex flex-col items-center">
-                <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
-                <p class="mt-4 text-gray-700" jhiTranslate="jobCreationForm.imageSection.uploading"></p>
-              </div>
+              <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
             } @else {
-              <div class="mb-4">
-                <fa-icon [icon]="['fas', 'image']" size="3x" />
-              </div>
-              <div class="flex items-center justify-center gap-2 font-medium mb-2">
-                <fa-icon [icon]="['fas', 'cloud-arrow-up']" />
-                <span jhiTranslate="jobCreationForm.imageSection.clickToUpload"></span>
-              </div>
-              <div class="text-sm mb-1">
-                <span jhiTranslate="jobCreationForm.imageSection.uploadRecommendation"></span>
-              </div>
-              <div class="text-sm">
-                <span jhiTranslate="jobCreationForm.imageSection.uploadFormats"></span>
-              </div>
+              <fa-icon [icon]="['fas', 'plus']" [size]="'3x'" class="text-primary transition-transform group-hover:scale-110" />
             }
           </div>
-        }
+        </div>
       </div>
     </div>
   </ng-template>

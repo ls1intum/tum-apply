@@ -92,6 +92,7 @@ export class JobCreationFormComponent {
 
   // Image upload state
   defaultImages = signal<ImageDTO[]>([]);
+  researchGroupImages = signal<ImageDTO[]>([]);
   selectedImage = signal<ImageDTO | undefined>(undefined);
   isUploadingImage = signal<boolean>(false);
   // Pending image upload (not yet uploaded to server)
@@ -370,6 +371,7 @@ export class JobCreationFormComponent {
 
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
+      console.error('File too large:', file.size);
       this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
       return;
     }
@@ -377,6 +379,7 @@ export class JobCreationFormComponent {
     // Validate file type - allow only specific image formats (no SVG)
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!allowedTypes.includes(file.type)) {
+      console.error('Invalid file type:', file.type);
       this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
       return;
     }
@@ -385,10 +388,12 @@ export class JobCreationFormComponent {
     try {
       const dimensions = await this.getImageDimensions(file);
       if (dimensions.width > 4096 || dimensions.height > 4096) {
+        console.error('Dimensions too large:', dimensions);
         this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
         return;
       }
-    } catch {
+    } catch (error) {
+      console.error('Failed to read image dimensions:', error);
       this.toastService.showErrorKey('jobCreationForm.imageSection.invalidImage');
       return;
     }
@@ -402,8 +407,13 @@ export class JobCreationFormComponent {
       this.selectedImage.set(uploadedImage);
       this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
+      // Reload research group images to include the newly uploaded image
+      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+      this.researchGroupImages.set(researchGroupImages);
+
       this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
-    } catch {
+    } catch (error) {
+      console.error('Failed to upload image:', error);
       this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
     } finally {
       this.isUploadingImage.set(false);
@@ -425,8 +435,9 @@ export class JobCreationFormComponent {
   }
 
   selectImage(image: ImageDTO): void {
-    // Prevent selecting default images if a custom image is already uploaded
-    if (this.hasCustomImage()) {
+    // Only prevent selecting default images if a custom image is already uploaded
+    // Allow switching between custom/research group images freely
+    if (this.hasCustomImage() && image.imageType === 'DEFAULT_JOB_BANNER') {
       return;
     }
     this.selectedImage.set(image);
@@ -438,9 +449,8 @@ export class JobCreationFormComponent {
     this.imageForm.patchValue({ imageId: null });
   }
 
-  async deleteSelectedImage(): Promise<void> {
-    const imageId = this.selectedImage()?.imageId ?? '';
-    if (imageId.length === 0) {
+  async deleteImage(imageId: string | undefined): Promise<void> {
+    if (!imageId || imageId.length === 0) {
       return;
     }
 
@@ -448,19 +458,44 @@ export class JobCreationFormComponent {
       // Delete from server
       await firstValueFrom(this.imageResourceService.deleteImage(imageId));
 
-      // Clear selection
-      this.clearImageSelection();
+      // Clear selection if the deleted image was selected
+      if (this.selectedImage()?.imageId === imageId) {
+        this.clearImageSelection();
+      }
+
+      // Reload research group images to reflect the deletion
+      try {
+        const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+        this.researchGroupImages.set(researchGroupImages);
+      } catch (error) {
+        console.error('Failed to reload research group images after deletion:', error);
+        // Even if reload fails, keep the UI consistent by removing the deleted image
+        this.researchGroupImages.set(this.researchGroupImages().filter(img => img.imageId !== imageId));
+      }
 
       this.toastService.showSuccessKey('jobCreationForm.imageSection.deleteImageSuccess');
-    } catch {
+    } catch (error) {
+      console.error('Failed to delete image:', error);
       this.toastService.showErrorKey('jobCreationForm.imageSection.deleteImageFailed');
     }
   }
 
+  async deleteSelectedImage(): Promise<void> {
+    await this.deleteImage(this.selectedImage()?.imageId);
+  }
+
   async loadImages(): Promise<void> {
     try {
-      const defaults = await firstValueFrom(this.imageResourceService.getDefaultJobBanners());
+      const user = this.accountService.loadedUser();
+      const researchGroupId = user?.researchGroup?.researchGroupId;
+
+      // Load default images filtered by research group
+      const defaults = await firstValueFrom(this.imageResourceService.getDefaultJobBanners(researchGroupId));
       this.defaultImages.set(defaults);
+
+      // Load research group's custom images
+      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+      this.researchGroupImages.set(researchGroupImages);
     } catch {
       this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
     }
