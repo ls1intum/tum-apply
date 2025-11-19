@@ -6,11 +6,7 @@ import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
-import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.ImageService;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -25,21 +21,18 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageResource {
 
     private final ImageService imageService;
-    private final CurrentUserService currentUserService;
-    private final UserRepository userRepository;
 
-    public ImageResource(ImageService imageService, CurrentUserService currentUserService, UserRepository userRepository) {
+    public ImageResource(ImageService imageService) {
         this.imageService = imageService;
-        this.currentUserService = currentUserService;
-        this.userRepository = userRepository;
     }
 
     /**
      * Get all default job banner images (publicly accessible)
-     * Optionally filter by school
+     * Optionally filter by school. If a researchGroupId is provided, returns all default images
+     * for the school that the research group belongs to.
      *
-     * @param school optional school filter (e.g., CIT)
-     * @return a list of default job banner images
+     * @param researchGroupId optional research group ID (used to determine the school to filter by)
+     * @return a list of default job banner images (all schools if null, or all images for one school)
      */
     @Public
     @GetMapping("/defaults/job-banners")
@@ -57,8 +50,21 @@ public class ImageResource {
     @ProfessorOrAdmin
     @GetMapping("/my-uploads")
     public ResponseEntity<List<ImageDTO>> getMyUploadedImages() {
-        UUID userId = currentUserService.getUserId();
-        List<Image> images = imageService.getImagesByUploader(userId);
+        List<Image> images = imageService.getMyUploadedImages();
+        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
+     * Get all job banner images for the current user's research group
+     * (non-default images only)
+     *
+     * @return a list of job banner images belonging to the user's research group
+     */
+    @ProfessorOrAdmin
+    @GetMapping("/research-group/job-banners")
+    public ResponseEntity<List<ImageDTO>> getResearchGroupJobBanners() {
+        List<Image> images = imageService.getResearchGroupJobBanners();
         List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
         return ResponseEntity.ok(dtos);
     }
@@ -72,32 +78,27 @@ public class ImageResource {
     @ProfessorOrAdmin
     @PostMapping(value = "/upload/job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadJobBanner(@RequestParam("file") MultipartFile file) {
-        UUID userId = currentUserService.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        Image image = imageService.upload(file, user, ImageType.JOB_BANNER);
-        log.info("User {} uploaded job banner image: {}", userId, image.getImageId());
+        Image image = imageService.upload(file, ImageType.JOB_BANNER);
+        log.info("Uploaded job banner image: {}", image.getImageId());
         return ResponseEntity.ok(ImageDTO.fromEntity(image));
     }
 
     /**
-     * Upload a default job banner image (admin only)
-     * The image will be associated with the current user's research group
+     * Upload a default job banner image for a school (admin only)
+     * The image will be associated with the school that the specified research group belongs to.
      *
-     * @param file the image file
+     * @param file            the image file
+     * @param researchGroupId the ID of a research group belonging to the target school
      * @return the uploaded default image DTO
      */
     @Admin
     @PostMapping(value = "/upload/default-job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageDTO> uploadDefaultJobBanner(@RequestParam("file") MultipartFile file) {
-        User user = currentUserService.getUser();
-        ResearchGroup researchGroup = user.getResearchGroup();
-
-        if (researchGroup == null) {
-            throw new IllegalArgumentException("User must belong to a research group to upload default images");
-        }
-
-        Image image = imageService.uploadDefaultImage(file, user, ImageType.DEFAULT_JOB_BANNER, researchGroup);
+    public ResponseEntity<ImageDTO> uploadDefaultJobBanner(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("researchGroupId") UUID researchGroupId
+    ) {
+        Image image = imageService.uploadDefaultImage(file, ImageType.DEFAULT_JOB_BANNER, researchGroupId);
+        log.info("Uploaded default job banner image: {} for research group: {}", image.getImageId(), researchGroupId);
         return ResponseEntity.ok(ImageDTO.fromEntity(image));
     }
 
@@ -111,10 +112,7 @@ public class ImageResource {
     @ProfessorOrAdmin
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable UUID imageId) {
-        User user = currentUserService.getUser();
-        boolean isAdmin = currentUserService.isAdmin();
-
-        imageService.delete(imageId, user, isAdmin);
+        imageService.delete(imageId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     /**
-     * Find all images by type and research group
+     * Find all images by type and specific research group ID
      *
      * @param imageType      the type of images to find
-     * @param researchGroupId the research group ID to filter by
-     * @return a list of images matching the criteria
+     * @param researchGroupId the specific research group ID to filter by
+     * @return a list of images belonging to that specific research group
      */
     @Query("SELECT i FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId")
     List<Image> findByImageTypeAndResearchGroup(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
@@ -30,16 +30,16 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<Image> findImagesWithUploader(@Param("imageType") ImageType imageType);
 
     /**
-     * Find default job banners by research group with user information
+     * Find default images by school (determined from a research group) with user information
      *
-     * @param imageType       the type of images to find
-     * @param researchGroupId the research group ID to filter by
-     * @return a list of images with uploader information
+     * @param imageType       the type of images to find (typically DEFAULT_JOB_BANNER)
+     * @param researchGroupId the research group ID (used to determine the school)
+     * @return a list of default images for that school with uploader information eagerly loaded
      */
     @Query(
-        "SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId"
+        "SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.school = (SELECT rg.school FROM ResearchGroup rg WHERE rg.researchGroupId = :researchGroupId)"
     )
-    List<Image> findImagesByResearchGroupWithUploader(
+    List<Image> findDefaultImagesBySchoolViaResearchGroup(
         @Param("imageType") ImageType imageType,
         @Param("researchGroupId") UUID researchGroupId
     );
@@ -54,14 +54,16 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<Image> findByUploaderId(@Param("userId") UUID userId);
 
     /**
-     * Count default images by research group
+     * Count default images by school (determined from a research group)
      *
-     * @param imageType       the type of images to count (should be DEFAULT_JOB_BANNER)
-     * @param researchGroupId the research group ID to filter by
-     * @return the count of matching images
+     * @param imageType       the type of images to count (typically DEFAULT_JOB_BANNER)
+     * @param researchGroupId the research group ID (used to determine the school)
+     * @return the count of default images for that school
      */
-    @Query("SELECT COUNT(i) FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId")
-    long countDefaultImagesByResearchGroup(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
+    @Query(
+        "SELECT COUNT(i) FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.school = (SELECT rg.school FROM ResearchGroup rg WHERE rg.researchGroupId = :researchGroupId)"
+    )
+    long countDefaultImagesBySchool(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
 
     /**
      * Find all default job banner images for a specific school
@@ -73,19 +75,19 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<Image> findDefaultJobBannersBySchool(@Param("imageType") ImageType imageType, @Param("school") String school);
 
     /**
-     * Find all default job banner images for a specific research group
+     * Find all default job banner images for the school that a research group belongs to
      *
-     * @param researchGroupId the research group ID to find banners for
-     * @return a list of default job banners for the research group
+     * @param researchGroupId the research group ID (used to determine the school)
+     * @return a list of all default job banners for that school
      */
     default List<Image> findDefaultJobBannersByResearchGroup(UUID researchGroupId) {
-        return findByImageTypeAndResearchGroup(ImageType.DEFAULT_JOB_BANNER, researchGroupId);
+        return findDefaultImagesBySchoolViaResearchGroup(ImageType.DEFAULT_JOB_BANNER, researchGroupId);
     }
 
     /**
-     * Find all default job banner images (all schools)
+     * Find all default job banner images across all schools
      *
-     * @return a list of all default job banners
+     * @return a list of all default job banners from all schools
      */
     default List<Image> findDefaultJobBanners() {
         return findImagesWithUploader(ImageType.DEFAULT_JOB_BANNER);
