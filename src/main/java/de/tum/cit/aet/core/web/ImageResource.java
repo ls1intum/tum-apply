@@ -1,8 +1,8 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.constants.ImageType;
-import de.tum.cit.aet.core.constants.School;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
@@ -43,8 +43,8 @@ public class ImageResource {
      */
     @Public
     @GetMapping("/defaults/job-banners")
-    public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) School school) {
-        List<Image> images = imageService.getDefaultJobBanners(school);
+    public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID researchGroupId) {
+        List<Image> images = imageService.getDefaultJobBanners(researchGroupId);
         List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
         return ResponseEntity.ok(dtos);
     }
@@ -82,21 +82,22 @@ public class ImageResource {
 
     /**
      * Upload a default job banner image (admin only)
+     * The image will be associated with the current user's research group
      *
-     * @param file   the image file
-     * @param school the school this default image belongs to (e.g., CIT)
+     * @param file the image file
      * @return the uploaded default image DTO
      */
     @Admin
     @PostMapping(value = "/upload/default-job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageDTO> uploadDefaultJobBanner(
-        @RequestParam("file") MultipartFile file,
-        @RequestParam("school") School school
-    ) {
-        UUID userId = currentUserService.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public ResponseEntity<ImageDTO> uploadDefaultJobBanner(@RequestParam("file") MultipartFile file) {
+        User user = currentUserService.getUser();
+        ResearchGroup researchGroup = user.getResearchGroup();
+        
+        if (researchGroup == null) {
+            throw new IllegalArgumentException("User must belong to a research group to upload default images");
+        }
 
-        Image image = imageService.uploadDefaultImage(file, user, ImageType.DEFAULT_JOB_BANNER, school);
+        Image image = imageService.uploadDefaultImage(file, user, ImageType.DEFAULT_JOB_BANNER, researchGroup);
         return ResponseEntity.ok(ImageDTO.fromEntity(image));
     }
 

@@ -1,8 +1,8 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.constants.ImageType;
-import de.tum.cit.aet.core.constants.School;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -64,6 +64,8 @@ public class ImageService {
 
     /**
      * Uploads an image file and stores it as a non-default image.
+     * The image will be associated with the uploader's research group if they have one,
+     * otherwise the research group will be null (e.g., for applicants uploading profile pictures).
      *
      * @param file      the file to be uploaded
      * @param uploader  the user uploading the image
@@ -106,7 +108,8 @@ public class ImageService {
             image.setSizeBytes(file.getSize());
             image.setImageType(imageType);
             image.setUploadedBy(uploader);
-            image.setSchool(null); // User uploaded images don't belong to a specific school
+            // Set research group from uploader (will be null for applicants/users without a research group)
+            image.setResearchGroup(uploader.getResearchGroup());
 
             return imageRepository.save(image);
         } catch (IOException e) {
@@ -115,19 +118,19 @@ public class ImageService {
     }
 
     /**
-     * Uploads a default system image for a specific school (admin only).
+     * Uploads a default system image for a specific research group (admin only).
      *
-     * @param file      the file to be uploaded
-     * @param uploader  the admin user uploading the image
-     * @param imageType the type of default image
-     * @param school    the school this image belongs to
+     * @param file         the file to be uploaded
+     * @param uploader     the admin user uploading the image
+     * @param imageType    the type of default image
+     * @param researchGroup the research group this image belongs to
      * @return the stored default image
      * @throws UploadException if the file cannot be stored
      */
     @Transactional
-    public Image uploadDefaultImage(MultipartFile file, User uploader, ImageType imageType, School school) {
-        if (school == null) {
-            throw new IllegalArgumentException("School is required for default images");
+    public Image uploadDefaultImage(MultipartFile file, User uploader, ImageType imageType, ResearchGroup researchGroup) {
+        if (researchGroup == null) {
+            throw new IllegalArgumentException("Research group is required for default images");
         }
         validateImage(file);
 
@@ -162,7 +165,8 @@ public class ImageService {
             image.setSizeBytes(file.getSize());
             image.setImageType(imageType);
             image.setUploadedBy(uploader);
-            image.setSchool(school);
+            // Set research group - JPA will only persist the research_group_id
+            image.setResearchGroup(researchGroup);
 
             return imageRepository.save(image);
         } catch (IOException e) {
@@ -176,11 +180,11 @@ public class ImageService {
      * @param school the school to filter by, or null for all schools
      * @return list of default job banner images
      */
-    public List<Image> getDefaultJobBanners(School school) {
-        if (school == null) {
+    public List<Image> getDefaultJobBanners(UUID researchGroupId) {
+        if (researchGroupId == null) {
             return imageRepository.findDefaultJobBanners();
         }
-        return imageRepository.findDefaultJobBannersBySchool(school);
+        return imageRepository.findDefaultJobBannersByResearchGroup(researchGroupId);
     }
 
     /**

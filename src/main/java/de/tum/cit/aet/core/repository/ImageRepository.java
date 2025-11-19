@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.repository;
 
 import de.tum.cit.aet.core.constants.ImageType;
-import de.tum.cit.aet.core.constants.School;
 import de.tum.cit.aet.core.domain.Image;
 import java.util.List;
 import java.util.UUID;
@@ -12,13 +11,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     /**
-     * Find all images by type and school
+     * Find all images by type and research group
      *
-     * @param imageType the type of images to find
-     * @param school    the school to filter by
+     * @param imageType      the type of images to find
+     * @param researchGroupId the research group ID to filter by
      * @return a list of images matching the criteria
      */
-    List<Image> findByImageTypeAndSchool(ImageType imageType, School school);
+    @Query("SELECT i FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId")
+    List<Image> findByImageTypeAndResearchGroup(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
 
     /**
      * Find default job banners with user information
@@ -30,14 +30,14 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<Image> findImagesWithUploader(@Param("imageType") ImageType imageType);
 
     /**
-     * Find default job banners by school with user information
+     * Find default job banners by research group with user information
      *
-     * @param imageType the type of images to find
-     * @param school    the school to filter by
+     * @param imageType       the type of images to find
+     * @param researchGroupId the research group ID to filter by
      * @return a list of images with uploader information
      */
-    @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.school = :school")
-    List<Image> findImagesBySchoolWithUploader(@Param("imageType") ImageType imageType, @Param("school") School school);
+    @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId")
+    List<Image> findImagesByResearchGroupWithUploader(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
 
     /**
      * Find images by uploader (non-default images only)
@@ -49,14 +49,14 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     List<Image> findByUploaderId(@Param("userId") UUID userId);
 
     /**
-     * Count default images by school
+     * Count default images by research group
      *
-     * @param imageType the type of images to count (should be DEFAULT_JOB_BANNER)
-     * @param school    the school to filter by
+     * @param imageType       the type of images to count (should be DEFAULT_JOB_BANNER)
+     * @param researchGroupId the research group ID to filter by
      * @return the count of matching images
      */
-    @Query("SELECT COUNT(i) FROM Image i WHERE i.imageType = :imageType AND i.school = :school")
-    long countDefaultImagesBySchool(@Param("imageType") ImageType imageType, @Param("school") School school);
+    @Query("SELECT COUNT(i) FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId")
+    long countDefaultImagesByResearchGroup(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
 
     /**
      * Find all default job banner images for a specific school
@@ -64,8 +64,8 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @param school the school to find banners for
      * @return a list of default job banners for the school
      */
-    default List<Image> findDefaultJobBannersBySchool(School school) {
-        return findByImageTypeAndSchool(ImageType.DEFAULT_JOB_BANNER, school);
+    default List<Image> findDefaultJobBannersByResearchGroup(UUID researchGroupId) {
+        return findByImageTypeAndResearchGroup(ImageType.DEFAULT_JOB_BANNER, researchGroupId);
     }
 
     /**

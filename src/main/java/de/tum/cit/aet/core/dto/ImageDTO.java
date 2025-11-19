@@ -2,12 +2,11 @@ package de.tum.cit.aet.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.core.constants.ImageType;
-import de.tum.cit.aet.core.constants.School;
 import de.tum.cit.aet.core.domain.Image;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ImageDTO(UUID imageId, String url, ImageType imageType, School school, Long sizeBytes, UUID uploadedById) {
+public record ImageDTO(UUID imageId, UUID researchGroupId, String url, ImageType imageType, Long sizeBytes, UUID uploadedById) {
     /**
      * Convert an Image entity to an ImageDTO
      *
@@ -23,9 +22,9 @@ public record ImageDTO(UUID imageId, String url, ImageType imageType, School sch
 
         return new ImageDTO(
             image.getImageId(),
+            image.getResearchGroup() != null ? image.getResearchGroup().getResearchGroupId() : null,
             image.getUrl(),
             image.getImageType(),
-            image.getSchool(),
             image.getSizeBytes(),
             uploadedById
         );
