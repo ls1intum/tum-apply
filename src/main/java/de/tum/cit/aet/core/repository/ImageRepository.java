@@ -36,8 +36,13 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @param researchGroupId the research group ID to filter by
      * @return a list of images with uploader information
      */
-    @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId")
-    List<Image> findImagesByResearchGroupWithUploader(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
+    @Query(
+        "SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId"
+    )
+    List<Image> findImagesByResearchGroupWithUploader(
+        @Param("imageType") ImageType imageType,
+        @Param("researchGroupId") UUID researchGroupId
+    );
 
     /**
      * Find images by uploader (non-default images only)

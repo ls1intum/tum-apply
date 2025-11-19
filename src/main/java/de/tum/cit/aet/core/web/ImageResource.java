@@ -2,13 +2,13 @@ package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.ImageService;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.List;
@@ -92,7 +92,7 @@ public class ImageResource {
     public ResponseEntity<ImageDTO> uploadDefaultJobBanner(@RequestParam("file") MultipartFile file) {
         User user = currentUserService.getUser();
         ResearchGroup researchGroup = user.getResearchGroup();
-        
+
         if (researchGroup == null) {
             throw new IllegalArgumentException("User must belong to a research group to upload default images");
         }

@@ -2,9 +2,9 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
