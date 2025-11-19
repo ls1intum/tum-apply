@@ -184,6 +184,36 @@ public class MvcTestClient {
     }
 
     /**
+     * Performs a POST with a JSON body and asserts the given status, then returns
+     * the raw response
+     * body as bytes.
+     * Useful for binary downloads (e.g. PDF) returned from POST requests.
+     */
+    public byte[] postAndReturnBytes(String url, Object body, int expectedStatus, MediaType... accepts) {
+        try {
+            ResultActions action = mockMvc.perform(
+                applyDefaults(post(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
+            );
+
+            MockHttpServletResponse response;
+            switch (expectedStatus) {
+                case 200 -> response = action.andExpect(status().isOk()).andReturn().getResponse();
+                case 204 -> response = action.andExpect(status().isNoContent()).andReturn().getResponse();
+                case 400 -> response = action.andExpect(status().isBadRequest()).andReturn().getResponse();
+                case 401 -> response = action.andExpect(status().isUnauthorized()).andReturn().getResponse();
+                case 403 -> response = action.andExpect(status().isForbidden()).andReturn().getResponse();
+                case 404 -> response = action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 500 -> response = action.andExpect(status().isInternalServerError()).andReturn().getResponse();
+                default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+            }
+
+            return response.getContentAsByteArray();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with status " + expectedStatus, e);
+        }
+    }
+
+    /**
      * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the given class.
      * If type is Void, only the assertion is performed.
      */
