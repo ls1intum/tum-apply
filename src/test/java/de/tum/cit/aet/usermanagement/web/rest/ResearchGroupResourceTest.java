@@ -332,7 +332,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         assertThat(result).isNotNull();
         assertThat(result.name()).isEqualTo("New Research Lab");
         assertThat(result.state()).isEqualTo(ResearchGroupState.DRAFT);
-        assertThat(result.abbreviation()).isEqualTo(ResearchGroupSchool.CIT);
+        assertThat(result.school()).isEqualTo(ResearchGroupSchool.CIT);
     }
 
     @Test
