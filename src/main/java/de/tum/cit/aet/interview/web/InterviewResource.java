@@ -5,8 +5,10 @@ import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,5 +40,18 @@ public class InterviewResource {
     public ResponseEntity<List<InterviewOverviewDTO>> getInterviewOverview() {
         List<InterviewOverviewDTO> overview = interviewService.getInterviewOverview();
         return ResponseEntity.ok(overview);
+    }
+
+    /**
+     * {@code GET /api/interviews/processes/{processId}} : Get details for a specific interview process.
+     *
+     * @param processId the ID of the interview process
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the {@link InterviewOverviewDTO}
+     */
+    @Professor
+    @GetMapping("/processes/{processId}")
+    public ResponseEntity<InterviewOverviewDTO> getInterviewProcessDetails(@PathVariable UUID processId) {
+        InterviewOverviewDTO details = interviewService.getInterviewProcessDetails(processId);
+        return ResponseEntity.ok(details);
     }
 }
