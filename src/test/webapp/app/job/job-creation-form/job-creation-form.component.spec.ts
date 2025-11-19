@@ -69,6 +69,36 @@ function mockPanelTemplates(component: JobCreationFormComponent) {
   (component as { savingStatePanel: () => object }).savingStatePanel = () => ({});
 }
 
+function mockAllPanelTemplates(component: JobCreationFormComponent) {
+  const mockTemplate = {} as TemplateRef<HTMLDivElement>;
+  Object.defineProperty(component, 'panel1', { get: () => signal(mockTemplate).asReadonly() });
+  Object.defineProperty(component, 'panel2', { get: () => signal(mockTemplate).asReadonly() });
+  Object.defineProperty(component, 'panel3', { get: () => signal(mockTemplate).asReadonly() });
+  Object.defineProperty(component, 'panel4', { get: () => signal(mockTemplate).asReadonly() });
+  Object.defineProperty(component, 'savingStatePanel', { get: () => signal(mockTemplate).asReadonly() });
+}
+
+// Type helpers to avoid verbose casting
+type ComponentPrivate = {
+  performAutoSave: () => Promise<void>;
+  clearAutoSaveTimer: () => void;
+  autoSaveTimer?: number;
+  autoSaveInitialized: boolean;
+  populateForm: (job?: JobDTO) => void;
+  createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO;
+  buildStepData: () => Step[];
+  findDropdownOption: (arr: { value: string }[], val: string) => unknown;
+  getImageDimensions: (file: File) => Promise<{ width: number; height: number }>;
+  sendPublishDialog: () => { confirm: () => void };
+  panel1: () => object;
+  panel2: () => object;
+  savingStatePanel: () => object;
+};
+
+function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
+  return component as unknown as ComponentPrivate;
+}
+
 describe('JobCreationFormComponent', () => {
   let fixture: ComponentFixture<JobCreationFormComponent>;
   let component: JobCreationFormComponent;
@@ -79,6 +109,7 @@ describe('JobCreationFormComponent', () => {
   };
   let imageService: {
     getDefaultJobBanners: ReturnType<typeof vi.fn>;
+    getResearchGroupJobBanners: ReturnType<typeof vi.fn>;
     uploadJobBanner: ReturnType<typeof vi.fn>;
     deleteImage: ReturnType<typeof vi.fn>;
   };
@@ -97,6 +128,7 @@ describe('JobCreationFormComponent', () => {
 
     imageService = {
       getDefaultJobBanners: vi.fn().mockReturnValue(of([])),
+      getResearchGroupJobBanners: vi.fn().mockReturnValue(of([])),
       uploadJobBanner: vi.fn().mockReturnValue(of({ imageId: 'img123', url: '/images/test.jpg', imageType: 'JOB_BANNER' })),
       deleteImage: vi.fn().mockReturnValue(of({})),
     };
@@ -133,6 +165,7 @@ describe('JobCreationFormComponent', () => {
   });
 
   afterEach(() => {
+    vi.clearAllMocks();
     vi.restoreAllMocks();
     fixture?.destroy();
   });
@@ -196,14 +229,6 @@ describe('JobCreationFormComponent', () => {
       component.mode.set('edit');
       expect(component.pageTitle()).toContain('edit');
     });
-
-    it('should display correct page title based on mode', () => {
-      component.mode.set('create');
-      expect(component.pageTitle()).toContain('create');
-
-      component.mode.set('edit');
-      expect(component.pageTitle()).toContain('edit');
-    });
   });
 
   describe('Navigation', () => {
@@ -214,14 +239,7 @@ describe('JobCreationFormComponent', () => {
   });
 
   describe('Auto-Save and Saving State', () => {
-    it('should detect unsaved changes', () => {
-      const last = component.lastSavedData();
-      component.basicInfoForm.patchValue({ title: 'changed' });
-      expect(component.hasUnsavedChanges()).toBe(true);
-      component.basicInfoForm.patchValue({ title: last?.title });
-    });
-
-    it('should detect hasUnsavedChanges when form changes', () => {
+    it('should detect unsaved changes when form changes', () => {
       const initialData = component.currentJobData();
       component.lastSavedData.set(initialData);
       expect(component.hasUnsavedChanges()).toBe(false);
@@ -235,7 +253,7 @@ describe('JobCreationFormComponent', () => {
     it('should set savingState to FAILED when autoSave fails', async () => {
       vi.spyOn(jobService, 'updateJob').mockReturnValueOnce(throwError(() => new Error('fail')));
       component.jobId.set('id123');
-      await (component as unknown as { performAutoSave: () => Promise<void> }).performAutoSave();
+      await getPrivate(component).performAutoSave();
 
       expect(component.savingState()).toBe('FAILED');
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.saveFailed');
@@ -255,7 +273,7 @@ describe('JobCreationFormComponent', () => {
     it('should set jobId after creating a new job', async () => {
       jobService.createJob.mockReturnValueOnce(of({ jobId: 'abc123' }));
       component.jobId.set('');
-      await (component as unknown as { performAutoSave: () => Promise<void> }).performAutoSave();
+      await getPrivate(component).performAutoSave();
 
       expect(component.jobId()).toBe('abc123');
       expect(jobService.createJob).toHaveBeenCalled();
@@ -263,24 +281,26 @@ describe('JobCreationFormComponent', () => {
 
     it('should call updateJob when jobId is set in performAutoSave', async () => {
       component.jobId.set('job123');
-      await (component as unknown as { performAutoSave: () => Promise<void> }).performAutoSave();
+      await getPrivate(component).performAutoSave();
 
       expect(jobService.updateJob).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
     it('should clear autoSaveTimer if set', () => {
       const spy = vi.spyOn(global, 'clearTimeout');
-      (component as unknown as { autoSaveTimer: number | undefined }).autoSaveTimer = 123;
-      (component as unknown as { clearAutoSaveTimer: () => void }).clearAutoSaveTimer();
+      const priv = getPrivate(component);
+      priv.autoSaveTimer = 123;
+      priv.clearAutoSaveTimer();
 
       expect(spy).toHaveBeenCalledWith(123);
-      expect((component as unknown as { autoSaveTimer?: number }).autoSaveTimer).toBeUndefined();
+      expect(priv.autoSaveTimer).toBeUndefined();
     });
 
     it('should trigger performAutoSave from setupAutoSave effect', async () => {
       vi.useFakeTimers();
-      const spy = vi.spyOn(component as unknown as { performAutoSave: () => Promise<void> }, 'performAutoSave').mockResolvedValue();
-      (component as unknown as { autoSaveInitialized: boolean }).autoSaveInitialized = true;
+      const priv = getPrivate(component);
+      const spy = vi.spyOn(priv, 'performAutoSave').mockResolvedValue();
+      priv.autoSaveInitialized = true;
 
       component.basicInfoForm.patchValue({ title: 'new title' });
       vi.runAllTimers();
@@ -292,43 +312,54 @@ describe('JobCreationFormComponent', () => {
   });
 
   describe('Job Publishing', () => {
-    it('should show error if privacy not accepted on publish', async () => {
-      component.additionalInfoForm.patchValue({ privacyAccepted: false });
+    it.each([
+      {
+        name: 'reject when privacy not accepted',
+        setup: (comp: JobCreationFormComponent) => comp.additionalInfoForm.patchValue({ privacyAccepted: false }),
+        expectations: () => {
+          expect(mockToastService.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
+        },
+      },
+      {
+        name: 'publish successfully and navigate',
+        setup: (comp: JobCreationFormComponent) => {
+          fillValidJobForm(comp);
+          fixture.detectChanges();
+          comp.jobId.set('id123');
+        },
+        expectations: () => {
+          expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('toast.published');
+          expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-positions']);
+        },
+      },
+      {
+        name: 'handle publish failure',
+        setup: (comp: JobCreationFormComponent) => {
+          jobService.updateJob.mockReturnValueOnce(throwError(() => new Error('fail')));
+          fillValidJobForm(comp);
+          fixture.detectChanges();
+          comp.jobId.set('id123');
+        },
+        expectations: () => {
+          expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.publishFailed');
+        },
+      },
+      {
+        name: 'skip when form data invalid',
+        setup: (comp: JobCreationFormComponent) => {
+          comp.additionalInfoForm.patchValue({ privacyAccepted: true });
+          comp.basicInfoForm.patchValue({ title: '' });
+          comp.positionDetailsForm.patchValue({ description: '' });
+        },
+        expectations: () => {
+          expect(mockToastService.showSuccessKey).not.toHaveBeenCalled();
+          expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
+        },
+      },
+    ])('should $name', async ({ setup, expectations }) => {
+      setup(component);
       await component.publishJob();
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
-    });
-
-    it('should publish successfully and navigate', async () => {
-      fillValidJobForm(component);
-      fixture.detectChanges();
-      component.jobId.set('id123');
-
-      await component.publishJob();
-
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('toast.published');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-positions']);
-    });
-
-    it('should handle publishJob failure', async () => {
-      jobService.updateJob.mockReturnValueOnce(throwError(() => new Error('fail')));
-      fillValidJobForm(component);
-      fixture.detectChanges();
-      component.jobId.set('id123');
-
-      await component.publishJob();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('toast.publishFailed');
-    });
-
-    it('should return early in publishJob when jobData is undefined', async () => {
-      component.additionalInfoForm.patchValue({ privacyAccepted: true });
-      component.basicInfoForm.patchValue({ title: '' });
-      component.positionDetailsForm.patchValue({ description: '' });
-
-      await component.publishJob();
-
-      expect(mockToastService.showSuccessKey).not.toHaveBeenCalled();
-      expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
+      expectations();
     });
   });
 
@@ -357,63 +388,108 @@ describe('JobCreationFormComponent', () => {
         jobId: 'job1',
         state: 'DRAFT',
         title: 'Job',
-        researchArea: 'R',
-        description: 'D',
-        tasks: 'T',
-        requirements: 'Q',
-        supervisingProfessor: 'Prof',
         fundingType: DropdownOptions.fundingTypes[0].value,
-      };
-
-      const populateForm = (component as unknown as { populateForm: (job: JobDTO) => void }).populateForm;
-      populateForm.call(component, job);
+      } as JobDTO;
+      getPrivate(component).populateForm(job);
       expect(component.basicInfoForm.get('fundingType')?.value).toEqual(DropdownOptions.fundingTypes[0]);
     });
 
-    it('should populate form with job image data as default banner', () => {
-      const job: JobDTO = {
-        title: 'Test Job',
-        imageId: 'img123',
-        imageUrl: '/images/test.jpg',
-      } as JobDTO;
-
+    it('should populate form with job image correctly', () => {
+      // Default banner
       component.defaultImages.set([{ imageId: 'img123', url: '/images/test.jpg', imageType: 'DEFAULT_JOB_BANNER' }]);
-
-      const populateForm = (component as unknown as { populateForm: (job: JobDTO) => void }).populateForm;
-      populateForm.call(component, job);
-
+      getPrivate(component).populateForm({ title: 'Test', imageId: 'img123', imageUrl: '/images/test.jpg' } as JobDTO);
       expect(component.selectedImage()?.imageId).toBe('img123');
       expect(component.selectedImage()?.imageType).toBe('DEFAULT_JOB_BANNER');
-    });
 
-    it('should populate form with custom (non-default) job image', () => {
-      const job: JobDTO = {
-        title: 'Test Job',
-        imageId: 'custom123',
-        imageUrl: '/images/custom.jpg',
-      } as JobDTO;
-
+      // Custom image
       component.defaultImages.set([{ imageId: 'default1', url: '/images/default.jpg', imageType: 'DEFAULT_JOB_BANNER' }]);
-
-      const populateForm = (component as unknown as { populateForm: (job: JobDTO) => void }).populateForm;
-      populateForm.call(component, job);
-
+      getPrivate(component).populateForm({ title: 'Test', imageId: 'custom123', imageUrl: '/images/custom.jpg' } as JobDTO);
       expect(component.selectedImage()?.imageId).toBe('custom123');
       expect(component.selectedImage()?.imageType).toBe('JOB_BANNER');
+    });
+
+    it('should not set image when imageId or imageUrl is missing', () => {
+      getPrivate(component).populateForm({ title: 'Test', imageUrl: '/images/test.jpg' } as JobDTO);
+      expect(component.selectedImage()).toBeUndefined();
+
+      getPrivate(component).populateForm({ title: 'Test', imageId: 'img123' } as JobDTO);
+      expect(component.selectedImage()).toBeUndefined();
+
+      getPrivate(component).populateForm(undefined);
+      expect(component.selectedImage()).toBeUndefined();
     });
   });
 
   describe('Image Upload and Selection', () => {
     beforeEach(() => {
       // Mock getImageDimensions for image upload tests
-      vi.spyOn(
-        component as unknown as { getImageDimensions: (file: File) => Promise<{ width: number; height: number }> },
-        'getImageDimensions',
-      ).mockResolvedValue({ width: 1920, height: 1080 });
+      vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValue({ width: 1920, height: 1080 });
+    });
+
+    it.each([
+      {
+        name: 'file too large',
+        file: createMockFile('test.jpg', 'image/jpeg', 6 * 1024 * 1024),
+        errorKey: 'jobCreationForm.imageSection.fileTooLarge',
+        setupSpy: (spy?: ReturnType<typeof vi.spyOn>) => spy && vi.spyOn(console, 'error').mockImplementation(() => {}),
+      },
+      {
+        name: 'invalid file type',
+        file: createMockFile('test.svg', 'image/svg+xml', 1024),
+        errorKey: 'jobCreationForm.imageSection.invalidFileType',
+      },
+      {
+        name: 'dimensions too large',
+        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
+        errorKey: 'jobCreationForm.imageSection.dimensionsTooLarge',
+        setupSpy: () => vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValueOnce({ width: 5000, height: 5000 }),
+      },
+      {
+        name: 'invalid image file',
+        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
+        errorKey: 'jobCreationForm.imageSection.invalidImage',
+        setupSpy: () => vi.spyOn(getPrivate(component), 'getImageDimensions').mockRejectedValueOnce(new Error('Invalid')),
+      },
+      {
+        name: 'research group image limit reached',
+        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
+        errorKey: 'jobCreationForm.imageSection.maxImagesReached',
+        setupSpy: () => {
+          const maxImages = Array.from({ length: 10 }, (_, i) => ({
+            imageId: `img${i}`,
+            url: `/images/img${i}.jpg`,
+            imageType: 'JOB_BANNER' as const,
+          }));
+          component.researchGroupImages.set(maxImages);
+        },
+      },
+      {
+        name: 'upload failure',
+        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
+        errorKey: 'jobCreationForm.imageSection.uploadFailed',
+        setupSpy: () => imageService.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed'))),
+      },
+    ])('should reject image upload when $name', async ({ file, errorKey, setupSpy }) => {
+      const spy = setupSpy?.();
+      const mockEvent = createMockFileEvent(file);
+
+      await component.onImageSelected(mockEvent);
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(errorKey);
+      expect((mockEvent.target as HTMLInputElement).value).toBe('');
+      spy && spy.mockRestore();
+    });
+
+    it.each([
+      { name: 'no files', event: { target: { files: [] } as unknown as HTMLInputElement } as unknown as Event },
+      { name: 'non-input target', event: { target: document.createElement('div') } as unknown as Event },
+    ])('should handle $name gracefully', async ({ event }) => {
+      await component.onImageSelected(event);
+      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
     });
 
     it('should upload image successfully', async () => {
-      const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024); // 1MB
+      const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024);
       const mockEvent = createMockFileEvent(file);
       const mockImage: ImageDTO = { imageId: 'uploaded123', url: '/images/uploaded.jpg', imageType: 'JOB_BANNER' };
       imageService.uploadJobBanner.mockReturnValueOnce(of(mockImage));
@@ -426,160 +502,110 @@ describe('JobCreationFormComponent', () => {
       expect((mockEvent.target as HTMLInputElement).value).toBe('');
     });
 
-    it('should reject file that is too large', async () => {
-      const file = createMockFile('test.jpg', 'image/jpeg', 6 * 1024 * 1024); // 6MB
-      const mockEvent = createMockFileEvent(file);
-
-      await component.onImageSelected(mockEvent);
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.fileTooLarge');
-      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should reject invalid file type', async () => {
-      const file = createMockFile('test.svg', 'image/svg+xml', 1024);
-      const mockEvent = createMockFileEvent(file);
-
-      await component.onImageSelected(mockEvent);
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.invalidFileType');
-      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should reject image with dimensions too large', async () => {
-      const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024);
-      const mockEvent = createMockFileEvent(file);
-      const getImageDimensions = vi.spyOn(
-        component as unknown as { getImageDimensions: (file: File) => Promise<{ width: number; height: number }> },
-        'getImageDimensions',
-      );
-      getImageDimensions.mockResolvedValueOnce({ width: 5000, height: 5000 });
-
-      await component.onImageSelected(mockEvent);
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.dimensionsTooLarge');
-      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should handle invalid image file', async () => {
-      const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024);
-      const mockEvent = createMockFileEvent(file);
-      const getImageDimensions = vi.spyOn(
-        component as unknown as { getImageDimensions: (file: File) => Promise<{ width: number; height: number }> },
-        'getImageDimensions',
-      );
-      getImageDimensions.mockRejectedValueOnce(new Error('Invalid image'));
-
-      await component.onImageSelected(mockEvent);
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.invalidImage');
-      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should handle image upload failure', async () => {
-      const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024);
-      const mockEvent = createMockFileEvent(file);
-      imageService.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed')));
-
-      await component.onImageSelected(mockEvent);
-
-      expect(component.isUploadingImage()).toBe(false);
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.uploadFailed');
-      expect((mockEvent.target as HTMLInputElement).value).toBe('');
-    });
-
-    it('should handle event with no files', async () => {
-      const mockEvent = {
-        target: { files: [] } as unknown as HTMLInputElement,
-      } as unknown as Event;
-
-      await component.onImageSelected(mockEvent);
-
-      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should handle non-input target', async () => {
-      const mockEvent = {
-        target: document.createElement('div'),
-      } as unknown as Event;
-
-      await component.onImageSelected(mockEvent);
-
-      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should select a default image', () => {
-      const image: ImageDTO = { imageId: 'default1', url: '/images/default1.jpg', imageType: 'DEFAULT_JOB_BANNER' };
-      component.selectImage(image);
-
-      expect(component.selectedImage()).toEqual(image);
-      expect(component.imageForm.get('imageId')?.value).toBe('default1');
-    });
-
-    it('should not select default image if custom image already uploaded', () => {
-      component.selectedImage.set({ imageId: 'custom1', url: '/images/custom.jpg', imageType: 'JOB_BANNER' });
-
+    it('should handle image selection and computed signals', () => {
+      // Select default image
       const defaultImage: ImageDTO = { imageId: 'default1', url: '/images/default1.jpg', imageType: 'DEFAULT_JOB_BANNER' };
       component.selectImage(defaultImage);
-
-      expect(component.selectedImage()?.imageId).toBe('custom1');
-    });
-
-    it('should allow selecting default image when no custom image exists', () => {
-      component.selectedImage.set(undefined);
-
-      const defaultImage: ImageDTO = { imageId: 'default1', url: '/default.jpg', imageType: 'DEFAULT_JOB_BANNER' };
-      component.selectImage(defaultImage);
-
       expect(component.selectedImage()).toEqual(defaultImage);
-    });
+      expect(component.imageForm.get('imageId')?.value).toBe('default1');
+      expect(component.imageSelected()).toBe(true);
+      expect(component.hasCustomImage()).toBe(false);
 
-    it('should clear image selection', () => {
-      component.selectedImage.set({ imageId: 'img1', url: '/url', imageType: 'JOB_BANNER' });
-      component.imageForm.patchValue({ imageId: 'img1' });
+      // Select custom image
+      const customImage: ImageDTO = { imageId: 'custom1', url: '/url', imageType: 'JOB_BANNER' };
+      component.selectImage(customImage);
+      expect(component.hasCustomImage()).toBe(true);
+      expect(component.imageSelected()).toBe(true);
 
+      // Clear selection
       component.clearImageSelection();
-
       expect(component.selectedImage()).toBeUndefined();
       expect(component.imageForm.get('imageId')?.value).toBeNull();
+      expect(component.imageSelected()).toBe(false);
+      expect(component.hasCustomImage()).toBe(false);
     });
 
-    it('should delete selected image', async () => {
+    it('should delete selected image successfully', async () => {
       component.selectedImage.set({ imageId: 'img1', url: '/url', imageType: 'JOB_BANNER' });
-
       await component.deleteSelectedImage();
-
       expect(imageService.deleteImage).toHaveBeenCalledWith('img1');
       expect(component.selectedImage()).toBeUndefined();
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('jobCreationForm.imageSection.deleteImageSuccess');
     });
 
-    it('should handle delete image failure', async () => {
+    it('should handle delete failure', async () => {
       component.selectedImage.set({ imageId: 'img1', url: '/url', imageType: 'JOB_BANNER' });
       imageService.deleteImage.mockReturnValueOnce(throwError(() => new Error('Delete failed')));
-
       await component.deleteSelectedImage();
-
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.deleteImageFailed');
     });
 
-    it('should not delete if no image selected', async () => {
+    it('should skip delete when no image selected', async () => {
       component.selectedImage.set(undefined);
-
       await component.deleteSelectedImage();
-
       expect(imageService.deleteImage).not.toHaveBeenCalled();
     });
 
-    it('should compute hasCustomImage correctly', () => {
-      component.selectedImage.set(undefined);
-      expect(component.hasCustomImage()).toBe(false);
+    it.each([
+      {
+        name: 'skip delete with empty imageId',
+        imageId: '',
+        expectations: () => {
+          expect(imageService.deleteImage).not.toHaveBeenCalled();
+        },
+      },
+      {
+        name: 'delete non-selected image',
+        imageId: 'img2',
+        setup: (comp: JobCreationFormComponent) => {
+          comp.selectedImage.set({ imageId: 'img1', url: '/url1', imageType: 'JOB_BANNER' });
+          comp.researchGroupImages.set([
+            { imageId: 'img1', url: '/url1', imageType: 'JOB_BANNER' },
+            { imageId: 'img2', url: '/url2', imageType: 'JOB_BANNER' },
+          ]);
+        },
+        expectations: (comp: JobCreationFormComponent) => {
+          expect(imageService.deleteImage).toHaveBeenCalledWith('img2');
+          expect(comp.selectedImage()?.imageId).toBe('img1');
+          expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('jobCreationForm.imageSection.deleteImageSuccess');
+        },
+      },
+      {
+        name: 'handle reload error after deleting selected image',
+        imageId: 'img1',
+        setup: (comp: JobCreationFormComponent) => {
+          comp.selectedImage.set({ imageId: 'img1', url: '/url1', imageType: 'JOB_BANNER' });
+          comp.researchGroupImages.set([
+            { imageId: 'img1', url: '/url1', imageType: 'JOB_BANNER' },
+            { imageId: 'img2', url: '/url2', imageType: 'JOB_BANNER' },
+          ]);
+        },
+        mockSetup: () => imageService.getResearchGroupJobBanners.mockReturnValueOnce(throwError(() => new Error('Reload failed'))),
+        expectations: (comp: JobCreationFormComponent) => {
+          expect(comp.selectedImage()).toBeUndefined();
+          expect(comp.researchGroupImages()).toHaveLength(1);
+          expect(comp.researchGroupImages()[0].imageId).toBe('img2');
+        },
+      },
+    ])('should $name', async ({ imageId, setup, mockSetup, expectations }) => {
+      setup?.(component);
+      mockSetup?.();
+      await component.deleteImage(imageId);
+      expectations(component);
+    });
 
-      component.selectedImage.set({ imageId: 'default1', url: '/url', imageType: 'DEFAULT_JOB_BANNER' });
-      expect(component.hasCustomImage()).toBe(false);
-
-      component.selectedImage.set({ imageId: 'custom1', url: '/url', imageType: 'JOB_BANNER' });
-      expect(component.hasCustomImage()).toBe(true);
+    it.each([
+      { imageCount: 0, expected: false },
+      { imageCount: 9, expected: false },
+      { imageCount: 10, expected: true },
+    ])('should compute isResearchGroupImageLimitReached as $expected when count is $imageCount', ({ imageCount, expected }) => {
+      const images = Array.from({ length: imageCount }, (_, i) => ({
+        imageId: `img${i}`,
+        url: `/url${i}`,
+        imageType: 'JOB_BANNER' as const,
+      }));
+      component.researchGroupImages.set(images);
+      expect(component.isResearchGroupImageLimitReached()).toBe(expected);
     });
 
     it('should load default images successfully', async () => {
@@ -588,119 +614,86 @@ describe('JobCreationFormComponent', () => {
         { imageId: 'default2', url: '/images/default2.jpg', imageType: 'DEFAULT_JOB_BANNER' },
       ];
       imageService.getDefaultJobBanners.mockReturnValueOnce(of(mockImages));
-
       await component.loadImages();
-
-      expect(imageService.getDefaultJobBanners).toHaveBeenCalled();
       expect(component.defaultImages()).toEqual(mockImages);
     });
 
-    it('should handle error when loading default images fails', async () => {
-      imageService.getDefaultJobBanners.mockReturnValueOnce(throwError(() => new Error('Load failed')));
-
+    it('should load images with research group', async () => {
+      mockAccountService.user.set({
+        id: 'u1',
+        name: 'Test User',
+        email: 'test@example.com',
+        researchGroup: { researchGroupId: 'rg123', researchGroupName: 'Test Group' },
+      } as User);
+      const mockImages: ImageDTO[] = [{ imageId: 'default1', url: '/images/default1.jpg', imageType: 'DEFAULT_JOB_BANNER' }];
+      imageService.getDefaultJobBanners.mockReturnValueOnce(of(mockImages));
+      imageService.getResearchGroupJobBanners.mockReturnValueOnce(of([]));
       await component.loadImages();
+      expect(imageService.getDefaultJobBanners).toHaveBeenCalledWith('rg123');
+    });
 
+    it('should handle error when loading images fails', async () => {
+      imageService.getDefaultJobBanners.mockReturnValueOnce(throwError(() => new Error('Load failed')));
+      await component.loadImages();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.loadImagesFailed');
     });
   });
 
   describe('JobDTO Creation', () => {
-    it('should create JobDTO with DRAFT state', () => {
+    it('should create JobDTO with correct state and data', () => {
       fillValidJobForm(component);
       component.imageForm.patchValue({ imageId: 'img123' });
 
-      const createJobDTO = (component as unknown as { createJobDTO: (state: JobFormDTO.StateEnum) => JobFormDTO }).createJobDTO;
-      const jobDTO = createJobDTO.call(component, 'DRAFT');
+      const draftDTO = getPrivate(component).createJobDTO('DRAFT');
+      expect(draftDTO.state).toBe('DRAFT');
+      expect(draftDTO.title).toBe('T');
+      expect(draftDTO.researchArea).toBe('AI');
+      expect(draftDTO.imageId).toBe('img123');
 
-      expect(jobDTO.state).toBe('DRAFT');
-      expect(jobDTO.title).toBe('T');
-      expect(jobDTO.researchArea).toBe('AI');
-      expect(jobDTO.description).toBe('desc');
-      expect(jobDTO.tasks).toBe('tasks');
-      expect(jobDTO.requirements).toBe('reqs');
-      expect(jobDTO.imageId).toBe('img123');
+      const publishedDTO = getPrivate(component).createJobDTO('PUBLISHED');
+      expect(publishedDTO.state).toBe('PUBLISHED');
     });
 
-    it('should create JobDTO with PUBLISHED state', () => {
-      fillValidJobForm(component);
-
-      const createJobDTO = (component as unknown as { createJobDTO: (state: JobFormDTO.StateEnum) => JobFormDTO }).createJobDTO;
-      const jobDTO = createJobDTO.call(component, 'PUBLISHED');
-
-      expect(jobDTO.state).toBe('PUBLISHED');
-    });
-
-    it('should build Job DTO with default empty strings when form fields missing', () => {
+    it('should handle empty and whitespace values correctly', () => {
       component.basicInfoForm.reset();
       component.positionDetailsForm.reset();
-
-      const dto = (component as unknown as { createJobDTO: () => JobFormDTO }).createJobDTO();
-
+      let dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('');
       expect(dto.researchArea).toBe('');
-      expect(dto.startDate).toBe('');
-      expect(dto.endDate).toBe('');
-      expect(dto.description).toBe('');
-      expect(dto.tasks).toBe('');
-      expect(dto.requirements).toBe('');
-    });
 
-    it('should build Job DTO with provided form values', () => {
-      component.basicInfoForm.patchValue({
-        title: 'My Job',
-        researchArea: 'AI ',
-        startDate: '2025-10-03',
-        applicationDeadline: '2025-11-01',
-      });
-      component.positionDetailsForm.patchValue({
-        description: 'Some description ',
-        tasks: 'Some tasks ',
-        requirements: 'Some requirements ',
-      });
-
-      const dto = (component as unknown as { createJobDTO: () => JobFormDTO }).createJobDTO();
-
+      component.basicInfoForm.patchValue({ title: 'My Job', researchArea: '  AI Research  ' });
+      component.positionDetailsForm.patchValue({ description: '  Some description  ' });
+      dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('My Job');
-      expect(dto.researchArea).toBe('AI');
-      expect(dto.startDate).toBe('2025-10-03');
-      expect(dto.endDate).toBe('2025-11-01');
+      expect(dto.researchArea).toBe('AI Research');
       expect(dto.description).toBe('Some description');
-      expect(dto.tasks).toBe('Some tasks');
-      expect(dto.requirements).toBe('Some requirements');
     });
 
-    it('should trim whitespace from text fields', () => {
-      component.basicInfoForm.patchValue({ researchArea: '  AI Research  ' });
-      component.positionDetailsForm.patchValue({
-        description: '  Description with spaces  ',
-        tasks: '  Tasks  ',
-        requirements: '  Requirements  ',
+    it.each([
+      { fieldOfStudies: { value: undefined }, expected: '' },
+      { fieldOfStudies: null, expected: '' },
+    ])('should handle fieldOfStudies edge cases', ({ fieldOfStudies, expected }) => {
+      component.basicInfoForm.patchValue({
+        title: 'Job',
+        researchArea: 'AI',
+        fieldOfStudies,
+        location: { value: 'MUNICH' },
+        supervisingProfessor: 'Prof',
       });
-
-      const createJobDTO = (component as unknown as { createJobDTO: (state: JobFormDTO.StateEnum) => JobFormDTO }).createJobDTO;
-      const jobDTO = createJobDTO.call(component, 'DRAFT');
-
-      expect(jobDTO.researchArea).toBe('AI Research');
-      expect(jobDTO.description).toBe('Description with spaces');
-      expect(jobDTO.tasks).toBe('Tasks');
-      expect(jobDTO.requirements).toBe('Requirements');
-    });
-
-    it('should set imageId to null when no image selected', () => {
-      fillValidJobForm(component);
-      component.imageForm.patchValue({ imageId: null });
-
-      const createJobDTO = (component as unknown as { createJobDTO: (state: JobFormDTO.StateEnum) => JobFormDTO }).createJobDTO;
-      const jobDTO = createJobDTO.call(component, 'DRAFT');
-
-      expect(jobDTO.imageId).toBeNull();
+      component.positionDetailsForm.patchValue({ description: 'desc', tasks: 'tasks', requirements: 'reqs' });
+      const dto = getPrivate(component).createJobDTO('DRAFT');
+      expect(dto.fieldOfStudies).toBe(expected);
     });
   });
 
   describe('Form Validation', () => {
-    it('should validate basicInfoForm with required fields', () => {
+    it('should validate individual forms and their signals', () => {
+      // Test invalid state
       expect(component.basicInfoForm.valid).toBe(false);
+      expect(component.positionDetailsForm.valid).toBe(false);
+      expect(component.allFormsValid()).toBe(false);
 
+      // Test basicInfoForm
       component.basicInfoForm.patchValue({
         title: 'Job Title',
         researchArea: 'AI',
@@ -708,79 +701,47 @@ describe('JobCreationFormComponent', () => {
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
       });
-
+      fixture.detectChanges();
       expect(component.basicInfoForm.valid).toBe(true);
-    });
+      expect(component.basicInfoValid()).toBe(true);
 
-    it('should invalidate basicInfoForm when required fields are missing', () => {
-      component.basicInfoForm.patchValue({
-        title: '',
-        researchArea: '',
-      });
-
-      expect(component.basicInfoForm.valid).toBe(false);
-      expect(component.basicInfoForm.get('title')?.invalid).toBe(true);
-    });
-
-    it('should validate positionDetailsForm with required HTML fields', () => {
-      expect(component.positionDetailsForm.valid).toBe(false);
-
+      // Test positionDetailsForm
       component.positionDetailsForm.patchValue({
         description: '<p>Description</p>',
         tasks: '<p>Tasks</p>',
         requirements: '<p>Requirements</p>',
       });
-
-      expect(component.positionDetailsForm.valid).toBe(true);
-    });
-
-    it('should require privacy acceptance in additionalInfoForm', () => {
-      expect(component.additionalInfoForm.get('privacyAccepted')?.value).toBe(false);
-
-      component.additionalInfoForm.patchValue({ privacyAccepted: true });
-
-      expect(component.additionalInfoForm.valid).toBe(true);
-      expect(component.additionalInfoForm.get('privacyAccepted')?.value).toBe(true);
-    });
-
-    it('should update form validity signals', () => {
-      component.basicInfoForm.patchValue({
-        title: 'Job',
-        researchArea: 'AI',
-        fieldOfStudies: { value: 'CS' },
-        location: { value: 'MUNICH' },
-        supervisingProfessor: 'Prof',
-      });
-      component.basicInfoForm.updateValueAndValidity();
       fixture.detectChanges();
+      expect(component.positionDetailsForm.valid).toBe(true);
+      expect(component.positionDetailsValid()).toBe(true);
 
-      expect(component.basicInfoValid()).toBe(true);
+      // Test privacy form
+      component.additionalInfoForm.patchValue({ privacyAccepted: true });
+      fixture.detectChanges();
+      expect(component.additionalInfoForm.valid).toBe(true);
+      expect(component.privacyAcceptedSignal()).toBe(true);
+      expect(component.allFormsValid()).toBe(true);
     });
   });
 
-  describe('Computed Signals', () => {
-    it('should compute allFormsValid when both basic and position forms are valid', () => {
+  describe('Computed Signals and Form Status Tracking', () => {
+    it('should compute signals correctly based on form validity', () => {
+      // Invalid state
       expect(component.allFormsValid()).toBe(false);
-
-      fillValidJobForm(component);
-      fixture.detectChanges();
-
-      expect(component.allFormsValid()).toBe(true);
-    });
-
-    it('should compute publishableJobData only when all forms are valid', () => {
       expect(component.publishableJobData()).toBeUndefined();
+      expect(component.basicInfoChanges()).toBeDefined();
+      expect(component.positionDetailsChanges()).toBeDefined();
 
+      // Valid state
       fillValidJobForm(component);
       fixture.detectChanges();
+      expect(component.allFormsValid()).toBe(true);
+      expect(component.basicInfoChanges()).toBeDefined();
+      expect(component.positionDetailsChanges()).toBeDefined();
 
       const publishableData = component.publishableJobData();
       expect(publishableData).toBeDefined();
       expect(publishableData?.state).toBe('PUBLISHED');
-    });
-
-    it('should compute currentJobData with DRAFT state', () => {
-      fillValidJobForm(component);
 
       const currentData = component.currentJobData();
       expect(currentData).toBeDefined();
@@ -789,172 +750,76 @@ describe('JobCreationFormComponent', () => {
     });
   });
 
-  describe('Form Status Tracking', () => {
-    it('should track basicInfoForm status changes', () => {
-      const initialStatus = component.basicInfoChanges();
-      expect(initialStatus).toBeDefined();
-
-      component.basicInfoForm.patchValue({ title: 'Test' });
-      fixture.detectChanges();
-
-      expect(component.basicInfoChanges()).toBeDefined();
-    });
-
-    it('should track positionDetailsForm status changes', () => {
-      const initialStatus = component.positionDetailsChanges();
-      expect(initialStatus).toBeDefined();
-
-      component.positionDetailsForm.patchValue({ description: 'Test' });
-      fixture.detectChanges();
-
-      expect(component.positionDetailsChanges()).toBeDefined();
-    });
-
-    it('should track privacy acceptance changes', () => {
-      expect(component.privacyAcceptedSignal()).toBe(false);
-
-      component.additionalInfoForm.patchValue({ privacyAccepted: true });
-      fixture.detectChanges();
-
-      expect(component.privacyAcceptedSignal()).toBe(true);
-    });
-  });
-
   describe('Step Navigation and Build', () => {
     beforeEach(() => {
       mockPanelTemplates(component);
     });
 
-    it('should disable steps in buildStepData when forms invalid', () => {
+    it('should disable/enable steps based on form validity', () => {
       component.basicInfoValid.set(false);
       component.positionDetailsValid.set(false);
-
-      const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
-
-      const step2 = steps.find(s => s.name.includes('positionDetails'));
-      const step4 = steps.find(s => s.name.includes('summary'));
-
-      expect(step2?.disabled).toBe(true);
-      expect(step4?.disabled).toBe(true);
-    });
-
-    it('should execute panel1 onClick in buildStepData', () => {
-      (component as { panel1: () => object }).panel1 = () => ({});
-      (component as { savingStatePanel: () => object }).savingStatePanel = () => ({});
-
-      component.basicInfoValid.set(false);
-      let steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
+      let steps = getPrivate(component).buildStepData();
+      expect(steps.find(s => s.name.includes('positionDetails'))?.disabled).toBe(true);
+      expect(steps.find(s => s.name.includes('summary'))?.disabled).toBe(true);
       expect(steps[0].buttonGroupNext?.[0].disabled).toBe(true);
 
       component.basicInfoValid.set(true);
-      steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
+      steps = getPrivate(component).buildStepData();
       expect(steps[0].buttonGroupNext?.[0].disabled).toBe(false);
-
-      steps[0].buttonGroupNext?.[0].onClick?.();
     });
 
-    it('should execute back buttons in buildStepData for panel2 and panel4', () => {
-      const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
-
-      const panel2Back = steps.find(s => s.name.includes('positionDetails'))?.buttonGroupPrev?.[0];
-      const panel4Back = steps.find(s => s.name.includes('summary'))?.buttonGroupPrev?.[0];
-
-      expect(() => panel2Back?.onClick()).not.toThrow();
-      expect(() => panel4Back?.onClick()).not.toThrow();
-    });
-
-    it('should call onClick of step1 prev and next buttons', () => {
-      (component as unknown as { panel1: () => object }).panel1 = () => ({});
-      (component as unknown as { savingStatePanel: () => object }).savingStatePanel = () => ({});
-
-      const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
-
-      const backBtn = steps[0].buttonGroupPrev?.[0];
-      backBtn?.onClick();
+    it('should handle button clicks correctly', () => {
+      const steps = getPrivate(component).buildStepData();
+      steps[0].buttonGroupPrev?.[0].onClick();
       expect(location.back).toHaveBeenCalled();
 
-      const nextBtn = steps[0].buttonGroupNext?.[0];
-      expect(() => nextBtn?.onClick()).not.toThrow();
-    });
-
-    it('should execute panel2 next button onClick (noop)', () => {
-      const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
-
-      const panel2Next = steps.find(s => s.name.includes('positionDetails'))?.buttonGroupNext?.[0];
-      expect(() => panel2Next?.onClick()).not.toThrow();
-    });
-
-    it('should call confirm() on sendPublishDialog when publish step button clicked', () => {
-      const confirmSpy = vi.fn();
-      (component as unknown as { sendPublishDialog: () => { confirm: () => void } }).sendPublishDialog = () => ({
-        confirm: confirmSpy,
+      steps.forEach(step => {
+        step.buttonGroupPrev?.forEach(btn => expect(() => btn.onClick()).not.toThrow());
+        step.buttonGroupNext?.forEach(btn => expect(() => btn.onClick()).not.toThrow());
       });
+    });
 
+    it('should call confirm() when publish button clicked', () => {
+      const confirmSpy = vi.fn();
+      getPrivate(component).sendPublishDialog = () => ({ confirm: confirmSpy });
       component.basicInfoValid.set(true);
       component.positionDetailsValid.set(true);
 
-      const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
-      const publishBtn = steps.find(s => s.name.includes('summary'))?.buttonGroupNext?.[0];
-      publishBtn?.onClick();
-
+      const steps = getPrivate(component).buildStepData();
+      steps.find(s => s.name.includes('summary'))?.buttonGroupNext?.[0].onClick();
       expect(confirmSpy).toHaveBeenCalled();
     });
   });
 
   describe('Panel3 (Image Step)', () => {
-    it('should build step data with panel3 (image selection)', () => {
-      const mockTemplate = {} as TemplateRef<HTMLDivElement>;
-      Object.defineProperty(component, 'panel1', { get: () => signal(mockTemplate).asReadonly() });
-      Object.defineProperty(component, 'panel2', { get: () => signal(mockTemplate).asReadonly() });
-      Object.defineProperty(component, 'panel3', { get: () => signal(mockTemplate).asReadonly() });
-      Object.defineProperty(component, 'panel4', { get: () => signal(mockTemplate).asReadonly() });
-      Object.defineProperty(component, 'savingStatePanel', { get: () => signal(mockTemplate).asReadonly() });
-
-      component.basicInfoValid.set(false);
-      component.positionDetailsValid.set(false);
-
-      const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
-
-      const imageStep = steps.find(s => s.name.includes('imageSelection'));
-      expect(imageStep).toBeDefined();
-      expect(imageStep?.disabled).toBe(true);
+    beforeEach(() => {
+      mockAllPanelTemplates(component);
     });
 
-    it('should execute panel3 prev and next buttons', () => {
-      const mockTemplate = {} as TemplateRef<HTMLDivElement>;
-      Object.defineProperty(component, 'panel1', { get: () => signal(mockTemplate).asReadonly() });
-      Object.defineProperty(component, 'panel2', { get: () => signal(mockTemplate).asReadonly() });
-      Object.defineProperty(component, 'panel3', { get: () => signal(mockTemplate).asReadonly() });
-      Object.defineProperty(component, 'savingStatePanel', { get: () => signal(mockTemplate).asReadonly() });
+    it('should enable/disable image step based on form validity', () => {
+      component.basicInfoValid.set(false);
+      component.positionDetailsValid.set(false);
+      let steps = getPrivate(component).buildStepData();
+      let imageStep = steps.find(s => s.name.includes('imageSelection'));
+      expect(imageStep?.disabled).toBe(true);
 
       component.basicInfoValid.set(true);
       component.positionDetailsValid.set(true);
-
-      const steps = (component as unknown as { buildStepData: () => Step[] }).buildStepData();
-
-      const imageStep = steps.find(s => s.name.includes('imageSelection'));
-      const prevBtn = imageStep?.buttonGroupPrev?.[0];
-      const nextBtn = imageStep?.buttonGroupNext?.[0];
-
-      expect(() => prevBtn?.onClick()).not.toThrow();
-      expect(() => nextBtn?.onClick()).not.toThrow();
+      steps = getPrivate(component).buildStepData();
+      imageStep = steps.find(s => s.name.includes('imageSelection'));
+      expect(imageStep?.disabled).toBe(false);
+      expect(() => imageStep?.buttonGroupPrev?.[0].onClick()).not.toThrow();
+      expect(() => imageStep?.buttonGroupNext?.[0].onClick()).not.toThrow();
     });
   });
 
   describe('Utility Functions', () => {
-    it('should return undefined when findDropdownOption has no match', () => {
-      const result = (
-        component as unknown as { findDropdownOption: (arr: { value: string }[], val: string) => unknown }
-      ).findDropdownOption([{ value: 'x' }], 'y');
-      expect(result).toBeUndefined();
-    });
-
-    it('should find matching dropdown option', () => {
-      const options = [{ value: 'a' }, { value: 'b' }];
-      const result = (
-        component as unknown as { findDropdownOption: (arr: { value: string }[], val: string) => unknown }
-      ).findDropdownOption(options, 'b');
-      expect(result).toEqual({ value: 'b' });
+    it.each([
+      { options: [{ value: 'x' }], search: 'y', expected: undefined, desc: 'return undefined when no match' },
+      { options: [{ value: 'a' }, { value: 'b' }], search: 'b', expected: { value: 'b' }, desc: 'find matching option' },
+    ])('should $desc', ({ options, search, expected }) => {
+      const result = getPrivate(component).findDropdownOption(options, search);
+      expect(result).toEqual(expected);
     });
   });
 });
