@@ -4,7 +4,6 @@
     <jhi-search-filter-sort-bar
       [searchText]="'researchGroup.members.searchPlaceholder' | translate"
       [totalRecords]="totalRecords()"
-      [filters]="[]"
       [singleEntity]="'researchGroup.members.singleEntity' | translate"
       [multipleEntities]="'researchGroup.members.multipleEntities' | translate"
       (searchOutput)="onSearch($event)"
@@ -17,28 +16,29 @@
       <div class="p-8 text-center text-gray-500">
         {{ 'researchGroup.members.noUsers' | translate }}
       </div>
-    }
-    @for (user of users(); track user.userId) {
-      <div
-        class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
-        [class.bg-blue-50]="isUserSelected(user)"
-        [class.hover:bg-blue-100]="isUserSelected(user)"
-        [class.hover:bg-gray-50]="!isUserSelected(user)"
-        role="button"
-        tabindex="0"
-        (click)="toggleUserSelection(user)"
-      >
+    } @else {
+      @for (user of users(); track user.userId) {
         <div
-          class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--p-primary-color)] flex items-center justify-center text-white font-semibold"
+          class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
+          [class.bg-blue-50]="isUserSelected(user)"
+          [class.hover:bg-blue-100]="isUserSelected(user)"
+          [class.hover:bg-gray-50]="!isUserSelected(user)"
+          role="button"
+          tabindex="0"
+          (click)="toggleUserSelection(user)"
         >
-          {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
+          <div
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--p-primary-color)] flex items-center justify-center text-white font-semibold"
+          >
+            {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
+          </div>
+          <div class="flex-1">
+            <div class="font-medium">{{ user.firstName }} {{ user.lastName }}</div>
+            <div class="text-sm text-gray-600">{{ user.email }}</div>
+          </div>
+          <p-checkbox [ngModel]="isUserSelected(user)" [binary]="true" (click)="$event.stopPropagation()" />
         </div>
-        <div class="flex-1">
-          <div class="font-medium">{{ user.firstName }} {{ user.lastName }}</div>
-          <div class="text-sm text-gray-600">{{ user.email }}</div>
-        </div>
-        <p-checkbox [ngModel]="isUserSelected(user)" [binary]="true" (click)="$event.stopPropagation()" />
-      </div>
+      }
     }
   </div>
 

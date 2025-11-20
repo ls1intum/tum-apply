@@ -91,13 +91,13 @@
       "loading": "Mitglieder werden geladen...",
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
-      "noUsers": "Keine verfügbaren Benutzer gefunden.",
+      "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
       "me": "Ich",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
-      "singleEntity": "Benutzer",
-      "multipleEntities": "Benutzer",
+      "singleEntity": "Benutzer:in",
+      "multipleEntities": "Benutzer:innen",
 
       "tableColumns": {
         "name": "Name",
@@ -117,11 +117,11 @@
         },
         "loadUsersFailed": {
           "summary": "Fehler beim Laden",
-          "detail": "Verfügbare Benutzer konnten nicht geladen werden. Bitte versuche es erneut."
+          "detail": "Verfügbare Benutzer:innen konnten nicht geladen werden. Bitte versuche es erneut."
         },
         "invalidUser": {
-          "summary": "Ungültiger Benutzer",
-          "detail": "Der ausgewählte Benutzer ist ungültig. Bitte aktualisiere die Seite und versuche es erneut."
+          "summary": "Ungültige:r Benutzer:in",
+          "detail": "Der:die ausgewählte Benutzer:in ist ungültig. Bitte aktualisiere die Seite und versuche es erneut."
         },
         "addMembersSuccess": {
           "summary": "Mitglieder hinzugefügt",
@@ -179,8 +179,8 @@
           "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
         },
         "userNotFound": {
-          "summary": "Benutzer nicht gefunden",
-          "detail": "Es wurde kein Benutzer mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+          "summary": "Benutzer:in nicht gefunden",
+          "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
         }
       },
       "success": {
