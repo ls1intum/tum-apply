@@ -109,7 +109,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void getInterviewProcessDetailsForbiddenForOtherUser() {
-        // Create another professor 
+        // Create another professor
         User otherProfessor = UserTestData.savedProfessorAll(
             userRepository,
             researchGroup,
