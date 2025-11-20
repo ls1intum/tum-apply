@@ -1,0 +1,16 @@
+{
+  "genderDecoder": {
+    "resultTitle": "Gender Bias Analysis",
+    "formulationTexts": {
+      "manly": "Predominantly agentic (stereotypically masculine) wording",
+      "feminine": "Predominantly communal (stereotypically feminine) wording",
+      "neutral": "Neutral wording"
+    },
+    "explanations": {
+      "mostly_agentic": "According to our analysis, your job advertisement contains more agentic (stereotypically masculine) than communal (stereotypically feminine) words. Empirical studies indicate that this type of wording tends to appeal more to men than to women and may discourage women from applying.<br><br>Using predominantly agentic wording may create the impression that the job primarily requires agentic traits and that candidates who possess these traits are particularly sought after.",
+      "mostly_communal": "According to our analysis, your job advertisement contains more communal (stereotypically feminine) than agentic (stereotypically masculine) words. This wording may encourage women to apply.<br><br>Research shows that communal wording has little effect on how attractive men perceive a job to be, so this type of wording is unlikely to discourage men from applying.",
+      "empty": "According to our analysis, your job advertisement contains neither agentic (stereotypically masculine) nor communal (stereotypically feminine) words. Therefore, your advertisement suggests neither that predominantly agentic traits nor that predominantly communal traits are required. The language used in your job advertisement can thus be considered gender-fair.",
+      "neutral": "According to our analysis, your job advertisement contains both agentic (stereotypically masculine) and communal (stereotypically feminine) words in equal measure. Therefore, your advertisement suggests neither that predominantly agentic traits nor that predominantly communal traits are required. The language used in your job advertisement can thus be considered gender-fair."
+    }
+  }
+}
