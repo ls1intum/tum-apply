@@ -230,26 +230,64 @@ public class ImageService {
 
         Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
 
-        if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER && !isAdmin) {
+        validateDeletePermission(image, currentUser, isAdmin);
+
+        deleteImageFile(image);
+        imageRepository.delete(image);
+    }
+
+    /**
+     * Validates whether the current user has permission to delete the given image.
+     *
+     * @param image the image to be deleted
+     * @param currentUser the user attempting to delete the image
+     * @param isAdmin whether the current user is an admin
+     * @throws AccessDeniedException if the user lacks permission to delete the image
+     */
+    private void validateDeletePermission(Image image, User currentUser, boolean isAdmin) {
+        if (isAdmin) {
+            return; // Admins can delete any image
+        }
+
+        if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER) {
             throw new AccessDeniedException("Only admins can delete default images");
         }
 
-        // For job banners, allow deletion if the image belongs to the same research group
-        if (!isAdmin && image.getImageType() == ImageType.JOB_BANNER) {
-            if (image.getResearchGroup() == null || currentUser.getResearchGroup() == null) {
-                throw new AccessDeniedException("You do not have permission to delete this image");
-            }
-            if (!image.getResearchGroup().getResearchGroupId().equals(currentUser.getResearchGroup().getResearchGroupId())) {
-                throw new AccessDeniedException("You can only delete job banners from your research group");
-            }
-        } else if (!isAdmin && image.getUploadedBy() != null && !image.getUploadedBy().getUserId().equals(currentUser.getUserId())) {
-            // For other image types, only allow deletion if the user uploaded it
-            throw new AccessDeniedException("You can only delete images you uploaded");
+        if (image.getImageType() == ImageType.JOB_BANNER) {
+            validateJobBannerDeletePermission(image, currentUser);
+        } else {
+            validateOwnershipDeletePermission(image, currentUser);
+        }
+    }
+
+    /**
+     * Validates whether the user can delete a job banner from their research group.
+     *
+     * @param image the job banner image
+     * @param currentUser the user attempting to delete the image
+     * @throws AccessDeniedException if the user's research group doesn't match the image's research group
+     */
+    private void validateJobBannerDeletePermission(Image image, User currentUser) {
+        if (image.getResearchGroup() == null || currentUser.getResearchGroup() == null) {
+            throw new AccessDeniedException("You do not have permission to delete this image");
         }
 
-        deleteImageFile(image);
+        if (!image.getResearchGroup().getResearchGroupId().equals(currentUser.getResearchGroup().getResearchGroupId())) {
+            throw new AccessDeniedException("You can only delete job banners from your research group");
+        }
+    }
 
-        imageRepository.delete(image);
+    /**
+     * Validates whether the user is the uploader of the image.
+     *
+     * @param image the image
+     * @param currentUser the user attempting to delete the image
+     * @throws AccessDeniedException if the user is not the uploader
+     */
+    private void validateOwnershipDeletePermission(Image image, User currentUser) {
+        if (image.getUploadedBy() != null && !image.getUploadedBy().getUserId().equals(currentUser.getUserId())) {
+            throw new AccessDeniedException("You can only delete images you uploaded");
+        }
     }
 
     /**
