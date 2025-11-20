@@ -2,6 +2,8 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -100,20 +102,21 @@ public class ImageService {
      * @param imageType       the type of default image (typically DEFAULT_JOB_BANNER)
      * @param researchGroupId the ID of a research group belonging to the target school
      * @return the persisted default Image entity
-     * @throws IllegalArgumentException if the current user is not an admin or research group is not found
+     * @throws AccessDeniedException if the current user is not an admin
+     * @throws EntityNotFoundException if the research group is not found
      * @throws UploadException if the file is invalid or cannot be stored
      */
     @Transactional
     public Image uploadDefaultImage(MultipartFile file, ImageType imageType, UUID researchGroupId) {
         if (!currentUserService.isAdmin()) {
-            throw new IllegalArgumentException("Only admins can upload default images");
+            throw new AccessDeniedException("Only admins can upload default images");
         }
 
         User uploader = currentUserService.getUser();
 
         ResearchGroup researchGroup = researchGroupRepository
             .findById(researchGroupId)
-            .orElseThrow(() -> new IllegalArgumentException("Research group not found: " + researchGroupId));
+            .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
 
         return uploadImage(file, uploader, imageType, researchGroup);
     }
@@ -211,26 +214,37 @@ public class ImageService {
     /**
      * Deletes an image with ownership and permission checks.
      * Regular users can only delete images they uploaded themselves (excluding default school images).
+     * For job banners (JOB_BANNER), users can delete any banner belonging to their research group.
      * Admins can delete any image, including default school images.
      *
      * The image file is deleted from the filesystem and the database record is removed.
      *
      * @param imageId the ID of the image to delete
-     * @throws IllegalArgumentException if the image is not found, or the user lacks permission to delete it
+     * @throws EntityNotFoundException if the image is not found
+     * @throws AccessDeniedException if the user lacks permission to delete the image
      */
     @Transactional
     public void delete(UUID imageId) {
         User currentUser = currentUserService.getUser();
         boolean isAdmin = currentUserService.isAdmin();
 
-        Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
 
         if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER && !isAdmin) {
-            throw new IllegalArgumentException("Only admins can delete default images");
+            throw new AccessDeniedException("Only admins can delete default images");
         }
 
-        if (!isAdmin && image.getUploadedBy() != null && !image.getUploadedBy().getUserId().equals(currentUser.getUserId())) {
-            throw new IllegalArgumentException("You can only delete images you uploaded");
+        // For job banners, allow deletion if the image belongs to the same research group
+        if (!isAdmin && image.getImageType() == ImageType.JOB_BANNER) {
+            if (image.getResearchGroup() == null || currentUser.getResearchGroup() == null) {
+                throw new AccessDeniedException("You do not have permission to delete this image");
+            }
+            if (!image.getResearchGroup().getResearchGroupId().equals(currentUser.getResearchGroup().getResearchGroupId())) {
+                throw new AccessDeniedException("You can only delete job banners from your research group");
+            }
+        } else if (!isAdmin && image.getUploadedBy() != null && !image.getUploadedBy().getUserId().equals(currentUser.getUserId())) {
+            // For other image types, only allow deletion if the user uploaded it
+            throw new AccessDeniedException("You can only delete images you uploaded");
         }
 
         deleteImageFile(image);
@@ -244,11 +258,11 @@ public class ImageService {
      * If a default image ID is provided, the deletion is skipped and a warning is logged.
      *
      * @param imageId the ID of the image to delete
-     * @throws IllegalArgumentException if the image is not found
+     * @throws EntityNotFoundException if the image is not found
      */
     @Transactional
     public void deleteWithoutChecks(UUID imageId) {
-        Image image = imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
 
         if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER) {
             log.warn("Attempted to delete default image: {}", imageId);

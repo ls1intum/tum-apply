@@ -1,6 +1,7 @@
 package de.tum.cit.aet.job.service;
 
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.UUID;
@@ -22,9 +23,10 @@ public class JobImageHelper {
      *
      * @param imageId the ID of the image to retrieve
      * @return the Image entity
+     * @throws EntityNotFoundException if the image is not found
      */
     public Image getImageForJob(UUID imageId) {
-        return imageRepository.findById(imageId).orElseThrow(() -> new IllegalArgumentException("Image not found: " + imageId));
+        return imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
     }
 
     /**
