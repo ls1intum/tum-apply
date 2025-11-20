@@ -114,7 +114,7 @@ export class ResearchGroupCreationFormComponent {
         const currentDepartment = this.form.get('researchGroupDepartment')?.value as SelectOption | null;
         if (currentDepartment) {
           const isDepartmentValid = filtered.some(dept => dept.value === currentDepartment.value);
-          if (isDepartmentValid === false) {
+          if (!isDepartmentValid) {
             this.form.get('researchGroupDepartment')?.setValue(null);
           }
         }
