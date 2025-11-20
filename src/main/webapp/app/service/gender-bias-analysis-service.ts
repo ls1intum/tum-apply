@@ -11,7 +11,7 @@ export class GenderBiasAnalysisService {
    * Observable für debounced Analyse
    */
   readonly analysis = this.analyzeSubject.pipe(
-    debounceTime(1000),
+    debounceTime(400),
     switchMap(({ text, language }) => {
       if (!text || text.trim() === '') {
         return of(null);
