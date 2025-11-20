@@ -236,6 +236,16 @@ describe('JobCreationFormComponent', () => {
       component.onBack();
       expect(location.back).toHaveBeenCalled();
     });
+
+    it('should navigate to login when no user is loaded in init', async () => {
+      mockAccountService.user.set(undefined as unknown as User);
+
+      const fixture2 = TestBed.createComponent(JobCreationFormComponent);
+      fixture2.detectChanges();
+      await fixture2.whenStable();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
+    });
   });
 
   describe('Auto-Save and Saving State', () => {

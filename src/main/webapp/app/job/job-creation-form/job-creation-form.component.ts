@@ -95,18 +95,45 @@ export class JobCreationFormComponent {
   researchGroupImages = signal<ImageDTO[]>([]);
   selectedImage = signal<ImageDTO | undefined>(undefined);
   isUploadingImage = signal<boolean>(false);
-  // Pending image upload (not yet uploaded to server)
   pendingImageFile = signal<File | undefined>(undefined);
   pendingImagePreviewUrl = signal<string | undefined>(undefined);
   // Maximum number of research group images allowed
   readonly MAX_RESEARCH_GROUP_IMAGES = 10;
-  // Check if there's a custom uploaded image (not a default image)
+  // Allowed image file types for upload
+  private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+  // Maximum file size for image upload
+  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+  // Maximum image dimensions (width and height in pixels)
+  private readonly MAX_IMAGE_DIMENSION_PX = 4096;
+
+  get acceptedImageTypes(): string {
+    return this.ALLOWED_IMAGE_TYPES.join(',');
+  }
+
   hasCustomImage = computed(() => {
     const image = this.selectedImage();
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
   });
   // Check if research group image limit is reached
   isResearchGroupImageLimitReached = computed(() => this.researchGroupImages().length >= this.MAX_RESEARCH_GROUP_IMAGES);
+
+  uploadContainerClasses = computed(() => {
+    const disabled = this.isUploadingImage() || this.isResearchGroupImageLimitReached();
+    if (disabled) {
+      const cursor = this.isResearchGroupImageLimitReached() && !this.isUploadingImage() ? 'cursor-not-allowed' : '';
+      return `relative rounded-xl transition-all opacity-50 pointer-events-none ${cursor}`.trim();
+    }
+    return 'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
+  });
+
+  uploadInnerClasses = computed(() => {
+    const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
+    if (this.isResearchGroupImageLimitReached()) {
+      return `${base} border-gray-300 bg-gray-50`;
+    }
+    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-blue-50' : '';
+    return `${base} border-gray-300 ${hover}`.trim();
+  });
 
   // Forms
   basicInfoForm = this.createBasicInfoForm();
@@ -280,7 +307,7 @@ export class JobCreationFormComponent {
             severity: 'primary',
             icon: 'chevron-right',
             onClick() {},
-            disabled: false, // Image is optional
+            disabled: false,
             label: 'button.next',
             shouldTranslate: true,
             changePanel: true,
@@ -381,24 +408,23 @@ export class JobCreationFormComponent {
 
     const file = input.files[0];
 
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size
+    if (file.size > this.MAX_FILE_SIZE_BYTES) {
       console.error('File too large:', file.size);
       this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
       return;
     }
 
-    // Validate file type - allow only specific image formats (no SVG)
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (!allowedTypes.includes(file.type)) {
+    // Validate file type
+    if (!this.ALLOWED_IMAGE_TYPES.includes(file.type)) {
       this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
       return;
     }
 
-    // Validate image dimensions (1920x1080 max)
+    // Validate image dimensions
     try {
       const dimensions = await this.getImageDimensions(file);
-      if (dimensions.width > 4096 || dimensions.height > 4096) {
+      if (dimensions.width > this.MAX_IMAGE_DIMENSION_PX || dimensions.height > this.MAX_IMAGE_DIMENSION_PX) {
         this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
         return;
       }
@@ -407,7 +433,6 @@ export class JobCreationFormComponent {
       return;
     }
 
-    // Upload the image immediately
     this.isUploadingImage.set(true);
 
     try {
@@ -432,13 +457,17 @@ export class JobCreationFormComponent {
   private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
       const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
       img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
         resolve({ width: img.width, height: img.height });
       };
       img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
         reject(new Error('Failed to load image'));
       };
-      img.src = URL.createObjectURL(file);
+      img.src = objectUrl;
     });
   }
 
@@ -490,7 +519,7 @@ export class JobCreationFormComponent {
       const user = this.accountService.loadedUser();
       const researchGroupId = user?.researchGroup?.researchGroupId;
 
-      // Load default images filtered by research group
+      // Load default images
       const defaults = await firstValueFrom(this.imageResourceService.getDefaultJobBanners(researchGroupId));
       this.defaultImages.set(defaults);
 
@@ -575,7 +604,6 @@ export class JobCreationFormComponent {
       }
       this.userId.set(userId);
 
-      // Load images for selection
       await this.loadImages();
 
       const segments = await firstValueFrom(this.route.url);
@@ -628,11 +656,11 @@ export class JobCreationFormComponent {
       requirements: job?.requirements ?? '',
     });
 
-    // Set image if available - reconstruct ImageDTO from job data
+    // Set image if available
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {
       this.imageForm.patchValue({ imageId: job.imageId });
 
-      // Check if this image is a default image (exists in defaultImages array)
+      // Check if this image is a default image
       const isDefaultImage = this.defaultImages().some(img => img.imageId === job.imageId);
       const imageType = isDefaultImage ? 'DEFAULT_JOB_BANNER' : 'JOB_BANNER';
 
