@@ -68,13 +68,13 @@ export class ResearchGroupDetailViewComponent implements OnInit {
   selectedDepartment = computed(() => {
     const value = this.form.controls.department.value;
     const options = this.departmentOptions();
-    return options?.find((option: { value: string }) => option.value === value);
+    return options.find((option: { value: string }) => option.value === value);
   });
 
   selectedSchool = computed(() => {
     const value = this.form.controls.school.value;
     const options = this.schoolOptions();
-    return options?.find((option: { value: string }) => option.value === value);
+    return options.find((option: { value: string }) => option.value === value);
   });
 
   isSaving = signal<boolean>(false);

@@ -81,12 +81,12 @@ export class ResearchGroupCreationFormComponent {
 
     // If no school selected, return all departments
     if (!selectedSchool) {
-      return this.allDepartmentOptions() ?? [];
+      return this.allDepartmentOptions();
     }
 
     // Return filtered departments
     const filtered = this.filteredDepartments();
-    return filtered.length > 0 ? filtered : (this.allDepartmentOptions() ?? []);
+    return filtered.length > 0 ? filtered : this.allDepartmentOptions();
   });
 
   // Services
@@ -105,7 +105,6 @@ export class ResearchGroupCreationFormComponent {
 
     if (selectedSchool && typeof selectedSchool.value === 'string') {
       try {
-        // Fetch departments for the selected school - using firstValueFrom for cleaner async/await
         const departments = await firstValueFrom(this.researchGroupService.getDepartmentsBySchool(selectedSchool.value));
         const filtered = departments.map(dept => ({ name: dept.displayName ?? '', value: dept.value ?? '' }) as SelectOption);
 
@@ -115,13 +114,13 @@ export class ResearchGroupCreationFormComponent {
         const currentDepartment = this.form.get('researchGroupDepartment')?.value as SelectOption | null;
         if (currentDepartment) {
           const isDepartmentValid = filtered.some(dept => dept.value === currentDepartment.value);
-          if (!isDepartmentValid) {
+          if (isDepartmentValid === false) {
             this.form.get('researchGroupDepartment')?.setValue(null);
           }
         }
       } catch {
         // On error, show all departments
-        this.filteredDepartments.set(this.allDepartmentOptions() ?? []);
+        this.filteredDepartments.set(this.allDepartmentOptions());
       }
     } else {
       // No school selected, clear filtered departments to show all

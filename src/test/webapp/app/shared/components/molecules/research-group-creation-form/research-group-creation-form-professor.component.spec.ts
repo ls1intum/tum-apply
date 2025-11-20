@@ -14,6 +14,7 @@ import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } fro
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
+import { EnumDisplayDTO } from 'app/generated/model/enumDisplayDTO';
 
 /**
  * Test suite for ResearchGroupCreationFormComponent - Professor Mode
@@ -39,6 +40,9 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     mockResearchGroupService = {
       createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
       createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as any)),
+      getAvailableSchools: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
+      getAvailableDepartments: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
+      getDepartmentsBySchool: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
     };
 
     mockProfOnboardingService = {
@@ -79,6 +83,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       tumID: 'ab12cde',
       researchGroupHead: 'Prof. Dr. Max Mustermann',
       researchGroupName: 'AI Research Group',
+      researchGroupSchool: { name: 'School of Computation, Information and Technology', value: 'CIT' },
       researchGroupDepartment: { name: 'onboarding.professorRequest.researchGroupDepartment.options.informatics', value: 'INFORMATICS' },
       ...overrides,
     });
@@ -126,6 +131,27 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
 
       expect(abbreviationControl?.valid).toBe(true);
       expect(websiteControl?.valid).toBe(true);
+    });
+
+    it('should handle departments with null/undefined displayName and value during initialization', async () => {
+      const departmentsWithNulls: EnumDisplayDTO[] = [
+        { displayName: undefined, value: 'DEPT1' },
+        { displayName: 'Department 2', value: undefined },
+      ];
+      mockResearchGroupService.getAvailableDepartments = vi.fn(() => of(departmentsWithNulls)) as any;
+
+      // Create a new component to trigger initialization with the new mock
+      const newFixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
+      const newComponent = newFixture.componentInstance;
+      newFixture.detectChanges();
+
+      // Wait for async signals to update
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const allDepts = newComponent.allDepartmentOptions();
+      expect(allDepts).toHaveLength(2);
+      expect(allDepts[0]).toEqual({ name: '', value: 'DEPT1' });
+      expect(allDepts[1]).toEqual({ name: 'Department 2', value: '' });
     });
   });
 
@@ -283,7 +309,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       fillValidForm({
         researchGroupAbbreviation: '',
         researchGroupWebsite: '',
-        researchGroupSchool: '',
       });
 
       component.onConfirmSubmit();
@@ -294,7 +319,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         expect.objectContaining({
           abbreviation: '',
           website: '',
-          school: '',
         }),
       );
     });
@@ -549,7 +573,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       fillValidForm({
         researchGroupAbbreviation: '   ',
         researchGroupWebsite: '  ',
-        researchGroupSchool: '\t\n',
         researchGroupCity: '    ',
       });
 
@@ -561,7 +584,6 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         expect.objectContaining({
           abbreviation: '',
           website: '',
-          school: '',
           city: '',
         }),
       );

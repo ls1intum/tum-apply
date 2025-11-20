@@ -13,6 +13,7 @@ import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } fro
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
+import { EnumDisplayDTO } from 'app/generated/model/enumDisplayDTO';
 
 /**
  * Test suite for ResearchGroupCreationFormComponent - Admin Mode
@@ -39,6 +40,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     mockResearchGroupService = {
       createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
       createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as any)),
+      getAvailableSchools: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
+      getAvailableDepartments: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
+      getDepartmentsBySchool: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
     };
 
     mockProfOnboardingService = {
@@ -76,6 +80,8 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       tumID: 'ab12cde',
       researchGroupHead: 'Prof. Dr. Admin Test',
       researchGroupName: 'Admin Research Group',
+      researchGroupSchool: { name: 'School of Computation, Information and Technology', value: 'CIT' },
+      researchGroupDepartment: { name: 'researchGroup.department.options.informatics', value: 'INFORMATICS' },
       ...overrides,
     });
   }
@@ -348,6 +354,186 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       component.onCancel();
 
       expect(mockDialogRef.close).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('School and Department Selection', () => {
+    const mockSchool = { name: 'School of Computation, Information and Technology', value: 'CIT' };
+    const mockDepartments: EnumDisplayDTO[] = [
+      { displayName: 'Informatics', value: 'INFORMATICS' },
+      { displayName: 'Mathematics', value: 'MATHEMATICS' },
+    ];
+
+    it('should update selected school when onSchoolChange is called', async () => {
+      await component.onSchoolChange(mockSchool);
+
+      expect(component.selectedSchool()).toEqual(mockSchool);
+    });
+
+    it('should fetch departments for selected school', async () => {
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+
+      await component.onSchoolChange(mockSchool);
+
+      expect(mockResearchGroupService.getDepartmentsBySchool).toHaveBeenCalledWith('CIT');
+    });
+
+    it('should update filtered departments after fetching', async () => {
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+
+      await component.onSchoolChange(mockSchool);
+
+      const filteredDepts = component.filteredDepartments();
+      expect(filteredDepts).toHaveLength(2);
+      expect(filteredDepts[0]).toEqual({ name: 'Informatics', value: 'INFORMATICS' });
+      expect(filteredDepts[1]).toEqual({ name: 'Mathematics', value: 'MATHEMATICS' });
+    });
+
+    it('should clear department selection if current department is not in filtered list', async () => {
+      const mockCurrentDepartment = { name: 'Computer Science', value: 'CS' };
+      component.form.get('researchGroupDepartment')?.setValue(mockCurrentDepartment);
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+
+      await component.onSchoolChange(mockSchool);
+
+      expect(component.form.get('researchGroupDepartment')?.value).toBeNull();
+    });
+
+    it('should keep department selection if current department is in filtered list', async () => {
+      const mockCurrentDepartment = { name: 'Informatics', value: 'INFORMATICS' };
+      component.form.get('researchGroupDepartment')?.setValue(mockCurrentDepartment);
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+
+      await component.onSchoolChange(mockSchool);
+
+      expect(component.form.get('researchGroupDepartment')?.value).toEqual(mockCurrentDepartment);
+    });
+
+    it('should handle error when fetching departments and show all departments', async () => {
+      const allDepts: EnumDisplayDTO[] = [
+        { displayName: 'All Department 1', value: 'ALL_DEPT_1' },
+        { displayName: 'All Department 2', value: 'ALL_DEPT_2' },
+      ];
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => throwError(() => new Error('API Error'))) as any;
+      mockResearchGroupService.getAvailableDepartments = vi.fn(() => of(allDepts)) as any;
+
+      const newFixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
+      const newComponent = newFixture.componentInstance;
+      newFixture.detectChanges();
+
+      await newComponent.onSchoolChange(mockSchool);
+
+      expect(newComponent.filteredDepartments().length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should clear filtered departments when school is set to null', async () => {
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      await component.onSchoolChange(mockSchool);
+      expect(component.filteredDepartments()).toHaveLength(2);
+
+      await component.onSchoolChange(null);
+
+      expect(component.selectedSchool()).toBeNull();
+      expect(component.filteredDepartments()).toEqual([]);
+    });
+
+    it('should clear department selection when school is set to null', async () => {
+      component.form.get('researchGroupDepartment')?.setValue({ name: 'Informatics', value: 'INFORMATICS' });
+
+      await component.onSchoolChange(null);
+
+      expect(component.form.get('researchGroupDepartment')?.value).toBeNull();
+    });
+
+    it('should return all departments when no school is selected', () => {
+      component.selectedSchool.set(null);
+      component.filteredDepartments.set([]);
+
+      const departments = component.departmentOptions();
+
+      expect(departments).toEqual(component.allDepartmentOptions());
+    });
+
+    it('should return filtered departments when school is selected and departments are available', async () => {
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+
+      await component.onSchoolChange(mockSchool);
+
+      const departments = component.departmentOptions();
+
+      expect(departments).toHaveLength(2);
+      expect(departments[0].value).toBe('INFORMATICS');
+      expect(departments[1].value).toBe('MATHEMATICS');
+    });
+
+    it('should return all departments when school is selected but filtered list is empty', () => {
+      component.selectedSchool.set(mockSchool);
+      component.filteredDepartments.set([]);
+
+      const departments = component.departmentOptions();
+
+      expect(departments).toEqual(component.allDepartmentOptions());
+    });
+
+    it('should not fetch departments when school value is not a string', async () => {
+      const invalidSchool = { name: 'Invalid', value: 123 };
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+
+      await component.onSchoolChange(invalidSchool as any);
+
+      expect(mockResearchGroupService.getDepartmentsBySchool).not.toHaveBeenCalled();
+      expect(component.filteredDepartments()).toEqual([]);
+    });
+
+    it('should handle departments with null/undefined displayName and value fields', async () => {
+      const departmentsWithNulls: EnumDisplayDTO[] = [
+        { displayName: undefined, value: 'INFORMATICS' },
+        { displayName: 'Mathematics', value: undefined },
+        { displayName: undefined, value: undefined },
+      ];
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(departmentsWithNulls)) as any;
+
+      await component.onSchoolChange(mockSchool);
+
+      const filteredDepts = component.filteredDepartments();
+      expect(filteredDepts).toHaveLength(3);
+      expect(filteredDepts[0]).toEqual({ name: '', value: 'INFORMATICS' });
+      expect(filteredDepts[1]).toEqual({ name: 'Mathematics', value: '' });
+      expect(filteredDepts[2]).toEqual({ name: '', value: '' });
+    });
+  });
+
+  describe('DTO Creation', () => {
+    it('should handle researchGroupSchool with undefined value in admin mode', async () => {
+      fillValidForm({
+        researchGroupSchool: { name: 'Some School', value: undefined },
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          school: undefined,
+        }),
+      );
+    });
+
+    it('should handle researchGroupSchool with null value in admin mode', async () => {
+      fillValidForm({
+        researchGroupSchool: { name: 'Some School', value: null },
+      });
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          school: undefined,
+        }),
+      );
     });
   });
 });
