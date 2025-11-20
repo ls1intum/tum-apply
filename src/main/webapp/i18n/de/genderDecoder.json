@@ -1,6 +1,10 @@
 {
   "genderDecoder": {
     "resultTitle": "Gender-Bias-Analyse",
+    "buttonLabel": "Prüfen",
+    "masculineWords": "Agentische (männlich kodierte) Wörter",
+    "feminineWords": "Kommunale (weiblich kodierte) Wörter",
+    "noWordsFound": "Keine Wörter gefunden",
     "formulationTexts": {
       "manly": "Überwiegend agentisch (stereotyp männlich) formuliert",
       "feminine": "Überwiegend kommunal (stereotyp weiblich) formuliert",

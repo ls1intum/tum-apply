@@ -1,6 +1,10 @@
 {
   "genderDecoder": {
     "resultTitle": "Gender Bias Analysis",
+    "buttonLabel": "Check",
+    "masculineWords": "Agentic (masculine-coded) words",
+    "feminineWords": "Communal (feminine-coded) words",
+    "noWordsFound": "No words found",
     "formulationTexts": {
       "manly": "Predominantly agentic (stereotypically masculine) wording",
       "feminine": "Predominantly communal (stereotypically feminine) wording",

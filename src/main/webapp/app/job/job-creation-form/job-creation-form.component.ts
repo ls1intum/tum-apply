@@ -15,6 +15,7 @@ import { DividerModule } from 'primeng/divider';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { Dialog } from 'primeng/dialog';
 import { GenderBiasAnalysisRequest, GenderBiasAnalysisResourceApiService, GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -55,6 +56,7 @@ type JobFormMode = 'create' | 'edit';
     DividerModule,
     ButtonComponent,
     Dialog,
+    GenderBiasAnalysisDialogComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -378,6 +380,33 @@ export class JobCreationFormComponent {
       });
   }
 
+  analyzeFieldFromEditor(fieldName: 'description' | 'tasks' | 'requirements', content: string): void {
+    if (!content || content.trim() === '') {
+      this.toastService.showWarn({ detail: 'Please enter some text to analyze' });
+      return;
+    }
+
+    this.currentAnalyzingField.set(fieldName);
+    this.isAnalyzing.set(true);
+
+    const request: GenderBiasAnalysisRequest = {
+      text: content,
+      language: 'de',
+    };
+
+    firstValueFrom(this.genderBiasService.analyzeHtmlContent(request))
+      .then(result => {
+        this.analysisResult.set(result);
+        this.showAnalysisModal.set(true);
+      })
+      .catch(() => {
+        this.toastService.showErrorKey('toast.genderBiasAnalysisFailed');
+      })
+      .finally(() => {
+        this.isAnalyzing.set(false);
+      });
+  }
+
   /**
    * Close analysis modal
    */
@@ -399,10 +428,10 @@ export class JobCreationFormComponent {
    */
   getCodingTranslationKey(coding: string): string {
     const mapping: Record<string, string> = {
-      'masculine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.manly',
-      'feminine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.feminine',
-      neutral: 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.neutral',
-      empty: 'jobCreationForm.positionDetailsSection.genderDecoder.formulationTexts.neutral', // Empty = neutral
+      'masculine-coded': 'genderDecoder.formulationTexts.manly',
+      'feminine-coded': 'genderDecoder.formulationTexts.feminine',
+      neutral: 'genderDecoder.formulationTexts.neutral',
+      empty: 'genderDecoder.formulationTexts.neutral',
     };
     return mapping[coding] || mapping['neutral'];
   }
@@ -412,10 +441,10 @@ export class JobCreationFormComponent {
    */
   getExplanationTranslationKey(coding: string): string {
     const mapping: Record<string, string> = {
-      'masculine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.mostly_agentic',
-      'feminine-coded': 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.mostly_communal',
-      neutral: 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.neutral',
-      empty: 'jobCreationForm.positionDetailsSection.genderDecoder.explanations.empty',
+      'masculine-coded': 'genderDecoder.explanations.mostly_agentic',
+      'feminine-coded': 'genderDecoder.explanations.mostly_communal',
+      neutral: 'genderDecoder.explanations.neutral',
+      empty: 'genderDecoder.explanations.empty',
     };
     return mapping[coding] || mapping['neutral'];
   }

@@ -1,0 +1,79 @@
+<!-- gender-bias-analysis-dialog.component.html -->
+<p-dialog
+  [visible]="visible()"
+  [header]="'genderDecoder.resultTitle' | translate"
+  [modal]="true"
+  [draggable]="false"
+  (visibleChange)="onVisibleChange($event)"
+  [style]="{
+    'background-color': 'var(--p-background-default)',
+    'border-radius': 'var(--p-button-border-radius)',
+    width: '700px',
+  }"
+>
+  @if (result(); as analysisResult) {
+    <div class="space-y-6">
+      <!-- Coding Summary -->
+      <div class="text-center">
+        <p class="font-semibold text-lg text-gray-800">
+          {{ getCodingTranslationKey(analysisResult.coding ?? 'neutral') | translate }}
+        </p>
+      </div>
+
+      <!-- Explanation -->
+      <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+        <div
+          class="text-gray-700 leading-relaxed"
+          [innerHTML]="getExplanationTranslationKey(analysisResult.coding ?? 'neutral') | translate"
+        ></div>
+      </div>
+
+      <!-- Biased Words - Two Columns -->
+      @if (analysisResult.biasedWords && analysisResult.biasedWords.length > 0) {
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Masculine Words Column -->
+          <div class="space-y-3">
+            <div class="flex items-center gap-2 pb-2 border-b-2 border-blue-300">
+              <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+              <h4 class="font-semibold text-gray-700">
+                {{ 'genderDecoder.masculineWords' | translate }}
+              </h4>
+            </div>
+            <div class="space-y-2">
+              @for (word of getMasculineWords(analysisResult.biasedWords); track word.word) {
+                <div class="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                  <span class="text-gray-800 font-medium">{{ word.word }}</span>
+                </div>
+              } @empty {
+                <p class="text-gray-500 italic text-sm">
+                  {{ 'genderDecoder.noWordsFound' | translate }}
+                </p>
+              }
+            </div>
+          </div>
+
+          <!-- Feminine Words Column -->
+          <div class="space-y-3">
+            <div class="flex items-center gap-2 pb-2 border-b-2 border-pink-300">
+              <div class="w-3 h-3 rounded-full bg-pink-500"></div>
+              <h4 class="font-semibold text-gray-700">
+                {{ 'genderDecoder.feminineWords' | translate }}
+              </h4>
+            </div>
+            <div class="space-y-2">
+              @for (word of getFeminineWords(analysisResult.biasedWords); track word.word) {
+                <div class="px-3 py-2 bg-pink-50 border border-pink-200 rounded-lg">
+                  <span class="text-gray-800 font-medium">{{ word.word }}</span>
+                </div>
+              } @empty {
+                <p class="text-gray-500 italic text-sm">
+                  {{ 'genderDecoder.noWordsFound' | translate }}
+                </p>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</p-dialog>
