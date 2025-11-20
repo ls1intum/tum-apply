@@ -96,7 +96,6 @@ class InterviewResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getInterviewProcessDetailsReturnsCorrectDetails() {
         InterviewOverviewDTO details = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -109,7 +108,6 @@ class InterviewResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getInterviewProcessDetailsForbiddenForOtherUser() {
         // Create another professor
         User otherProfessor = UserTestData.savedProfessorAll(
@@ -137,7 +135,6 @@ class InterviewResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    @WithMockUser(roles = "PROFESSOR")
     void getInterviewProcessDetailsNotFoundForNonExistentId() {
         Void result = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
