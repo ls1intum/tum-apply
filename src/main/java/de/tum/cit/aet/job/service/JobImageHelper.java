@@ -4,21 +4,18 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
  * Helper class for managing job images in JobService
  */
 @Component
+@RequiredArgsConstructor
 public class JobImageHelper {
 
     private final ImageService imageService;
     private final ImageRepository imageRepository;
-
-    public JobImageHelper(ImageService imageService, ImageRepository imageRepository) {
-        this.imageService = imageService;
-        this.imageRepository = imageRepository;
-    }
 
     /**
      * Get an image by ID (validates it exists)

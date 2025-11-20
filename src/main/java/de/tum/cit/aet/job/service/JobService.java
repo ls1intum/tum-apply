@@ -28,11 +28,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class JobService {
 
     private final JobRepository jobRepository;
@@ -43,26 +45,6 @@ public class JobService {
     private final InterviewService interviewService;
     private final JobImageHelper jobImageHelper;
     private final ImageService imageService;
-
-    public JobService(
-        JobRepository jobRepository,
-        UserRepository userRepository,
-        ApplicationRepository applicationRepository,
-        AsyncEmailSender sender,
-        CurrentUserService currentUserService,
-        InterviewService interviewService,
-        JobImageHelper jobImageHelper,
-        ImageService imageService
-    ) {
-        this.jobRepository = jobRepository;
-        this.userRepository = userRepository;
-        this.applicationRepository = applicationRepository;
-        this.sender = sender;
-        this.currentUserService = currentUserService;
-        this.interviewService = interviewService;
-        this.jobImageHelper = jobImageHelper;
-        this.imageService = imageService;
-    }
 
     /**
      * Creates a new job using the provided job form data.

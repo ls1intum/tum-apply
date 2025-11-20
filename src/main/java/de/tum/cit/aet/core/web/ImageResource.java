@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/images")
 public class ImageResource {
 
     private final ImageService imageService;
-
-    public ImageResource(ImageService imageService) {
-        this.imageService = imageService;
-    }
 
     /**
      * Get all default job banner images (publicly accessible)
@@ -80,7 +78,7 @@ public class ImageResource {
     public ResponseEntity<ImageDTO> uploadJobBanner(@RequestParam("file") MultipartFile file) {
         Image image = imageService.upload(file, ImageType.JOB_BANNER);
         log.info("Uploaded job banner image: {}", image.getImageId());
-        return ResponseEntity.ok(ImageDTO.fromEntity(image));
+        return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 
     /**
@@ -99,7 +97,7 @@ public class ImageResource {
     ) {
         Image image = imageService.uploadDefaultImage(file, ImageType.DEFAULT_JOB_BANNER, researchGroupId);
         log.info("Uploaded default job banner image: {} for research group: {}", image.getImageId(), researchGroupId);
-        return ResponseEntity.ok(ImageDTO.fromEntity(image));
+        return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 
     /**

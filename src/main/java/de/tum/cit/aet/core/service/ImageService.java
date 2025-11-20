@@ -29,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImageService {
 
+    private static final List<String> ALLOWED_MIME_TYPES = List.of("image/jpeg", "image/png", "image/jpg");
+
     private final ImageRepository imageRepository;
     private final ResearchGroupRepository researchGroupRepository;
     private final CurrentUserService currentUserService;
@@ -161,9 +163,7 @@ public class ImageService {
             image.setUploadedBy(uploader);
             image.setResearchGroup(researchGroup);
 
-            Image savedImage = imageRepository.save(image);
-
-            return savedImage;
+            return imageRepository.save(image);
         } catch (IOException e) {
             throw new UploadException("Failed to store image", e);
         }
@@ -205,7 +205,6 @@ public class ImageService {
     public List<Image> getResearchGroupJobBanners() {
         UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
         List<Image> images = imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, researchGroupId);
-        images.forEach(img -> log.debug("  - Image ID: {} (url: {})", img.getImageId(), img.getUrl()));
         return images;
     }
 
@@ -295,19 +294,8 @@ public class ImageService {
     private void deleteImageFile(Image image) {
         try {
             String relativePath = image.getUrl().replace("/images/", "");
-            Path imagePath = imageRoot.resolve(relativePath);
-
-            if (!imagePath.isAbsolute()) {
-                if (imagePath.getNameCount() == 1) {
-                    imagePath = imageRoot.resolve(imagePath);
-                } else {
-                    Path workingDir = Paths.get("").toAbsolutePath();
-                    imagePath = workingDir.resolve(imagePath);
-                }
-            }
-
-            imagePath = imagePath.toAbsolutePath().normalize();
-            Path normalizedRoot = imageRoot.toAbsolutePath().normalize();
+            Path imagePath = imageRoot.resolve(relativePath).normalize();
+            Path normalizedRoot = imageRoot.normalize();
 
             if (!imagePath.startsWith(normalizedRoot)) {
                 throw new IllegalStateException("Stored path lies outside storage root: " + imagePath);
@@ -329,7 +317,7 @@ public class ImageService {
         }
 
         String mimeType = file.getContentType();
-        if (mimeType == null || !List.of("image/jpeg", "image/png", "image/jpg").contains(mimeType.toLowerCase())) {
+        if (mimeType == null || !ALLOWED_MIME_TYPES.contains(mimeType.toLowerCase())) {
             throw new UploadException("Invalid image type. Allowed: JPG, JPEG, PNG");
         }
     }
