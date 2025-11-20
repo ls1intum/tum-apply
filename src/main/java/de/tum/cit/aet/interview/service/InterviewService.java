@@ -11,9 +11,8 @@ import de.tum.cit.aet.interview.dto.InterviewProcessDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
-import java.util.*;
-
 import de.tum.cit.aet.usermanagement.domain.User;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -146,7 +145,7 @@ public class InterviewService {
         // Filter for this specific job (optimization: could add a specific repository method, but this reuses existing logic)
         Map<ApplicationState, Long> stateCounts = new EnumMap<>(ApplicationState.class);
         for (Object[] result : countResults) {
-             job = (Job) result[0];
+            job = (Job) result[0];
             if (job.getJobId().equals(jobId)) {
                 ApplicationState state = (ApplicationState) result[1];
                 Long count = (Long) result[2];
