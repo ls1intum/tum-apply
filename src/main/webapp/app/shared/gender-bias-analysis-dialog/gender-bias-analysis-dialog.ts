@@ -32,7 +32,7 @@ export class GenderBiasAnalysisDialogComponent {
       neutral: 'genderDecoder.formulationTexts.neutral',
       empty: 'genderDecoder.formulationTexts.neutral',
     };
-    return mapping[coding] || mapping['neutral'];
+    return mapping[coding] ?? mapping.neutral;
   }
 
   getExplanationTranslationKey(coding: string): string {
