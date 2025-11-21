@@ -36,6 +36,10 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   readonly analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
 
+  readonly shouldShowButton = computed(() => {
+    return this.showGenderDecoderButton() && this.analysisResult() !== null;
+  });
+
   // Check if error message should be displayed
   isOverCharLimit = computed(() => {
     const count = this.characterCount();

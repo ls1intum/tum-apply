@@ -69,18 +69,19 @@
                   {{ coding }}
                 </span>
               }
-
-              <button
-                type="button"
-                class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
-                [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: white;'"
-                (click)="onGenderDecoderClick()"
-                [pTooltip]="'genderDecoder.openAnaylsis' | translate"
-                tooltipPosition="top"
-                [disabled]="!analysisResult()"
-              >
-                ?
-              </button>
+              @if (shouldShowButton()) {
+                <button
+                  type="button"
+                  class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
+                  [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: white;'"
+                  (click)="onGenderDecoderClick()"
+                  [pTooltip]="'genderDecoder.openAnaylsis' | translate"
+                  tooltipPosition="top"
+                  [disabled]="!analysisResult()"
+                >
+                  ?
+                </button>
+              }
             </span>
           }
         </div>
