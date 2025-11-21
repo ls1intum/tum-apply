@@ -107,8 +107,7 @@ class InterviewResourceTest extends AbstractResourceTest {
     void getInterviewProcessDetailsReturnsCorrectDetails() {
         InterviewOverviewDTO details = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, InterviewOverviewDTO.class,
-                200);
+            .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, InterviewOverviewDTO.class, 200);
 
         assertThat(details.jobId()).isEqualTo(job.getJobId());
         assertThat(details.jobTitle()).isEqualTo(job.getTitle());
@@ -133,7 +132,8 @@ class InterviewResourceTest extends AbstractResourceTest {
             "DE",
             null,
             "weiblich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
+        );
 
         Void result = api
             .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))

@@ -53,6 +53,21 @@ public class InterviewResource {
     }
 
     /**
+     * {@code GET /api/interviews/processes/{processId}} : Get details for a specific interview process.
+     *
+     * @param processId the ID of the interview process
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the {@link InterviewOverviewDTO}
+     */
+    @Professor
+    @GetMapping("/processes/{processId}")
+    public ResponseEntity<InterviewOverviewDTO> getInterviewProcessDetails(@PathVariable UUID processId) {
+        log.info("REST request to get interview process id {}", processId);
+        InterviewOverviewDTO details = interviewService.getInterviewProcessDetails(processId);
+        log.info("Returning {} interview processes", processId);
+        return ResponseEntity.ok(details);
+    }
+
+    /**
      * {@code POST /api/interviews/processes/{processId}/slots/create} :
      * Creates one or more interview slots for a given interview process.
      * <p>
