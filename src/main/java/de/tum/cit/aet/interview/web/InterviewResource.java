@@ -36,7 +36,7 @@ public class InterviewResource {
 
     /**
      * {@code GET /api/interviews/overview} : Get interview overview for all jobs with interview process.
-     *
+     * <p>
      * Returns statistics about applications in different interview states
      * (completed, scheduled, invited, uncontacted) for each job that has
      * an active interview process.
