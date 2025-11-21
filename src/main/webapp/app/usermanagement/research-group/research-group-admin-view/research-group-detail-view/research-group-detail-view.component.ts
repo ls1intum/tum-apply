@@ -104,17 +104,17 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   private populateFormData(data?: ResearchGroupDTO): void {
     this.form.patchValue({
-      abbreviation: data?.abbreviation,
-      name: data?.name,
-      school: data?.school,
-      defaultFieldOfStudies: data?.defaultFieldOfStudies,
-      head: data?.head,
-      email: data?.email,
-      website: data?.website,
-      description: data?.description,
-      city: data?.city,
-      postalCode: data?.postalCode,
-      street: data?.street,
+      abbreviation: data?.abbreviation ?? '',
+      name: data?.name ?? '',
+      school: data?.school ?? '',
+      defaultFieldOfStudies: data?.defaultFieldOfStudies ?? '',
+      head: data?.head ?? '',
+      email: data?.email ?? '',
+      website: data?.website ?? '',
+      description: data?.description ?? '',
+      city: data?.city ?? '',
+      postalCode: data?.postalCode ?? '',
+      street: data?.street ?? '',
     });
     this.form.updateValueAndValidity();
   }
