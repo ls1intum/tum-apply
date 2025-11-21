@@ -58,7 +58,7 @@
           <jhi-button
             icon="pencil"
             variant="text"
-            [tooltip]="'button.edit' | translate"
+            [tooltip]="job.state !== 'DRAFT' ? ('button.tooltip.editDisabled' | translate) : ('button.edit' | translate)"
             severity="primary"
             variant="text"
             (click)="onEditJob(job.jobId)"
@@ -77,6 +77,7 @@
               (confirmed)="onDeleteJob(job.jobId)"
               confirmIcon="trash"
               data-testid="delete"
+              [disabled]="job.state !== 'DRAFT'"
             />
           }
           @if (job.state === 'PUBLISHED') {
@@ -90,6 +91,7 @@
               (confirmed)="onCloseJob(job.jobId)"
               confirmIcon="xmark"
               data-testid="delete"
+              [disabled]="job.state !== 'PUBLISHED'"
             />
           }
         </div>
