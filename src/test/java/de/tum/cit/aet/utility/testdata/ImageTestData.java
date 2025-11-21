@@ -98,7 +98,14 @@ public class ImageTestData {
      * @return the created Image instance
      */
     public static Image newJobBanner(User uploadedBy, ResearchGroup researchGroup) {
-        return newImageAll("/images/jobs/" + UUID.randomUUID() + ".jpg", ImageType.JOB_BANNER, "image/jpeg", 2048L, uploadedBy, researchGroup);
+        return newImageAll(
+            "/images/jobs/" + UUID.randomUUID() + ".jpg",
+            ImageType.JOB_BANNER,
+            "image/jpeg",
+            2048L,
+            uploadedBy,
+            researchGroup
+        );
     }
 
     /**

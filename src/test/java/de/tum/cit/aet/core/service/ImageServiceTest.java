@@ -26,11 +26,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +43,6 @@ class ImageServiceTest {
     @Mock
     private CurrentUserService currentUserService;
 
-    @InjectMocks
     private ImageService imageService;
 
     private static final UUID TEST_USER_ID = UUID.randomUUID();
@@ -62,11 +59,15 @@ class ImageServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Set up ImageService fields
-        ReflectionTestUtils.setField(imageService, "imageRoot", java.nio.file.Paths.get(IMAGE_ROOT));
-        ReflectionTestUtils.setField(imageService, "maxFileSize", MAX_FILE_SIZE);
-        ReflectionTestUtils.setField(imageService, "maxWidth", MAX_WIDTH);
-        ReflectionTestUtils.setField(imageService, "maxHeight", MAX_HEIGHT);
+        imageService = new ImageService(
+            imageRepository,
+            researchGroupRepository,
+            currentUserService,
+            IMAGE_ROOT,
+            MAX_FILE_SIZE,
+            MAX_WIDTH,
+            MAX_HEIGHT
+        );
 
         // Initialize test research group
         testResearchGroup = ResearchGroupTestData.newRgAll(
