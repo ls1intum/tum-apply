@@ -1,20 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
+import { GenderBiasAnalysisService } from 'app/service/gender-bias-analysis-service';
+import { GenderBiasAnalysisResponse } from 'app/generated';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
+import { ButtonComponent } from '../button/button.component';
 
 const STANDARD_CHARACTER_LIMIT = 500;
 const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, TranslateModule, TooltipModule],
+  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, TranslateModule, TooltipModule, ButtonComponent],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
@@ -22,6 +27,15 @@ export class EditorComponent extends BaseInputDirective<string> {
   characterCount = computed(() => extractTextFromHtml(this.htmlValue()).length);
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
+  showGenderDecoderButton = input<boolean>(false);
+  genderDecoderClick = output<string>();
+  openAnalysisDialog = output<GenderBiasAnalysisResponse>();
+
+  readonly genderBiasService = inject(GenderBiasAnalysisService);
+  readonly translateService = inject(TranslateService);
+
+  readonly analysisResult = toSignal(this.genderBiasService.analysis);
+
   // Check if error message should be displayed
   isOverCharLimit = computed(() => {
     const count = this.characterCount();
@@ -64,6 +78,17 @@ export class EditorComponent extends BaseInputDirective<string> {
     }
   });
 
+  readonly codingDisplay = computed(() => {
+    const result = this.analysisResult();
+    if (!result?.coding) return null;
+
+    const coding = result.coding;
+    const key = this.getCodingTranslationKey(coding);
+    return this.translateService.instant(key);
+  });
+
+  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
+
   private htmlValue = signal('');
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   private hasFormControl = computed(() => !!this.formControl());
@@ -72,6 +97,15 @@ export class EditorComponent extends BaseInputDirective<string> {
   private syncHtmlValueEffect = effect(() => {
     const currentEditorValue = this.editorValue();
     this.htmlValue.set(currentEditorValue);
+  });
+
+  private analyzeEffect = effect(() => {
+    if (!this.showGenderDecoderButton()) return;
+
+    const html = this.htmlValue();
+    const lang = this.currentLang();
+
+    this.genderBiasService.triggerAnalysis(html, lang);
   });
 
   textChanged(event: ContentChange): void {
@@ -104,6 +138,23 @@ export class EditorComponent extends BaseInputDirective<string> {
       this.modelChange.emit(html);
     }
     this.markAsTouchedManually();
+  }
+
+  onGenderDecoderClick(): void {
+    const result = this.analysisResult();
+    if (result) {
+      this.openAnalysisDialog.emit(result);
+    }
+  }
+
+  private getCodingTranslationKey(coding: string): string {
+    const mapping: Record<string, string> = {
+      'masculine-coded': 'genderDecoder.formulationTexts.manly',
+      'feminine-coded': 'genderDecoder.formulationTexts.feminine',
+      neutral: 'genderDecoder.formulationTexts.neutral',
+      empty: 'genderDecoder.formulationTexts.neutral',
+    };
+    return mapping[coding] || mapping['neutral'];
   }
 }
 
