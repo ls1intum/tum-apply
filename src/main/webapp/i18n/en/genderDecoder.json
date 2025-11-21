@@ -15,6 +15,10 @@
       "mostly_communal": "Your posting contains more communal (stereotypically feminine) than agentic words. This may encourage women to apply. Communal wording barely affects men's interest in applying.",
       "empty": "Your posting contains neither agentic nor communal gender-coded words. The language is gender-fair.",
       "neutral": "Your posting contains both agentic and communal words equally. The language is gender-fair."
+    },
+    "error": {
+      "summary": "Error",
+      "detail": "Failed to analyze the text. Please try refreshing the page, or contact us if the problem continues."
     }
   }
 }

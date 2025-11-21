@@ -15,6 +15,10 @@
       "mostly_communal": "Ihre Stellenanzeige enthält mehr kommunale (stereotyp weibliche) als agentische Worte. Dies bestätigt Frauen in einer Bewerbung. Kommunale Formulierungen beeinflussen Männer kaum, sie werden dadurch nicht abgehalten sich zu bewerben.",
       "empty": "Ihre Stellenanzeige enthält weder agentische noch kommunale geschlechtskodierte Worte. Die Formulierung ist gender-fair.",
       "neutral": "Ihre Stellenanzeige enthält agentische und kommunale Worte in gleichem Maße. Die Formulierung ist gender-fair."
+    },
+    "error": {
+      "summary": "Fehler",
+      "detail": "Analysieren des Textes ist fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   }
 }
