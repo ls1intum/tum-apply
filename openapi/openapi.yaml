@@ -718,14 +718,25 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
-  /api/interviews/processes/{processId}/slots:
-    get:
-      tags: [interview-resource]
-      operationId: getSlotsByProcessId
   /api/interviews/processes/{processId}:
     get:
       tags: [interview-resource]
       operationId: getInterviewProcessDetails
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewOverviewDTO'}
+  /api/interviews/processes/{processId}/slots:
+    get:
+      tags: [interview-resource]
+      operationId: getSlotsByProcessId
       parameters:
       - name: processId
         in: path
