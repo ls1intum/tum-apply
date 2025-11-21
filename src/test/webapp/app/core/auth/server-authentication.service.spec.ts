@@ -219,7 +219,11 @@ describe('ServerAuthenticationService', () => {
     });
 
     it.each([
-      ['visibility change (visible)', 'onVisibilityChange', () => Object.defineProperty(document, 'hidden', { value: false, writable: true })],
+      [
+        'visibility change (visible)',
+        'onVisibilityChange',
+        () => Object.defineProperty(document, 'hidden', { value: false, writable: true }),
+      ],
       ['window focus', 'onFocus', () => {}],
       ['online event', 'onOnline', () => {}],
     ])('should trigger refreshTokens on %s', async (_label, handler, setup) => {
