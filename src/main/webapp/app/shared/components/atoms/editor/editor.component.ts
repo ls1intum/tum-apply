@@ -10,6 +10,7 @@ import { GenderBiasAnalysisService } from 'app/service/gender-bias-analysis-serv
 import { GenderBiasAnalysisResponse } from 'app/generated';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
+import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -18,7 +19,15 @@ const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, TranslateModule, TooltipModule],
+  imports: [
+    CommonModule,
+    QuillEditorComponent,
+    FontAwesomeModule,
+    FormsModule,
+    TranslateModule,
+    TooltipModule,
+    GenderBiasAnalysisDialogComponent,
+  ],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
@@ -35,6 +44,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly translateService = inject(TranslateService);
 
   readonly analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
+  showAnalysisModal = signal(false);
 
   readonly shouldShowButton = computed(() => {
     return this.showGenderDecoderButton() && this.analysisResult() !== null;
@@ -155,8 +165,12 @@ export class EditorComponent extends BaseInputDirective<string> {
   onGenderDecoderClick(): void {
     const result = this.analysisResult();
     if (result) {
-      this.openAnalysisDialog.emit(result);
+      this.showAnalysisModal.set(true);
     }
+  }
+
+  closeAnalysisModal(): void {
+    this.showAnalysisModal.set(false);
   }
 
   private getCodingTranslationKey(coding: string): string {

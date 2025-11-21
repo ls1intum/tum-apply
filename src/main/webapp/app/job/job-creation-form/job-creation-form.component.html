@@ -179,8 +179,6 @@
             icon="circle-info"
             [shouldTranslate]="true"
             [showGenderDecoderButton]="true"
-            (openAnalysisDialog)="showAnalysisDialog($event)"
-            (genderDecoderClick)="analyzeFieldFromEditor('description', $event)"
           />
         </div>
       </div>
@@ -200,8 +198,6 @@
             icon="circle-info"
             [shouldTranslate]="true"
             [showGenderDecoderButton]="true"
-            (openAnalysisDialog)="showAnalysisDialog($event)"
-            (genderDecoderClick)="analyzeFieldFromEditor('tasks', $event)"
           />
         </div>
       </div>
@@ -221,21 +217,11 @@
             icon="circle-info"
             [shouldTranslate]="true"
             [showGenderDecoderButton]="true"
-            (openAnalysisDialog)="showAnalysisDialog($event)"
-            (genderDecoderClick)="analyzeFieldFromEditor('requirements', $event)"
           />
         </div>
       </div>
     </form>
   </ng-template>
-
-  <!-- Gender Bias Analysis Modal -->
-  <jhi-gender-bias-analysis-dialog
-    [visible]="showAnalysisModal()"
-    [result]="analysisResult()"
-    (visibleChange)="showAnalysisModal.set($event)"
-    (close)="closeAnalysisModal()"
-  />
 
   <!-- Step 3: Additional Information -->
   <ng-template #panel3>
