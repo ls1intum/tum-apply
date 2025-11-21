@@ -5,7 +5,6 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
-import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
 import java.util.UUID;
@@ -25,14 +24,14 @@ public class ImageResource {
     private final ImageService imageService;
 
     /**
-     * Get all default job banner images (publicly accessible)
+     * Get all default job banner images
      * Optionally filter by school. If a researchGroupId is provided, returns all default images
      * for the school that the research group belongs to.
      *
      * @param researchGroupId optional research group ID (used to determine the school to filter by)
      * @return a list of default job banner images (all schools if null, or all images for one school)
      */
-    @Public
+    @ProfessorOrAdmin
     @GetMapping("/defaults/job-banners")
     public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID researchGroupId) {
         List<Image> images = imageService.getDefaultJobBanners(researchGroupId);
