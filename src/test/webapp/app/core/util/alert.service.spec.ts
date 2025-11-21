@@ -1,9 +1,9 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { MissingTranslationHandler, TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import { missingTranslationHandler } from '../../config/translation.config';
+import { missingTranslationHandler } from 'src/main/webapp/app/config/translation.config';
 
-import { Alert, AlertService } from './alert.service';
+import { Alert, AlertService } from 'app/core/util/alert.service';
 
 describe('Alert service test', () => {
   describe('Alert Service Test', () => {
@@ -22,7 +22,7 @@ describe('Alert service test', () => {
       });
       const translateService = TestBed.inject(TranslateService);
       translateService.setDefaultLang('en');
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       extAlerts = [];
     });
 
@@ -158,7 +158,7 @@ describe('Alert service test', () => {
 
       expect(service.get().length).toBe(1);
 
-      jest.advanceTimersByTime(6000);
+      vi.advanceTimersByTime(6000);
 
       expect(service.get().length).toBe(0);
     }));
