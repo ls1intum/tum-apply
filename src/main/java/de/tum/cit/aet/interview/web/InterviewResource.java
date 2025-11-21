@@ -100,9 +100,9 @@ public class InterviewResource {
     @Professor
     @GetMapping("/processes/{processId}/slots")
     public ResponseEntity<List<InterviewSlotDTO>> getSlotsByProcessId(@PathVariable UUID processId) {
-        log.debug("REST request to get all slots for interview process: {}", processId);
+        log.info("REST request to get all slots for interview process: {}", processId);
         List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
-        log.debug("Returning {} slots for interview process: {}", slots.size(), processId);
+        log.info("Returning {} slots for interview process: {}", slots.size(), processId);
         return ResponseEntity.ok(slots);
     }
 }
