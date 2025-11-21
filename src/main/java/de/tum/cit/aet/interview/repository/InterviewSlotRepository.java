@@ -1,7 +1,6 @@
 package de.tum.cit.aet.interview.repository;
 
 import de.tum.cit.aet.interview.domain.InterviewSlot;
-import de.tum.cit.aet.interview.dto.SlotConflictDTO;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.util.List;
@@ -61,31 +60,22 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("endDateTime") Instant endDateTime
     );
 
-    /**
-     * Finds the first conflicting slot for a professor within the given time range.
-     *
-     * @param professor the professor to check
-     * @param startDateTime start of the time range
-     * @param endDateTime end of the time range
-     * @return the first conflicting slot information, if any exists
-     */
     @Query(
         """
-        SELECT new de.tum.cit.aet.interview.dto.SlotConflictDTO(
-            s.startDateTime,
-            j.title
-        )
-        FROM InterviewSlot s
-        JOIN s.interviewProcess ip
-        JOIN ip.job j
-        WHERE j.supervisingProfessor = :professor
-        AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
-        ORDER BY s.startDateTime
+            SELECT slot
+            FROM InterviewSlot slot
+            JOIN slot.interviewProcess process
+            JOIN process.job job
+            WHERE job.supervisingProfessor = :professor
+              AND slot.startDateTime < :endTime
+              AND slot.endDateTime > :startTime
+            ORDER BY slot.startDateTime ASC
+            LIMIT 1
         """
     )
-    Optional<SlotConflictDTO> findFirstConflictingSlot(
+    Optional<InterviewSlot> findFirstConflictingSlot(
         @Param("professor") User professor,
-        @Param("startDateTime") Instant startDateTime,
-        @Param("endDateTime") Instant endDateTime
+        @Param("startTime") Instant startTime,
+        @Param("endTime") Instant endTime
     );
 }
