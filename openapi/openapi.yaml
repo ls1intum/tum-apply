@@ -722,6 +722,10 @@ paths:
     get:
       tags: [interview-resource]
       operationId: getSlotsByProcessId
+  /api/interviews/processes/{processId}:
+    get:
+      tags: [interview-resource]
+      operationId: getInterviewProcessDetails
       parameters:
       - name: processId
         in: path
