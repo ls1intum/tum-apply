@@ -35,7 +35,7 @@ export class GenderBiasAnalysisService {
       this.analyses.set(fieldId, analysis$);
     }
 
-    return this.analyses.get(fieldId)!;
+    return this.analyses.get(fieldId) ?? of(null);
   }
 
   analyzeHtmlContent(request: GenderBiasAnalysisRequest): Observable<GenderBiasAnalysisResponse> {

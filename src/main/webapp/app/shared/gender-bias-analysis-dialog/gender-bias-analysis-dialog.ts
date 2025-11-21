@@ -42,7 +42,7 @@ export class GenderBiasAnalysisDialogComponent {
       neutral: 'genderDecoder.explanations.neutral',
       empty: 'genderDecoder.explanations.empty',
     };
-    return mapping[coding] || mapping['neutral'];
+    return mapping[coding] ?? mapping.neutral;
   }
 
   getBiasTypeClass(type: string): string {
