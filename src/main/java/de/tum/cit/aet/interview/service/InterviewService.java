@@ -14,7 +14,6 @@ import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
-import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -177,7 +176,6 @@ public class InterviewService {
      * @throws AccessDeniedException if the user is not authorized
      * @throws TimeConflictException if any time conflicts are detected
      */
-    @Transactional
     public List<InterviewSlotDTO> createSlots(UUID processId, CreateSlotsDTO dto) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
@@ -246,7 +244,6 @@ public class InterviewService {
         for (InterviewSlot newSlot : newSlots) {
             User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
 
-            // First: Quick check if any conflicts exist
             boolean hasConflict = interviewSlotRepository.hasConflictingSlots(
                 professor,
                 newSlot.getStartDateTime(),
@@ -254,18 +251,19 @@ public class InterviewService {
             );
 
             if (hasConflict) {
-                // Second: Fetch details for error message
-                SlotConflictDTO conflict = interviewSlotRepository
+                // Fetch conflicting InterviewSlot entity
+                InterviewSlot conflictingSlot = interviewSlotRepository
                     .findFirstConflictingSlot(professor, newSlot.getStartDateTime(), newSlot.getEndDateTime())
-                    .orElseThrow(); // Should always exist since hasConflict is true
+                    .orElseThrow();
 
-                ZonedDateTime conflictTime = conflict.startDateTime().atZone(CET_TIMEZONE);
+                ZonedDateTime conflictTime = conflictingSlot.getStartDateTime().atZone(CET_TIMEZONE);
+                String jobTitle = conflictingSlot.getInterviewProcess().getJob().getTitle();
 
                 throw new TimeConflictException(
                     String.format(
                         "Time conflict: You already have an interview slot at %s for job '%s'",
                         conflictTime.toLocalDateTime(),
-                        conflict.jobTitle()
+                        jobTitle
                     )
                 );
             }
