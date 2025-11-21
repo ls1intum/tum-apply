@@ -14,6 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST controller for managing interview processes.
@@ -32,7 +36,7 @@ public class InterviewResource {
 
     /**
      * {@code GET /api/interviews/overview} : Get interview overview for all jobs with interview process.
-     * <p>
+     *
      * Returns statistics about applications in different interview states
      * (completed, scheduled, invited, uncontacted) for each job that has
      * an active interview process.
