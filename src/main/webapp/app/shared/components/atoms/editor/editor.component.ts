@@ -103,6 +103,13 @@ export class EditorComponent extends BaseInputDirective<string> {
     this.htmlValue.set(currentEditorValue);
   });
 
+  private analysisSubscriptionEffect = effect(onCleanup => {
+    const fieldId = this.fieldId();
+    const subscription = this.genderBiasService.getAnalysisForField(fieldId).subscribe(result => this.analysisResult.set(result));
+
+    onCleanup(() => subscription.unsubscribe());
+  });
+
   private analyzeEffect = effect(() => {
     if (!this.showGenderDecoderButton()) return;
 
@@ -111,13 +118,6 @@ export class EditorComponent extends BaseInputDirective<string> {
     const id = this.fieldId();
 
     this.genderBiasService.triggerAnalysis(id, html, lang);
-  });
-
-  private analysisSubscriptionEffect = effect(onCleanup => {
-    const fieldId = this.fieldId();
-    const subscription = this.genderBiasService.getAnalysisForField(fieldId).subscribe(result => this.analysisResult.set(result));
-
-    onCleanup(() => subscription.unsubscribe());
   });
 
   textChanged(event: ContentChange): void {
