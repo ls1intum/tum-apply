@@ -22,7 +22,6 @@ public record InterviewSlotDTO(
 ) {
     /**
      * Converts an {@link InterviewSlot} entity into its corresponding {@link InterviewSlotDTO}.
-     * <p>
      * Used to transfer interview slot data to the frontend without exposing the full entity.
      *
      * @param slot the {@link InterviewSlot} entity to convert

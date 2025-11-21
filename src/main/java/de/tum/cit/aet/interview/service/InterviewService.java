@@ -14,7 +14,6 @@ import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
-import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -115,7 +114,6 @@ public class InterviewService {
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
                     jobId,
-                    interviewProcess.getId(),
                     job.getTitle(),
                     completedCount,
                     scheduledCount,
@@ -125,6 +123,66 @@ public class InterviewService {
                 );
             })
             .toList();
+    }
+
+    /**
+     * Get details for a single interview process.
+     *
+     * @param processId the ID of the interview process
+     * @return the {@link InterviewOverviewDTO} with statistics
+     * @throws EntityNotFoundException if the process is not found
+     */
+    public InterviewOverviewDTO getInterviewProcessDetails(UUID processId) {
+        // 1. Load the interview process
+        InterviewProcess interviewProcess = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
+
+        // 2. Security: Verify current user is the job owner
+        UUID currentUserId = currentUserService.getUserId();
+
+        // Extract job and professor to avoid long get-chain
+        Job job = interviewProcess.getJob();
+        User supervisingProfessor = job.getSupervisingProfessor();
+        UUID professorUserId = supervisingProfessor.getUserId();
+
+        // Security check: Only job owner can view their interview processes
+        if (!professorUserId.equals(currentUserId)) {
+            throw new AccessDeniedException("You can only view your own interview processes");
+        }
+
+        // 3. Fetch aggregated data for this specific job
+        UUID jobId = interviewProcess.getJob().getJobId();
+        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(currentUserId);
+
+        // Filter for this specific job (optimization: could add a specific repository method, but this reuses existing logic)
+        Map<ApplicationState, Long> stateCounts = new EnumMap<>(ApplicationState.class);
+        for (Object[] result : countResults) {
+            job = (Job) result[0];
+            if (job.getJobId().equals(jobId)) {
+                ApplicationState state = (ApplicationState) result[1];
+                Long count = (Long) result[2];
+                stateCounts.put(state, count);
+            }
+        }
+
+        // 4. Calculate stats
+        long completedCount = stateCounts.getOrDefault(ApplicationState.COMPLETED, 0L);
+        long scheduledCount = stateCounts.getOrDefault(ApplicationState.SCHEDULED, 0L);
+        long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
+        long uncontactedCount =
+            stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + stateCounts.getOrDefault(ApplicationState.SENT, 0L);
+        long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+
+        return new InterviewOverviewDTO(
+            jobId,
+            interviewProcess.getJob().getTitle(),
+            completedCount,
+            scheduledCount,
+            invitedCount,
+            uncontactedCount,
+            totalInterviews
+        );
     }
 
     /**
@@ -178,7 +236,6 @@ public class InterviewService {
      * @throws AccessDeniedException if the user is not authorized
      * @throws TimeConflictException if any time conflicts are detected
      */
-    @Transactional
     public List<InterviewSlotDTO> createSlots(UUID processId, CreateSlotsDTO dto) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
@@ -238,16 +295,37 @@ public class InterviewService {
     }
 
     /**
-     * Validates that none of the new slots conflict with existing slots of the same professor.
+     * Validates that none of the new slots conflict with existing slots of the same
+     * professor.
      *
      * @param newSlots the slots to validate
      * @throws TimeConflictException if a time conflict is detected
      */
     private void validateNoTimeConflicts(List<InterviewSlot> newSlots) {
+        // 1. Check for internal conflicts within the new batch
+        for (int i = 0; i < newSlots.size(); i++) {
+            for (int j = i + 1; j < newSlots.size(); j++) {
+                InterviewSlot s1 = newSlots.get(i);
+                InterviewSlot s2 = newSlots.get(j);
+
+                if (s1.getStartDateTime().isBefore(s2.getEndDateTime()) && s1.getEndDateTime().isAfter(s2.getStartDateTime())) {
+                    throw new TimeConflictException(
+                        String.format(
+                            "Time conflict: The new slots overlap with each other (%s - %s and %s - %s)",
+                            s1.getStartDateTime().atZone(CET_TIMEZONE).toLocalDateTime(),
+                            s1.getEndDateTime().atZone(CET_TIMEZONE).toLocalDateTime(),
+                            s2.getStartDateTime().atZone(CET_TIMEZONE).toLocalDateTime(),
+                            s2.getEndDateTime().atZone(CET_TIMEZONE).toLocalDateTime()
+                        )
+                    );
+                }
+            }
+        }
+
+        // 2. Check for conflicts with existing slots in the database
         for (InterviewSlot newSlot : newSlots) {
             User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
 
-            // First: Quick check if any conflicts exist
             boolean hasConflict = interviewSlotRepository.hasConflictingSlots(
                 professor,
                 newSlot.getStartDateTime(),
@@ -255,18 +333,19 @@ public class InterviewService {
             );
 
             if (hasConflict) {
-                // Second: Fetch details for error message
-                SlotConflictDTO conflict = interviewSlotRepository
+                // Fetch conflicting InterviewSlot entity
+                InterviewSlot conflictingSlot = interviewSlotRepository
                     .findFirstConflictingSlot(professor, newSlot.getStartDateTime(), newSlot.getEndDateTime())
-                    .orElseThrow(); // Should always exist since hasConflict is true
+                    .orElseThrow();
 
-                ZonedDateTime conflictTime = conflict.startDateTime().atZone(CET_TIMEZONE);
+                ZonedDateTime conflictTime = conflictingSlot.getStartDateTime().atZone(CET_TIMEZONE);
+                String jobTitle = conflictingSlot.getInterviewProcess().getJob().getTitle();
 
                 throw new TimeConflictException(
                     String.format(
                         "Time conflict: You already have an interview slot at %s for job '%s'",
                         conflictTime.toLocalDateTime(),
-                        conflict.jobTitle()
+                        jobTitle
                     )
                 );
             }
