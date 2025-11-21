@@ -40,8 +40,13 @@
               </div>
             </div>
             <ul class="list-disc list-inside space-y-1 pl-2">
-              @for (word of getMasculineWords(analysisResult.biasedWords); track word.word) {
-                <li class="text-gray-800">{{ word.word }}</li>
+              @for (entry of getMasculineWordCounts(analysisResult.biasedWords) | keyvalue; track entry.key) {
+                <li class="text-gray-800">
+                  {{ entry.key }}
+                  @if (entry.value > 1) {
+                    <span class="text-gray-500"> ({{ entry.value }})</span>
+                  }
+                </li>
               } @empty {
                 <p class="italic text-sm" [style.color]="'var(--p-text-disabled)'">
                   {{ 'genderDecoder.noWordsFound' | translate }}
@@ -61,8 +66,13 @@
               </div>
             </div>
             <ul class="list-disc list-inside space-y-1 pl-2">
-              @for (word of getFeminineWords(analysisResult.biasedWords); track word.word) {
-                <li class="text-gray-800">{{ word.word }}</li>
+              @for (entry of getFeminineWordCounts(analysisResult.biasedWords) | keyvalue; track entry.key) {
+                <li class="text-gray-800">
+                  {{ entry.key }}
+                  @if (entry.value > 1) {
+                    <span class="text-gray-500"> ({{ entry.value }})</span>
+                  }
+                </li>
               } @empty {
                 <p class="italic text-sm" [style.color]="'var(--p-text-disabled)'">
                   {{ 'genderDecoder.noWordsFound' | translate }}

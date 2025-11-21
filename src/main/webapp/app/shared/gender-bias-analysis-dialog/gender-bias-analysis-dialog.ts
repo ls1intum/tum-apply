@@ -56,4 +56,23 @@ export class GenderBiasAnalysisDialogComponent {
   getFeminineWords(words: BiasedWordDTO[]): BiasedWordDTO[] {
     return words.filter(w => w.type === 'feminine');
   }
+
+  getWordCounts(words: BiasedWordDTO[]): Map<string, number> {
+    const counts = new Map<string, number>();
+    words.forEach(word => {
+      if (word.word) {
+        const current = counts.get(word.word) ?? 0;
+        counts.set(word.word, current + 1);
+      }
+    });
+    return counts;
+  }
+
+  getMasculineWordCounts(words: BiasedWordDTO[]): Map<string, number> {
+    return this.getWordCounts(this.getMasculineWords(words));
+  }
+
+  getFeminineWordCounts(words: BiasedWordDTO[]): Map<string, number> {
+    return this.getWordCounts(this.getFeminineWords(words));
+  }
 }
