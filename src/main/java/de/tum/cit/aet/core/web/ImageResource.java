@@ -5,10 +5,10 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
-import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,24 +17,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/images")
 public class ImageResource {
 
     private final ImageService imageService;
 
-    public ImageResource(ImageService imageService) {
-        this.imageService = imageService;
-    }
-
     /**
-     * Get all default job banner images (publicly accessible)
+     * Get all default job banner images
      * Optionally filter by school. If a researchGroupId is provided, returns all default images
      * for the school that the research group belongs to.
      *
      * @param researchGroupId optional research group ID (used to determine the school to filter by)
      * @return a list of default job banner images (all schools if null, or all images for one school)
      */
-    @Public
+    @ProfessorOrAdmin
     @GetMapping("/defaults/job-banners")
     public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID researchGroupId) {
         List<Image> images = imageService.getDefaultJobBanners(researchGroupId);
@@ -80,7 +77,7 @@ public class ImageResource {
     public ResponseEntity<ImageDTO> uploadJobBanner(@RequestParam("file") MultipartFile file) {
         Image image = imageService.upload(file, ImageType.JOB_BANNER);
         log.info("Uploaded job banner image: {}", image.getImageId());
-        return ResponseEntity.ok(ImageDTO.fromEntity(image));
+        return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 
     /**
@@ -99,7 +96,7 @@ public class ImageResource {
     ) {
         Image image = imageService.uploadDefaultImage(file, ImageType.DEFAULT_JOB_BANNER, researchGroupId);
         log.info("Uploaded default job banner image: {} for research group: {}", image.getImageId(), researchGroupId);
-        return ResponseEntity.ok(ImageDTO.fromEntity(image));
+        return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 
     /**

@@ -19,7 +19,7 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @return a list of images belonging to that specific research group, ordered by creation date ascending
      */
     @Query(
-        "SELECT i FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.researchGroupId = :researchGroupId ORDER BY i.createdAt ASC"
+        "SELECT i FROM Image i JOIN i.researchGroup rg WHERE i.imageType = :imageType AND rg.researchGroupId = :researchGroupId ORDER BY i.createdAt ASC"
     )
     List<Image> findByImageTypeAndResearchGroup(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
 
@@ -40,7 +40,11 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @return a list of default images for that school with uploader information eagerly loaded
      */
     @Query(
-        "SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.school = (SELECT rg.school FROM ResearchGroup rg WHERE rg.researchGroupId = :researchGroupId)"
+        "SELECT i FROM Image i " +
+            "LEFT JOIN FETCH i.uploadedBy " +
+            "JOIN i.researchGroup irg " +
+            "JOIN ResearchGroup rg ON rg.researchGroupId = :researchGroupId " +
+            "WHERE i.imageType = :imageType AND irg.school = rg.school"
     )
     List<Image> findDefaultImagesBySchoolViaResearchGroup(
         @Param("imageType") ImageType imageType,
@@ -64,7 +68,10 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @return the count of default images for that school
      */
     @Query(
-        "SELECT COUNT(i) FROM Image i WHERE i.imageType = :imageType AND i.researchGroup.school = (SELECT rg.school FROM ResearchGroup rg WHERE rg.researchGroupId = :researchGroupId)"
+        "SELECT COUNT(i) FROM Image i " +
+            "JOIN i.researchGroup irg " +
+            "JOIN ResearchGroup rg ON rg.researchGroupId = :researchGroupId " +
+            "WHERE i.imageType = :imageType AND irg.school = rg.school"
     )
     long countDefaultImagesBySchool(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
 
@@ -76,7 +83,7 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @return a list of default job banners for the school
      */
     @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType AND i.researchGroup.school = :school")
-    List<Image> findDefaultJobBannersBySchool(@Param("imageType") ImageType imageType, @Param("school") String school);
+    List<Image> findByImageTypeAndSchool(@Param("imageType") ImageType imageType, @Param("school") String school);
 
     /**
      * Find all default job banner images for the school that a research group belongs to
@@ -104,6 +111,6 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @return a list of default job banners for the school
      */
     default List<Image> findDefaultJobBannersBySchool(String school) {
-        return findDefaultJobBannersBySchool(ImageType.DEFAULT_JOB_BANNER, school);
+        return findByImageTypeAndSchool(ImageType.DEFAULT_JOB_BANNER, school);
     }
 }
