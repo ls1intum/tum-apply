@@ -46,9 +46,9 @@ public class InterviewResource {
     @Professor
     @GetMapping("/overview")
     public ResponseEntity<List<InterviewOverviewDTO>> getInterviewOverview() {
-        log.info("REST request to get interview overview");
+        log.info("REST request to get all interview processes{}");
         List<InterviewOverviewDTO> overview = interviewService.getInterviewOverview();
-        log.info("Returning {} interview processes", overview.size());
+        log.info("Returning all interview processes");
         return ResponseEntity.ok(overview);
     }
 
