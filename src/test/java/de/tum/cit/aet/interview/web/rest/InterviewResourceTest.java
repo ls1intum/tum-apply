@@ -25,7 +25,9 @@ import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -207,10 +209,20 @@ class InterviewResourceTest extends AbstractResourceTest {
             );
 
         assertThat(createdSlots).hasSize(1);
-        assertThat(createdSlots.get(0).startDateTime()).isNotNull();
-        assertThat(createdSlots.get(0).endDateTime()).isNotNull();
-        assertThat(createdSlots.get(0).location()).isEqualTo("Room 101");
-        assertThat(createdSlots.get(0).isBooked()).isFalse();
+
+        InterviewSlotDTO createdSlot = createdSlots.get(0);
+        assertThat(createdSlot.location()).isEqualTo("Room 101");
+        assertThat(createdSlot.streamLink()).isEqualTo("http://zoom.us/j/123");
+        assertThat(createdSlot.isBooked()).isFalse();
+
+        // Verify exact date and time values
+        assertThat(createdSlot.startDateTime()).isNotNull();
+        assertThat(createdSlot.endDateTime()).isNotNull();
+        // Convert to LocalDateTime and check the exact values we sent
+        LocalDateTime expectedStart = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
+        LocalDateTime expectedEnd = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+        assertThat(createdSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart);
+        assertThat(createdSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd);
 
         // Verify persistence
         List<InterviewSlot> savedSlots = interviewSlotRepository.findAll();
@@ -354,8 +366,29 @@ class InterviewResourceTest extends AbstractResourceTest {
             );
 
         assertThat(slots).hasSize(2);
-        // Verify ordering (ascending)
-        assertThat(slots.get(0).startDateTime()).isBefore(slots.get(1).startDateTime());
+
+        // Verify first slot
+        InterviewSlotDTO firstSlot = slots.get(0);
+        assertThat(firstSlot.location()).isEqualTo("Room 101");
+        assertThat(firstSlot.streamLink()).isNull();
+        assertThat(firstSlot.isBooked()).isFalse();
+        LocalDateTime expectedStart1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
+        LocalDateTime expectedEnd1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+        assertThat(firstSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart1);
+        assertThat(firstSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd1);
+
+        // Verify second slot
+        InterviewSlotDTO secondSlot = slots.get(1);
+        assertThat(secondSlot.location()).isEqualTo("Room 102");
+        assertThat(secondSlot.streamLink()).isNull();
+        assertThat(secondSlot.isBooked()).isFalse();
+        LocalDateTime expectedStart2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+        LocalDateTime expectedEnd2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(12, 0));
+        assertThat(secondSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart2);
+        assertThat(secondSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd2);
+
+        // Verify chronological ordering
+        assertThat(firstSlot.startDateTime()).isBefore(secondSlot.startDateTime());
     }
 
     @Test
