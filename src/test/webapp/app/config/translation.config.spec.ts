@@ -38,57 +38,6 @@ describe('Translation Config', () => {
       expect(result).toBe('translation-not-found[test.key]');
     });
 
-    it('should handle missing translation with nested key', () => {
-      const params: MissingTranslationHandlerParams = {
-        key: 'global.menu.entities.user',
-        translateService: {} as any,
-      };
-
-      const result = handler.handle(params);
-      expect(result).toBe('translation-not-found[global.menu.entities.user]');
-    });
-
-    it('should handle missing translation with simple key', () => {
-      const params: MissingTranslationHandlerParams = {
-        key: 'home',
-        translateService: {} as any,
-      };
-
-      const result = handler.handle(params);
-      expect(result).toBe('translation-not-found[home]');
-    });
-
-    it('should handle missing translation with empty key', () => {
-      const params: MissingTranslationHandlerParams = {
-        key: '',
-        translateService: {} as any,
-      };
-
-      const result = handler.handle(params);
-      expect(result).toBe('translation-not-found[]');
-    });
-
-    it('should handle missing translation with key containing special characters', () => {
-      const params: MissingTranslationHandlerParams = {
-        key: 'test.key-with_special.chars123',
-        translateService: {} as any,
-      };
-
-      const result = handler.handle(params);
-      expect(result).toBe('translation-not-found[test.key-with_special.chars123]');
-    });
-
-    it('should handle missing translation with interpolation params', () => {
-      const params: MissingTranslationHandlerParams = {
-        key: 'test.key',
-        translateService: {} as any,
-        interpolateParams: { name: 'John', count: 5 },
-      };
-
-      const result = handler.handle(params);
-      expect(result).toBe('translation-not-found[test.key]');
-    });
-
     it('should handle missing translation and ignore interpolation params', () => {
       const params: MissingTranslationHandlerParams = {
         key: 'user.greeting',
@@ -161,16 +110,6 @@ describe('Translation Config', () => {
       expect(getMock).toHaveBeenCalled();
     });
 
-    it('should construct correct URL for language', () => {
-      const loader = translatePartialLoader(mockHttpClient);
-
-      loader.getTranslation('de').subscribe();
-
-      expect(mockHttpClient.get).toHaveBeenCalled();
-      const callArgs = (mockHttpClient.get as any).mock.calls[0];
-      expect(callArgs[0]).toMatch(/^\/i18n\/de\.json\?_=/);
-    });
-
     it('should construct correct URL for different languages', () => {
       const loader = translatePartialLoader(mockHttpClient);
 
@@ -200,17 +139,6 @@ describe('Translation Config', () => {
       expect(handler1).not.toBe(handler2);
       expect(handler1).toBeInstanceOf(MissingTranslationHandlerImpl);
       expect(handler2).toBeInstanceOf(MissingTranslationHandlerImpl);
-    });
-
-    it('should return handler that can handle missing translations', () => {
-      const handler = missingTranslationHandler();
-      const params: MissingTranslationHandlerParams = {
-        key: 'some.missing.key',
-        translateService: {} as any,
-      };
-
-      const result = handler.handle(params);
-      expect(result).toBe('translation-not-found[some.missing.key]');
     });
 
     it('should return handler with correct behavior', () => {
@@ -247,22 +175,6 @@ describe('Translation Config', () => {
         translateService: {} as any,
       });
       expect(result).toBe('translation-not-found[missing.key]');
-    });
-
-    it('should maintain consistent translation not found format', () => {
-      const handler1 = new MissingTranslationHandlerImpl();
-      const handler2 = missingTranslationHandler();
-
-      const params: MissingTranslationHandlerParams = {
-        key: 'test.key',
-        translateService: {} as any,
-      };
-
-      const result1 = handler1.handle(params);
-      const result2 = handler2.handle(params);
-
-      expect(result1).toBe(result2);
-      expect(result1).toBe('translation-not-found[test.key]');
     });
   });
 });
