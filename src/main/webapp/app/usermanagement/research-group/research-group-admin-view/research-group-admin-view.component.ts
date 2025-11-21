@@ -17,6 +17,7 @@ import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components
 import { TranslateDirective } from 'app/shared/language';
 import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
+import { ResearchGroupAddMembersComponent } from 'app/usermanagement/research-group/research-group-add-members/research-group-add-members.component';
 
 const I18N_BASE = 'researchGroup.adminView';
 
@@ -164,7 +165,24 @@ export class ResearchGroupAdminView {
     });
 
     dialogRef?.onClose.subscribe(result => {
-      if (result) {
+      if (result !== null && result !== undefined) {
+        void this.loadResearchGroups();
+      }
+    });
+  }
+
+  onAddMembers(researchGroupId: string): void {
+    const ref = this.dialogService.open(ResearchGroupAddMembersComponent, {
+      header: this.translate.instant('researchGroup.members.addMembers'),
+      data: { researchGroupId },
+      styleClass: 'research-group-add-members-dialog',
+      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      closable: true,
+      modal: true,
+    });
+
+    ref?.onClose.subscribe((success: boolean) => {
+      if (success) {
         void this.loadResearchGroups();
       }
     });
