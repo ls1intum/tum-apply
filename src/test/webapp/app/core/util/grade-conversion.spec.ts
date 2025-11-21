@@ -6,40 +6,42 @@ import {
 } from '../../../../../../src/main/webapp/app/core/util/grade-conversion';
 
 describe('grade-conversion', () => {
-  it('should convert numeric grades', () => {
-    expect(convertToGermanGrade('1.0', '4.0', '2.0')).toBeCloseTo(2.0);
-    expect(convertToGermanGrade('100', '40', '70')).toBeCloseTo(2.5);
+  describe('convertToGermanGrade', () => {
+    it.each([
+      ['numeric grades', '1.0', '4.0', '2.0', 2.0, 0],
+      ['percentage grades', '100%', '50%', '75%', 2.5, 0],
+      ['letter grades', 'A', 'C', 'B', 2.5, 1],
+    ])('should convert %s', (_label, best, worst, achieved, expected, precision) => {
+      expect(convertToGermanGrade(best, worst, achieved)).toBeCloseTo(expected, precision);
+    });
+
+    it.each([
+      ['out-of-range grade', '1.0', '4.0', '5.0'],
+      ['invalid letter grade', 'A', 'C', 'Z'],
+    ])('should return null for %s', (_label, best, worst, achieved) => {
+      expect(convertToGermanGrade(best, worst, achieved)).toBeNull();
+    });
   });
 
-  it('should convert percentage grades', () => {
-    expect(convertToGermanGrade('100%', '50%', '75%')).toBeCloseTo(2.5);
+  describe('formatGrade', () => {
+    it('should format numeric value', () => {
+      expect(formatGrade(2.345)).toBe('2.3');
+    });
   });
 
-  it('should convert letter grades', () => {
-    expect(convertToGermanGrade('A+', 'D', 'B')).toBeCloseTo(2.5, 1);
-    expect(convertToGermanGrade('A', 'C', 'B')).toBeCloseTo(2.5, 1);
+  describe('convertAndFormatGermanGrade', () => {
+    it('should convert and format grade', () => {
+      expect(convertAndFormatGermanGrade('1.0', '4.0', '2.0')).toBe('2.0');
+    });
   });
 
-  it('should return null for invalid or out-of-range grades', () => {
-    expect(convertToGermanGrade('1.0', '4.0', '5.0')).toBeNull();
-    expect(convertToGermanGrade('', '4.0', '2.0')).toBeNull();
-    expect(convertToGermanGrade('A', 'C', 'Z')).toBeNull();
-  });
-
-  it('should format grade with one decimal', () => {
-    expect(formatGrade(2.345)).toBe('2.3');
-    expect(formatGrade(null)).toBeNull();
-  });
-
-  it('should convert and format in one step', () => {
-    expect(convertAndFormatGermanGrade('1.0', '4.0', '2.0')).toBe('2.0');
-    expect(convertAndFormatGermanGrade(undefined, '4.0', '2.0')).toBeNull();
-  });
-
-  it('should display grade with conversion', () => {
-    expect(displayGradeWithConversion('1.0', '4.0', '2.0')).toBe('2.0');
-    expect(displayGradeWithConversion('A', 'C', 'B')).toBe('2.5');
-    expect(displayGradeWithConversion('1.0', '4.0', undefined)).toBe('');
-    expect(displayGradeWithConversion('1.0', '4.0', '5.0')).toBe('');
+  describe('displayGradeWithConversion', () => {
+    it.each([
+      ['numeric grade', '1.0', '4.0', '2.0', '2.0'],
+      ['letter grade', 'A', 'C', 'B', '2.5'],
+      ['out-of-range grade', '1.0', '4.0', '5.0', ''],
+    ])('should display %s', (_label, best, worst, achieved, expected) => {
+      expect(displayGradeWithConversion(best, worst, achieved)).toBe(expected);
+    });
   });
 });

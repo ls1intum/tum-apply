@@ -13,49 +13,33 @@ describe('Data Utils Service Test', () => {
     service = TestBed.inject(DataUtils);
   });
 
-  describe('byteSize', () => {
-    it('should return the bytesize of the text', () => {
-      // 'Hello JHipster' in base64 is 'SGVsbG8gSkhpcHN0ZXI='
-      expect(service.byteSize('SGVsbG8gSkhpcHN0ZXI=')).toBe('14 bytes');
-    });
-  });
-
   describe('openFile', () => {
-    it('should open the file in the new window', () => {
+    it('should open file in new window', () => {
       const newWindow = { ...window };
       // eslint-disable-next-line @typescript-eslint/no-deprecated
-      (newWindow.document as any).write = (globalThis as any).vi.fn();
-      window.open = (globalThis as any).vi.fn(() => newWindow);
-      window.URL.createObjectURL = (globalThis as any).vi.fn();
-      // 'JHipster' in base64 is 'SkhpcHN0ZXI='
-      const data = 'SkhpcHN0ZXI=';
-      const contentType = 'text/plain';
-      service.openFile(data, contentType);
+      (newWindow.document as any).write = vi.fn();
+      window.open = vi.fn(() => newWindow);
+      window.URL.createObjectURL = vi.fn();
+      
+      service.openFile('SkhpcHN0ZXI=', 'text/plain');
+      
       expect(window.open).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('byteSize - additional cases', () => {
-    it('should correctly handle no padding', () => {
-      // 'abc' -> base64 'YWJj' -> 3 bytes
-      expect(service.byteSize('YWJj')).toBe('3 bytes');
+  describe('byteSize', () => {
+    it.each([
+      ['Hello JHipster', 'SGVsbG8gSkhpcHN0ZXI=', '14 bytes'],
+      ['abc (no padding)', 'YWJj', '3 bytes'],
+      ['ab (single padding)', 'YWI=', '2 bytes'],
+      ['a (double padding)', 'YQ==', '1 bytes'],
+    ])('should return correct size for %s', (_label, base64, expected) => {
+      expect(service.byteSize(base64)).toBe(expected);
     });
 
-    it('should correctly handle single padding', () => {
-      // 'ab' -> base64 'YWI=' -> 2 bytes
-      expect(service.byteSize('YWI=')).toBe('2 bytes');
-    });
-
-    it('should correctly handle double padding', () => {
-      // 'a' -> base64 'YQ==' -> 1 byte
-      expect(service.byteSize('YQ==')).toBe('1 bytes');
-    });
-
-    it('formatAsBytes should add thousand separator', () => {
-      // call private method for formatting
+    it('should format bytes with thousand separator', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const formatted = (service as any).formatAsBytes(1234);
-      expect(formatted).toBe('1 234 bytes');
+      expect((service as any).formatAsBytes(1234)).toBe('1 234 bytes');
     });
   });
 
