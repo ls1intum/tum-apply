@@ -1,0 +1,37 @@
+meta {
+  name: Create Slots
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/interviews/processes/00000000-0000-0000-0000-000000030001/slots/create
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "slots": [
+      {
+        "date": "2025-11-15",
+        "startTime": "14:00",
+        "endTime": "14:45",
+        "location": "virtual",
+        "streamLink": "https://zoom.us/j/123456789"
+      },
+      {
+        "date": "2025-11-15",
+        "startTime": "15:00",
+        "endTime": "15:45",
+        "location": "Room MI 01.11.018",
+        "streamLink": null
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
