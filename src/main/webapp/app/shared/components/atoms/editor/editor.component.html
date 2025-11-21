@@ -72,14 +72,14 @@
 
               <button
                 type="button"
-                class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold text-white flex items-center justify-center cursor-pointer hover:brightness-130 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-                [style.background-color]="'var(--p-primary-color)'"
+                class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
+                [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: white;'"
                 (click)="onGenderDecoderClick()"
-                [pTooltip]="'genderDecoder.resultTitle' | translate"
+                [pTooltip]="'genderDecoder.openAnaylsis' | translate"
                 tooltipPosition="top"
                 [disabled]="!analysisResult()"
               >
-                <span class="text-white" style="color: white !important">?</span>
+                ?
               </button>
             </span>
           }
