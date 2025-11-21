@@ -55,7 +55,6 @@ class ImageServiceTest {
 
     private User testUser;
     private ResearchGroup testResearchGroup;
-    private Image testImage;
 
     @BeforeEach
     void setUp() {
@@ -89,10 +88,6 @@ class ImageServiceTest {
         // Initialize test user
         testUser = UserTestData.newUserAll(TEST_USER_ID, "test@example.com", "Test", "User");
         testUser.setResearchGroup(testResearchGroup);
-
-        // Initialize test image
-        testImage = ImageTestData.newJobBanner(testUser, testResearchGroup);
-        testImage.setImageId(TEST_IMAGE_ID);
     }
 
     @Nested
@@ -641,7 +636,7 @@ class ImageServiceTest {
             ImageIO.write(image, "jpg", baos);
             return baos.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create image bytes", e);
+            throw new AssertionError("Failed to create image bytes for test", e);
         }
     }
 }

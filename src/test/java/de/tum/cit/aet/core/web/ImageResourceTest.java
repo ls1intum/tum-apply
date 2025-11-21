@@ -70,7 +70,13 @@ public class ImageResourceTest extends AbstractResourceTest {
         databaseCleaner.clean();
         api.withoutPostProcessors(); // Clear any authentication from previous tests
 
-        // Create first research group and professor
+        setupFirstResearchGroup();
+        setupSecondResearchGroup();
+        setupAdminUser();
+        setupTestImages();
+    }
+
+    private void setupFirstResearchGroup() {
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Prof. Smith",
@@ -87,8 +93,9 @@ public class ImageResourceTest extends AbstractResourceTest {
             "ACTIVE"
         );
         professorUser = UserTestData.savedProfessor(userRepository, researchGroup);
+    }
 
-        // Create second research group and professor
+    private void setupSecondResearchGroup() {
         secondResearchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Prof. Doe",
@@ -105,8 +112,9 @@ public class ImageResourceTest extends AbstractResourceTest {
             "ACTIVE"
         );
         secondProfessorUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
+    }
 
-        // Create admin user with ADMIN role
+    private void setupAdminUser() {
         adminUser = UserTestData.newUserAll(UUID.randomUUID(), "admin@tum.de", "Admin", "User");
         UserResearchGroupRole adminRole = new UserResearchGroupRole();
         adminRole.setUser(adminUser);
@@ -114,8 +122,9 @@ public class ImageResourceTest extends AbstractResourceTest {
         adminRole.setResearchGroup(null); // Admin role doesn't need a research group
         adminUser.getResearchGroupRoles().add(adminRole);
         adminUser = userRepository.save(adminUser);
+    }
 
-        // Create test images
+    private void setupTestImages() {
         testImage = ImageTestData.savedAll(
             imageRepository,
             "/images/jobs/" + UUID.randomUUID() + ".jpg",
@@ -176,56 +185,11 @@ public class ImageResourceTest extends AbstractResourceTest {
     @Test
     void getDefaultJobBannersFiltersByResearchGroupWhenIdProvided() {
         // Arrange - Create new research groups with different schools to test filtering
-        ResearchGroup csResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Prof. CS",
-            "CS Research Group",
-            "CS",
-            "Munich",
-            "Computer Science",
-            "CS research",
-            "cs@tum.de",
-            "80333",
-            "CS",
-            "CS Street 1",
-            "https://cs.tum.de",
-            "ACTIVE"
-        );
-        ResearchGroup eeResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Prof. EE",
-            "EE Research Group",
-            "EE",
-            "Munich",
-            "Electrical Engineering",
-            "EE research",
-            "ee@tum.de",
-            "80333",
-            "EE",
-            "EE Street 2",
-            "https://ee.tum.de",
-            "ACTIVE"
-        );
+        ResearchGroup csResearchGroup = createTestResearchGroup("CS", "Computer Science");
+        ResearchGroup eeResearchGroup = createTestResearchGroup("EE", "Electrical Engineering");
 
-        Image defaultImageCS = ImageTestData.savedAll(
-            imageRepository,
-            "/images/defaults/" + UUID.randomUUID() + ".jpg",
-            ImageType.DEFAULT_JOB_BANNER,
-            "image/jpeg",
-            3072L,
-            adminUser,
-            csResearchGroup
-        );
-        // Create default image for EE school (needed for test setup, but not used in assertion)
-        ImageTestData.savedAll(
-            imageRepository,
-            "/images/defaults/" + UUID.randomUUID() + ".jpg",
-            ImageType.DEFAULT_JOB_BANNER,
-            "image/jpeg",
-            2560L,
-            adminUser,
-            eeResearchGroup
-        );
+        Image defaultImageCS = createDefaultJobBanner(csResearchGroup);
+        createDefaultJobBanner(eeResearchGroup);
 
         // Act - Filter by CS research group
         List<ImageDTO> result = api
@@ -594,5 +558,35 @@ public class ImageResourceTest extends AbstractResourceTest {
         byte[] imageBytes = baos.toByteArray();
 
         return new MockMultipartFile("file", filename, "image/jpeg", imageBytes);
+    }
+
+    private ResearchGroup createTestResearchGroup(String abbreviation, String department) {
+        return ResearchGroupTestData.savedAll(
+            researchGroupRepository,
+            "Prof. " + abbreviation,
+            abbreviation + " Research Group",
+            abbreviation,
+            "Munich",
+            department,
+            abbreviation + " research",
+            abbreviation.toLowerCase() + "@tum.de",
+            "80333",
+            abbreviation,
+            abbreviation + " Street 1",
+            "https://" + abbreviation.toLowerCase() + ".tum.de",
+            "ACTIVE"
+        );
+    }
+
+    private Image createDefaultJobBanner(ResearchGroup researchGroup) {
+        return ImageTestData.savedAll(
+            imageRepository,
+            "/images/defaults/" + UUID.randomUUID() + ".jpg",
+            ImageType.DEFAULT_JOB_BANNER,
+            "image/jpeg",
+            3072L,
+            adminUser,
+            researchGroup
+        );
     }
 }
