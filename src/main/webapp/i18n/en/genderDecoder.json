@@ -7,15 +7,15 @@
     "noWordsFound": "No words found",
     "openAnaylsis": "Click here for more information",
     "formulationTexts": {
-      "manly": "Predominantly agentic (stereotypically masculine) wording",
-      "feminine": "Predominantly communal (stereotypically feminine) wording",
+      "manly": "Predominantly masculine wording",
+      "feminine": "Predominantly feminine wording",
       "neutral": "Neutral wording"
     },
     "explanations": {
-      "mostly_agentic": "Your posting contains more agentic (stereotypically masculine) than communal words. Studies show this appeals more to men and may discourage women from applying. It suggests agentic traits are primarily required.",
-      "mostly_communal": "Your posting contains more communal (stereotypically feminine) than agentic words. This may encourage women to apply. Communal wording barely affects men's interest in applying.",
-      "empty": "Your posting contains neither agentic nor communal gender-coded words. The language is gender-fair.",
-      "neutral": "Your posting contains both agentic and communal words equally. The language is gender-fair."
+      "masculine-coded": "Your posting contains more stereotypically masculine-coded than feminine-coded words. Studies show this appeals more to men and may discourage women from applying.",
+      "feminine-coded": "Your posting contains more stereotypically feminine-coded than masculine-coded words. This may encourage women to apply. Stereotypically feminine-coded wording barely affects men's application interest.",
+      "empty": "Your posting contains no gender-coded words. The language is gender-fair.",
+      "neutral": "Your posting contains stereotypically masculine and feminine-coded words equally. The language is gender-fair."
     },
     "error": {
       "summary": "Error",

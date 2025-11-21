@@ -7,15 +7,15 @@
     "noWordsFound": "Keine Wörter gefunden",
     "openAnaylsis": "Klicke hier für mehr Informationen",
     "formulationTexts": {
-      "manly": "Überwiegend agentisch (stereotyp männlich) formuliert",
-      "feminine": "Überwiegend kommunal (stereotyp weiblich) formuliert",
+      "manly": "Überwiegend männlich formuliert",
+      "feminine": "Überwiegend weiblich formuliert",
       "neutral": "Neutral formuliert"
     },
     "explanations": {
-      "mostly_agentic": "Ihre Stellenanzeige enthält mehr agentische (stereotyp männliche) als kommunale Worte. Dies spricht laut Studien eher Männer an und kann Frauen abhalten sich zu bewerben. Es entsteht der Eindruck, dass vorwiegend agentische Eigenschaften gefordert werden.",
-      "mostly_communal": "Ihre Stellenanzeige enthält mehr kommunale (stereotyp weibliche) als agentische Worte. Dies bestätigt Frauen in einer Bewerbung. Kommunale Formulierungen beeinflussen Männer kaum, sie werden dadurch nicht abgehalten sich zu bewerben.",
-      "empty": "Ihre Stellenanzeige enthält weder agentische noch kommunale geschlechtskodierte Worte. Die Formulierung ist gender-fair.",
-      "neutral": "Ihre Stellenanzeige enthält agentische und kommunale Worte in gleichem Maße. Die Formulierung ist gender-fair."
+      "masculine-coded": "Ihre Stellenanzeige enthält mehr stereotypisch männlich kodierte als stereotypisch weiblich kodierte Wörter. Dies spricht laut Studien eher Männer an und kann Frauen von einer Bewerbung abhalten.",
+      "feminine-coded": "Ihre Stellenanzeige enthält mehr stereotypisch weiblich kodierte als stereotypisch männlich kodierte Wörter. Dies bestärkt Frauen in einer Bewerbung. Stereotypisch weiblich kodierte Formulierungen beeinflussen Männer kaum und halten sie nicht von einer Bewerbung ab.",
+      "empty": "Ihre Stellenanzeige enthält keine geschlechtskodierten Wörter. Die Formulierung ist gender-fair.",
+      "neutral": "Ihre Stellenanzeige enthält stereotypisch männlich und stereotypisch weiblich kodierte Wörter in gleichem Maße. Die Formulierung ist gender-fair."
     },
     "error": {
       "summary": "Fehler",

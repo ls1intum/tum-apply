@@ -37,8 +37,8 @@ export class GenderBiasAnalysisDialogComponent {
 
   getExplanationTranslationKey(coding: string): string {
     const mapping: Record<string, string> = {
-      'masculine-coded': 'genderDecoder.explanations.mostly_agentic',
-      'feminine-coded': 'genderDecoder.explanations.mostly_communal',
+      'masculine-coded': 'genderDecoder.explanations.masculine-coded',
+      'feminine-coded': 'genderDecoder.explanations.feminine-coded',
       neutral: 'genderDecoder.explanations.neutral',
       empty: 'genderDecoder.explanations.empty',
     };
