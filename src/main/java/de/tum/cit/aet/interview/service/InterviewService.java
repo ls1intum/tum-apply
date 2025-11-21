@@ -106,7 +106,7 @@ public class InterviewService {
                 // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
                     stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
-                    stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
+                        stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
                 // Calculate total number of all applications in this interview process
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
@@ -114,6 +114,7 @@ public class InterviewService {
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
                     jobId,
+                    interviewProcess.getId(),
                     job.getTitle(),
                     completedCount,
                     scheduledCount,
@@ -176,6 +177,7 @@ public class InterviewService {
 
         return new InterviewOverviewDTO(
             jobId,
+            interviewProcess.getId(),
             interviewProcess.getJob().getTitle(),
             completedCount,
             scheduledCount,
