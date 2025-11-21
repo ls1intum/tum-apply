@@ -179,9 +179,11 @@ class InterviewResourceTest extends AbstractResourceTest {
     void getInterviewOverviewAsStudentReturnsForbidden() {
         User student = UserTestData.createUserWithoutResearchGroup(userRepository, "student@tum.de", "Student", "One", "123456");
 
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(student.getUserId(), "ROLE_STUDENT"))
             .getAndRead("/api/interviews/overview", null, Void.class, 403);
+
+        assertThat(result).isNull();
     }
 
     @Test
@@ -239,18 +241,14 @@ class InterviewResourceTest extends AbstractResourceTest {
             );
 
         // Second creation with overlapping time should fail
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 409);
+        assertThat(result).isNull();
     }
 
     @Test
     void createSlotsWithInvalidDataReturnsBadRequest() {
-        // End time before start time is handled by DTO validation, but let's try nulls
-        // or invalid constraints if possible
-        // The DTO constructor throws InvalidParameterException for end < start, which
-        // might result in 400 or 500 depending on exception handler.
-        // Let's try missing required fields which triggers @Valid
         CreateSlotsDTO.SlotInput invalidInput = new CreateSlotsDTO.SlotInput(
             null, // date is required
             LocalTime.of(10, 0),
@@ -260,9 +258,10 @@ class InterviewResourceTest extends AbstractResourceTest {
         );
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(invalidInput));
 
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 400);
+        assertThat(result).isNull();
     }
 
     @Test
@@ -293,9 +292,10 @@ class InterviewResourceTest extends AbstractResourceTest {
         );
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
 
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 403);
+        assertThat(result).isNull();
     }
 
     @Test
@@ -309,9 +309,10 @@ class InterviewResourceTest extends AbstractResourceTest {
         );
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
 
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots/create", dto, Void.class, 404);
+        assertThat(result).isNull();
     }
 
     @Test
@@ -376,15 +377,17 @@ class InterviewResourceTest extends AbstractResourceTest {
             UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
 
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots", null, Void.class, 403);
+        assertThat(result).isNull();
     }
 
     @Test
     void getSlotsByProcessIdForNonExistentProcessReturnsNotFound() {
-        api
+        Void result = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
+        assertThat(result).isNull();
     }
 }
