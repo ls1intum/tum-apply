@@ -167,6 +167,7 @@
       <div class="form-row mb-6">
         <div class="form-field">
           <jhi-editor
+            fieldId="description"
             label="jobCreationForm.positionDetailsSection.jobDescription.label"
             placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
             helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
@@ -187,6 +188,7 @@
       <div class="form-row mb-6">
         <div class="form-field">
           <jhi-editor
+            fieldId="tasks"
             label="jobCreationForm.positionDetailsSection.tasks.label"
             placeholder="jobCreationForm.positionDetailsSection.tasks.placeholder"
             helperText="jobCreationForm.positionDetailsSection.tasks.descriptionHelper"
@@ -197,6 +199,9 @@
             [control]="positionDetailsForm.get('tasks') ?? undefined"
             icon="circle-info"
             [shouldTranslate]="true"
+            [showGenderDecoderButton]="true"
+            (openAnalysisDialog)="showAnalysisDialog($event)"
+            (genderDecoderClick)="analyzeFieldFromEditor('tasks', $event)"
           />
         </div>
       </div>
@@ -204,6 +209,7 @@
       <div class="form-row">
         <div class="form-field">
           <jhi-editor
+            fieldId="requirements"
             label="jobCreationForm.positionDetailsSection.requirements.label"
             placeholder="jobCreationForm.positionDetailsSection.requirements.placeholder"
             helperText="jobCreationForm.positionDetailsSection.requirements.descriptionHelper"
@@ -214,6 +220,9 @@
             [control]="positionDetailsForm.get('requirements') ?? undefined"
             icon="circle-info"
             [shouldTranslate]="true"
+            [showGenderDecoderButton]="true"
+            (openAnalysisDialog)="showAnalysisDialog($event)"
+            (genderDecoderClick)="analyzeFieldFromEditor('requirements', $event)"
           />
         </div>
       </div>

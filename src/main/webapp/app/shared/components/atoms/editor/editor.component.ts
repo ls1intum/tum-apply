@@ -12,19 +12,19 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
-import { ButtonComponent } from '../button/button.component';
 
 const STANDARD_CHARACTER_LIMIT = 500;
 const STANDARD_CHARACTER_BUFFER = 50;
 
 @Component({
   selector: 'jhi-editor',
-  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, TranslateModule, TooltipModule, ButtonComponent],
+  imports: [CommonModule, QuillEditorComponent, FontAwesomeModule, FormsModule, TranslateModule, TooltipModule],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
 export class EditorComponent extends BaseInputDirective<string> {
   characterCount = computed(() => extractTextFromHtml(this.htmlValue()).length);
+  fieldId = input<string>('default');
   characterLimit = input<number | undefined>(STANDARD_CHARACTER_LIMIT); // Optionally set maximum character limit
   helperText = input<string | undefined>(undefined); // Optional helper text to display below the editor field
   showGenderDecoderButton = input<boolean>(false);
@@ -34,7 +34,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);
 
-  readonly analysisResult = toSignal(this.genderBiasService.analysis);
+  readonly analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
 
   // Check if error message should be displayed
   isOverCharLimit = computed(() => {
@@ -104,8 +104,16 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     const html = this.htmlValue();
     const lang = this.currentLang();
+    const id = this.fieldId();
 
-    this.genderBiasService.triggerAnalysis(html, lang);
+    this.genderBiasService.triggerAnalysis(id, html, lang);
+  });
+
+  private analysisSubscriptionEffect = effect(onCleanup => {
+    const fieldId = this.fieldId();
+    const subscription = this.genderBiasService.getAnalysisForField(fieldId).subscribe(result => this.analysisResult.set(result));
+
+    onCleanup(() => subscription.unsubscribe());
   });
 
   textChanged(event: ContentChange): void {
