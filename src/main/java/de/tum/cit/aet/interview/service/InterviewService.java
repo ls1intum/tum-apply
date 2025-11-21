@@ -235,12 +235,34 @@ public class InterviewService {
     }
 
     /**
-     * Validates that none of the new slots conflict with existing slots of the same professor.
+     * Validates that none of the new slots conflict with existing slots of the same
+     * professor.
      *
      * @param newSlots the slots to validate
      * @throws TimeConflictException if a time conflict is detected
      */
     private void validateNoTimeConflicts(List<InterviewSlot> newSlots) {
+        // 1. Check for internal conflicts within the new batch
+        for (int i = 0; i < newSlots.size(); i++) {
+            for (int j = i + 1; j < newSlots.size(); j++) {
+                InterviewSlot s1 = newSlots.get(i);
+                InterviewSlot s2 = newSlots.get(j);
+
+                if (s1.getStartDateTime().isBefore(s2.getEndDateTime()) && s1.getEndDateTime().isAfter(s2.getStartDateTime())) {
+                    throw new TimeConflictException(
+                        String.format(
+                            "Time conflict: The new slots overlap with each other (%s - %s and %s - %s)",
+                            s1.getStartDateTime().atZone(CET_TIMEZONE).toLocalDateTime(),
+                            s1.getEndDateTime().atZone(CET_TIMEZONE).toLocalDateTime(),
+                            s2.getStartDateTime().atZone(CET_TIMEZONE).toLocalDateTime(),
+                            s2.getEndDateTime().atZone(CET_TIMEZONE).toLocalDateTime()
+                        )
+                    );
+                }
+            }
+        }
+
+        // 2. Check for conflicts with existing slots in the database
         for (InterviewSlot newSlot : newSlots) {
             User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
 
