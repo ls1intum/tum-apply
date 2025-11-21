@@ -15,6 +15,7 @@ export interface JobFormDTO {
     endDate?: string;
     fieldOfStudies: string;
     fundingType?: JobFormDTO.FundingTypeEnum;
+    imageId?: string;
     jobId?: string;
     location: JobFormDTO.LocationEnum;
     requirements?: string;

@@ -23,6 +23,7 @@ public class DatabaseCleaner {
         "email_template_translations",
         "email_templates",
         "email_verification_otp",
+        "images",
         "internal_comments",
         "interview_processes",
         "interview_slots",

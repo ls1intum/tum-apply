@@ -137,7 +137,8 @@ class JobResourceTest extends AbstractResourceTest {
             "Build ML pipelines",
             "data cleaning and model training",
             "Python and TensorFlow",
-            JobState.PUBLISHED
+            JobState.PUBLISHED,
+            null
         );
 
         JobFormDTO returned = api
@@ -227,7 +228,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -250,7 +252,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -275,7 +278,8 @@ class JobResourceTest extends AbstractResourceTest {
             "Updated Description",
             "Updated Tasks",
             "Updated Requirements",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
 
         JobFormDTO returnedJob = api
@@ -319,7 +323,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
 
         api.putAndRead("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload, JobFormDTO.class, 404);
@@ -343,7 +348,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
         api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);
     }
