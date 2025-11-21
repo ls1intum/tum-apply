@@ -380,18 +380,18 @@ export class JobCreationFormComponent {
       });
   }
 
-  analyzeFieldFromEditor(fieldName: 'description' | 'tasks' | 'requirements', content: string): void {
-    if (!content || content.trim() === '') {
-      this.toastService.showWarn({ detail: 'Please enter some text to analyze' });
-      return;
-    }
+  showAnalysisDialog(result: GenderBiasAnalysisResponse): void {
+    this.analysisResult.set(result);
+    this.showAnalysisModal.set(true);
+  }
 
+  analyzeFieldFromEditor(fieldName: 'description' | 'tasks' | 'requirements', content: string): void {
     this.currentAnalyzingField.set(fieldName);
     this.isAnalyzing.set(true);
 
     const request: GenderBiasAnalysisRequest = {
       text: content,
-      language: 'de',
+      language: this.currentLang(),
     };
 
     firstValueFrom(this.genderBiasService.analyzeHtmlContent(request))
@@ -400,7 +400,7 @@ export class JobCreationFormComponent {
         this.showAnalysisModal.set(true);
       })
       .catch(() => {
-        this.toastService.showErrorKey('toast.genderBiasAnalysisFailed');
+        this.toastService.showErrorKey('genderDecoder.error');
       })
       .finally(() => {
         this.isAnalyzing.set(false);
