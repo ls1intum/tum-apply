@@ -178,18 +178,9 @@
             icon="circle-info"
             [shouldTranslate]="true"
             [showGenderDecoderButton]="true"
+            (openAnalysisDialog)="showAnalysisDialog($event)"
             (genderDecoderClick)="analyzeFieldFromEditor('description', $event)"
           />
-
-          <!-- Gender Bias Analysis Button -->
-          <div class="mt-2">
-            <jhi-button
-              label="Check for Gender Bias"
-              variant="outlined"
-              [loading]="isAnalyzing() && currentAnalyzingField() === 'description'"
-              (click)="analyzeField('description')"
-            />
-          </div>
         </div>
       </div>
 
@@ -207,14 +198,6 @@
             icon="circle-info"
             [shouldTranslate]="true"
           />
-          <div class="mt-2">
-            <jhi-button
-              label="Check for Gender Bias"
-              variant="outlined"
-              [loading]="isAnalyzing() && currentAnalyzingField() === 'tasks'"
-              (click)="analyzeField('tasks')"
-            />
-          </div>
         </div>
       </div>
 
@@ -232,14 +215,6 @@
             icon="circle-info"
             [shouldTranslate]="true"
           />
-          <div class="mt-2">
-            <jhi-button
-              label="Check for Gender Bias"
-              variant="outlined"
-              [loading]="isAnalyzing() && currentAnalyzingField() === 'requirements'"
-              (click)="analyzeField('requirements')"
-            />
-          </div>
         </div>
       </div>
     </form>
