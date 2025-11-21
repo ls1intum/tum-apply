@@ -5,12 +5,12 @@ import { convertToParamMap, ParamMap } from '@angular/router';
 
 import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateDTO } from 'app/generated/model/emailTemplateDTO';
-import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
-import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
-import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
-import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
+import { createRouterMock, provideRouterMock } from '../../../../util/router.mock';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../util/toast-service.mock';
+import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
+import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
 import { ResearchGroupTemplateEdit } from 'app/usermanagement/research-group/research-group-template-edit/research-group-template-edit';
-import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../../util/activated-route.mock';
 
 class ResizeObserverMock {
   observe() {}
