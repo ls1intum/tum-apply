@@ -329,7 +329,6 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void getSlotsByProcessIdAsProfessorReturnsSlots() {
-        // Create some slots first
         CreateSlotsDTO.SlotInput slotInput1 = new CreateSlotsDTO.SlotInput(
             LocalDate.now().plusDays(1),
             LocalTime.of(10, 0),
