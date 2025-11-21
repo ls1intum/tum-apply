@@ -180,7 +180,7 @@ export class EditorComponent extends BaseInputDirective<string> {
       neutral: 'genderDecoder.formulationTexts.neutral',
       empty: 'genderDecoder.formulationTexts.neutral',
     };
-    return mapping[coding] ?? mapping.neutral;
+    return Object.prototype.hasOwnProperty.call(mapping, coding) ? mapping[coding] : mapping.neutral;
   }
 }
 

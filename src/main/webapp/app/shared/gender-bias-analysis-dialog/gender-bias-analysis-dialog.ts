@@ -32,7 +32,7 @@ export class GenderBiasAnalysisDialogComponent {
       neutral: 'genderDecoder.formulationTexts.neutral',
       empty: 'genderDecoder.formulationTexts.neutral',
     };
-    return mapping[coding] ?? mapping.neutral;
+    return Object.prototype.hasOwnProperty.call(mapping, coding) ? mapping[coding] : mapping.neutral;
   }
 
   getExplanationTranslationKey(coding: string): string {
@@ -42,7 +42,7 @@ export class GenderBiasAnalysisDialogComponent {
       neutral: 'genderDecoder.explanations.neutral',
       empty: 'genderDecoder.explanations.empty',
     };
-    return mapping[coding] ?? mapping.neutral;
+    return Object.prototype.hasOwnProperty.call(mapping, coding) ? mapping[coding] : mapping.neutral;
   }
 
   getBiasTypeClass(type: string): string {
