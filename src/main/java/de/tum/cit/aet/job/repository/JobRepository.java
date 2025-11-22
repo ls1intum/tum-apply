@@ -94,10 +94,12 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
           j.workload as workload,
           j.startDate as startDate,
           j.endDate as endDate,
-          j.contractDuration as contractDuration
+          j.contractDuration as contractDuration,
+          i.url as imageUrl
         )
         FROM Job j
         JOIN j.supervisingProfessor p
+        LEFT JOIN j.image i
         LEFT JOIN j.applications a
                WITH (:userId IS NOT NULL
                  AND a.applicant.userId = :userId
@@ -172,10 +174,12 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
             j.workload as workload,
             j.startDate as startDate,
             j.endDate as endDate,
-            j.contractDuration as contractDuration
+            j.contractDuration as contractDuration,
+            i.url as imageUrl
           )
           FROM Job j
           JOIN j.supervisingProfessor p
+          LEFT JOIN j.image i
           LEFT JOIN j.applications a
                  WITH (:userId IS NOT NULL
                    AND a.applicant.userId = :userId
@@ -240,4 +244,24 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         """
     )
     List<String> findAllUniqueSupervisorNames(@Param("state") JobState state);
+
+    /**
+     * Find a job with its image eagerly loaded
+     *
+     * @param jobId the job ID
+     * @return the job with image loaded, or empty if not found
+     */
+    @Query("SELECT j FROM Job j LEFT JOIN FETCH j.image WHERE j.jobId = :jobId")
+    java.util.Optional<Job> findByIdWithImage(@Param("jobId") UUID jobId);
+
+    /**
+     * Find all jobs by state with images eagerly loaded
+     *
+     * @param state the job state
+     * @return list of jobs with images loaded
+     */
+    @Query(
+        "SELECT DISTINCT j FROM Job j LEFT JOIN FETCH j.image WHERE j.state = :state AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)"
+    )
+    List<Job> findAllByStateWithImages(@Param("state") JobState state);
 }

@@ -91,6 +91,8 @@ aet:
   storage:
     root: build/test-docs
     max-size-bytes: 26214400
+    image-root: ${java.io.tmpdir}/test-images
+    max-image-size-bytes: 5242880
   email:
     enabled: false
   download:

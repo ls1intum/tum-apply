@@ -100,6 +100,6 @@ describe('ButtonComponent', () => {
 
   it('should show badge if size is set', () => {
     const fixture = createButtonFixture({ size: 'sm' });
-    expect(fixture.componentInstance.buttonClass()).contain('w-8 h-8');
+    expect(fixture.componentInstance.buttonClass()).contain('w-10 h-10');
   });
 });

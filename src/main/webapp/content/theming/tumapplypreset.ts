@@ -136,7 +136,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           onSecondary: '{base.white}',
           onAccent: '{base.white}',
           onSuccess: '{base.black}',
-          onDanger: '{base.black}',
+          onDanger: '{base.white}',
           onWarn: '{base.black}',
           onInfo: '{base.black}',
           onNeutral: '{base.black}',

@@ -8,6 +8,7 @@
       "steps": {
         "basicInfo": "Basic Information",
         "positionDetails": "Position Details",
+        "imageSelection": "Job Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
       },
@@ -83,6 +84,59 @@
         "descriptionHelper": "Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.",
         "toolTipText": "Ensure the applicant knows what qualifications are expected."
       }
+    },
+    "imageSection": {
+      "title": "Choose a Banner Image",
+      "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library. Uploaded images are shared across your research group and can be reused for multiple job postings.",
+      "defaultImages": "Default Images",
+      "orDivider": "or",
+      "researchGroupImages": "Research Group Image Library",
+      "researchGroupImagesDescription": "These images are shared across your research group. Upload new images to add them to the library, and select any image to use for this job.",
+      "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
+      "uploadFormats": "JPG, JPEG, PNG formats accepted",
+      "uploadSuccess": {
+        "summary": "Upload Successful",
+        "detail": "Image uploaded successfully"
+      },
+      "uploadFailed": {
+        "summary": "Upload Failed",
+        "detail": "Failed to upload image. Please try again."
+      },
+      "deleteImageSuccess": {
+        "summary": "Image Deleted",
+        "detail": "Image deleted successfully"
+      },
+      "deleteImageFailed": {
+        "summary": "Delete Failed",
+        "detail": "Failed to delete image. Please try again."
+      },
+      "fileTooLarge": {
+        "summary": "File Too Large",
+        "detail": "Image must be smaller than 5MB"
+      },
+      "invalidFileType": {
+        "summary": "Invalid File Type",
+        "detail": "Please select an image file (JPG, JPEG, PNG)"
+      },
+      "loadImagesFailed": {
+        "summary": "Load Failed",
+        "detail": "Failed to load images. Please refresh the page."
+      },
+      "dimensionsTooLarge": {
+        "summary": "Image Too Large",
+        "detail": "Image dimensions must not exceed 4096x4096 pixels"
+      },
+      "invalidImage": {
+        "summary": "Invalid Image",
+        "detail": "Unable to read image file. Please select a valid image."
+      },
+      "uploadNew": "Upload New Image",
+      "uploading": "Uploading...",
+      "noDefaultImages": "No default banners available. Please upload your own image.",
+      "uploadHint": "Maximum file size: 5MB. Supported formats: JPG, JPEG, PNG. Maximum dimensions: 1920x1080px",
+      "selectedImage": "Selected Image",
+      "myUploads": "My Uploaded Images",
+      "noImage": "No Image"
     },
     "additionalInformationSection": {
       "extras": {
