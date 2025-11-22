@@ -16,10 +16,11 @@ import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'u
 import { HttpErrorResponse } from '@angular/common/http';
 
 /**
- * Test suite for ResearchGroupCreationFormComponent
- * Tests both professor and admin modes for creating research groups
+ * Test suite for ResearchGroupCreationFormComponent - Professor Mode
+ * Tests professor-specific functionality for creating research group requests
+ * Professors create research group requests (DRAFT state) that require admin approval
  */
-describe('ResearchGroupCreationFormComponent', () => {
+describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
   let component: ResearchGroupCreationFormComponent;
   let fixture: ComponentFixture<ResearchGroupCreationFormComponent>;
 
@@ -469,29 +470,6 @@ describe('ResearchGroupCreationFormComponent', () => {
 
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('onboarding.professorRequest.error');
     });
-
-    it('should handle non-HttpErrorResponse errors in admin mode', async () => {
-      // Switch to admin mode
-      mockDialogConfig.data = { mode: 'admin' };
-      fixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      const error = new TypeError('Unexpected error'); // Not an HttpErrorResponse
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
-
-      component.form.patchValue({
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Test',
-        researchGroupName: 'Test Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.create');
-    });
   });
 
   describe('onCancel', () => {
@@ -609,168 +587,7 @@ describe('ResearchGroupCreationFormComponent', () => {
   });
 
   /**
-   * Admin Mode Tests
-   * Admins can create research groups directly (ACTIVE state)
-   * Personal information fields are disabled in admin mode
-   */
-  describe('Admin Mode', () => {
-    beforeEach(async () => {
-      // Recreate component with admin mode
-      mockDialogConfig.data = { mode: 'admin' };
-
-      fixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    });
-
-    it('should set mode to admin when provided in dialog config', () => {
-      expect(component.mode()).toBe('admin');
-    });
-
-    it('should disable personal information fields in admin mode', () => {
-      expect(component.form.get('title')?.disabled).toBe(true);
-      expect(component.form.get('firstName')?.disabled).toBe(true);
-      expect(component.form.get('lastName')?.disabled).toBe(true);
-      expect(component.form.get('additionalNotes')?.disabled).toBe(true);
-    });
-
-    it('should mark form as valid without personal information in admin mode', () => {
-      component.form.patchValue({
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Test',
-        researchGroupName: 'Test Research Group',
-      });
-
-      expect(component.form.valid).toBe(true);
-    });
-
-    it('should call createResearchGroupAsAdmin in admin mode', async () => {
-      component.form.patchValue({
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Admin Test',
-        researchGroupName: 'Admin Research Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledOnce();
-      expect(mockResearchGroupService.createProfessorResearchGroupRequest).not.toHaveBeenCalled();
-    });
-
-    it('should show admin success toast in admin mode', async () => {
-      component.form.patchValue({
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Admin Test',
-        researchGroupName: 'Admin Research Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.adminView.success.create');
-    });
-
-    it('should show admin error toast when creation fails in admin mode', async () => {
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() =>
-        throwError(() => new HttpErrorResponse({ error: 'Creation failed' })),
-      );
-
-      component.form.patchValue({
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Admin Test',
-        researchGroupName: 'Admin Research Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.create');
-    });
-
-    it('should handle empty personal fields gracefully in admin mode', async () => {
-      component.form.patchValue({
-        title: '',
-        firstName: '',
-        lastName: '',
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Admin Test',
-        researchGroupName: 'Admin Research Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: '',
-          firstName: '',
-          lastName: '',
-          universityId: 'ab12cde',
-          researchGroupHead: 'Prof. Dr. Admin Test',
-          researchGroupName: 'Admin Research Group',
-        }),
-      );
-    });
-
-    it('should close dialog with result after successful admin creation', async () => {
-      const expectedResult = { researchGroupId: 'admin-test-id' };
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => of(expectedResult as any));
-
-      component.form.patchValue({
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Admin Test',
-        researchGroupName: 'Admin Research Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockDialogRef.close).toHaveBeenCalledWith(expectedResult);
-    });
-
-    it('should show duplicate name error toast in admin mode when creation fails with 409', async () => {
-      const error = new HttpErrorResponse({ status: 409, error: { message: 'Research group already exists' } });
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
-
-      component.form.patchValue({
-        tumID: 'ab12cde',
-        researchGroupHead: 'Prof. Dr. Admin Test',
-        researchGroupName: 'Duplicate Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.duplicateName');
-    });
-
-    it('should show user not found error toast in admin mode when TUM-ID is invalid', async () => {
-      const error = new HttpErrorResponse({ status: 404, error: { message: 'User with universityId "invalid" not found' } });
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => throwError(() => error));
-
-      component.form.patchValue({
-        tumID: 'ab12cde', // Use valid TUM-ID format
-        researchGroupHead: 'Prof. Dr. Test',
-        researchGroupName: 'Test Group',
-      });
-
-      component.onConfirmSubmit();
-
-      await new Promise(resolve => setTimeout(resolve, 10)); // Increase timeout slightly
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.adminView.errors.userNotFound');
-    });
-  });
-
-  /**
-   * Professor Mode Tests
+   * Professor Mode Specific Tests
    * Professors create research group requests (DRAFT state) that require admin approval
    */
   describe('Professor Mode', () => {
