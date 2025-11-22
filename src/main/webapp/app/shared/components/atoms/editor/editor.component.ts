@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, SecurityContext, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
@@ -12,7 +12,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { franc } from 'franc-min';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
-import { DomSanitizer } from '@angular/platform-browser';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -44,7 +43,6 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);
-  readonly sanitizer = inject(DomSanitizer);
 
   readonly analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
   showAnalysisModal = signal(false);
@@ -127,15 +125,14 @@ export class EditorComponent extends BaseInputDirective<string> {
     if (!this.showGenderDecoderButton()) return;
 
     const html = this.htmlValue();
-    const sanitizedHtml = this.sanitizer.sanitize(SecurityContext.HTML, html) ?? '';
-    const plainText = extractTextFromHtml(sanitizedHtml);
+    const plainText = extractTextFromHtml(html);
 
     const detectedLangCode = franc(plainText);
     const lang = this.mapToLanguageCode(detectedLangCode);
 
     const id = this.fieldId();
 
-    this.genderBiasService.triggerAnalysis(id, sanitizedHtml, lang);
+    this.genderBiasService.triggerAnalysis(id, html, lang);
   });
 
   textChanged(event: ContentChange): void {
