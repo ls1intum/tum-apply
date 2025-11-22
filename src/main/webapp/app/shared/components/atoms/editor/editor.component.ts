@@ -181,7 +181,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   private mapToLanguageCode(francCode: string): string {
     const validCodes = ['deu', 'eng', 'und'] as const;
 
-    if (!validCodes.includes(francCode as any)) {
+    if (!validCodes.includes(francCode as 'deu' | 'eng' | 'und')) {
       return this.currentLang();
     }
 
