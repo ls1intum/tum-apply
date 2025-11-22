@@ -12,8 +12,28 @@
         class="login-credentials"
         secondButtonLabel="auth.login.buttons.continueWithPassword"
       />
+      @if (this.showPassword()) {
+        <jhi-button
+          class="login-header-button back-button"
+          severity="info"
+          icon="chevron-left"
+          [shouldTranslate]="true"
+          variant="text"
+          style="font-weight: bold"
+          (click)="backButtonHandler()"
+        />
+      }
     } @else {
       <jhi-otp-input />
+      <jhi-button
+        class="login-header-button back-button"
+        severity="info"
+        icon="chevron-left"
+        [shouldTranslate]="true"
+        variant="text"
+        style="font-weight: bold"
+        (click)="backButtonHandler()"
+      />
     }
   </div>
   <p class="login-footer">
