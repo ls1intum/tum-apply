@@ -187,25 +187,6 @@
   }
 }
 
-/* -------------------------------
-   Custom Global Styles for Login
----------------------------------- */
-.login-header-button .p-button-text.p-button-info {
-  color: white !important;
-  transition: all 0.3s ease;
-}
-
-.registration-header-button .p-button-text {
-  color: white !important;
-  transition: all 0.3s ease;
-}
-
-.login-header-button .p-button-text.p-button-info:hover,
-.registration-header-button .p-button-text:hover {
-  filter: drop-shadow(0 0 0.075rem white);
-  background: rgba(255, 255, 255, 0.05);
-}
-
 /* --------------------------------------------------
    Custom Global Styles for Atomic Editor Component
 
