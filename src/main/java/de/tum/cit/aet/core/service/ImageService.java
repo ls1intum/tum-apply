@@ -69,7 +69,7 @@ public class ImageService {
             Files.createDirectories(imageRoot.resolve("profiles"));
             Files.createDirectories(imageRoot.resolve("defaults"));
         } catch (IOException ioe) {
-            log.warn("Cannot create image storage root: {}. Image upload functionality may be limited.", imageRoot, ioe);
+            throw new IllegalStateException("Cannot create image root: " + imageRoot, ioe);
         }
     }
 

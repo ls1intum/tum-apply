@@ -34,6 +34,7 @@ public class ImageResource {
     @ProfessorOrAdmin
     @GetMapping("/defaults/job-banners")
     public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID researchGroupId) {
+        log.info("GET /api/images/defaults/job-banners?researchGroupId={}", researchGroupId);
         List<Image> images = imageService.getDefaultJobBanners(researchGroupId);
         List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
         return ResponseEntity.ok(dtos);
@@ -47,6 +48,7 @@ public class ImageResource {
     @ProfessorOrAdmin
     @GetMapping("/my-uploads")
     public ResponseEntity<List<ImageDTO>> getMyUploadedImages() {
+        log.info("GET /api/images/my-uploads");
         List<Image> images = imageService.getMyUploadedImages();
         List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
         return ResponseEntity.ok(dtos);
@@ -61,6 +63,7 @@ public class ImageResource {
     @ProfessorOrAdmin
     @GetMapping("/research-group/job-banners")
     public ResponseEntity<List<ImageDTO>> getResearchGroupJobBanners() {
+        log.info("GET /api/images/research-group/job-banners");
         List<Image> images = imageService.getResearchGroupJobBanners();
         List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
         return ResponseEntity.ok(dtos);
@@ -75,8 +78,8 @@ public class ImageResource {
     @ProfessorOrAdmin
     @PostMapping(value = "/upload/job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadJobBanner(@RequestParam("file") MultipartFile file) {
+        log.info("POST /api/images/upload/job-banner filename={}", file.getOriginalFilename());
         Image image = imageService.upload(file, ImageType.JOB_BANNER);
-        log.info("Uploaded job banner image: {}", image.getImageId());
         return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 
@@ -94,8 +97,8 @@ public class ImageResource {
         @RequestParam("file") MultipartFile file,
         @RequestParam("researchGroupId") UUID researchGroupId
     ) {
+        log.info("POST /api/images/upload/default-job-banner filename={} researchGroupId={}", file.getOriginalFilename(), researchGroupId);
         Image image = imageService.uploadDefaultImage(file, ImageType.DEFAULT_JOB_BANNER, researchGroupId);
-        log.info("Uploaded default job banner image: {} for research group: {}", image.getImageId(), researchGroupId);
         return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 
@@ -109,6 +112,7 @@ public class ImageResource {
     @ProfessorOrAdmin
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable UUID imageId) {
+        log.info("DELETE /api/images/{}", imageId);
         imageService.delete(imageId);
         return ResponseEntity.noContent().build();
     }
