@@ -178,16 +178,22 @@ export class EditorComponent extends BaseInputDirective<string> {
   }
 
   private mapToLanguageCode(francCode: string): string {
-    const mapping: Record<string, string> = {
-      deu: 'de',
-      eng: 'en',
-      und: this.currentLang(),
-    };
+    const validCodes = ['deu', 'eng', 'und'] as const;
 
-    if (francCode in mapping && mapping[francCode]) {
-      return mapping[francCode];
+    if (!validCodes.includes(francCode as any)) {
+      return this.currentLang();
     }
-    return this.currentLang();
+
+    switch (francCode) {
+      case 'deu':
+        return 'de';
+      case 'eng':
+        return 'en';
+      case 'und':
+        return this.currentLang();
+      default:
+        return this.currentLang();
+    }
   }
 
   private getCodingTranslationKey(coding: string): string {
