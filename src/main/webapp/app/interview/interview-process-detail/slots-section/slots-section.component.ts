@@ -228,16 +228,16 @@ export class SlotsSectionComponent {
 
   onEditSlot(slot: InterviewSlotDTO): void {
     console.log('Edit slot:', slot);
-    // TODO: Open Edit Modal (Issue #10)
+    // TODO: Open Edit Modal
   }
 
   onDeleteSlot(slot: InterviewSlotDTO): void {
     console.log('Delete slot:', slot);
-    // TODO: Open Delete Confirmation (Issue #10)
+    // TODO: Open Delete Confirmation
   }
 
   onAssignApplicant(slot: InterviewSlotDTO): void {
     console.log('Assign applicant to slot:', slot);
-    // TODO: Open Assign Modal (Issue #9)
+    // TODO: Open Assign Modal
   }
 }

@@ -9,9 +9,9 @@
 @if (error() && !loading()) {
   <div class="flex justify-center items-center py-8">
     <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
-      <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
+      <i class="pi pi-exclamation-triangle text-4xl text-[var(--p-danger-500)]"></i>
       <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.error.title">Failed to load slots</h3>
-      <p class="text-gray-600" jhiTranslate="interview.detail.error.description">
+      <p class="text-[var(--p-text-secondary)]" jhiTranslate="interview.detail.error.description">
         There was an error loading the interview slots. Please try again.
       </p>
       <jhi-button
@@ -28,9 +28,9 @@
 @if (!loading() && !error() && groupedSlots().length === 0) {
   <div class="flex justify-center items-center py-8">
     <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
-      <i class="pi pi-calendar-times text-4xl text-gray-400"></i>
+      <i class="pi pi-calendar-times text-4xl text-[var(--p-text-tertiary)]"></i>
       <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
-      <p class="text-gray-600" jhiTranslate="interview.detail.empty.description">Create your first interview slots to get started.</p>
+      <p class="text-[var(--p-text-secondary)]" jhiTranslate="interview.detail.empty.description">Create your first interview slots to get started.</p>
       <jhi-button
         [label]="'interview.slots.addSlots'"
         [shouldTranslate]="true"
@@ -88,7 +88,7 @@
                 <!-- Show More/Less Button -->
                 @if (group.slots.length > 3) {
                   <button
-                    class="w-full py-2 border border-gray-300 rounded-md bg-white text-gray-600 text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-gray-50 hover:border-gray-400 transition-all"
+                    class="w-full py-2 border border-[var(--p-border-default)] rounded-md bg-[var(--p-background-default)] text-[var(--p-text-secondary)] text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-[var(--p-background-surface)] hover:border-[var(--p-border-default)] transition-all"
                     (click)="toggleExpanded(group.date)"
                   >
                     @if (!isExpanded(group.date)) {
@@ -117,7 +117,7 @@
       </div>
     } @else {
       <!-- No slots in current month -->
-      <div class="text-center py-12 text-gray-500">
+      <div class="text-center py-12 text-[var(--p-text-secondary)]">
         <i class="pi pi-calendar-times text-5xl mb-4 block"></i>
         <p class="text-lg" [jhiTranslate]="'interview.detail.noSlotsInMonth'" [translateValues]="{month: currentMonth()}">
           No slots in {{ currentMonth() }}

@@ -1,4 +1,4 @@
-<div class="relative bg-white border border-[var(--p-neutral-400)] rounded-lg p-2.5">
+<div class="relative bg-[var(--p-background-default)] border border-[var(--p-neutral-400)] rounded-lg p-2.5">
   <!-- 3-Dots Menu Button -->
   <button class="absolute top-2 right-2 p-1 hover:bg-[var(--p-neutral-100)] rounded-full transition-colors z-10"
           (click)="toggleMenu(); $event.stopPropagation()">
@@ -8,7 +8,7 @@
   <!-- Dropdown Menu -->
   @if (showMenu()) {
     <div
-      class="absolute top-9 right-2 bg-white shadow-lg rounded-md border border-[var(--p-neutral-200)] z-20 min-w-[140px] overflow-hidden">
+      class="absolute top-9 right-2 bg-[var(--p-background-default)] shadow-lg rounded-md border border-[var(--p-neutral-200)] z-20 min-w-[140px] overflow-hidden">
       <button
         class="w-full px-4 py-2.5 text-left text-sm hover:bg-[var(--p-neutral-50)] flex items-center gap-2 text-[var(--p-neutral-700)] transition-colors"
         (click)="onEdit()">
