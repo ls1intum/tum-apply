@@ -31,7 +31,6 @@ public final class UserTestData {
         u.setFirstName("Alice");
         u.setLastName("Smith");
         u.setEmail("alice.smith@example.com");
-        u.setSelectedLanguage("en");
         u.setResearchGroup(rg);
         u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         attachProfessorRole(u, rg);
@@ -55,7 +54,6 @@ public final class UserTestData {
         String email,
         String firstName,
         String lastName,
-        String selectedLanguage,
         String phoneNumber,
         String website,
         String linkedinUrl,
@@ -69,7 +67,6 @@ public final class UserTestData {
         if (email != null) u.setEmail(email);
         if (firstName != null) u.setFirstName(firstName);
         if (lastName != null) u.setLastName(lastName);
-        if (selectedLanguage != null) u.setSelectedLanguage(selectedLanguage);
         if (phoneNumber != null) u.setPhoneNumber(phoneNumber);
         if (website != null) u.setWebsite(website);
         if (linkedinUrl != null) u.setLinkedinUrl(linkedinUrl);
@@ -104,7 +101,6 @@ public final class UserTestData {
         String email,
         String firstName,
         String lastName,
-        String selectedLanguage,
         String phoneNumber,
         String website,
         String linkedinUrl,
@@ -120,7 +116,6 @@ public final class UserTestData {
                 email,
                 firstName,
                 lastName,
-                selectedLanguage,
                 phoneNumber,
                 website,
                 linkedinUrl,
@@ -147,7 +142,6 @@ public final class UserTestData {
         user.setEmail(email);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setSelectedLanguage("en");
         user.setUniversityId(universityId);
         user.setResearchGroup(null);
         return userRepository.save(user);

@@ -18,7 +18,6 @@ export interface UserForApplicationDetailDTO {
     name?: string;
     nationality?: string;
     phoneNumber?: string;
-    preferredLanguage?: string;
     userId: string;
     website?: string;
 }

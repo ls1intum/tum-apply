@@ -70,7 +70,6 @@ public final class ApplicantTestData {
         User applicantUser = new User();
         applicantUser.setUserId(UUID.randomUUID());
         applicantUser.setEmail("ada@example.com");
-        applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
         applicantUser.setFirstName("Ada");
         applicantUser.setLastName("Lovelace");
 

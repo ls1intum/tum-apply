@@ -2159,7 +2159,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/UserResearchGroupRole'}
           uniqueItems: true
-        selectedLanguage: {type: string}
         universityId: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
@@ -2176,7 +2175,6 @@ components:
         nationality: {type: string}
         phoneNumber: {type: string}
         researchGroupShortDTO: {$ref: '#/components/schemas/ResearchGroupShortDTO'}
-        selectedLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
     UserForApplicationDetailDTO:
@@ -2190,7 +2188,6 @@ components:
         name: {type: string}
         nationality: {type: string}
         phoneNumber: {type: string}
-        preferredLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
       required: [userId]

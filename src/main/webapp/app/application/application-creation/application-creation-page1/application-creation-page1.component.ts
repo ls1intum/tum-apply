@@ -21,7 +21,6 @@ export type ApplicationCreationPage1Data = {
   phoneNumber: string;
   gender?: SelectOption;
   nationality?: SelectOption;
-  language?: SelectOption;
   dateOfBirth: string;
   website: string;
   linkedIn: string;
@@ -37,11 +36,6 @@ export const selectGender: SelectOption[] = [
   { value: 'other', name: 'Other' },
 ];
 
-export const selectLanguage: SelectOption[] = [
-  { value: 'de', name: 'German' },
-  { value: 'en', name: 'English' },
-];
-
 // Suppressed: flat object mapping logic causes high cyclomatic complexity, but function is safe and readable
 // codacy-disable-next-line
 export const getPage1FromApplication = (application: ApplicationForApplicantDTO): ApplicationCreationPage1Data => {
@@ -52,7 +46,6 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     phoneNumber: application.applicant?.user.phoneNumber ?? '',
     gender: selectGender.find(val => val.value === application.applicant?.user.gender),
     nationality: selectNationality.find(val => val.value === application.applicant?.user.nationality),
-    language: selectLanguage.find(val => val.value === application.applicant?.user.selectedLanguage),
     dateOfBirth: application.applicant?.user.birthday ?? '',
     website: application.applicant?.user.website ?? '',
     linkedIn: application.applicant?.user.linkedinUrl ?? '',
@@ -106,7 +99,6 @@ export default class ApplicationCreationPage1Component {
   readonly defaultBirthDate = new Date(2000, 0, 1);
 
   selectGenderLocal = selectGender;
-  selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
   accountService = inject(AccountService);
   selectCountriesLocal = selectCountries;
@@ -128,7 +120,6 @@ export default class ApplicationCreationPage1Component {
       // Optional fields
       gender: [currentData.gender ?? null],
       nationality: [currentData.nationality ?? null],
-      language: [currentData.language ?? null],
       dateOfBirth: [currentData.dateOfBirth],
       website: [currentData.website],
       linkedIn: [currentData.linkedIn],
@@ -144,7 +135,6 @@ export default class ApplicationCreationPage1Component {
         const selectFields = {
           gender: data.gender,
           nationality: data.nationality,
-          language: data.language,
           country: data.country,
           dateOfBirth: data.dateOfBirth,
         };

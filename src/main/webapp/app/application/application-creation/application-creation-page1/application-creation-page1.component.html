@@ -69,34 +69,6 @@
     </div>
   </div>
 
-  <div class="form-row mb-6">
-    <div class="form-field">
-      <jhi-select
-        width="100%"
-        label="{{ 'entity.applicationPage1.label.language' | translate }}"
-        [items]="selectLanguageLocal"
-        id="language"
-        [(selected)]="data().language"
-        (selectedChange)="updateSelect('language', $event)"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage1.tooltip.language' | translate"
-        [showClear]="true"
-      />
-    </div>
-    <div class="form-field">
-      <label jhiTranslate="entity.applicationPage1.label.dateOfBirth"></label>
-      <jhi-datepicker
-        [selectedDate]="data().dateOfBirth"
-        label=""
-        width="100%"
-        (selectedDateChange)="setDateOfBirth($event)"
-        [minDate]="minDate"
-        [maxDate]="maxDate"
-        [defaultDate]="defaultBirthDate"
-      />
-    </div>
-  </div>
-
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
@@ -114,6 +86,22 @@
         [control]="page1Form().controls.linkedIn"
       />
     </div>
+  </div>
+
+  <div class="form-row mb-6">
+    <div class="form-field">
+      <label jhiTranslate="entity.applicationPage1.label.dateOfBirth"></label>
+      <jhi-datepicker
+        [selectedDate]="data().dateOfBirth"
+        label=""
+        width="100%"
+        (selectedDateChange)="setDateOfBirth($event)"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        [defaultDate]="defaultBirthDate"
+      />
+    </div>
+    <div class="form-field"></div>
   </div>
 
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.address"></span></p-divider>

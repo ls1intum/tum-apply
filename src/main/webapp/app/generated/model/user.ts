@@ -29,7 +29,6 @@ export interface User {
     postedJobs?: Array<Job>;
     researchGroup?: ResearchGroup;
     researchGroupRoles?: Array<UserResearchGroupRole>;
-    selectedLanguage?: string;
     universityId?: string;
     userId?: string;
     website?: string;

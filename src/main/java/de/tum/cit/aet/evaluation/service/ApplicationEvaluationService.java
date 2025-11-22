@@ -101,7 +101,6 @@ public class ApplicationEvaluationService {
                 .bcc(supervisingProfessor)
                 .customBody(acceptDTO.message())
                 .emailType(EmailType.APPLICATION_ACCEPTED)
-                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 .customBody(acceptDTO.message())
                 .researchGroup(job.getResearchGroup())
                 .build();
@@ -138,7 +137,6 @@ public class ApplicationEvaluationService {
 
             Email email = Email.builder()
                 .to(applicant.getUser())
-                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
                 .emailType(EmailType.APPLICATION_REJECTED)
                 .templateName(rejectDTO.reason().getValue())
                 .content(application)

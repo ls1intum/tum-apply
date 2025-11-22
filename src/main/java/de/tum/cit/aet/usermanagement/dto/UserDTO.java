@@ -19,7 +19,6 @@ public record UserDTO(
     String phoneNumber,
     String website,
     String linkedinUrl,
-    String selectedLanguage,
     ResearchGroupShortDTO researchGroupShortDTO
 ) {
     /**
@@ -46,7 +45,6 @@ public record UserDTO(
             user.getPhoneNumber(),
             user.getWebsite(),
             user.getLinkedinUrl(),
-            user.getSelectedLanguage(),
             researchGroupShortDTO
         );
     }
