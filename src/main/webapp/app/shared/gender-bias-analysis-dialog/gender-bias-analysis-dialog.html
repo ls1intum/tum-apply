@@ -19,7 +19,13 @@
       </div>
 
       <!-- Explanation -->
-      <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+      <div
+        class="p-4 border-l-4 rounded"
+        [ngClass]="{
+          'bg-amber-100 border-amber-900': analysisResult.coding === 'masculine-coded',
+          'bg-blue-50 border-blue-500': analysisResult.coding !== 'masculine-coded',
+        }"
+      >
         <div
           class="text-gray-700 leading-relaxed"
           [innerHTML]="getExplanationTranslationKey(analysisResult.coding ?? 'neutral') | translate"
