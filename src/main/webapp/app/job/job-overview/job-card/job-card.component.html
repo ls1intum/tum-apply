@@ -1,5 +1,5 @@
 <div
-  class="rounded-lg border border-gray-200 hover:scale-[1.02] hover:bg-blue-50 transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  class="rounded-lg border border-gray-200 hover:scale-[1.02] hover:bg-primary-50 transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
   (click)="onViewDetails()"
 >
   <div
@@ -23,7 +23,7 @@
 
     <!-- Deadline -->
     @if (relativeTime()) {
-      <p class="text-sm italic text-gray-500 mb-4">
+      <p class="text-sm italic text-neutral-500 mb-4">
         {{ relativeTime() }}
       </p>
     }

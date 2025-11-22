@@ -18,13 +18,13 @@
         }
       }
     </div>
-    <!--<jhi-button
-			  class="theme-toggle-button"
-			  (click)="toggleColorScheme()"
-			  [icon]="isDarkMode() ? 'moon' : 'sun'"
-			  severity="primary"
-			  variant="text"
-			/>-->
+    <jhi-button
+      class="theme-toggle-button"
+      (click)="toggleColorScheme()"
+      [icon]="isDarkMode() ? 'moon' : 'sun'"
+      severity="primary"
+      variant="text"
+    />
 
     @if (user() === undefined) {
       @if (isProfessorPage()) {
