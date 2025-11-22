@@ -9,6 +9,7 @@ import java.util.UUID;
  */
 public record InterviewOverviewDTO(
     @NotNull UUID jobId,
+    @NotNull UUID processId,
     @NotNull String jobTitle,
     @NotNull Long completedCount,
     @NotNull Long scheduledCount,

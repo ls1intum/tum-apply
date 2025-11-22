@@ -1,0 +1,18 @@
+import { CommonModule } from '@angular/common';
+import { Component, ViewEncapsulation, input, output } from '@angular/core';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
+@Component({
+  selector: 'jhi-month-navigation',
+  standalone: true,
+  imports: [CommonModule, ButtonComponent],
+  encapsulation: ViewEncapsulation.None,
+  templateUrl: './month-navigation.component.html',
+})
+export class MonthNavigationComponent {
+  currentMonth = input.required<string>();
+
+  previousMonth = output();
+  nextMonth = output();
+  addSlots = output();
+}

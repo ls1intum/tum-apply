@@ -1,0 +1,29 @@
+<div class="text-[var(--p-text-primary)] mb-3">
+  <!-- Header Row -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <jhi-button [icon]="'chevron-left'" [variant]="'text'" [severity]="'primary'" size="sm" (click)="previousMonth.emit()" />
+
+      <div class="w-40 text-center">
+        <h3 class="text-xl font-semibold">{{ currentMonth() }}</h3>
+      </div>
+
+      <jhi-button [icon]="'chevron-right'" [variant]="'text'" [severity]="'primary'" size="sm" (click)="nextMonth.emit()" />
+    </div>
+
+    <jhi-button
+      [icon]="'plus'"
+      [label]="'interview.slots.addSlots'"
+      [shouldTranslate]="true"
+      [severity]="'primary'"
+      size="sm"
+      [style]="{
+        '--p-button-primary-background': 'var(--p-pastel-500)',
+        '--p-button-primary-border-color': 'var(--p-pastel-500)',
+      }"
+      (click)="addSlots.emit()"
+    />
+  </div>
+
+  <div class="mt-2 w-full h-[1px] bg-[var(--p-neutral-200)]"></div>
+</div>
