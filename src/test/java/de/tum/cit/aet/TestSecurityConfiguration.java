@@ -4,13 +4,12 @@ import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
 import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.UserService;
+import java.time.Instant;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-
-import java.time.Instant;
 
 @TestConfiguration
 public class TestSecurityConfiguration {
