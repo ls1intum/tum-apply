@@ -6,6 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
 import { SlotsSectionComponent } from './slots-section/slots-section.component';
 
 @Component({
@@ -37,13 +38,12 @@ export class InterviewProcessDetailComponent {
       }
     });
   }
-
+  navigateBack(): void {
+    this.router.navigate(['/interviews/overview']);
+  }
   private updateTabTitle(jobTitle: string): void {
     const translatedTitle = this.translateService.instant('global.routes.interview.detail', { jobTitle });
     this.titleService.setTitle(translatedTitle);
-  }
-  navigateBack(): void {
-    this.router.navigate(['/interviews/overview']);
   }
 
   private async loadProcessDetails(processId: string): Promise<void> {
