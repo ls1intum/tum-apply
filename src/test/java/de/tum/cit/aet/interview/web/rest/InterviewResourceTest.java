@@ -14,6 +14,8 @@ import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
@@ -76,10 +78,11 @@ class InterviewResourceTest extends AbstractResourceTest {
             "We do cool stuff",
             "alg@example.com",
             "80333",
-            "CIT",
+            ResearchGroupSchool.CIT,
             "Arcisstr. 21",
             "https://alg.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.MATHEMATICS
         );
 
         professor = UserTestData.savedProfessorAll(

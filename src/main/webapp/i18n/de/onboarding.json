@@ -68,6 +68,10 @@
         "label": "Name",
         "placeholder": "z.B. Forschungsgruppe für Künstliche Intelligenz"
       },
+      "researchGroupDepartment": {
+        "label": "Fachbereich",
+        "placeholder": "Wählen..."
+      },
       "researchGroupAbbreviation": {
         "label": "Abkürzung",
         "placeholder": "z.B. KI"
@@ -82,7 +86,7 @@
       },
       "researchGroupSchool": {
         "label": "School",
-        "placeholder": "z.B. Informatik"
+        "placeholder": "Wählen..."
       },
       "researchGroupDescription": {
         "label": "Beschreibung",

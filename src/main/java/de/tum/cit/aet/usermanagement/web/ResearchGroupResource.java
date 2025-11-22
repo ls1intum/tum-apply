@@ -12,6 +12,7 @@ import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.EnumDisplayDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
@@ -110,7 +111,7 @@ public class ResearchGroupResource {
     /**
      * Update a research group.
      *
-     * @param id the ID of the research group to update
+     * @param id               the ID of the research group to update
      * @param researchGroupDTO the research group data to update
      * @return the updated research group
      */
@@ -173,9 +174,9 @@ public class ResearchGroupResource {
     /**
      * Returns a paginated list of research groups for admin review.
      *
-     * @param pageDTO the pagination parameters
+     * @param pageDTO   the pagination parameters
      * @param filterDTO the filter parameters including status and search query
-     * @param sortDTO the sorting parameters
+     * @param sortDTO   the sorting parameters
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link Page} of {@link ResearchGroupAdminDTO}
@@ -256,5 +257,39 @@ public class ResearchGroupResource {
         log.info("POST /api/research-groups/{}/withdraw", researchGroupId);
         ResearchGroup withdrawn = researchGroupService.withdrawResearchGroup(researchGroupId);
         return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(withdrawn));
+    }
+
+    /**
+     * Get all available research group schools with their display names.
+     *
+     * @return the list of available schools
+     */
+    @GetMapping("/schools")
+    public ResponseEntity<List<EnumDisplayDTO>> getAvailableSchools() {
+        log.info("GET /api/research-groups/schools");
+        return ResponseEntity.ok(researchGroupService.getAvailableSchools());
+    }
+
+    /**
+     * Get all available research group departments with their display names.
+     *
+     * @return the list of available departments
+     */
+    @GetMapping("/departments")
+    public ResponseEntity<List<EnumDisplayDTO>> getAvailableDepartments() {
+        log.info("GET /api/research-groups/departments");
+        return ResponseEntity.ok(researchGroupService.getAvailableDepartments());
+    }
+
+    /**
+     * Get departments filtered by school with their display names.
+     *
+     * @param school the school to filter departments by
+     * @return the list of departments for the given school
+     */
+    @GetMapping("/departments/{school}")
+    public ResponseEntity<List<EnumDisplayDTO>> getDepartmentsBySchool(@PathVariable String school) {
+        log.info("GET /api/research-groups/departments/{}", school);
+        return ResponseEntity.ok(researchGroupService.getDepartmentsBySchool(school));
     }
 }

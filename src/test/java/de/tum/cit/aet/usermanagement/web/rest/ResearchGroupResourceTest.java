@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -69,10 +71,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "We research ML algorithms",
             "contact@ml.tum.de",
             "80333",
-            "TUM",
+            ResearchGroupSchool.CIT,
             "Arcisstr. 21",
             "https://ml.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.MATHEMATICS
         );
         secondResearchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
@@ -84,10 +87,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Other research",
             "contact@other.tum.de",
             "80335",
-            "TUM",
+            ResearchGroupSchool.CIT,
             "Otherstr. 10",
             "https://other.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.MATHEMATICS
         );
         researchGroupUser = UserTestData.savedProfessor(userRepository, researchGroup);
         secondResearchGroupUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
@@ -220,7 +224,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         );
     }
 
-    // --- DELETE /api/research-groups/members/{userId} (removeMemberFromResearchGroup) ---
+    // --- DELETE /api/research-groups/members/{userId}
+    // (removeMemberFromResearchGroup) ---
 
     @Test
     void removeMemberFromResearchGroupReturnsNoContent() {
@@ -249,9 +254,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Updated ML Lab",
             "UML",
             "Prof. Smith",
+            ResearchGroupDepartment.MATHEMATICS,
+            ResearchGroupSchool.CIT,
             "updated@ml.tum.de",
             "https://updated.ml.tum.de",
-            "Computer Science",
             "Updated description",
             "AI",
             "Arcisstr. 21",
@@ -275,10 +281,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         ResearchGroupDTO invalidDTO = ResearchGroupTestData.createResearchGroupDTO(
             "", // Invalid: empty name
             "ML",
-            "",
+            "", // Invalid: empty head
+            ResearchGroupDepartment.MATHEMATICS,
+            ResearchGroupSchool.CIT,
             "invalid-email", // Invalid email
             "https://ml.tum.de",
-            "Computer Science",
             "Description",
             "AI",
             "Street",
@@ -292,7 +299,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .putAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId(), invalidDTO, ResearchGroupDTO.class, 400);
     }
 
-    // --- POST /api/research-groups/professor-request (createProfe`ssorResearchGroupRequest) ---
+    // --- POST /api/research-groups/professor-request
+    // (createProfe`ssorResearchGroupRequest) ---
 
     @Test
     void createResearchGroupRequestCreatesGroupInDraftState() {
@@ -305,7 +313,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "ab12cde",
             "Dr. John Doe",
             "New Research Lab",
-            "NRL",
+            ResearchGroupDepartment.MATHEMATICS,
+            ResearchGroupSchool.CIT,
             "contact@newlab.tum.de",
             "https://newlab.tum.de",
             "Engineering",
@@ -323,7 +332,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         assertThat(result).isNotNull();
         assertThat(result.name()).isEqualTo("New Research Lab");
         assertThat(result.state()).isEqualTo(ResearchGroupState.DRAFT);
-        assertThat(result.abbreviation()).isEqualTo("NRL");
+        assertThat(result.school()).isEqualTo(ResearchGroupSchool.CIT);
     }
 
     @Test
@@ -337,7 +346,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "mn33zzz",
             "Prof. Minimal User",
             "Minimal Research Lab",
-            "",
+            ResearchGroupDepartment.MATHEMATICS,
+            ResearchGroupSchool.CIT,
             "",
             "",
             "",
@@ -366,7 +376,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "ab12cde",
             "Dr. John Doe",
             "New Research Lab",
-            "NRL",
+            ResearchGroupDepartment.MATHEMATICS,
+            ResearchGroupSchool.CIT,
             "contact@newlab.tum.de",
             "https://newlab.tum.de",
             "Engineering",
@@ -380,7 +391,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         api.postAndRead(API_BASE_PATH + "/professor-request", request, ResearchGroupDTO.class, 403);
     }
 
-    // --- POST /api/research-groups/employee-request (createEmployeeResearchGroupRequest) ---
+    // --- POST /api/research-groups/employee-request
+    // (createEmployeeResearchGroupRequest) ---
 
     @Test
     void createEmployeeResearchGroupRequestReturnsNoContent() {
@@ -506,10 +518,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Draft research",
             "contact@draft.tum.de",
             "80333",
-            "Munich",
+            ResearchGroupSchool.CIT,
             "Draftstr. 1",
             "https://draft.tum.de",
-            "DRAFT"
+            "DRAFT",
+            ResearchGroupDepartment.MATHEMATICS
         );
         researchGroupRepository.save(draftGroup);
 
@@ -540,7 +553,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             );
     }
 
-    // --- POST /api/research-groups/{researchGroupId}/activate (activateResearchGroup) ---
+    // --- POST /api/research-groups/{researchGroupId}/activate
+    // (activateResearchGroup) ---
 
     @Test
     void activateResearchGroupChangesStateToDraftToActive() {
@@ -555,10 +569,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Activation research",
             "contact@activate.tum.de",
             "80333",
-            "Munich",
+            ResearchGroupSchool.CIT,
             "Activationstr. 1",
             "https://activate.tum.de",
-            "DRAFT"
+            "DRAFT",
+            ResearchGroupDepartment.MATHEMATICS
         );
         researchGroupRepository.save(draftGroup);
 
@@ -593,10 +608,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Denial research",
             "contact@deny.tum.de",
             "80333",
-            "Munich",
+            ResearchGroupSchool.CIT,
             "Denialstr. 1",
             "https://deny.tum.de",
-            "DRAFT"
+            "DRAFT",
+            ResearchGroupDepartment.MATHEMATICS
         );
         researchGroupRepository.save(draftGroup);
 
@@ -616,7 +632,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .postAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId() + "/deny", null, Void.class, 403);
     }
 
-    // --- POST /api/research-groups/{researchGroupId}/withdraw (withdrawResearchGroup) ---
+    // --- POST /api/research-groups/{researchGroupId}/withdraw
+    // (withdrawResearchGroup) ---
 
     @Test
     void withdrawResearchGroupChangesStateBackToDraft() {
@@ -631,10 +648,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Withdrawal research",
             "contact@withdraw.tum.de",
             "80333",
-            "TUM",
+            ResearchGroupSchool.CIT,
             "Withdrawstr. 1",
             "https://withdraw.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.MATHEMATICS
         );
         activeGroup.setState(ResearchGroupState.ACTIVE);
         researchGroupRepository.save(activeGroup);

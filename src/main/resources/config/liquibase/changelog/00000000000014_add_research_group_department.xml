@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-research-group-department" author="bofanzhu">
+        <addColumn tableName="research_groups">
+            <column name="department" type="varchar(50)" defaultValue="COMPUTER_SCIENCE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        
+        <modifyDataType tableName="research_groups" columnName="school" newDataType="varchar(50)"/>
+        <addDefaultValue tableName="research_groups" columnName="school" defaultValue="CIT"/>
+        <addNotNullConstraint tableName="research_groups" columnName="school" columnDataType="varchar(50)" defaultNullValue="CIT"/>
+    </changeSet>
+
+</databaseChangeLog>

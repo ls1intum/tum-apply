@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 
 /**
  * DTO for professor research group creation requests during onboarding.
@@ -17,12 +19,13 @@ public record ResearchGroupRequestDTO(
     // Required Research Group Information
     String researchGroupHead,
     String researchGroupName,
+    ResearchGroupDepartment researchGroupDepartment,
+    ResearchGroupSchool school,
 
     // Optional Research Group Information
     String abbreviation,
     String contactEmail,
     String website,
-    String school,
     String description,
     String defaultFieldOfStudies,
 

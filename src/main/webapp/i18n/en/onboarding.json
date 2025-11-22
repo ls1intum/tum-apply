@@ -68,6 +68,10 @@
         "label": "Name",
         "placeholder": "e.g. Research Group for Artificial Intelligence"
       },
+      "researchGroupDepartment": {
+        "label": "Department",
+        "placeholder": "Select..."
+      },
       "researchGroupAbbreviation": {
         "label": "Abbreviation",
         "placeholder": "e.g. AI"
@@ -82,7 +86,7 @@
       },
       "researchGroupSchool": {
         "label": "School",
-        "placeholder": "e.g. Informatics"
+        "placeholder": "Select..."
       },
       "researchGroupDescription": {
         "label": "Description",

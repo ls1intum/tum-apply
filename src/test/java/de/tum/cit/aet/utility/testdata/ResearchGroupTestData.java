@@ -1,5 +1,7 @@
 package de.tum.cit.aet.utility.testdata;
 
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
@@ -28,11 +30,12 @@ public final class ResearchGroupTestData {
         rg.setDescription("A test research group");
         rg.setEmail("rg@example.com");
         rg.setPostalCode("12345");
-        rg.setSchool("Test University");
+        rg.setSchool(ResearchGroupSchool.CIT);
         rg.setStreet("123 Main St");
         rg.setWebsite("http://example.com");
         rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         rg.setState(ResearchGroupState.ACTIVE);
+        rg.setDepartment(ResearchGroupDepartment.MATHEMATICS);
         return rg;
     }
 
@@ -48,10 +51,11 @@ public final class ResearchGroupTestData {
         String description,
         String email,
         String postalCode,
-        String school,
+        ResearchGroupSchool school,
         String street,
         String website,
-        String state
+        String state,
+        ResearchGroupDepartment department
     ) {
         ResearchGroup rg = newRg();
         if (head != null) rg.setHead(head);
@@ -66,13 +70,15 @@ public final class ResearchGroupTestData {
         if (street != null) rg.setStreet(street);
         if (website != null) rg.setWebsite(website);
         if (state != null) rg.setState(ResearchGroupState.valueOf(state));
+        if (department != null) rg.setDepartment(department);
         if (rg.getUniversityId() == null) {
             rg.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         }
         return rg;
     }
 
-    // --- Save to Repository variants -------------------------------------------------------------------------
+    // --- Save to Repository variants
+    // -------------------------------------------------------------------------
     public static ResearchGroup saved(ResearchGroupRepository repo) {
         return repo.save(newRg());
     }
@@ -87,20 +93,37 @@ public final class ResearchGroupTestData {
         String description,
         String email,
         String postalCode,
-        String school,
+        ResearchGroupSchool school,
         String street,
         String website,
-        String state
+        String state,
+        ResearchGroupDepartment department
     ) {
         return repo.save(
-            newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, school, street, website, state)
+            newRgAll(
+                head,
+                name,
+                abbreviation,
+                city,
+                defaultFieldOfStudies,
+                description,
+                email,
+                postalCode,
+                school,
+                street,
+                website,
+                state,
+                department
+            )
         );
     }
 
-    // --- DTO creation helpers -------------------------------------------------------------------------
+    // --- DTO creation helpers
+    // -------------------------------------------------------------------------
 
     /**
-     * Creates a ResearchGroupRequestDTO with the given research group name and default values for other fields.
+     * Creates a ResearchGroupRequestDTO with the given research group name and
+     * default values for other fields.
      */
     public static ResearchGroupRequestDTO createResearchGroupRequest(String researchGroupName) {
         return new ResearchGroupRequestDTO(
@@ -110,7 +133,8 @@ public final class ResearchGroupTestData {
             "ab12cde",
             "Prof. New",
             researchGroupName,
-            "NRG",
+            ResearchGroupDepartment.MATHEMATICS,
+            ResearchGroupSchool.CIT,
             "nrg@test.com",
             "https://nrg.com",
             "Computer Science",
@@ -129,11 +153,12 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String head,
+        ResearchGroupDepartment department,
+        ResearchGroupSchool school,
         String email,
         String website,
-        String university,
         String description,
-        String field,
+        String defaultFieldOfStudies,
         String street,
         String postalCode,
         String city,
@@ -143,11 +168,12 @@ public final class ResearchGroupTestData {
             name,
             abbreviation,
             head,
+            department,
+            school,
             email,
             website,
-            university,
             description,
-            field,
+            defaultFieldOfStudies,
             street,
             postalCode,
             city,

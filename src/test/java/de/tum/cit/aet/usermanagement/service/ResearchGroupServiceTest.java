@@ -14,6 +14,8 @@ import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -85,10 +87,11 @@ class ResearchGroupServiceTest {
             "Test description",
             "test@research.com",
             "12345",
-            "Test University",
+            ResearchGroupSchool.CIT,
             "Test Street",
             "https://test.com",
-            ResearchGroupState.ACTIVE.toString()
+            ResearchGroupState.ACTIVE.toString(),
+            ResearchGroupDepartment.MATHEMATICS
         );
         testResearchGroup.setResearchGroupId(TEST_RESEARCH_GROUP_ID);
 
@@ -192,10 +195,11 @@ class ResearchGroupServiceTest {
                 null,
                 null,
                 null,
+                ResearchGroupSchool.CIT,
                 null,
                 null,
-                null,
-                ResearchGroupState.ACTIVE.toString()
+                ResearchGroupState.ACTIVE.toString(),
+                ResearchGroupDepartment.MATHEMATICS
             );
             otherGroup.setResearchGroupId(UUID.randomUUID());
             User memberFromOtherGroup = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", null, null);
@@ -289,7 +293,8 @@ class ResearchGroupServiceTest {
                 "Updated Name",
                 "UN",
                 "Prof. Updated",
-                "updated@test.com",
+                ResearchGroupDepartment.MATHEMATICS,
+                ResearchGroupSchool.CIT,
                 "https://updated.com",
                 "Updated School",
                 "Updated description",

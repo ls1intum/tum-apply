@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +16,8 @@ public record ResearchGroupCreationDTO(
     @Email String email,
     String abbreviation,
     String website,
-    String school,
+    ResearchGroupSchool school,
+    ResearchGroupDepartment department,
     String description,
     String defaultFieldOfStudies,
     String street,
