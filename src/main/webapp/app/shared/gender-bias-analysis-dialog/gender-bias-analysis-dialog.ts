@@ -26,29 +26,33 @@ export class GenderBiasAnalysisDialogComponent {
   }
 
   getCodingTranslationKey(coding: string): string {
-    const mapping: Record<string, string> = {
-      'masculine-coded': 'genderDecoder.formulationTexts.manly',
-      'feminine-coded': 'genderDecoder.formulationTexts.feminine',
-      neutral: 'genderDecoder.formulationTexts.neutral',
-      empty: 'genderDecoder.formulationTexts.neutral',
-    };
-    if (coding in mapping && mapping[coding]) {
-      return mapping[coding];
+    switch (coding) {
+      case 'masculine-coded':
+        return 'genderDecoder.formulationTexts.manly';
+      case 'feminine-coded':
+        return 'genderDecoder.formulationTexts.feminine';
+      case 'neutral':
+        return 'genderDecoder.formulationTexts.neutral';
+      case 'empty':
+        return 'genderDecoder.formulationTexts.neutral';
+      default:
+        return 'genderDecoder.formulationTexts.neutral';
     }
-    return mapping.neutral;
   }
 
   getExplanationTranslationKey(coding: string): string {
-    const mapping: Record<string, string> = {
-      'masculine-coded': 'genderDecoder.explanations.masculine-coded',
-      'feminine-coded': 'genderDecoder.explanations.feminine-coded',
-      neutral: 'genderDecoder.explanations.neutral',
-      empty: 'genderDecoder.explanations.empty',
-    };
-    if (coding in mapping && mapping[coding]) {
-      return mapping[coding];
+    switch (coding) {
+      case 'masculine-coded':
+        return 'genderDecoder.explanations.masculine-coded';
+      case 'feminine-coded':
+        return 'genderDecoder.explanations.feminine-coded';
+      case 'neutral':
+        return 'genderDecoder.explanations.neutral';
+      case 'empty':
+        return 'genderDecoder.explanations.empty';
+      default:
+        return 'genderDecoder.explanations.neutral';
     }
-    return mapping.neutral;
   }
 
   getBiasTypeClass(type: string): string {

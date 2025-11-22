@@ -197,16 +197,18 @@ export class EditorComponent extends BaseInputDirective<string> {
   }
 
   private getCodingTranslationKey(coding: string): string {
-    const mapping: Record<string, string> = {
-      'masculine-coded': 'genderDecoder.formulationTexts.manly',
-      'feminine-coded': 'genderDecoder.formulationTexts.feminine',
-      neutral: 'genderDecoder.formulationTexts.neutral',
-      empty: 'genderDecoder.formulationTexts.neutral',
-    };
-    if (coding in mapping && mapping[coding]) {
-      return mapping[coding];
+    switch (coding) {
+      case 'masculine-coded':
+        return 'genderDecoder.formulationTexts.manly';
+      case 'feminine-coded':
+        return 'genderDecoder.formulationTexts.feminine';
+      case 'neutral':
+        return 'genderDecoder.formulationTexts.neutral';
+      case 'empty':
+        return 'genderDecoder.formulationTexts.neutral';
+      default:
+        return 'genderDecoder.formulationTexts.neutral';
     }
-    return mapping.neutral;
   }
 }
 
