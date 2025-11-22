@@ -1694,11 +1694,12 @@ components:
         invitedCount: {type: integer, format: int64}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
+        processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
-      required: [completedCount, invitedCount, jobId, jobTitle, scheduledCount, totalInterviews,
-        uncontactedCount]
+      required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
+        totalInterviews, uncontactedCount]
     InterviewSlotDTO:
       type: object
       properties:
