@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { InterviewProcessDetailComponent } from 'app/interview/interview-process-detail/interview-process-detail.component';
 
 import { errorRoute } from './layouts/error/error.route';
 import { UserShortDTO } from './generated/model/userShortDTO';
-import { InterviewProcessDetailComponent } from 'app/interview/interview-process-detail/interview-process-detail.component';
 
 const routes: Routes = [
   // ======================================================================================

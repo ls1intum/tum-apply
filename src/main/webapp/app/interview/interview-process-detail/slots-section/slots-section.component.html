@@ -14,12 +14,7 @@
       <p class="text-[var(--p-text-secondary)]" jhiTranslate="interview.detail.error.description">
         There was an error loading the interview slots. Please try again.
       </p>
-      <jhi-button
-        [label]="'interview.detail.error.retry'"
-        [shouldTranslate]="true"
-        [icon]="'refresh'"
-        (click)="refreshSlots()"
-      />
+      <jhi-button [label]="'interview.detail.error.retry'" [shouldTranslate]="true" [icon]="'refresh'" (click)="refreshSlots()" />
     </div>
   </div>
 }
@@ -30,13 +25,10 @@
     <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
       <i class="pi pi-calendar-times text-4xl text-[var(--p-text-tertiary)]"></i>
       <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
-      <p class="text-[var(--p-text-secondary)]" jhiTranslate="interview.detail.empty.description">Create your first interview slots to get started.</p>
-      <jhi-button
-        [label]="'interview.slots.addSlots'"
-        [shouldTranslate]="true"
-        [icon]="'plus'"
-        (click)="openCreateSlotsModal()"
-      />
+      <p class="text-[var(--p-text-secondary)]" jhiTranslate="interview.detail.empty.description">
+        Create your first interview slots to get started.
+      </p>
+      <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
     </div>
   </div>
 }
@@ -56,12 +48,7 @@
       <div class="flex items-start gap-4">
         <!-- Left Pagination Arrow -->
         <div class="flex-shrink-0 pt-8">
-          <jhi-button
-            [icon]="'chevron-left'"
-            [variant]="'text'"
-            [disabled]="!canGoPreviousDate()"
-            (click)="previousDatePage()"
-          />
+          <jhi-button [icon]="'chevron-left'" [variant]="'text'" [disabled]="!canGoPreviousDate()" (click)="previousDatePage()" />
         </div>
 
         <!-- Date Grid (max 5 dates visible) -->
@@ -69,19 +56,16 @@
           @for (group of paginatedSlots(); track group.date) {
             <div class="flex flex-col gap-2">
               <!-- Date Header -->
-              <jhi-date-header
-                [date]="group.localDate"
-                [slotCount]="group.slots.length"
-              />
+              <jhi-date-header [date]="group.localDate" [slotCount]="group.slots.length" />
 
               <!-- Slot Cards -->
               <div class="flex flex-col gap-2">
                 @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
                   <jhi-slot-card
                     [slot]="slot"
-                    (editSlot)="onEditSlot($event)"
-                    (deleteSlot)="onDeleteSlot($event)"
-                    (assignApplicant)="onAssignApplicant($event)"
+                    (editSlot)="onEditSlot()"
+                    (deleteSlot)="onDeleteSlot()"
+                    (assignApplicant)="onAssignApplicant()"
                   />
                 }
 
@@ -107,19 +91,14 @@
 
         <!-- Right Pagination Arrow -->
         <div class="flex-shrink-0 pt-8">
-          <jhi-button
-            [icon]="'chevron-right'"
-            [variant]="'text'"
-            [disabled]="!canGoNextDate()"
-            (click)="nextDatePage()"
-          />
+          <jhi-button [icon]="'chevron-right'" [variant]="'text'" [disabled]="!canGoNextDate()" (click)="nextDatePage()" />
         </div>
       </div>
     } @else {
       <!-- No slots in current month -->
       <div class="text-center py-12 text-[var(--p-text-secondary)]">
         <i class="pi pi-calendar-times text-5xl mb-4 block"></i>
-        <p class="text-lg" [jhiTranslate]="'interview.detail.noSlotsInMonth'" [translateValues]="{month: currentMonth()}">
+        <p class="text-lg" [jhiTranslate]="'interview.detail.noSlotsInMonth'" [translateValues]="{ month: currentMonth() }">
           No slots in {{ currentMonth() }}
         </p>
       </div>

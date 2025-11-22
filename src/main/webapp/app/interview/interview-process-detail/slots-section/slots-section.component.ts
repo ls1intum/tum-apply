@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, signal, effect } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
@@ -7,6 +7,7 @@ import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
 import { SlotCardComponent } from './slot-card/slot-card.component';
@@ -33,14 +34,10 @@ interface GroupedSlots {
   templateUrl: './slots-section.component.html',
 })
 export class SlotsSectionComponent {
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly translateService = inject(TranslateService);
-
+  // Inputs
   processId = input.required<string>();
 
-  private readonly MAX_VISIBLE_SLOTS = 3;
-  private readonly DATES_PER_PAGE = 5;
-
+  // Signals
   slots = signal<InterviewSlotDTO[]>([]);
   loading = signal(true);
   error = signal(false);
@@ -48,11 +45,7 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
 
-  private locale = computed(() => {
-    const currentLang = this.translateService.currentLang || 'en';
-    return currentLang === 'de' ? 'de-DE' : 'en-US';
-  });
-
+  // Computed properties (must be before private fields for lint)
   /**
    * Groups slots by date and sorts them chronologically
    */
@@ -76,9 +69,7 @@ export class SlotsSectionComponent {
       .map(([dateKey, dateSlots]) => ({
         date: dateKey,
         localDate: new Date(dateKey),
-        slots: dateSlots.sort((a, b) =>
-          new Date(a.startDateTime!).getTime() - new Date(b.startDateTime!).getTime()
-        ),
+        slots: dateSlots.sort((a, b) => new Date(a.startDateTime!).getTime() - new Date(b.startDateTime!).getTime()),
       }))
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
@@ -96,8 +87,7 @@ export class SlotsSectionComponent {
     const targetYear = targetDate.getFullYear();
 
     return allDates.filter(group => {
-      return group.localDate.getMonth() === targetMonth &&
-        group.localDate.getFullYear() === targetYear;
+      return group.localDate.getMonth() === targetMonth && group.localDate.getFullYear() === targetYear;
     });
   });
 
@@ -127,33 +117,28 @@ export class SlotsSectionComponent {
   });
 
   canGoPreviousDate = computed(() => this.currentDatePage() > 0);
+
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly translateService = inject(TranslateService);
+
+  private readonly MAX_VISIBLE_SLOTS = 3;
+  private readonly DATES_PER_PAGE = 5;
+
+  private locale = computed(() => {
+    const currentLang = this.translateService.getCurrentLang() || 'en';
+    return currentLang === 'de' ? 'de-DE' : 'en-US';
+  });
+
   constructor() {
+    // Load slots whenever processId changes
     effect(() => {
       const id = this.processId();
       if (id) {
         void this.loadSlots(id);
       }
     });
-  }
-
-  private async loadSlots(processId: string): Promise<void> {
-    try {
-      this.loading.set(true);
-      this.error.set(false);
-
-      const data = await firstValueFrom(
-        this.interviewService.getSlotsByProcessId(processId)
-      );
-
-      this.slots.set(data);
-    } catch (error) {
-      console.error('Failed to load interview slots', error);
-      this.error.set(true);
-    } finally {
-      this.loading.set(false);
-    }
   }
 
   openCreateSlotsModal(): void {
@@ -217,20 +202,39 @@ export class SlotsSectionComponent {
     this.expandedDates.set(expanded);
   }
 
+  /**
+   * Returns properly pluralized "show more" text based on count
+   */
   getShowMoreText(count: number): string {
     const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
     return `${count} ${this.translateService.instant(key)}`;
   }
 
-  onEditSlot(slot: InterviewSlotDTO): void {
+  onEditSlot(): void {
     // TODO: Open Edit Modal
   }
 
-  onDeleteSlot(slot: InterviewSlotDTO): void {
+  onDeleteSlot(): void {
     // TODO: Open Delete Confirmation
   }
 
-  onAssignApplicant(slot: InterviewSlotDTO): void {
+  onAssignApplicant(): void {
     // TODO: Open Assign Modal
+  }
+
+  private async loadSlots(processId: string): Promise<void> {
+    try {
+      this.loading.set(true);
+      this.error.set(false);
+
+      const data = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId));
+
+      this.slots.set(data);
+    } catch (error) {
+      console.error('Failed to load interview slots', error);
+      this.error.set(true);
+    } finally {
+      this.loading.set(false);
+    }
   }
 }

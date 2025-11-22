@@ -9,39 +9,40 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './date-header.component.html',
 })
 export class DateHeaderComponent {
-  private readonly translateService = inject(TranslateService);
-
   date = input.required<Date>();
   slotCount = input.required<number>();
 
-  private currentLang = signal<string>(this.translateService.currentLang || 'en');
-
-  constructor() {
-    // Track language changes for reactive locale updates
-    effect(() => {
-      this.translateService.onLangChange.subscribe(event => {
-        this.currentLang.set(event.lang);
-      });
-    }, { allowSignalWrites: true });
-  }
-
+  private readonly translateService = inject(TranslateService);
+  private currentLang = signal<string>(this.translateService.getCurrentLang() || 'en');
   private locale = computed(() => {
     const lang = this.currentLang();
     return lang === 'de' ? 'de-DE' : 'en-US';
   });
 
-  weekday = () => {
+  constructor() {
+    // Track language changes for reactive locale updates
+    effect(
+      () => {
+        this.translateService.onLangChange.subscribe(event => {
+          this.currentLang.set(event.lang);
+        });
+      },
+      { allowSignalWrites: true },
+    );
+  }
+
+  weekday = (): string => {
     return this.date().toLocaleDateString(this.locale(), { weekday: 'short' }).toUpperCase();
   };
 
-  day = () => {
+  day = (): string => {
     return this.date().toLocaleDateString(this.locale(), { day: '2-digit' });
   };
 
   /**
    * Returns properly pluralized slot count text
    */
-  slotsText = () => {
+  slotsText = (): string => {
     const count = this.slotCount();
     const key = count === 1 ? 'interview.slots.slotsCountSingular' : 'interview.slots.slotsCountPlural';
     return `${count} ${this.translateService.instant(key)}`;

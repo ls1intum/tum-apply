@@ -12,7 +12,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 export class MonthNavigationComponent {
   currentMonth = input.required<string>();
 
-  previousMonth = output<void>();
-  nextMonth = output<void>();
-  addSlots = output<void>();
+  previousMonth = output();
+  nextMonth = output();
+  addSlots = output();
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, input, signal, output, ElementRef } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
@@ -19,15 +19,14 @@ export class SlotCardComponent {
   assignApplicant = output<InterviewSlotDTO>();
 
   private readonly TIMEZONE = 'Europe/Berlin';
-
-  constructor(private el: ElementRef) {}
+  private readonly el = inject(ElementRef);
 
   /**
    * Closes the dropdown menu when clicking outside the component
    */
   @HostListener('document:click', ['$event'])
-  handleOutsideClick(event: Event) {
-    if (!this.el.nativeElement.contains(event.target)) {
+  handleOutsideClick(event: Event): void {
+    if (event.target && !this.el.nativeElement.contains(event.target as Node)) {
       this.showMenu.set(false);
     }
   }
@@ -40,21 +39,21 @@ export class SlotCardComponent {
     });
   }
 
-  timeRange = () => {
+  timeRange = (): string => {
     const start = this.formatTime(this.slot().startDateTime!);
     const end = this.formatTime(this.slot().endDateTime!);
     return `${start} - ${end}`;
   };
 
-  isVirtual = () => {
+  isVirtual = (): boolean => {
     return this.slot().location === 'virtual';
   };
 
-  isBooked = () => {
+  isBooked = (): boolean => {
     return this.slot().isBooked ?? false;
   };
 
-  applicantName = () => {
+  applicantName = (): string => {
     // TODO: Will be implemented with Application.scheduledInterviewSlot relationship
     return 'Applicant Name';
   };
