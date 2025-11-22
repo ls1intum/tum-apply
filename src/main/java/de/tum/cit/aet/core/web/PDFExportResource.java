@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.service.PDFExportService;
 import de.tum.cit.aet.job.dto.JobPreviewRequest;
 import java.util.Map;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,14 +18,11 @@ import org.springframework.web.bind.annotation.*;
  * REST controller for exporting job and application details as PDF
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/export")
 public class PDFExportResource {
 
     private final PDFExportService pdfExportService;
-
-    public PDFExportResource(PDFExportService pdfExportService) {
-        this.pdfExportService = pdfExportService;
-    }
 
     /**
      * POST /api/export/application/{id}/pdf : Export application details as PDF

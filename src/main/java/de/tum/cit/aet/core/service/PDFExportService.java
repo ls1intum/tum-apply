@@ -19,10 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PDFExportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -33,18 +35,6 @@ public class PDFExportService {
     private final CurrentUserService currentUserService;
 
     private final UserRepository userRepository;
-
-    public PDFExportService(
-        ApplicationService applicationService,
-        JobService jobService,
-        CurrentUserService currentUserService,
-        UserRepository userRepository
-    ) {
-        this.applicationService = applicationService;
-        this.jobService = jobService;
-        this.currentUserService = currentUserService;
-        this.userRepository = userRepository;
-    }
 
     // ------------------- Main methods -------------------
 
