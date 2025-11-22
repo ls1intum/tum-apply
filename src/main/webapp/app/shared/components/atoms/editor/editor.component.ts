@@ -94,6 +94,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   });
 
   readonly codingDisplay = computed(() => {
+    this.langChange();
     const result = this.analysisResult();
     if (!result?.coding) return null;
 
