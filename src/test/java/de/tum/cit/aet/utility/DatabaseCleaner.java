@@ -24,6 +24,8 @@ public class DatabaseCleaner {
         "email_templates",
         "email_verification_otp",
         "internal_comments",
+        "interview_processes",
+        "interview_slots",
         "jobs",
         "ratings",
         "research_groups",
