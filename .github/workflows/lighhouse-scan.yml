@@ -1,0 +1,31 @@
+name: Lighthouse Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    env:
+      TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '${{ env.node }}'
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.11.x
+
+      - name: Run Lighthouse CI
+        run: |
+          echo "Running Lighthouse on $TARGET_URL"
+          lhci autorun \
+            --upload.target=filesystem \
+            --collect.url="${TARGET_URL}"
