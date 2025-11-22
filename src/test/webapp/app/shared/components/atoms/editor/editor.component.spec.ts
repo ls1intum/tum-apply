@@ -5,6 +5,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 function makeEditorEvent(html: string, overrides: Partial<unknown> = {}) {
   return {
@@ -34,7 +35,7 @@ describe('EditorComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EditorComponent, ReactiveFormsModule],
-      providers: [provideFontAwesomeTesting(), provideTranslateMock()],
+      providers: [provideFontAwesomeTesting(), provideTranslateMock(), provideHttpClientMock()],
     }).compileComponents();
   });
 
