@@ -309,7 +309,7 @@ const routes: Routes = [
       {
         path: ':processId',
         component: InterviewProcessDetailComponent,
-        title: 'Interview Slots',
+        title: 'global.routes.interview.detail',
       },
     ],
   },
