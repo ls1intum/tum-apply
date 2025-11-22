@@ -1,5 +1,10 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -13,17 +18,11 @@ import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.UserTestData;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
-
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Integration tests for {@link de.tum.cit.aet.usermanagement.web.UserResource}.
@@ -59,13 +58,7 @@ public class UserResourceTest extends AbstractResourceTest {
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
-        currentUser = UserTestData.createUserWithoutResearchGroup(
-            userRepository,
-            "current.user@tum.de",
-            "Current",
-            "User",
-            "ab12cde"
-        );
+        currentUser = UserTestData.createUserWithoutResearchGroup(userRepository, "current.user@tum.de", "Current", "User", "ab12cde");
     }
 
     // --- GET /api/users/me (getCurrentUser) ---
