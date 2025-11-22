@@ -10,6 +10,7 @@ import { GenderBiasAnalysisService } from 'app/service/gender-bias-analysis-serv
 import { GenderBiasAnalysisResponse } from 'app/generated';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
+import { franc } from 'franc-min';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
@@ -107,7 +108,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   private hasFormControl = computed(() => !!this.formControl());
 
-  // Effect to sync htmlValue when editorValue changes (e.g., from form patching)
   private syncHtmlValueEffect = effect(() => {
     const currentEditorValue = this.editorValue();
     this.htmlValue.set(currentEditorValue);
@@ -124,7 +124,11 @@ export class EditorComponent extends BaseInputDirective<string> {
     if (!this.showGenderDecoderButton()) return;
 
     const html = this.htmlValue();
-    const lang = this.currentLang();
+    const plainText = extractTextFromHtml(html);
+
+    const detectedLangCode = franc(plainText);
+    const lang = this.mapToLanguageCode(detectedLangCode);
+
     const id = this.fieldId();
 
     this.genderBiasService.triggerAnalysis(id, html, lang);
@@ -171,6 +175,15 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   closeAnalysisModal(): void {
     this.showAnalysisModal.set(false);
+  }
+
+  private mapToLanguageCode(francCode: string): string {
+    const mapping: Record<string, string> = {
+      deu: 'de',
+      eng: 'en',
+      und: this.currentLang(),
+    };
+    return mapping[francCode] ?? this.currentLang();
   }
 
   private getCodingTranslationKey(coding: string): string {
