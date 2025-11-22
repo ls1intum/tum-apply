@@ -76,20 +76,17 @@ jobs:
         if: ${{ !vars.AET_CLIENT_URL }}
         run: npm run build
 
-      - name: Install static server
-        if: ${{ !vars.AET_CLIENT_URL }}
-        run: npm install -g http-server
-
-      - name: Start Client (serve dist)
+      - name: Start Client
         if: ${{ !vars.AET_CLIENT_URL }}
         run: |
-          http-server dist/tum-apply -p 4200 > client.log 2>&1 &
+          npx serve -s dist -l 4200 > client.log 2>&1 &
           echo "CLIENT_PID=$!" >> $GITHUB_ENV
+          sleep 5
 
       - name: Wait for frontend to be ready
         if: ${{ !vars.AET_CLIENT_URL }}
         run: |
-          echo "Waiting for frontend on http://localhost:4200..."
+          echo "Waiting for frontend on http://localhost:4200 ..."
           for i in {1..30}; do
             if curl -fs http://localhost:4200 > /dev/null; then
               echo "Frontend is UP!"
@@ -98,7 +95,7 @@ jobs:
             echo "Still waiting..."
             sleep 2
           done
-          echo "❌ Frontend did not start"
+          echo "❌ Frontend did not start in time"
           exit 1
 
       # ------------------------------------------------------------
