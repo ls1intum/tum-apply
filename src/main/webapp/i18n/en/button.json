@@ -19,6 +19,7 @@
     "publish": "Publish",
     "tooltip": {
       "editDisabled": "Only drafts can be edited"
-    }
+    },
+    "downloadPDF": "Export PDF"
   }
 }

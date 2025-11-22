@@ -1,9 +1,17 @@
 {
   "pdf": {
+    "jobPdfEnding": "jobangebot",
     "headerItems": {
       "applicationBy": "Bewerbung von ",
       "forPosition": " auf die Stelle ",
+      "jobBy": "Jobangebot von ",
+      "forJob": " für die Stelle ",
       "status": "Status: "
+    },
+    "sections": {
+      "jobDetails": "Details zur Stelle",
+      "description": "Beschreibung",
+      "contactDetails": "Kontaktdaten"
     },
     "metaData": {
       "thisDocumentWasGeneratedOn": "Dieses Dokument wurde am ",
@@ -14,6 +22,10 @@
     "pageCount": {
       "page": "Seite",
       "of": "von"
+    },
+    "couldNotGeneratePdf": {
+      "summary": "Fehler",
+      "detail": "Die PDF konnte nicht generiert werden. Bitte versuche es später erneut oder kontaktiere uns, wenn das Problem weiterhin besteht."
     }
   }
 }

@@ -1,9 +1,17 @@
 {
   "pdf": {
+    "jobPdfEnding": "job_posting",
     "headerItems": {
       "applicationBy": "Application by ",
       "forPosition": " for the position ",
+      "jobBy": "Job posting by ",
+      "forJob": " for the position ",
       "status": "Status: "
+    },
+    "sections": {
+      "jobDetails": "Job Details",
+      "description": "Description",
+      "contactDetails": "Contact Details"
     },
     "metaData": {
       "thisDocumentWasGeneratedOn": "This document was created on ",
@@ -14,6 +22,10 @@
     "pageCount": {
       "page": "Page",
       "of": "from"
+    },
+    "couldNotGeneratePdf": {
+      "summary": "Error",
+      "detail": "The PDF could not be generated. Please try again later or contact us if the problem persists."
     }
   }
 }
