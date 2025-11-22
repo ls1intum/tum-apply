@@ -93,9 +93,8 @@ public class UserResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void getCurrentUserWithoutAuthenticationReturns403() {
-        api.getAndRead(API_BASE_PATH + "/me", Map.of(), Void.class, 403);
-
+    void getCurrentUserWithoutAuthenticationReturns401() {
+        api.withoutPostProcessors().getAndRead(API_BASE_PATH + "/me", Map.of(), Void.class, 401);
     }
 
     // --- PUT /api/users/name (updateUserName) ---
@@ -121,10 +120,10 @@ public class UserResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void updateUserNameWithoutAuthenticationReturns403() {
+    void updateUserNameWithoutAuthenticationReturns401() {
         UpdateUserNameDTO dto = new UpdateUserNameDTO("NewFirst", "NewLast");
 
-        api.putAndRead(API_BASE_PATH + "/name", dto, Void.class, 403);
+        api.withoutPostProcessors().putAndRead(API_BASE_PATH + "/name", dto, Void.class, 401);
     }
 
     // --- PUT /api/users/password (updatePassword) ---
@@ -165,9 +164,9 @@ public class UserResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void updatePasswordWithoutAuthenticationReturns403() {
+    void updatePasswordWithoutAuthenticationReturns401() {
         UpdatePasswordDTO dto = new UpdatePasswordDTO("StrongPassword123!");
 
-        api.putAndRead(API_BASE_PATH + "/password", dto, Void.class, 403);
+        api.withoutPostProcessors().putAndRead(API_BASE_PATH + "/password", dto, Void.class, 401);
     }
 }
