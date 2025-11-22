@@ -38,7 +38,7 @@ export class SlotsSectionComponent {
 
   processId = input.required<string>();
 
-  readonly MAX_VISIBLE_SLOTS = 3;
+  private readonly MAX_VISIBLE_SLOTS = 3;
   private readonly DATES_PER_PAGE = 5;
 
   slots = signal<InterviewSlotDTO[]>([]);
@@ -130,7 +130,6 @@ export class SlotsSectionComponent {
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
   constructor() {
-    // Load slots whenever processId changes
     effect(() => {
       const id = this.processId();
       if (id) {
@@ -158,7 +157,7 @@ export class SlotsSectionComponent {
   }
 
   openCreateSlotsModal(): void {
-    console.log('Create slots modal - TODO: Issue #8');
+    // TODO: Open Create Slots Modal
   }
 
   async refreshSlots(): Promise<void> {
@@ -169,24 +168,24 @@ export class SlotsSectionComponent {
   }
 
   previousMonth(): void {
-    this.currentMonthOffset.update(v => v - 1);
+    this.currentMonthOffset.update(currentMonth => currentMonth - 1);
     this.currentDatePage.set(0);
   }
 
   nextMonth(): void {
-    this.currentMonthOffset.update(v => v + 1);
+    this.currentMonthOffset.update(currentMonth => currentMonth + 1);
     this.currentDatePage.set(0);
   }
 
   previousDatePage(): void {
     if (this.canGoPreviousDate()) {
-      this.currentDatePage.update(p => p - 1);
+      this.currentDatePage.update(currentPage => currentPage - 1);
     }
   }
 
   nextDatePage(): void {
     if (this.canGoNextDate()) {
-      this.currentDatePage.update(p => p + 1);
+      this.currentDatePage.update(currentPage => currentPage + 1);
     }
   }
 
@@ -218,26 +217,20 @@ export class SlotsSectionComponent {
     this.expandedDates.set(expanded);
   }
 
-  /**
-   * Returns properly pluralized "show more" text based on count
-   */
   getShowMoreText(count: number): string {
     const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
     return `${count} ${this.translateService.instant(key)}`;
   }
 
   onEditSlot(slot: InterviewSlotDTO): void {
-    console.log('Edit slot:', slot);
     // TODO: Open Edit Modal
   }
 
   onDeleteSlot(slot: InterviewSlotDTO): void {
-    console.log('Delete slot:', slot);
     // TODO: Open Delete Confirmation
   }
 
   onAssignApplicant(slot: InterviewSlotDTO): void {
-    console.log('Assign applicant to slot:', slot);
     // TODO: Open Assign Modal
   }
 }

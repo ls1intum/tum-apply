@@ -32,12 +32,12 @@
     "detail": {
       "error": {
         "title": "Termine konnten nicht geladen werden",
-        "description": "Beim Laden der Interviewtermine ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+        "description": "Beim Laden der Interview Termine ist ein Fehler aufgetreten. Bitte versuche es erneut.",
         "retry": "Erneut versuchen"
       },
       "empty": {
         "title": "Noch keine Termine",
-        "description": "Erstelle deine ersten Interviewtermine."
+        "description": "Erstelle deine ersten Interview Termine."
       },
       "noSlotsInMonth": "Keine Termine in {{month}}",
       "showLess": "Weniger anzeigen"

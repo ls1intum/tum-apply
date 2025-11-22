@@ -55,7 +55,7 @@ export class SlotCardComponent {
   };
 
   applicantName = () => {
-    // TODO: Will be implemented later with Application.scheduledInterviewSlot relationship
+    // TODO: Will be implemented with Application.scheduledInterviewSlot relationship
     return 'Applicant Name';
   };
 
@@ -66,15 +66,18 @@ export class SlotCardComponent {
   onEdit(): void {
     this.editSlot.emit(this.slot());
     this.showMenu.set(false);
+    // TODO: Open Edit Modal
   }
 
   onDelete(): void {
     this.deleteSlot.emit(this.slot());
     this.showMenu.set(false);
+    // TODO: Open Delete Confirmation
   }
 
   onAssign(): void {
     this.assignApplicant.emit(this.slot());
     this.showMenu.set(false);
+    // TODO: Open Assign Modal
   }
 }
