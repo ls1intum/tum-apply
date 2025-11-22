@@ -14,6 +14,7 @@ export default [
       '/.well-known/',
       '/webauthn/',
       '/login/webauthn',
+      '/images/',
     ],
     target: `http://localhost:8080`,
     secure: false,

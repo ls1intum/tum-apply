@@ -10,6 +10,7 @@
 import { ResearchGroup } from './researchGroup';
 import { User } from './user';
 import { CustomField } from './customField';
+import { Image } from './image';
 import { Application } from './application';
 
 
@@ -22,6 +23,7 @@ export interface Job {
     endDate?: string;
     fieldOfStudies?: string;
     fundingType?: Job.FundingTypeEnum;
+    image?: Image;
     jobId?: string;
     lastModifiedAt?: string;
     location?: Job.LocationEnum;
