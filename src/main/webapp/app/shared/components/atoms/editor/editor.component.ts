@@ -183,7 +183,11 @@ export class EditorComponent extends BaseInputDirective<string> {
       eng: 'en',
       und: this.currentLang(),
     };
-    return mapping[francCode] ?? this.currentLang();
+
+    if (francCode in mapping && mapping[francCode]) {
+      return mapping[francCode];
+    }
+    return this.currentLang();
   }
 
   private getCodingTranslationKey(coding: string): string {
@@ -193,7 +197,10 @@ export class EditorComponent extends BaseInputDirective<string> {
       neutral: 'genderDecoder.formulationTexts.neutral',
       empty: 'genderDecoder.formulationTexts.neutral',
     };
-    return Object.prototype.hasOwnProperty.call(mapping, coding) ? mapping[coding] : mapping.neutral;
+    if (coding in mapping && mapping[coding]) {
+      return mapping[coding];
+    }
+    return mapping.neutral;
   }
 }
 
