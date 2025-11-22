@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { GenderBiasAnalysisRequest, GenderBiasAnalysisResponse, BiasedWordDTO } from 'app/generated';
+import { GenderBiasAnalysisRequest, GenderBiasAnalysisResponse } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
 import { GenderBiasAnalysisService } from 'app/service/gender-bias-analysis-service';
 
