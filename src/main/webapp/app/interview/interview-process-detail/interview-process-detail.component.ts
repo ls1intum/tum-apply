@@ -24,40 +24,27 @@ export class InterviewProcessDetailComponent {
   private readonly interviewService = inject(InterviewResourceApiService);
 
   processId = signal<string | null>(null);
-  jobTitle = signal<string>('Interview Process');
+  jobTitle = signal<string | null>(null);
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('processId');
     if (id) {
       this.processId.set(id);
-
-      // Try to get jobTitle from router state (faster on navigation)
-      const state = window.history.state;
-      if (state?.jobTitle) {
-        this.jobTitle.set(state.jobTitle);
-      } else {
-        // Fallback: Load from backend (e.g., on page refresh)
-        void this.loadJobTitle(id);
-      }
+      void this.loadProcessDetails(id);
     }
   }
 
-  /**
-   * Loads job title from backend when router state is not available
-   */
-  private async loadJobTitle(processId: string): Promise<void> {
+  private async loadProcessDetails(processId: string): Promise<void> {
     try {
-      const overviews = await firstValueFrom(
-        this.interviewService.getInterviewOverview()
+      const process = await firstValueFrom(
+        this.interviewService.getInterviewProcessDetails(processId)
       );
 
-      const interviewProcess = overviews.find(ov => ov.processId === processId);
-
-      if (interviewProcess?.jobTitle) {
-        this.jobTitle.set(interviewProcess.jobTitle);
+      if (process?.jobTitle) {
+        this.jobTitle.set(process.jobTitle);
       }
     } catch (error) {
-      console.error('Failed to load job title', error);
+      console.error('Failed to load interview process details', error);
     }
   }
 
