@@ -1,31 +1,118 @@
-name: Lighthouse Audit
+name: Full Quality Gate (Server + Client + Lighthouse)
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
 
 jobs:
-  audit:
+  quality-gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     env:
       TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
 
     steps:
-      - uses: actions/checkout@v5
+      # ------------------------------------------------------------
+      # 1) Checkout
+      # ------------------------------------------------------------
+      - name: Checkout code
+        uses: actions/checkout@v5
 
+      # ------------------------------------------------------------
+      # 2) Setup Java + Gradle (backend)
+      # ------------------------------------------------------------
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '9.1.0'
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      # ------------------------------------------------------------
+      # 3) Start backend server
+      # ------------------------------------------------------------
+      - name: Start Spring Boot
+        id: backend
+        run: |
+          ./gradlew -Pprod bootRun > backend.log 2>&1 &
+          echo "BACKEND_PID=$!" >> $GITHUB_ENV
+
+          echo "Waiting for backend to start..."
+          sleep 240
+
+          # Kill the process to avoid timeout
+          kill $SERVER_PID || true
+
+          if grep -q "Application 'TUMApply' is running!" backend.log; then
+            echo "✅ Backend started successfully!"
+          else
+            echo "❌ Backend failed to start!"
+            cat backend.log
+            exit 1
+          fi
+
+      # ------------------------------------------------------------
+      # 4) Install Node + build client (only for localhost mode)
+      # ------------------------------------------------------------
       - name: Install Node
         uses: actions/setup-node@v5
         with:
-          node-version: '${{ env.node }}'
+          node-version: 18
 
+      - name: Install Client Dependencies
+        if: ${{ vars.AET_CLIENT_URL == '' }}
+        run: npm ci
+
+      - name: Build Client
+        if: ${{ vars.AET_CLIENT_URL == '' }}
+        run: npm run build
+
+      - name: Start Client (local only)
+        if: ${{ vars.AET_CLIENT_URL == '' }}
+        run: |
+          npx serve -s dist -l 4200 > client.log 2>&1 &
+          echo "CLIENT_PID=$!" >> $GITHUB_ENV
+          sleep 5
+
+      # ------------------------------------------------------------
+      # 5) Install Lighthouse CI
+      # ------------------------------------------------------------
       - name: Install Lighthouse CI
         run: npm install -g @lhci/cli@0.11.x
 
-      - name: Run Lighthouse CI
+      # ------------------------------------------------------------
+      # 6) Run Lighthouse
+      # ------------------------------------------------------------
+      - name: Run Lighthouse
         run: |
-          echo "Running Lighthouse on $TARGET_URL"
+          echo "Running Lighthouse for: $TARGET_URL"
           lhci autorun \
             --upload.target=filesystem \
-            --collect.url="${TARGET_URL}"
+            --collect.url="$TARGET_URL"
+
+      # ------------------------------------------------------------
+      # 7) Upload reports
+      # ------------------------------------------------------------
+      - name: Upload Lighthouse Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: ".lighthouseci"
+
+      # ------------------------------------------------------------
+      # 8) Cleanup (kill backend + frontend)
+      # ------------------------------------------------------------
+      - name: Kill processes
+        if: always()
+        run: |
+          echo "Stopping servers..."
+          kill $BACKEND_PID || true
+          kill $CLIENT_PID || true
