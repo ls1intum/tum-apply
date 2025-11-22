@@ -1,7 +1,6 @@
 package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.security.annotations.Authenticated;
-import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
+@Authenticated
 public class UserResource {
 
     private final AuthenticationService authenticationService;
@@ -32,19 +32,17 @@ public class UserResource {
     /**
      * Returns information about the currently authenticated user.
      * If the user does not exist yet, a new user is created and assigned a default role.
-     * If no JWT is present, or it is not valid, the response will HTTP 401 Unauthorized.
      *
      * @param jwt of the authenticated user
      * @return the user data as {@link UserShortDTO}, or an empty response if unauthenticated
      */
-    @Public
     @GetMapping("/me")
     public ResponseEntity<UserShortDTO> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-        if (jwt == null) {
-            return ResponseEntity.ok().build(); // no token = no user
-        }
-
         User user = authenticationService.provisionUserIfMissing(jwt);
+
+        if (user==null) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(new UserShortDTO(user));
     }
 
@@ -55,7 +53,6 @@ public class UserResource {
      * @param updateUserNameDTO contains the new first and last name
      * @return 204 No Content if updated successfully
      */
-    @Authenticated
     @PutMapping("/name")
     public ResponseEntity<Void> updateUserName(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserNameDTO updateUserNameDTO) {
         userService.updateNames(jwt.getSubject(), updateUserNameDTO.firstName(), updateUserNameDTO.lastName());
@@ -69,12 +66,12 @@ public class UserResource {
      * @param dto contains the new password
      * @return 204 No Content if updated successfully, 400 Bad Request if update fails
      */
-    @Authenticated
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
         boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
-        return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
+        return updated ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
     }
 
-    public record UpdatePasswordDTO(@NotBlank String newPassword) {}
+    public record UpdatePasswordDTO(@NotBlank String newPassword) {
+    }
 }
