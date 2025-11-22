@@ -1,7 +1,5 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
@@ -17,13 +15,16 @@ import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link ResearchGroupResource}.
@@ -127,7 +128,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         PageResponseDTO<ResearchGroupDTO> result = api.getAndRead(
             API_BASE_PATH,
             Map.of("pageNumber", String.valueOf(DEFAULT_PAGE_NUMBER), "pageSize", String.valueOf(DEFAULT_PAGE_SIZE)),
-            new TypeReference<PageResponseDTO<ResearchGroupDTO>>() {},
+            new TypeReference<PageResponseDTO<ResearchGroupDTO>>() {
+            },
             200
         );
 
@@ -149,7 +151,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         PageResponseDTO<ResearchGroupDTO> result = api.getAndRead(
             API_BASE_PATH,
             Map.of("pageNumber", String.valueOf(DEFAULT_PAGE_NUMBER), "pageSize", "1"),
-            new TypeReference<PageResponseDTO<ResearchGroupDTO>>() {},
+            new TypeReference<PageResponseDTO<ResearchGroupDTO>>() {
+            },
             200
         );
 
@@ -195,7 +198,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .getAndRead(
                 API_BASE_PATH + "/members",
                 Map.of("pageNumber", String.valueOf(DEFAULT_PAGE_NUMBER), "pageSize", String.valueOf(DEFAULT_PAGE_SIZE)),
-                new TypeReference<PageResponseDTO<UserShortDTO>>() {},
+                new TypeReference<PageResponseDTO<UserShortDTO>>() {
+                },
                 200
             );
 
@@ -317,7 +321,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         );
 
         ResearchGroupDTO result = api
-            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_APPLICANT"))
             .postAndRead(API_BASE_PATH + "/professor-request", request, ResearchGroupDTO.class, 201);
 
         assertThat(result).isNotNull();
@@ -349,7 +353,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         );
 
         ResearchGroupDTO result = api
-            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_APPLICANT"))
             .postAndRead(API_BASE_PATH + "/professor-request", minimalRequest, ResearchGroupDTO.class, 201);
 
         assertThat(result).isNotNull();
@@ -389,7 +393,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         EmployeeResearchGroupRequestDTO request = new EmployeeResearchGroupRequestDTO("Prof. Smith");
 
         api
-            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead(API_BASE_PATH + "/employee-request", request, Void.class, 204);
     }
 
@@ -400,7 +404,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         EmployeeResearchGroupRequestDTO invalidRequest = new EmployeeResearchGroupRequestDTO("");
 
         api
-            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead(API_BASE_PATH + "/employee-request", invalidRequest, Void.class, 400);
     }
 
@@ -429,7 +433,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                     "direction",
                     "DESC"
                 ),
-                new TypeReference<PageResponseDTO<ResearchGroupAdminDTO>>() {},
+                new TypeReference<PageResponseDTO<ResearchGroupAdminDTO>>() {
+                },
                 200
             );
 
@@ -461,7 +466,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                     "direction",
                     "DESC"
                 ),
-                new TypeReference<PageResponseDTO<ResearchGroupAdminDTO>>() {},
+                new TypeReference<PageResponseDTO<ResearchGroupAdminDTO>>() {
+                },
                 200
             );
 
@@ -519,13 +525,14 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .getAndRead(
                 API_BASE_PATH + "/draft",
                 Map.of("pageNumber", String.valueOf(DEFAULT_PAGE_NUMBER), "pageSize", String.valueOf(DEFAULT_PAGE_SIZE)),
-                new TypeReference<PageResponseDTO<ResearchGroupDTO>>() {},
+                new TypeReference<PageResponseDTO<ResearchGroupDTO>>() {
+                },
                 200
             );
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isNotEmpty();
-        assertThat(result.getContent()).allMatch(rg -> rg.state() == ResearchGroupState.DRAFT);
+        assertThat(result.getContent()).allMatch(rg -> rg.state()==ResearchGroupState.DRAFT);
     }
 
     @Test
