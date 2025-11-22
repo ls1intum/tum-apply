@@ -297,14 +297,6 @@
       <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
       <p class="text-gray-600 mb-4 text-sm" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
 
-      <!-- Info message when limit is reached -->
-      @if (isResearchGroupImageLimitReached()) {
-        <div class="p-3 mb-4 border border-blue-300 rounded-lg bg-blue-50 flex items-center gap-2">
-          <fa-icon [icon]="['fas', 'circle-info']" class="text-primary" />
-          <p class="text-sm" [innerHTML]="'jobCreationForm.imageSection.maxImagesReached' | translate"></p>
-        </div>
-      }
-
       <!-- Grid of research group images + upload button -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
         @for (image of researchGroupImages(); track image.imageId) {
@@ -317,7 +309,7 @@
         }
 
         <!-- Upload New Image Button -->
-        <div [class]="uploadContainerClasses()" (click)="!isResearchGroupImageLimitReached() && fileInput.click()">
+        <div [class]="uploadContainerClasses()" (click)="fileInput.click()">
           <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput class="hidden" />
           <div [class]="uploadInnerClasses()">
             @if (isUploadingImage()) {

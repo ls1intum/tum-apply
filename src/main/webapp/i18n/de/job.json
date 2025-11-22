@@ -136,7 +136,6 @@
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, JPEG, PNG. Maximale Abmessungen: 1920x1080px",
       "selectedImage": "Ausgewähltes Bild",
       "myUploads": "Meine hochgeladenen Bilder",
-      "maxImagesReached": "Maximal 10 Bilder erreicht. Bitte lösche ein vorhandenes Bild, bevor du ein neues hochlädst.",
       "noImage": "Kein Bild"
     },
     "additionalInformationSection": {

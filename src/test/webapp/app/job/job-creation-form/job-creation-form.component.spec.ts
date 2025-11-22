@@ -461,19 +461,6 @@ describe('JobCreationFormComponent', () => {
         setupSpy: () => vi.spyOn(getPrivate(component), 'getImageDimensions').mockRejectedValueOnce(new Error('Invalid')),
       },
       {
-        name: 'research group image limit reached',
-        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.maxImagesReached',
-        setupSpy: () => {
-          const maxImages = Array.from({ length: 10 }, (_, i) => ({
-            imageId: `img${i}`,
-            url: `/images/img${i}.jpg`,
-            imageType: 'JOB_BANNER' as const,
-          }));
-          component.researchGroupImages.set(maxImages);
-        },
-      },
-      {
         name: 'upload failure',
         file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
         errorKey: 'jobCreationForm.imageSection.uploadFailed',
@@ -602,20 +589,6 @@ describe('JobCreationFormComponent', () => {
       mockSetup?.();
       await component.deleteImage(imageId);
       expectations(component);
-    });
-
-    it.each([
-      { imageCount: 0, expected: false },
-      { imageCount: 9, expected: false },
-      { imageCount: 10, expected: true },
-    ])('should compute isResearchGroupImageLimitReached as $expected when count is $imageCount', ({ imageCount, expected }) => {
-      const images = Array.from({ length: imageCount }, (_, i) => ({
-        imageId: `img${i}`,
-        url: `/url${i}`,
-        imageType: 'JOB_BANNER' as const,
-      }));
-      component.researchGroupImages.set(images);
-      expect(component.isResearchGroupImageLimitReached()).toBe(expected);
     });
 
     it('should load default images successfully', async () => {

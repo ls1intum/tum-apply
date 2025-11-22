@@ -97,8 +97,6 @@ export class JobCreationFormComponent {
   isUploadingImage = signal<boolean>(false);
   pendingImageFile = signal<File | undefined>(undefined);
   pendingImagePreviewUrl = signal<string | undefined>(undefined);
-  // Maximum number of research group images allowed
-  readonly MAX_RESEARCH_GROUP_IMAGES = 10;
   // Allowed image file types for upload
   private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
   // Maximum file size for image upload
@@ -114,23 +112,16 @@ export class JobCreationFormComponent {
     const image = this.selectedImage();
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
   });
-  // Check if research group image limit is reached
-  isResearchGroupImageLimitReached = computed(() => this.researchGroupImages().length >= this.MAX_RESEARCH_GROUP_IMAGES);
 
   uploadContainerClasses = computed(() => {
-    const disabled = this.isUploadingImage() || this.isResearchGroupImageLimitReached();
-    if (disabled) {
-      const cursor = this.isResearchGroupImageLimitReached() && !this.isUploadingImage() ? 'cursor-not-allowed' : '';
-      return `relative rounded-xl transition-all opacity-50 pointer-events-none ${cursor}`.trim();
+    if (this.isUploadingImage()) {
+      return 'relative rounded-xl transition-all opacity-50 pointer-events-none';
     }
     return 'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
   });
 
   uploadInnerClasses = computed(() => {
     const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
-    if (this.isResearchGroupImageLimitReached()) {
-      return `${base} border-gray-300 bg-gray-50`;
-    }
     const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-blue-50' : '';
     return `${base} border-gray-300 ${hover}`.trim();
   });
@@ -398,13 +389,6 @@ export class JobCreationFormComponent {
     }
     const input = target;
     if (!input.files || input.files.length === 0) return;
-
-    // Check if the research group image limit is reached
-    if (this.isResearchGroupImageLimitReached()) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.maxImagesReached');
-      input.value = '';
-      return;
-    }
 
     const file = input.files[0];
 
