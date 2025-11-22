@@ -13,6 +13,7 @@ import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } fro
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 /**
  * Test suite for ResearchGroupCreationFormComponent - Admin Mode
@@ -53,6 +54,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         provideToastServiceMock(mockToastService),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
+        provideHttpClientMock(),
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
       ],
