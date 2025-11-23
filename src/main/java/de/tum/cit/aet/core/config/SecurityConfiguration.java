@@ -130,6 +130,8 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/auth/logout")
                     .permitAll()
+                    .requestMatchers("/api/export/job/**")
+                    .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()
                     .requestMatchers("/login/webauthn")
