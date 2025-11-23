@@ -103,6 +103,10 @@ If you're a developer or contributor, head over to the full documentation:
 - 💡 [General Documentation](docs-github/general/general-documentation.md)
 - 🧪 [Testing Guide](docs-github/testing/testing-guide.md)
 - 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
+- 💼 [Job Documentation](docs-github/job/job-module-documentation.md)
+- 📝 [Application Documentation](docs-github/application/application-module-documentation.md)
+- 👤 [User Documentation](docs-github/user-management/user-management-module-documentation.md)
+- 📊 [Evaluation Documentation](docs-github/evaluation/evaluation-module-documentation.md)
 
 Full documentation is available in the [`/docs`](docs-github) folder.
 
