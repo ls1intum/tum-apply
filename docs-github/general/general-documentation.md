@@ -158,21 +158,5 @@ The following points are some of several strategies used across the TUMApply app
 - Prevents eager loading of heavy document metadata in list views.
 - Client requests document IDs only when rendering detail view.
 
----
 
-## 5) Testing & quality
 
-### Client-side
-
-- Test runner: **Vitest**  
-  Example command:
-  ```bash
-  npm run test:ci
-  ```
-- View coverage report of tests:
-  ```bash
-  open build/test-results/lcov-report/index.html
-  ```
-
-- Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
-  Keep unit tests close to the component you change. Prefer focused DOM and behavior tests (validation, visibility of actions, rendering of states, sorting/filter effects).
