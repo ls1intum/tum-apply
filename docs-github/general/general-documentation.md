@@ -57,6 +57,12 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 - `@ApplicantOrAdmin` — Restricts access to applicants (owners) or system administrators.
   - Used for: Create, Update, Delete, Upload, Withdraw operations.
   - Enforces ownership check: Applicant can only access their own applications.
+
+
+- `@ProfessorOrAdmin`
+  - Works analogously to `@ApplicantOrAdmin`.
+  
+
 - `@Authenticated` — Requires any authenticated user (applicant or professor).
   - Used for: Read operations (GetById, GetDocumentIds).
   - Professors can view applications they're evaluating.
@@ -102,18 +108,16 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 - Returns `404 Not Found` for invalid application IDs.
 - User interface gracefully handles missing resources.
 
-**Conflict Errors:**
-
-- Duplicate application detection returns existing draft (no error thrown).
-- State transition validation prevents invalid operations (e.g., editing submitted application).
-- Returns `409 Conflict` for invalid state transitions.
-
 **Server Errors:**
 
 - Unhandled exceptions return `500 Internal Server Error`.
 - Logged with full stack trace for debugging.
 - User interface displays generic error message to user.
 
+**Custom Exceptions:**
+
+We have a set of custom exceptions (e.g. for specific conflict scenarios or business logic errors) that can be utilized:
+`src/main/java/de/tum/cit/aet/core/exception`
 ## 5) Performance Optimizations
 
 The following points are some of several strategies used across the TUMApply application to boost the performance and responsiveness of the site: 
@@ -129,6 +133,8 @@ The following points are some of several strategies used across the TUMApply app
 - Criteria API enables database-level pagination (LIMIT / OFFSET).
 - Prevents loading entire datasets into memory.
 - Configurable page size (default 25, max 100).
+- Use the helper class **`PageUtil`** located in:
+  `src/main/java/de/tum/cit/aet/core/util/PageUtil.java`.
 
 **Lazy Loading:**
 
