@@ -432,7 +432,12 @@ public class ImageResourceTest extends AbstractResourceTest {
             // Act & Assert
             api
                 .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
-                .multipartPostAndRead(API_BASE_PATH + "/upload/job-banner", List.of(fileWithoutName), new TypeReference<ImageDTO>() {}, 400);
+                .multipartPostAndRead(
+                    API_BASE_PATH + "/upload/job-banner",
+                    List.of(fileWithoutName),
+                    new TypeReference<ImageDTO>() {},
+                    400
+                );
         }
 
         @Test
@@ -520,7 +525,12 @@ public class ImageResourceTest extends AbstractResourceTest {
             UUID nonExistentId = UUID.randomUUID();
 
             // Create a multipart file with the researchGroupId as a separate part
-            MockMultipartFile validImageFile2 = new MockMultipartFile("file", "default-banner.jpg", "image/jpeg", validImageFile.getBytes());
+            MockMultipartFile validImageFile2 = new MockMultipartFile(
+                "file",
+                "default-banner.jpg",
+                "image/jpeg",
+                validImageFile.getBytes()
+            );
 
             String url = API_BASE_PATH + "/upload/default-job-banner?researchGroupId=" + nonExistentId;
 
