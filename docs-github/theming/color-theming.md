@@ -21,9 +21,9 @@ To ensure a consistent design, avoid hard-coded hex values. Instead, use:
 
 ### ✅ PrimeNG variables (CSS custom properties)
 
-```scss
-color: var (--text-color);
-background-color: var (--surface-ground);
+```
+color: var(--text-color);
+background-color: var(--surface-ground);
 ```
 
 ### ✅ Tailwind utility classes

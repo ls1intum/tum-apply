@@ -51,7 +51,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 - Avoid leaking persistence concerns (IDs, timestamps) into write DTOs unless required.
 - Validate DTOs at the boundary; map cleanly to domain entities within services.
 
-### 2.1 Authorization and Security
+### 2.2 Authorization and Security
 
 **Endpoint Security:**
 - `@ApplicantOrAdmin` — Restricts access to applicants (owners) or system administrators.
@@ -157,6 +157,3 @@ The following points are some of several strategies used across the TUMApply app
 - Separate document loading via dedicated endpoint (`getDocumentDictionaryIds`).
 - Prevents eager loading of heavy document metadata in list views.
 - Client requests document IDs only when rendering detail view.
-
-
-
