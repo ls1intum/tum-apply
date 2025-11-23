@@ -223,13 +223,13 @@ export const TUMApplyPreset = definePreset(Lara, {
           surfaceAlt: '{background.100}', // sidebars etc.
           special: '{tertiary.50}', // info areas
           disabled: '{neutral.200}',
-          footer: '{base.white}',
+          footer: '{background.50}',
         },
         border: {
-          default: '{neutral.100}',
+          default: '{neutral.200}',
         },
         divider: {
-          default: '{neutral.100}',
+          default: '{neutral.200}',
         },
         card: {
           background: '{base.white}',
@@ -341,7 +341,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           surfaceAlt: '{background.800}',
           special: '{tertiary.900}',
           disabled: '{neutral.700}',
-          footer: '{background.900}',
+          footer: '{background.950}',
         },
         border: {
           default: '{neutral.700}',

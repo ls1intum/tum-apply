@@ -411,11 +411,10 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 ------------------------------- */
 // Base card styles - shared between all card types
 .section-card {
-  border: 0.05rem solid var(--p-border-default);
+  border: 0.1rem solid var(--p-border-default);
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  background: var(--p-background-surface);
 }
 
 // Detail card extends base card with additional structure
