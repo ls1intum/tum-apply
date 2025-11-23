@@ -23,7 +23,7 @@ Install npm dependencies:
 ```bash
 npm install
 ```
-Before starting the backend, you must start the required services (MySQL and Keycloak).
+
 Make sure Docker Desktop is running, then execute:
 ```bash
 docker compose -f src/main/docker/services.yml up -d

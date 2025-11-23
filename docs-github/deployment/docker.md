@@ -15,12 +15,3 @@ Stop and remove containers:
 ```bash
 docker compose -f src/main/docker/services.yml down
 ```
-
-To disable Spring Boot's Docker Compose integration:
-
-```yaml
-spring:
-  docker:
-    compose:
-      enabled: false
-```
