@@ -58,10 +58,8 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
   - Used for: Create, Update, Delete, Upload, Withdraw operations.
   - Enforces ownership check: Applicant can only access their own applications.
 
-
 - `@ProfessorOrAdmin`
   - Works analogously to `@ApplicantOrAdmin`.
-  
 
 - `@Authenticated` — Requires any authenticated user (applicant or professor).
   - Used for: Read operations (GetById, GetDocumentIds).
