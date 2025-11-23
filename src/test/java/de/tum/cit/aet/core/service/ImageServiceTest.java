@@ -163,13 +163,18 @@ class ImageServiceTest {
     @Nested
     class UploadDefaultImage {
 
+        private MultipartFile validFile;
+
+        @BeforeEach
+        void setUpTestFile() throws IOException {
+            BufferedImage validImage = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+            byte[] imageBytes = createImageBytes(validImage);
+            validFile = new MockMultipartFile("file", "default.jpg", "image/jpeg", imageBytes);
+        }
+
         @Test
         void shouldUploadDefaultImageSuccessfullyAsAdmin() throws IOException {
             // Arrange
-            BufferedImage validImage = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
-            byte[] imageBytes = createImageBytes(validImage);
-            MultipartFile validFile = new MockMultipartFile("file", "default.jpg", "image/jpeg", imageBytes);
-
             when(currentUserService.isAdmin()).thenReturn(true);
             when(currentUserService.getUser()).thenReturn(testUser);
             when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
@@ -192,10 +197,6 @@ class ImageServiceTest {
         @Test
         void shouldThrowExceptionWhenNonAdminUploadsDefaultImage() {
             // Arrange
-            BufferedImage validImage = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
-            byte[] imageBytes = createImageBytes(validImage);
-            MultipartFile validFile = new MockMultipartFile("file", "default.jpg", "image/jpeg", imageBytes);
-
             when(currentUserService.isAdmin()).thenReturn(false);
 
             // Act & Assert
@@ -207,10 +208,6 @@ class ImageServiceTest {
         @Test
         void shouldThrowExceptionWhenResearchGroupNotFound() {
             // Arrange
-            BufferedImage validImage = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
-            byte[] imageBytes = createImageBytes(validImage);
-            MultipartFile validFile = new MockMultipartFile("file", "default.jpg", "image/jpeg", imageBytes);
-
             when(currentUserService.isAdmin()).thenReturn(true);
             when(currentUserService.getUser()).thenReturn(testUser);
             when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.empty());
@@ -241,7 +238,7 @@ class ImageServiceTest {
             assertThat(result).hasSize(2);
             assertThat(result).containsExactlyInAnyOrder(defaultImage1, defaultImage2);
             verify(imageRepository).findDefaultJobBanners();
-            verify(imageRepository, never()).findDefaultJobBannersByResearchGroup(any());
+            verify(imageRepository, never()).findDefaultJobBannersByResearchGroup(any(UUID.class));
         }
 
         @Test
@@ -510,7 +507,7 @@ class ImageServiceTest {
             imageService.deleteWithoutChecks(TEST_IMAGE_ID);
 
             // Assert
-            verify(imageRepository, never()).delete(any());
+            verify(imageRepository, never()).delete(any(Image.class));
         }
 
         @Test
@@ -561,8 +558,8 @@ class ImageServiceTest {
 
             // Assert
             assertThat(result).isEqualTo(newImage);
-            verify(imageRepository, never()).findById(any());
-            verify(imageRepository, never()).delete(any());
+            verify(imageRepository, never()).findById(any(UUID.class));
+            verify(imageRepository, never()).delete(any(Image.class));
         }
 
         @Test
@@ -579,8 +576,8 @@ class ImageServiceTest {
 
             // Assert
             assertThat(result).isEqualTo(newImage);
-            verify(imageRepository, never()).findById(any());
-            verify(imageRepository, never()).delete(any());
+            verify(imageRepository, never()).findById(any(UUID.class));
+            verify(imageRepository, never()).delete(any(Image.class));
         }
 
         @Test
@@ -593,7 +590,7 @@ class ImageServiceTest {
 
             // Assert
             assertThat(result).isEqualTo(newImage);
-            verify(imageRepository, never()).delete(any());
+            verify(imageRepository, never()).delete(any(Image.class));
         }
 
         @Test
@@ -607,7 +604,7 @@ class ImageServiceTest {
 
             // Assert
             assertThat(result).isEqualTo(sameImage);
-            verify(imageRepository, never()).delete(any());
+            verify(imageRepository, never()).delete(any(Image.class));
         }
 
         @Test
