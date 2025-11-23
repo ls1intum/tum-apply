@@ -104,9 +104,15 @@ export const TUMApplyPreset = definePreset(Lara, {
       600: '#676769',
       700: '#414144',
       800: '#343537',
-      850: '#212121',
       900: '#1A1B1E',
       950: '#010205',
+    },
+    background: {
+      50: '#f7f8f8',
+      100: '#edeef1',
+      800: '#3f434d',
+      900: '#30333a',
+      950: '#25272c',
     },
     base: {
       white: '#ffffff',
@@ -147,7 +153,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{primary.600}',
           activeColor: '{primary.700}',
           disabledColor: '{primary.200}',
-          hoverColorOutlined: '{primary.50}',
+          hoverColorOutlined: '{primary.100}',
         },
         secondary: {
           color: '{secondary.500}',
@@ -155,7 +161,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{secondary.600}',
           activeColor: '{secondary.700}',
           disabledColor: '{secondary.200}',
-          hoverColorOutlined: '{secondary.50}',
+          hoverColorOutlined: '{secondary.100}',
         },
         accent: {
           color: '{accent.400}',
@@ -163,7 +169,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{accent.500}',
           activeColor: '{accent.600}',
           disabledColor: '{accent.200}',
-          hoverColorOutlined: '{accent.50}',
+          hoverColorOutlined: '{accent.100}',
         },
         highlight: {
           background: '{primary.950}',
@@ -177,7 +183,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{success.600}',
           activeColor: '{success.700}',
           disabledColor: '{success.200}',
-          hoverColorOutlined: '{success.50}',
+          hoverColorOutlined: '{success.100}',
         },
         warn: {
           color: '{warn.500}',
@@ -185,7 +191,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{warn.600}',
           activeColor: '{warn.700}',
           disabledColor: '{warn.200}',
-          hoverColorOutlined: '{warn.50}',
+          hoverColorOutlined: '{warn.100}',
         },
         danger: {
           color: '{danger.500}',
@@ -193,7 +199,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{danger.600}',
           activeColor: '{danger.700}',
           disabledColor: '{danger.200}',
-          hoverColorOutlined: '{danger.50}',
+          hoverColorOutlined: '{danger.100}',
         },
         info: {
           color: '{info.500}',
@@ -201,7 +207,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{info.600}',
           activeColor: '{info.700}',
           disabledColor: '{info.200}',
-          hoverColorOutlined: '{info.50}',
+          hoverColorOutlined: '{info.100}',
         },
         neutral: {
           color: '{neutral.500}',
@@ -209,31 +215,42 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{neutral.600}',
           activeColor: '{neutral.700}',
           disabledColor: '{neutral.200}',
-          hoverColorOutlined: '{neutral.50}',
+          hoverColorOutlined: '{neutral.200}',
         },
         background: {
-          default: '{base.white}',
-          surface: '{neutral.50}',
-          surfaceAlt: '{neutral.100}',
-          special: '{tertiary.50}',
+          default: '{background.50}', // canvas
+          surface: '{base.white}', // cards, panels
+          surfaceAlt: '{background.100}', // sidebars etc.
+          special: '{tertiary.50}', // info areas
           disabled: '{neutral.200}',
-          footer: '{neutral.100}',
+          footer: '{base.white}',
         },
         border: {
-          default: '{neutral.300}',
+          default: '{neutral.100}',
         },
         divider: {
-          default: '{neutral.200}',
+          default: '{neutral.100}',
+        },
+        card: {
+          background: '{base.white}',
+          backgroundAlt: '{neutral.100}',
+          backgroundHover: '{primary.50}',
+          border: '{neutral.200}',
+        },
+        informationBlock: {
+          background: '{base.white}',
+          border: '{primary.color}',
         },
       },
       dark: {
         text: {
-          primary: '{neutral.50}',
+          primary: '{neutral.100}',
           secondary: '{neutral.200}',
           tertiary: '{neutral.400}',
-          disabled: '{neutral.200}',
+          disabled: '{neutral.500}',
           onPrimary: '{base.white}',
           onSecondary: '{base.white}',
+          onTertiary: '{base.white}',
           onAccent: '{base.white}',
           onSuccess: '{base.black}',
           onDanger: '{base.black}',
@@ -241,11 +258,12 @@ export const TUMApplyPreset = definePreset(Lara, {
           onInfo: '{base.white}',
         },
         primary: {
-          color: '{primary.300}',
+          color: '{primary.400}',
           inverseColor: '{text.onPrimary}',
-          hoverColor: '{primary.200}',
-          activeColor: '{primary.100}',
-          disabledColor: '{primary.50}',
+          hoverColor: '{primary.500}',
+          activeColor: '{primary.600}',
+          disabledColor: '{primary.200}',
+          hoverColorOutlined: '{primary.900}',
         },
         secondary: {
           color: '{secondary.300}',
@@ -253,6 +271,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{secondary.200}',
           activeColor: '{secondary.100}',
           disabledColor: '{secondary.50}',
+          hoverColorOutlined: '{secondary.800}',
         },
         tertiary: {
           color: '{tertiary.300}',
@@ -260,6 +279,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{tertiary.200}',
           activeColor: '{tertiary.100}',
           disabledColor: '{tertiary.50}',
+          hoverColorOutlined: '{tertiary.800}',
         },
         accent: {
           color: '{accent.300}',
@@ -267,6 +287,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{accent.200}',
           activeColor: '{accent.100}',
           disabledColor: '{accent.800}',
+          hoverColorOutlined: '{accent.800}',
         },
         highlight: {
           background: '{primary.50}',
@@ -280,6 +301,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{success.600}',
           activeColor: '{success.700}',
           disabledColor: '{success.800}',
+          hoverColorOutlined: '{success.900}',
         },
         warn: {
           color: '{warn.500}',
@@ -287,6 +309,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{warn.600}',
           activeColor: '{warn.700}',
           disabledColor: '{warn.800}',
+          hoverColorOutlined: '{warn.900}',
         },
         danger: {
           color: '{danger.500}',
@@ -294,6 +317,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{danger.600}',
           activeColor: '{danger.700}',
           disabledColor: '{danger.800}',
+          hoverColorOutlined: '{danger.900}',
         },
         info: {
           color: '{info.500}',
@@ -301,20 +325,29 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColor: '{info.600}',
           activeColor: '{info.700}',
           disabledColor: '{info.800}',
+          hoverColorOutlined: '{info.900}',
+        },
+        neutral: {
+          color: '{neutral.500}',
+          inverseColor: '{text.onNeutral}',
+          hoverColor: '{neutral.400}',
+          activeColor: '{neutral.300}',
+          disabledColor: '{neutral.700}',
+          hoverColorOutlined: '{neutral.800}',
         },
         background: {
-          default: '{neutral.900}',
-          surface: '{neutral.800}',
-          surfaceAlt: '{neutral.800}',
+          default: '{background.950}',
+          surface: '{background.900}',
+          surfaceAlt: '{background.800}',
           special: '{tertiary.900}',
           disabled: '{neutral.700}',
-          footer: '{neutral.850}',
+          footer: '{background.900}',
         },
         border: {
-          default: '{neutral.600}',
+          default: '{neutral.800}',
         },
         divider: {
-          default: '{neutral.700}',
+          default: '{neutral.800}',
         },
       },
     },
@@ -689,7 +722,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             activeColor: '{base.black}',
           },
           stepNumber: {
-            background: '{background.disabled}',
+            background: '{background.surface}',
             activeBackground: '{primary.color}',
             borderColor: '{background.disabled}',
             activeBorderColor: '{primary.color}',
@@ -707,7 +740,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             activeColor: '{base.white}',
           },
           stepNumber: {
-            background: '{background.disabled}',
+            background: '{background.default}',
             activeBackground: '{primary.color}',
             borderColor: '{background.disabled}',
             activeBorderColor: '{primary.color}',
@@ -721,7 +754,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       colorScheme: {
         light: {
           tab: {
-            background: '{background.surface}',
+            background: '{background.default}',
             activeBackground: '{background.surface}',
             color: '{text.tertiary}',
             activeColor: '{primary.color}',
@@ -842,71 +875,39 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     multiselect: {
       root: {
-        background: '{transparent}',
+        background: '{background.surface}',
+        color: '{text.primary}',
       },
-      colorScheme: {
-        light: {
-          root: {
-            color: '{text.primary}',
-          },
-          overlay: {
-            background: '{background.default}',
-          },
-          option: {
-            color: '{text.primary}',
-            selectedColor: '{text.primary}',
-            selectedBackground: '{background.surface}',
-            focusBackground: '{primary.color}',
-            focusColor: '{base.white}',
-          },
-        },
-        dark: {
-          root: {
-            color: '{text.primary}',
-          },
-          overlay: {
-            background: '{background.default}',
-          },
-          option: {
-            color: '{text.primary}',
-            selectedColor: '{text.primary}',
-            selectedBackground: '{background.surface}',
-            focusBackground: '{primary.color}',
-            focusColor: '{base.white}',
-          },
-        },
+      overlay: {
+        background: '{background.surface}',
+      },
+      option: {
+        color: '{text.primary}',
+        selectedColor: '{text.primary}',
+        selectedBackground: '{background.surface}',
+        focusBackground: '{primary.color}',
+        focusColor: '{base.white}',
       },
     },
     inputtext: {
-      colorScheme: {
-        light: {
-          root: {
-            color: '{text.primary}',
-            background: '{transparent}',
-          },
-        },
-        dark: {
-          root: {
-            color: '{text.primary}',
-            background: '{transparent}',
-          },
-        },
+      root: {
+        color: '{text.primary}',
+        background: '{background.surface}',
+        borderRadius: '0.5rem',
+      },
+    },
+    datepicker: {
+      panel: {
+        background: '{background.surface}',
+      },
+      header: {
+        background: '{background.surface}',
       },
     },
     dialog: {
-      colorScheme: {
-        light: {
-          root: {
-            color: '{text.primary}',
-            background: '{background.default}',
-          },
-        },
-        dark: {
-          root: {
-            color: '{text.primary}',
-            background: '{background.default}',
-          },
-        },
+      root: {
+        color: '{text.primary}',
+        background: '{background.default}',
       },
     },
     fileupload: {
@@ -918,6 +919,16 @@ export const TUMApplyPreset = definePreset(Lara, {
         borderWidth: '0',
         gap: '0',
         color: '{background.default}',
+      },
+    },
+    accordion: {
+      content: {
+        background: '{background.surface}',
+      },
+    },
+    divider: {
+      content: {
+        background: '{background.default}',
       },
     },
   },

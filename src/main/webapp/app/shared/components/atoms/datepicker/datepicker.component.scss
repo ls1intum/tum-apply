@@ -21,7 +21,7 @@
 
     .p-inputtext {
       border: 0.1rem solid var(--p-border-default);
-      background: transparent;
+      background: var(--p-background-surface);
 
       &:disabled {
         background-color: var(--p-background-disabled);
@@ -45,7 +45,6 @@
     }
 
     .p-inputtext::placeholder {
-      color: var(--p-text-primary);
     }
 
     .p-inputtext:disabled::placeholder {

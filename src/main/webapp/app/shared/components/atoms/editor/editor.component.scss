@@ -4,7 +4,6 @@
   min-height: 2rem;
 
   .char-counter-normal {
-    color: var(--p-text-primary);
   }
   .char-counter-warning {
     color: var(--p-warn-color);
@@ -13,7 +12,6 @@
     color: var(--p-danger-color);
   }
   .helper-text {
-    color: var(--p-text-primary);
     font-size: 0.8rem;
   }
   .error-text {

@@ -1,4 +1,5 @@
 @use 'tailwindcss' as *;
+@use './tokens' as *;
 @use './_header.scss';
 @use './_layout.scss';
 @use './breakpoints' as bp;
@@ -46,9 +47,8 @@
   }
 
   .p-inputtext {
-    color: var(--p-text-primary);
     border: 0.1rem solid var(--p-border-default);
-    background: transparent;
+    background: var(--p-inputtext-background);
   }
 
   .p-inputtext::placeholder {
@@ -196,7 +196,7 @@
 
 .ql-editor {
   background: transparent;
-  color: var(--p-text-primary);
+
   overflow-wrap: anywhere;
 }
 
@@ -225,7 +225,6 @@
 .ql-picker-label,
 .ql-picker-item,
 .p-editor .ql-snow.ql-toolbar button {
-  color: var(--p-text-primary);
 }
 
 /* Default icon styling */
@@ -416,6 +415,7 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
+  background: var(--p-background-surface);
 }
 
 // Detail card extends base card with additional structure
@@ -434,7 +434,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   .section-card-title {
     font-weight: 600;
     margin: 0;
-    color: var(--p-text-primary);
   }
 
   .section-card-body {
@@ -538,7 +537,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 ------------------------------- */
 .p-select-option.p-select-option-selected {
   background: var(--p-background-surface-alt);
-  color: var(--p-text-primary);
 }
 
 /* -------------------------------
@@ -567,4 +565,11 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--p-primary-color);
+}
+
+/* Disable all transitions while switching theme */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
 }

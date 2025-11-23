@@ -126,8 +126,18 @@ export class HeaderComponent {
   }
 
   toggleColorScheme(): void {
-    const className = 'tum-apply-dark-mode';
-    document.documentElement.classList.toggle(className);
+    const root = document.documentElement;
+
+    // turn off transitions
+    root.classList.add('theme-switching');
+
+    // flip your dark mode class
+    root.classList.toggle('tum-apply-dark-mode');
+
+    // allow one frame for styles to apply, then restore transitions
+    window.requestAnimationFrame(() => {
+      root.classList.remove('theme-switching');
+    });
   }
 
   toggleLanguage(language: string): void {

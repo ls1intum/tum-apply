@@ -1,152 +1,87 @@
-@import 'primitives';
-// SCSS fallbacks for Bootstrap (do not use in application styling)
-$primary-default: $primary-300;
-$secondary-default: $secondary-300;
-$info-default: $info-500;
-$positive-default: $positive-500;
-$warning-default: $warning-500;
-$negative-default: $negative-500;
 // ========================================================
-// Semantic Color Tokens for TUMApply
+// Color Tokens for TUMApply
 //
-// This file defines semantic tokens for Light and Dark Mode
-// using CSS Custom Properties. Values are assigned based on
-// design tokens defined in `_primitives.scss`.
+// SINGLE SOURCE OF TRUTH: tumapplypreset.ts
+// PrimeNG automatically generates CSS variables from the preset:
+// - Color scales: --p-primary-50 through --p-primary-950
+// - Semantic tokens: --p-primary-color, --p-background-default, etc.
+// - Component tokens: --p-button-background, etc.
 //
-// Token Suffixes:
-// -default: standard appearance for a UI element
-// -hover: color on hover state
-// -active: color on pressed/active state
-// -disabled: appearance for non-interactive elements
-//
-// :root          → Light Mode
-// .dark-theme    → Dark Mode
+// This file maps PrimeNG variables to Tailwind for use with Tailwind classes.
 // ========================================================
 
-:root {
-  // Background Colors
-  --background-default: #f8f9fa;
-  --background-disabled: #{$neutral-200};
-  --background-footer: #f5f5f5;
-  --background-special: #{$tertiary-50};
-  --background-surface: #{$base-white};
-  --background-surface-alt: #{$neutral-100};
+// ========================================================
+// Tailwind v4 Theme Configuration
+//
+// Maps PrimeNG CSS variables to Tailwind color tokens.
+// PrimeNG handles light/dark mode switching automatically.
+// Full color scales (50-950) are already available via PrimeNG.
+// ========================================================
 
-  // Border & Divider
-  --border-default: #{$neutral-300};
-  --divider-default: #{$neutral-200};
+@theme {
+  // Primary Semantic Colors (for bg-primary-default, text-primary, etc.)
+  --color-primary-DEFAULT: var(--p-primary-color);
+  --color-primary-default: var(--p-primary-color);
+  --color-primary-hover: var(--p-primary-hover-color);
+  --color-primary-active: var(--p-primary-active-color);
+  --color-primary-disabled: var(--p-primary-disabled-color);
 
-  // Primary Colors
-  --primary-default: #{$primary-500};
-  --primary-hover: #{$primary-600};
-  --primary-active: #{$primary-700};
-  --primary-disabled: #{$primary-200};
+  // Secondary Semantic Colors
+  --color-secondary-DEFAULT: var(--p-secondary-color);
+  --color-secondary-default: var(--p-secondary-color);
+  --color-secondary-hover: var(--p-secondary-hover-color);
+  --color-secondary-active: var(--p-secondary-active-color);
+  --color-secondary-disabled: var(--p-secondary-disabled-color);
 
-  // Secondary Colors
-  --secondary-default: #{$secondary-500};
-  --secondary-hover: #{$secondary-600};
-  --secondary-active: #{$secondary-700};
-  --secondary-disabled: #{$secondary-200};
+  // Info Semantic Colors
+  --color-info-DEFAULT: var(--p-info-color);
+  --color-info-default: var(--p-info-color);
+  --color-info-hover: var(--p-info-hover-color);
+  --color-info-active: var(--p-info-active-color);
+  --color-info-disabled: var(--p-info-disabled-color);
 
-  // Info Colors
-  --info-default: #{$info-500};
-  --info-hover: #{$info-600};
-  --info-active: #{$info-700};
-  --info-disabled: #{$info-200};
+  // Positive/Success Semantic Colors
+  --color-positive-DEFAULT: var(--p-success-color);
+  --color-positive-default: var(--p-success-color);
+  --color-positive-hover: var(--p-success-hover-color);
+  --color-positive-active: var(--p-success-active-color);
+  --color-positive-disabled: var(--p-success-disabled-color);
 
-  // Positive Colors
-  --positive-default: #{$positive-500};
-  --positive-hover: #{$positive-600};
-  --positive-active: #{$positive-700};
-  --positive-disabled: #{$positive-200};
+  // Warning Semantic Colors
+  --color-warning-DEFAULT: var(--p-warn-color);
+  --color-warning-default: var(--p-warn-color);
+  --color-warning-hover: var(--p-warn-hover-color);
+  --color-warning-active: var(--p-warn-active-color);
+  --color-warning-disabled: var(--p-warn-disabled-color);
 
-  // Warning Colors
-  --warning-default: #{$warning-500};
-  --warning-hover: #{$warning-600};
-  --warning-active: #{$warning-700};
-  --warning-disabled: #{$warning-200};
+  // Negative/Danger Semantic Colors
+  --color-negative-DEFAULT: var(--p-danger-color);
+  --color-negative-default: var(--p-danger-color);
+  --color-negative-hover: var(--p-danger-hover-color);
+  --color-negative-active: var(--p-danger-active-color);
+  --color-negative-disabled: var(--p-danger-disabled-color);
 
-  // Negative Colors
-  --negative-default: #{$negative-500};
-  --negative-hover: #{$negative-600};
-  --negative-active: #{$negative-700};
-  --negative-disabled: #{$negative-200};
+  // Background Semantic Colors
+  --color-background-default: var(--p-background-default);
+  --color-background-disabled: var(--p-background-disabled);
+  --color-background-footer: var(--p-background-footer);
+  --color-background-special: var(--p-background-special);
+  --color-background-surface: var(--p-background-surface);
+  --color-background-surface-alt: var(--p-background-surface-alt);
 
-  // Text Colors
-  --text-primary: #{$neutral-950};
-  --text-primary-inverted: #{$neutral-50};
-  --text-secondary: #{$neutral-700};
-  --text-secondary-inverted: #{$neutral-200};
-  --text-on-primary: #{$neutral-50};
-  --text-on-secondary: #{$neutral-50};
-  --text-on-info: #{$neutral-950};
-  --text-on-positive: #{$neutral-950};
-  --text-on-warning: #{$neutral-950};
-  --text-on-negative: #{$neutral-950};
-  --text-on-surface-alt: #{$neutral-800};
-  --text-on-disabled: #{$neutral-600};
-}
+  // Border & Divider Semantic Colors
+  --color-border-default: var(--p-border-default);
+  --color-divider-default: var(--p-divider-default);
 
-.dark-theme {
-  // Background Colors
-  --background-default: #121212;
-  --background-disabled: #{$neutral-700};
-  --background-footer: #212121;
-  --background-special: #{$tertiary-900};
-  --background-surface: #1e1e1e;
-  --background-surface-alt: #{$neutral-800};
-
-  // Border & Divider
-  --border-default: #{$neutral-600};
-  --divider-default: #{$neutral-700};
-
-  // Primary Colors
-  --primary-default: #{$primary-300};
-  --primary-hover: #{$primary-200};
-  --primary-active: #{$primary-100};
-  --primary-disabled: #{$primary-50};
-
-  // Secondary Colors
-  --secondary-default: #{$secondary-500};
-  --secondary-hover: #{$secondary-600};
-  --secondary-active: #{$secondary-700};
-  --secondary-disabled: #{$secondary-800};
-
-  // Info Colors
-  --info-default: #{$info-500};
-  --info-hover: #{$info-600};
-  --info-active: #{$info-700};
-  --info-disabled: #{$info-800};
-
-  // Positive Colors
-  --positive-default: #{$positive-500};
-  --positive-hover: #{$positive-600};
-  --positive-active: #{$positive-700};
-  --positive-disabled: #{$positive-800};
-
-  // Warning Colors
-  --warning-default: #{$warning-500};
-  --warning-hover: #{$warning-600};
-  --warning-active: #{$warning-700};
-  --warning-disabled: #{$warning-800};
-
-  // Negative Colors
-  --negative-default: #{$negative-500};
-  --negative-hover: #{$negative-600};
-  --negative-active: #{$negative-700};
-  --negative-disabled: #{$negative-800};
-
-  // Text Colors
-  --text-primary: #{$neutral-50};
-  --text-primary-inverted: #{$neutral-950};
-  --text-secondary: #{$neutral-200};
-  --text-secondary-inverted: #{$neutral-700};
-  --text-on-primary: #{$neutral-50};
-  --text-on-secondary: #{$neutral-50};
-  --text-on-info: #{$neutral-50};
-  --text-on-positive: #{$neutral-950};
-  --text-on-warning: #{$neutral-950};
-  --text-on-negative: #{$neutral-950};
-  --text-on-surface-alt: #{$neutral-50};
-  --text-on-disabled: #{$neutral-200};
+  // Text Semantic Colors
+  --color-text-primary: var(--p-text-primary);
+  --color-text-secondary: var(--p-text-secondary);
+  --color-text-tertiary: var(--p-text-tertiary);
+  --color-text-disabled: var(--p-text-disabled);
+  --color-text-on-primary: var(--p-text-on-primary);
+  --color-text-on-secondary: var(--p-text-on-secondary);
+  --color-text-on-info: var(--p-text-on-info);
+  --color-text-on-success: var(--p-text-on-success);
+  --color-text-on-warn: var(--p-text-on-warn);
+  --color-text-on-danger: var(--p-text-on-danger);
 }
