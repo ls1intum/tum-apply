@@ -135,15 +135,15 @@ export const TUMApplyPreset = definePreset(Lara, {
       light: {
         text: {
           primary: '{neutral.950}',
-          secondary: '{neutral.700}',
-          tertiary: '{neutral.600}',
-          disabled: '{neutral.500}',
+          secondary: '{neutral.600}',
+          tertiary: '{neutral.500}',
+          disabled: '{neutral.600}',
           onPrimary: '{base.white}',
           onSecondary: '{base.white}',
           onAccent: '{base.white}',
           onSuccess: '{base.black}',
           onDanger: '{base.white}',
-          onWarn: '{base.black}',
+          onWarn: '{base.white}',
           onInfo: '{base.black}',
           onNeutral: '{base.black}',
         },
@@ -247,14 +247,14 @@ export const TUMApplyPreset = definePreset(Lara, {
           primary: '{neutral.100}',
           secondary: '{neutral.200}',
           tertiary: '{neutral.400}',
-          disabled: '{neutral.500}',
+          disabled: '{neutral.400}',
           onPrimary: '{base.white}',
           onSecondary: '{base.white}',
           onTertiary: '{base.white}',
           onAccent: '{base.white}',
           onSuccess: '{base.black}',
-          onDanger: '{base.black}',
-          onWarn: '{base.black}',
+          onDanger: '{base.white}',
+          onWarn: '{base.white}',
           onInfo: '{base.white}',
         },
         primary: {
@@ -344,7 +344,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           footer: '{background.900}',
         },
         border: {
-          default: '{neutral.800}',
+          default: '{neutral.700}',
         },
         divider: {
           default: '{neutral.800}',
@@ -913,7 +913,7 @@ export const TUMApplyPreset = definePreset(Lara, {
     fileupload: {
       root: {
         color: '{text.primary}',
-        background: '{background.default}',
+        background: '{background.surface}',
       },
       header: {
         borderWidth: '0',
@@ -924,6 +924,7 @@ export const TUMApplyPreset = definePreset(Lara, {
     accordion: {
       content: {
         background: '{background.surface}',
+        color: '{text.secondary}',
       },
     },
     divider: {

@@ -48,11 +48,10 @@
 
   .p-inputtext {
     border: 0.1rem solid var(--p-border-default);
-    background: var(--p-inputtext-background);
   }
 
   .p-inputtext::placeholder {
-    color: var(--p-background-disabled);
+    color: var(--p-text-tertiary);
   }
 
   .p-inputtext:disabled {
@@ -195,13 +194,12 @@
 --------------------------------------------------- */
 
 .ql-editor {
-  background: transparent;
-
+  background: var(--p-background-surface);
   overflow-wrap: anywhere;
 }
 
 .ql-editor.ql-blank {
-  color: var(--p-background-disabled);
+  color: var(--p-text-tertiary);
 }
 
 .ql-editor.ql-blank::before {
@@ -221,10 +219,17 @@
    Primeng Editor Toolbar Styling
 ---------------------------------- */
 
+/* Toolbar background */
+.ql-toolbar {
+  background: var(--p-background-surface);
+  color: var(--p-text-primary);
+}
+
 /* Default text color for toolbar buttons and pickers */
 .ql-picker-label,
 .ql-picker-item,
 .p-editor .ql-snow.ql-toolbar button {
+  color: var(--p-text-primary);
 }
 
 /* Default icon styling */
@@ -238,7 +243,7 @@
 
 /* Picker select component background */
 .ql-picker-options {
-  background: var(--p-background-default);
+  color: var(--p-text-primary);
 }
 
 /* -------------------------------
@@ -294,17 +299,12 @@
    Primeng Editor Border Styling
 ---------------------------------- */
 .p-editor-toolbar.ql-toolbar.ql-snow {
-  border-top: 0.1rem solid var(--p-border-default);
-  border-left: 0.1rem solid var(--p-border-default);
-  border-right: 0.1rem solid var(--p-border-default);
   border-bottom: none;
+  background: var(--p-background-surface);
 }
 
 .p-editor-content.ql-container.ql-snow {
-  border-top: 0.1rem solid var(--p-border-default);
-  border-left: 0.1rem solid var(--p-border-default);
-  border-right: 0.1rem solid var(--p-border-default);
-  border-bottom: 0.1rem solid var(--p-border-default);
+  background: var(--p-background-surface);
 
   &:focus-within {
     border-color: var(--p-primary-color);
@@ -384,11 +384,11 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 ------------------------------- */
 .p-fileupload-content {
   color: var(--p-text-color);
-  background: var(--p-background-default);
+  background: var(--p-background-surface);
 }
 
 .p-fileupload-header {
-  background: var(--p-background-default);
+  background: var(--p-background-surface);
 }
 
 /* ---------------------------
