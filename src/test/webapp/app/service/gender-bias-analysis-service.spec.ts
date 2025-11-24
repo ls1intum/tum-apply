@@ -51,6 +51,8 @@ describe('GenderBiasAnalysisService', () => {
     });
 
     it('should emit null initially without trigger', async () => {
+      vi.useFakeTimers();
+
       const fieldId = 'test-field';
       const analysis = service.getAnalysisForField(fieldId);
 
@@ -59,7 +61,7 @@ describe('GenderBiasAnalysisService', () => {
         emitted = true;
       });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
 
       expect(emitted).toBe(false);
       subscription.unsubscribe();
@@ -208,6 +210,8 @@ describe('GenderBiasAnalysisService', () => {
     });
 
     it('should debounce subsequent analyses with same language', async () => {
+      vi.useFakeTimers();
+
       const fieldId = 'test-field';
       const analysis = service.getAnalysisForField(fieldId);
 
@@ -227,7 +231,7 @@ describe('GenderBiasAnalysisService', () => {
       service.triggerAnalysis(fieldId, '<p>Fourth</p>', 'en');
 
       // Wait for debounce time (400ms) + buffer
-      await new Promise(resolve => setTimeout(resolve, 500));
+      vi.advanceTimersByTime(500);
 
       // Should only have made 2 requests: 1 immediate + 1 debounced (last one)
       const req2 = httpMock.expectOne(`${resourceUrl}/analyze-html`);
@@ -239,6 +243,8 @@ describe('GenderBiasAnalysisService', () => {
     });
 
     it('should trigger immediate analysis when language changes', async () => {
+      vi.useFakeTimers();
+
       const fieldId = 'test-field';
       const analysis = service.getAnalysisForField(fieldId);
 
@@ -255,7 +261,7 @@ describe('GenderBiasAnalysisService', () => {
       req1.flush({ biasedWords: [], language: 'en', originalText: '<p>English text</p>' });
 
       // Wait a bit, then change language (should be immediate, not debounced)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
 
       service.triggerAnalysis(fieldId, '<p>Deutscher Text</p>', 'de');
 
@@ -295,6 +301,8 @@ describe('GenderBiasAnalysisService', () => {
     });
 
     it('should track last language per field independently', async () => {
+      vi.useFakeTimers();
+
       const fieldId1 = 'test-field-1';
       const fieldId2 = 'test-field-2';
 
@@ -320,7 +328,7 @@ describe('GenderBiasAnalysisService', () => {
       const req2 = httpMock.expectOne(`${resourceUrl}/analyze-html`);
       req2.flush({ biasedWords: [], language: 'de', originalText: '<p>Deutsch</p>' });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
 
       service.triggerAnalysis(fieldId1, '<p>Deutsch</p>', 'de');
       const req3 = httpMock.expectOne(`${resourceUrl}/analyze-html`);
@@ -328,7 +336,7 @@ describe('GenderBiasAnalysisService', () => {
 
       service.triggerAnalysis(fieldId2, '<p>Mehr Deutsch</p>', 'de');
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      vi.advanceTimersByTime(500);
 
       const req4 = httpMock.expectOne(`${resourceUrl}/analyze-html`);
       req4.flush({ biasedWords: [], language: 'de', originalText: '<p>Mehr Deutsch</p>' });
@@ -338,6 +346,8 @@ describe('GenderBiasAnalysisService', () => {
     });
 
     it('should mark field as loaded after first trigger', async () => {
+      vi.useFakeTimers();
+
       const fieldId = 'test-field';
       const analysis = service.getAnalysisForField(fieldId);
 
@@ -351,11 +361,11 @@ describe('GenderBiasAnalysisService', () => {
       const req1 = httpMock.expectOne(`${resourceUrl}/analyze-html`);
       req1.flush({ biasedWords: [], language: 'en', originalText: '<p>First</p>' });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      vi.advanceTimersByTime(100);
 
       service.triggerAnalysis(fieldId, '<p>Second</p>', 'en');
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      vi.advanceTimersByTime(500);
 
       const req2 = httpMock.expectOne(`${resourceUrl}/analyze-html`);
       req2.flush({ biasedWords: [], language: 'en', originalText: '<p>Second</p>' });
