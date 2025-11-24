@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faEllipsisVertical, faMapMarkerAlt, faVideo } from '@fortawesome/free-solid-svg-icons';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-slot-card',
-  standalone: true,
-  imports: [CommonModule, TranslateDirective],
+  imports: [CommonModule, TranslateDirective, ButtonComponent, FontAwesomeModule],
   templateUrl: './slot-card.component.html',
 })
 export class SlotCardComponent {
@@ -19,14 +21,18 @@ export class SlotCardComponent {
   assignApplicant = output<InterviewSlotDTO>();
 
   private readonly TIMEZONE = 'Europe/Berlin';
-  private readonly el = inject(ElementRef);
+  private readonly elementRef = inject(ElementRef);
+
+  readonly faEllipsisVertical = faEllipsisVertical;
+  readonly faVideo = faVideo;
+  readonly faMapMarkerAlt = faMapMarkerAlt;
 
   /**
    * Closes the dropdown menu when clicking outside the component
    */
   @HostListener('document:click', ['$event'])
   handleOutsideClick(event: Event): void {
-    if (event.target && !this.el.nativeElement.contains(event.target as Node)) {
+    if (event.target && !this.elementRef.nativeElement.contains(event.target as Node)) {
       this.showMenu.set(false);
     }
   }
