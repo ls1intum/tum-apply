@@ -46,8 +46,8 @@
       "addSlots": "Termine hinzufügen",
       "slotsCountSingular": "Termin",
       "slotsCountPlural": "Termine",
-      "showMoreSingular": "weiteren Termin anzeigen",
-      "showMorePlural": "weitere Termine anzeigen",
+      "showMoreSingular": "weiteren Termin",
+      "showMorePlural": "weitere Termine",
       "status": {
         "booked": "Gebucht"
       },

@@ -46,8 +46,8 @@
       "addSlots": "Add Slots",
       "slotsCountSingular": "slot",
       "slotsCountPlural": "slots",
-      "showMoreSingular": "show more slot",
-      "showMorePlural": "show more slots",
+      "showMoreSingular": "more slot",
+      "showMorePlural": "more slots",
       "status": {
         "booked": "booked"
       },

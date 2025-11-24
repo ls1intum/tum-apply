@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
@@ -30,6 +32,7 @@ interface GroupedSlots {
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
+    FontAwesomeModule,
   ],
   templateUrl: './slots-section.component.html',
 })
@@ -45,7 +48,7 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
 
-  // Computed properties (must be before private fields for lint)
+  // Computed properties
   /**
    * Groups slots by date and sorts them chronologically
    */
@@ -126,20 +129,20 @@ export class SlotsSectionComponent {
   private readonly MAX_VISIBLE_SLOTS = 3;
   private readonly DATES_PER_PAGE = 5;
 
+  private readonly currentLang = toSignal(this.translateService.onLangChange);
+
   private locale = computed(() => {
-    const currentLang = this.translateService.getCurrentLang() || 'en';
-    return currentLang === 'de' ? 'de-DE' : 'en-US';
+    const langEvent = this.currentLang();
+    const lang = langEvent?.lang || this.translateService.currentLang || this.translateService.defaultLang || 'en';
+    return lang === 'de' ? 'de-DE' : 'en-US';
   });
 
-  constructor() {
-    // Load slots whenever processId changes
-    effect(() => {
-      const id = this.processId();
-      if (id) {
-        void this.loadSlots(id);
-      }
-    });
-  }
+  private readonly loadSlotsEffect = effect(() => {
+    const id = this.processId();
+    if (id) {
+      void this.loadSlots(id);
+    }
+  });
 
   openCreateSlotsModal(): void {
     // TODO: Open Create Slots Modal
