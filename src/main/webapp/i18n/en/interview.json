@@ -46,19 +46,14 @@
       "addSlots": "Add Slots",
       "slotsCountSingular": "slot",
       "slotsCountPlural": "slots",
-      "showMoreSingular": "more slot",
-      "showMorePlural": "more slots",
+      "showMoreSingular": "show more slot",
+      "showMorePlural": "show more slots",
       "status": {
         "booked": "booked"
       },
       "location": {
         "virtual": "virtual",
         "inPerson": "in-person"
-      },
-      "actions": {
-        "edit": "Edit",
-        "assign": "Assign",
-        "delete": "Delete"
       }
     }
   }

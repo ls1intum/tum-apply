@@ -54,11 +54,6 @@
       "location": {
         "virtual": "virtuell",
         "inPerson": "vor Ort"
-      },
-      "actions": {
-        "edit": "Bearbeiten",
-        "assign": "Zuweisen",
-        "delete": "Löschen"
       }
     }
   }
