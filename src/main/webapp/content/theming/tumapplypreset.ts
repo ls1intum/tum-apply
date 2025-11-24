@@ -778,9 +778,9 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     floatlabel: {
       root: {
-        color: '{background.disabled}',
-        focusColor: '{base.white}',
-        activeColor: '{base.white}',
+        color: '{text.tertiary}',
+        focusColor: '{text.primary}',
+        activeColor: '{text.primary}',
         transitionDuration: '0.2s',
         fontWeight: '200',
         active: {
@@ -889,6 +889,11 @@ export const TUMApplyPreset = definePreset(Lara, {
         focusColor: '{base.white}',
       },
     },
+    select: {
+      overlay: {
+        background: '{background.surface}',
+      },
+    },
     inputtext: {
       root: {
         color: '{text.primary}',
@@ -930,14 +935,19 @@ export const TUMApplyPreset = definePreset(Lara, {
     divider: {
       content: {
         background: '{background.default}',
+        color: '{text.primary}',
       },
     },
     datatable: {
       headerCell: {
         borderColor: '{divider.default}',
+        color: '{text.primary}',
       },
       bodyCell: {
         borderColor: '{divider.default}',
+      },
+      row: {
+        color: '{text.primary}',
       },
     },
   },
