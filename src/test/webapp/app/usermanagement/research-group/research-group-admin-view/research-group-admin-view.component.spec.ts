@@ -2,8 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { TranslateService } from '@ngx-translate/core';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ResearchGroupAdminView } from 'app/usermanagement/research-group/research-group-admin-view/research-group-admin-view.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -106,16 +105,65 @@ describe('ResearchGroupAdminView', () => {
     expect(component.selectedStatusFilters()).toEqual([]);
   });
 
-  it('should have correct columns configuration', () => {
-    fixture.detectChanges();
-    const columns = component.columns();
+  describe('Columns Configuration', () => {
+    it('should have correct columns configuration', () => {
+      fixture.detectChanges();
+      const columns = component.columns();
 
-    expect(columns).toHaveLength(5);
-    expect(columns[0].field).toBe('professorName');
-    expect(columns[1].field).toBe('status');
-    expect(columns[2].field).toBe('researchGroup');
-    expect(columns[3].field).toBe('createdAt');
-    expect(columns[4].field).toBe('actions');
+      expect(columns).toHaveLength(5);
+      expect(columns[0].field).toBe('professorName');
+      expect(columns[1].field).toBe('status');
+      expect(columns[2].field).toBe('researchGroup');
+      expect(columns[3].field).toBe('createdAt');
+      expect(columns[4].field).toBe('actions');
+    });
+
+    it('should have correct translation keys for column headers', () => {
+      fixture.detectChanges();
+      const columns = component.columns();
+
+      expect(columns[0].header).toBe('researchGroup.adminView.tableColumn.professor');
+      expect(columns[1].header).toBe('researchGroup.adminView.tableColumn.status');
+      expect(columns[2].header).toBe('researchGroup.adminView.tableColumn.researchGroup');
+      expect(columns[3].header).toBe('researchGroup.adminView.tableColumn.requestedAt');
+      expect(columns[4].header).toBe('');
+    });
+
+    it('should have correct column widths', () => {
+      fixture.detectChanges();
+      const columns = component.columns();
+
+      expect(columns[0].width).toBe('20rem');
+      expect(columns[1].width).toBe('6rem');
+      expect(columns[2].width).toBe('30rem');
+      expect(columns[3].width).toBe('16rem');
+      expect(columns[4].width).toBe('5rem');
+    });
+
+    it('should configure status column with template and center alignment', () => {
+      fixture.detectChanges();
+      const columns = component.columns();
+      const statusColumn = columns[1];
+
+      expect(statusColumn.alignCenter).toBe(true);
+      expect(statusColumn.template).toBeDefined();
+    });
+
+    it('should configure createdAt column as date type', () => {
+      fixture.detectChanges();
+      const columns = component.columns();
+      const dateColumn = columns[3];
+
+      expect(dateColumn.type).toBe('date');
+    });
+
+    it('should configure actions column with template', () => {
+      fixture.detectChanges();
+      const columns = component.columns();
+      const actionsColumn = columns[4];
+
+      expect(actionsColumn.template).toBeDefined();
+    });
   });
 
   it('should have correct status options', () => {
@@ -141,10 +189,22 @@ describe('ResearchGroupAdminView', () => {
     expect(stateSeverityMap['DENIED']).toBe('danger');
   });
 
-  it('should have correct sortable fields', () => {
-    expect(component.sortableFields).toHaveLength(2);
-    expect(component.sortableFields[0].fieldName).toBe('state');
-    expect(component.sortableFields[1].fieldName).toBe('createdAt');
+  describe('Sortable Fields Configuration', () => {
+    it('should have correct sortable fields', () => {
+      expect(component.sortableFields).toHaveLength(2);
+      expect(component.sortableFields[0].fieldName).toBe('state');
+      expect(component.sortableFields[1].fieldName).toBe('createdAt');
+    });
+
+    it('should have correct translation keys for sortable field display names', () => {
+      expect(component.sortableFields[0].displayName).toBe('researchGroup.adminView.tableColumn.status');
+      expect(component.sortableFields[1].displayName).toBe('researchGroup.adminView.tableColumn.requestedAt');
+    });
+
+    it('should have correct sort types for sortable fields', () => {
+      expect(component.sortableFields[0].type).toBe('TEXT');
+      expect(component.sortableFields[1].type).toBe('NUMBER');
+    });
   });
 
   it('should load research groups on table emit', async () => {
@@ -272,6 +332,52 @@ describe('ResearchGroupAdminView', () => {
     expect(component.sortBy()).toBe('createdAt');
     expect(component.sortDirection()).toBe('ASC');
     expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledWith(10, 0, [], '', 'createdAt', 'ASC');
+  });
+
+  describe('Translation Behavior', () => {
+    it('should use TranslateService.instant for detail view dialog header', () => {
+      component.onViewResearchGroup('rg-123');
+
+      expect(mockTranslateService.instant).toHaveBeenCalledWith('researchGroup.detailView.title');
+      expect(mockDialogService.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          header: 'researchGroup.detailView.title',
+          data: { researchGroupId: 'rg-123' },
+        }),
+      );
+    });
+
+    it('should use TranslateService.instant for create dialog header', () => {
+      const mockDialogRef = {
+        onClose: {
+          subscribe: vi.fn(),
+        },
+      } as unknown as DynamicDialogRef;
+
+      mockDialogService.open.mockReturnValue(mockDialogRef);
+
+      component.onCreateResearchGroup();
+
+      expect(mockTranslateService.instant).toHaveBeenCalledWith('researchGroup.adminView.createDialog.title');
+      expect(mockDialogService.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          header: 'researchGroup.adminView.createDialog.title',
+        }),
+      );
+    });
+
+    it('should return translation keys as-is from instant mock', () => {
+      const translatedTitle = mockTranslateService.instant('researchGroup.detailView.title');
+      expect(translatedTitle).toBe('researchGroup.detailView.title');
+    });
+
+    it('should handle array of translation keys', () => {
+      const keys = ['key1', 'key2', 'key3'];
+      const result = mockTranslateService.instant(keys);
+      expect(result).toEqual(['key1', 'key2', 'key3']);
+    });
   });
 
   it('should open detail view dialog', () => {
@@ -417,10 +523,26 @@ describe('ResearchGroupAdminView', () => {
     expect(component.selectedStatusFilters()).toEqual(['unknown.key'] as unknown as ('DRAFT' | 'ACTIVE' | 'DENIED')[]);
   });
 
-  it('should have correct filter configuration', () => {
-    expect(component.filters).toHaveLength(1);
-    expect(component.filters[0].filterId).toBe('status');
-    expect(component.filters[0].shouldTranslateOptions).toBe(true);
+  describe('Filter Configuration', () => {
+    it('should have correct filter configuration', () => {
+      expect(component.filters).toHaveLength(1);
+      expect(component.filters[0].filterId).toBe('status');
+      expect(component.filters[0].shouldTranslateOptions).toBe(true);
+    });
+
+    it('should have correct translation keys for filter labels', () => {
+      expect(component.filters[0].filterLabel).toBe('researchGroup.adminView.filter.status');
+      expect(component.filters[0].filterSearchPlaceholder).toBe('researchGroup.adminView.filter.stateSearchPlaceholder');
+    });
+
+    it('should have correct filter options with translation keys', () => {
+      const filterOptions = component.filters[0].filterOptions;
+      expect(filterOptions).toEqual([
+        'researchGroup.adminView.groupState.draft',
+        'researchGroup.adminView.groupState.active',
+        'researchGroup.adminView.groupState.denied',
+      ]);
+    });
   });
 
   it('should pass all parameters to API when loading research groups', async () => {
