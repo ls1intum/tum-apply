@@ -45,8 +45,7 @@ export class InterviewProcessDetailComponent {
     this.router.navigate(['/interviews/overview']);
   }
   private updateTabTitle(jobTitle: string): void {
-    const translatedTitle = this.translateService.instant('global.routes.interview.detail', { jobTitle });
-    this.titleService.setTitle(translatedTitle);
+    this.titleService.setTitle(`Interview – ${jobTitle}`);
   }
 
   private async loadProcessDetails(processId: string): Promise<void> {
@@ -56,7 +55,7 @@ export class InterviewProcessDetailComponent {
       if (process.jobTitle) {
         this.jobTitle.set(process.jobTitle);
       }
-    } catch (error) {
+    } catch {
       this.toastService.showErrorKey('interview.detail.error.loadFailed');
     }
   }

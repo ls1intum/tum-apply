@@ -1,24 +1,42 @@
-<div
-  class="relative min-w-[13.75rem] bg-[var(--p-background-default)] border border-[var(--p-neutral-400)] rounded-lg p-2.5">
+<div class="relative min-w-[13.75rem] bg-[var(--p-background-default)] border border-[var(--p-neutral-400)] rounded-lg p-2.5">
   <!-- 3-Dots Menu Button -->
-  <button class="absolute top-2 right-2 p-1 hover:bg-[var(--p-neutral-100)] rounded-full transition-colors z-10"
-          (click)="toggleMenu(); $event.stopPropagation()">
-    <fa-icon icon="ellipsis-vertical" class="text-[var(--p-neutral-500)] text-xs"></fa-icon>
+  <button
+    class="absolute top-2 right-2 p-1 hover:bg-[var(--p-neutral-100)] rounded-full transition-colors z-10"
+    (click)="toggleMenu(); $event.stopPropagation()"
+  >
+    <fa-icon icon="ellipsis-vertical" class="text-[var(--p-neutral-500)] text-xs" />
   </button>
 
   <!-- Dropdown Menu -->
   @if (showMenu()) {
     <div
-      class="absolute top-9 right-2 bg-[var(--p-background-default)] shadow-lg rounded-md border border-[var(--p-neutral-200)] z-20 min-w-[8.75rem] overflow-hidden">
-      <jhi-button class="w-full block" [fullWidth]="true" variant="text" icon="pencil" label="button.edit"
-                  [shouldTranslate]="true"
-                  [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-[var(--p-neutral-50)] flex items-center gap-2 text-[var(--p-neutral-700)] transition-colors justify-start border-none rounded-none'"
-                  (click)="onEdit()" />
+      class="absolute top-9 right-2 bg-[var(--p-background-default)] shadow-lg rounded-md border border-[var(--p-neutral-200)] z-20 min-w-[8.75rem] overflow-hidden"
+    >
+      <jhi-button
+        class="w-full block"
+        [fullWidth]="true"
+        variant="text"
+        icon="pencil"
+        label="button.edit"
+        [shouldTranslate]="true"
+        [styleClass]="
+          'px-4 py-2.5 text-left text-sm hover:bg-[var(--p-neutral-50)] flex items-center gap-2 text-[var(--p-neutral-700)] transition-colors justify-start border-none rounded-none'
+        "
+        (click)="onEdit()"
+      />
 
-      <jhi-button class="w-full block" [fullWidth]="true" variant="text" icon="trash" label="button.delete"
-                  [shouldTranslate]="true"
-                  [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-[var(--p-danger-50)] flex items-center gap-2 text-[var(--p-danger-600)] transition-colors justify-start border-none rounded-none'"
-                  (click)="onDelete()" />
+      <jhi-button
+        class="w-full block"
+        [fullWidth]="true"
+        variant="text"
+        icon="trash"
+        label="button.delete"
+        [shouldTranslate]="true"
+        [styleClass]="
+          'px-4 py-2.5 text-left text-sm hover:bg-[var(--p-danger-50)] flex items-center gap-2 text-[var(--p-danger-600)] transition-colors justify-start border-none rounded-none'
+        "
+        (click)="onDelete()"
+      />
     </div>
   }
 
@@ -30,19 +48,20 @@
         <span class="text-sm font-semibold text-[var(--p-neutral-900)]">{{ timeRange() }}</span>
         <span
           class="bg-[var(--p-success-100)] text-[var(--p-success-700)] px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
-          jhiTranslate="interview.slots.status.booked">
-        booked
-      </span>
+          jhiTranslate="interview.slots.status.booked"
+        >
+          booked
+        </span>
       </div>
 
       <!-- Applicant Name + Location -->
       <div class="flex items-center justify-between gap-2">
         <span class="text-xs text-[var(--p-neutral-900)] font-medium">{{ applicantName() }}</span>
         <div class="flex items-center gap-1 text-xs text-[var(--p-neutral-500)]">
-          <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]"></fa-icon>
+          <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
           <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
-          {{ isVirtual() ? 'virtual' : 'in-person' }}
-        </span>
+            {{ isVirtual() ? 'virtual' : 'in-person' }}
+          </span>
         </div>
       </div>
     }
@@ -52,19 +71,27 @@
       <div class="flex items-center justify-between gap-2">
         <span class="text-sm font-semibold text-[var(--p-neutral-900)]">{{ timeRange() }}</span>
         <div class="flex items-center gap-1 text-xs text-[var(--p-neutral-500)]">
-          <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]"></fa-icon>
+          <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
           <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
-          {{ isVirtual() ? 'virtual' : 'in-person' }}
-        </span>
+            {{ isVirtual() ? 'virtual' : 'in-person' }}
+          </span>
         </div>
       </div>
 
       <!-- Assign Button -->
-        <!-- Assign Button -->
-      <jhi-button class="w-full" [fullWidth]="true" variant="text" icon="plus" label="button.assign"
-                  [shouldTranslate]="true"
-                  [styleClass]="'h-6 px-3 py-1 text-xs font-medium text-[var(--p-neutral-600)] border border-[var(--p-neutral-200)] rounded-md hover:bg-[var(--p-pastel-50)] transition-all flex items-center justify-center'"
-                  (click)="onAssign()" />
+      <!-- Assign Button -->
+      <jhi-button
+        class="w-full"
+        [fullWidth]="true"
+        variant="text"
+        icon="plus"
+        label="button.assign"
+        [shouldTranslate]="true"
+        [styleClass]="
+          'h-6 px-3 py-1 text-xs font-medium text-[var(--p-neutral-600)] border border-[var(--p-neutral-200)] rounded-md hover:bg-[var(--p-pastel-50)] transition-all flex items-center justify-center'
+        "
+        (click)="onAssign()"
+      />
     }
   </div>
 </div>

@@ -19,7 +19,7 @@ export class DateHeaderComponent {
 
   private locale = computed(() => {
     const langEvent = this.currentLangEvent();
-    const lang = langEvent?.lang || this.translateService.currentLang || this.translateService.defaultLang || 'en';
+    const lang = langEvent?.lang ?? this.translateService.getBrowserCultureLang() ?? 'en';
     return lang === 'de' ? 'de-DE' : 'en-US';
   });
 

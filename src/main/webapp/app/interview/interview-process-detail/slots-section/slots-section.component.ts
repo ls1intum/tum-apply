@@ -135,7 +135,7 @@ export class SlotsSectionComponent {
   private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
 
   // Writable signal for current language
-  private readonly currentLangSignal = signal(this.translateService.currentLang || this.translateService.defaultLang || 'en');
+  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
   // Locale computed from current language signal
   private locale = computed(() => {
@@ -247,7 +247,7 @@ export class SlotsSectionComponent {
       const data = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId));
 
       this.slots.set(data);
-    } catch (error) {
+    } catch {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);
     } finally {
