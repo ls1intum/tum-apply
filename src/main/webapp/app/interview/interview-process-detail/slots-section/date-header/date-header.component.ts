@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -13,23 +14,14 @@ export class DateHeaderComponent {
   slotCount = input.required<number>();
 
   private readonly translateService = inject(TranslateService);
-  private currentLang = signal<string>(this.translateService.getCurrentLang() || 'en');
+
+  private readonly currentLangEvent = toSignal(this.translateService.onLangChange);
+
   private locale = computed(() => {
-    const lang = this.currentLang();
+    const langEvent = this.currentLangEvent();
+    const lang = langEvent?.lang || this.translateService.currentLang || this.translateService.defaultLang || 'en';
     return lang === 'de' ? 'de-DE' : 'en-US';
   });
-
-  constructor() {
-    // Track language changes for reactive locale updates
-    effect(
-      () => {
-        this.translateService.onLangChange.subscribe(event => {
-          this.currentLang.set(event.lang);
-        });
-      },
-      { allowSignalWrites: true },
-    );
-  }
 
   weekday = (): string => {
     return this.date().toLocaleDateString(this.locale(), { weekday: 'short' }).toUpperCase();
