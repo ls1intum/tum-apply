@@ -10,6 +10,9 @@ import TranslateDirective from 'app/shared/language/translate.directive';
   selector: 'jhi-slot-card',
   imports: [CommonModule, TranslateDirective, ButtonComponent, FontAwesomeModule],
   templateUrl: './slot-card.component.html',
+  host: {
+    '(document:click)': 'handleOutsideClick($event)',
+  },
 })
 export class SlotCardComponent {
   slot = input.required<InterviewSlotDTO>();
@@ -23,14 +26,6 @@ export class SlotCardComponent {
   private readonly TIMEZONE = 'Europe/Berlin';
   private readonly elementRef = inject(ElementRef);
 
-  readonly faEllipsisVertical = faEllipsisVertical;
-  readonly faVideo = faVideo;
-  readonly faMapMarkerAlt = faMapMarkerAlt;
-
-  /**
-   * Closes the dropdown menu when clicking outside the component
-   */
-  @HostListener('document:click', ['$event'])
   handleOutsideClick(event: Event): void {
     if (event.target && !this.elementRef.nativeElement.contains(event.target as Node)) {
       this.showMenu.set(false);
