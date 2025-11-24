@@ -108,7 +108,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       950: '#010205',
     },
     background: {
-      50: '#f7f8f8',
+      50: '#f5f7fb',
       100: '#edeef1',
       800: '#3f434d',
       900: '#30333a',
@@ -347,7 +347,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           default: '{neutral.700}',
         },
         divider: {
-          default: '{neutral.800}',
+          default: '{neutral.700}',
         },
       },
     },
@@ -860,7 +860,7 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     checkbox: {
       root: {
-        background: 'transparent',
+        background: 'background.surface',
         checkedBackground: '{primary.color}',
         checkedHoverBackground: '{primary.hoverColor}',
       },
@@ -930,6 +930,14 @@ export const TUMApplyPreset = definePreset(Lara, {
     divider: {
       content: {
         background: '{background.default}',
+      },
+    },
+    datatable: {
+      headerCell: {
+        borderColor: '{divider.default}',
+      },
+      bodyCell: {
+        borderColor: '{divider.default}',
       },
     },
   },

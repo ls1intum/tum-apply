@@ -195,6 +195,7 @@
 
 .ql-editor {
   background: var(--p-background-surface);
+  color: var(--p-text-primary);
   overflow-wrap: anywhere;
 }
 
@@ -220,30 +221,47 @@
 ---------------------------------- */
 
 /* Toolbar background */
-.ql-toolbar {
-  background: var(--p-background-surface);
-  color: var(--p-text-primary);
+.ql-toolbar,
+.ql-toolbar.ql-snow,
+.custom-quill-editor .ql-toolbar {
+  background: var(--p-background-surface) !important;
+  border-color: var(--p-border-default) !important;
+  border: 1px solid var(--p-border-default) !important;
 }
 
 /* Default text color for toolbar buttons and pickers */
 .ql-picker-label,
 .ql-picker-item,
-.p-editor .ql-snow.ql-toolbar button {
-  color: var(--p-text-primary);
+.p-editor .ql-snow.ql-toolbar button,
+.ql-snow.ql-toolbar button,
+.ql-toolbar.ql-snow button,
+.custom-quill-editor .ql-toolbar button {
+  color: var(--p-text-secondary) !important;
 }
 
 /* Default icon styling */
-.p-editor .ql-snow.ql-toolbar .ql-fill {
-  fill: var(--p-text-primary);
+.p-editor .ql-snow.ql-toolbar .ql-fill,
+.p-editor .ql-snow .ql-toolbar .ql-fill,
+.ql-snow.ql-toolbar .ql-fill,
+.ql-snow .ql-toolbar .ql-fill,
+.ql-toolbar.ql-snow .ql-fill,
+.custom-quill-editor .ql-fill {
+  fill: var(--p-text-secondary) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar .ql-stroke {
-  stroke: var(--p-text-primary);
+.p-editor .ql-snow.ql-toolbar .ql-stroke,
+.p-editor .ql-snow .ql-toolbar .ql-stroke,
+.ql-snow.ql-toolbar .ql-stroke,
+.ql-snow .ql-toolbar .ql-stroke,
+.ql-toolbar.ql-snow .ql-stroke,
+.custom-quill-editor .ql-stroke {
+  stroke: var(--p-text-secondary) !important;
 }
 
 /* Picker select component background */
 .ql-picker-options {
-  color: var(--p-text-primary);
+  color: var(--p-text-secondary) !important;
+  background: var(--p-background-surface) !important;
 }
 
 /* -------------------------------
@@ -251,18 +269,27 @@
 ---------------------------------- */
 .p-editor .ql-snow.ql-toolbar button.ql-active,
 .p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected {
-  color: var(--p-primary-color);
+.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
+.ql-snow.ql-toolbar button.ql-active,
+.ql-toolbar.ql-snow button.ql-active,
+.custom-quill-editor .ql-toolbar button.ql-active {
+  color: var(--p-primary-color) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar button.ql-active .ql-fill {
-  fill: var(--p-primary-color);
+.p-editor .ql-snow.ql-toolbar button.ql-active .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill,
+.ql-toolbar.ql-snow button.ql-active .ql-fill,
+.custom-quill-editor .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--p-primary-color) !important;
 }
 
 .p-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke,
 .p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke {
-  stroke: var(--p-primary-color);
+.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.ql-toolbar.ql-snow button.ql-active .ql-stroke,
+.custom-quill-editor .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--p-primary-color) !important;
 }
 
 /* -------------------------------
@@ -270,18 +297,27 @@
 ---------------------------------- */
 .p-editor .ql-snow.ql-toolbar button:hover,
 .p-editor .ql-snow.ql-toolbar .ql-picker-label:hover,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover {
-  color: var(--p-primary-color);
+.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover,
+.ql-snow.ql-toolbar button:hover,
+.ql-toolbar.ql-snow button:hover,
+.custom-quill-editor .ql-toolbar button:hover {
+  color: var(--p-primary-color) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar button:hover .ql-fill {
-  fill: var(--p-primary-color);
+.p-editor .ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-toolbar.ql-snow button:hover .ql-fill,
+.custom-quill-editor .ql-toolbar button:hover .ql-fill {
+  fill: var(--p-primary-color) !important;
 }
 
 .p-editor .ql-snow.ql-toolbar button:hover .ql-stroke,
 .p-editor .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke {
-  stroke: var(--p-primary-color);
+.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-toolbar.ql-snow button:hover .ql-stroke,
+.custom-quill-editor .ql-toolbar button:hover .ql-stroke {
+  stroke: var(--p-primary-color) !important;
 }
 
 /* -------------------------------
@@ -298,16 +334,23 @@
 /* -------------------------------
    Primeng Editor Border Styling
 ---------------------------------- */
-.p-editor-toolbar.ql-toolbar.ql-snow {
-  border-bottom: none;
-  background: var(--p-background-surface);
+.p-editor-toolbar.ql-toolbar.ql-snow,
+.ql-toolbar.ql-snow,
+.custom-quill-editor .ql-toolbar {
+  border-bottom: none !important;
+  border-color: var(--p-border-default) !important;
+  background: var(--p-background-surface) !important;
 }
 
-.p-editor-content.ql-container.ql-snow {
-  background: var(--p-background-surface);
+.p-editor-content.ql-container.ql-snow,
+.ql-container.ql-snow,
+.custom-quill-editor .ql-container {
+  background: var(--p-background-surface) !important;
+  border-color: var(--p-border-default) !important;
+  border: 1px solid var(--p-border-default) !important;
 
   &:focus-within {
-    border-color: var(--p-primary-color);
+    border-color: var(--p-primary-color) !important;
   }
 }
 
