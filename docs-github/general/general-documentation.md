@@ -76,8 +76,8 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 
 ### 3.1 Sorting & filtering (client-side)
 
-- Use **molecules**: `search-filter-sort-bar`, `filter-multiselect`.  
-  Use the **atom**: `sorting`.
+- Use **molecules**: `search-filter-sort-bar`.  
+  Use the **atom**: `sorting`, `filter-multiselect`.
 - Feed options from `dropdown-options.ts` to keep labels/values centralized.
 - Keep UI state (selected filters, sort key/order, search term) **serializable** so it can be:
   - Reflected in the URL (optional)
