@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { ProfessorFaqSectionComponent } from 'app/shared/pages/professor-landing-page/professor-faq-section/professor-faq-section.component';

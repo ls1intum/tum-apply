@@ -65,13 +65,5 @@ describe('ProfessorLandingPageComponent', () => {
     it('should render the professor FAQ section', () => {
       expect(nativeElement.querySelector('jhi-professor-faq-section')).not.toBeNull();
     });
-
-    it('should render all main section components', () => {
-      expect(nativeElement.querySelector('jhi-professor-hero-section')).not.toBeNull();
-      expect(nativeElement.querySelector('jhi-professor-benefits-section')).not.toBeNull();
-      expect(nativeElement.querySelector('jhi-professor-workflow-section')).not.toBeNull();
-      expect(nativeElement.querySelector('jhi-professor-information-section')).not.toBeNull();
-      expect(nativeElement.querySelector('jhi-professor-faq-section')).not.toBeNull();
-    });
   });
 });

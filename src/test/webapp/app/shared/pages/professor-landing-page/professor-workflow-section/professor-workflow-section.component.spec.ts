@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ProfessorWorkflowSectionComponent } from 'app/shared/pages/professor-landing-page/professor-workflow-section/professor-workflow-section.component';
 import { provideTranslateMock } from 'util/translate.mock';
