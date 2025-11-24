@@ -33,7 +33,8 @@
       "error": {
         "title": "Termine konnten nicht geladen werden",
         "description": "Beim Laden der Interview Termine ist ein Fehler aufgetreten. Bitte versuche es erneut.",
-        "retry": "Erneut versuchen"
+        "retry": "Erneut versuchen",
+        "loadFailed": "Interview Prozess Informationen konnten nicht geladen werden"
       },
       "empty": {
         "title": "Noch keine Termine",
@@ -48,6 +49,9 @@
       "slotsCountPlural": "Termine",
       "showMoreSingular": "weiteren Termin",
       "showMorePlural": "weitere Termine",
+      "error": {
+        "loadFailed": "Interview Termine konnten nicht geladen werden"
+      },
       "status": {
         "booked": "Gebucht"
       },

@@ -7,6 +7,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
@@ -48,7 +49,7 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
 
-  // Computed properties
+  // Computed properties (must be before private fields for lint)
   /**
    * Groups slots by date and sorts them chronologically
    */
@@ -125,16 +126,29 @@ export class SlotsSectionComponent {
 
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly translateService = inject(TranslateService);
+  private readonly toastService = inject(ToastService);
 
   private readonly MAX_VISIBLE_SLOTS = 3;
   private readonly DATES_PER_PAGE = 5;
 
-  private readonly currentLang = toSignal(this.translateService.onLangChange);
+  // Convert language change observable to signal
+  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
 
+  // Writable signal for current language
+  private readonly currentLangSignal = signal(this.translateService.currentLang || this.translateService.defaultLang || 'en');
+
+  // Locale computed from current language signal
   private locale = computed(() => {
-    const langEvent = this.currentLang();
-    const lang = langEvent?.lang || this.translateService.currentLang || this.translateService.defaultLang || 'en';
+    const lang = this.currentLangSignal();
     return lang === 'de' ? 'de-DE' : 'en-US';
+  });
+
+  // Effect to update current language when language changes
+  private readonly langChangeEffect = effect(() => {
+    const langEvent = this.langChangeSignal();
+    if (langEvent?.lang) {
+      this.currentLangSignal.set(langEvent.lang);
+    }
   });
 
   private readonly loadSlotsEffect = effect(() => {
@@ -234,7 +248,7 @@ export class SlotsSectionComponent {
 
       this.slots.set(data);
     } catch (error) {
-      console.error('Failed to load interview slots', error);
+      this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);
     } finally {
       this.loading.set(false);

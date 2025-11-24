@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
+import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { SlotsSectionComponent } from './slots-section/slots-section.component';
@@ -24,6 +25,14 @@ export class InterviewProcessDetailComponent {
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly translateService = inject(TranslateService);
   private readonly titleService = inject(Title);
+  private readonly toastService = inject(ToastService);
+
+  private readonly updateTitleEffect = effect(() => {
+    const title = this.jobTitle();
+    if (title) {
+      this.updateTabTitle(title);
+    }
+  });
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('processId');
@@ -31,12 +40,6 @@ export class InterviewProcessDetailComponent {
       this.processId.set(id);
       void this.loadProcessDetails(id);
     }
-    effect(() => {
-      const title = this.jobTitle();
-      if (title) {
-        this.updateTabTitle(title);
-      }
-    });
   }
   navigateBack(): void {
     this.router.navigate(['/interviews/overview']);
@@ -54,7 +57,7 @@ export class InterviewProcessDetailComponent {
         this.jobTitle.set(process.jobTitle);
       }
     } catch (error) {
-      console.error('Failed to load interview process details', error);
+      this.toastService.showErrorKey('interview.detail.error.loadFailed');
     }
   }
 }

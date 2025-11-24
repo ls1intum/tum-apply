@@ -4,7 +4,6 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 
 @Component({
   selector: 'jhi-month-navigation',
-  standalone: true,
   imports: [CommonModule, ButtonComponent],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './month-navigation.component.html',
