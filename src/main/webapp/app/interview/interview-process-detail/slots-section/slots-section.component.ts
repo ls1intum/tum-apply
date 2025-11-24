@@ -60,20 +60,20 @@ export class SlotsSectionComponent {
     const grouped = new Map<string, InterviewSlotDTO[]>();
 
     slotsData.forEach(slot => {
-      const localDate = new Date(slot.startDateTime!);
+      const localDate = new Date(this.safeDate(slot.startDateTime));
       const dateKey = localDate.toISOString().split('T')[0];
 
       if (!grouped.has(dateKey)) {
         grouped.set(dateKey, []);
       }
-      grouped.get(dateKey)!.push(slot);
+      grouped.get(dateKey)?.push(slot);
     });
 
     return Array.from(grouped.entries())
       .map(([dateKey, dateSlots]) => ({
         date: dateKey,
         localDate: new Date(dateKey),
-        slots: dateSlots.sort((a, b) => new Date(a.startDateTime!).getTime() - new Date(b.startDateTime!).getTime()),
+        slots: dateSlots.sort((a, b) => this.safeDate(a.startDateTime) - this.safeDate(b.startDateTime)),
       }))
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
@@ -253,5 +253,9 @@ export class SlotsSectionComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  private safeDate(value?: string): number {
+    return value ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
   }
 }

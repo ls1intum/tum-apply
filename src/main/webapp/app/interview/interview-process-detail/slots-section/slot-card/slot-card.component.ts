@@ -31,17 +31,17 @@ export class SlotCardComponent {
     }
   }
 
-  formatTime(date: string): string {
-    return new Date(date).toLocaleTimeString('de-DE', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: this.TIMEZONE,
-    });
+  formatTime(date?: string): string {
+    if (!date) {
+      return '';
+    }
+    const d = new Date(date);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
   timeRange = (): string => {
-    const start = this.formatTime(this.slot().startDateTime!);
-    const end = this.formatTime(this.slot().endDateTime!);
+    const start = this.formatTime(this.slot().startDateTime);
+    const end = this.formatTime(this.slot().endDateTime);
     return `${start} - ${end}`;
   };
 
