@@ -24,5 +24,7 @@ public record JobDTO(
     String description,
     String tasks,
     String requirements,
-    @NotNull JobState state
+    @NotNull JobState state,
+    UUID imageId,
+    String imageUrl
 ) {}

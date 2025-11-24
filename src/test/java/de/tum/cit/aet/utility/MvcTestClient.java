@@ -119,7 +119,7 @@ public class MvcTestClient {
                 builder.file(file);
             }
             // Apply default Accept header and RequestPostProcessors (e.g., JWT)
-            applyDefaults(builder);
+            builder = (MockMultipartHttpServletRequestBuilder) applyDefaults(builder);
             MvcResult result = mockMvc.perform(builder).andExpect(status().is(expectedStatus)).andReturn();
 
             String body = result.getResponse().getContentAsString();
