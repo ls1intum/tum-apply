@@ -1,0 +1,25 @@
+{
+  "genderDecoder": {
+    "resultTitle": "Gender Bias Analysis",
+    "buttonLabel": "Check",
+    "masculineWords": "Masculine-coded words",
+    "feminineWords": "Feminine-coded words",
+    "noWordsFound": "No words found",
+    "openAnaylsis": "Click here for more information",
+    "formulationTexts": {
+      "manly": "Predominantly masculine wording",
+      "feminine": "Predominantly feminine wording",
+      "neutral": "Neutral wording"
+    },
+    "explanations": {
+      "masculine-coded": "Your posting contains more stereotypically masculine-coded than feminine-coded words. Studies show this appeals more to men and may discourage women from applying.",
+      "feminine-coded": "Your posting contains more stereotypically feminine-coded than masculine-coded words. This may encourage women to apply. Stereotypically feminine-coded wording barely affects men's application interest.",
+      "empty": "Your posting contains no gender-coded words. The language is gender-fair.",
+      "neutral": "Your posting contains stereotypically masculine and feminine-coded words equally. The language is gender-fair."
+    },
+    "error": {
+      "summary": "Error",
+      "detail": "Failed to analyze the text. Please try refreshing the page, or contact us if the problem continues."
+    }
+  }
+}
