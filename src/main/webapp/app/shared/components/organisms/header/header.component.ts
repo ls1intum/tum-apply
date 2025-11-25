@@ -18,6 +18,7 @@ import { IdpProvider } from '../../../../core/auth/keycloak-authentication.servi
 
 @Component({
   selector: 'jhi-header',
+  standalone: true,
   imports: [
     CommonModule,
     ButtonComponent,
