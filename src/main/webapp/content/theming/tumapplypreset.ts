@@ -1000,7 +1000,7 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     accordion: {
       content: {
-        background: '{background.default}',
+        background: '{background.surface}',
         color: '{text.secondary}',
       },
     },
