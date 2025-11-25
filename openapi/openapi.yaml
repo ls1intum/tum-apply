@@ -1241,6 +1241,16 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
+    post:
+      tags: [research-group-resource]
+      operationId: addMembersToResearchGroup
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AddMembersToResearchGroupDTO'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/research-groups/members/{userId}:
     delete:
       tags: [research-group-resource]
@@ -1379,6 +1389,29 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/EmailSettingDTO'}
                 uniqueItems: true
+  /api/users/available-for-research-group:
+    get:
+      tags: [user-resource]
+      operationId: getAvailableUsersForResearchGroup
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1419,6 +1452,15 @@ components:
         closeJob: {type: boolean}
         message: {type: string, maxLength: 3000, minLength: 0}
         notifyApplicant: {type: boolean}
+    AddMembersToResearchGroupDTO:
+      type: object
+      properties:
+        researchGroupId: {type: string, format: uuid}
+        userIds:
+          type: array
+          items: {type: string, format: uuid}
+          minItems: 1
+      required: [userIds]
     Applicant:
       type: object
       properties:
