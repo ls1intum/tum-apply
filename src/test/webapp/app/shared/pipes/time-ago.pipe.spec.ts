@@ -1,29 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { TranslateService } from '@ngx-translate/core';
+import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 
 describe('TimeAgoPipe', () => {
   let pipe: TimeAgoPipe;
   let translate: TranslateService;
 
   beforeEach(() => {
+    const mockTranslate = createTranslateServiceMock();
+    mockTranslate.instant = (key: string, params?: any) => {
+      if (key === 'time.justNow') return 'just now';
+      if (key === 'time.ago') return `${params.count} ${params.unit} ago`;
+      if (key.startsWith('time.units.')) {
+        const unit = key.replace('time.units.', '').replace('Plural', 's');
+        return unit;
+      }
+      return key;
+    };
     TestBed.configureTestingModule({
-      providers: [
-        {
-          provide: TranslateService,
-          useValue: {
-            instant: vi.fn((key: string, params?: any) => {
-              if (key === 'time.justNow') return 'just now';
-              if (key === 'time.ago') return `${params.count} ${params.unit} ago`;
-              if (key.startsWith('time.units.')) {
-                const unit = key.replace('time.units.', '').replace('Plural', 's');
-                return unit;
-              }
-              return key;
-            }),
-          },
-        },
-      ],
+      providers: [provideTranslateMock(mockTranslate)],
     });
     translate = TestBed.inject(TranslateService);
     pipe = TestBed.runInInjectionContext(() => new TimeAgoPipe());

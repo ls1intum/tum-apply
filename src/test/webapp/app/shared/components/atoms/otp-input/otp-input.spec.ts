@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { OtpInput } from 'app/shared/components/atoms/otp-input/otp-input';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
-import { provideTranslateMock } from 'util/translate.mock';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
@@ -14,23 +13,22 @@ import { of } from 'rxjs';
 import { signal } from '@angular/core';
 import { InputOtpChangeEvent } from 'primeng/inputotp';
 
-interface AuthOrchestratorStub {
-  cooldownSeconds: ReturnType<typeof signal<number>>;
-  isBusy: ReturnType<typeof signal<boolean>>;
-  error: ReturnType<typeof signal<string | null>>;
-  clearError: () => void;
-}
-
-interface AuthFacadeStub {
-  verifyOtp: (code: string, registration: boolean) => unknown;
-  requestOtp: (registration: boolean) => unknown;
-}
+import { createAuthOrchestratorServiceMock } from 'util/auth-orchestrator.service.mock';
+import { createAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
+import { createTranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
+import { provideAuthOrchestratorServiceMock } from 'util/auth-orchestrator.service.mock';
+import { provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
 
 describe('OtpInput', () => {
   let mockApplicationConfigService: { otp: { length: number; ttlSeconds: number } };
-  let mockAuthOrchestratorService: AuthOrchestratorStub;
-  let mockAuthFacadeService: AuthFacadeStub;
-  let translateService: TranslateService;
+  let mockAuthOrchestratorService: ReturnType<typeof createAuthOrchestratorServiceMock> & {
+    cooldownSeconds: ReturnType<typeof signal<number>>;
+    isBusy: ReturnType<typeof signal<boolean>>;
+    error: ReturnType<typeof signal<string | null>>;
+    clearError: () => void;
+  };
+  let mockAuthFacadeService: ReturnType<typeof createAuthFacadeServiceMock>;
+  let mockTranslateService: ReturnType<typeof createTranslateServiceMock>;
   let mockDynamicDialogConfig: DynamicDialogConfig;
   let mockBreakpointObserver: { observe: ReturnType<typeof vi.fn> };
 
@@ -42,16 +40,19 @@ describe('OtpInput', () => {
       },
     };
 
-    mockAuthOrchestratorService = {
+    mockAuthOrchestratorService = Object.assign(createAuthOrchestratorServiceMock(), {
       cooldownSeconds: signal(0),
       isBusy: signal(false),
       error: signal<string | null>(null),
       clearError: vi.fn(),
-    };
-
-    mockAuthFacadeService = {
-      verifyOtp: vi.fn(),
-      requestOtp: vi.fn(),
+    });
+    mockAuthFacadeService = createAuthFacadeServiceMock();
+    mockTranslateService = createTranslateServiceMock();
+    // Patch instant to return the expected label for the test
+    mockTranslateService.instant = (key: string, params?: any) => {
+      if (key === 'auth.common.otp.resend') return 'Resend OTP';
+      if (key === 'auth.common.otp.resendCooldown') return `Resend in ${params?.seconds ?? ''} seconds`;
+      return key;
     };
 
     mockDynamicDialogConfig = { data: {} } as DynamicDialogConfig;
@@ -73,25 +74,14 @@ describe('OtpInput', () => {
       imports: [OtpInput, ReactiveFormsModule],
       providers: [
         provideFontAwesomeTesting(),
-        provideTranslateMock(),
+        provideTranslateMock(mockTranslateService),
         { provide: ApplicationConfigService, useValue: mockApplicationConfigService as unknown as ApplicationConfigService },
-        { provide: AuthOrchestratorService, useValue: mockAuthOrchestratorService as unknown as AuthOrchestratorService },
-        { provide: AuthFacadeService, useValue: mockAuthFacadeService as unknown as AuthFacadeService },
+        provideAuthOrchestratorServiceMock(mockAuthOrchestratorService),
+        provideAuthFacadeServiceMock(mockAuthFacadeService),
         { provide: DynamicDialogConfig, useValue: mockDynamicDialogConfig },
         { provide: BreakpointObserver, useValue: mockBreakpointObserver as unknown as BreakpointObserver },
       ],
     }).compileComponents();
-
-    translateService = TestBed.inject(TranslateService);
-    vi.spyOn(translateService, 'instant').mockImplementation((key: string | string[], params?: any) => {
-      if (key === 'auth.common.otp.resendCooldown') {
-        return `Resend in ${params?.seconds} seconds`;
-      }
-      if (key === 'auth.common.otp.resend') {
-        return 'Resend OTP';
-      }
-      return typeof key === 'string' ? key : key.join('.');
-    });
   });
 
   function createFixture() {
@@ -173,9 +163,11 @@ describe('OtpInput', () => {
     const comp = fixture.componentInstance;
 
     mockAuthOrchestratorService.cooldownSeconds.set(0);
+    fixture.detectChanges();
     expect(comp.resendLabel).toBe('Resend OTP');
 
     mockAuthOrchestratorService.cooldownSeconds.set(15);
+    fixture.detectChanges();
     expect(comp.resendLabel).toBe('Resend in 15 seconds');
   });
 

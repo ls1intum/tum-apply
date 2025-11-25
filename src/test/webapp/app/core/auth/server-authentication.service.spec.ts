@@ -5,18 +5,11 @@ import { EmailVerificationResourceApiService } from 'app/generated/api/emailVeri
 import { of, throwError } from 'rxjs';
 import { OtpCompleteDTO } from 'app/generated/model/otpCompleteDTO';
 import { vi } from 'vitest';
-
-const mockSessionInfo = { expiresIn: 60 };
-
-class MockAuthenticationResourceApiService {
-  login = vi.fn().mockReturnValue(of(mockSessionInfo));
-  otpComplete = vi.fn().mockReturnValue(of(mockSessionInfo));
-  logout = vi.fn().mockReturnValue(of(undefined));
-  refresh = vi.fn().mockReturnValue(of(mockSessionInfo));
-}
-class MockEmailVerificationResourceApiService {
-  send = vi.fn().mockReturnValue(of(undefined));
-}
+import {
+  MockAuthenticationResourceApiService,
+  MockEmailVerificationResourceApiService,
+  mockSessionInfo,
+} from 'util/authentication-resource-api.service.mock';
 
 describe('ServerAuthenticationService', () => {
   let service: ServerAuthenticationService;

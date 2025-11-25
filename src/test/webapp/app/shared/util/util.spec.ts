@@ -1,3 +1,6 @@
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 import { describe, it, expect } from 'vitest';
 
 import { trimWebsiteUrl } from 'app/shared/util/util';

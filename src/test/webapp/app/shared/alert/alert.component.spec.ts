@@ -3,10 +3,7 @@ import { AlertComponent } from 'app/shared/alert/alert.component';
 import { AlertService, Alert } from 'app/core/util/alert.service';
 import { vi } from 'vitest';
 
-class MockAlertService {
-  get = vi.fn().mockReturnValue([{ id: 1, type: 'success', message: 'Test', toast: false, position: 'top-right' }]);
-  clear = vi.fn();
-}
+import { MockAlertService } from 'util/alert.service.mock';
 
 describe('AlertComponent', () => {
   let component: AlertComponent;
@@ -14,6 +11,7 @@ describe('AlertComponent', () => {
   let alertService: MockAlertService;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     TestBed.configureTestingModule({
       imports: [AlertComponent],
       providers: [{ provide: AlertService, useClass: MockAlertService }],
@@ -36,7 +34,6 @@ describe('AlertComponent', () => {
   it('should call alertService.clear on destroy', () => {
     component.ngOnDestroy();
     expect(alertService.clear).toHaveBeenCalled();
-    vi.clearAllMocks();
   });
 
   it('should set correct classes for toast and position', () => {
@@ -58,6 +55,5 @@ describe('AlertComponent', () => {
     const alert = { id: 4, type: 'warning', message: 'z', close: closeFn } as Alert;
     component.close(alert);
     expect(closeFn).toHaveBeenCalledWith(component.alerts());
-    vi.clearAllMocks();
   });
 });
