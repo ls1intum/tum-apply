@@ -1,32 +1,35 @@
 import { TestBed } from '@angular/core/testing';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
-import { AuthenticationResourceApiService } from 'app/generated/api/authenticationResourceApi.service';
-import { EmailVerificationResourceApiService } from 'app/generated/api/emailVerificationResourceApi.service';
 import { of, throwError } from 'rxjs';
 import { OtpCompleteDTO } from 'app/generated/model/otpCompleteDTO';
 import { vi } from 'vitest';
 import {
-  MockAuthenticationResourceApiService,
-  MockEmailVerificationResourceApiService,
+  AuthenticationResourceApiServiceMock,
+  EmailVerificationResourceApiServiceMock,
+  createAuthenticationResourceApiServiceMock,
+  createEmailVerificationResourceApiServiceMock,
+  provideAuthenticationResourceApiServiceMock,
+  provideEmailVerificationResourceApiServiceMock,
   mockSessionInfo,
 } from 'util/authentication-resource-api.service.mock';
 
 describe('ServerAuthenticationService', () => {
   let service: ServerAuthenticationService;
-  let authApi: MockAuthenticationResourceApiService;
-  let emailApi: MockEmailVerificationResourceApiService;
+  let authApi: AuthenticationResourceApiServiceMock;
+  let emailApi: EmailVerificationResourceApiServiceMock;
 
   beforeEach(() => {
+    authApi = createAuthenticationResourceApiServiceMock();
+    emailApi = createEmailVerificationResourceApiServiceMock();
+
     TestBed.configureTestingModule({
       providers: [
         ServerAuthenticationService,
-        { provide: AuthenticationResourceApiService, useClass: MockAuthenticationResourceApiService },
-        { provide: EmailVerificationResourceApiService, useClass: MockEmailVerificationResourceApiService },
+        provideAuthenticationResourceApiServiceMock(authApi),
+        provideEmailVerificationResourceApiServiceMock(emailApi),
       ],
     });
     service = TestBed.inject(ServerAuthenticationService);
-    authApi = TestBed.inject(AuthenticationResourceApiService) as unknown as MockAuthenticationResourceApiService;
-    emailApi = TestBed.inject(EmailVerificationResourceApiService) as unknown as MockEmailVerificationResourceApiService;
   });
 
   afterEach(() => {

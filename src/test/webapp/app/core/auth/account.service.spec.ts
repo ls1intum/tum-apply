@@ -1,6 +1,5 @@
 import { AccountService } from 'app/core/auth/account.service';
 import { of, throwError } from 'rxjs';
-import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import {

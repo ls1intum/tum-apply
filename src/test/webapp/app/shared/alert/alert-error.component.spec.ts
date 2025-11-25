@@ -1,23 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
-import { AlertService } from 'app/core/util/alert.service';
-import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
+import { EventWithContent } from 'app/core/util/event-manager.service';
 import { HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { vi } from 'vitest';
 import { createAlertServiceMock, AlertServiceMock, provideAlertServiceMock } from 'util/alert.service.mock';
-import { MockEventManager, provideEventManagerMock } from 'util/event-manager.mock';
+import { EventManagerMock, createEventManagerMock, provideEventManagerMock } from 'util/event-manager.mock';
 import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 
 describe('AlertErrorComponent', () => {
   let component: AlertErrorComponent;
   let fixture: ComponentFixture<AlertErrorComponent>;
   let alertService: AlertServiceMock;
-  let eventManager: MockEventManager;
+  let eventManager: EventManagerMock;
   let translate: TranslateServiceMock;
 
   beforeEach(() => {
     alertService = createAlertServiceMock();
-    eventManager = new MockEventManager();
+    eventManager = createEventManagerMock();
     translate = createTranslateServiceMock();
     TestBed.configureTestingModule({
       imports: [AlertErrorComponent],

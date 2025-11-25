@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { vi } from 'vitest';
-
 import { DataUtils } from 'app/core/util/data-util.service';
 
 describe('Data Utils Service Test', () => {
