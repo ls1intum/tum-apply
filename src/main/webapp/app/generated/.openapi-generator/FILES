@@ -12,6 +12,7 @@ api/emailSettingResourceApi.service.ts
 api/emailTemplateResourceApi.service.ts
 api/emailVerificationResourceApi.service.ts
 api/genderBiasAnalysisResourceApi.service.ts
+api/imageResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
 api/interviewResourceApi.service.ts
 api/jobResourceApi.service.ts
@@ -42,6 +43,7 @@ model/applicationOverviewDTO.ts
 model/applicationReview.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
+model/createSlotsDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
@@ -55,10 +57,13 @@ model/emailTemplateTranslationDTO.ts
 model/employeeResearchGroupRequestDTO.ts
 model/genderBiasAnalysisRequest.ts
 model/genderBiasAnalysisResponse.ts
+model/image.ts
+model/imageDTO.ts
 model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
 model/interviewOverviewDTO.ts
+model/interviewSlotDTO.ts
 model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
@@ -89,6 +94,7 @@ model/researchGroupProvisionDTO.ts
 model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
+model/slotInput.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/updatePasswordDTO.ts

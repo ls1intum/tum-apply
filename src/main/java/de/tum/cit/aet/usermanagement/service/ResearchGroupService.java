@@ -597,8 +597,6 @@ public class ResearchGroupService {
                 emailBody,
                 Language.fromCode(user.getSelectedLanguage())
             );
-
-            log.info("Added user {} to research group {} and sent notification email", userId, targetGroupId);
         }
     }
 
