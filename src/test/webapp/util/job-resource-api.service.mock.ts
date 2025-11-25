@@ -6,6 +6,7 @@ export type JobResourceApiServiceMock = Pick<
   JobResourceApiService,
   'getJobDetails' | 'getAvailableJobs' | 'getJobsByProfessor' | 'getJobById' | 'createJob' | 'updateJob' | 'deleteJob'
 >;
+
 export function createJobResourceApiServiceMock(): JobResourceApiServiceMock {
   return {
     getJobDetails: vi.fn(),
