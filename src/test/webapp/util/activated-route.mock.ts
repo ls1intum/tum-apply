@@ -51,10 +51,12 @@ export function provideActivatedRouteMock(mock: ActivatedRouteMock): Provider {
       paramMap: mock.paramMapSubject.asObservable(),
       queryParamMap: mock.queryParamMapSubject.asObservable(),
       url: mock.urlSubject.asObservable(),
-      snapshot: {
-        paramMap: mock.paramMapSubject.value,
-        queryParamMap: mock.queryParamMapSubject.value,
-        url: mock.urlSubject.value,
+      get snapshot() {
+        return {
+          paramMap: mock.paramMapSubject.value,
+          queryParamMap: mock.queryParamMapSubject.value,
+          url: mock.urlSubject.value,
+        };
       },
     },
   };
