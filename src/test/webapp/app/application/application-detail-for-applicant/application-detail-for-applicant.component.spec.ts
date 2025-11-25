@@ -43,7 +43,6 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
       { provide: Location, useValue: location },
     ],
     imports: [ApplicationDetailForApplicantComponent],
-
   });
 
   const fixture = TestBed.createComponent(ApplicationDetailForApplicantComponent);
@@ -59,7 +58,7 @@ function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationD
     researchGroup: overrides.researchGroup ?? '',
     supervisingProfessorName: overrides.supervisingProfessorName ?? '',
     ...overrides,
-  } as ApplicationDetailDTO; 
+  } as ApplicationDetailDTO;
 }
 
 describe('ApplicationDetailForApplicantComponent', () => {
