@@ -2,11 +2,6 @@
   display: flex;
   flex-direction: column;
   position: relative;
-
-  .custom-label {
-    color: var(--p-text-color);
-  }
-
   .fa-circle-info {
     color: var(--p-primary-color);
   }
@@ -21,7 +16,7 @@
 
     .p-inputtext {
       border: 0.1rem solid var(--p-border-default);
-      background: transparent;
+      background: var(--p-background-default);
 
       &:disabled {
         background-color: var(--p-background-disabled);
@@ -42,10 +37,6 @@
       &:disabled {
         background-color: var(--p-text-disabled);
       }
-    }
-
-    .p-inputtext::placeholder {
-      color: var(--p-text-primary);
     }
 
     .p-inputtext:disabled::placeholder {
