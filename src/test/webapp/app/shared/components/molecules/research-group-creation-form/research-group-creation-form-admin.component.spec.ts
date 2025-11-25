@@ -14,6 +14,7 @@ import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogR
 import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EnumDisplayDTO } from 'app/generated/model/enumDisplayDTO';
+import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 
 /**
  * Test suite for ResearchGroupCreationFormComponent - Admin Mode
@@ -38,16 +39,23 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
-      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
-      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as any)),
-      getAvailableSchools: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
-      getAvailableDepartments: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
-      getDepartmentsBySchool: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
-    };
+      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id', head: '', name: '' } as ResearchGroupDTO)),
+      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id', head: '', name: '' } as ResearchGroupDTO)),
+      getAvailableSchools: vi.fn(() => of([] as EnumDisplayDTO[])),
+      getAvailableDepartments: vi.fn(() => of([] as EnumDisplayDTO[])),
+      getDepartmentsBySchool: vi.fn(() => of([] as EnumDisplayDTO[])),
+    } as unknown as Pick<
+      ResearchGroupResourceApiService,
+      | 'createProfessorResearchGroupRequest'
+      | 'createResearchGroupAsAdmin'
+      | 'getAvailableSchools'
+      | 'getAvailableDepartments'
+      | 'getDepartmentsBySchool'
+    >;
 
     mockProfOnboardingService = {
-      confirmOnboarding: vi.fn(() => of(undefined)) as any,
-    };
+      confirmOnboarding: vi.fn(() => of(undefined)),
+    } as unknown as Pick<ProfOnboardingResourceApiService, 'confirmOnboarding'>;
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
@@ -175,8 +183,10 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should close dialog with result after successful admin creation', async () => {
-      const expectedResult = { researchGroupId: 'admin-test-id' };
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => of(expectedResult as any));
+      const expectedResult = { researchGroupId: 'admin-test-id', head: '', name: '' } as ResearchGroupDTO;
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() =>
+        of(expectedResult),
+      ) as unknown as ResearchGroupResourceApiService['createResearchGroupAsAdmin'];
 
       fillValidForm();
 
@@ -371,7 +381,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should fetch departments for selected school', async () => {
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(mockDepartments),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
 
       await component.onSchoolChange(mockSchool);
 
@@ -379,7 +391,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should update filtered departments after fetching', async () => {
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(mockDepartments),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
 
       await component.onSchoolChange(mockSchool);
 
@@ -392,7 +406,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     it('should clear department selection if current department is not in filtered list', async () => {
       const mockCurrentDepartment = { name: 'Computer Science', value: 'CS' };
       component.form.get('researchGroupDepartment')?.setValue(mockCurrentDepartment);
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(mockDepartments),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
 
       await component.onSchoolChange(mockSchool);
 
@@ -402,7 +418,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     it('should keep department selection if current department is in filtered list', async () => {
       const mockCurrentDepartment = { name: 'Informatics', value: 'INFORMATICS' };
       component.form.get('researchGroupDepartment')?.setValue(mockCurrentDepartment);
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(mockDepartments),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
 
       await component.onSchoolChange(mockSchool);
 
@@ -414,8 +432,12 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         { displayName: 'All Department 1', value: 'ALL_DEPT_1' },
         { displayName: 'All Department 2', value: 'ALL_DEPT_2' },
       ];
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => throwError(() => new Error('API Error'))) as any;
-      mockResearchGroupService.getAvailableDepartments = vi.fn(() => of(allDepts)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        throwError(() => new Error('API Error')),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
+      mockResearchGroupService.getAvailableDepartments = vi.fn(() =>
+        of(allDepts),
+      ) as unknown as ResearchGroupResourceApiService['getAvailableDepartments'];
 
       const newFixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
       const newComponent = newFixture.componentInstance;
@@ -427,7 +449,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should clear filtered departments when school is set to null', async () => {
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(mockDepartments),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
       await component.onSchoolChange(mockSchool);
       expect(component.filteredDepartments()).toHaveLength(2);
 
@@ -455,7 +479,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should return filtered departments when school is selected and departments are available', async () => {
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(mockDepartments),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
 
       await component.onSchoolChange(mockSchool);
 
@@ -477,8 +503,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
 
     it('should not fetch departments when school value is not a string', async () => {
       const invalidSchool = { name: 'Invalid', value: 123 };
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(mockDepartments)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(mockDepartments),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await component.onSchoolChange(invalidSchool as any);
 
       expect(mockResearchGroupService.getDepartmentsBySchool).not.toHaveBeenCalled();
@@ -491,7 +520,9 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         { displayName: 'Mathematics', value: undefined },
         { displayName: undefined, value: undefined },
       ];
-      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() => of(departmentsWithNulls)) as any;
+      mockResearchGroupService.getDepartmentsBySchool = vi.fn(() =>
+        of(departmentsWithNulls),
+      ) as unknown as ResearchGroupResourceApiService['getDepartmentsBySchool'];
 
       await component.onSchoolChange(mockSchool);
 

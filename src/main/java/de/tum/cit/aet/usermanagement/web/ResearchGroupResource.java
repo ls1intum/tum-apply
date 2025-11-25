@@ -19,6 +19,7 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

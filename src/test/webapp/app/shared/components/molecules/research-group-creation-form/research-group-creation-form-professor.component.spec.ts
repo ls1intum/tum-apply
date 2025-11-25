@@ -15,6 +15,8 @@ import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogR
 import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EnumDisplayDTO } from 'app/generated/model/enumDisplayDTO';
+import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 /**
  * Test suite for ResearchGroupCreationFormComponent - Professor Mode
@@ -38,16 +40,23 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
-      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
-      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as any)),
-      getAvailableSchools: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
-      getAvailableDepartments: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
-      getDepartmentsBySchool: vi.fn(() => of([] as EnumDisplayDTO[])) as any,
-    };
+      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id', head: '', name: '' } as ResearchGroupDTO)),
+      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id', head: '', name: '' } as ResearchGroupDTO)),
+      getAvailableSchools: vi.fn(() => of([] as EnumDisplayDTO[])),
+      getAvailableDepartments: vi.fn(() => of([] as EnumDisplayDTO[])),
+      getDepartmentsBySchool: vi.fn(() => of([] as EnumDisplayDTO[])),
+    } as unknown as Pick<
+      ResearchGroupResourceApiService,
+      | 'createProfessorResearchGroupRequest'
+      | 'createResearchGroupAsAdmin'
+      | 'getAvailableSchools'
+      | 'getAvailableDepartments'
+      | 'getDepartmentsBySchool'
+    >;
 
     mockProfOnboardingService = {
-      confirmOnboarding: vi.fn(() => of(undefined)) as any,
-    };
+      confirmOnboarding: vi.fn(() => of(undefined)),
+    } as unknown as Pick<ProfOnboardingResourceApiService, 'confirmOnboarding'>;
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
@@ -138,7 +147,9 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         { displayName: undefined, value: 'DEPT1' },
         { displayName: 'Department 2', value: undefined },
       ];
-      mockResearchGroupService.getAvailableDepartments = vi.fn(() => of(departmentsWithNulls)) as any;
+      mockResearchGroupService.getAvailableDepartments = vi.fn(() =>
+        of(departmentsWithNulls),
+      ) as unknown as ResearchGroupResourceApiService['getAvailableDepartments'];
 
       // Create a new component to trigger initialization with the new mock
       const newFixture = TestBed.createComponent(ResearchGroupCreationFormComponent);
@@ -221,8 +232,8 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     it('should trigger confirm dialog when form is valid', () => {
       fillValidForm();
 
-      const mockConfirmDialog = { confirm: vi.fn() };
-      vi.spyOn(component, 'confirmDialog').mockReturnValue(mockConfirmDialog as any);
+      const mockConfirmDialog = { confirm: vi.fn() } as unknown as ConfirmDialog;
+      vi.spyOn(component, 'confirmDialog').mockReturnValue(mockConfirmDialog);
 
       component.onSubmit();
 
@@ -368,7 +379,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
 
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockDialogRef.close).toHaveBeenCalledWith({ researchGroupId: 'test-id' });
+      expect(mockDialogRef.close).toHaveBeenCalledWith({ researchGroupId: 'test-id', head: '', name: '' });
     });
 
     it('should set isSubmitting to false after successful submission', async () => {
