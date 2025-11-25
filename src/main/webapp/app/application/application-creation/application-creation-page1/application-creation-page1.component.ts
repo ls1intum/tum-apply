@@ -21,7 +21,6 @@ export type ApplicationCreationPage1Data = {
   phoneNumber: string;
   gender?: SelectOption;
   nationality?: SelectOption;
-  language?: SelectOption;
   dateOfBirth: string;
   website: string;
   linkedIn: string;
@@ -52,7 +51,6 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     phoneNumber: application.applicant?.user.phoneNumber ?? '',
     gender: selectGender.find(val => val.value === application.applicant?.user.gender),
     nationality: selectNationality.find(val => val.value === application.applicant?.user.nationality),
-    language: selectLanguage.find(val => val.value === application.applicant?.user.selectedLanguage),
     dateOfBirth: application.applicant?.user.birthday ?? '',
     website: application.applicant?.user.website ?? '',
     linkedIn: application.applicant?.user.linkedinUrl ?? '',
@@ -128,7 +126,6 @@ export default class ApplicationCreationPage1Component {
       // Optional fields
       gender: [currentData.gender ?? null],
       nationality: [currentData.nationality ?? null],
-      language: [currentData.language ?? null],
       dateOfBirth: [currentData.dateOfBirth],
       website: [currentData.website],
       linkedIn: [currentData.linkedIn],
@@ -144,7 +141,6 @@ export default class ApplicationCreationPage1Component {
         const selectFields = {
           gender: data.gender,
           nationality: data.nationality,
-          language: data.language,
           country: data.country,
           dateOfBirth: data.dateOfBirth,
         };
