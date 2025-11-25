@@ -6,12 +6,12 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ContentChange, QuillEditorComponent } from 'ngx-quill';
 import { FormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
-import { GenderBiasAnalysisService } from 'app/service/gender-bias-analysis-service';
+import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 import { GenderBiasAnalysisResponse } from 'app/generated';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { franc } from 'franc-min';
-import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
+import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
