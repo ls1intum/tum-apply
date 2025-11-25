@@ -11,7 +11,11 @@ import { createTranslateServiceMock, TranslateServiceMock, provideTranslateMock 
 import { createToastServiceMock, ToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
 import { createRouterMock, RouterMock, provideRouterMock } from 'util/router.mock';
 import { createLocationMock, LocationMock, provideLocationMock } from 'util/location.mock';
-import { createApplicationResourceApiServiceMock, ApplicationResourceApiServiceMock, provideApplicationResourceApiServiceMock } from 'util/application-resource-api.service.mock';
+import {
+  createApplicationResourceApiServiceMock,
+  ApplicationResourceApiServiceMock,
+  provideApplicationResourceApiServiceMock,
+} from 'util/application-resource-api.service.mock';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
