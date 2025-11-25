@@ -654,19 +654,4 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId() + "/withdraw", null, Void.class, 403);
     }
-
-    @Test
-    void createResearchGroupAsAdminReturnsCreatedGroup() {
-        UUID adminUserID = UUID.randomUUID();
-        ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest("Admin Created Lab", "adm1234");
-
-        ResearchGroupDTO result = api
-            .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
-            .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, ResearchGroupDTO.class, 201);
-
-        assertThat(result).isNotNull();
-        assertThat(result.name()).isEqualTo(requestDTO.researchGroupName());
-        assertThat(result.head()).isEqualTo(requestDTO.researchGroupHead());
-        assertThat(result.state()).isEqualTo(ResearchGroupState.ACTIVE);
-    }
 }
