@@ -693,6 +693,20 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    void createResearchGroupAsAdminWithUserAlreadyInGroupThrowsException() {
+        UUID adminUserID = UUID.randomUUID();
+        User userWithGroup = UserTestData.savedProfessor(userRepository, researchGroup);
+        ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest(
+            "Another Lab",
+            userWithGroup.getUniversityId()
+        );
+
+        api
+            .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
+            .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, Void.class, 400);
+    }
+
+    @Test
     void addMembersToResearchGroupAsProfessorAddsMembers() {
         User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.me@tum.de", "Add", "Me", "add123");
         AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(
@@ -721,5 +735,105 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
         User updatedUser = userRepository.findById(userToAdd.getUserId()).orElseThrow();
         assertThat(updatedUser.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
+    }
+
+    @Test
+    void addMembersToResearchGroupWithNonExistentUserThrowsException() {
+        AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(UUID.randomUUID()), researchGroup.getResearchGroupId());
+
+        api
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 404);
+    }
+
+    @Test
+    void addMembersToResearchGroupWithNonExistentGroupThrowsException() {
+        User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.fail@tum.de", "Add", "Fail", "fail123");
+        AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(userToAdd.getUserId()), UUID.randomUUID());
+
+        api
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 404);
+    }
+
+    @Test
+    void removeMemberFromResearchGroupWithNonExistentUserThrowsException() {
+        api
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .deleteAndRead(API_BASE_PATH + "/members/" + UUID.randomUUID(), null, Void.class, 404);
+    }
+
+    @Test
+    void removeMemberFromResearchGroupWithUserInDifferentGroupThrowsException() {
+        User otherUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
+
+        api
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .deleteAndRead(API_BASE_PATH + "/members/" + otherUser.getUserId(), null, Void.class, 403);
+    }
+
+    @Test
+    void removeSelfFromResearchGroupThrowsException() {
+        api
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .deleteAndRead(API_BASE_PATH + "/members/" + researchGroupUser.getUserId(), null, Void.class, 500);
+    }
+
+    @Test
+    void activateActiveResearchGroupThrowsException() {
+        UUID adminUserId = UUID.randomUUID();
+        api
+            .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+            .postAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId() + "/activate", null, Void.class, 500);
+    }
+
+    @Test
+    void denyActiveResearchGroupThrowsException() {
+        UUID adminUserId = UUID.randomUUID();
+        api
+            .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+            .postAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId() + "/deny", null, Void.class, 500);
+    }
+
+    @Test
+    void withdrawDraftResearchGroupThrowsException() {
+        ResearchGroup draftGroup = ResearchGroupTestData.savedAll(
+            researchGroupRepository,
+            "Draft Lab Withdraw",
+            "Prof. Withdraw",
+            "withdraw@example.com",
+            "DLW",
+            "Science",
+            "Withdraw research",
+            "contact@withdraw.tum.de",
+            "80333",
+            "Munich",
+            "Withdrawstr. 1",
+            "https://withdraw.tum.de",
+            "DRAFT"
+        );
+        UUID adminUserId = UUID.randomUUID();
+        api
+            .with(JwtPostProcessors.jwtUser(adminUserId, "ROLE_ADMIN"))
+            .postAndRead(API_BASE_PATH + "/" + draftGroup.getResearchGroupId() + "/withdraw", null, Void.class, 500);
+    }
+
+    @Test
+    void createProfessorResearchGroupRequestWhenAlreadyMemberThrowsException() {
+        ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("Another Group");
+
+        api
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(API_BASE_PATH + "/professor-request", request, Void.class, 400);
+    }
+
+    @Test
+    void createProfessorResearchGroupRequestWithExistingNameThrowsException() {
+        User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "req.exist@tum.de", "Req", "Exist", "req999");
+        ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest(researchGroup.getName());
+
+        api
+            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+            .postAndRead(API_BASE_PATH + "/professor-request", request, Void.class, 409);
     }
 }
