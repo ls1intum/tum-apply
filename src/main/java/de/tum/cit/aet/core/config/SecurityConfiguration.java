@@ -107,6 +107,8 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/media/**")
                     .permitAll()
+                    .requestMatchers("/images/**")
+                    .permitAll()
                     .requestMatchers("/favicon.ico")
                     .permitAll()
                     // Information and health endpoints do not need authentication
@@ -129,6 +131,8 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/auth/otp-complete")
                     .permitAll()
                     .requestMatchers("/api/auth/logout")
+                    .permitAll()
+                    .requestMatchers("/api/export/job/**")
                     .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()
@@ -160,9 +164,11 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Extracts the bearer token from the 'access_token' cookie, falling back to the Authorization header.
+     * Extracts the bearer token from the 'access_token' cookie, falling back to the
+     * Authorization header.
      *
-     * @return a BearerTokenResolver that reads from cookie and refreshes tokens as needed
+     * @return a BearerTokenResolver that reads from cookie and refreshes tokens as
+     *         needed
      */
     private BearerTokenResolver bearerTokenResolver() {
         DefaultBearerTokenResolver defaultResolver = new DefaultBearerTokenResolver();

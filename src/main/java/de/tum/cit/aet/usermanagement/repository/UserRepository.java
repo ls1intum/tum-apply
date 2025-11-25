@@ -104,5 +104,30 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      */
     boolean existsByEmailIgnoreCase(String email);
 
+    /**
+     * Finds user IDs for users available to be added to a research group.
+     * Returns only IDs without JOIN FETCH for safe pagination.
+     * Only includes TUM-affiliated users (email domain contains 'tum').
+     *
+     * @param searchQuery optional search query to filter by name or email
+     * @param pageable pagination information
+     * @return a Page of user IDs matching the criteria
+     */
+    @Query(
+        """
+            SELECT u.userId FROM User u
+            LEFT JOIN u.researchGroupRoles rgr ON rgr.role = 'ADMIN'
+            WHERE u.researchGroup IS NULL
+            AND rgr.id IS NULL
+            AND u.email LIKE '%@%tum%'
+            AND (:searchQuery IS NULL OR
+                 LOWER(u.firstName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR
+                 LOWER(u.email) LIKE LOWER(CONCAT('%', :searchQuery, '%'))
+            )
+        """
+    )
+    Page<UUID> findAvailableUserIdsForResearchGroup(@Param("searchQuery") String searchQuery, Pageable pageable);
+
     String email(String email);
 }

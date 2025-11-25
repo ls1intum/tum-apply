@@ -12,6 +12,7 @@ api/emailSettingResourceApi.service.ts
 api/emailTemplateResourceApi.service.ts
 api/emailVerificationResourceApi.service.ts
 api/genderBiasAnalysisResourceApi.service.ts
+api/imageResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
 api/interviewResourceApi.service.ts
 api/jobResourceApi.service.ts
@@ -26,6 +27,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/acceptDTO.ts
+model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
@@ -56,6 +58,8 @@ model/employeeResearchGroupRequestDTO.ts
 model/enumDisplayDTO.ts
 model/genderBiasAnalysisRequest.ts
 model/genderBiasAnalysisResponse.ts
+model/image.ts
+model/imageDTO.ts
 model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
@@ -67,6 +71,7 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
+model/jobPreviewRequest.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts

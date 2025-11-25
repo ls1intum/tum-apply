@@ -3,13 +3,12 @@ package de.tum.cit.aet.usermanagement.web;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.dto.SortDTO.Direction;
 import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
-import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.AddMembersToResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.EnumDisplayDTO;
@@ -20,14 +19,12 @@ import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -291,5 +288,19 @@ public class ResearchGroupResource {
     public ResponseEntity<List<EnumDisplayDTO>> getDepartmentsBySchool(@PathVariable String school) {
         log.info("GET /api/research-groups/departments/{}", school);
         return ResponseEntity.ok(researchGroupService.getDepartmentsBySchool(school));
+    }
+
+    /**
+     * Adds members to the current user's research group.
+     *
+     * @param dto the DTO containing user IDs to add
+     * @return no content response
+     */
+    @PostMapping("/members")
+    @ProfessorOrAdmin
+    public ResponseEntity<Void> addMembersToResearchGroup(@Valid @RequestBody AddMembersToResearchGroupDTO dto) {
+        log.info("POST /api/research-groups/members - adding {} members", dto.userIds().size());
+        researchGroupService.addMembersToResearchGroup(dto.userIds(), dto.researchGroupId());
+        return ResponseEntity.noContent().build();
     }
 }

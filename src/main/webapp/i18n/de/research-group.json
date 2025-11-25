@@ -91,7 +91,13 @@
       "loading": "Mitglieder werden geladen...",
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
+      "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
       "me": "Ich",
+      "addMembers": "Mitglieder hinzufügen",
+      "addMembersButton": "Mitglieder hinzufügen",
+      "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
+      "singleEntity": "Benutzer:in",
+      "multipleEntities": "Benutzer:innen",
 
       "tableColumns": {
         "name": "Name",
@@ -109,9 +115,21 @@
           "summary": "Fehler beim Laden",
           "detail": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
-        "addSuccess": {
-          "summary": "Mitglied hinzugefügt",
-          "detail": "{{memberName}} wurde zur Forschungsgruppe hinzugefügt."
+        "loadUsersFailed": {
+          "summary": "Fehler beim Laden",
+          "detail": "Verfügbare Benutzer:innen konnten nicht geladen werden. Bitte versuche es erneut."
+        },
+        "invalidUser": {
+          "summary": "Ungültige:r Benutzer:in",
+          "detail": "Der:die ausgewählte Benutzer:in ist ungültig. Bitte aktualisiere die Seite und versuche es erneut."
+        },
+        "addMembersSuccess": {
+          "summary": "Mitglieder hinzugefügt",
+          "detail": "Die ausgewählten Mitglieder wurden erfolgreich zur Forschungsgruppe hinzugefügt."
+        },
+        "addMembersFailed": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mitglieder konnten nicht hinzugefügt werden. Bitte versuche es erneut."
         },
         "removeSuccess": {
           "summary": "Mitglied entfernt",
@@ -121,6 +139,11 @@
           "summary": "Fehler beim Entfernen",
           "detail": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
         }
+      },
+
+      "confirmDialog": {
+        "header": "Mitglieder hinzufügen",
+        "message": "Möchtest du die ausgewählten Mitglieder wirklich zur Forschungsgruppe hinzufügen? Sie werden per E-Mail benachrichtigt."
       },
 
       "noRole": "Keine Rolle"
@@ -156,8 +179,8 @@
           "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
         },
         "userNotFound": {
-          "summary": "Benutzer nicht gefunden",
-          "detail": "Es wurde kein Benutzer mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+          "summary": "Benutzer:in nicht gefunden",
+          "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
         }
       },
       "success": {
