@@ -14,7 +14,7 @@
       <!-- Coding Summary -->
       <div class="text-center">
         <p class="font-semibold text-lg">
-          {{ getCodingTranslationKey(analysisResult.coding ?? 'neutral') | translate }}
+          {{ codingTranslationKey() | translate }}
         </p>
       </div>
 
@@ -26,10 +26,7 @@
           'bg-blue-50 border-blue-500': analysisResult.coding !== 'masculine-coded',
         }"
       >
-        <div
-          class="text-gray-700 leading-relaxed"
-          [innerHTML]="getExplanationTranslationKey(analysisResult.coding ?? 'neutral') | translate"
-        ></div>
+        <div class="text-gray-700 leading-relaxed" [innerHTML]="explanationTranslationKey() | translate"></div>
       </div>
 
       <!-- Biased Words - Two Columns -->
@@ -40,13 +37,11 @@
             <div class="flex items-center gap-2 pb-2 border-b-2 border-blue-300">
               <div class="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"></div>
               <div class="font-semibold text-gray-700">
-                {{ 'genderDecoder.masculineWords' | translate }}&nbsp;<span class="text-gray-500"
-                  >({{ getMasculineWords(analysisResult.biasedWords).length }})</span
-                >
+                {{ 'genderDecoder.masculineWords' | translate }}&nbsp;<span class="text-gray-500">({{ masculineWords().length }})</span>
               </div>
             </div>
             <ul class="list-disc list-inside space-y-1 pl-2">
-              @for (entry of getMasculineWordCounts(analysisResult.biasedWords) | keyvalue; track entry.key) {
+              @for (entry of masculineWordCounts() | keyvalue; track entry.key) {
                 <li class="text-gray-800">
                   {{ entry.key }}
                   @if (entry.value > 1) {
@@ -66,13 +61,11 @@
             <div class="flex items-center gap-2 pb-2 border-b-2 border-blue-300">
               <div class="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"></div>
               <div class="font-semibold text-gray-700">
-                {{ 'genderDecoder.feminineWords' | translate }}&nbsp;<span class="text-gray-500"
-                  >({{ getFeminineWords(analysisResult.biasedWords).length }})</span
-                >
+                {{ 'genderDecoder.feminineWords' | translate }}&nbsp;<span class="text-gray-500">({{ feminineWords().length }})</span>
               </div>
             </div>
             <ul class="list-disc list-inside space-y-1 pl-2">
-              @for (entry of getFeminineWordCounts(analysisResult.biasedWords) | keyvalue; track entry.key) {
+              @for (entry of feminineWordCounts() | keyvalue; track entry.key) {
                 <li class="text-gray-800">
                   {{ entry.key }}
                   @if (entry.value > 1) {

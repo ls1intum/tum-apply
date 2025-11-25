@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, input, output } from '@angular/core';
+import { Component, ViewEncapsulation, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Dialog } from 'primeng/dialog';
@@ -18,29 +18,27 @@ export class GenderBiasAnalysisDialogComponent {
   visibleChange = output<boolean>();
   closeDialog = output();
 
-  onVisibleChange(isVisible: boolean): void {
-    if (!isVisible) {
-      this.visibleChange.emit(false);
-      this.closeDialog.emit();
-    }
-  }
+  readonly codingTranslationKey = computed(() => {
+    const coding = this.result()?.coding;
+    if (!coding) return 'genderDecoder.formulationTexts.neutral';
 
-  getCodingTranslationKey(coding: string): string {
     switch (coding) {
       case 'masculine-coded':
         return 'genderDecoder.formulationTexts.manly';
       case 'feminine-coded':
         return 'genderDecoder.formulationTexts.feminine';
       case 'neutral':
-        return 'genderDecoder.formulationTexts.neutral';
       case 'empty':
         return 'genderDecoder.formulationTexts.neutral';
       default:
         return 'genderDecoder.formulationTexts.neutral';
     }
-  }
+  });
 
-  getExplanationTranslationKey(coding: string): string {
+  readonly explanationTranslationKey = computed(() => {
+    const coding = this.result()?.coding;
+    if (!coding) return 'genderDecoder.explanations.neutral';
+
     switch (coding) {
       case 'masculine-coded':
         return 'genderDecoder.explanations.masculine-coded';
@@ -53,21 +51,38 @@ export class GenderBiasAnalysisDialogComponent {
       default:
         return 'genderDecoder.explanations.neutral';
     }
+  });
+
+  readonly masculineWords = computed(() => {
+    const words = this.result()?.biasedWords ?? [];
+    return words.filter(w => w.type === 'masculine');
+  });
+
+  readonly feminineWords = computed(() => {
+    const words = this.result()?.biasedWords ?? [];
+    return words.filter(w => w.type === 'feminine');
+  });
+
+  readonly masculineWordCounts = computed(() => {
+    return this.getWordCounts(this.masculineWords());
+  });
+
+  readonly feminineWordCounts = computed(() => {
+    return this.getWordCounts(this.feminineWords());
+  });
+
+  onVisibleChange(isVisible: boolean): void {
+    if (!isVisible) {
+      this.visibleChange.emit(false);
+      this.closeDialog.emit();
+    }
   }
 
   getBiasTypeClass(type: string): string {
     return type === 'masculine' ? 'masculine-badge' : 'feminine-badge';
   }
 
-  getMasculineWords(words: BiasedWordDTO[]): BiasedWordDTO[] {
-    return words.filter(w => w.type === 'masculine');
-  }
-
-  getFeminineWords(words: BiasedWordDTO[]): BiasedWordDTO[] {
-    return words.filter(w => w.type === 'feminine');
-  }
-
-  getWordCounts(words: BiasedWordDTO[]): Map<string, number> {
+  private getWordCounts(words: BiasedWordDTO[]): Map<string, number> {
     const counts = new Map<string, number>();
     words.forEach(word => {
       if (word.word) {
@@ -76,13 +91,5 @@ export class GenderBiasAnalysisDialogComponent {
       }
     });
     return counts;
-  }
-
-  getMasculineWordCounts(words: BiasedWordDTO[]): Map<string, number> {
-    return this.getWordCounts(this.getMasculineWords(words));
-  }
-
-  getFeminineWordCounts(words: BiasedWordDTO[]): Map<string, number> {
-    return this.getWordCounts(this.getFeminineWords(words));
   }
 }
