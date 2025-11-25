@@ -19,6 +19,9 @@ import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
+import { createLocationMock, provideLocationMock } from '../../../util/location.mock';
+import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
+import { createJobResourceApiServiceMock, provideJobResourceApiServiceMock } from '../../../util/job-resource-api.service.mock';
 
 interface Step {
   name: string;
@@ -102,11 +105,7 @@ function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
 describe('JobCreationFormComponent', () => {
   let fixture: ComponentFixture<JobCreationFormComponent>;
   let component: JobCreationFormComponent;
-  let jobService: {
-    getJobById: ReturnType<typeof vi.fn>;
-    createJob: ReturnType<typeof vi.fn>;
-    updateJob: ReturnType<typeof vi.fn>;
-  };
+  let mockJobService: ReturnType<typeof createJobResourceApiServiceMock>;
   let imageService: {
     getDefaultJobBanners: ReturnType<typeof vi.fn>;
     getResearchGroupJobBanners: ReturnType<typeof vi.fn>;
@@ -116,15 +115,14 @@ describe('JobCreationFormComponent', () => {
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockRouter: ReturnType<typeof createRouterMock>;
-  let location: Pick<Location, 'back'>;
-  let route$: Subject<UrlSegment[]>;
+  let mockLocation: ReturnType<typeof createLocationMock>;
+  let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
 
   beforeEach(async () => {
-    jobService = {
-      getJobById: vi.fn().mockReturnValue(of({ title: 'Loaded Job', description: 'Desc' })),
-      createJob: vi.fn().mockReturnValue(of({ jobId: 'new123' })),
-      updateJob: vi.fn().mockReturnValue(of({})),
-    };
+    mockJobService = createJobResourceApiServiceMock();
+    mockJobService.getJobById = vi.fn().mockReturnValue(of({ title: 'Loaded Job', description: 'Desc' }));
+    mockJobService.createJob = vi.fn().mockReturnValue(of({ jobId: 'new123' }));
+    mockJobService.updateJob = vi.fn().mockReturnValue(of({}));
 
     imageService = {
       getDefaultJobBanners: vi.fn().mockReturnValue(of([])),
@@ -137,16 +135,16 @@ describe('JobCreationFormComponent', () => {
     mockAccountService.user.set({ id: 'u1', name: 'Test User' } as User);
     mockToastService = createToastServiceMock();
     mockRouter = createRouterMock();
-    location = { back: vi.fn() };
-    route$ = new Subject();
+    mockLocation = createLocationMock();
+    mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
       providers: [
-        { provide: JobResourceApiService, useValue: jobService },
+        provideJobResourceApiServiceMock(mockJobService),
         { provide: ImageResourceApiService, useValue: imageService },
-        { provide: Location, useValue: location },
-        { provide: ActivatedRoute, useValue: { url: route$, snapshot: { paramMap: new Map() } } },
+        provideLocationMock(mockLocation),
+        provideActivatedRouteMock(mockActivatedRoute),
         provideAccountServiceMock(mockAccountService),
         provideToastServiceMock(mockToastService),
         provideRouterMock(mockRouter),
@@ -184,7 +182,7 @@ describe('JobCreationFormComponent', () => {
     });
 
     it('should initialize in create mode and populate form', async () => {
-      route$.next([new UrlSegment('job', {}), new UrlSegment('create', {})]);
+      mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('create', {})]);
       const fixture2 = TestBed.createComponent(JobCreationFormComponent);
       fixture2.detectChanges();
       await fixture2.whenStable();
@@ -194,23 +192,28 @@ describe('JobCreationFormComponent', () => {
     });
 
     it('should navigate to /my-positions if edit mode but no jobId', async () => {
-      route$.next([new UrlSegment('job', {}), new UrlSegment('edit', {})]);
-      const routeMock = TestBed.inject(ActivatedRoute) as unknown as {
-        url: Subject<UrlSegment[]>;
-        snapshot: { paramMap: { get: (key: string) => string | null } };
-      };
-      routeMock.snapshot.paramMap = { get: () => null };
+      // Update the existing mock for this test case BEFORE creating component
+      mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('edit', {})]);
+      mockActivatedRoute.setParams({});
+
+      // Track the initial call count to check for new calls
+      const initialCallCount = vi.mocked(mockRouter.navigate).mock.calls.length;
 
       const fixture2 = TestBed.createComponent(JobCreationFormComponent);
       fixture2.detectChanges();
       await fixture2.whenStable();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/my-positions']);
+      // Give async init() time to complete
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Check that navigate was called with the expected arguments after the initial calls
+      const calls = vi.mocked(mockRouter.navigate).mock.calls.slice(initialCallCount);
+      expect(calls).toContainEqual([['/my-positions']]);
+      fixture2.destroy();
     });
 
     it('should handle init error by showing toast and navigating', async () => {
-      const routeMock = TestBed.inject(ActivatedRoute) as ActivatedRoute;
-      routeMock.url = of([new UrlSegment('job', {}), new UrlSegment('create', {})]);
+      mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('create', {})]);
       imageService.getDefaultJobBanners.mockReturnValueOnce(throwError(() => new Error('fail')));
 
       const fixture2 = TestBed.createComponent(JobCreationFormComponent);
@@ -234,7 +237,7 @@ describe('JobCreationFormComponent', () => {
   describe('Navigation', () => {
     it('should call Location.back on onBack', () => {
       component.onBack();
-      expect(location.back).toHaveBeenCalled();
+      expect(mockLocation.back).toHaveBeenCalled();
     });
 
     it('should navigate to login when no user is loaded in init', async () => {
@@ -261,7 +264,7 @@ describe('JobCreationFormComponent', () => {
     });
 
     it('should set savingState to FAILED when autoSave fails', async () => {
-      vi.spyOn(jobService, 'updateJob').mockReturnValueOnce(throwError(() => new Error('fail')));
+      mockJobService.updateJob = vi.fn().mockReturnValueOnce(throwError(() => new Error('fail')));
       component.jobId.set('id123');
       await getPrivate(component).performAutoSave();
 
@@ -281,19 +284,19 @@ describe('JobCreationFormComponent', () => {
     });
 
     it('should set jobId after creating a new job', async () => {
-      jobService.createJob.mockReturnValueOnce(of({ jobId: 'abc123' }));
+      mockJobService.createJob = vi.fn().mockReturnValueOnce(of({ jobId: 'abc123' }));
       component.jobId.set('');
       await getPrivate(component).performAutoSave();
 
       expect(component.jobId()).toBe('abc123');
-      expect(jobService.createJob).toHaveBeenCalled();
+      expect(mockJobService.createJob).toHaveBeenCalled();
     });
 
     it('should call updateJob when jobId is set in performAutoSave', async () => {
       component.jobId.set('job123');
       await getPrivate(component).performAutoSave();
 
-      expect(jobService.updateJob).toHaveBeenCalledWith('job123', expect.any(Object));
+      expect(mockJobService.updateJob).toHaveBeenCalledWith('job123', expect.any(Object));
     });
 
     it('should clear autoSaveTimer if set', () => {
@@ -313,8 +316,11 @@ describe('JobCreationFormComponent', () => {
       priv.autoSaveInitialized = true;
 
       component.basicInfoForm.patchValue({ title: 'new title' });
+      fixture.detectChanges();
+      await fixture.whenStable();
+
       vi.runAllTimers();
-      await Promise.resolve();
+      await fixture.whenStable();
 
       expect(spy).toHaveBeenCalled();
       vi.useRealTimers();
@@ -345,7 +351,7 @@ describe('JobCreationFormComponent', () => {
       {
         name: 'handle publish failure',
         setup: (comp: JobCreationFormComponent) => {
-          jobService.updateJob.mockReturnValueOnce(throwError(() => new Error('fail')));
+          mockJobService.updateJob = vi.fn().mockReturnValueOnce(throwError(() => new Error('fail')));
           fillValidJobForm(comp);
           fixture.detectChanges();
           comp.jobId.set('id123');
@@ -375,7 +381,7 @@ describe('JobCreationFormComponent', () => {
 
   describe('Job Loading and Form Population', () => {
     it('should enter edit mode and call getJobById when jobId is present', async () => {
-      jobService.getJobById.mockReturnValueOnce(
+      mockJobService.getJobById = vi.fn().mockReturnValueOnce(
         of({
           jobId: 'job123',
           title: 'JobX',
@@ -388,9 +394,9 @@ describe('JobCreationFormComponent', () => {
       component.jobId.set('job123');
       component.mode.set('edit');
 
-      const job = await vi.waitFor(() => jobService.getJobById('job123'));
+      const job = await vi.waitFor(() => mockJobService.getJobById('job123'));
       expect(job).toBeDefined();
-      expect(jobService.getJobById).toHaveBeenCalledWith('job123');
+      expect(mockJobService.getJobById).toHaveBeenCalledWith('job123');
     });
 
     it('should populate fundingType when job has it', () => {
@@ -754,7 +760,7 @@ describe('JobCreationFormComponent', () => {
     it('should handle button clicks correctly', () => {
       const steps = getPrivate(component).buildStepData();
       steps[0].buttonGroupPrev?.[0].onClick();
-      expect(location.back).toHaveBeenCalled();
+      expect(mockLocation.back).toHaveBeenCalled();
 
       steps.forEach(step => {
         step.buttonGroupPrev?.forEach(btn => expect(() => btn.onClick()).not.toThrow());
