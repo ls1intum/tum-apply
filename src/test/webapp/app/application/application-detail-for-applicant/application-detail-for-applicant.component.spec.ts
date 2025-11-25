@@ -7,15 +7,15 @@ import { ApplicationResourceApiService } from 'app/generated/api/applicationReso
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
-import { createTranslateServiceMock, TranslateServiceMock } from 'util/translate.mock';
-import { createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
-import { createRouterMock, RouterMock } from 'util/router.mock';
-import { createLocationMock, LocationMock } from 'util/location.mock';
-import { createApplicationResourceApiServiceMock, ApplicationResourceApiServiceMock } from 'util/application-resource-api.service.mock';
+import { createTranslateServiceMock, TranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
+import { createToastServiceMock, ToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
+import { createRouterMock, RouterMock, provideRouterMock } from 'util/router.mock';
+import { createLocationMock, LocationMock, provideLocationMock } from 'util/location.mock';
+import { createApplicationResourceApiServiceMock, ApplicationResourceApiServiceMock, provideApplicationResourceApiServiceMock } from 'util/application-resource-api.service.mock';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { createPdfExportResourceApiServiceMock } from 'util/pdf-export-resource-api.service.mock';
+import { createPdfExportResourceApiServiceMock, providePdfExportResourceApiServiceMock } from 'util/pdf-export-resource-api.service.mock';
 
 function setupTest(paramId: string | null, appServiceOverrides?: Partial<ApplicationResourceApiServiceMock>) {
   const applicationService: ApplicationResourceApiServiceMock = {
@@ -35,12 +35,12 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
   TestBed.configureTestingModule({
     providers: [
       { provide: ActivatedRoute, useValue: route },
-      { provide: ApplicationResourceApiService, useValue: applicationService },
-      { provide: PdfExportResourceApiService, useValue: pdfExportService },
-      { provide: TranslateService, useValue: translate },
-      { provide: ToastService, useValue: toast },
-      { provide: Router, useValue: router },
-      { provide: Location, useValue: location },
+      provideApplicationResourceApiServiceMock(applicationService),
+      providePdfExportResourceApiServiceMock(pdfExportService),
+      provideTranslateMock(translate),
+      provideToastServiceMock(toast),
+      provideRouterMock(router),
+      provideLocationMock(location),
     ],
     imports: [ApplicationDetailForApplicantComponent],
   });
