@@ -8,8 +8,8 @@ import { FormsModule } from '@angular/forms';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 import { GenderBiasAnalysisResponse } from 'app/generated';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { map, switchMap } from 'rxjs';
 import { franc } from 'franc-min';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 
@@ -44,7 +44,12 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);
 
-  readonly analysisResult = signal<GenderBiasAnalysisResponse | null>(null);
+  readonly fieldIdChanges$ = toObservable(this.fieldId);
+
+  readonly analysisResult = toSignal(this.fieldIdChanges$.pipe(switchMap(fieldId => this.genderBiasService.getAnalysisForField(fieldId))), {
+    initialValue: null,
+  });
+
   showAnalysisModal = signal(false);
 
   readonly shouldShowButton = computed(() => {
@@ -112,13 +117,6 @@ export class EditorComponent extends BaseInputDirective<string> {
   private syncHtmlValueEffect = effect(() => {
     const currentEditorValue = this.editorValue();
     this.htmlValue.set(currentEditorValue);
-  });
-
-  private analysisSubscriptionEffect = effect(onCleanup => {
-    const fieldId = this.fieldId();
-    const subscription = this.genderBiasService.getAnalysisForField(fieldId).subscribe(result => this.analysisResult.set(result));
-
-    onCleanup(() => subscription.unsubscribe());
   });
 
   private analyzeEffect = effect(() => {
