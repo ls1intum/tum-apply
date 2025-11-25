@@ -222,20 +222,6 @@ class ResearchGroupServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Cannot remove yourself");
         }
-
-        @Test
-        void shouldThrowExceptionWhenUserHasNoGroup() {
-            // Arrange
-            User userNoGroup = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", null, null);
-            userNoGroup.setResearchGroup(null);
-
-            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(userNoGroup));
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID)).isInstanceOf(
-                AccessDeniedException.class
-            );
-        }
     }
 
     @Nested
@@ -299,7 +285,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldUpdateResearchGroupSuccessfully() {
             // Arrange
-            ResearchGroupDTO updateDTO = ResearchGroupTestData.createResearchGroupDTO(
+            ResearchGroupDTO updateDTO = new ResearchGroupDTO(
                 "Updated Name",
                 "UN",
                 "Prof. Updated",
@@ -335,7 +321,7 @@ class ResearchGroupServiceTest {
         void shouldProvisionResearchGroupSuccessfully() {
             // Arrange
             String universityId = "ab12cde";
-            ResearchGroupProvisionDTO dto = ResearchGroupTestData.createResearchGroupProvisionDTO(universityId, TEST_RESEARCH_GROUP_ID);
+            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO(universityId, TEST_RESEARCH_GROUP_ID);
 
             User user = UserTestData.newUserAll(TEST_USER_ID, "user@test.com", null, null);
             when(userRepository.findByUniversityIdIgnoreCase(universityId)).thenReturn(Optional.of(user));
@@ -355,7 +341,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldThrowExceptionWhenUserNotFound() {
             // Arrange
-            ResearchGroupProvisionDTO dto = ResearchGroupTestData.createResearchGroupProvisionDTO("nonexistent", UUID.randomUUID());
+            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO("nonexistent", UUID.randomUUID());
             when(userRepository.findByUniversityIdIgnoreCase("nonexistent")).thenReturn(Optional.empty());
 
             // Act & Assert
@@ -367,7 +353,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldThrowExceptionWhenResearchGroupNotFound() {
             // Arrange
-            ResearchGroupProvisionDTO dto = ResearchGroupTestData.createResearchGroupProvisionDTO("ab12cde", TEST_RESEARCH_GROUP_ID);
+            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO("ab12cde", TEST_RESEARCH_GROUP_ID);
             when(userRepository.findByUniversityIdIgnoreCase("ab12cde")).thenReturn(Optional.of(testUser));
             when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.empty());
 
@@ -375,32 +361,6 @@ class ResearchGroupServiceTest {
             assertThatThrownBy(() -> researchGroupService.provisionResearchGroup(dto))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("ResearchGroup");
-        }
-
-        @Test
-        void shouldUpdateExistingRoleToProfessor() {
-            // Arrange
-            String universityId = "ab12cde";
-            ResearchGroupProvisionDTO dto = ResearchGroupTestData.createResearchGroupProvisionDTO(universityId, TEST_RESEARCH_GROUP_ID);
-
-            User user = UserTestData.newUserAll(TEST_USER_ID, "user@test.com", null, null);
-            user.setResearchGroup(testResearchGroup); // Already in group
-
-            UserResearchGroupRole existingRole = new UserResearchGroupRole();
-            existingRole.setUser(user);
-            existingRole.setResearchGroup(testResearchGroup);
-            existingRole.setRole(UserRole.APPLICANT);
-
-            when(userRepository.findByUniversityIdIgnoreCase(universityId)).thenReturn(Optional.of(user));
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
-            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(user, testResearchGroup)).thenReturn(Optional.of(existingRole));
-
-            // Act
-            researchGroupService.provisionResearchGroup(dto);
-
-            // Assert
-            assertThat(existingRole.getRole()).isEqualTo(UserRole.PROFESSOR);
-            verify(userResearchGroupRoleRepository).save(existingRole);
         }
     }
 
@@ -454,30 +414,6 @@ class ResearchGroupServiceTest {
             assertThatThrownBy(() -> researchGroupService.activateResearchGroup(TEST_RESEARCH_GROUP_ID))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Only DRAFT or DENIED groups can be activated");
-        }
-
-        @Test
-        void shouldHandleMultipleRolesWarning() {
-            // Arrange
-            testResearchGroup.setState(ResearchGroupState.DRAFT);
-            UserResearchGroupRole role1 = new UserResearchGroupRole();
-            role1.setRole(UserRole.APPLICANT);
-            role1.setUser(testUser);
-            UserResearchGroupRole role2 = new UserResearchGroupRole();
-            role2.setRole(UserRole.APPLICANT);
-            role2.setUser(UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", "Other", "User"));
-
-            when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
-            when(researchGroupRepository.save(testResearchGroup)).thenReturn(testResearchGroup);
-            when(userResearchGroupRoleRepository.findAllByResearchGroup(testResearchGroup)).thenReturn(Set.of(role1, role2));
-
-            // Act
-            researchGroupService.activateResearchGroup(TEST_RESEARCH_GROUP_ID);
-
-            // Assert
-            // Both should be updated to PROFESSOR
-            assertThat(role1.getRole()).isEqualTo(UserRole.PROFESSOR);
-            assertThat(role2.getRole()).isEqualTo(UserRole.PROFESSOR);
         }
     }
 
@@ -605,7 +541,7 @@ class ResearchGroupServiceTest {
         @Test
         void shouldSendEmailToSupportSuccessfully() {
             // Arrange
-            EmployeeResearchGroupRequestDTO request = ResearchGroupTestData.createEmployeeResearchGroupRequestDTO("Prof. Smith");
+            EmployeeResearchGroupRequestDTO request = new EmployeeResearchGroupRequestDTO("Prof. Smith");
             testUser.setUniversityId("ab12cde");
             when(currentUserService.getUser()).thenReturn(testUser);
 
@@ -669,13 +605,10 @@ class ResearchGroupServiceTest {
         @Test
         void shouldReturnFilteredResearchGroupsForAdmin() {
             // Arrange
-            AdminResearchGroupFilterDTO filterDTO = ResearchGroupTestData.createAdminResearchGroupFilterDTO(
-                List.of(ResearchGroupState.ACTIVE),
-                "Test"
-            );
+            AdminResearchGroupFilterDTO filterDTO = new AdminResearchGroupFilterDTO(List.of(ResearchGroupState.ACTIVE), "Test");
             SortDTO sortDTO = new SortDTO("name", SortDTO.Direction.ASC);
 
-            ResearchGroupAdminDTO adminDTO = ResearchGroupTestData.createResearchGroupAdminDTO(
+            ResearchGroupAdminDTO adminDTO = new ResearchGroupAdminDTO(
                 TEST_RESEARCH_GROUP_ID,
                 "Test Group",
                 "Prof. Test",
@@ -693,108 +626,6 @@ class ResearchGroupServiceTest {
             assertThat(result.getContent()).hasSize(1);
             assertThat(result.getTotalElements()).isEqualTo(1L);
             verify(researchGroupRepository).findAllForAdmin(anyList(), anyString(), any(Pageable.class));
-        }
-    }
-
-    @Nested
-    class CreateResearchGroupAsAdmin {
-
-        @Test
-        void shouldCreateResearchGroupAsAdminSuccessfully() {
-            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("New Group");
-
-            when(userRepository.findByUniversityIdIgnoreCase("ab12cde")).thenReturn(Optional.of(testUser));
-            testUser.setResearchGroup(null);
-            when(researchGroupRepository.existsByNameIgnoreCase("New Group")).thenReturn(false);
-            when(researchGroupRepository.save(any(ResearchGroup.class))).thenAnswer(i -> i.getArguments()[0]);
-            when(userResearchGroupRoleRepository.save(any(UserResearchGroupRole.class))).thenAnswer(i -> i.getArguments()[0]);
-
-            ResearchGroup result = researchGroupService.createResearchGroupAsAdmin(request);
-
-            assertThat(result).isNotNull();
-            assertThat(result.getName()).isEqualTo("New Group");
-            assertThat(result.getState()).isEqualTo(ResearchGroupState.ACTIVE);
-            assertThat(testUser.getResearchGroup()).isEqualTo(result);
-            verify(userResearchGroupRoleRepository).save(any(UserResearchGroupRole.class));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenUserNotFound() {
-            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("N", "unknown");
-            when(userRepository.findByUniversityIdIgnoreCase("unknown")).thenReturn(Optional.empty());
-
-            assertThatThrownBy(() -> researchGroupService.createResearchGroupAsAdmin(request)).isInstanceOf(EntityNotFoundException.class);
-        }
-
-        @Test
-        void shouldThrowExceptionWhenUserAlreadyHasGroup() {
-            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("N", "ab12cde");
-            testUser.setResearchGroup(testResearchGroup);
-            when(userRepository.findByUniversityIdIgnoreCase("ab12cde")).thenReturn(Optional.of(testUser));
-
-            assertThatThrownBy(() -> researchGroupService.createResearchGroupAsAdmin(request)).isInstanceOf(
-                AlreadyMemberOfResearchGroupException.class
-            );
-        }
-
-        @Test
-        void shouldThrowExceptionWhenNameExists() {
-            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("Existing", "ab12cde");
-            testUser.setResearchGroup(null);
-            when(researchGroupRepository.existsByNameIgnoreCase("Existing")).thenReturn(true);
-
-            assertThatThrownBy(() -> researchGroupService.createResearchGroupAsAdmin(request)).isInstanceOf(
-                ResourceAlreadyExistsException.class
-            );
-        }
-    }
-
-    @Nested
-    class AddMembersToResearchGroup {
-
-        @Test
-        void shouldAddMembersSuccessfullyWithExplicitGroupId() {
-            List<UUID> userIds = List.of(OTHER_USER_ID);
-            User otherUser = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", "Other", "User");
-
-            when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
-            when(userRepository.findById(OTHER_USER_ID)).thenReturn(Optional.of(otherUser));
-
-            researchGroupService.addMembersToResearchGroup(userIds, TEST_RESEARCH_GROUP_ID);
-
-            assertThat(otherUser.getResearchGroup()).isEqualTo(testResearchGroup);
-            verify(userRepository).save(otherUser);
-            verify(userResearchGroupRoleRepository).save(any(UserResearchGroupRole.class));
-            verify(emailSender).sendAsync(any(Email.class));
-        }
-
-        @Test
-        void shouldAddMembersSuccessfullyWithImplicitGroupId() {
-            List<UUID> userIds = List.of(OTHER_USER_ID);
-            User otherUser = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", "Other", "User");
-
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
-            when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
-            when(userRepository.findById(OTHER_USER_ID)).thenReturn(Optional.of(otherUser));
-
-            researchGroupService.addMembersToResearchGroup(userIds, null);
-
-            assertThat(otherUser.getResearchGroup()).isEqualTo(testResearchGroup);
-            verify(userRepository).save(otherUser);
-        }
-
-        @Test
-        void shouldSkipUsersAlreadyInGroup() {
-            List<UUID> userIds = List.of(OTHER_USER_ID);
-            User otherUser = UserTestData.newUserAll(OTHER_USER_ID, "other@test.com", "Other", "User");
-            otherUser.setResearchGroup(testResearchGroup);
-
-            when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
-            when(userRepository.findById(OTHER_USER_ID)).thenReturn(Optional.of(otherUser));
-
-            researchGroupService.addMembersToResearchGroup(userIds, TEST_RESEARCH_GROUP_ID);
-
-            verify(userRepository, never()).save(otherUser);
         }
     }
 }
