@@ -19,6 +19,7 @@
     "publish": "Veröffentlichen",
     "tooltip": {
       "editDisabled": "Nur Entwürfe können bearbeitet werden"
-    }
+    },
+    "downloadPDF": "PDF exportieren"
   }
 }

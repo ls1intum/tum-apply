@@ -151,8 +151,7 @@
       "open": "Öffnen",
       "save": "Speichern",
       "view": "Details",
-      "show": "Zeige {{otherEntity}}",
-      "pdf": "PDF exportieren"
+      "show": "Zeige {{otherEntity}}"
     },
     "detail": {
       "field": "Feld",
