@@ -14,6 +14,7 @@ import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } fro
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 /**
  * Test suite for ResearchGroupCreationFormComponent - Professor Mode
@@ -50,6 +51,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       providers: [
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideHttpClientMock(),
         provideToastServiceMock(mockToastService),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
@@ -495,6 +497,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
           providers: [
             provideTranslateMock(),
             provideFontAwesomeTesting(),
+            provideHttpClientMock(),
             { provide: DynamicDialogRef, useValue: mockDialogRefNull },
             { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
             { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
@@ -674,6 +677,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         providers: [
           provideTranslateMock(),
           provideFontAwesomeTesting(),
+          provideHttpClientMock(),
           provideToastServiceMock(mockToastService),
           provideDynamicDialogRefMock(mockDialogRef),
           { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
