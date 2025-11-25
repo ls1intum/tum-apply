@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
@@ -18,12 +18,12 @@ import { SlotsSectionComponent } from './slots-section/slots-section.component';
 })
 export class InterviewProcessDetailComponent {
   processId = signal<string | null>(null);
+  readonly safeProcessId = computed(() => this.processId() ?? '');
   jobTitle = signal<string | null>(null);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly translateService = inject(TranslateService);
   private readonly titleService = inject(Title);
   private readonly toastService = inject(ToastService);
 

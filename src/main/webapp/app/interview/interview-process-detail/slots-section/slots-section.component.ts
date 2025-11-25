@@ -99,17 +99,24 @@ export class SlotsSectionComponent {
    * Paginates the current month's slots to show max 5 dates at a time
    */
   paginatedSlots = computed(() => {
+    // Get all date groups for the currently selected month
     const monthDates = this.currentMonthSlots();
+    //Get current page
     const page = this.currentDatePage();
+    //Calculate start index
     const start = page * this.DATES_PER_PAGE;
+    //Calculate end index
     const end = start + this.DATES_PER_PAGE;
+    //Returns the slots for current page
     return monthDates.slice(start, end);
   });
 
+  //Formats the current month and year for display * Returns the formatted month and year string for the currently selected month.
   currentMonth = computed(() => {
     const targetDate = new Date();
     targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
 
+    // Format the date as "Month Year" in the user's selected language (de-DE or en-US)
     return targetDate.toLocaleDateString(this.locale(), {
       month: 'long',
       year: 'numeric',
