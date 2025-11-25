@@ -17,8 +17,10 @@
     "next": "Weiter",
     "apply": "Bewerben",
     "publish": "Veröffentlichen",
+    "assign": "Zuweisen",
     "tooltip": {
       "editDisabled": "Nur Entwürfe können bearbeitet werden"
-    }
+    },
+    "downloadPDF": "PDF exportieren"
   }
 }

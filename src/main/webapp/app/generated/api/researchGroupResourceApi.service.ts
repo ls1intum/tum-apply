@@ -16,6 +16,8 @@ import { HttpClient, HttpParams,
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { AddMembersToResearchGroupDTO } from '../model/addMembersToResearchGroupDTO';
+// @ts-ignore
 import { EmployeeResearchGroupRequestDTO } from '../model/employeeResearchGroupRequestDTO';
 // @ts-ignore
 import { PageResponseDTOResearchGroupAdminDTO } from '../model/pageResponseDTOResearchGroupAdminDTO';
@@ -88,6 +90,67 @@ export class ResearchGroupResourceApiService extends BaseService {
         return this.httpClient.request<ResearchGroupDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param addMembersToResearchGroupDTO 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public addMembersToResearchGroup(addMembersToResearchGroupDTO: AddMembersToResearchGroupDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public addMembersToResearchGroup(addMembersToResearchGroupDTO: AddMembersToResearchGroupDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public addMembersToResearchGroup(addMembersToResearchGroupDTO: AddMembersToResearchGroupDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public addMembersToResearchGroup(addMembersToResearchGroupDTO: AddMembersToResearchGroupDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (addMembersToResearchGroupDTO === null || addMembersToResearchGroupDTO === undefined) {
+            throw new Error('Required parameter addMembersToResearchGroupDTO was null or undefined when calling addMembersToResearchGroup.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/research-groups/members`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: addMembersToResearchGroupDTO,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

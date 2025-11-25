@@ -1,0 +1,72 @@
+<div class="flex flex-col">
+  <!-- Search Bar -->
+  <div class="w-full">
+    <jhi-search-filter-sort-bar
+      [searchText]="'researchGroup.members.searchPlaceholder' | translate"
+      [totalRecords]="totalRecords()"
+      [singleEntity]="'researchGroup.members.singleEntity' | translate"
+      [multipleEntities]="'researchGroup.members.multipleEntities' | translate"
+      (searchOutput)="onSearch($event)"
+    />
+  </div>
+
+  <!-- User List -->
+  <div class="flex flex-col max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+    @if (users().length === 0) {
+      <div class="p-8 text-center text-gray-500">
+        {{ 'researchGroup.members.noUsers' | translate }}
+      </div>
+    } @else {
+      @for (user of users(); track user.userId) {
+        <div
+          class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
+          [class.bg-blue-50]="isUserSelected(user)"
+          [class.hover:bg-blue-100]="isUserSelected(user)"
+          [class.hover:bg-gray-50]="!isUserSelected(user)"
+          role="button"
+          tabindex="0"
+          (click)="toggleUserSelection(user)"
+        >
+          <div
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--p-primary-color)] flex items-center justify-center text-white font-semibold"
+          >
+            {{ user.firstName ? user.firstName.charAt(0) : '' }}{{ user.lastName ? user.lastName.charAt(0) : '' }}
+          </div>
+          <div class="flex-1">
+            <div class="font-medium">{{ user.firstName }} {{ user.lastName }}</div>
+            <div class="text-sm text-gray-600">{{ user.email }}</div>
+          </div>
+          <p-checkbox [ngModel]="isUserSelected(user)" [binary]="true" (click)="$event.stopPropagation()" />
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Pagination -->
+  @if (totalRecords() > 0) {
+    <div class="flex justify-center">
+      <p-paginator
+        [rows]="pageSize()"
+        [totalRecords]="totalRecords()"
+        [first]="page() * pageSize()"
+        (onPageChange)="onPageChange($event)"
+      />
+    </div>
+  }
+
+  <!-- Action Buttons -->
+  <div class="flex justify-end gap-2">
+    <jhi-button [label]="'button.cancel' | translate" severity="secondary" variant="outlined" (click)="onCancel()" />
+
+    <jhi-confirm-dialog
+      [label]="'researchGroup.members.addMembersButton' | translate"
+      [header]="'researchGroup.members.confirmDialog.header' | translate"
+      [message]="'researchGroup.members.confirmDialog.message' | translate"
+      confirmIcon="user-plus"
+      (confirmed)="onAddMembers()"
+      severity="primary"
+      [disabled]="selectedUserCount() === 0"
+      [tooltip]="'researchGroup.members.addMembersButton' | translate"
+    />
+  </div>
+</div>

@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
@@ -10,7 +11,7 @@ import { OtpInput } from '../../atoms/otp-input/otp-input';
 
 @Component({
   selector: 'jhi-login',
-  imports: [CredentialsGroupComponent, TranslateDirective, OtpInput],
+  imports: [CredentialsGroupComponent, TranslateDirective, OtpInput, ButtonComponent],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -33,6 +34,10 @@ export class Login {
 
   secondButtonHandler = (): void => {
     this.authOrchestrator.loginStep.set('password');
+  };
+
+  backButtonHandler = (): void => {
+    this.authOrchestrator.previousStep();
   };
 
   onEmailLogin = async (email: string, password?: string): Promise<boolean> => {
