@@ -64,8 +64,9 @@ function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationD
 
 describe('ApplicationDetailForApplicantComponent', () => {
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
+
   it('initializes and fetches application & document IDs when param provided', async () => {
     const appData = makeDetail({ applicationId: 'APP1', jobId: 'JOB123' });
     const docIds: ApplicationDocumentIdsDTO = {};
@@ -77,7 +78,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     expect(component.applicationId()).toBe('APP1');
     expect(component.application()).toEqual(appData);
     expect(component.documentIds()).toEqual(docIds);
-    vi.clearAllMocks();
   });
 
   describe('init() success flow (split AAA)', () => {
@@ -105,20 +105,17 @@ describe('ApplicationDetailForApplicantComponent', () => {
       expect(component.applicationId()).toBe('APP1');
       expect(applicationService.getApplicationForDetailPage).toHaveBeenCalledWith('APP1');
       expect(applicationService.getDocumentDictionaryIds).toHaveBeenCalledWith('APP1');
-      vi.clearAllMocks();
     });
 
     it('stores application and document data in signals', () => {
       // Assert
       expect(component.application()).toEqual(appData);
       expect(component.documentIds()).toEqual(docIds);
-      vi.clearAllMocks();
     });
 
     it('does not emit an error toast on successful init', () => {
       // Assert
       expect(toast.showErrorKey).not.toHaveBeenCalled();
-      vi.clearAllMocks();
     });
   });
 
@@ -129,7 +126,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     });
     await component.init();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.invalidApplicationId');
-    vi.clearAllMocks();
   });
 
   it('handles application fetch error', async () => {
@@ -140,7 +136,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     await component.init();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchApplicationFailed');
     expect(applicationService.getDocumentDictionaryIds).toHaveBeenCalled();
-    vi.clearAllMocks();
   });
 
   it('handles document ID fetch error', async () => {
@@ -150,7 +145,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     });
     await component.init();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.fetchDocumentIdsFailed');
-    vi.clearAllMocks();
   });
 
   it('navigates to job detail when jobId present', () => {
@@ -170,7 +164,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     component.actualDetailDataExists.set(true);
     component.onViewJobDetails();
     expect(router.navigate).toHaveBeenCalledWith(['/job/detail', 'JOBX']);
-    vi.clearAllMocks();
   });
 
   it('shows error when jobId missing on view job details', () => {
@@ -190,7 +183,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     component.onViewJobDetails();
     expect(router.navigate).not.toHaveBeenCalled();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.jobIdNotAvailable');
-    vi.clearAllMocks();
   });
 
   it('deletes application successfully', () => {
@@ -205,7 +197,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     expect(applicationService.deleteApplication).toHaveBeenCalledWith('APP6');
     expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationDeleted');
     expect(router.navigate).toHaveBeenCalledWith(['/application/overview']);
-    vi.clearAllMocks();
   });
 
   it('handles delete application error', () => {
@@ -218,7 +209,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     component.onDeleteApplication();
     expect(applicationService.deleteApplication).toHaveBeenCalled();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorDeletingApplication');
-    vi.clearAllMocks();
   });
 
   it('withdraws application successfully and re-inits', () => {
@@ -233,7 +223,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     expect(applicationService.withdrawApplication).toHaveBeenCalledWith('APP8');
     expect(toast.showSuccessKey).toHaveBeenCalledWith('entity.toast.applyFlow.applicationWithdrawn');
     expect(initSpy).toHaveBeenCalled();
-    vi.clearAllMocks();
   });
 
   it('handles withdraw application error', () => {
@@ -246,7 +235,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     component.onWithdrawApplication();
     expect(applicationService.withdrawApplication).toHaveBeenCalled();
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorWithdrawingApplication');
-    vi.clearAllMocks();
   });
 
   it('downloads PDF and uses filename from header', () => {
@@ -277,7 +265,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalled();
     expect(clickSpy).toHaveBeenCalled();
     expect((globalThis as unknown as { URL: { createObjectURL: Function } }).URL.createObjectURL).toHaveBeenCalled();
-    vi.clearAllMocks();
   });
 
   it('falls back to default filename when header missing', () => {
@@ -293,7 +280,6 @@ describe('ApplicationDetailForApplicantComponent', () => {
     pdfExportService.exportApplicationToPDF.mockReturnValue(of({ headers: { get: () => null }, body: new Blob(['c']) }));
     component.onDownloadPDF();
     expect(anchor.download).toBe('application.pdf');
-    vi.clearAllMocks();
   });
 
   it('getApplicationPDFLabels integration returns expected label keys without component', () => {

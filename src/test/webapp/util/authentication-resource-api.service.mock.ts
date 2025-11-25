@@ -4,7 +4,6 @@ import { vi } from 'vitest';
 import { AuthenticationResourceApiService } from 'app/generated/api/authenticationResourceApi.service';
 import { EmailVerificationResourceApiService } from 'app/generated/api/emailVerificationResourceApi.service';
 
-// Shared mock session info for tests
 export const mockSessionInfo = { expiresIn: 60 };
 
 export type AuthenticationResourceApiServiceMock = Pick<

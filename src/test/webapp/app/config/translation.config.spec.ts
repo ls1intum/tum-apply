@@ -10,6 +10,10 @@ import {
 } from 'app/config/translation.config';
 
 describe('Translation Config', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe('translationNotFoundMessage', () => {
     it('should have correct constant value', () => {
       expect(translationNotFoundMessage).toBe('translation-not-found');
@@ -68,7 +72,6 @@ describe('Translation Config', () => {
       // TranslateHttpLoader should use /i18n/ as prefix
       const internal = loader as unknown as { prefix?: string };
       expect(internal.prefix).toBe('/i18n/');
-      vi.clearAllMocks();
     });
 
     it('should configure loader with correct suffix including hash', () => {
@@ -76,14 +79,12 @@ describe('Translation Config', () => {
       // TranslateHttpLoader should use .json?_=<hash> as suffix
       const internal = loader as unknown as { suffix?: string };
       expect(internal.suffix).toMatch(/^\.json\?_=/);
-      vi.clearAllMocks();
     });
 
     it('should use provided HttpClient', () => {
       const loader = translatePartialLoader(mockHttpClient);
       const internal = loader as unknown as { http?: HttpClient }; // http private access
       expect(internal.http).toBe(mockHttpClient);
-      vi.clearAllMocks();
     });
 
     it('should create different loader instances for different HttpClient instances', () => {
@@ -97,7 +98,6 @@ describe('Translation Config', () => {
       const internal2 = loader2 as unknown as { http?: HttpClient };
       expect(internal1.http).toBe(mockHttpClient);
       expect(internal2.http).toBe(mockHttpClient2);
-      vi.clearAllMocks();
     });
 
     it('should load translation files with getTranslation method', () => {
@@ -112,7 +112,6 @@ describe('Translation Config', () => {
       });
 
       expect(getMock).toHaveBeenCalled();
-      vi.clearAllMocks();
     });
 
     it('should construct correct URL for different languages', () => {
@@ -128,7 +127,6 @@ describe('Translation Config', () => {
       expect(calls[0][0]).toMatch(/^\/i18n\/en\.json\?_=/);
       expect(calls[1][0]).toMatch(/^\/i18n\/de\.json\?_=/);
       expect(calls[2][0]).toMatch(/^\/i18n\/fr\.json\?_=/);
-      vi.clearAllMocks();
     });
   });
 
@@ -137,7 +135,6 @@ describe('Translation Config', () => {
       const handler = missingTranslationHandler();
       expect(handler).toBeTruthy();
       expect(handler).toBeInstanceOf(MissingTranslationHandlerImpl);
-      vi.clearAllMocks();
     });
 
     it('should create new instance on each call', () => {
@@ -147,7 +144,6 @@ describe('Translation Config', () => {
       expect(handler1).not.toBe(handler2);
       expect(handler1).toBeInstanceOf(MissingTranslationHandlerImpl);
       expect(handler2).toBeInstanceOf(MissingTranslationHandlerImpl);
-      vi.clearAllMocks();
     });
 
     it('should return handler with correct behavior', () => {
@@ -166,7 +162,6 @@ describe('Translation Config', () => {
         });
         expect(result).toBe(testCase.expected);
       });
-      vi.clearAllMocks();
     });
   });
 
@@ -185,7 +180,6 @@ describe('Translation Config', () => {
         translateService: {} as TranslateService,
       });
       expect(result).toBe('translation-not-found[missing.key]');
-      vi.clearAllMocks();
     });
   });
 });
