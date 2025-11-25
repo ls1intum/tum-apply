@@ -1,49 +1,66 @@
 @if (page3Form; as form) {
   <form [formGroup]="form">
-    @if (data(); as data) {
-      <div class="flex flex-col w-1/2">
-        <label>
-          <span jhiTranslate="entity.applicationPage3.label.desiredStartDate"></span>
-          <fa-icon
-            class="icon"
-            [icon]="['fas', 'circle-info']"
-            [pTooltip]="'entity.applicationPage3.tooltip.desiredStartDate' | translate"
-            tooltipPosition="top"
-          />
-        </label>
-        <jhi-datepicker
-          [selectedDate]="data.desiredStartDate"
-          label=""
-          [placeholder]="'entity.applicationPage3.placeholder.selectStartDate' | translate"
-          width="100%"
-          (selectedDateChange)="setDesiredStartDate($event)"
-        />
-      </div>
-    }
     <p-divider layout="horizontal">
-      <span jhiTranslate="entity.applicationPage3.section.uploads"></span>
-      <fa-icon
-        icon="circle-info"
-        class="upload-info-icon mr-4"
-        pTooltip="{{ 'entity.applicationPage2.tooltip.filenamePrivacy' | translate }}"
-        tooltipPosition="top"
-      />
+      <span jhiTranslate="entity.applicationPage3.section.startAndDocuments"></span>
     </p-divider>
 
-    @if (applicationIdForDocuments(); as applicationId) {
-      <div class="form-row mb-6">
+    @if (data(); as data) {
+      <div class="form-row w-full lg:w-1/2 mb-6 lg:pe-3">
         <div class="form-field">
+          <label>
+            <span jhiTranslate="entity.applicationPage3.label.desiredStartDate"></span>
+            <fa-icon
+              class="icon"
+              [icon]="['fas', 'circle-info']"
+              [pTooltip]="'entity.applicationPage3.tooltip.desiredStartDate' | translate"
+              tooltipPosition="top"
+            />
+          </label>
+          <jhi-datepicker
+            [selectedDate]="data.desiredStartDate"
+            label=""
+            [placeholder]="'entity.applicationPage3.placeholder.selectStartDate' | translate"
+            width="100%"
+            (selectedDateChange)="setDesiredStartDate($event)"
+          />
+        </div>
+      </div>
+    }
+
+    @if (applicationIdForDocuments(); as applicationId) {
+      <div class="mb-6 flex flex-col gap-6 lg:flex-row lg:gap-8">
+        <!-- CV Upload -->
+        <div class="form-field flex-1">
+          <label>
+            <span jhiTranslate="entity.applicationPage3.label.curriculumVitae"></span>
+            <span class="required"> *</span>
+            <fa-icon
+              class="icon"
+              [icon]="['fas', 'circle-info']"
+              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+              tooltipPosition="top"
+            />
+          </label>
           <jhi-upload-button
             uploadKey="entity.upload.upload_instruction.CV"
             documentType="CV"
             [applicationId]="applicationId"
             [documentIds]="computedDocumentIdsCvSet()"
             (documentIdsChange)="cvDocsSetValidity($event)"
-            [markAsRequired]="true"
           />
         </div>
 
-        <div class="form-field">
+        <!-- Reference Upload -->
+        <div class="form-field flex-1">
+          <label>
+            <span jhiTranslate="entity.applicationPage3.label.additionalReferences"></span>
+            <fa-icon
+              class="icon"
+              [icon]="['fas', 'circle-info']"
+              [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+              tooltipPosition="top"
+            />
+          </label>
           <jhi-upload-button
             uploadKey="entity.upload.upload_instruction.REFERENCE"
             documentType="REFERENCE"
@@ -53,6 +70,11 @@
         </div>
       </div>
     }
+
+    <p-divider layout="horizontal">
+      <span jhiTranslate="entity.applicationPage3.section.motivationAndBackground"></span>
+    </p-divider>
+
     @if (hasInitialized()) {
       <div class="form-row mb-6">
         <div class="form-field">

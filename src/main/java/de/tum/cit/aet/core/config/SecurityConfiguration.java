@@ -97,11 +97,17 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/manifest.webapp", "/robots.txt")
                     .permitAll()
+                    .requestMatchers("/googledd0b8a13f86d0918.html")
+                    .permitAll()
+                    .requestMatchers("/sitemap.xml")
+                    .permitAll()
                     .requestMatchers("/assets/**")
                     .permitAll()
                     .requestMatchers("/content/**", "/i18n/*.json", "/logo/*")
                     .permitAll()
                     .requestMatchers("/media/**")
+                    .permitAll()
+                    .requestMatchers("/images/**")
                     .permitAll()
                     .requestMatchers("/favicon.ico")
                     .permitAll()
@@ -156,9 +162,11 @@ public class SecurityConfiguration {
     }
 
     /**
-     * Extracts the bearer token from the 'access_token' cookie, falling back to the Authorization header.
+     * Extracts the bearer token from the 'access_token' cookie, falling back to the
+     * Authorization header.
      *
-     * @return a BearerTokenResolver that reads from cookie and refreshes tokens as needed
+     * @return a BearerTokenResolver that reads from cookie and refreshes tokens as
+     *         needed
      */
     private BearerTokenResolver bearerTokenResolver() {
         DefaultBearerTokenResolver defaultResolver = new DefaultBearerTokenResolver();

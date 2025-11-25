@@ -46,7 +46,9 @@ public record ApplicationForApplicantDTO(
                 application.getState(),
                 job.getWorkload(),
                 job.getStartDate(),
-                job.getEndDate()
+                job.getEndDate(),
+                job.getContractDuration(),
+                job.getImage() != null ? job.getImage().getUrl() : null
             ),
             application.getState(),
             application.getDesiredStartDate(),

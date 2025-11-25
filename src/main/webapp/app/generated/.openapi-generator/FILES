@@ -1,6 +1,9 @@
 .gitignore
+README.md
 api.base.service.ts
+api.module.ts
 api/adminResourceApi.service.ts
+api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
@@ -8,7 +11,10 @@ api/documentResourceApi.service.ts
 api/emailSettingResourceApi.service.ts
 api/emailTemplateResourceApi.service.ts
 api/emailVerificationResourceApi.service.ts
+api/genderBiasAnalysisResourceApi.service.ts
+api/imageResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
+api/interviewResourceApi.service.ts
 api/jobResourceApi.service.ts
 api/pdfExportResourceApi.service.ts
 api/profOnboardingResourceApi.service.ts
@@ -18,6 +24,8 @@ api/researchGroupResourceApi.service.ts
 api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
+git_push.sh
+index.ts
 model/acceptDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
@@ -33,6 +41,8 @@ model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
 model/authSessionInfoDTO.ts
+model/biasedWordDTO.ts
+model/createSlotsDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
@@ -44,9 +54,15 @@ model/emailTemplateDTO.ts
 model/emailTemplateOverviewDTO.ts
 model/emailTemplateTranslationDTO.ts
 model/employeeResearchGroupRequestDTO.ts
+model/genderBiasAnalysisRequest.ts
+model/genderBiasAnalysisResponse.ts
+model/image.ts
+model/imageDTO.ts
 model/internalComment.ts
 model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
+model/interviewOverviewDTO.ts
+model/interviewSlotDTO.ts
 model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
@@ -54,7 +70,9 @@ model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/loginRequestDTO.ts
+model/models.ts
 model/otpCompleteDTO.ts
+model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
@@ -64,7 +82,6 @@ model/pageResponseDTOUserShortDTO.ts
 model/pageableObject.ts
 model/profOnboardingDTO.ts
 model/professorDTO.ts
-model/professorResearchGroupRequestDTO.ts
 model/ratingDTO.ts
 model/ratingOverviewDTO.ts
 model/rejectDTO.ts
@@ -73,8 +90,10 @@ model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts
+model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
 model/sendCodeRequest.ts
+model/slotInput.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
 model/updatePasswordDTO.ts

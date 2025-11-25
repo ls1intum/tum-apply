@@ -1,0 +1,289 @@
+<!-- Confirmation Dialog for Professor -->
+@if (mode() === 'professor') {
+  <jhi-confirm-dialog
+    #confirmDialog
+    [header]="'onboarding.professorRequest.confirmDialog.header' | translate"
+    [message]="'onboarding.professorRequest.confirmDialog.message' | translate"
+    [label]="'onboarding.professorRequest.confirmDialog.confirm' | translate"
+    severity="primary"
+    confirmIcon="paper-plane"
+    [showOpenButton]="false"
+    (confirmed)="onConfirmSubmit()"
+  />
+}
+
+<!-- Confirmation Dialog for Admin -->
+@if (mode() === 'admin') {
+  <jhi-confirm-dialog
+    #confirmDialog
+    [header]="'researchGroup.adminView.createDialog.confirmHeader' | translate"
+    [message]="'researchGroup.adminView.createDialog.confirmMessage' | translate"
+    [label]="'researchGroup.adminView.createDialog.confirmButton' | translate"
+    severity="primary"
+    confirmIcon="check"
+    [showOpenButton]="false"
+    (confirmed)="onConfirmSubmit()"
+  />
+}
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
+  <!-- Information Notice -->
+  @if (mode() === 'professor') {
+    <jhi-info-box severity="primary" message="onboarding.professorRequest.approvalNotice" [shouldTranslate]="true" />
+  }
+
+  <!-- Personal Information -->
+  @if (mode() === 'professor') {
+    <div class="flex flex-col gap-4">
+      <h3
+        class="m-0 mb-2 text-xl font-semibold text-gray-700 border-b-2 border-gray-200 pb-2"
+        jhiTranslate="onboarding.professorRequest.sections.personalInfo"
+      ></h3>
+
+      <div class="form-field">
+        <jhi-string-input
+          #firstInput
+          label="onboarding.professorRequest.title.label"
+          placeholder="onboarding.professorRequest.title.placeholder"
+          [required]="true"
+          [model]="form.get('title')?.value"
+          [control]="form.get('title') ?? undefined"
+          [shouldTranslate]="true"
+        />
+      </div>
+
+      <div class="form-row flex-col md:flex-row">
+        <div class="form-field">
+          <jhi-string-input
+            label="onboarding.professorRequest.firstName.label"
+            placeholder="onboarding.professorRequest.firstName.placeholder"
+            [required]="true"
+            [model]="form.get('firstName')?.value"
+            [control]="form.get('firstName') ?? undefined"
+            [shouldTranslate]="true"
+          />
+        </div>
+
+        <div class="form-field">
+          <jhi-string-input
+            label="onboarding.professorRequest.lastName.label"
+            placeholder="onboarding.professorRequest.lastName.placeholder"
+            [required]="true"
+            [model]="form.get('lastName')?.value"
+            [control]="form.get('lastName') ?? undefined"
+            [shouldTranslate]="true"
+          />
+        </div>
+      </div>
+
+      <div>
+        <jhi-string-input
+          label="onboarding.professorRequest.tumID.label"
+          placeholder="onboarding.professorRequest.tumID.placeholder"
+          [required]="true"
+          [model]="form.get('tumID')?.value"
+          [control]="form.get('tumID') ?? undefined"
+          icon="id-card"
+          [shouldTranslate]="true"
+        />
+      </div>
+    </div>
+  }
+
+  <!-- Research Group Information -->
+  <div class="flex flex-col gap-4">
+    <h3
+      class="m-0 mb-2 text-xl font-semibold text-gray-700 border-b-2 border-gray-200 pb-2"
+      jhiTranslate="onboarding.professorRequest.sections.researchGroupInfo"
+    ></h3>
+
+    @if (mode() === 'admin') {
+      <div>
+        <jhi-string-input
+          label="researchGroup.adminView.tumID.label"
+          placeholder="researchGroup.adminView.tumID.placeholder"
+          [required]="true"
+          [model]="form.get('tumID')?.value"
+          [control]="form.get('tumID') ?? undefined"
+          icon="id-card"
+          [shouldTranslate]="true"
+        />
+      </div>
+    }
+
+    <div>
+      <jhi-string-input
+        label="onboarding.professorRequest.researchGroupHead.label"
+        placeholder="onboarding.professorRequest.researchGroupHead.placeholder"
+        [required]="true"
+        [model]="form.get('researchGroupHead')?.value"
+        [control]="form.get('researchGroupHead') ?? undefined"
+        [shouldTranslate]="true"
+      />
+    </div>
+
+    <div>
+      <jhi-string-input
+        label="onboarding.professorRequest.researchGroupName.label"
+        placeholder="onboarding.professorRequest.researchGroupName.placeholder"
+        [required]="true"
+        [model]="form.get('researchGroupName')?.value"
+        [control]="form.get('researchGroupName') ?? undefined"
+        [shouldTranslate]="true"
+      />
+    </div>
+  </div>
+
+  <!-- Optional Information -->
+  <div class="flex flex-col gap-4">
+    <h3
+      class="m-0 mb-2 text-xl font-semibold text-gray-700 border-b-2 border-gray-200 pb-2"
+      jhiTranslate="onboarding.professorRequest.sections.optionalInfo"
+    ></h3>
+    <p class="text-sm text-gray-500 m-0 italic" jhiTranslate="onboarding.professorRequest.optionalHint"></p>
+
+    <div>
+      <jhi-string-input
+        label="onboarding.professorRequest.researchGroupAbbreviation.label"
+        placeholder="onboarding.professorRequest.researchGroupAbbreviation.placeholder"
+        [model]="form.get('researchGroupAbbreviation')?.value"
+        [control]="form.get('researchGroupAbbreviation') ?? undefined"
+        [shouldTranslate]="true"
+      />
+    </div>
+
+    <div>
+      <jhi-string-input
+        label="onboarding.professorRequest.researchGroupContactEmail.label"
+        placeholder="onboarding.professorRequest.researchGroupContactEmail.placeholder"
+        [model]="form.get('researchGroupContactEmail')?.value"
+        [control]="form.get('researchGroupContactEmail') ?? undefined"
+        icon="envelope"
+        [shouldTranslate]="true"
+      />
+    </div>
+
+    <div>
+      <jhi-string-input
+        label="onboarding.professorRequest.researchGroupWebsite.label"
+        placeholder="onboarding.professorRequest.researchGroupWebsite.placeholder"
+        [model]="form.get('researchGroupWebsite')?.value"
+        [control]="form.get('researchGroupWebsite') ?? undefined"
+        icon="globe"
+        [shouldTranslate]="true"
+      />
+    </div>
+
+    <div>
+      <jhi-string-input
+        label="onboarding.professorRequest.researchGroupSchool.label"
+        placeholder="onboarding.professorRequest.researchGroupSchool.placeholder"
+        [model]="form.get('researchGroupSchool')?.value"
+        [control]="form.get('researchGroupSchool') ?? undefined"
+        [shouldTranslate]="true"
+      />
+    </div>
+
+    <div>
+      <jhi-editor
+        label="onboarding.professorRequest.researchGroupDescription.label"
+        placeholder="onboarding.professorRequest.researchGroupDescription.placeholder"
+        [model]="form.get('researchGroupDescription')?.value"
+        [control]="form.get('researchGroupDescription') ?? undefined"
+        [characterLimit]="1000"
+        [shouldTranslate]="true"
+      />
+    </div>
+
+    <div>
+      <jhi-string-input
+        label="onboarding.professorRequest.researchGroupFieldOfStudies.label"
+        placeholder="onboarding.professorRequest.researchGroupFieldOfStudies.placeholder"
+        [model]="form.get('researchGroupFieldOfStudies')?.value"
+        [control]="form.get('researchGroupFieldOfStudies') ?? undefined"
+        [shouldTranslate]="true"
+      />
+    </div>
+
+    <!-- Address Section -->
+    <div class="flex flex-col gap-4">
+      <h4 class="m-0 text-lg font-medium text-gray-700" jhiTranslate="onboarding.professorRequest.sections.address"></h4>
+
+      <div>
+        <jhi-string-input
+          label="onboarding.professorRequest.researchGroupStreetAndNumber.label"
+          placeholder="onboarding.professorRequest.researchGroupStreetAndNumber.placeholder"
+          [model]="form.get('researchGroupStreetAndNumber')?.value"
+          [control]="form.get('researchGroupStreetAndNumber') ?? undefined"
+          [shouldTranslate]="true"
+        />
+      </div>
+
+      <div class="form-row flex-col md:flex-row">
+        <div class="form-field">
+          <jhi-string-input
+            label="onboarding.professorRequest.researchGroupCity.label"
+            placeholder="onboarding.professorRequest.researchGroupCity.placeholder"
+            [model]="form.get('researchGroupCity')?.value"
+            [control]="form.get('researchGroupCity') ?? undefined"
+            [shouldTranslate]="true"
+          />
+        </div>
+
+        <div class="form-field">
+          <jhi-string-input
+            label="onboarding.professorRequest.researchGroupPostalCode.label"
+            placeholder="onboarding.professorRequest.researchGroupPostalCode.placeholder"
+            [model]="form.get('researchGroupPostalCode')?.value"
+            [control]="form.get('researchGroupPostalCode') ?? undefined"
+            [shouldTranslate]="true"
+          />
+        </div>
+      </div>
+    </div>
+
+    @if (mode() === 'professor') {
+      <div>
+        <jhi-string-input
+          label="onboarding.professorRequest.additionalNotes.label"
+          placeholder="onboarding.professorRequest.additionalNotes.placeholder"
+          [model]="form.get('additionalNotes')?.value"
+          [control]="form.get('additionalNotes') ?? undefined"
+          [shouldTranslate]="true"
+        />
+      </div>
+    }
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex justify-end gap-4 mt-8 pt-4 border-t border-gray-200">
+    <jhi-button
+      type="button"
+      (click)="onCancel()"
+      [shouldTranslate]="true"
+      label="entity.action.cancel"
+      variant="outlined"
+      [disabled]="isSubmitting()"
+    />
+    @if (mode() === 'professor') {
+      <jhi-button
+        type="submit"
+        [disabled]="form.invalid || isSubmitting()"
+        [shouldTranslate]="true"
+        [label]="isSubmitting() ? 'onboarding.professorRequest.submitting' : 'onboarding.professorRequest.submit'"
+        severity="primary"
+        [icon]="isSubmitting() ? 'spinner' : 'paper-plane'"
+      />
+    }
+    @if (mode() === 'admin') {
+      <jhi-button
+        type="submit"
+        [disabled]="form.invalid || isSubmitting()"
+        [shouldTranslate]="true"
+        [label]="isSubmitting() ? 'researchGroup.adminView.createDialog.submitting' : 'researchGroup.adminView.createDialog.confirmButton'"
+        severity="primary"
+        [icon]="isSubmitting() ? 'spinner' : 'check'"
+      />
+    }
+  </div>
+</form>

@@ -3,14 +3,18 @@ package de.tum.cit.aet.job.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
+import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
@@ -24,11 +28,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class JobService {
 
     private final JobRepository jobRepository;
@@ -36,20 +42,9 @@ public class JobService {
     private final CurrentUserService currentUserService;
     private final AsyncEmailSender sender;
     private final ApplicationRepository applicationRepository;
-
-    public JobService(
-        JobRepository jobRepository,
-        UserRepository userRepository,
-        ApplicationRepository applicationRepository,
-        AsyncEmailSender sender,
-        CurrentUserService currentUserService
-    ) {
-        this.jobRepository = jobRepository;
-        this.userRepository = userRepository;
-        this.applicationRepository = applicationRepository;
-        this.sender = sender;
-        this.currentUserService = currentUserService;
-    }
+    private final InterviewService interviewService;
+    private final JobImageHelper jobImageHelper;
+    private final ImageService imageService;
 
     /**
      * Creates a new job using the provided job form data.
@@ -140,6 +135,17 @@ public class JobService {
      */
     public void deleteJob(UUID jobId) {
         assertCanManageJob(jobId);
+
+        // Get the job to check if it has an associated image
+        Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("Job not found"));
+
+        // Delete associated image if it exists and is not a default image
+        if (job.getImage() != null && job.getImage().getImageType() != ImageType.DEFAULT_JOB_BANNER) {
+            try {
+                imageService.deleteWithoutChecks(job.getImage().getImageId());
+            } catch (Exception e) {}
+        }
+
         jobRepository.deleteById(jobId);
     }
 
@@ -166,7 +172,9 @@ public class JobService {
             job.getDescription(),
             job.getTasks(),
             job.getRequirements(),
-            job.getState()
+            job.getState(),
+            job.getImage() != null ? job.getImage().getImageId() : null,
+            job.getImage() != null ? job.getImage().getUrl() : null
         );
     }
 
@@ -321,6 +329,7 @@ public class JobService {
         // Ensure that the current user is either an admin or a research group member of
         // the supervising professor
         currentUserService.isAdminOrMemberOfResearchGroupOfProfessor(supervisingProfessor);
+        JobState oldState = job.getState();
 
         job.setSupervisingProfessor(supervisingProfessor);
         job.setResearchGroup(supervisingProfessor.getResearchGroup());
@@ -337,6 +346,22 @@ public class JobService {
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
         job.setState(dto.state());
+
+        // Handle image update (replace old image if changed)
+        if (dto.imageId() != null) {
+            Image newImage = jobImageHelper.getImageForJob(dto.imageId());
+            job.setImage(jobImageHelper.replaceJobImage(job.getImage(), newImage));
+        } else if (job.getImage() != null) {
+            // If imageId is null but job has image, remove it
+            jobImageHelper.replaceJobImage(job.getImage(), null);
+            job.setImage(null);
+        }
+
+        if (dto.state() == JobState.PUBLISHED && oldState != JobState.PUBLISHED) {
+            Job savedJob = jobRepository.save(job);
+            interviewService.createInterviewProcessForJob(savedJob.getJobId());
+            return JobFormDTO.getFromEntity(savedJob);
+        }
         Job createdJob = jobRepository.save(job);
         return JobFormDTO.getFromEntity(createdJob);
     }

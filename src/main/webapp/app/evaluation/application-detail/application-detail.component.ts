@@ -23,15 +23,15 @@ import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantF
 import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
 
 import TranslateDirective from '../../shared/language/translate.directive';
-import { Section } from '../components/section/section';
-import { SubSection } from '../components/sub-section/sub-section';
-import { DescItem, DescriptionList } from '../components/description-list/description-list';
-import { LinkList } from '../components/link-list/link-list';
-import { Prose } from '../components/prose/prose';
-import { DocumentSection } from '../components/document-section/document-section';
+import { Section } from '../../shared/components/atoms/section/section';
+import { SubSection } from '../../shared/components/atoms/sub-section/sub-section';
+import { DescItem, DescriptionList } from '../../shared/components/atoms/description-list/description-list';
+import { LinkList } from '../../shared/components/atoms/link-list/link-list';
+import { Prose } from '../../shared/components/atoms/prose/prose';
+import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
-import { CommentSection } from '../components/comment-section/comment-section';
-import { RatingSection } from '../components/rating-section/rating-section';
+import { CommentSection } from '../../shared/components/molecules/comment-section/comment-section';
+import { RatingSection } from '../../shared/components/molecules/rating-section/rating-section';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -120,28 +120,29 @@ export class ApplicationDetailComponent {
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
+  private _queryParamEffect = effect(() => {
+    const qp = this.qpSignal();
+    const rawSD = qp.get('sortDir');
+    this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+
+    if (!this.isSortInitiatedByUser) {
+      this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
+      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
+    } else {
+      this.isSortInitiatedByUser = false;
+    }
+
+    if (!this.isSearchInitiatedByUser) {
+      this.searchQuery.set(qp.get('search') ?? '');
+    }
+    this.isSearchInitiatedByUser = false;
+  });
+
   constructor() {
     void this.init();
   }
 
   async init(): Promise<void> {
-    effect(() => {
-      const qp = this.qpSignal();
-      const rawSD = qp.get('sortDir');
-      this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
-
-      if (!this.isSortInitiatedByUser) {
-        this.sortBy.set(qp.get('sortBy') ?? this.sortableFields[0].fieldName);
-        this.sortDirection.set(rawSD === 'ASC' || rawSD === 'DESC' ? rawSD : 'DESC');
-      } else {
-        this.isSortInitiatedByUser = false;
-      }
-
-      if (!this.isSearchInitiatedByUser) {
-        this.searchQuery.set(qp.get('search') ?? '');
-      }
-      this.isSearchInitiatedByUser = false;
-    });
     await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
@@ -175,7 +176,7 @@ export class ApplicationDetailComponent {
       { labelKey: 'evaluation.details.educationGrade', value: applicant.bachelorGrade },
     ];
 
-    const converted = this.getGradeItem(
+    /* const converted = this.getGradeItem(
       applicant.bachelorGrade,
       applicant.bachelorGradeUpperLimit,
       applicant.bachelorGradeLowerLimit,
@@ -183,7 +184,7 @@ export class ApplicationDetailComponent {
       'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);
+    items.push(...converted);*/
     return items;
   }
 
@@ -195,7 +196,7 @@ export class ApplicationDetailComponent {
       { labelKey: 'evaluation.details.educationGrade', value: applicant.masterGrade },
     ];
 
-    const converted = this.getGradeItem(
+    /* const converted = this.getGradeItem(
       applicant.masterGrade,
       applicant.masterGradeUpperLimit,
       applicant.masterGradeLowerLimit,
@@ -203,7 +204,7 @@ export class ApplicationDetailComponent {
       'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);
+    items.push(...converted);*/
     return items;
   }
 
@@ -403,7 +404,7 @@ export class ApplicationDetailComponent {
   }
 
   /**
-   * Loads a page of applications from backend.
+   * Loads a page of applications from server.
    * Also updates total count of applications.
    */
   private async loadPage(offset: number, limit: number): Promise<ApplicationEvaluationDetailDTO[] | undefined> {

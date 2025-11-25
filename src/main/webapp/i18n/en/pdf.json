@@ -1,0 +1,19 @@
+{
+  "pdf": {
+    "headerItems": {
+      "applicationBy": "Application by ",
+      "forPosition": " for the position ",
+      "status": "Status: "
+    },
+    "metaData": {
+      "thisDocumentWasGeneratedOn": "This document was created on ",
+      "byUser": " by ",
+      "usingTumapply": " using ",
+      "metaEndText": "."
+    },
+    "pageCount": {
+      "page": "Page",
+      "of": "from"
+    }
+  }
+}

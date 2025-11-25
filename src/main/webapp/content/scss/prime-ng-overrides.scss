@@ -1,0 +1,28 @@
+:root {
+  // Stepper Styles
+  --p-stepper-step-number-size: 1.75rem;
+  --p-stepper-step-number-font-size: 1rem;
+  --p-stepper-step-title-font-weight: 500;
+}
+
+p-step[data-p-active='true'] .p-step-title {
+  font-weight: 700 !important;
+}
+/* -------------------------------
+   Custom Global Styles for Login
+---------------------------------- */
+.login-header-button .p-button-text.p-button-info {
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.registration-header-button .p-button-text {
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.login-header-button .p-button-text.p-button-info:hover,
+.registration-header-button .p-button-text:hover {
+  filter: drop-shadow(0 0 0.075rem white);
+  background: rgba(255, 255, 255, 0.05);
+}

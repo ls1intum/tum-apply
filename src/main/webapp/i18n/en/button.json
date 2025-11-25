@@ -4,6 +4,7 @@
     "close": "Close",
     "confirm": "Confirm",
     "delete": "Delete",
+    "deny": "Deny",
     "remove": "Remove",
     "edit": "Edit",
     "save": "Save",
@@ -15,6 +16,9 @@
     "back": "Back",
     "next": "Next",
     "apply": "Apply",
-    "publish": "Publish"
+    "publish": "Publish",
+    "tooltip": {
+      "editDisabled": "Only drafts can be edited"
+    }
   }
 }

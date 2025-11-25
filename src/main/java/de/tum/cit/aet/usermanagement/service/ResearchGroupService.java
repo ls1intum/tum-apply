@@ -24,6 +24,7 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -198,6 +199,28 @@ public class ResearchGroupService {
     }
 
     /**
+     * Populates a ResearchGroup entity with values from a ResearchGroupRequestDTO.
+     * Normalizes name, abbreviation, and universityId fields.
+     *
+     * @param entity the research group entity to populate
+     * @param request the request DTO containing the data
+     */
+    private void populateResearchGroupFromRequest(ResearchGroup entity, ResearchGroupRequestDTO request) {
+        entity.setName(StringUtil.normalize(request.researchGroupName(), false));
+        entity.setUniversityId(StringUtil.normalize(request.universityId(), false));
+        entity.setHead(request.researchGroupHead());
+        entity.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
+        entity.setEmail(request.contactEmail());
+        entity.setWebsite(request.website());
+        entity.setSchool(request.school());
+        entity.setDescription(request.description());
+        entity.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
+        entity.setStreet(request.street());
+        entity.setPostalCode(request.postalCode());
+        entity.setCity(request.city());
+    }
+
+    /**
      * Provisions a target user (professor) into an existing research group.
      * - Caller must be ADMIN (enforced in controller).
      * - Group must already exist (manual creation).
@@ -226,7 +249,7 @@ public class ResearchGroupService {
         }
         String roleOutcome = "unchanged";
 
-        var existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
+        Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
             UserResearchGroupRole mapping = new UserResearchGroupRole();
             mapping.setUser(user);
@@ -371,7 +394,7 @@ public class ResearchGroupService {
      * @return the created research group in DRAFT state
      */
     @Transactional
-    public ResearchGroup createProfessorResearchGroupRequest(ProfessorResearchGroupRequestDTO request) {
+    public ResearchGroup createProfessorResearchGroupRequest(ResearchGroupRequestDTO request) {
         User currentUser = currentUserService.getUser();
 
         if (currentUser.getResearchGroup() != null) {
@@ -383,18 +406,7 @@ public class ResearchGroupService {
         }
 
         ResearchGroup researchGroup = new ResearchGroup();
-        researchGroup.setName(StringUtil.normalize(request.researchGroupName(), false));
-        researchGroup.setUniversityId(request.universityId());
-        researchGroup.setHead(request.researchGroupHead());
-        researchGroup.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
-        researchGroup.setEmail(request.contactEmail());
-        researchGroup.setWebsite(request.website());
-        researchGroup.setSchool(request.school());
-        researchGroup.setDescription(request.description());
-        researchGroup.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
-        researchGroup.setStreet(request.street());
-        researchGroup.setPostalCode(request.postalCode());
-        researchGroup.setCity(request.city());
+        populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.DRAFT);
 
         ResearchGroup saved = researchGroupRepository.save(researchGroup);
@@ -420,7 +432,74 @@ public class ResearchGroupService {
     }
 
     /**
-     * Creates an employee research group access request.
+     * Creates a research group directly as ACTIVE state (admin only).
+     * Associated with professor submitted in the request using universityId.
+     *
+     * @param request the research group creation request
+     * @return the created research group in ACTIVE state
+     */
+    @Transactional
+    public ResearchGroup createResearchGroupAsAdmin(ResearchGroupRequestDTO request) {
+        if (researchGroupRepository.existsByNameIgnoreCase(request.researchGroupName())) {
+            throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
+        }
+
+        // Validate that the universityId belongs to a professor or eligible user
+        User professor = userRepository
+            .findByUniversityIdIgnoreCase(request.universityId())
+            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(request.universityId())));
+
+        // Check if user already has a research group
+        if (professor.getResearchGroup() != null) {
+            throw new AlreadyMemberOfResearchGroupException(
+                "User with universityId '%s' is already a member of research group '%s'".formatted(
+                    request.universityId(),
+                    professor.getResearchGroup().getName()
+                )
+            );
+        }
+
+        // Validate that the user has a PROFESSOR role or can be assigned one
+        Set<UserResearchGroupRole> existingRoles = userResearchGroupRoleRepository.findAllByUser(professor);
+        boolean hasProfessorRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.PROFESSOR);
+        boolean hasApplicantRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.APPLICANT);
+
+        // User should either have PROFESSOR role already, or have APPLICANT role (can be upgraded), or no role yet
+        if (!hasProfessorRole && !hasApplicantRole && !existingRoles.isEmpty()) {
+            throw new IllegalArgumentException(
+                "User with universityId '%s' has incompatible roles and cannot be assigned as professor".formatted(request.universityId())
+            );
+        }
+
+        ResearchGroup researchGroup = new ResearchGroup();
+        populateResearchGroupFromRequest(researchGroup, request);
+        researchGroup.setState(ResearchGroupState.ACTIVE);
+
+        ResearchGroup saved = researchGroupRepository.save(researchGroup);
+
+        // Assign the professor to the research group
+        professor.setResearchGroup(saved);
+        userRepository.save(professor);
+
+        // Update or create the PROFESSOR role
+        UserResearchGroupRole role = existingRoles
+            .stream()
+            .findFirst()
+            .orElseGet(() -> {
+                UserResearchGroupRole newRole = new UserResearchGroupRole();
+                newRole.setUser(professor);
+                return newRole;
+            });
+
+        role.setRole(UserRole.PROFESSOR);
+        role.setResearchGroup(saved);
+        userResearchGroupRoleRepository.save(role);
+
+        return saved;
+    }
+
+    /**
+     * Creates an employee research group access request during onboarding.
      * Sends an email to support/administrators with user information and professor name.
      * This is a temporary solution until the employee role is implemented.
      *

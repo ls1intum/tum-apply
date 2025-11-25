@@ -12,19 +12,24 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Thin HTTP client for MVC.
  * - Central place for common request setup (Accept, JSON content).
  * - Keeps request-building logic away from individual tests.
  *
- * Tip: Use the "with(...)" helper to attach security to all requests from this client,
+ * Tip: Use the "with(...)" helper to attach security to all requests from this
+ * client,
  * for example a JWT RequestPostProcessor.
  */
 @Component
@@ -72,7 +77,8 @@ public class MvcTestClient {
 
     /**
      * Removes all default RequestPostProcessors.
-     * After calling this, subsequent requests will not carry previously set processors.
+     * After calling this, subsequent requests will not carry previously set
+     * processors.
      */
     public MvcTestClient withoutPostProcessors() {
         this.defaultPostProcessors.clear();
@@ -83,7 +89,8 @@ public class MvcTestClient {
     // Use these in tests by default.
 
     /**
-     * Performs a GET and asserts 200 OK, then deserializes the body to the given class.
+     * Performs a GET and asserts 200 OK, then deserializes the body to the given
+     * class.
      * Query parameters and optional Accept overrides are supported.
      * If type is Void, only the assertion is performed.
      */
@@ -105,8 +112,29 @@ public class MvcTestClient {
         return read(result, type);
     }
 
+    public <T> T multipartPostAndRead(String url, List<MockMultipartFile> files, TypeReference<T> responseType, int expectedStatus) {
+        try {
+            MockMultipartHttpServletRequestBuilder builder = multipart(url);
+            for (MockMultipartFile file : files) {
+                builder.file(file);
+            }
+            // Apply default Accept header and RequestPostProcessors (e.g., JWT)
+            builder = (MockMultipartHttpServletRequestBuilder) applyDefaults(builder);
+            MvcResult result = mockMvc.perform(builder).andExpect(status().is(expectedStatus)).andReturn();
+
+            String body = result.getResponse().getContentAsString();
+            if (body.isEmpty()) {
+                return null;
+            }
+            return objectMapper.readValue(body, responseType);
+        } catch (Exception e) {
+            throw new AssertionError("Multipart POST " + url + " failed", e);
+        }
+    }
+
     /**
-     * Performs a GET and asserts 200 OK, then deserializes the body using a TypeReference.
+     * Performs a GET and asserts 200 OK, then deserializes the body using a
+     * TypeReference.
      * Useful for generic types like PageResponse<Foo>.
      */
     public <T> T getAndRead(String url, Map<String, String> params, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
@@ -120,6 +148,39 @@ public class MvcTestClient {
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
         return read(result, typeRef);
+    }
+
+    /**
+     * Performs a GET and asserts the given status, then returns the raw response body as bytes.
+     * Useful for binary downloads (e.g. ZIP, PDF).
+     */
+    public byte[] getAndReturnBytes(String url, Map<String, String> params, int expectedStatus, MediaType... accepts) {
+        try {
+            MultiValueMap<String, String> multiParams = new LinkedMultiValueMap<>();
+            if (params != null) {
+                params.forEach(multiParams::add);
+            }
+
+            ResultActions action = mockMvc.perform(
+                applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url).params(multiParams), accepts)
+            );
+
+            MockHttpServletResponse response;
+            switch (expectedStatus) {
+                case 200 -> response = action.andExpect(status().isOk()).andReturn().getResponse();
+                case 204 -> response = action.andExpect(status().isNoContent()).andReturn().getResponse();
+                case 400 -> response = action.andExpect(status().isBadRequest()).andReturn().getResponse();
+                case 401 -> response = action.andExpect(status().isUnauthorized()).andReturn().getResponse();
+                case 403 -> response = action.andExpect(status().isForbidden()).andReturn().getResponse();
+                case 404 -> response = action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 500 -> response = action.andExpect(status().isInternalServerError()).andReturn().getResponse();
+                default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+            }
+
+            return response.getContentAsByteArray();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with status " + expectedStatus, e);
+        }
     }
 
     /**
@@ -147,7 +208,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a POST with a JSON body and asserts 200 OK, then deserializes using a TypeReference.
+     * Performs a POST with a JSON body and asserts 200 OK, then deserializes using
+     * a TypeReference.
      */
     public <T> T postAndRead(String url, Object body, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
         MvcResult result;
@@ -166,7 +228,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a PUT with a JSON body and asserts 200 OK, then deserializes to the given class.
+     * Performs a PUT with a JSON body and asserts 200 OK, then deserializes to the
+     * given class.
      * If type is Void, only the assertion is performed.
      */
     public <T> T putAndRead(String url, Object body, Class<T> type, int expectedStatus, MediaType... accepts) {
@@ -189,7 +252,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a PUT with a JSON body and asserts 200 OK, then deserializes using a TypeReference.
+     * Performs a PUT with a JSON body and asserts 200 OK, then deserializes using a
+     * TypeReference.
      */
     public <T> T putAndRead(String url, Object body, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
         MvcResult result;
@@ -206,7 +270,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a DELETE and asserts 204 No Content, then optionally deserializes if a body is returned.
+     * Performs a DELETE and asserts 204 No Content, then optionally deserializes if
+     * a body is returned.
      * If type is Void, only the assertion is performed.
      */
     public <T> T deleteAndRead(String url, Object body, Class<T> type, int expectedStatus, MediaType... accepts) {
@@ -228,13 +293,15 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a DELETE and asserts 204 No Content, then deserializes using a TypeReference if present.
+     * Performs a DELETE and asserts 204 No Content, then deserializes using a
+     * TypeReference if present.
      */
     public <T> T deleteAndRead(String url, Object body, TypeReference<T> typeRef, int expectedStatus, MediaType... accepts) {
         return read(deleteOk(url, body, accepts), typeRef);
     }
 
-    // --- No-throws convenience (assert 200 OK inside) -------------------------------------------
+    // --- No-throws convenience (assert 200 OK inside)
+    // -------------------------------------------
 
     /**
      * Low-level GET that asserts 200 OK and returns the MvcResult.
@@ -293,7 +360,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Low-level GET that asserts 500 Internal Server Error and returns the MvcResult.
+     * Low-level GET that asserts 500 Internal Server Error and returns the
+     * MvcResult.
      */
     private MvcResult getInternalServerError(String url, Map<String, String> params, MediaType... accepts) {
         try {
@@ -458,7 +526,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Low-level PUT that asserts 500 Internal Server Error and returns the MvcResult.
+     * Low-level PUT that asserts 500 Internal Server Error and returns the
+     * MvcResult.
      */
     private MvcResult putInternalServerError(String url, Object body, MediaType... accepts) {
         try {
@@ -513,7 +582,7 @@ public class MvcTestClient {
     }
 
     /**
-     *  Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
+     * Low-level DELETE that asserts 403 Forbidden and returns the MvcResult.
      */
     private MvcResult deleteForbidden(String url, Object body, MediaType... accepts) {
         try {
@@ -534,17 +603,20 @@ public class MvcTestClient {
         }
     }
 
-    // --- HTTP performers (low-level, throw checked Exception) -----------------------------------
+    // --- HTTP performers (low-level, throw checked Exception)
+    // -----------------------------------
 
     /**
-     * Builds and performs a GET applying default Accept and any configured RequestPostProcessors.
+     * Builds and performs a GET applying default Accept and any configured
+     * RequestPostProcessors.
      */
     private ResultActions get(String url, MediaType... accepts) throws Exception {
         return mockMvc.perform(applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts));
     }
 
     /**
-     * Builds and performs a GET with query parameters, applying defaults and processors.
+     * Builds and performs a GET with query parameters, applying defaults and
+     * processors.
      */
     private ResultActions get(String url, Map<String, String> params, MediaType... accepts) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = applyDefaults(
@@ -556,7 +628,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Builds and performs a POST with a JSON body, applying defaults and processors.
+     * Builds and performs a POST with a JSON body, applying defaults and
+     * processors.
      */
     private ResultActions postJson(String url, Object body, MediaType... accepts) throws Exception {
         return mockMvc.perform(
@@ -574,7 +647,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Builds and performs a DELETE, optionally with a JSON body, applying defaults and processors.
+     * Builds and performs a DELETE, optionally with a JSON body, applying defaults
+     * and processors.
      */
     private ResultActions deleteJson(String url, Object body, MediaType... accepts) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = applyDefaults(delete(url), accepts).contentType(MediaType.APPLICATION_JSON);
@@ -582,7 +656,8 @@ public class MvcTestClient {
         return mockMvc.perform(requestBuilder);
     }
 
-    // --- Shortcuts that parse JSON bodies --------------------------------------------------------
+    // --- Shortcuts that parse JSON bodies
+    // --------------------------------------------------------
 
     /**
      * Reads and deserializes the response body into a concrete class.
@@ -606,7 +681,8 @@ public class MvcTestClient {
         }
     }
 
-    // --- Internal helpers ------------------------------------------------------------------------
+    // --- Internal helpers
+    // ------------------------------------------------------------------------
 
     /**
      * Applies the default Accept header and all configured RequestPostProcessors.
@@ -620,7 +696,8 @@ public class MvcTestClient {
         return requestBuilder;
     }
 
-    // --- Misc helpers ----------------------------------------------------------------------------
+    // --- Misc helpers
+    // ----------------------------------------------------------------------------
 
     /**
      * Returns the response body as a string.

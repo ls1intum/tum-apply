@@ -51,6 +51,21 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 - Avoid leaking persistence concerns (IDs, timestamps) into write DTOs unless required.
 - Validate DTOs at the boundary; map cleanly to domain entities within services.
 
+### 2.1 Authorization and Security
+
+**Endpoint Security:**
+- `@ApplicantOrAdmin` — Restricts access to applicants (owners) or system administrators.
+  - Used for: Create, Update, Delete, Upload, Withdraw operations.
+  - Enforces ownership check: Applicant can only access their own applications.
+- `@Authenticated` — Requires any authenticated user (applicant or professor).
+  - Used for: Read operations (GetById, GetDocumentIds).
+  - Professors can view applications they're evaluating.
+
+**Service-Level Authorization:**
+- `CurrentUserService` provides authenticated user context.
+- Ownership validation: Compares `application.applicant.userId` with `currentUser.userId`.
+- Throws `AccessDeniedException` for unauthorized access attempts.
+
 ---
 
 ## 3) UI patterns
@@ -68,7 +83,78 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 
 ---
 
-## 4) Testing & quality
+## 4) Endpoint Error Handling
+
+**Validation Errors:**
+
+- `@Valid` annotations trigger Bean Validation framework.
+- Returns `400 Bad Request` with detailed error messages.
+- User interface displays field-level validation errors.
+
+**Authorization Errors:**
+
+- `AccessDeniedException` returns `403 Forbidden`.
+- Client handles via global error interceptor.
+- Displays user-friendly error toast message.
+
+**Not Found Errors:**
+
+- Returns `404 Not Found` for invalid application IDs.
+- User interface gracefully handles missing resources.
+
+**Conflict Errors:**
+
+- Duplicate application detection returns existing draft (no error thrown).
+- State transition validation prevents invalid operations (e.g., editing submitted application).
+- Returns `409 Conflict` for invalid state transitions.
+
+**Server Errors:**
+
+- Unhandled exceptions return `500 Internal Server Error`.
+- Logged with full stack trace for debugging.
+- User interface displays generic error message to user.
+
+## 5) Performance Optimizations
+
+The following points are some of several strategies used across the TUMApply application to boost the performance and responsiveness of the site: 
+
+**DTO Projections:**
+
+- Direct projection to DTOs via JPQL constructor expressions avoids unnecessary entity hydration.
+- Reduces memory footprint and serialization overhead.
+- Example: `SELECT new ApplicationOverviewDTO(...) FROM Application a...`
+
+**Pagination:**
+
+- Criteria API enables database-level pagination (LIMIT / OFFSET).
+- Prevents loading entire datasets into memory.
+- Configurable page size (default 25, max 100).
+
+**Lazy Loading:**
+
+- Client table component loads data on-demand via lazy load events.
+- Supports infinite scroll and traditional pagination UI patterns.
+
+**Bulk Operations:**
+
+- Bulk state updates use JPQL UPDATE queries instead of entity loading.
+- Significantly faster for batch operations (e.g., closing all applications for a job).
+
+**Cascade Operations:**
+
+- Configured cascade types ensure efficient deletion:
+  - `CascadeType.ALL` on CustomFieldAnswers and InternalComments.
+  - `orphanRemoval = true` ensures orphaned entities are cleaned up.
+
+**Document Reference Strategy:**
+
+- Separate document loading via dedicated endpoint (`getDocumentDictionaryIds`).
+- Prevents eager loading of heavy document metadata in list views.
+- Client requests document IDs only when rendering detail view.
+
+---
+
+## 5) Testing & quality
 
 ### Client-side
 

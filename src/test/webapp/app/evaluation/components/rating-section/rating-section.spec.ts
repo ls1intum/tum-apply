@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
-import { RatingSection } from 'app/evaluation/components/rating-section/rating-section';
+import { RatingSection } from 'app/shared/components/molecules/rating-section/rating-section';
 import { RatingResourceApiService } from 'app/generated/api/ratingResourceApi.service';
 import { RatingOverviewDTO } from 'app/generated/model/ratingOverviewDTO';
 import { createToastServiceMock, provideToastServiceMock } from '../../../../util/toast-service.mock';
