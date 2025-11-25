@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -251,5 +252,37 @@ describe('ResearchGroupMembersComponent', () => {
     component.members.set([memberWithLowercaseRole]);
     const row = component.tableData()[0];
     expect(row.role).toBe('Professor');
+  });
+
+  it('should open add members modal and reload members on close if added', () => {
+    const mockRef = {
+      onClose: of(true),
+    };
+    const dialogService = TestBed.inject(DialogService);
+    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef as any);
+    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+
+    fixture.detectChanges(); // Trigger initial load
+
+    component.openAddMembersModal();
+
+    expect(dialogService.open).toHaveBeenCalled();
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(2);
+  });
+
+  it('should open add members modal and NOT reload members on close if NOT added', () => {
+    const mockRef = {
+      onClose: of(false),
+    };
+    const dialogService = TestBed.inject(DialogService);
+    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef as any);
+    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+
+    fixture.detectChanges(); // Trigger initial load
+
+    component.openAddMembersModal();
+
+    expect(dialogService.open).toHaveBeenCalled();
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 });
