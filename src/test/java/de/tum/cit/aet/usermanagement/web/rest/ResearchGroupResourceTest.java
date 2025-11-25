@@ -654,4 +654,72 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead(API_BASE_PATH + "/" + researchGroup.getResearchGroupId() + "/withdraw", null, Void.class, 403);
     }
+
+    @Test
+    void createResearchGroupAsAdminReturnsCreatedGroup() {
+        UUID adminUserID = UUID.randomUUID();
+        UserTestData.createUserWithoutResearchGroup(userRepository, "prof.new@tum.de", "Prof.", "New", "adm1234");
+        ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest("Admin Created Lab", "adm1234");
+
+        ResearchGroupDTO result = api
+            .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
+            .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, ResearchGroupDTO.class, 201);
+
+        assertThat(result).isNotNull();
+        assertThat(result.name()).isEqualTo(requestDTO.researchGroupName());
+        assertThat(result.head()).isEqualTo(requestDTO.researchGroupHead());
+        assertThat(result.state()).isEqualTo(ResearchGroupState.ACTIVE);
+    }
+
+    @Test
+    void createResearchGroupAsAdminWithNonExistentUserThrowsException() {
+        UUID adminUserID = UUID.randomUUID();
+        ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest("Fail Lab", "nonexistent");
+
+        api
+            .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
+            .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, Void.class, 404);
+    }
+
+    @Test
+    void createResearchGroupAsAdminWithExistingNameThrowsException() {
+        UUID adminUserID = UUID.randomUUID();
+        UserTestData.createUserWithoutResearchGroup(userRepository, "prof.exist@tum.de", "Prof.", "Exist", "ex123st");
+        ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest(researchGroup.getName(), "ex123st");
+
+        api
+            .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
+            .postAndRead(API_BASE_PATH + "/admin-create", requestDTO, Void.class, 409);
+    }
+
+    @Test
+    void addMembersToResearchGroupAsProfessorAddsMembers() {
+        User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.me@tum.de", "Add", "Me", "add123");
+        AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(
+            List.of(userToAdd.getUserId()),
+            researchGroup.getResearchGroupId()
+        );
+
+        api
+            .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
+
+        User updatedUser = userRepository.findById(userToAdd.getUserId()).orElseThrow();
+        assertThat(updatedUser.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
+    }
+
+    @Test
+    void addMembersToResearchGroupAsAdminAddsMembers() {
+        User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.admin@tum.de", "Add", "Admin", "adm999");
+        AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(
+            List.of(userToAdd.getUserId()),
+            researchGroup.getResearchGroupId()
+        );
+        UUID adminId = UUID.randomUUID();
+
+        api.with(JwtPostProcessors.jwtUser(adminId, "ROLE_ADMIN")).postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
+
+        User updatedUser = userRepository.findById(userToAdd.getUserId()).orElseThrow();
+        assertThat(updatedUser.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
+    }
 }

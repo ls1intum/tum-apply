@@ -29,6 +29,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -469,7 +470,12 @@ public class ResearchGroupService {
         populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.ACTIVE);
 
-        ResearchGroup saved = researchGroupRepository.save(researchGroup);
+        ResearchGroup saved;
+        try {
+            saved = researchGroupRepository.save(researchGroup);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
+        }
 
         // Assign the professor to the research group
         professor.setResearchGroup(saved);
@@ -597,7 +603,7 @@ public class ResearchGroupService {
                 user.getEmail(),
                 "You have been added to the research group " + researchGroup.getName(),
                 emailBody,
-                Language.fromCode(user.getSelectedLanguage())
+                user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
             );
         }
     }
