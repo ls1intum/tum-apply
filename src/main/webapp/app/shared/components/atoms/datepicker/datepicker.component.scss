@@ -39,9 +39,6 @@
       }
     }
 
-    .p-inputtext::placeholder {
-    }
-
     .p-inputtext:disabled::placeholder {
       color: var(--p-text-disabled);
     }

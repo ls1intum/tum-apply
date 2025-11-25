@@ -33,10 +33,6 @@
       }
     }
 
-    // Override primeng styling of placeholder text color in select field
-    .p-select-label.ng-star-inserted.p-placeholder {
-    }
-
     // Override primeng unnecessary padding on top and bottom of select list
     .p-select-list {
       padding: 0;
@@ -57,10 +53,6 @@
         color: var(--p-text-on-primary);
       }
     }
-  }
-
-  // Override primeng styling of wrong color on select icon
-  .ng-fa-icon {
   }
 
   .p-select {
