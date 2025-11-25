@@ -11,7 +11,7 @@ import {
   validateBoundaryMismatch,
   validateGradeRange,
   gradeFormatValidator,
-} from '../../../../../../src/main/webapp/app/core/util/grade-format.validator';
+} from 'app/core/util/grade-format.validator';
 import { FormControl, FormGroup } from '@angular/forms';
 
 describe('grade-format.validator', () => {

@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { vi } from 'vitest';
 
 import { DataUtils } from 'app/core/util/data-util.service';
 
@@ -16,8 +17,7 @@ describe('Data Utils Service Test', () => {
   describe('openFile', () => {
     it('should open file in new window', () => {
       const newWindow = { ...window };
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      (newWindow.document as any).write = vi.fn();
+      (newWindow.document as Document)['write'] = vi.fn();
       window.open = vi.fn(() => newWindow);
       window.URL.createObjectURL = vi.fn();
 
@@ -38,8 +38,7 @@ describe('Data Utils Service Test', () => {
     });
 
     it('should format bytes with thousand separator', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((service as any).formatAsBytes(1234)).toBe('1 234 bytes');
+      expect((service as unknown as { formatAsBytes: (n: number) => string })['formatAsBytes'](1234)).toBe('1 234 bytes');
     });
   });
 
@@ -57,15 +56,13 @@ describe('Data Utils Service Test', () => {
     }
 
     beforeEach(() => {
-      // stub global FileReader
-      // @ts-ignore
-      global.FileReader = MockFileReader;
+      (global as any).FileReader = MockFileReader;
     });
 
     it('should load file to form when file present (non-image)', async () => {
       const file = createMockFile('text/plain');
       const event = { target: { files: [file] } } as unknown as Event;
-      const editForm = { patchValue: vi.fn() } as any;
+      const editForm = { patchValue: vi.fn() } as unknown as import('@angular/forms').FormGroup;
 
       await firstValueFrom(service.loadFileToForm(event, editForm, 'myField', false));
 
@@ -75,14 +72,14 @@ describe('Data Utils Service Test', () => {
     it('should error when image expected but wrong type', async () => {
       const file = createMockFile('text/plain');
       const event = { target: { files: [file] } } as unknown as Event;
-      const editForm = { patchValue: vi.fn() } as any;
+      const editForm = { patchValue: vi.fn() } as unknown as import('@angular/forms').FormGroup;
 
       await expect(firstValueFrom(service.loadFileToForm(event, editForm, 'f', true))).rejects.toMatchObject({ key: 'not.image' });
     });
 
     it('should error when no file present', async () => {
       const event = { target: {} } as unknown as Event;
-      const editForm = { patchValue: vi.fn() } as any;
+      const editForm = { patchValue: vi.fn() } as unknown as import('@angular/forms').FormGroup;
 
       await expect(firstValueFrom(service.loadFileToForm(event, editForm, 'f', false))).rejects.toMatchObject({ key: 'could.not.extract' });
     });

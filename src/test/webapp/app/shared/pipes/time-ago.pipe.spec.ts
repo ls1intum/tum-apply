@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { TimeAgoPipe } from '../../../../../../src/main/webapp/app/shared/pipes/time-ago.pipe';
+import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { TranslateService } from '@ngx-translate/core';
 
 describe('TimeAgoPipe', () => {
@@ -31,7 +31,7 @@ describe('TimeAgoPipe', () => {
 
   it('should return empty string for falsy value', () => {
     expect(pipe.transform('')).toBe('');
-    expect(pipe.transform(undefined as any)).toBe('');
+    expect(pipe.transform(undefined as unknown as string)).toBe('');
   });
 
   it('should return just now for < 60 seconds', () => {

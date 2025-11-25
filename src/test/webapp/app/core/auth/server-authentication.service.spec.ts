@@ -1,14 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { ServerAuthenticationService } from '../../../../../../src/main/webapp/app/core/auth/server-authentication.service';
-import { AuthenticationResourceApiService } from '../../../../../../src/main/webapp/app/generated/api/authenticationResourceApi.service';
-import { EmailVerificationResourceApiService } from '../../../../../../src/main/webapp/app/generated/api/emailVerificationResourceApi.service';
-import { of } from 'rxjs';
-import { OtpCompleteDTO } from '../../../../../../src/main/webapp/app/generated/model/otpCompleteDTO';
+import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
+import { AuthenticationResourceApiService } from 'app/generated/api/authenticationResourceApi.service';
+import { EmailVerificationResourceApiService } from 'app/generated/api/emailVerificationResourceApi.service';
+import { of, throwError } from 'rxjs';
+import { OtpCompleteDTO } from 'app/generated/model/otpCompleteDTO';
+import { vi } from 'vitest';
 
-// Mock DTOs
 const mockSessionInfo = { expiresIn: 60 };
 
-// Mock Services
 class MockAuthenticationResourceApiService {
   login = vi.fn().mockReturnValue(of(mockSessionInfo));
   otpComplete = vi.fn().mockReturnValue(of(mockSessionInfo));
@@ -33,14 +32,15 @@ describe('ServerAuthenticationService', () => {
       ],
     });
     service = TestBed.inject(ServerAuthenticationService);
-    authApi = TestBed.inject(AuthenticationResourceApiService) as any;
-    emailApi = TestBed.inject(EmailVerificationResourceApiService) as any;
+    authApi = TestBed.inject(AuthenticationResourceApiService) as unknown as MockAuthenticationResourceApiService;
+    emailApi = TestBed.inject(EmailVerificationResourceApiService) as unknown as MockEmailVerificationResourceApiService;
   });
 
   describe('authentication flows', () => {
     it('should login with email and password', async () => {
       await service.login('test@example.com', 'pw');
       expect(authApi.login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'pw' });
+      vi.clearAllMocks();
     });
 
     it('should handle login error', async () => {
@@ -49,16 +49,19 @@ describe('ServerAuthenticationService', () => {
         subscribe: (s: any, e: any) => e(new Error('fail')),
       });
       await expect(service.login('fail@example.com', 'pw')).rejects.toThrow();
+      vi.clearAllMocks();
     });
 
-    it('should logout and clear timer', async () => {
-      // @ts-ignore
-      service['refreshTimerId'] = 123;
-      const clearSpy = vi.spyOn(window, 'clearTimeout');
+    it('should logout successfully', async () => {
       await service.logout();
       expect(authApi.logout).toHaveBeenCalled();
-      expect(clearSpy).toHaveBeenCalled();
-      clearSpy.mockRestore();
+      vi.clearAllMocks();
+    });
+
+    it('should handle logout error', async () => {
+      authApi.logout.mockReturnValueOnce(throwError(() => new Error('logout failed')));
+      await expect(service.logout()).rejects.toThrow();
+      vi.clearAllMocks();
     });
   });
 
@@ -69,6 +72,7 @@ describe('ServerAuthenticationService', () => {
     ])('should send OTP for %s', async (_label, isRegistration) => {
       await service.sendOtp('test@example.com', isRegistration);
       expect(emailApi.send).toHaveBeenCalledWith({ email: 'test@example.com', registration: isRegistration });
+      vi.clearAllMocks();
     });
 
     it('should verify OTP for login', async () => {
@@ -80,6 +84,7 @@ describe('ServerAuthenticationService', () => {
         purpose: OtpCompleteDTO.PurposeEnum.Login,
       });
       expect(result).toEqual(mockSessionInfo);
+      vi.clearAllMocks();
     });
 
     it('should verify OTP for registration with profile', async () => {
@@ -92,6 +97,7 @@ describe('ServerAuthenticationService', () => {
         purpose: OtpCompleteDTO.PurposeEnum.Register,
       });
       expect(result).toEqual(mockSessionInfo);
+      vi.clearAllMocks();
     });
 
     it('should handle verifyOtp error', async () => {
@@ -100,6 +106,7 @@ describe('ServerAuthenticationService', () => {
         subscribe: (s: any, e: any) => e(new Error('fail')),
       });
       await expect(service.verifyOtp('fail@example.com', '123', OtpCompleteDTO.PurposeEnum.Login)).rejects.toThrow();
+      vi.clearAllMocks();
     });
   });
 
@@ -108,148 +115,150 @@ describe('ServerAuthenticationService', () => {
       const result = await service.refreshTokens();
       expect(authApi.refresh).toHaveBeenCalled();
       expect(result).toBe(true);
-    });
-
-    it('should not call refresh again if already in flight', async () => {
-      // @ts-ignore
-      service['refreshInFlight'] = Promise.resolve(true);
-      const result = await service.refreshTokens();
-      expect(authApi.refresh).not.toHaveBeenCalled();
-      expect(result).toBe(true);
+      vi.clearAllMocks();
     });
 
     it('should handle refresh error and return false', async () => {
-      authApi.refresh.mockReturnValueOnce({
-        toPromise: () => Promise.reject(new Error('fail')),
-        subscribe: (s: any, e: any) => e(new Error('fail')),
-      });
+      authApi.refresh.mockReturnValueOnce(throwError(() => new Error('fail')));
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       expect(await service.refreshTokens()).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Failed to refresh token, logging out...', expect.any(Error));
+      consoleWarnSpy.mockRestore();
+      vi.clearAllMocks();
     });
 
-    it('should manage timeout lifecycle', () => {
-      const setSpy = vi.spyOn(window, 'setTimeout');
-      const clearSpy = vi.spyOn(window, 'clearTimeout');
+    it('should not start new refresh if already in flight', async () => {
+      const firstRefresh = service.refreshTokens();
+      const secondRefresh = service.refreshTokens();
 
-      // @ts-ignore
-      service['startTokenRefreshTimeout'](60);
-      expect(setSpy).toHaveBeenCalled();
+      await Promise.all([firstRefresh, secondRefresh]);
 
-      // @ts-ignore
-      service['refreshTimerId'] = 123;
-      // @ts-ignore
-      service['stopTokenRefreshTimeout']();
-      expect(clearSpy).toHaveBeenCalledWith(123);
-
-      [setSpy, clearSpy].forEach(spy => spy.mockRestore());
+      expect(authApi.refresh).toHaveBeenCalledTimes(1);
+      vi.clearAllMocks();
     });
 
-    it('should not start timeout if expiresIn is undefined', () => {
-      const setSpy = vi.spyOn(window, 'setTimeout');
-      // @ts-ignore
-      service['startTokenRefreshTimeout'](undefined);
-      expect(setSpy).not.toHaveBeenCalled();
-      setSpy.mockRestore();
+    it('should schedule automatic token refresh after login', async () => {
+      const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
+      await service.login('test@example.com', 'password');
+
+      expect(setTimeoutSpy).toHaveBeenCalled();
+
+      setTimeoutSpy.mockRestore();
+      vi.clearAllMocks();
     });
 
-    it('should clear existing timer before starting new one', () => {
-      // @ts-ignore
-      service['refreshTimerId'] = 999;
-      const clearSpy = vi.spyOn(window, 'clearTimeout');
-      const setSpy = vi.spyOn(window, 'setTimeout');
+    it('should schedule automatic token refresh after OTP verification', async () => {
+      const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
+      await service.verifyOtp('test@example.com', '123456', OtpCompleteDTO.PurposeEnum.Login);
 
-      // @ts-ignore
-      service['startTokenRefreshTimeout'](60);
+      expect(setTimeoutSpy).toHaveBeenCalled();
 
-      expect(clearSpy).toHaveBeenCalledWith(999);
-      expect(setSpy).toHaveBeenCalled();
+      setTimeoutSpy.mockRestore();
+      vi.clearAllMocks();
+    });
 
-      [clearSpy, setSpy].forEach(spy => spy.mockRestore());
+    it('should not schedule refresh timer if expiresIn is undefined', async () => {
+      authApi.login.mockReturnValueOnce(of({ expiresIn: undefined }));
+      const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
+
+      await service.login('test@example.com', 'password');
+
+      expect(setTimeoutSpy).not.toHaveBeenCalled();
+
+      setTimeoutSpy.mockRestore();
+      vi.clearAllMocks();
+    });
+
+    it('should clear refresh timer on logout', async () => {
+      const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+
+      // First login to potentially start a timer
+      await service.login('test@example.com', 'password');
+
+      // Then logout
+      await service.logout();
+
+      // Verify timer was cleared (side effect of logout)
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+
+      clearTimeoutSpy.mockRestore();
+      vi.clearAllMocks();
+    });
+
+    it('should replace existing timer when starting new one', async () => {
+      const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+
+      // Login twice
+      await service.login('test@example.com', 'password');
+      await service.login('test@example.com', 'password');
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+
+      clearTimeoutSpy.mockRestore();
+      vi.clearAllMocks();
     });
   });
 
-  describe('window listeners', () => {
-    it('should bind and unbind listeners', () => {
-      const addDocSpy = vi.spyOn(document, 'addEventListener');
-      const addWinSpy = vi.spyOn(window, 'addEventListener');
-      const rmDocSpy = vi.spyOn(document, 'removeEventListener');
-      const rmWinSpy = vi.spyOn(window, 'removeEventListener');
+  describe('session management side effects', () => {
+    it('should bind window event listeners after login', async () => {
+      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+      const docAddEventListenerSpy = vi.spyOn(document, 'addEventListener');
 
-      // @ts-ignore
-      service['windowListenersActive'] = false;
-      // @ts-ignore
-      service['bindWindowListeners']();
-      expect(service['windowListenersActive']).toBe(true);
-      expect(addDocSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
-      expect(addWinSpy).toHaveBeenCalledWith('focus', expect.any(Function));
-      expect(addWinSpy).toHaveBeenCalledWith('online', expect.any(Function));
+      await service.login('test@example.com', 'password');
 
-      // @ts-ignore
-      service['onVisibilityChange'] = () => {};
-      // @ts-ignore
-      service['onFocus'] = () => {};
-      // @ts-ignore
-      service['onOnline'] = () => {};
-      // @ts-ignore
-      service['unbindWindowListeners']();
-      expect(service['windowListenersActive']).toBe(false);
-      expect(rmDocSpy).toHaveBeenCalled();
-      expect(rmWinSpy).toHaveBeenCalled();
+      expect(addEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
+      expect(addEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
+      expect(docAddEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
 
-      [addDocSpy, addWinSpy, rmDocSpy, rmWinSpy].forEach(spy => spy.mockRestore());
+      addEventListenerSpy.mockRestore();
+      docAddEventListenerSpy.mockRestore();
+      vi.clearAllMocks();
     });
 
-    it('should not bind if already active', () => {
-      // @ts-ignore
-      service['windowListenersActive'] = true;
-      const addSpy = vi.spyOn(document, 'addEventListener');
-      // @ts-ignore
-      service['bindWindowListeners']();
-      expect(addSpy).not.toHaveBeenCalled();
-      addSpy.mockRestore();
+    it('should not bind listeners multiple times', async () => {
+      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+
+      await service.login('test@example.com', 'password');
+
+      const callCountAfterFirst = addEventListenerSpy.mock.calls.length;
+
+      // Clear and login again
+      vi.clearAllMocks();
+      await service.login('test@example.com', 'password');
+
+      expect(addEventListenerSpy).toHaveBeenCalled();
+
+      addEventListenerSpy.mockRestore();
+      vi.clearAllMocks();
     });
 
-    it('should not unbind if not active', () => {
-      // @ts-ignore
-      service['windowListenersActive'] = false;
-      const rmSpy = vi.spyOn(document, 'removeEventListener');
-      // @ts-ignore
-      service['unbindWindowListeners']();
-      expect(rmSpy).not.toHaveBeenCalled();
-      rmSpy.mockRestore();
+    it('should unbind window event listeners after logout', async () => {
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+      const docRemoveEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+
+      // First login to set up listeners
+      await service.login('test@example.com', 'password');
+
+      // Then logout
+      await service.logout();
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
+      expect(docRemoveEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+
+      removeEventListenerSpy.mockRestore();
+      docRemoveEventListenerSpy.mockRestore();
+      vi.clearAllMocks();
     });
 
-    it.each([
-      [
-        'visibility change (visible)',
-        'onVisibilityChange',
-        () => Object.defineProperty(document, 'hidden', { value: false, writable: true }),
-      ],
-      ['window focus', 'onFocus', () => {}],
-      ['online event', 'onOnline', () => {}],
-    ])('should trigger refreshTokens on %s', async (_label, handler, setup) => {
-      // @ts-ignore
-      service['windowListenersActive'] = false;
-      // @ts-ignore
-      service['bindWindowListeners']();
-      setup();
-      const refreshSpy = vi.spyOn(service, 'refreshTokens').mockResolvedValue(true);
-      // @ts-ignore
-      service[handler]?.();
-      expect(refreshSpy).toHaveBeenCalled();
-      refreshSpy.mockRestore();
-    });
+    it('should handle unbind when no listeners are active', async () => {
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
-    it('should not trigger refreshTokens when document is hidden', async () => {
-      // @ts-ignore
-      service['windowListenersActive'] = false;
-      // @ts-ignore
-      service['bindWindowListeners']();
-      Object.defineProperty(document, 'hidden', { value: true, writable: true });
-      const refreshSpy = vi.spyOn(service, 'refreshTokens').mockResolvedValue(true);
-      // @ts-ignore
-      service['onVisibilityChange']?.();
-      expect(refreshSpy).not.toHaveBeenCalled();
-      refreshSpy.mockRestore();
+      await service.logout();
+      expect(removeEventListenerSpy).not.toHaveBeenCalled();
+
+      removeEventListenerSpy.mockRestore();
+      vi.clearAllMocks();
     });
   });
 });

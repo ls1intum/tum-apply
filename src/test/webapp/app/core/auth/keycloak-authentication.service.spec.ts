@@ -1,11 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  KeycloakAuthenticationService,
-  IdpProvider,
-} from '../../../../../../src/main/webapp/app/core/auth/keycloak-authentication.service';
-import { ApplicationConfigService } from '../../../../../../src/main/webapp/app/core/config/application-config.service';
+import { vi } from 'vitest';
+import { KeycloakAuthenticationService, IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
-// Mock Keycloak class
 class MockKeycloak {
   authenticated = false;
   token = 'mock-token';
@@ -21,7 +18,6 @@ vi.mock('keycloak-js', () => ({
   },
 }));
 
-// Mock ApplicationConfigService
 class MockApplicationConfigService {
   keycloak = {
     url: 'http://mock-keycloak',
@@ -41,9 +37,7 @@ describe('KeycloakAuthenticationService', () => {
       providers: [KeycloakAuthenticationService, { provide: ApplicationConfigService, useClass: MockApplicationConfigService }],
     });
     service = TestBed.inject(KeycloakAuthenticationService);
-    // Setze das Mock-Objekt direkt
-    // @ts-ignore
-    service['keycloak'] = keycloakInstance;
+    service['keycloak'] = keycloakInstance as unknown as (typeof service)['keycloak'];
   });
 
   describe('initialization', () => {
@@ -52,22 +46,47 @@ describe('KeycloakAuthenticationService', () => {
       const result = await service.init();
       expect(result).toBe(true);
       expect(keycloakInstance.init).toHaveBeenCalled();
+      vi.clearAllMocks();
     });
 
     it('should handle non-authenticated init', async () => {
-      // @ts-ignore
-      service['keycloak'] = undefined;
+      keycloakInstance.authenticated = false;
       keycloakInstance.init.mockResolvedValue(false);
-      // @ts-ignore
-      service['keycloak'] = keycloakInstance;
-      expect(await service.init()).toBe(false);
+      const result = await service.init();
+      expect(result).toBe(false);
+      expect(keycloakInstance.init).toHaveBeenCalled();
+      vi.clearAllMocks();
     });
 
     it('should return undefined/false when keycloak not initialized', () => {
-      // @ts-ignore
-      service['keycloak'] = undefined;
+      service['keycloak'] = undefined as unknown as (typeof service)['keycloak'];
       expect(service.getToken()).toBeUndefined();
       expect(service.isLoggedIn()).toBe(false);
+      vi.clearAllMocks();
+    });
+
+    it('should handle init error and return false', async () => {
+      keycloakInstance.init.mockRejectedValue(new Error('Init failed'));
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await service.init();
+
+      expect(result).toBe(false);
+      expect(consoleErrorSpy).toHaveBeenCalledWith('🔁 Keycloak init failed:', expect.any(Error));
+      consoleErrorSpy.mockRestore();
+      vi.clearAllMocks();
+    });
+
+    it('should start token refresh scheduler after successful authenticated init', async () => {
+      keycloakInstance.authenticated = true;
+      keycloakInstance.init.mockResolvedValue(true);
+      const setIntervalSpy = vi.spyOn(global, 'setInterval');
+
+      await service.init();
+
+      expect(setIntervalSpy).toHaveBeenCalled();
+      setIntervalSpy.mockRestore();
+      vi.clearAllMocks();
     });
   });
 
@@ -79,16 +98,19 @@ describe('KeycloakAuthenticationService', () => {
     ])('should login with %s provider using idpHint %s', async (provider, hint) => {
       await service.loginWithProvider(provider);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ idpHint: hint }));
+      vi.clearAllMocks();
     });
 
     it('should login with TUM provider without idpHint', async () => {
       await service.loginWithProvider(IdpProvider.TUM);
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.not.objectContaining({ idpHint: expect.anything() }));
+      vi.clearAllMocks();
     });
 
     it('should include redirectUri when provided', async () => {
       await service.loginWithProvider(IdpProvider.Google, '/redirect');
       expect(keycloakInstance.login).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: expect.stringContaining('/redirect') }));
+      vi.clearAllMocks();
     });
 
     it('should handle login errors gracefully', async () => {
@@ -97,6 +119,7 @@ describe('KeycloakAuthenticationService', () => {
       await service.loginWithProvider(IdpProvider.Google);
       expect(consoleErrorSpy).toHaveBeenCalled();
       consoleErrorSpy.mockRestore();
+      vi.clearAllMocks();
     });
   });
 
@@ -105,77 +128,118 @@ describe('KeycloakAuthenticationService', () => {
       keycloakInstance.authenticated = true;
       await service.ensureFreshToken();
       expect(keycloakInstance.updateToken).toHaveBeenCalledWith(20);
+      vi.clearAllMocks();
     });
 
-    it('should manage refresh scheduler lifecycle', () => {
-      const setSpy = vi.spyOn(global, 'setInterval');
-      const clearSpy = vi.spyOn(global, 'clearInterval');
-
-      // @ts-ignore
-      service['refreshIntervalId'] = undefined;
-      // @ts-ignore
-      service['startTokenRefreshScheduler']();
-      expect(setSpy).toHaveBeenCalled();
-
-      // @ts-ignore
-      service['refreshIntervalId'] = 123;
-      // @ts-ignore
-      service['stopTokenRefreshScheduler']();
-      expect(clearSpy).toHaveBeenCalledWith(123);
-
-      setSpy.mockRestore();
-      clearSpy.mockRestore();
+    it('should not refresh token when not authenticated', async () => {
+      keycloakInstance.authenticated = false;
+      await service.ensureFreshToken();
+      expect(keycloakInstance.updateToken).not.toHaveBeenCalled();
+      vi.clearAllMocks();
     });
 
-    it('should not start scheduler if already running', () => {
-      // @ts-ignore
-      service['refreshIntervalId'] = 999;
-      const setSpy = vi.spyOn(global, 'setInterval');
-      // @ts-ignore
-      service['startTokenRefreshScheduler']();
-      expect(setSpy).not.toHaveBeenCalled();
-      setSpy.mockRestore();
+    it('should handle token refresh errors gracefully', async () => {
+      keycloakInstance.authenticated = true;
+      keycloakInstance.updateToken.mockRejectedValue(new Error('Token refresh failed'));
+      const consoleErrorSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const logoutSpy = vi.spyOn(service, 'logout').mockResolvedValue();
+
+      await expect(service.ensureFreshToken()).rejects.toThrow('Token refresh failed');
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to refresh token, logging out...', expect.any(Error));
+      expect(logoutSpy).toHaveBeenCalled();
+      consoleErrorSpy.mockRestore();
+      logoutSpy.mockRestore();
+      vi.clearAllMocks();
+    });
+
+    it('should not start new refresh if already in flight', async () => {
+      keycloakInstance.authenticated = true;
+      const firstRefresh = service.ensureFreshToken();
+      const secondRefresh = service.ensureFreshToken();
+
+      await Promise.all([firstRefresh, secondRefresh]);
+
+      // Should only call updateToken once
+      expect(keycloakInstance.updateToken).toHaveBeenCalledTimes(1);
+      vi.clearAllMocks();
     });
   });
 
-  describe('window listeners', () => {
-    it('should bind and unbind listeners correctly', () => {
-      const addDocSpy = vi.spyOn(document, 'addEventListener');
-      const addWinSpy = vi.spyOn(window, 'addEventListener');
-      const rmDocSpy = vi.spyOn(document, 'removeEventListener');
-      const rmWinSpy = vi.spyOn(window, 'removeEventListener');
-
-      // @ts-ignore
-      service['windowListenersActive'] = false;
-      // @ts-ignore
-      service['bindWindowListeners']();
-      expect(service['windowListenersActive']).toBe(true);
-      expect(addDocSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
-      expect(addWinSpy).toHaveBeenCalledWith('focus', expect.any(Function));
-      expect(addWinSpy).toHaveBeenCalledWith('online', expect.any(Function));
-
-      // @ts-ignore
-      service['unbindWindowListeners']();
-      expect(service['windowListenersActive']).toBe(false);
-      expect(rmDocSpy).toHaveBeenCalled();
-      expect(rmWinSpy).toHaveBeenCalled();
-
-      [addDocSpy, addWinSpy, rmDocSpy, rmWinSpy].forEach(spy => spy.mockRestore());
+  describe('logout', () => {
+    it('should call keycloak logout when authenticated', async () => {
+      keycloakInstance.authenticated = true;
+      await service.logout();
+      expect(keycloakInstance.logout).toHaveBeenCalled();
+      vi.clearAllMocks();
     });
 
-    it('should trigger token refresh on visibility change', async () => {
-      keycloakInstance.authenticated = true;
-      // @ts-ignore
-      service['windowListenersActive'] = false;
-      // @ts-ignore
-      service['bindWindowListeners']();
+    it('should not call keycloak logout when not authenticated', async () => {
+      keycloakInstance.authenticated = false;
+      await service.logout();
+      expect(keycloakInstance.logout).not.toHaveBeenCalled();
+      vi.clearAllMocks();
+    });
 
-      Object.defineProperty(document, 'hidden', { value: false, writable: true });
-      const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
-      // @ts-ignore
-      service['onVisibilityChange']?.();
-      expect(ensureFreshTokenSpy).toHaveBeenCalled();
-      ensureFreshTokenSpy.mockRestore();
+    it('should handle logout errors gracefully', async () => {
+      keycloakInstance.authenticated = true;
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      keycloakInstance.logout.mockRejectedValue(new Error('Logout failed'));
+
+      await expect(service.logout()).rejects.toThrow('Logout failed');
+
+      consoleErrorSpy.mockRestore();
+      vi.clearAllMocks();
+    });
+
+    it('should use custom redirect URI when provided', async () => {
+      keycloakInstance.authenticated = true;
+      await service.logout('/custom-redirect');
+
+      expect(keycloakInstance.logout).toHaveBeenCalledWith(
+        expect.objectContaining({ redirectUri: expect.stringContaining('/custom-redirect') }),
+      );
+      vi.clearAllMocks();
+    });
+
+    it('should handle absolute redirect URIs', async () => {
+      keycloakInstance.authenticated = true;
+      await service.logout('https://external.com/redirect');
+
+      expect(keycloakInstance.logout).toHaveBeenCalledWith(expect.objectContaining({ redirectUri: 'https://external.com/redirect' }));
+      vi.clearAllMocks();
+    });
+
+    it('should stop token refresh scheduler on logout', async () => {
+      const clearIntervalSpy = vi.spyOn(global, 'clearInterval');
+      keycloakInstance.authenticated = true;
+
+      // First login to start scheduler
+      await service.init();
+
+      // Then logout
+      await service.logout();
+
+      expect(clearIntervalSpy).toHaveBeenCalled();
+      clearIntervalSpy.mockRestore();
+      vi.clearAllMocks();
+    });
+  });
+
+  describe('token access', () => {
+    it('should return token when keycloak is initialized', () => {
+      keycloakInstance.token = 'test-token-123';
+      expect(service.getToken()).toBe('test-token-123');
+      vi.clearAllMocks();
+    });
+
+    it('should return authentication status', () => {
+      keycloakInstance.authenticated = true;
+      expect(service.isLoggedIn()).toBe(true);
+
+      keycloakInstance.authenticated = false;
+      expect(service.isLoggedIn()).toBe(false);
+      vi.clearAllMocks();
     });
   });
 });

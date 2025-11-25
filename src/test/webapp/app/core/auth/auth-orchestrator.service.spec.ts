@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthOrchestratorService } from '../../../../../../src/main/webapp/app/core/auth/auth-orchestrator.service';
-import { ApplicationConfigService } from '../../../../../../src/main/webapp/app/core/config/application-config.service';
+import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { vi } from 'vitest';
 
-// Mock ApplicationConfigService
 class MockApplicationConfigService {
   otp = { resendCooldownSeconds: 30 };
 }
@@ -22,6 +22,7 @@ describe('AuthOrchestratorService', () => {
     service.authSuccess();
     expect(service.isOpen()).toBe(false);
     expect(cb).toHaveBeenCalled();
+    vi.clearAllMocks();
   });
 
   it('should go to nextStep in login flow', () => {
@@ -88,8 +89,8 @@ describe('AuthOrchestratorService', () => {
   });
 
   it('should start OTP cooldown', () => {
-    // Simuliere das Setzen des OTP-Cooldowns direkt
-    (service as any).startOtpRefreshCooldown();
+    // Simuliere das Setzen des OTP-Cooldowns direkt ohne as any
+    service['startOtpRefreshCooldown']();
     expect(service.cooldownUntil()).not.toBeNull();
     expect(service.cooldownSeconds()).toBeGreaterThan(0);
   });

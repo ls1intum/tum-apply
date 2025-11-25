@@ -1,4 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { ParseLinks } from 'app/core/util/parse-links.service';
 
@@ -14,7 +14,7 @@ describe('Parse links service test', () => {
 
   describe('parse', () => {
     it('should throw error for invalid input', () => {
-      expect(() => service.parse('')).toThrow(new Error('input must not be of zero length'));
+      expect(() => service.parse('')).toThrowError('input must not be of zero length');
     });
 
     it('should return links when headers are passed', () => {
@@ -25,7 +25,7 @@ describe('Parse links service test', () => {
 
   describe('parseAll', () => {
     it('should throw error for invalid input', () => {
-      expect(() => service.parseAll('')).toThrow(new Error('input must not be of zero length'));
+      expect(() => service.parseAll('')).toThrowError('input must not be of zero length');
     });
 
     it('should return links when headers are passed', () => {

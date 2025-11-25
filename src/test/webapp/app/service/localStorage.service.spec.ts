@@ -9,8 +9,20 @@ describe('LocalStorageService', () => {
     vi.restoreAllMocks();
   });
 
+  const emptyPersonalInfo: ApplicationDraftData['personalInfoData'] = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    dateOfBirth: '',
+    website: '',
+    linkedIn: '',
+    street: '',
+    city: '',
+    postcode: '',
+  };
   const baseDraft: Omit<ApplicationDraftData, 'timestamp'> = {
-    personalInfoData: {} as any, // minimal stub
+    personalInfoData: emptyPersonalInfo,
     applicationId: 'A123',
     jobId: 'J999',
   };
@@ -29,8 +41,8 @@ describe('LocalStorageService', () => {
 
   it('saves application draft with jobId when applicationId absent', () => {
     const draftOnlyJob: ApplicationDraftData = {
-      personalInfoData: {} as any,
-      applicationId: undefined as any,
+      personalInfoData: emptyPersonalInfo,
+      applicationId: '', // empty string forces jobId fallback
       jobId: 'J123',
       timestamp: new Date().toISOString(),
     };
@@ -65,14 +77,19 @@ describe('LocalStorageService', () => {
   });
 
   it('throws error when neither applicationId nor jobId provided to load', () => {
-    expect(() => (service as any).getApplicationKey(undefined, undefined)).toThrowError();
+    // Access private helper via bracket notation without casting entire service
+    expect(() =>
+      (service as unknown as { getApplicationKey: (a?: string, b?: string) => string }).getApplicationKey(undefined, undefined),
+    ).toThrowError();
   });
 
   it('rethrows error when JSON.stringify fails (circular data)', () => {
-    const circular: any = {};
-    circular.self = circular; // circular reference triggers JSON.stringify error
+    const circularPersonal: ApplicationDraftData['personalInfoData'] & { self?: any } = {
+      ...emptyPersonalInfo,
+    };
+    circularPersonal.self = circularPersonal; // circular reference triggers JSON.stringify error
     const draft: ApplicationDraftData = {
-      personalInfoData: circular,
+      personalInfoData: circularPersonal,
       applicationId: 'AERR',
       jobId: 'JERR',
       timestamp: new Date().toISOString(),

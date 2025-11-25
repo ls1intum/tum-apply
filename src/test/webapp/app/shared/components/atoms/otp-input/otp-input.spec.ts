@@ -14,13 +14,25 @@ import { of } from 'rxjs';
 import { signal } from '@angular/core';
 import { InputOtpChangeEvent } from 'primeng/inputotp';
 
+interface AuthOrchestratorStub {
+  cooldownSeconds: ReturnType<typeof signal<number>>;
+  isBusy: ReturnType<typeof signal<boolean>>;
+  error: ReturnType<typeof signal<string | null>>;
+  clearError: () => void;
+}
+
+interface AuthFacadeStub {
+  verifyOtp: (code: string, registration: boolean) => unknown;
+  requestOtp: (registration: boolean) => unknown;
+}
+
 describe('OtpInput', () => {
-  let mockApplicationConfigService: any;
-  let mockAuthOrchestratorService: any;
-  let mockAuthFacadeService: any;
+  let mockApplicationConfigService: { otp: { length: number; ttlSeconds: number } };
+  let mockAuthOrchestratorService: AuthOrchestratorStub;
+  let mockAuthFacadeService: AuthFacadeStub;
   let translateService: TranslateService;
-  let mockDynamicDialogConfig: any;
-  let mockBreakpointObserver: any;
+  let mockDynamicDialogConfig: DynamicDialogConfig;
+  let mockBreakpointObserver: { observe: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     mockApplicationConfigService = {
@@ -33,7 +45,7 @@ describe('OtpInput', () => {
     mockAuthOrchestratorService = {
       cooldownSeconds: signal(0),
       isBusy: signal(false),
-      error: signal(null),
+      error: signal<string | null>(null),
       clearError: vi.fn(),
     };
 
@@ -42,9 +54,7 @@ describe('OtpInput', () => {
       requestOtp: vi.fn(),
     };
 
-    mockDynamicDialogConfig = {
-      data: {},
-    };
+    mockDynamicDialogConfig = { data: {} } as DynamicDialogConfig;
 
     mockBreakpointObserver = {
       observe: vi.fn(() =>
@@ -64,11 +74,11 @@ describe('OtpInput', () => {
       providers: [
         provideFontAwesomeTesting(),
         provideTranslateMock(),
-        { provide: ApplicationConfigService, useValue: mockApplicationConfigService },
-        { provide: AuthOrchestratorService, useValue: mockAuthOrchestratorService },
-        { provide: AuthFacadeService, useValue: mockAuthFacadeService },
+        { provide: ApplicationConfigService, useValue: mockApplicationConfigService as unknown as ApplicationConfigService },
+        { provide: AuthOrchestratorService, useValue: mockAuthOrchestratorService as unknown as AuthOrchestratorService },
+        { provide: AuthFacadeService, useValue: mockAuthFacadeService as unknown as AuthFacadeService },
         { provide: DynamicDialogConfig, useValue: mockDynamicDialogConfig },
-        { provide: BreakpointObserver, useValue: mockBreakpointObserver },
+        { provide: BreakpointObserver, useValue: mockBreakpointObserver as unknown as BreakpointObserver },
       ],
     }).compileComponents();
 
@@ -146,7 +156,7 @@ describe('OtpInput', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
 
-    mockAuthOrchestratorService.error.set({ message: 'Error' });
+    mockAuthOrchestratorService.error.set('Error');
     expect(comp.disabledSubmit()).toBe(true);
 
     mockAuthOrchestratorService.error.set(null);

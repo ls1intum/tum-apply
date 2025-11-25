@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AlertComponent } from '../../../../../../src/main/webapp/app/shared/alert/alert.component';
-import { AlertService, Alert } from '../../../../../../src/main/webapp/app/core/util/alert.service';
-import { Component } from '@angular/core';
+import { AlertComponent } from 'app/shared/alert/alert.component';
+import { AlertService, Alert } from 'app/core/util/alert.service';
+import { vi } from 'vitest';
 
 class MockAlertService {
   get = vi.fn().mockReturnValue([{ id: 1, type: 'success', message: 'Test', toast: false, position: 'top-right' }]);
@@ -20,7 +20,7 @@ describe('AlertComponent', () => {
     });
     fixture = TestBed.createComponent(AlertComponent);
     component = fixture.componentInstance;
-    alertService = TestBed.inject(AlertService) as any;
+    alertService = TestBed.inject(AlertService) as unknown as MockAlertService;
   });
 
   it('should create', () => {
@@ -36,17 +36,18 @@ describe('AlertComponent', () => {
   it('should call alertService.clear on destroy', () => {
     component.ngOnDestroy();
     expect(alertService.clear).toHaveBeenCalled();
+    vi.clearAllMocks();
   });
 
   it('should set correct classes for toast and position', () => {
-    const alert: Alert = { toast: true, position: 'bottom-left' } as any;
+    const alert = { id: 2, type: 'danger', message: 'x', toast: true, position: 'bottom-left' } as Alert;
     const classes = component.setClasses(alert);
     expect(classes['jhi-toast']).toBe(true);
     expect(classes['bottom-left']).toBe(true);
   });
 
   it('should set correct classes for no position', () => {
-    const alert: Alert = { toast: true } as any;
+    const alert = { id: 3, type: 'info', message: 'y', toast: true } as Alert;
     const classes = component.setClasses(alert);
     expect(classes['jhi-toast']).toBe(true);
     expect(Object.keys(classes).length).toBe(1);
@@ -54,8 +55,9 @@ describe('AlertComponent', () => {
 
   it('should call alert.close when close is called', () => {
     const closeFn = vi.fn();
-    const alert: Alert = { close: closeFn } as any;
+    const alert = { id: 4, type: 'warning', message: 'z', close: closeFn } as Alert;
     component.close(alert);
     expect(closeFn).toHaveBeenCalledWith(component.alerts());
+    vi.clearAllMocks();
   });
 });

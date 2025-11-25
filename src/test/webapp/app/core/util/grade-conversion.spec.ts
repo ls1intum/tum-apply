@@ -1,9 +1,4 @@
-import {
-  convertToGermanGrade,
-  formatGrade,
-  convertAndFormatGermanGrade,
-  displayGradeWithConversion,
-} from '../../../../../../src/main/webapp/app/core/util/grade-conversion';
+import { convertToGermanGrade, formatGrade, convertAndFormatGermanGrade, displayGradeWithConversion } from 'app/core/util/grade-conversion';
 
 describe('grade-conversion', () => {
   describe('convertToGermanGrade', () => {

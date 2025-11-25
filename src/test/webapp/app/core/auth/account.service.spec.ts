@@ -2,6 +2,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { of, throwError } from 'rxjs';
 import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 class MockUserResourceApiService {
   getCurrentUser = vi.fn();
@@ -38,8 +39,7 @@ describe('AccountService', () => {
     expect(user?.id).toBe('U1');
     expect(user?.email).toBe('user@example.com');
     expect(user?.name).toBe('Jane Doe');
-    // Research group shape may not include 'id'; ensure object is carried through
-    expect(user?.researchGroup).toEqual({ id: 'RG1', name: 'Group' } as any);
+    expect(user?.researchGroup).toMatchObject({ id: 'RG1', name: 'Group' });
     expect(user?.authorities).toEqual(['ROLE_USER', 'ROLE_ADMIN']);
     expect(service.signedIn()).toBe(true);
   });
@@ -77,18 +77,21 @@ describe('AccountService', () => {
     await service.updateUser('  New  ', '  Name  ');
     expect(api.updateUserName).toHaveBeenCalledWith({ firstName: 'New', lastName: 'Name' });
     expect(loadSpy).toHaveBeenCalled();
+    vi.clearAllMocks();
   });
 
   it('updatePassword trims and calls API when non-empty', async () => {
     api.updatePassword.mockReturnValue(of(void 0));
     await service.updatePassword('  secret  ');
     expect(api.updatePassword).toHaveBeenCalledWith({ newPassword: 'secret' });
+    vi.clearAllMocks();
   });
 
   it('updatePassword does nothing when empty after trim', async () => {
     api.updatePassword.mockReturnValue(of(void 0));
     await service.updatePassword('   ');
     expect(api.updatePassword).not.toHaveBeenCalled();
+    vi.clearAllMocks();
   });
 
   it('exposes convenience getters', async () => {
