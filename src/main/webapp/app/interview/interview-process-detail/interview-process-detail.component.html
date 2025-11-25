@@ -1,0 +1,14 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header flex flex-row items-center">
+    <jhi-button [icon]="'arrow-left'" [variant]="'text'" [severity]="'secondary'" (click)="navigateBack()" />
+    <div class="flex left">
+      <h1 class="h1-text">{{ jobTitle() }}</h1>
+    </div>
+  </div>
+
+  <!-- Slots Section -->
+  @if (processId()) {
+    <jhi-slots-section [processId]="safeProcessId()" />
+  }
+</div>

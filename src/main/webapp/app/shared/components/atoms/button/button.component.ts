@@ -52,6 +52,7 @@ export class ButtonComponent {
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+  styleClass = input<string>('');
 
   iconPrefix(): 'fas' | 'fab' {
     if (this.icon() === 'microsoft' || this.icon() === 'google' || this.icon() === 'apple') {
@@ -65,6 +66,6 @@ export class ButtonComponent {
     if (this.label() === undefined) {
       sizeClass = `rounded-2xl ${this.size() === 'sm' ? 'w-8 h-8' : this.size() === 'md' ? 'w-10 h-10' : 'w-14 h-14'}`;
     }
-    return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''}`;
+    return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''} ${this.styleClass()}`;
   }
 }

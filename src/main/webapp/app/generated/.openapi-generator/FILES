@@ -70,6 +70,7 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
+model/jobPreviewRequest.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts

@@ -676,6 +676,43 @@ paths:
           content:
             application/pdf:
               schema: {type: string, format: binary}
+  /api/export/job/preview/pdf:
+    post:
+      tags: [pdf-export-resource]
+      operationId: exportJobPreviewToPDF
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JobPreviewRequest'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema: {type: string, format: binary}
+  /api/export/job/{id}/pdf:
+    post:
+      tags: [pdf-export-resource]
+      operationId: exportJobToPDF
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {type: string}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema: {type: string, format: binary}
   /api/gender-bias/analyze:
     post:
       tags: [gender-bias-analysis-resource]
@@ -1854,11 +1891,12 @@ components:
         invitedCount: {type: integer, format: int64}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
+        processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
-      required: [completedCount, invitedCount, jobId, jobTitle, scheduledCount, totalInterviews,
-        uncontactedCount]
+      required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
+        totalInterviews, uncontactedCount]
     InterviewSlotDTO:
       type: object
       properties:
@@ -2022,6 +2060,13 @@ components:
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [fieldOfStudies, location, state, supervisingProfessor, title]
+    JobPreviewRequest:
+      type: object
+      properties:
+        job: {$ref: '#/components/schemas/JobFormDTO'}
+        labels:
+          type: object
+          additionalProperties: {type: string}
     LoginRequestDTO:
       type: object
       properties:

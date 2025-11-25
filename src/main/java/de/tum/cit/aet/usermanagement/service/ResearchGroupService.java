@@ -542,6 +542,7 @@ public class ResearchGroupService {
         );
 
         sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
+        sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
 
         log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
