@@ -110,9 +110,9 @@ export const TUMApplyPreset = definePreset(Lara, {
     background: {
       50: '#f5f7fb',
       100: '#edeef1',
-      800: '#3f434d',
-      900: '#30333a',
-      950: '#25272c',
+      800: '#24272e',
+      900: '#1a1d22',
+      950: '#121417',
     },
     base: {
       white: '#ffffff',
@@ -259,7 +259,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           onNeutral: '{base.black}',
         },
         primary: {
-          color: '{primary.400}',
+          color: '#4d8ed1',
           inverseColor: '{text.onPrimary}',
           hoverColor: '{primary.500}',
           activeColor: '{primary.600}',
@@ -283,7 +283,7 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColorOutlined: '{tertiary.800}',
         },
         accent: {
-          color: '{accent.300}',
+          color: '{accent.400}',
           inverseColor: '{text.onAccent}',
           hoverColor: '{accent.200}',
           activeColor: '{accent.100}',
