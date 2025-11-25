@@ -262,7 +262,7 @@ describe('ResearchGroupMembersComponent', () => {
     vi.spyOn(dialogService, 'open').mockReturnValue(mockRef as any);
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
-    fixture.detectChanges(); // Trigger initial load
+    fixture.detectChanges();
 
     component.openAddMembersModal();
 
@@ -278,7 +278,7 @@ describe('ResearchGroupMembersComponent', () => {
     vi.spyOn(dialogService, 'open').mockReturnValue(mockRef as any);
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
-    fixture.detectChanges(); // Trigger initial load
+    fixture.detectChanges();
 
     component.openAddMembersModal();
 
