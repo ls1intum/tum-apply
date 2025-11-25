@@ -2,43 +2,34 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
 import { AlertService } from 'app/core/util/alert.service';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
-import { TranslateService } from '@ngx-translate/core';
 import { HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Subscription } from 'rxjs';
 import { vi } from 'vitest';
-
-class MockAlertService {
-  addAlert = vi.fn();
-}
-class MockEventManager {
-  subscribe = vi.fn().mockImplementation((_event: string, cb: any) => {
-    return { unsubscribe: vi.fn() } as unknown as Subscription;
-  });
-  destroy = vi.fn();
-}
-class MockTranslateService {
-  instant = vi.fn((key: string) => key);
-}
+import { createAlertServiceMock, AlertServiceMock, provideAlertServiceMock } from 'util/alert.service.mock';
+import { MockEventManager, provideEventManagerMock } from 'util/event-manager.mock';
+import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from 'util/translate.mock';
 
 describe('AlertErrorComponent', () => {
   let component: AlertErrorComponent;
   let fixture: ComponentFixture<AlertErrorComponent>;
-  let alertService: MockAlertService;
+  let alertService: AlertServiceMock;
   let eventManager: MockEventManager;
+  let translate: TranslateServiceMock;
 
   beforeEach(() => {
+    alertService = createAlertServiceMock();
+    eventManager = new MockEventManager();
+    translate = createTranslateServiceMock();
     TestBed.configureTestingModule({
       imports: [AlertErrorComponent],
-      providers: [
-        { provide: AlertService, useClass: MockAlertService },
-        { provide: EventManager, useClass: MockEventManager },
-        { provide: TranslateService, useClass: MockTranslateService },
-      ],
+      providers: [provideAlertServiceMock(alertService), provideEventManagerMock(eventManager), provideTranslateMock(translate)],
     });
+    // Component creation calls subscribe in constructor, so fixture creation must happen here
     fixture = TestBed.createComponent(AlertErrorComponent);
     component = fixture.componentInstance;
-    alertService = TestBed.inject(AlertService) as unknown as MockAlertService;
-    eventManager = TestBed.inject(EventManager) as unknown as MockEventManager;
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it('should create', () => {
@@ -46,15 +37,14 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should subscribe to error and httpError events on construction', () => {
+    // Subscriptions happen in constructor, which was called in beforeEach
     expect(eventManager.subscribe).toHaveBeenCalledWith('tumApplyApp.error', expect.any(Function));
     expect(eventManager.subscribe).toHaveBeenCalledWith('tumApplyApp.httpError', expect.any(Function));
-    vi.clearAllMocks();
   });
 
   it('should call eventManager.destroy on destroy', () => {
     component.ngOnDestroy();
     expect(eventManager.destroy).toHaveBeenCalledTimes(2);
-    vi.clearAllMocks();
   });
 
   it('should handle default error with error.message', () => {
@@ -67,7 +57,6 @@ describe('AlertErrorComponent', () => {
     component['addErrorAlert'] = vi.fn();
     component['handleDefaultError'](httpErrorResponse);
     expect(component['addErrorAlert']).toHaveBeenCalledWith('err', 'err', { foo: 'bar' });
-    vi.clearAllMocks();
   });
 
   it('should handle fields error in handleFieldsError', () => {
@@ -85,7 +74,6 @@ describe('AlertErrorComponent', () => {
     expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Size', {
       fieldName: 'translatedField',
     });
-    vi.clearAllMocks();
   });
 
   it('should handle bad request with fieldErrors', () => {
@@ -102,7 +90,6 @@ describe('AlertErrorComponent', () => {
     expect(component['addErrorAlert']).toHaveBeenCalledWith('Error on field "translatedField"', 'error.Size', {
       fieldName: 'translatedField',
     });
-    vi.clearAllMocks();
   });
 
   it('should handle http error 0 (server not reachable)', () => {
@@ -110,7 +97,6 @@ describe('AlertErrorComponent', () => {
     component['addErrorAlert'] = vi.fn();
     component['handleHttpError'](response);
     expect(component['addErrorAlert']).toHaveBeenCalledWith('Server not reachable', 'error.server.not.reachable');
-    vi.clearAllMocks();
   });
 
   it('should handle http error 404 (not found)', () => {
@@ -118,7 +104,6 @@ describe('AlertErrorComponent', () => {
     component['addErrorAlert'] = vi.fn();
     component['handleHttpError'](response);
     expect(component['addErrorAlert']).toHaveBeenCalledWith('Not found', 'error.url.not.found');
-    vi.clearAllMocks();
   });
 
   it('should handle http error 400 with app-error header', () => {
@@ -127,7 +112,6 @@ describe('AlertErrorComponent', () => {
     component['addErrorAlert'] = vi.fn();
     component['handleHttpError'](response);
     expect(component['addErrorAlert']).toHaveBeenCalledWith('err', 'err', expect.anything());
-    vi.clearAllMocks();
   });
 
   it('should set correct classes for toast and position', () => {
@@ -142,7 +126,6 @@ describe('AlertErrorComponent', () => {
     const alert = { id: '2', type: 'danger', close: closeFn } as unknown as any;
     component.close(alert);
     expect(closeFn).toHaveBeenCalledWith(component.alerts());
-    vi.clearAllMocks();
   });
 
   it('should add error alert via alertService when addErrorAlert is called', () => {
@@ -152,6 +135,5 @@ describe('AlertErrorComponent', () => {
       { type: 'danger', message: 'Test Message', translationKey: 'test.key', translationParams: { param: 'value' } },
       mockAlerts,
     );
-    vi.clearAllMocks();
   });
 });

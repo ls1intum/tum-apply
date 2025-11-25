@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { EventManager } from '@angular/platform-browser';
+import { EventManager } from 'app/core/util/event-manager.service';
 import { type Provider } from '@angular/core';
 
 export class MockEventManager {

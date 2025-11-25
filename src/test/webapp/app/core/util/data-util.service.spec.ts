@@ -20,9 +20,7 @@ describe('Data Utils Service Test', () => {
       (newWindow.document as Document)['write'] = vi.fn();
       window.open = vi.fn(() => newWindow);
       window.URL.createObjectURL = vi.fn();
-
       service.openFile('SkhpcHN0ZXI=', 'text/plain');
-
       expect(window.open).toHaveBeenCalledTimes(1);
       vi.clearAllMocks();
     });

@@ -8,6 +8,10 @@ class MockApplicationConfigService {
 }
 
 describe('AuthOrchestratorService', () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should open with prefill data', () => {
     service.open({ prefill: { email: 'foo@bar.com', firstName: 'Foo', lastName: 'Bar' } });
     expect(service.email()).toBe('foo@bar.com');
@@ -22,7 +26,6 @@ describe('AuthOrchestratorService', () => {
     service.authSuccess();
     expect(service.isOpen()).toBe(false);
     expect(cb).toHaveBeenCalled();
-    vi.clearAllMocks();
   });
 
   it('should go to nextStep in login flow', () => {
@@ -40,7 +43,6 @@ describe('AuthOrchestratorService', () => {
 
   it('should close dialog if nextStep called at end of register flow', () => {
     service.switchToRegister();
-    // Gehe zum letzten Schritt
     service.registerStep.set('password');
     service.nextStep();
     expect(service.isOpen()).toBe(false);

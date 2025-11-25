@@ -1,25 +1,30 @@
 import { TestBed } from '@angular/core/testing';
+import { convertToParamMap, ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
-import { convertToParamMap, ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
-import { TranslateService } from '@ngx-translate/core';
-import { ToastService } from 'app/service/toast-service';
-import { createTranslateServiceMock, TranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
-import { createToastServiceMock, ToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
-import { createRouterMock, RouterMock, provideRouterMock } from 'util/router.mock';
-import { createLocationMock, LocationMock, provideLocationMock } from 'util/location.mock';
+import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
+import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import {
+  createTranslateServiceMock,
+  TranslateServiceMock,
+  provideTranslateMock,
+  createToastServiceMock,
+  ToastServiceMock,
+  provideToastServiceMock,
+  createRouterMock,
+  RouterMock,
+  provideRouterMock,
+  createLocationMock,
+  LocationMock,
+  provideLocationMock,
   createApplicationResourceApiServiceMock,
   ApplicationResourceApiServiceMock,
   provideApplicationResourceApiServiceMock,
-} from 'util/application-resource-api.service.mock';
-import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
-import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
-import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-import { createPdfExportResourceApiServiceMock, providePdfExportResourceApiServiceMock } from 'util/pdf-export-resource-api.service.mock';
+  createPdfExportResourceApiServiceMock,
+  providePdfExportResourceApiServiceMock,
+} from 'util';
 
 function setupTest(paramId: string | null, appServiceOverrides?: Partial<ApplicationResourceApiServiceMock>) {
   const applicationService: ApplicationResourceApiServiceMock = {

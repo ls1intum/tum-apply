@@ -2,23 +2,22 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AlertComponent } from 'app/shared/alert/alert.component';
 import { AlertService, Alert } from 'app/core/util/alert.service';
 import { vi } from 'vitest';
-
-import { MockAlertService } from 'util/alert.service.mock';
+import { createAlertServiceMock, AlertServiceMock, provideAlertServiceMock } from 'util/alert.service.mock';
 
 describe('AlertComponent', () => {
   let component: AlertComponent;
   let fixture: ComponentFixture<AlertComponent>;
-  let alertService: MockAlertService;
+  let alertService: AlertServiceMock = createAlertServiceMock();
 
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
       imports: [AlertComponent],
-      providers: [{ provide: AlertService, useClass: MockAlertService }],
+      providers: [provideAlertServiceMock(createAlertServiceMock())],
     });
     fixture = TestBed.createComponent(AlertComponent);
     component = fixture.componentInstance;
-    alertService = TestBed.inject(AlertService) as unknown as MockAlertService;
+    alertService = TestBed.inject(AlertService) as unknown as AlertServiceMock;
   });
 
   it('should create', () => {
