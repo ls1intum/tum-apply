@@ -240,13 +240,10 @@ public class ResearchGroupService {
             .findById(dto.researchGroupId())
             .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
 
-        boolean userGroupChanged = false;
         if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
-            userGroupChanged = true;
         }
-        String roleOutcome = "unchanged";
 
         Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
@@ -255,11 +252,9 @@ public class ResearchGroupService {
             mapping.setResearchGroup(group);
             mapping.setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(mapping);
-            roleOutcome = "created";
         } else if (existing.get().getRole() != UserRole.PROFESSOR) {
             existing.get().setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(existing.get());
-            roleOutcome = "updated";
         }
 
         return group;
@@ -559,6 +554,13 @@ public class ResearchGroupService {
 
         for (UUID userId : userIds) {
             User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+
+            if (
+                user.getResearchGroup() != null && user.getResearchGroup().getResearchGroupId().equals(researchGroup.getResearchGroupId())
+            ) {
+                continue;
+            }
+
             UserResearchGroupRole role = userResearchGroupRoleRepository
                 .findByUserAndResearchGroup(user, researchGroup)
                 .orElseGet(() -> {
