@@ -8,6 +8,8 @@ import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
@@ -88,10 +90,11 @@ public class ImageResourceTest extends AbstractResourceTest {
             "Machine Learning research",
             "ml@tum.de",
             "80333",
-            "TUM",
+            ResearchGroupSchool.CIT,
             "Arcisstr. 21",
             "https://ml.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.MATHEMATICS
         );
         professorUser = UserTestData.savedProfessor(userRepository, researchGroup);
     }
@@ -107,10 +110,11 @@ public class ImageResourceTest extends AbstractResourceTest {
             "Artificial Intelligence research",
             "ai@tum.de",
             "80333",
-            "TUM",
+            ResearchGroupSchool.CIT,
             "Otherstr. 10",
             "https://ai.tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.MATHEMATICS
         );
         secondProfessorUser = UserTestData.savedProfessor(userRepository, secondResearchGroup);
     }
@@ -154,11 +158,11 @@ public class ImageResourceTest extends AbstractResourceTest {
         @Test
         void getDefaultJobBannersFiltersByResearchGroupWhenIdProvided() {
             // Arrange - Create new research groups with different schools to test filtering
-            ResearchGroup csResearchGroup = createTestResearchGroup("CS", "Computer Science");
-            ResearchGroup eeResearchGroup = createTestResearchGroup("EE", "Electrical Engineering");
+            ResearchGroup csResearchGroup = createTestResearchGroup("CS", ResearchGroupDepartment.COMPUTER_SCIENCE);
+            ResearchGroup mechResearchGroup = createTestResearchGroup("MECH", ResearchGroupDepartment.MECHANICAL_ENGINEERING);
 
             Image defaultImageCS = createDefaultJobBanner(csResearchGroup);
-            createDefaultJobBanner(eeResearchGroup);
+            createDefaultJobBanner(mechResearchGroup);
 
             // Act - Filter by CS research group
             List<ImageDTO> result = api
@@ -295,7 +299,7 @@ public class ImageResourceTest extends AbstractResourceTest {
         @Test
         void getResearchGroupJobBannersReturnsEmptyListWhenNoBannersExist() {
             // Arrange - Create a new research group with no job banners
-            ResearchGroup newGroup = createTestResearchGroup("NEW", "New Department");
+            ResearchGroup newGroup = createTestResearchGroup("NEW", ResearchGroupDepartment.MATHEMATICS);
             User newProfessor = UserTestData.savedProfessor(userRepository, newGroup);
 
             // Act
@@ -711,21 +715,22 @@ public class ImageResourceTest extends AbstractResourceTest {
         return new MockMultipartFile("file", filename, "image/jpeg", imageBytes);
     }
 
-    private ResearchGroup createTestResearchGroup(String abbreviation, String department) {
+    private ResearchGroup createTestResearchGroup(String abbreviation, ResearchGroupDepartment department) {
         return ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Prof. " + abbreviation,
             abbreviation + " Research Group",
             abbreviation,
             "Munich",
-            department,
+            abbreviation + " Field",
             abbreviation + " research",
             abbreviation.toLowerCase() + "@tum.de",
             "80333",
-            abbreviation,
+            department.getSchool(),
             abbreviation + " Street 1",
             "https://" + abbreviation.toLowerCase() + ".tum.de",
-            "ACTIVE"
+            "ACTIVE",
+            department
         );
     }
 

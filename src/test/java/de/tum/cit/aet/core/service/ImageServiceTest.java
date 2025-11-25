@@ -10,6 +10,8 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupDepartment;
+import de.tum.cit.aet.usermanagement.constants.ResearchGroupSchool;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
@@ -78,10 +80,11 @@ class ImageServiceTest {
             "Test description",
             "test@research.com",
             "12345",
-            "Test University",
+            ResearchGroupSchool.CIT,
             "Test Street",
             "https://test.com",
-            "ACTIVE"
+            "ACTIVE",
+            ResearchGroupDepartment.MATHEMATICS
         );
         testResearchGroup.setResearchGroupId(TEST_RESEARCH_GROUP_ID);
 
@@ -456,10 +459,11 @@ class ImageServiceTest {
                 "Description",
                 "email@test.com",
                 "54321",
-                "University",
+                ResearchGroupSchool.CIT,
                 "Street",
                 "https://other.com",
-                "ACTIVE"
+                "ACTIVE",
+                ResearchGroupDepartment.MATHEMATICS
             );
             otherGroup.setResearchGroupId(UUID.randomUUID());
 
