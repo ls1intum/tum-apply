@@ -5,20 +5,19 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { of } from 'rxjs';
 import { ApplicationOverviewDTO } from 'app/generated/model/applicationOverviewDTO';
 
-export type ApplicationResourceApiServiceMock = Pick<
-  ApplicationResourceApiService,
-  | 'createApplication'
-  | 'getApplicationById'
-  | 'getApplicationForDetailPage'
-  | 'updateApplication'
-  | 'withdrawApplication'
-  | 'getDocumentDictionaryIds'
-  | 'deleteApplication'
-  | 'getApplicationPages'
-  | 'renameDocument'
-  | 'uploadDocuments'
-  | 'deleteDocumentFromApplication'
->;
+export type ApplicationResourceApiServiceMock = {
+  createApplication: ReturnType<typeof vi.fn>;
+  getApplicationById: ReturnType<typeof vi.fn>;
+  getApplicationForDetailPage: ReturnType<typeof vi.fn>;
+  updateApplication: ReturnType<typeof vi.fn>;
+  withdrawApplication: ReturnType<typeof vi.fn>;
+  getDocumentDictionaryIds: ReturnType<typeof vi.fn>;
+  deleteApplication: ReturnType<typeof vi.fn>;
+  getApplicationPages: ReturnType<typeof vi.fn>;
+  renameDocument: ReturnType<typeof vi.fn>;
+  uploadDocuments: ReturnType<typeof vi.fn>;
+  deleteDocumentFromApplication: ReturnType<typeof vi.fn>;
+};
 
 export const createMockApplicationDTO = (
   applicationState: ApplicationForApplicantDTO.ApplicationStateEnum,

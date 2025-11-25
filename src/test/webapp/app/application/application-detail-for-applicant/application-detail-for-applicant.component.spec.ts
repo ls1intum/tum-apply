@@ -50,15 +50,16 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
   return { component, applicationService, pdfExportService, translate, toast, router, location };
 }
 
+const DEFAULT_APPLICATION_DETAIL: ApplicationDetailDTO = {
+  applicationId: 'APP1',
+  applicationState: 'SENT',
+  jobId: 'JOB123',
+  researchGroup: '',
+  supervisingProfessorName: '',
+} as ApplicationDetailDTO;
+
 function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationDetailDTO {
-  return {
-    applicationId: overrides.applicationId ?? 'APP1',
-    applicationState: overrides.applicationState ?? 'SENT',
-    jobId: overrides.jobId ?? 'JOB123',
-    researchGroup: overrides.researchGroup ?? '',
-    supervisingProfessorName: overrides.supervisingProfessorName ?? '',
-    ...overrides,
-  } as ApplicationDetailDTO;
+  return { ...DEFAULT_APPLICATION_DETAIL, ...overrides } as ApplicationDetailDTO;
 }
 
 describe('ApplicationDetailForApplicantComponent', () => {
