@@ -40,7 +40,6 @@ describe('trimWebsiteUrl', () => {
   });
 
   it('returns quirky result for non-http schemes (documented behavior)', () => {
-    // the implementation only strips http(s) so ftp:// will not be handled and will result in 'ftp:'
     expect(trimWebsiteUrl('ftp://example.com')).toBe('ftp:');
   });
 });

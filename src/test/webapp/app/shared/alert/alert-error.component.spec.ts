@@ -22,7 +22,6 @@ describe('AlertErrorComponent', () => {
       imports: [AlertErrorComponent],
       providers: [provideAlertServiceMock(alertService), provideEventManagerMock(eventManager), provideTranslateMock(translate)],
     });
-    // Component creation calls subscribe in constructor, so fixture creation must happen here
     fixture = TestBed.createComponent(AlertErrorComponent);
     component = fixture.componentInstance;
   });
@@ -36,7 +35,6 @@ describe('AlertErrorComponent', () => {
   });
 
   it('should subscribe to error and httpError events on construction', () => {
-    // Subscriptions happen in constructor, which was called in beforeEach
     expect(eventManager.subscribe).toHaveBeenCalledWith('tumApplyApp.error', expect.any(Function));
     expect(eventManager.subscribe).toHaveBeenCalledWith('tumApplyApp.httpError', expect.any(Function));
   });
