@@ -1,4 +1,5 @@
 export * from './acceptDTO';
+export * from './addMembersToResearchGroupDTO';
 export * from './applicant';
 export * from './applicantDTO';
 export * from './applicantForApplicationDetailDTO';
