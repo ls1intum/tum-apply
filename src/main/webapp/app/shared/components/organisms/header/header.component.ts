@@ -18,7 +18,6 @@ import { IdpProvider } from '../../../../core/auth/keycloak-authentication.servi
 
 @Component({
   selector: 'jhi-header',
-  standalone: true,
   imports: [
     CommonModule,
     ButtonComponent,
@@ -131,7 +130,6 @@ export class HeaderComponent {
     // turn off transitions
     root.classList.add('theme-switching');
 
-    // flip your dark mode class
     root.classList.toggle('tum-apply-dark-mode');
 
     // allow one frame for styles to apply, then restore transitions

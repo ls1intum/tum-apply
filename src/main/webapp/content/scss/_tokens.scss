@@ -16,6 +16,8 @@
 // Maps PrimeNG CSS variables to Tailwind color tokens.
 // PrimeNG handles light/dark mode switching automatically.
 // Full color scales (50-950) are already available via PrimeNG.
+// Add custom color tokens for Tailwind where PrimeNG does not provide a variable.
+// Please make sure to provide tokens that can be used in both light and dark mode.
 // ========================================================
 
 @theme {
