@@ -1,6 +1,6 @@
 # Testing Guide
 
-This document describes how to write and  run and structure tests in TUMApply, both for the Spring Boot server and Angular client.
+This document describes how to write and run and structure tests in TUMApply, both for the Spring Boot server and Angular client.
 
 ---
 

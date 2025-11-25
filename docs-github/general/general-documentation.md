@@ -54,6 +54,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 ### 2.2 Authorization and Security
 
 **Endpoint Security:**
+**Path:** `src/main/java/**/web/`
 - `@ApplicantOrAdmin` — Restricts access to applicants (owners) or system administrators.
   - Used for: Create, Update, Delete, Upload, Withdraw operations.
   - Enforces ownership check: Applicant can only access their own applications.
