@@ -11,12 +11,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
+import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
-import { getApplicationPDFLabels } from '../pdf-labels';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',

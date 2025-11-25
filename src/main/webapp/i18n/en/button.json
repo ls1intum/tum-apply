@@ -18,8 +18,10 @@
     "apply": "Apply",
     "publish": "Publish",
     "chooseFile": "Choose File",
+    "assign": "Assign",
     "tooltip": {
       "editDisabled": "Only drafts can be edited"
-    }
+    },
+    "downloadPDF": "Export PDF"
   }
 }

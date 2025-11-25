@@ -18,8 +18,10 @@
     "apply": "Bewerben",
     "publish": "Veröffentlichen",
     "chooseFile": "Datei auswählen",
+    "assign": "Zuweisen",
     "tooltip": {
       "editDisabled": "Nur Entwürfe können bearbeitet werden"
-    }
+    },
+    "downloadPDF": "PDF exportieren"
   }
 }

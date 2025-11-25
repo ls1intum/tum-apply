@@ -27,6 +27,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/acceptDTO.ts
+model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
@@ -69,6 +70,7 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
+model/jobPreviewRequest.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
