@@ -14,6 +14,7 @@ export interface JobCardDTO {
     applicationState?: JobCardDTO.ApplicationStateEnum;
     contractDuration?: number;
     fieldOfStudies: string;
+    imageUrl?: string;
     jobId: string;
     location: string;
     professorName: string;
