@@ -24,6 +24,7 @@ describe('Data Utils Service Test', () => {
       service.openFile('SkhpcHN0ZXI=', 'text/plain');
 
       expect(window.open).toHaveBeenCalledTimes(1);
+      vi.clearAllMocks();
     });
   });
 
@@ -67,6 +68,7 @@ describe('Data Utils Service Test', () => {
       await firstValueFrom(service.loadFileToForm(event, editForm, 'myField', false));
 
       expect(editForm.patchValue).toHaveBeenCalledWith({ myField: 'SGVsbG8=', myFieldContentType: 'text/plain' });
+      vi.clearAllMocks();
     });
 
     it('should error when image expected but wrong type', async () => {
