@@ -12,25 +12,22 @@ import { createToastServiceMock, ToastServiceMock } from 'util/toast-service.moc
 import { createRouterMock, RouterMock } from 'util/router.mock';
 import { createLocationMock, LocationMock } from 'util/location.mock';
 import { createApplicationResourceApiServiceMock, ApplicationResourceApiServiceMock } from 'util/application-resource-api.service.mock';
-import { getApplicationPDFLabels } from 'app/application/pdf-labels';
+import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
-
-class MockPdfExportService {
-  exportApplicationToPDF = vi.fn();
-}
+import { createPdfExportResourceApiServiceMock } from 'util/pdf-export-resource-api.service.mock';
 
 function setupTest(paramId: string | null, appServiceOverrides?: Partial<ApplicationResourceApiServiceMock>) {
   const applicationService: ApplicationResourceApiServiceMock = {
     ...createApplicationResourceApiServiceMock(),
     ...(appServiceOverrides ?? {}),
   };
-  // Provide minimal snapshot shape via unknown double-cast instead of 'as any'
+
   const route: Partial<ActivatedRoute> = {
     snapshot: { paramMap: convertToParamMap(paramId ? { application_id: paramId } : {}) } as unknown as ActivatedRoute['snapshot'],
   };
   const translate: TranslateServiceMock = createTranslateServiceMock();
-  const pdfExportService = new MockPdfExportService();
+  const pdfExportService = createPdfExportResourceApiServiceMock();
   const toast: ToastServiceMock = createToastServiceMock();
   const router: RouterMock = createRouterMock();
   const location: LocationMock = createLocationMock();
@@ -46,7 +43,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
       { provide: Location, useValue: location },
     ],
     imports: [ApplicationDetailForApplicantComponent],
-    // Removed NO_ERRORS_SCHEMA (not needed for standalone component imports)
+
   });
 
   const fixture = TestBed.createComponent(ApplicationDetailForApplicantComponent);
@@ -62,7 +59,7 @@ function makeDetail(overrides: Partial<ApplicationDetailDTO> = {}): ApplicationD
     researchGroup: overrides.researchGroup ?? '',
     supervisingProfessorName: overrides.supervisingProfessorName ?? '',
     ...overrides,
-  } as ApplicationDetailDTO; // other optional fields omitted
+  } as ApplicationDetailDTO; 
 }
 
 describe('ApplicationDetailForApplicantComponent', () => {
