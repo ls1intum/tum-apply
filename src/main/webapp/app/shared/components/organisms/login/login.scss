@@ -18,6 +18,13 @@
     }
   }
 
+  .back-button {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    transform: scale(0.8);
+  }
+
   .login-footer {
     @include layout.auth-footer;
   }
