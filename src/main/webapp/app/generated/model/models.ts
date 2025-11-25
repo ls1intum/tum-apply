@@ -1,4 +1,5 @@
 export * from './acceptDTO';
+export * from './addMembersToResearchGroupDTO';
 export * from './applicant';
 export * from './applicantDTO';
 export * from './applicantForApplicationDetailDTO';
@@ -41,6 +42,7 @@ export * from './jobDTO';
 export * from './jobDetailDTO';
 export * from './jobFiltersDTO';
 export * from './jobFormDTO';
+export * from './jobPreviewRequest';
 export * from './loginRequestDTO';
 export * from './otpCompleteDTO';
 export * from './pageApplicationOverviewDTO';
