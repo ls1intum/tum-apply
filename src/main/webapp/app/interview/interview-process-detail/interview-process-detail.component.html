@@ -8,7 +8,7 @@
   </div>
 
   <!-- Slots Section -->
-  @if (processId()) {
-    <jhi-slots-section [processId]="processId()!" />
+  @if (processId()as id) {
+    <jhi-slots-section [processId]="id" />
   }
 </div>
