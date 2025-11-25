@@ -49,7 +49,7 @@
     // Override primeng styling of unselected items in select component
     .p-select-items,
     .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
-      background: var(--p-background-surface);
+      background: var(--p-background-default);
 
       // Override primeng styling of hover on select items
       &:hover {
@@ -64,12 +64,13 @@
   }
 
   .p-select {
-    background: var(--p-background-surface);
+    background: var(--p-background-default);
   }
 
   // Override primeng styling of selected item in select menu
   .p-select-option.p-select-option-selected {
     background: var(--p-background-surface-alt);
+    color: var(--p-text-primary);
 
     &:hover {
       background-color: var(--p-primary-color);

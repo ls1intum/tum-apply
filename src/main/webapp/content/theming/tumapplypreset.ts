@@ -142,8 +142,8 @@ export const TUMApplyPreset = definePreset(Lara, {
           onSecondary: '{base.white}',
           onAccent: '{base.white}',
           onSuccess: '{base.black}',
-          onDanger: '{base.white}',
-          onWarn: '{base.white}',
+          onDanger: '{base.black}',
+          onWarn: '{base.black}',
           onInfo: '{base.black}',
           onNeutral: '{base.black}',
         },
@@ -253,9 +253,10 @@ export const TUMApplyPreset = definePreset(Lara, {
           onTertiary: '{base.white}',
           onAccent: '{base.white}',
           onSuccess: '{base.black}',
-          onDanger: '{base.white}',
-          onWarn: '{base.white}',
-          onInfo: '{base.white}',
+          onDanger: '{base.black}',
+          onWarn: '{base.black}',
+          onInfo: '{base.black}',
+          onNeutral: '{base.black}',
         },
         primary: {
           color: '{primary.400}',
@@ -799,31 +800,102 @@ export const TUMApplyPreset = definePreset(Lara, {
         light: {
           primary: {
             background: '{primary.color}',
+            color: '{base.black}',
+          },
+          secondary: {
+            background: '{secondary.color}',
+            color: '{base.black}',
+          },
+          info: {
+            background: '{neutral.300}',
+            color: '{info.inverseColor}',
+          },
+          success: {
+            background: '{success.color}',
+            color: '{success.inverseColor}',
+          },
+          warn: {
+            background: '{warn.color}',
+            color: '{warn.inverseColor}',
+          },
+          danger: {
+            background: '{danger.color}',
+            color: '{danger.inverseColor}',
+          },
+          contrast: {
+            background: '{accent.color}',
+            color: '{base.black}',
+          },
+        },
+        dark: {
+          primary: {
+            background: '{primary.color}',
+            color: '{base.black}',
+          },
+          secondary: {
+            background: '{secondary.color}',
+            color: '{base.black}',
+          },
+          info: {
+            background: '{neutral.300}',
+            color: '{info.inverseColor}',
+          },
+          success: {
+            background: '{success.color}',
+            color: '{success.inverseColor}',
+          },
+          warn: {
+            background: '{warn.color}',
+            color: '{warn.inverseColor}',
+          },
+          danger: {
+            background: '{danger.color}',
+            color: '{danger.inverseColor}',
+          },
+          contrast: {
+            background: '{accent.color}',
+            color: '{base.black}',
+          },
+        },
+      },
+    },
+    badge: {
+      root: {
+        fontSize: '0.75rem',
+        fontWeight: '700',
+        minWidth: '1.5rem',
+        height: '1.5rem',
+        borderRadius: '{border.radius.md}',
+      },
+      colorScheme: {
+        light: {
+          primary: {
+            background: '{primary.color}',
             color: '{primary.inverseColor}',
           },
           secondary: {
             background: '{secondary.color}',
-            color: '{secondary.inverse}',
+            color: '{secondary.inverseColor}',
           },
           info: {
             background: '{neutral.300}',
-            color: '{info.inverse}',
+            color: '{base.black}',
           },
           success: {
             background: '{success.color}',
-            color: '{success.inverse}',
+            color: '{success.inverseColor}',
           },
           warn: {
             background: '{warn.color}',
-            color: '{warn.inverse}',
+            color: '{warn.inverseColor}',
           },
           danger: {
             background: '{danger.color}',
-            color: '{danger.inverse}',
+            color: '{danger.inverseColor}',
           },
           contrast: {
             background: '{accent.color}',
-            color: '{accent.inverse}',
+            color: '{accent.inverseColor}',
           },
         },
         dark: {
@@ -833,27 +905,27 @@ export const TUMApplyPreset = definePreset(Lara, {
           },
           secondary: {
             background: '{secondary.color}',
-            color: '{secondary.inverse}',
+            color: '{secondary.inverseColor}',
           },
           info: {
             background: '{neutral.300}',
-            color: '{info.inverse}',
+            color: '{base.black}',
           },
           success: {
             background: '{success.color}',
-            color: '{success.inverse}',
+            color: '{success.inverseColor}',
           },
           warn: {
             background: '{warn.color}',
-            color: '{warn.inverse}',
+            color: '{warn.inverseColor}',
           },
           danger: {
             background: '{danger.color}',
-            color: '{danger.inverse}',
+            color: '{danger.inverseColor}',
           },
           contrast: {
             background: '{accent.color}',
-            color: '{accent.inverse}',
+            color: '{accent.inverseColor}',
           },
         },
       },
@@ -891,22 +963,22 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     select: {
       overlay: {
-        background: '{background.surface}',
+        background: '{background.default}',
       },
     },
     inputtext: {
       root: {
         color: '{text.primary}',
-        background: '{background.surface}',
+        background: '{background.default}',
         borderRadius: '0.5rem',
       },
     },
     datepicker: {
       panel: {
-        background: '{background.surface}',
+        background: '{background.default}',
       },
       header: {
-        background: '{background.surface}',
+        background: '{background.default}',
       },
     },
     dialog: {
@@ -918,7 +990,7 @@ export const TUMApplyPreset = definePreset(Lara, {
     fileupload: {
       root: {
         color: '{text.primary}',
-        background: '{background.surface}',
+        background: '{background.default}',
       },
       header: {
         borderWidth: '0',
@@ -928,7 +1000,7 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     accordion: {
       content: {
-        background: '{background.surface}',
+        background: '{background.default}',
         color: '{text.secondary}',
       },
     },

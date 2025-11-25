@@ -195,7 +195,7 @@
 --------------------------------------------------- */
 
 .ql-editor {
-  background: var(--p-background-surface);
+  background: var(--p-background-default);
   color: var(--p-text-primary);
   overflow-wrap: anywhere;
 }
@@ -225,7 +225,7 @@
 .ql-toolbar,
 .ql-toolbar.ql-snow,
 .custom-quill-editor .ql-toolbar {
-  background: var(--p-background-surface) !important;
+  background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
   border: 1px solid var(--p-border-default) !important;
 }
@@ -262,7 +262,7 @@
 /* Picker select component background */
 .ql-picker-options {
   color: var(--p-text-secondary) !important;
-  background: var(--p-background-surface) !important;
+  background: var(--p-background-default) !important;
 }
 
 /* -------------------------------
@@ -340,13 +340,13 @@
 .custom-quill-editor .ql-toolbar {
   border-bottom: none !important;
   border-color: var(--p-border-default) !important;
-  background: var(--p-background-surface) !important;
+  background: var(--p-background-default) !important;
 }
 
 .p-editor-content.ql-container.ql-snow,
 .ql-container.ql-snow,
 .custom-quill-editor .ql-container {
-  background: var(--p-background-surface) !important;
+  background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
   border: 1px solid var(--p-border-default) !important;
 
@@ -428,11 +428,11 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 ------------------------------- */
 .p-fileupload-content {
   color: var(--p-text-color);
-  background: var(--p-background-surface);
+  background: var(--p-background-default);
 }
 
 .p-fileupload-header {
-  background: var(--p-background-surface);
+  background: var(--p-background-default);
 }
 
 /* ---------------------------
