@@ -100,12 +100,12 @@ architecture for now, clear service boundaries allow for potential migration to 
 If you're a developer or contributor, head over to the full documentation:
 
 - 📚 [Development Setup](docs-github/setup/dev-environment.md)
-- 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
 - 💡 [General Documentation](docs-github/general/general-documentation.md)
-- 💼 [Job Documentation](docs-github/job/job-module-documentation.md)
 - 🧪 [Testing Guide](docs-github/testing/testing-guide.md)
-- 🐳 [Docker Setup](docs-github/deployment/docker.md)
-- 🚀 [Build for Production](docs-github/deployment/build-production.md)
+- 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
+- 💼 [Job Documentation](docs-github/job/job-module-documentation.md)
+- 📝 [Application Documentation](docs-github/application/application-module-documentation.md)
+- 📊 [Evaluation Documentation](docs-github/evaluation/evaluation-module-documentation.md)
 
 Full documentation is available in the [`/docs`](docs-github) folder.
 
