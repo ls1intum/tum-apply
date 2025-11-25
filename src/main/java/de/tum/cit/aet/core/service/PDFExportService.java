@@ -369,7 +369,9 @@ public class PDFExportService {
     }
 
     private String formatDate(Object date) {
-        if (date == null) return "-";
+        if (date == null) {
+            return "-";
+        }
         if (date instanceof java.time.LocalDate localDate) {
             return localDate.format(DATE_FORMATTER);
         }
@@ -385,7 +387,9 @@ public class PDFExportService {
     }
 
     private String sanitizeFilename(String filename) {
-        if (filename == null) return "document";
+        if (filename == null) {
+            return "document";
+        }
         return filename.replaceAll("[^a-zA-Z0-9-_]", "_").substring(0, Math.min(filename.length(), 50));
     }
 
