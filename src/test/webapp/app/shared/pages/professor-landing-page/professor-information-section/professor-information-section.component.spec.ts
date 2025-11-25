@@ -39,7 +39,7 @@ describe('ProfessorInformationSectionComponent', () => {
 
   describe('Information Cards Configuration', () => {
     it('should have exactly six information cards', () => {
-      expect(component.cards.length).toBe(6);
+      expect(component.cards).toHaveLength(6);
     });
 
     it('should configure research card correctly', () => {
@@ -98,13 +98,13 @@ describe('ProfessorInformationSectionComponent', () => {
     it('should have unique image sources for each card', () => {
       const imageSources = component.cards.map(card => card.imageSrc);
       const uniqueImageSources = new Set(imageSources);
-      expect(uniqueImageSources.size).toBe(imageSources.length);
+      expect(uniqueImageSources).toHaveLength(imageSources.length);
     });
 
     it('should have unique links for each card', () => {
       const links = component.cards.map(card => card.link);
       const uniqueLinks = new Set(links);
-      expect(uniqueLinks.size).toBe(links.length);
+      expect(uniqueLinks).toHaveLength(links.length);
     });
   });
 
@@ -116,12 +116,12 @@ describe('ProfessorInformationSectionComponent', () => {
 
     it('should render one information card per entry in the cards array', () => {
       const cards = nativeElement.querySelectorAll('jhi-information-card');
-      expect(cards.length).toBe(component.cards.length);
+      expect(cards).toHaveLength(component.cards.length);
     });
 
     it('should render exactly six information cards', () => {
       const cards = nativeElement.querySelectorAll('jhi-information-card');
-      expect(cards.length).toBe(6);
+      expect(cards).toHaveLength(6);
     });
   });
 });

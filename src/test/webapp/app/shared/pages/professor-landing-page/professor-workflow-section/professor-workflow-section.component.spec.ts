@@ -36,7 +36,7 @@ describe('ProfessorWorkflowSectionComponent', () => {
 
   describe('Workflow Steps Configuration', () => {
     it('should have exactly four workflow steps', () => {
-      expect(component.steps.length).toBe(4);
+      expect(component.steps).toHaveLength(4);
     });
 
     it('should configure create-job step correctly', () => {
@@ -104,12 +104,12 @@ describe('ProfessorWorkflowSectionComponent', () => {
 
     it('should render one workflow step component per entry in the steps array', () => {
       const workflowSteps = nativeElement.querySelectorAll('jhi-workflow-step');
-      expect(workflowSteps.length).toBe(component.steps.length);
+      expect(workflowSteps).toHaveLength(component.steps.length);
     });
 
     it('should render exactly four workflow step components', () => {
       const workflowSteps = nativeElement.querySelectorAll('jhi-workflow-step');
-      expect(workflowSteps.length).toBe(4);
+      expect(workflowSteps).toHaveLength(4);
     });
   });
 });

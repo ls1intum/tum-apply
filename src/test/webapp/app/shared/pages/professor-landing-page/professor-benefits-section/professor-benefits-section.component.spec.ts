@@ -3,13 +3,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { ProfessorBenefitsSectionComponent } from 'app/shared/pages/professor-landing-page/professor-benefits-section/professor-benefits-section.component';
 import { provideTranslateMock } from 'util/translate.mock';
-import { createRouterMock, provideRouterMock } from 'util/router.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 
 describe('ProfessorBenefitsSectionComponent', () => {
   let fixture: ComponentFixture<ProfessorBenefitsSectionComponent>;
   let component: ProfessorBenefitsSectionComponent;
   let nativeElement: HTMLElement;
-  let routerMock: ReturnType<typeof createRouterMock>;
+  let routerMock: RouterMock;
 
   beforeEach(async () => {
     routerMock = createRouterMock();
@@ -39,7 +39,7 @@ describe('ProfessorBenefitsSectionComponent', () => {
 
     it('should have exactly two buttons', () => {
       const buttonData = component.buttons();
-      expect(buttonData.buttons.length).toBe(2);
+      expect(buttonData.buttons).toHaveLength(2);
     });
 
     it('should configure first button correctly', () => {

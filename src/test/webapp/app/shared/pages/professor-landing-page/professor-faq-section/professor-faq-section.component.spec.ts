@@ -37,7 +37,7 @@ describe('ProfessorFaqSectionComponent', () => {
 
   describe('FAQ Tabs Configuration', () => {
     it('should have exactly four FAQ tabs', () => {
-      expect(component.tabs.length).toBe(4);
+      expect(component.tabs).toHaveLength(4);
     });
 
     it('should configure login tab correctly', () => {
@@ -91,7 +91,7 @@ describe('ProfessorFaqSectionComponent', () => {
     it('should have unique values for each tab', () => {
       const values = component.tabs.map(tab => tab.value);
       const uniqueValues = new Set(values);
-      expect(uniqueValues.size).toBe(values.length);
+      expect(uniqueValues).toHaveLength(values.length);
     });
 
     it('should have all required properties for each tab', () => {

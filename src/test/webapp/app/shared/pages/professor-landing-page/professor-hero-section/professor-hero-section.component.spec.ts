@@ -3,18 +3,18 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { ProfessorHeroSectionComponent } from 'app/shared/pages/professor-landing-page/professor-hero-section/professor-hero-section.component';
 import { provideTranslateMock } from 'util/translate.mock';
-import { createAuthFacadeServiceMock, provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
-import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
-import { createRouterMock, provideRouterMock } from 'util/router.mock';
+import { AuthFacadeServiceMock, createAuthFacadeServiceMock, provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
+import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 
 describe('ProfessorHeroSectionComponent', () => {
   let fixture: ComponentFixture<ProfessorHeroSectionComponent>;
   let component: ProfessorHeroSectionComponent;
   let nativeElement: HTMLElement;
-  let authFacadeServiceMock: ReturnType<typeof createAuthFacadeServiceMock>;
-  let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
-  let routerMock: ReturnType<typeof createRouterMock>;
+  let authFacadeServiceMock: AuthFacadeServiceMock;
+  let accountServiceMock: AccountServiceMock;
+  let routerMock: RouterMock;
 
   beforeEach(async () => {
     authFacadeServiceMock = createAuthFacadeServiceMock();
@@ -45,7 +45,7 @@ describe('ProfessorHeroSectionComponent', () => {
 
   describe('Image Carousel', () => {
     it('should define three images with background classes', () => {
-      expect(component.imagesWithBackgroundClass.length).toBe(3);
+      expect(component.imagesWithBackgroundClass).toHaveLength(3);
     });
 
     it('should have correct image names', () => {
