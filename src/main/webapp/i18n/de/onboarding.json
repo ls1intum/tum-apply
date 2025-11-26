@@ -73,12 +73,12 @@
         "placeholder": "z.B. KI"
       },
       "school": {
-        "label": "School (optionaler Filter)",
-        "placeholder": "Departments nach School filtern"
+        "label": "School",
+        "placeholder": "Wählen..."
       },
       "department": {
         "label": "Department",
-        "placeholder": "Wähle ein Department"
+        "placeholder": "Wählen..."
       },
       "researchGroupContactEmail": {
         "label": "E-Mail",

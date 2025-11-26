@@ -73,12 +73,12 @@
         "placeholder": "e.g. AI"
       },
       "school": {
-        "label": "School (optional filter)",
-        "placeholder": "Filter departments by school"
+        "label": "School",
+        "placeholder": "Select..."
       },
       "department": {
         "label": "Department",
-        "placeholder": "Select a department"
+        "placeholder": "Select..."
       },
       "researchGroupContactEmail": {
         "label": "Email",

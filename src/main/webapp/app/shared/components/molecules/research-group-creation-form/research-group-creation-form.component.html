@@ -124,8 +124,8 @@
 
     <div>
       <jhi-string-input
-        label="onboarding.professorRequest.researchGroupName.label | translate"
-        placeholder="onboarding.professorRequest.researchGroupName.placeholder | translate"
+        label="onboarding.professorRequest.researchGroupName.label"
+        placeholder="onboarding.professorRequest.researchGroupName.placeholder"
         [required]="true"
         [model]="form.get('researchGroupName')?.value"
         [control]="form.get('researchGroupName') ?? undefined"
@@ -134,7 +134,7 @@
     </div>
 
     <!-- School and Department Selection -->
-    <div>
+    <div class="mb-6">
       <jhi-select
         [label]="'onboarding.professorRequest.school.label' | translate"
         [placeholder]="'onboarding.professorRequest.school.placeholder' | translate"
@@ -144,10 +144,10 @@
       />
     </div>
 
-    <div>
+    <div class="mb-6">
       <jhi-select
-        [label]="'onboarding.professorRequest.department.label'"
-        [placeholder]="'onboarding.professorRequest.department.placeholder'"
+        [label]="'onboarding.professorRequest.department.label' | translate"
+        [placeholder]="'onboarding.professorRequest.department.placeholder' | translate"
         [items]="filteredDepartmentOptions()"
         [required]="true"
         [selected]="selectedDepartmentOption()"
