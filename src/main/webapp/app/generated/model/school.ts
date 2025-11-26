@@ -7,13 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Department } from './department';
 
 
 export interface School { 
     abbreviation?: string;
     createdAt?: string;
-    departments?: Array<Department>;
     lastModifiedAt?: string;
     name?: string;
     schoolId?: string;

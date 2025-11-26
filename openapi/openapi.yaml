@@ -1450,7 +1450,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: {$ref: '#/components/schemas/SchoolDTO'}
+                items: {$ref: '#/components/schemas/SchoolShortDTO'}
     post:
       tags: [school-resource]
       operationId: createSchool
@@ -1464,7 +1464,19 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/SchoolDTO'}
+              schema: {$ref: '#/components/schemas/SchoolShortDTO'}
+  /api/schools/with-departments:
+    get:
+      tags: [school-resource]
+      operationId: getAllSchoolsWithDepartments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/SchoolDTO'}
   /api/schools/{id}:
     get:
       tags: [school-resource]
@@ -2419,10 +2431,6 @@ components:
       properties:
         abbreviation: {type: string}
         createdAt: {type: string, format: date-time}
-        departments:
-          type: array
-          items: {$ref: '#/components/schemas/Department'}
-          uniqueItems: true
         lastModifiedAt: {type: string, format: date-time}
         name: {type: string}
         schoolId: {type: string, format: uuid}
