@@ -204,6 +204,7 @@ public final class ResearchGroupTestData {
         String name,
         String abbreviation,
         String head,
+        UUID departmentId,
         String email,
         String website,
         String description,
@@ -213,6 +214,19 @@ public final class ResearchGroupTestData {
         String city,
         ResearchGroupState state
     ) {
-        return new ResearchGroupDTO(name, abbreviation, head, email, website, description, field, street, postalCode, city, state);
+        return new ResearchGroupDTO(
+            name,
+            abbreviation,
+            head,
+            email,
+            website,
+            description,
+            field,
+            street,
+            postalCode,
+            city,
+            departmentId,
+            state
+        );
     }
 }
