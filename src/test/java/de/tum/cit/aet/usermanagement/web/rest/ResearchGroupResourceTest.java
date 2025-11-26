@@ -776,7 +776,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     void removeSelfFromResearchGroupThrowsException() {
         api
             .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
-            .deleteAndRead(API_BASE_PATH + "/members/" + researchGroupUser.getUserId(), null, Void.class, 500);
+            .deleteAndRead(API_BASE_PATH + "/members/" + researchGroupUser.getUserId(), null, Void.class, 400);
     }
 
     @Test
