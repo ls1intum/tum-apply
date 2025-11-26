@@ -20,6 +20,7 @@ import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -61,105 +62,111 @@ public class UserResourceTest extends AbstractResourceTest {
         currentUser = UserTestData.createUserWithoutResearchGroup(userRepository, "current.user@tum.de", "Current", "User", "ab12cde");
     }
 
-    // --- GET /api/users/me (getCurrentUser) ---
+    @Nested
+    class GetCurrentUser {
 
-    @Test
-    void getCurrentUserReturnsUserInfo() {
-        when(authenticationService.provisionUserIfMissing(any(Jwt.class))).thenReturn(currentUser);
+        @Test
+        void returnsUserInfo() {
+            when(authenticationService.provisionUserIfMissing(any(Jwt.class))).thenReturn(currentUser);
 
-        UserShortDTO result = api
-            .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-            .getAndRead(API_BASE_PATH + "/me", Map.of(), UserShortDTO.class, 200);
+            UserShortDTO result = api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead(API_BASE_PATH + "/me", Map.of(), UserShortDTO.class, 200);
 
-        assertThat(result).isNotNull();
-        assertThat(result.getUserId()).isEqualTo(currentUser.getUserId());
-        assertThat(result.getEmail()).isEqualTo(currentUser.getEmail());
+            assertThat(result).isNotNull();
+            assertThat(result.getUserId()).isEqualTo(currentUser.getUserId());
+            assertThat(result.getEmail()).isEqualTo(currentUser.getEmail());
+        }
+
+        @Test
+        void returnsNoContentWhenUserIsMissing() {
+            when(authenticationService.provisionUserIfMissing(any(Jwt.class))).thenReturn(null);
+
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .getAndRead(API_BASE_PATH + "/me", Map.of(), Void.class, 204);
+        }
+
+        @Test
+        void returns401WhenUnauthenticated() {
+            api.withoutPostProcessors().getAndRead(API_BASE_PATH + "/me", Map.of(), Void.class, 401);
+        }
     }
 
-    @Test
-    void getCurrentUserWithoutUserReturnsNoContent() {
-        when(authenticationService.provisionUserIfMissing(any(Jwt.class))).thenReturn(null);
+    @Nested
+    class UpdateUserName {
 
-        api
-            .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-            .getAndRead(API_BASE_PATH + "/me", Map.of(), Void.class, 204);
+        @Test
+        void returnsNoContentWithValidData() {
+            UpdateUserNameDTO dto = new UpdateUserNameDTO("NewFirst", "NewLast");
+
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/name", dto, Void.class, 204);
+
+            verify(userService).updateNames(currentUser.getUserId().toString(), "NewFirst", "NewLast");
+        }
+
+        @Test
+        void returns400WithInvalidData() {
+            UpdateUserNameDTO invalidDto = new UpdateUserNameDTO(null, null);
+
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/name", invalidDto, Void.class, 400);
+        }
+
+        @Test
+        void returns401WhenUnauthenticated() {
+            UpdateUserNameDTO dto = new UpdateUserNameDTO("NewFirst", "NewLast");
+
+            api.withoutPostProcessors().putAndRead(API_BASE_PATH + "/name", dto, Void.class, 401);
+        }
     }
 
-    @Test
-    void getCurrentUserWithoutAuthenticationReturns401() {
-        api.withoutPostProcessors().getAndRead(API_BASE_PATH + "/me", Map.of(), Void.class, 401);
-    }
+    @Nested
+    class UpdatePassword {
 
-    // --- PUT /api/users/name (updateUserName) ---
+        @Test
+        void returnsNoContentWhenPasswordUpdateSucceeds() {
+            String newPassword = "StrongPassword123!";
+            when(keycloakUserService.setPassword(anyString(), eq(newPassword))).thenReturn(true);
 
-    @Test
-    void updateUserNameWithValidDataReturnsNoContent() {
-        UpdateUserNameDTO dto = new UpdateUserNameDTO("NewFirst", "NewLast");
+            UpdatePasswordDTO dto = new UpdatePasswordDTO(newPassword);
 
-        api
-            .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-            .putAndRead(API_BASE_PATH + "/name", dto, Void.class, 204);
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/password", dto, Void.class, 204);
 
-        verify(userService).updateNames(currentUser.getUserId().toString(), "NewFirst", "NewLast");
-    }
+            verify(keycloakUserService).setPassword(currentUser.getUserId().toString(), newPassword);
+        }
 
-    @Test
-    void updateUserNameWithInvalidDataReturns400() {
-        UpdateUserNameDTO invalidDto = new UpdateUserNameDTO(null, null);
+        @Test
+        void returns400WhenPasswordUpdateFails() {
+            String newPassword = "AnotherStrongPassword!";
+            when(keycloakUserService.setPassword(anyString(), eq(newPassword))).thenReturn(false);
 
-        api
-            .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-            .putAndRead(API_BASE_PATH + "/name", invalidDto, Void.class, 400);
-    }
+            UpdatePasswordDTO dto = new UpdatePasswordDTO(newPassword);
 
-    @Test
-    void updateUserNameWithoutAuthenticationReturns401() {
-        UpdateUserNameDTO dto = new UpdateUserNameDTO("NewFirst", "NewLast");
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/password", dto, Void.class, 400);
+        }
 
-        api.withoutPostProcessors().putAndRead(API_BASE_PATH + "/name", dto, Void.class, 401);
-    }
+        @Test
+        void returns400ForBlankPassword() {
+            UpdatePasswordDTO dto = new UpdatePasswordDTO("");
 
-    // --- PUT /api/users/password (updatePassword) ---
+            api
+                .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/password", dto, Void.class, 400);
+        }
 
-    @Test
-    void updatePasswordWithValidPasswordAndSuccessfulUpdateReturnsNoContent() {
-        String newPassword = "StrongPassword123!";
-        when(keycloakUserService.setPassword(anyString(), eq(newPassword))).thenReturn(true);
+        @Test
+        void returns401WhenUnauthenticated() {
+            UpdatePasswordDTO dto = new UpdatePasswordDTO("StrongPassword123!");
 
-        UpdatePasswordDTO dto = new UpdatePasswordDTO(newPassword);
-
-        api
-            .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-            .putAndRead(API_BASE_PATH + "/password", dto, Void.class, 204);
-
-        verify(keycloakUserService).setPassword(currentUser.getUserId().toString(), newPassword);
-    }
-
-    @Test
-    void updatePasswordWithValidPasswordAndFailedUpdateReturns400() {
-        String newPassword = "AnotherStrongPassword!";
-        when(keycloakUserService.setPassword(anyString(), eq(newPassword))).thenReturn(false);
-
-        UpdatePasswordDTO dto = new UpdatePasswordDTO(newPassword);
-
-        api
-            .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-            .putAndRead(API_BASE_PATH + "/password", dto, Void.class, 400);
-    }
-
-    @Test
-    void updatePasswordWithBlankPasswordReturns400() {
-        UpdatePasswordDTO dto = new UpdatePasswordDTO("");
-
-        api
-            .with(JwtPostProcessors.jwtUser(currentUser.getUserId(), "ROLE_APPLICANT"))
-            .putAndRead(API_BASE_PATH + "/password", dto, Void.class, 400);
-    }
-
-    @Test
-    void updatePasswordWithoutAuthenticationReturns401() {
-        UpdatePasswordDTO dto = new UpdatePasswordDTO("StrongPassword123!");
-
-        api.withoutPostProcessors().putAndRead(API_BASE_PATH + "/password", dto, Void.class, 401);
+            api.withoutPostProcessors().putAndRead(API_BASE_PATH + "/password", dto, Void.class, 401);
+        }
     }
 }
