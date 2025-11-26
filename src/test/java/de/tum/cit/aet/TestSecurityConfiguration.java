@@ -1,6 +1,9 @@
 package de.tum.cit.aet;
 
+import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.service.KeycloakAuthenticationService;
+import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
+import de.tum.cit.aet.usermanagement.service.UserService;
 import java.time.Instant;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -14,6 +17,21 @@ public class TestSecurityConfiguration {
     @Bean
     public KeycloakAuthenticationService keycloakAuthenticationService() {
         return Mockito.mock(KeycloakAuthenticationService.class);
+    }
+
+    @Bean
+    public AuthenticationService authenticationService() {
+        return Mockito.mock(AuthenticationService.class);
+    }
+
+    @Bean
+    public UserService userService() {
+        return Mockito.mock(UserService.class);
+    }
+
+    @Bean
+    public KeycloakUserService keycloakUserService() {
+        return Mockito.mock(KeycloakUserService.class);
     }
 
     @Bean
