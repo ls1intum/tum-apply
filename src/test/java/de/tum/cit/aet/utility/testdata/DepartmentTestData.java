@@ -33,7 +33,7 @@ public final class DepartmentTestData {
     }
 
     // --- Save to Repository variants -------------------------------------------------------------------------
-    
+
     /**
      * Saved Department with default name.
      */

@@ -47,9 +47,7 @@ public class DepartmentResource {
      */
     @Public
     @GetMapping
-    public ResponseEntity<List<DepartmentDTO>> getDepartments(
-        @RequestParam(required = false) UUID schoolId
-    ) {
+    public ResponseEntity<List<DepartmentDTO>> getDepartments(@RequestParam(required = false) UUID schoolId) {
         if (schoolId != null) {
             log.info("GET /api/departments?schoolId={} - Fetching departments for school", schoolId);
             List<DepartmentDTO> departments = departmentService.getDepartmentsBySchoolId(schoolId);

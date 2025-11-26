@@ -147,7 +147,19 @@ public final class ResearchGroupTestData {
         String website,
         String state
     ) {
-        ResearchGroup rg = newRgAll(head, name, abbreviation, city, defaultFieldOfStudies, description, email, postalCode, street, website, state);
+        ResearchGroup rg = newRgAll(
+            head,
+            name,
+            abbreviation,
+            city,
+            defaultFieldOfStudies,
+            description,
+            email,
+            postalCode,
+            street,
+            website,
+            state
+        );
         rg.setDepartment(department);
         return repo.save(rg);
     }
@@ -201,18 +213,6 @@ public final class ResearchGroupTestData {
         String city,
         ResearchGroupState state
     ) {
-        return new ResearchGroupDTO(
-            name,
-            abbreviation,
-            head,
-            email,
-            website,
-            description,
-            field,
-            street,
-            postalCode,
-            city,
-            state
-        );
+        return new ResearchGroupDTO(name, abbreviation, head, email, website, description, field, street, postalCode, city, state);
     }
 }

@@ -14,25 +14,17 @@ public record SchoolDTO(
     UUID schoolId,
     String name,
     String abbreviation,
-    @JsonInclude(JsonInclude.Include.ALWAYS)
-    List<DepartmentShortDTO> departments
+    @JsonInclude(JsonInclude.Include.ALWAYS) List<DepartmentShortDTO> departments
 ) {
     public static SchoolDTO fromEntity(School school) {
         if (school == null) {
             return null;
         }
-        
+
         List<DepartmentShortDTO> departmentDTOs = school.getDepartments() != null
-            ? school.getDepartments().stream()
-                .map(DepartmentShortDTO::fromEntity)
-                .collect(Collectors.toList())
+            ? school.getDepartments().stream().map(DepartmentShortDTO::fromEntity).collect(Collectors.toList())
             : List.of();
-        
-        return new SchoolDTO(
-            school.getSchoolId(),
-            school.getName(),
-            school.getAbbreviation(),
-            departmentDTOs
-        );
+
+        return new SchoolDTO(school.getSchoolId(), school.getName(), school.getAbbreviation(), departmentDTOs);
     }
 }

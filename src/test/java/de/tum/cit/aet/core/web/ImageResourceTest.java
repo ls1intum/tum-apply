@@ -94,7 +94,7 @@ public class ImageResourceTest extends AbstractResourceTest {
     private void setupFirstResearchGroup() {
         school = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
         department = DepartmentTestData.saved(departmentRepository, "Computer Science", school);
-        
+
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             department,
@@ -732,7 +732,7 @@ public class ImageResourceTest extends AbstractResourceTest {
         // Create a school if we're creating a new department
         School testSchool = SchoolTestData.saved(schoolRepository, "School for " + abbreviation, abbreviation);
         Department testDepartment = DepartmentTestData.saved(departmentRepository, departmentName, testSchool);
-        
+
         return ResearchGroupTestData.savedAll(
             researchGroupRepository,
             testDepartment,

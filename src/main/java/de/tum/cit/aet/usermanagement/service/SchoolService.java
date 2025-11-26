@@ -30,17 +30,17 @@ public class SchoolService {
      * @return the created school as DTO
      * @throws ResourceAlreadyExistsException if a school with the same name already exists
      */
-    public SchoolDTO createSchool(SchoolCreationDTO dto) {        
+    public SchoolDTO createSchool(SchoolCreationDTO dto) {
         if (schoolRepository.existsByNameIgnoreCase(dto.name())) {
             throw new ResourceAlreadyExistsException("School with name '" + dto.name() + "' already exists");
         }
-        
+
         School school = new School();
         school.setName(dto.name());
         school.setAbbreviation(dto.abbreviation());
-        
+
         school = schoolRepository.save(school);
-        
+
         return SchoolDTO.fromEntity(school);
     }
 
@@ -50,10 +50,7 @@ public class SchoolService {
      * @return list of all schools
      */
     public List<SchoolDTO> getAllSchools() {
-        return schoolRepository.findAll()
-            .stream()
-            .map(SchoolDTO::fromEntity)
-            .collect(Collectors.toList());
+        return schoolRepository.findAll().stream().map(SchoolDTO::fromEntity).collect(Collectors.toList());
     }
 
     /**
@@ -64,7 +61,8 @@ public class SchoolService {
      * @throws EntityNotFoundException if school not found
      */
     public SchoolDTO getSchoolById(UUID schoolId) {
-        School school = schoolRepository.findById(schoolId)
+        School school = schoolRepository
+            .findById(schoolId)
             .orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + schoolId));
         return SchoolDTO.fromEntity(school);
     }

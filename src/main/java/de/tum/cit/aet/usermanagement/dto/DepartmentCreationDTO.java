@@ -10,7 +10,4 @@ import java.util.UUID;
  * DTO for creating a new Department.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record DepartmentCreationDTO(
-    @NotBlank @Size(min = 2, max = 200) String name,
-    @NotNull UUID schoolId
-) {}
+public record DepartmentCreationDTO(@NotBlank @Size(min = 2, max = 200) String name, @NotNull UUID schoolId) {}

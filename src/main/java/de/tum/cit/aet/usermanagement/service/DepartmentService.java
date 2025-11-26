@@ -34,22 +34,23 @@ public class DepartmentService {
      * @throws EntityNotFoundException if the school does not exist
      * @throws ResourceAlreadyExistsException if a department with the same name already exists in the school
      */
-    public DepartmentDTO createDepartment(DepartmentCreationDTO dto) {        
-        School school = schoolRepository.findById(dto.schoolId())
+    public DepartmentDTO createDepartment(DepartmentCreationDTO dto) {
+        School school = schoolRepository
+            .findById(dto.schoolId())
             .orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + dto.schoolId()));
-        
+
         if (departmentRepository.existsByNameIgnoreCaseAndSchoolSchoolId(dto.name(), dto.schoolId())) {
             throw new ResourceAlreadyExistsException(
                 "Department with name '" + dto.name() + "' already exists in school '" + school.getName() + "'"
             );
         }
-        
+
         Department department = new Department();
         department.setName(dto.name());
         department.setSchool(school);
-        
+
         department = departmentRepository.save(department);
-        
+
         return DepartmentDTO.fromEntity(department);
     }
 
@@ -59,10 +60,7 @@ public class DepartmentService {
      * @return list of all departments
      */
     public List<DepartmentDTO> getAllDepartments() {
-        return departmentRepository.findAll()
-            .stream()
-            .map(DepartmentDTO::fromEntity)
-            .collect(Collectors.toList());
+        return departmentRepository.findAll().stream().map(DepartmentDTO::fromEntity).collect(Collectors.toList());
     }
 
     /**
@@ -71,16 +69,13 @@ public class DepartmentService {
      * @param schoolId the school ID
      * @return list of departments for the school
      */
-    public List<DepartmentDTO> getDepartmentsBySchoolId(UUID schoolId) {        
+    public List<DepartmentDTO> getDepartmentsBySchoolId(UUID schoolId) {
         // Verify school exists
         if (!schoolRepository.existsById(schoolId)) {
             throw new EntityNotFoundException("School not found with ID: " + schoolId);
         }
-        
-        return departmentRepository.findBySchoolSchoolId(schoolId)
-            .stream()
-            .map(DepartmentDTO::fromEntity)
-            .collect(Collectors.toList());
+
+        return departmentRepository.findBySchoolSchoolId(schoolId).stream().map(DepartmentDTO::fromEntity).collect(Collectors.toList());
     }
 
     /**
@@ -91,7 +86,8 @@ public class DepartmentService {
      * @throws EntityNotFoundException if department not found
      */
     public DepartmentDTO getDepartmentById(UUID departmentId) {
-        Department department = departmentRepository.findById(departmentId)
+        Department department = departmentRepository
+            .findById(departmentId)
             .orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
         return DepartmentDTO.fromEntity(department);
     }

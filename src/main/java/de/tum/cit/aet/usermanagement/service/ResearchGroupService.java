@@ -216,11 +216,11 @@ public class ResearchGroupService {
         entity.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
         entity.setEmail(request.contactEmail());
         entity.setWebsite(request.website());
-        
+
         // Fetch and set department
         Department department = departmentRepository.findByIdElseThrow(request.departmentId());
         entity.setDepartment(department);
-        
+
         entity.setDescription(request.description());
         entity.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
         entity.setStreet(request.street());

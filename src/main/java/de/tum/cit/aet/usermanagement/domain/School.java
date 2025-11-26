@@ -2,14 +2,13 @@ package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "schools")

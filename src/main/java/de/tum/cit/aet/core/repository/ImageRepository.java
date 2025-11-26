@@ -32,7 +32,6 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType")
     List<Image> findImagesWithUploader(@Param("imageType") ImageType imageType);
 
-
     /**
      * Find images by uploader (non-default images only)
      *
@@ -42,7 +41,6 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     @Query("SELECT i FROM Image i WHERE i.uploadedBy.userId = :userId AND i.imageType != 'DEFAULT_JOB_BANNER' ORDER BY i.createdAt DESC")
     List<Image> findByUploaderId(@Param("userId") UUID userId);
 
-
     /**
      * Find all default job banner images for a specific school
      *
@@ -50,9 +48,10 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @param schoolId the school ID to find banners for
      * @return a list of default job banners for the school
      */
-    @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy JOIN i.researchGroup rg JOIN rg.department dept WHERE i.imageType = :imageType AND dept.school.schoolId = :schoolId")
+    @Query(
+        "SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy JOIN i.researchGroup rg JOIN rg.department dept WHERE i.imageType = :imageType AND dept.school.schoolId = :schoolId"
+    )
     List<Image> findByImageTypeAndSchoolId(@Param("imageType") ImageType imageType, @Param("schoolId") UUID schoolId);
-
 
     /**
      * Find all default job banner images across all schools

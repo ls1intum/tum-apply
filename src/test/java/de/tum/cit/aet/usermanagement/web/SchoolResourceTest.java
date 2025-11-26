@@ -127,9 +127,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
             SchoolCreationDTO createDTO = new SchoolCreationDTO("School of Computation, Information and Technology", "CIT2");
 
             // Act & Assert
-            api
-                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
-                .postAndRead(API_BASE_PATH, createDTO, Void.class, 409);
+            api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 409);
         }
 
         @Test
@@ -138,9 +136,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
             SchoolCreationDTO createDTO = new SchoolCreationDTO("", "MED");
 
             // Act & Assert
-            api
-                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
-                .postAndRead(API_BASE_PATH, createDTO, Void.class, 400);
+            api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 400);
         }
 
         @Test
@@ -149,9 +145,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
             SchoolCreationDTO createDTO = new SchoolCreationDTO("School of Medicine", "");
 
             // Act & Assert
-            api
-                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
-                .postAndRead(API_BASE_PATH, createDTO, Void.class, 400);
+            api.with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN")).postAndRead(API_BASE_PATH, createDTO, Void.class, 400);
         }
     }
 
@@ -161,8 +155,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void getAllSchoolsReturnsAllSchools() {
             // Act
-            List<SchoolDTO> result = api
-                .getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -177,8 +170,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
             databaseCleaner.clean();
 
             // Act
-            List<SchoolDTO> result = api
-                .getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull().isEmpty();
@@ -187,8 +179,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void getAllSchoolsIsPubliclyAccessible() {
             // Act - No authentication
-            List<SchoolDTO> result = api
-                .getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -201,8 +192,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
             // For now, just verify the departments field exists and is empty
 
             // Act
-            List<SchoolDTO> result = api
-                .getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -216,8 +206,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void getSchoolByIdReturnsSchoolWhenExists() {
             // Act
-            SchoolDTO result = api
-                .getAndRead(API_BASE_PATH + "/" + testSchool.getSchoolId(), Map.of(), SchoolDTO.class, 200);
+            SchoolDTO result = api.getAndRead(API_BASE_PATH + "/" + testSchool.getSchoolId(), Map.of(), SchoolDTO.class, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -239,8 +228,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void getSchoolByIdIsPubliclyAccessible() {
             // Act - No authentication
-            SchoolDTO result = api
-                .getAndRead(API_BASE_PATH + "/" + testSchool.getSchoolId(), Map.of(), SchoolDTO.class, 200);
+            SchoolDTO result = api.getAndRead(API_BASE_PATH + "/" + testSchool.getSchoolId(), Map.of(), SchoolDTO.class, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -256,8 +244,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
             // Arrange - testSchool already has no departments
 
             // Act
-            SchoolDTO result = api
-                .getAndRead(API_BASE_PATH + "/" + testSchool.getSchoolId(), Map.of(), SchoolDTO.class, 200);
+            SchoolDTO result = api.getAndRead(API_BASE_PATH + "/" + testSchool.getSchoolId(), Map.of(), SchoolDTO.class, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -267,8 +254,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void getAllSchoolsHandlesSchoolsWithoutDepartments() {
             // Act
-            List<SchoolDTO> result = api
-                .getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull();
