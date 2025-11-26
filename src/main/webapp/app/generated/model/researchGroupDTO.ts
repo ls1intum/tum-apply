@@ -18,7 +18,6 @@ export interface ResearchGroupDTO {
     head: string;
     name: string;
     postalCode?: string;
-    school?: string;
     state?: ResearchGroupDTO.StateEnum;
     street?: string;
     website?: string;
