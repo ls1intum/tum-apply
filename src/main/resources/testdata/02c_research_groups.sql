@@ -1,5 +1,5 @@
 -- =============================================
--- 02_research_groups.sql
+-- 02c_research_groups.sql
 -- Inserts example research groups
 -- Preconditions:
 --   - User with user_id '00000000-0000-0000-0000-000000000101' exists (created_by)
