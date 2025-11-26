@@ -8,7 +8,6 @@
  * Do not edit the class manually.
  */
 import { School } from './school';
-import { ResearchGroup } from './researchGroup';
 
 
 export interface Department { 
@@ -16,7 +15,6 @@ export interface Department {
     departmentId?: string;
     lastModifiedAt?: string;
     name?: string;
-    researchGroups?: Array<ResearchGroup>;
     school?: School;
 }
 
