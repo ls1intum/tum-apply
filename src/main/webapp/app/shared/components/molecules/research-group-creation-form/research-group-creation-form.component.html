@@ -124,12 +124,34 @@
 
     <div>
       <jhi-string-input
-        label="onboarding.professorRequest.researchGroupName.label"
-        placeholder="onboarding.professorRequest.researchGroupName.placeholder"
+        label="onboarding.professorRequest.researchGroupName.label | translate"
+        placeholder="onboarding.professorRequest.researchGroupName.placeholder | translate"
         [required]="true"
         [model]="form.get('researchGroupName')?.value"
         [control]="form.get('researchGroupName') ?? undefined"
         [shouldTranslate]="true"
+      />
+    </div>
+
+    <!-- School and Department Selection -->
+    <div>
+      <jhi-select
+        [label]="'onboarding.professorRequest.school.label' | translate"
+        [placeholder]="'onboarding.professorRequest.school.placeholder' | translate"
+        [items]="schoolOptions()"
+        [selected]="selectedSchoolOption()"
+        (selectedChange)="onSchoolChange($event)"
+      />
+    </div>
+
+    <div>
+      <jhi-select
+        [label]="'onboarding.professorRequest.department.label'"
+        [placeholder]="'onboarding.professorRequest.department.placeholder'"
+        [items]="filteredDepartmentOptions()"
+        [required]="true"
+        [selected]="selectedDepartmentOption()"
+        (selectedChange)="onDepartmentChange($event)"
       />
     </div>
   </div>
@@ -170,16 +192,6 @@
         [model]="form.get('researchGroupWebsite')?.value"
         [control]="form.get('researchGroupWebsite') ?? undefined"
         icon="globe"
-        [shouldTranslate]="true"
-      />
-    </div>
-
-    <div>
-      <jhi-string-input
-        label="onboarding.professorRequest.researchGroupSchool.label"
-        placeholder="onboarding.professorRequest.researchGroupSchool.placeholder"
-        [model]="form.get('researchGroupSchool')?.value"
-        [control]="form.get('researchGroupSchool') ?? undefined"
         [shouldTranslate]="true"
       />
     </div>

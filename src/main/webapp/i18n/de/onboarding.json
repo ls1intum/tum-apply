@@ -72,6 +72,14 @@
         "label": "Abkürzung",
         "placeholder": "z.B. KI"
       },
+      "school": {
+        "label": "School (optionaler Filter)",
+        "placeholder": "Departments nach School filtern"
+      },
+      "department": {
+        "label": "Department",
+        "placeholder": "Wähle ein Department"
+      },
       "researchGroupContactEmail": {
         "label": "E-Mail",
         "placeholder": "z.B. kontakt@forschung.de"
@@ -120,6 +128,10 @@
       "error": {
         "summary": "Übermittlung fehlgeschlagen",
         "detail": "Fehler beim Senden der Anfrage. Bitte versuche es erneut oder kontaktiere den Support."
+      },
+      "loadDataFailed": {
+        "summary": "Fehler beim Laden",
+        "detail": "Fehler beim Laden von Schools und Departments. Bitte aktualisiere die Seite oder versuche es später erneut."
       },
       "cancel": "Abbrechen",
       "submit": "Anfrage senden",
