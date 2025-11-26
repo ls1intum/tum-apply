@@ -2,26 +2,38 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
-  imports: [TranslateModule, StringInputComponent, ButtonComponent, ReactiveFormsModule, DividerModule, EditorComponent, InfoBoxComponent],
+  imports: [
+    TranslateModule,
+    StringInputComponent,
+    SelectComponent,
+    ButtonComponent,
+    ReactiveFormsModule,
+    DividerModule,
+    EditorComponent,
+    InfoBoxComponent,
+  ],
   templateUrl: './research-group-detail-view.component.html',
 })
 export class ResearchGroupDetailViewComponent implements OnInit {
   form = new FormGroup({
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
-    school: new FormControl(''),
+    departmentId: new FormControl('', [Validators.required]),
     defaultFieldOfStudies: new FormControl(''),
     head: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email, Validators.pattern(/.+\..{2,}$/)]),
@@ -37,12 +49,39 @@ export class ResearchGroupDetailViewComponent implements OnInit {
   isSaving = signal<boolean>(false);
   isLoading = signal<boolean>(true);
 
+  // Department data
+  departments: DepartmentDTO[] = [];
+  departmentOptions: SelectOption[] = [];
+  selectedDepartmentId?: string;
+  selectedDepartmentOption?: SelectOption;
+
   readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
+  private readonly departmentService = inject(DepartmentResourceApiService);
   private readonly config = inject(DynamicDialogConfig);
   private toastService = inject(ToastService);
 
   ngOnInit(): void {
+    void this.loadDepartments();
     void this.init();
+  }
+
+  async loadDepartments(): Promise<void> {
+    try {
+      this.departments = await firstValueFrom(this.departmentService.getDepartments());
+      this.departmentOptions = this.departments.map(dept => ({
+        name: dept.name ?? '',
+        value: dept.departmentId ?? '',
+      }));
+    } catch {
+      this.toastService.showErrorKey('researchGroup.detailView.errors.loadDepartments');
+    }
+  }
+
+  onDepartmentChange(option: SelectOption): void {
+    const deptId = option.value as string;
+    this.selectedDepartmentId = deptId;
+    this.selectedDepartmentOption = option;
+    this.form.patchValue({ departmentId: deptId });
   }
 
   async onSave(): Promise<void> {
@@ -71,6 +110,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         postalCode: formValue.postalCode ?? '',
         city: formValue.city ?? '',
         defaultFieldOfStudies: formValue.defaultFieldOfStudies ?? '',
+        departmentId: formValue.departmentId ?? undefined,
       };
 
       await firstValueFrom(this.ResearchGroupService.updateResearchGroup(researchGroupId, updateData));
@@ -113,7 +153,15 @@ export class ResearchGroupDetailViewComponent implements OnInit {
       city: data?.city,
       postalCode: data?.postalCode,
       street: data?.street,
+      departmentId: data?.departmentId,
     });
+
+    // Set selected department for the dropdown
+    if (data?.departmentId) {
+      this.selectedDepartmentId = data.departmentId;
+      this.selectedDepartmentOption = this.departmentOptions.find(opt => opt.value === data.departmentId);
+    }
+
     this.form.updateValueAndValidity();
   }
 }
