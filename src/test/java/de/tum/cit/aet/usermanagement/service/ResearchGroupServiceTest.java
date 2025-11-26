@@ -316,6 +316,7 @@ class ResearchGroupServiceTest {
                 "Updated Street",
                 "54321",
                 "Updated City",
+                TEST_DEPARTMENT_ID,
                 ResearchGroupState.ACTIVE
             );
 

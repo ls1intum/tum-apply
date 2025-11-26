@@ -265,6 +265,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "Updated ML Lab",
             "UML",
             "Prof. Smith",
+            testDepartment.getDepartmentId(),
             "updated@ml.tum.de",
             "https://updated.ml.tum.de",
             "Computer Science",
@@ -291,6 +292,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "", // Invalid: empty name
             "ML",
             "",
+            testDepartment.getDepartmentId(),
             "invalid-email", // Invalid email
             "https://ml.tum.de",
             "Computer Science",
