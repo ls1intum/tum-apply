@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
+import { formatEnumValue } from 'app/shared/util/text.util';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
@@ -402,6 +403,8 @@ export class JobDetailComponent {
       lastModifiedAt = dayjs(jobDetailDTO.lastModifiedAt).format('DD.MM.YYYY');
     }
 
+    const location = isForm ? formatEnumValue(data.location) : (data.location ?? '');
+    const fundingType = isForm ? formatEnumValue(data.fundingType) : (data.fundingType ?? '');
     const startDate = data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '';
     const endDate = data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '';
 
@@ -418,10 +421,10 @@ export class JobDetailComponent {
       title: data.title,
       fieldOfStudies: data.fieldOfStudies ?? '',
       researchArea: data.researchArea ?? '',
-      location: data.location ?? '',
+      location,
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
-      fundingType: data.fundingType ?? '',
+      fundingType,
       description: data.description ?? '',
       tasks: data.tasks ?? '',
       requirements: data.requirements ?? '',
