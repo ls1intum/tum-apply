@@ -21,27 +21,19 @@ export function createApplicationConfigServiceMock(overrides: Partial<Applicatio
       url: '',
       realm: '',
       clientId: '',
-      ...(overrides.keycloak ?? {}),
+      ...overrides.keycloak,
     },
     otp: {
       length: 6,
       ttlSeconds: 300,
       resendCooldownSeconds: 60,
-      ...(overrides.otp ?? {}),
+      ...overrides.otp,
     },
     appConfig: {
-      keycloak: overrides.keycloak,
-      otp: overrides.otp,
-      ...(overrides.appConfig ?? {}),
+      ...overrides.appConfig,
     },
     setAppConfig: vi.fn(),
-    getAppConfig: vi.fn(() => {
-      return {
-        keycloak: defaultConfig.keycloak,
-        otp: defaultConfig.otp,
-        ...(defaultConfig.appConfig ?? {}),
-      } as ApplicationConfig;
-    }),
+    getAppConfig: vi.fn(),
     getEndpointFor: vi.fn(api => api),
   };
 
