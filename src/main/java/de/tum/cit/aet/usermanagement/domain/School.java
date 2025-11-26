@@ -2,8 +2,6 @@ package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import jakarta.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +25,4 @@ public class School extends AbstractAuditingEntity {
 
     @Column(name = "abbreviation", nullable = false)
     private String abbreviation;
-
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Department> departments = new HashSet<>();
 }

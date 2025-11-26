@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.usermanagement.dto.SchoolCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolDTO;
+import de.tum.cit.aet.usermanagement.dto.SchoolShortDTO;
 import de.tum.cit.aet.usermanagement.service.SchoolService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -29,40 +30,53 @@ public class SchoolResource {
      * Create a new school.
      *
      * @param dto the school creation DTO
-     * @return HTTP 201 Created with the created school
+     * @return HTTP 201 Created with the created school (without departments)
      */
     @Admin
     @PostMapping
-    public ResponseEntity<SchoolDTO> createSchool(@Valid @RequestBody SchoolCreationDTO dto) {
+    public ResponseEntity<SchoolShortDTO> createSchool(@Valid @RequestBody SchoolCreationDTO dto) {
         log.info("POST /api/schools - Creating school: {}", dto.name());
-        SchoolDTO created = schoolService.createSchool(dto);
+        SchoolShortDTO created = schoolService.createSchool(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
-     * Get all schools with their departments.
+     * Get all schools without departments (lightweight).
      *
-     * @return HTTP 200 OK with list of all schools
+     * @return HTTP 200 OK with list of all schools without departments
      */
     @Public
     @GetMapping
-    public ResponseEntity<List<SchoolDTO>> getAllSchools() {
-        log.info("GET /api/schools - Fetching all schools");
-        List<SchoolDTO> schools = schoolService.getAllSchools();
+    public ResponseEntity<List<SchoolShortDTO>> getAllSchools() {
+        log.info("GET /api/schools - Fetching all schools without departments");
+        List<SchoolShortDTO> schools = schoolService.getAllSchools();
         return ResponseEntity.ok(schools);
     }
 
     /**
-     * Get a specific school by ID.
+     * Get all schools with their departments (includes nested department data).
+     *
+     * @return HTTP 200 OK with list of all schools with their departments
+     */
+    @Public
+    @GetMapping("/with-departments")
+    public ResponseEntity<List<SchoolDTO>> getAllSchoolsWithDepartments() {
+        log.info("GET /api/schools/with-departments - Fetching all schools with departments");
+        List<SchoolDTO> schools = schoolService.getAllSchoolsWithDepartments();
+        return ResponseEntity.ok(schools);
+    }
+
+    /**
+     * Get a specific school by ID with its departments.
      *
      * @param id the school ID
-     * @return HTTP 200 OK with the school
+     * @return HTTP 200 OK with the school and its departments
      */
     @Public
     @GetMapping("/{id}")
     public ResponseEntity<SchoolDTO> getSchoolById(@PathVariable UUID id) {
-        log.info("GET /api/schools/{} - Fetching school by ID", id);
-        SchoolDTO school = schoolService.getSchoolById(id);
+        log.info("GET /api/schools/{} - Fetching school by ID with departments", id);
+        SchoolDTO school = schoolService.getSchoolByIdWithDepartments(id);
         return ResponseEntity.ok(school);
     }
 }

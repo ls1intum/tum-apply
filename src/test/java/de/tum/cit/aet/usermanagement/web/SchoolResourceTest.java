@@ -8,6 +8,7 @@ import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.SchoolCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolDTO;
+import de.tum.cit.aet.usermanagement.dto.SchoolShortDTO;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
@@ -84,16 +85,15 @@ public class SchoolResourceTest extends AbstractResourceTest {
             SchoolCreationDTO createDTO = new SchoolCreationDTO("School of Medicine", "MED");
 
             // Act
-            SchoolDTO result = api
+            SchoolShortDTO result = api
                 .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
-                .postAndRead(API_BASE_PATH, createDTO, SchoolDTO.class, 201);
+                .postAndRead(API_BASE_PATH, createDTO, SchoolShortDTO.class, 201);
 
             // Assert
             assertThat(result).isNotNull();
             assertThat(result.schoolId()).isNotNull();
             assertThat(result.name()).isEqualTo("School of Medicine");
             assertThat(result.abbreviation()).isEqualTo("MED");
-            assertThat(result.departments()).isNotNull().isEmpty();
 
             // Verify saved in database
             School saved = schoolRepository.findById(result.schoolId()).orElse(null);
@@ -155,7 +155,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void getAllSchoolsReturnsAllSchools() {
             // Act
-            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolShortDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolShortDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -170,7 +170,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
             databaseCleaner.clean();
 
             // Act
-            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolShortDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolShortDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull().isEmpty();
@@ -179,7 +179,7 @@ public class SchoolResourceTest extends AbstractResourceTest {
         @Test
         void getAllSchoolsIsPubliclyAccessible() {
             // Act - No authentication
-            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolShortDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolShortDTO>>() {}, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -187,12 +187,16 @@ public class SchoolResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void getAllSchoolsIncludesDepartments() {
-            // This test will be more meaningful after departments are added
-            // For now, just verify the departments field exists and is empty
+        void getAllSchoolsWithDepartmentsIncludesDepartments() {
+            // Test the /with-departments endpoint to verify departments are included
 
             // Act
-            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolDTO> result = api.getAndRead(
+                API_BASE_PATH + "/with-departments",
+                Map.of(),
+                new TypeReference<List<SchoolDTO>>() {},
+                200
+            );
 
             // Assert
             assertThat(result).isNotNull();
@@ -252,9 +256,16 @@ public class SchoolResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void getAllSchoolsHandlesSchoolsWithoutDepartments() {
+        void getAllSchoolsWithDepartmentsHandlesSchoolsWithoutDepartments() {
+            // Test that /with-departments endpoint returns empty department lists correctly
+
             // Act
-            List<SchoolDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<SchoolDTO>>() {}, 200);
+            List<SchoolDTO> result = api.getAndRead(
+                API_BASE_PATH + "/with-departments",
+                Map.of(),
+                new TypeReference<List<SchoolDTO>>() {},
+                200
+            );
 
             // Assert
             assertThat(result).isNotNull();
