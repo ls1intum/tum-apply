@@ -6,6 +6,7 @@ import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import java.util.UUID;
 
 /**
  * DTO for {@link ResearchGroup}
@@ -22,6 +23,7 @@ public record ResearchGroupDTO(
     String street,
     String postalCode,
     String city,
+    UUID departmentId,
     ResearchGroupState state
 ) {
     /**
@@ -45,6 +47,7 @@ public record ResearchGroupDTO(
             researchGroup.getStreet(),
             researchGroup.getPostalCode(),
             researchGroup.getCity(),
+            researchGroup.getDepartment() != null ? researchGroup.getDepartment().getDepartmentId() : null,
             researchGroup.getState()
         );
     }

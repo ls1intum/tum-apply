@@ -185,7 +185,7 @@ public class ResearchGroupService {
 
     /**
      * Updates a ResearchGroup entity with values from the provided DTO.
-     * Note: Department is not updated here as it should only be changeable by admins.
+     * Includes department updates when departmentId is provided.
      */
     private void updateEntityFromDTO(ResearchGroup entity, ResearchGroupDTO dto) {
         entity.setName(dto.name());
@@ -198,6 +198,12 @@ public class ResearchGroupService {
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
         entity.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
+
+        // Update department if departmentId is provided
+        if (dto.departmentId() != null) {
+            Department department = departmentRepository.findByIdElseThrow(dto.departmentId());
+            entity.setDepartment(department);
+        }
     }
 
     /**
