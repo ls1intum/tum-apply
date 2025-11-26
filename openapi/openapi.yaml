@@ -1869,10 +1869,6 @@ components:
         departmentId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         name: {type: string}
-        researchGroups:
-          type: array
-          items: {$ref: '#/components/schemas/ResearchGroup'}
-          uniqueItems: true
         school: {$ref: '#/components/schemas/School'}
     DepartmentCreationDTO:
       type: object
