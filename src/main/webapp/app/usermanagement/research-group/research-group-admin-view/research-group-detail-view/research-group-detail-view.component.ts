@@ -66,7 +66,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         head: formValue.head ?? '',
         email: formValue.email ?? '',
         website: formValue.website ?? '',
-        school: formValue.school ?? '',
         description: formValue.description ?? '',
         street: formValue.street ?? '',
         postalCode: formValue.postalCode ?? '',
@@ -106,7 +105,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     this.form.patchValue({
       abbreviation: data?.abbreviation,
       name: data?.name,
-      school: data?.school,
       defaultFieldOfStudies: data?.defaultFieldOfStudies,
       head: data?.head,
       email: data?.email,
