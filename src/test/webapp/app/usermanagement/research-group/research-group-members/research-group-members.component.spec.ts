@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -257,9 +257,9 @@ describe('ResearchGroupMembersComponent', () => {
   it('should open add members modal and reload members on close if added', () => {
     const mockRef = {
       onClose: of(true),
-    };
+    } as DynamicDialogRef;
     const dialogService = TestBed.inject(DialogService);
-    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef as any);
+    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     fixture.detectChanges();
@@ -273,9 +273,9 @@ describe('ResearchGroupMembersComponent', () => {
   it('should open add members modal and NOT reload members on close if NOT added', () => {
     const mockRef = {
       onClose: of(false),
-    };
+    } as DynamicDialogRef;
     const dialogService = TestBed.inject(DialogService);
-    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef as any);
+    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
 
     fixture.detectChanges();
