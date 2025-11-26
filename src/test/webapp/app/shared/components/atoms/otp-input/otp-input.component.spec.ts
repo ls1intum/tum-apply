@@ -51,17 +51,13 @@ describe('OtpInput', () => {
         resendCooldownSeconds: 60,
       },
     });
-
     authFacadeMock = createAuthFacadeServiceMock();
-
     authOrchestratorServiceMock = createAuthOrchestratorServiceMock();
-
     breakpointState = {
       [Breakpoints.XLarge]: false,
       [Breakpoints.XSmall]: false,
       [Breakpoints.Small]: false,
     };
-
     dynamicDialogConfigMock = { data: {} } as DynamicDialogConfig;
 
     await TestBed.configureTestingModule({
@@ -162,7 +158,6 @@ describe('OtpInput', () => {
   });
 
   it('should reset OTP and mark control as pristine for empty value', () => {
-    // first set some non-empty value to ensure state changes back
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
@@ -182,7 +177,6 @@ describe('OtpInput', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    // Submit is disabled because otp length is not valid
     const clearSpy = vi.spyOn(authOrchestratorServiceMock, 'clearError');
 
     component.onSubmit();
@@ -222,6 +216,17 @@ describe('OtpInput', () => {
     expect(submitSpy).toHaveBeenCalled();
   });
 
+  it('should allow non-character keys like Backspace without preventing default', () => {
+    const fixture = createComponent();
+    const component = fixture.componentInstance;
+
+    const preventDefault = vi.fn();
+    component.onKeyDown({ key: 'Backspace', preventDefault } as any);
+
+    // Backspace has key.length > 1 and should not be prevented
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
+
   it('should block non-alphanumeric single-character keys', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
@@ -243,7 +248,6 @@ describe('OtpInput', () => {
   });
 
   it('should not resend OTP when disableResend is true (busy or cooldown)', () => {
-    // Make disableResend() true before component creation
     authOrchestratorServiceMock.isBusySignal.set(true);
     authOrchestratorServiceMock.cooldownSecondsSignal.set(10);
 
@@ -319,7 +323,6 @@ describe('OtpInput', () => {
   });
 
   it('should use cooldown resend label when on cooldown', () => {
-    // Cooldown is active before component creation
     authOrchestratorServiceMock.cooldownSecondsSignal.set(10);
 
     const fixture = createComponent();
@@ -363,16 +366,5 @@ describe('OtpInput', () => {
     fixture.detectChanges();
 
     expect(authFacadeMock.requestOtp).toHaveBeenCalled();
-  });
-
-  it('should allow non-character keys like Backspace without preventing default', () => {
-    const fixture = createComponent();
-    const component = fixture.componentInstance;
-
-    const preventDefault = vi.fn();
-    component.onKeyDown({ key: 'Backspace', preventDefault } as any);
-
-    // Backspace has key.length > 1 and should not be prevented
-    expect(preventDefault).not.toHaveBeenCalled();
   });
 });
