@@ -2372,6 +2372,7 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         defaultFieldOfStudies: {type: string}
+        departmentId: {type: string, format: uuid}
         description: {type: string}
         email: {type: string, format: email}
         head: {type: string, minLength: 1}
