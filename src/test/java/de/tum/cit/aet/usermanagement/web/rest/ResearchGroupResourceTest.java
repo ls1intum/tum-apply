@@ -6,16 +6,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.*;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.web.ResearchGroupResource;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,11 +52,19 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     UserRepository userRepository;
 
     @Autowired
+    SchoolRepository schoolRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
+
+    @Autowired
     DatabaseCleaner databaseCleaner;
 
     @Autowired
     MvcTestClient api;
 
+    School testSchool;
+    Department testDepartment;
     ResearchGroup researchGroup;
     ResearchGroup secondResearchGroup;
     User researchGroupUser;
@@ -59,6 +73,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
+        testSchool = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
+        testDepartment = DepartmentTestData.saved(departmentRepository, "Computer Science", testSchool);
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Prof. Smith",
@@ -253,7 +269,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "https://updated.ml.tum.de",
             "Computer Science",
             "Updated description",
-            "AI",
             "Arcisstr. 21",
             "80333",
             "Munich",
@@ -280,7 +295,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "https://ml.tum.de",
             "Computer Science",
             "Description",
-            "AI",
             "Street",
             "80333",
             "Munich",
@@ -305,10 +319,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "ab12cde",
             "Dr. John Doe",
             "New Research Lab",
+            testDepartment.getDepartmentId(),
             "NRL",
             "contact@newlab.tum.de",
             "https://newlab.tum.de",
-            "Engineering",
             "Research on new topics",
             "Engineering Science",
             "Boltzmannstr. 3",
@@ -337,7 +351,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "mn33zzz",
             "Prof. Minimal User",
             "Minimal Research Lab",
-            "",
+            testDepartment.getDepartmentId(),
             "",
             "",
             "",
@@ -366,10 +380,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             "ab12cde",
             "Dr. John Doe",
             "New Research Lab",
+            testDepartment.getDepartmentId(),
             "NRL",
             "contact@newlab.tum.de",
             "https://newlab.tum.de",
-            "Engineering",
             "Research on new topics",
             "Engineering Science",
             "Boltzmannstr. 3",

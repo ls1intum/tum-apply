@@ -17,6 +17,7 @@ public class DatabaseCleaner {
         "applicants",
         "custom_field_answers",
         "custom_fields",
+        "departments",
         "document_dictionary",
         "documents",
         "email_settings",
@@ -30,6 +31,7 @@ public class DatabaseCleaner {
         "jobs",
         "ratings",
         "research_groups",
+        "schools",
         "user_research_group_roles",
         "user_settings",
         "users"

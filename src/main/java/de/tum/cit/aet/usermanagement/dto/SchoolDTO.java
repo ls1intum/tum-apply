@@ -14,6 +14,7 @@ public record SchoolDTO(
     UUID schoolId,
     String name,
     String abbreviation,
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     List<DepartmentShortDTO> departments
 ) {
     public static SchoolDTO fromEntity(School school) {

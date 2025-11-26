@@ -185,7 +185,13 @@ public class ImageService {
         if (researchGroupId == null) {
             return imageRepository.findDefaultJobBanners();
         }
-        return imageRepository.findDefaultJobBannersByResearchGroup(researchGroupId);
+        
+        // Fetch the school ID from the research group
+        ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
+            .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
+        UUID schoolId = researchGroup.getDepartment().getSchool().getSchoolId();
+        
+        return imageRepository.findDefaultJobBannersBySchool(schoolId);
     }
 
     /**
