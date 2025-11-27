@@ -202,7 +202,7 @@ public class CurrentUserService {
         if (
             isAdmin() ||
             getCurrentUser()
-                .getResearchGroupIdIfProfessor()
+                .getResearchGroupIdIfMember()
                 .map(id -> id.equals(researchGroupId))
                 .orElse(false)
         ) {

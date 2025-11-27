@@ -5,10 +5,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Marks a controller class or method that can be accessed by professors
- * (users with the PROFESSOR role) or employees (users with the EMPLOYEE role).
+ * (users with the PROFESSOR role), employees (users with the EMPLOYEE role), or admins (users with the ADMIN role).
  */
 @Documented
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAnyRole('PROFESSOR','EMPLOYEE')")
-public @interface ProfessorOrEmployee {}
+@PreAuthorize("hasAnyRole('PROFESSOR','EMPLOYEE', 'ADMIN')")
+public @interface ProfessorOrEmployeeOrAdmin {}

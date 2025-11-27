@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import java.util.UUID;
@@ -26,9 +27,9 @@ public class DocumentResource {
      * @param documentDictionaryId the UUID of the DocumentDictionary
      * @return the file as a downloadable HTTP resource
      */
+    @Authenticated
     @GetMapping("/{documentDictionaryId}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentDictionaryId) {
-        //TODO authorize access
         DocumentDictionary documentDictionary = documentDictionaryService.findDocumentDictionaryById(documentDictionaryId);
         return ResponseEntity.ok(documentService.download(documentDictionary.getDocument()));
     }
