@@ -564,7 +564,7 @@ public class ResearchGroupService {
                 .orElseGet(() -> {
                     UserResearchGroupRole newRole = new UserResearchGroupRole();
                     newRole.setUser(user);
-                    newRole.setRole(UserRole.APPLICANT);
+                    newRole.setRole(UserRole.EMPLOYEE);
                     return newRole;
                 });
 

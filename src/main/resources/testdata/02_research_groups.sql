@@ -269,3 +269,49 @@ SET
 WHERE
     user_id = '11111111-0000-0000-0000-000000000012';
 -- Daniel Kim
+
+
+--============================================--
+-- Extra assignment for employees
+--============================================--
+UPDATE users
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000020';
+-- Nina Petrova
+
+UPDATE users
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000020';
+-- George Mensah
+
+UPDATE users
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000020';
+-- Eva Fischer
+
+UPDATE users
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000024';
+-- Olga Smir
+
+UPDATE users
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000027';
+-- Erik Olsen
+
+UPDATE users
+SET
+    research_group_id = '00000000-0000-0000-0000-000000000002' -- Data Science Group
+WHERE
+    user_id = '11111111-0000-0000-0000-000000000029';
+-- Matteo Rinaldi
