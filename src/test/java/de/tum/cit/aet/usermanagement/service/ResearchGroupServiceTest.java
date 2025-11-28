@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
+import de.tum.cit.aet.core.domain.CurrentUser;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
