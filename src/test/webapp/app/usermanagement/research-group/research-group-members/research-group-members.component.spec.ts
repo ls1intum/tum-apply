@@ -5,13 +5,14 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideDialogServiceMock } from 'util/dialog.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
@@ -21,6 +22,7 @@ describe('ResearchGroupMembersComponent', () => {
     removeMemberFromResearchGroup: ReturnType<typeof vi.fn>;
   };
   let mockToastService: ReturnType<typeof createToastServiceMock>;
+  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
 
   const mockUserData: UserShortDTO = {
     userId: 'user-1',
@@ -48,12 +50,14 @@ describe('ResearchGroupMembersComponent', () => {
     };
 
     mockToastService = createToastServiceMock();
+    mockAccountService = createAccountServiceMock();
+    mockAccountService.user.set({ id: 'current-user', name: 'Current User', email: 'test@test.com', authorities: [] });
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent],
       providers: [
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: AccountService, useValue: { userId: 'current-user' } },
+        provideAccountServiceMock(mockAccountService),
         provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
@@ -253,5 +257,25 @@ describe('ResearchGroupMembersComponent', () => {
     component.members.set([memberWithLowercaseRole]);
     const row = component.tableData()[0];
     expect(row.role).toBe('Professor');
+  });
+
+  it('should prevent employee from removing a professor', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    const professorMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Professor] };
+    component.members.set([professorMember]);
+
+    const row = component.tableData()[0];
+
+    expect(row.canRemove).toBe(false);
+  });
+
+  it('should allow employee to remove non-professor members', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    const studentMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Applicant] };
+    component.members.set([studentMember]);
+
+    const row = component.tableData()[0];
+
+    expect(row.canRemove).toBe(true);
   });
 });
