@@ -62,7 +62,7 @@ public class ResearchGroupService {
      */
     public PageResponseDTO<UserShortDTO> getResearchGroupMembers(PageDTO pageDTO) {
         // Get the current user's research group ID
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
@@ -89,7 +89,7 @@ public class ResearchGroupService {
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
         // Get the current user's research group ID for validation
-        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
@@ -549,7 +549,7 @@ public class ResearchGroupService {
      */
     @Transactional
     public void addMembersToResearchGroup(List<UUID> userIds, UUID researchGroupId) {
-        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfProfessor();
+        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 
         for (UUID userId : userIds) {

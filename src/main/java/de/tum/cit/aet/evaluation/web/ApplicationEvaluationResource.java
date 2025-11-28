@@ -73,7 +73,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getAllApplicationsOverviews(researchGroupId, offsetPageDTO, sortDto, filterDto)
@@ -96,7 +96,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroupId, offsetPageDTO, sortDto, filterDto));
     }
@@ -119,7 +119,7 @@ public class ApplicationEvaluationResource {
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroupId, sortDto, filterDto)
@@ -171,7 +171,7 @@ public class ApplicationEvaluationResource {
     @ProfessorOrEmployee
     @GetMapping("/job-names")
     public ResponseEntity<List<String>> getAllJobNames() {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         List<String> jobNames = applicationEvaluationService.getAllJobNames(researchGroupId);
         return ResponseEntity.ok(jobNames);

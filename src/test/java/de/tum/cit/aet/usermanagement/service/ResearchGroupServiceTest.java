@@ -103,7 +103,7 @@ class ResearchGroupServiceTest {
 
         @BeforeEach
         void setup() {
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
         }
 
         @Test
@@ -149,7 +149,7 @@ class ResearchGroupServiceTest {
 
         @BeforeEach
         void setup() {
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
         }
 
         @Test
