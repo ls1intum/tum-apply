@@ -1158,62 +1158,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupDTO'}
-  /api/research-groups/admin:
-    get:
-      tags: [research-group-resource]
-      operationId: getResearchGroupsForAdmin
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      - name: status
-        in: query
-        required: false
-        schema:
-          type: array
-          items:
-            type: string
-            enum: [DRAFT, ACTIVE, DENIED]
-      - name: searchQuery
-        in: query
-        required: false
-        schema: {type: string}
-      - name: sortBy
-        in: query
-        required: false
-        schema: {type: string}
-      - name: direction
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [ASC, DESC]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupAdminDTO'}
-  /api/research-groups/admin-create:
-    post:
-      tags: [research-group-resource]
-      operationId: createResearchGroupAsAdmin
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ResearchGroupRequestDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
   /api/research-groups/detail/{researchGroupId}:
     get:
       tags: [research-group-resource]
@@ -1229,25 +1173,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupLargeDTO'}
-  /api/research-groups/draft:
-    get:
-      tags: [research-group-resource]
-      operationId: getDraftResearchGroups
-      parameters:
-      - name: pageSize
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 1}
-      - name: pageNumber
-        in: query
-        required: false
-        schema: {type: integer, format: int32, minimum: 0}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOResearchGroupDTO'}
   /api/research-groups/employee-request:
     post:
       tags: [research-group-resource]
@@ -1342,51 +1267,6 @@ paths:
           application/json:
             schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
         required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-  /api/research-groups/{researchGroupId}/activate:
-    post:
-      tags: [research-group-resource]
-      operationId: activateResearchGroup
-      parameters:
-      - name: researchGroupId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-  /api/research-groups/{researchGroupId}/deny:
-    post:
-      tags: [research-group-resource]
-      operationId: denyResearchGroup
-      parameters:
-      - name: researchGroupId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
-  /api/research-groups/{researchGroupId}/withdraw:
-    post:
-      tags: [research-group-resource]
-      operationId: withdrawResearchGroup
-      parameters:
-      - name: researchGroupId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
       responses:
         '200':
           description: OK
@@ -2142,13 +2022,6 @@ components:
           type: array
           items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
         totalElements: {type: integer, format: int64}
-    PageResponseDTOResearchGroupAdminDTO:
-      type: object
-      properties:
-        content:
-          type: array
-          items: {$ref: '#/components/schemas/ResearchGroupAdminDTO'}
-        totalElements: {type: integer, format: int64}
     PageResponseDTOResearchGroupDTO:
       type: object
       properties:
@@ -2230,16 +2103,6 @@ components:
           items: {$ref: '#/components/schemas/UserResearchGroupRole'}
           uniqueItems: true
         website: {type: string}
-    ResearchGroupAdminDTO:
-      type: object
-      properties:
-        createdAt: {type: string, format: date-time}
-        id: {type: string, format: uuid}
-        professorName: {type: string}
-        researchGroup: {type: string}
-        status:
-          type: string
-          enum: [DRAFT, ACTIVE, DENIED]
     ResearchGroupDTO:
       type: object
       properties:
