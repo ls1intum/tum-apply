@@ -213,12 +213,14 @@ describe('ResearchGroupMembersComponent', () => {
       name: 'John Doe',
       role: 'Professor',
       isCurrentUser: false,
+      canRemove: true,
     });
     expect(tableData[1]).toEqual({
       ...mockCurrentUser,
       name: 'Current User',
       role: 'Admin',
       isCurrentUser: true,
+      canRemove: false,
     });
   });
 
