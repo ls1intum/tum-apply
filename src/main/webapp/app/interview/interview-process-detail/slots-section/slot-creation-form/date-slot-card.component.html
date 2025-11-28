@@ -1,0 +1,147 @@
+<div class="rounded-md border border-[var(--p-border-default)] bg-[var(--p-background-default)] p-1">
+  <p-accordion [value]="['1']" [multiple]="true">
+    <p-accordion-panel value="1">
+      <p-accordion-header>
+        <div class="flex w-full items-center justify-between pr-2">
+
+          <!-- Left Part: Date & Info -->
+          <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-[var(--p-text-secondary)]">
+                            {{ date() | date:'EEE' | uppercase }}
+                        </span>
+            <span class="text-base font-bold text-[var(--p-text-primary)]">
+                            {{ date() | date:'mediumDate' }}
+                        </span>
+          </div>
+
+          <!-- Right Part: Header Buttons -->
+          <div class="flex gap-2 items-center" (click)="$event.stopPropagation()">
+            <jhi-button [label]="'interview.slots.create.addRange' | translate" variant="outlined" size="sm"
+                        (click)="addRange()"></jhi-button>
+            <jhi-button [label]="'interview.slots.create.addSlot' | translate" variant="outlined"
+                        severity="success" size="sm" (click)="addSingleSlot()"></jhi-button>
+          </div>
+        </div>
+      </p-accordion-header>
+
+      <p-accordion-content>
+        <div class="flex flex-col gap-4 pt-2">
+          @if (slotRanges().length === 0) {
+            <div class="flex flex-col items-center justify-center py-8 text-[var(--p-text-secondary)]">
+              <i class="fa-regular fa-calendar-plus mb-2 text-2xl"></i>
+              <span class="text-sm font-medium">{{ 'interview.slots.create.noSlotsYet' | translate }}</span>
+              <span class="text-xs">{{ 'interview.slots.create.noSlotsYetDesc' | translate }}</span>
+            </div>
+          } @else {
+            @for (range of slotRanges(); track range.id; let rangeIndex = $index) {
+              <div class="flex gap-3">
+
+                <!-- Colored Bar Left -->
+                <div class="w-1 rounded-full self-stretch flex-shrink-0"
+                     [class.bg-[var(--p-green-500)]]="range.type === 'single'"
+                     [class.bg-[var(--p-blue-500)]]="range.type === 'range'"
+                     [class.bg-[var(--p-primary-500)]]="range.type === 'scheduled'"></div>
+
+                <div class="flex flex-col gap-2 flex-1">
+                  <!-- Slot Row Header -->
+                  <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-[var(--p-text-secondary)]">
+                                    @switch (range.type) {
+                                      @case ('single') { {{ 'interview.slots.create.singleSlot' | translate }} }
+                                      @case ('range') { {{ 'interview.slots.create.rangeSlot' | translate }} }
+                                      @case ('scheduled') { {{ 'interview.slots.create.bookedSlot' | translate }} }
+                                    }
+                                </span>
+
+                    <!-- BUTTON: Delete Range/Slot -->
+                    <jhi-button severity="danger" variant="text" icon="trash-can" size="sm"
+                                (click)="removeRange(rangeIndex)" [disabled]="range.type === 'scheduled'">
+                    </jhi-button>
+                  </div>
+
+                  @if (range.type !== 'scheduled') {
+                    <div class="flex gap-4 rounded p-1" [class.border]="conflictingRangeIds().has(range.id)"
+                         [class.border-[var(--p-danger-500)]]="conflictingRangeIds().has(range.id)">
+                      <!-- START TIME -->
+                      <div class="flex-1">
+                        <label class="mb-1 block text-xs text-[var(--p-text-secondary)]">{{
+                            'interview.slots.create.startTime' | translate }}</label>
+                        <input type="time"
+                               class="w-full rounded border border-[var(--p-border-default)] px-3 py-2 text-sm"
+                               autocomplete="off" [attr.name]="'start-' + range.id"
+                               [value]="range.startStr || ''"
+                               (input)="onStartInput(rangeIndex, $any($event.target).value)"
+                               (change)="onStartInput(rangeIndex, $any($event.target).value)">
+                      </div>
+
+                      <!-- END TIME -->
+                      @if (range.type === 'range' || (range.type === 'single' && range.startStr)) {
+                        <div class="flex-1">
+                          <label class="mb-1 block text-xs text-[var(--p-text-secondary)]">{{
+                              'interview.slots.create.endTime' | translate }}</label>
+                          <input type="time"
+                                 class="w-full rounded border border-[var(--p-border-default)] px-3 py-2 text-sm"
+                                 autocomplete="off" [attr.name]="'end-' + range.id"
+                                 [class.bg-[var(--p-surface-100)]]="range.type === 'single'"
+                                 [class.text-[var(--p-text-tertiary)]]="range.type === 'single'"
+                                 [disabled]="range.type === 'single'" [value]="range.endStr || ''"
+                                 (input)="onEndInput(rangeIndex, $any($event.target).value)"
+                                 (change)="onEndInput(rangeIndex, $any($event.target).value)">
+                        </div>
+                      } @else {
+                        <div class="flex-1"></div>
+                      }
+                    </div>
+                  }
+
+                  @if (range.type === 'single' && !range.startStr) {
+                    <span class="text-xs text-[var(--p-text-secondary)] font-medium mt-1">
+                                {{ 'interview.slots.create.addStartTime' | translate }}
+                            </span>
+                  }
+
+                  <!-- Generated Slots List -->
+                  @if (range.slots.length > 0 && range.type === 'range') {
+                    <div class="flex flex-col gap-2 pt-2">
+                      @for (slot of range.slots; track $index; let slotIndex = $index) {
+                        <div
+                          class="flex items-center justify-between rounded-md border border-[var(--p-border-default)] bg-[var(--p-background-default)] px-3 py-2 text-sm font-medium text-[var(--p-text-primary)] shadow-sm">
+                          <div class="flex items-center gap-2 font-bold">
+                                        <span>{{ slot.startDateTime | date:'HH:mm' }} - {{ slot.endDateTime |
+                                          date:'HH:mm' }}</span>
+                          </div>
+
+                          <!-- BUTTON: Delete Single Generated Slot -->
+                          <jhi-button severity="secondary" variant="text" icon="xmark" size="sm"
+                                      (click)="removeSlot(rangeIndex, slotIndex)">
+                          </jhi-button>
+                        </div>
+                      }
+                    </div>
+                  }
+                  @else if (range.startTime && range.endTime && range.startTime.getTime() >=
+                  range.endTime.getTime()) {
+                    <span class="text-xs text-[var(--p-danger-500)] mt-1">{{
+                        'interview.slots.create.validation.endBeforeStart' | translate }}</span>
+                  }
+                  @else if (range.type === 'range' && (!range.startTime || !range.endTime)) {
+                    <span class="text-xs text-[var(--p-text-secondary)] font-medium mt-1">{{
+                        'interview.slots.create.addStartAndEndTime' | translate }}</span>
+                  }
+
+                  <!-- Conflict Error -->
+                  @if (conflictingRangeIds().has(range.id)) {
+                    <span class="text-xs text-[var(--p-danger-500)] mt-1 font-medium">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                      {{ 'interview.slots.create.validation.conflict' | translate }}
+                            </span>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+  </p-accordion>
+</div>

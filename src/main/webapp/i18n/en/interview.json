@@ -58,6 +58,56 @@
       "location": {
         "virtual": "virtual",
         "inPerson": "in-person"
+      },
+      "create": {
+        "title": "Create Interview Slots",
+        "addSlot": "Add Another Slot",
+        "removeSlot": "Remove Slot",
+        "slotNumber": "Slot {{number}}",
+        "date": "Date",
+        "selectDate": "Select a date...",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "location": "Location",
+        "inPerson": "In-Person",
+        "virtual": "Virtual",
+        "streamLink": "Meeting Link",
+        "streamLinkPlaceholder": "https://meet.google.com/...",
+        "cancel": "Cancel",
+        "create": "Create Slots",
+        "creating": "Creating...",
+        "success": {
+          "summary": "Slots Created",
+          "detail": "Interview slots have been created successfully."
+        },
+        "error": {
+          "generic": "Failed to create slots. Please try again.",
+          "conflict": "Some slots conflict with existing ones. Please adjust the times.",
+          "validation": "Please check the form for errors."
+        },
+        "validation": {
+          "required": "This field is required",
+          "endBeforeStart": "End time must be after start time",
+          "conflict": "Time conflict with another slot",
+          "streamLinkRequired": "Meeting link is required for virtual slots"
+        },
+        "interviewLength": "Interview Length",
+        "interviewBreaks": "Interview Breaks",
+        "breakTooltip": "Break time between consecutive interview slots",
+        "selectDates": "Select Dates",
+        "noDateSelected": "No Date selected",
+        "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
+        "sameSlotsForAllDays": "Same Slots for all days",
+        "addRange": "Add range",
+        "addSlot": "Add slot",
+        "noSlotsYet": "No Slots yet",
+        "noSlotsYetDesc": "Add a range or a single slot to get started",
+        "singleSlot": "Single Slot",
+        "rangeSlot": "Range Slot",
+        "bookedSlot": "Booked Slot",
+        "addStartTime": "Add a start time to create this slot",
+        "addStartAndEndTime": "Add a start and end time to see slots in this range",
+        "saveSlots": "Save Slots"
       }
     }
   }

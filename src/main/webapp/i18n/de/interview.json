@@ -58,6 +58,56 @@
       "location": {
         "virtual": "virtuell",
         "inPerson": "vor Ort"
+      },
+      "create": {
+        "title": "Interview-Slots erstellen",
+        "addSlot": "Weiteren Slot hinzufügen",
+        "removeSlot": "Slot entfernen",
+        "slotNumber": "Slot {{number}}",
+        "date": "Datum",
+        "selectDate": "Datum auswählen...",
+        "startTime": "Startzeit",
+        "endTime": "Endzeit",
+        "location": "Ort",
+        "inPerson": "Vor Ort",
+        "virtual": "Virtuell",
+        "streamLink": "Meeting-Link",
+        "streamLinkPlaceholder": "https://meet.google.com/...",
+        "cancel": "Abbrechen",
+        "create": "Slots erstellen",
+        "creating": "Wird erstellt...",
+        "success": {
+          "summary": "Slots erstellt",
+          "detail": "Die Interview-Slots wurden erfolgreich erstellt."
+        },
+        "error": {
+          "generic": "Slots konnten nicht erstellt werden. Bitte versuchen Sie es erneut.",
+          "conflict": "Einige Slots überschneiden sich mit bestehenden. Bitte passen Sie die Zeiten an.",
+          "validation": "Bitte überprüfen Sie das Formular auf Fehler."
+        },
+        "validation": {
+          "required": "Dieses Feld ist erforderlich",
+          "endBeforeStart": "Endzeit muss nach Startzeit liegen",
+          "conflict": "Zeitkonflikt mit einem anderen Slot",
+          "streamLinkRequired": "Meeting-Link ist für virtuelle Slots erforderlich"
+        },
+        "interviewLength": "Interviewdauer",
+        "interviewBreaks": "Pausen",
+        "breakTooltip": "Pausenzeit zwischen aufeinanderfolgenden Interview-Slots",
+        "selectDates": "Daten auswählen",
+        "noDateSelected": "Kein Datum ausgewählt",
+        "noDateSelectedDesc": "Bitte wählen Sie ein oder mehrere Daten im Kalender aus",
+        "sameSlotsForAllDays": "Gleiche Slots für alle Tage",
+        "addRange": "Zeitraum hinzufügen",
+        "addSlot": "Slot hinzufügen",
+        "noSlotsYet": "Noch keine Slots",
+        "noSlotsYetDesc": "Fügen Sie einen Zeitraum oder einen einzelnen Slot hinzu, um zu beginnen",
+        "singleSlot": "Einzelner Slot",
+        "rangeSlot": "Zeitraum",
+        "bookedSlot": "Gebuchter Slot",
+        "addStartTime": "Startzeit hinzufügen, um diesen Slot zu erstellen",
+        "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Slots in diesem Bereich zu sehen",
+        "saveSlots": "Slots speichern"
       }
     }
   }
