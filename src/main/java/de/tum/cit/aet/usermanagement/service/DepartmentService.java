@@ -10,7 +10,6 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -60,7 +59,7 @@ public class DepartmentService {
      * @return list of all departments
      */
     public List<DepartmentDTO> getAllDepartments() {
-        return departmentRepository.findAll().stream().map(DepartmentDTO::fromEntity).collect(Collectors.toList());
+        return departmentRepository.findAll().stream().map(DepartmentDTO::fromEntity).toList();
     }
 
     /**
@@ -75,7 +74,7 @@ public class DepartmentService {
             throw new EntityNotFoundException("School not found with ID: " + schoolId);
         }
 
-        return departmentRepository.findBySchoolSchoolId(schoolId).stream().map(DepartmentDTO::fromEntity).collect(Collectors.toList());
+        return departmentRepository.findBySchoolSchoolId(schoolId).stream().map(DepartmentDTO::fromEntity).toList();
     }
 
     /**

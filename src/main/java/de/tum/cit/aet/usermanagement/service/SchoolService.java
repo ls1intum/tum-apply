@@ -11,7 +11,6 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,7 +53,7 @@ public class SchoolService {
      * @return list of all schools without departments
      */
     public List<SchoolShortDTO> getAllSchools() {
-        return schoolRepository.findAll().stream().map(SchoolShortDTO::fromEntity).collect(Collectors.toList());
+        return schoolRepository.findAll().stream().map(SchoolShortDTO::fromEntity).toList();
     }
 
     /**
@@ -70,7 +69,7 @@ public class SchoolService {
                 List<Department> departments = departmentRepository.findBySchoolSchoolId(school.getSchoolId());
                 return SchoolDTO.fromEntity(school, departments);
             })
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**
