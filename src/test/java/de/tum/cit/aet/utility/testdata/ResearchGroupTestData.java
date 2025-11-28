@@ -2,9 +2,15 @@ package de.tum.cit.aet.utility.testdata;
 
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
+import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupProvisionDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -103,11 +109,18 @@ public final class ResearchGroupTestData {
      * Creates a ResearchGroupRequestDTO with the given research group name and default values for other fields.
      */
     public static ResearchGroupRequestDTO createResearchGroupRequest(String researchGroupName) {
+        return createResearchGroupRequest(researchGroupName, "ab12cde");
+    }
+
+    /**
+     * Creates a ResearchGroupRequestDTO with the given research group name and university ID.
+     */
+    public static ResearchGroupRequestDTO createResearchGroupRequest(String researchGroupName, String universityId) {
         return new ResearchGroupRequestDTO(
             "Prof.",
             "John",
             "Doe",
-            "ab12cde",
+            universityId,
             "Prof. New",
             researchGroupName,
             "NRG",
@@ -153,5 +166,39 @@ public final class ResearchGroupTestData {
             city,
             state
         );
+    }
+
+    /**
+     * Creates a ResearchGroupProvisionDTO.
+     */
+    public static ResearchGroupProvisionDTO createResearchGroupProvisionDTO(String universityId, UUID researchGroupId) {
+        return new ResearchGroupProvisionDTO(universityId, researchGroupId);
+    }
+
+    /**
+     * Creates an EmployeeResearchGroupRequestDTO.
+     */
+    public static EmployeeResearchGroupRequestDTO createEmployeeResearchGroupRequestDTO(String professorName) {
+        return new EmployeeResearchGroupRequestDTO(professorName);
+    }
+
+    /**
+     * Creates an AdminResearchGroupFilterDTO.
+     */
+    public static AdminResearchGroupFilterDTO createAdminResearchGroupFilterDTO(List<ResearchGroupState> states, String search) {
+        return new AdminResearchGroupFilterDTO(states, search);
+    }
+
+    /**
+     * Creates a ResearchGroupAdminDTO.
+     */
+    public static ResearchGroupAdminDTO createResearchGroupAdminDTO(
+        UUID id,
+        String name,
+        String head,
+        ResearchGroupState state,
+        LocalDateTime creationDate
+    ) {
+        return new ResearchGroupAdminDTO(id, name, head, state, creationDate);
     }
 }

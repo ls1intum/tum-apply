@@ -198,6 +198,7 @@ public class MvcTestClient {
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             case 409 -> result = postConflict(url, body, accepts);
+            case 500 -> result = postInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -222,6 +223,7 @@ public class MvcTestClient {
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             case 409 -> result = postConflict(url, body, accepts);
+            case 500 -> result = postInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
         return read(result, typeRef);
@@ -283,6 +285,7 @@ public class MvcTestClient {
             case 401 -> result = deleteUnauthorized(url, body, accepts);
             case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
+            case 500 -> result = deleteInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -460,6 +463,17 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 500 Internal Server Error and returns the MvcResult.
+     */
+    private MvcResult postInternalServerError(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isInternalServerError()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 500", e);
+        }
+    }
+
+    /**
      * Low-level PUT that asserts 200 OK and returns the MvcResult.
      */
     private MvcResult putOk(String url, Object body, MediaType... accepts) {
@@ -600,6 +614,17 @@ public class MvcTestClient {
             return deleteJson(url, body, accepts).andExpect(status().isNotFound()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("DELETE " + url + " failed with 404", e);
+        }
+    }
+
+    /**
+     * Low-level DELETE that asserts 500 Internal Server Error and returns the MvcResult.
+     */
+    private MvcResult deleteInternalServerError(String url, Object body, MediaType... accepts) {
+        try {
+            return deleteJson(url, body, accepts).andExpect(status().isInternalServerError()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 500", e);
         }
     }
 
