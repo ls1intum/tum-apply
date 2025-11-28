@@ -225,6 +225,24 @@
         "summary": "Error",
         "detail": "Failed to load jobs. Please try refreshing the page, or contact us if the problem continues."
       }
+    },
+    "toastMessages": {
+      "deleteJobSuccess": {
+        "summary": "Job Deleted",
+        "detail": "The job has been deleted successfully."
+      },
+      "deleteJobFailed": {
+        "summary": "Job Deletion Failed",
+        "detail": "The job could not be deleted. Please try again."
+      },
+      "closeJobSuccess": {
+        "summary": "Job Closed",
+        "detail": "The job has been closed successfully."
+      },
+      "closeJobFailed": {
+        "summary": "Job Closing Failed",
+        "detail": "The job could not be closed. Please try again."
+      }
     }
   },
   "jobDetailPage": {
