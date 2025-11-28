@@ -2,12 +2,16 @@ package de.tum.cit.aet.usermanagement.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.CheckAccess;
+import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.AddMembersToResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupLargeDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
@@ -134,6 +138,21 @@ public class ResearchGroupResource {
     }
 
     /**
+     * Creates a research group directly as ACTIVE state (admin only).
+     * Does not require user association during creation.
+     *
+     * @param request the research group creation request
+     * @return the created research group in ACTIVE state
+     */
+    @Admin
+    @PostMapping("/admin-create")
+    public ResponseEntity<ResearchGroupDTO> createResearchGroupAsAdmin(@Valid @RequestBody ResearchGroupRequestDTO request) {
+        log.info("POST /api/research-groups/admin-create name={}", request.researchGroupName());
+        ResearchGroup created = researchGroupService.createResearchGroupAsAdmin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResearchGroupDTO.getFromEntity(created));
+    }
+
+    /**
      * Creates an employee research group access request during onboarding.
      * Sends an email to administrators with user and professor information.
      *
@@ -146,6 +165,94 @@ public class ResearchGroupResource {
         log.info("POST /api/research-groups/employee-request professorName={}", request.professorName());
         researchGroupService.createEmployeeResearchGroupRequest(request);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Returns a paginated list of research groups for admin review.
+     *
+     * @param pageDTO the pagination parameters
+     * @param filterDTO the filter parameters including status and search query
+     * @param sortDTO the sorting parameters
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
+     *         {@link Page} of {@link ResearchGroupAdminDTO}
+     */
+    @Admin
+    @GetMapping("/admin")
+    public ResponseEntity<PageResponseDTO<ResearchGroupAdminDTO>> getResearchGroupsForAdmin(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute AdminResearchGroupFilterDTO filterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+    ) {
+        log.info(
+            "GET /api/research-groups/admin called with pageNumber={}, pageSize={}, status={}, sortBy={}, direction={}, searchQuery={}",
+            pageDTO.pageNumber(),
+            pageDTO.pageSize(),
+            filterDTO.getStatus(),
+            sortDTO.sortBy(),
+            sortDTO.direction(),
+            filterDTO.getSearchQuery()
+        );
+        PageResponseDTO<ResearchGroupAdminDTO> response = researchGroupService.getResearchGroupsForAdmin(pageDTO, filterDTO, sortDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Gets all DRAFT research groups for admin review.
+     *
+     * @param pageDTO the pagination parameters
+     * @return paginated list of DRAFT research groups
+     */
+    @Admin
+    @GetMapping("/draft")
+    public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getDraftResearchGroups(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+    ) {
+        log.info("GET /api/research-groups/draft?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
+        PageResponseDTO<ResearchGroupDTO> draftGroups = researchGroupService.getDraftResearchGroups(pageDTO);
+        return ResponseEntity.ok(draftGroups);
+    }
+
+    /**
+     * Activates a DRAFT research group (admin only).
+     *
+     * @param researchGroupId the ID of the research group to activate
+     * @return the activated research group
+     */
+    @PostMapping("/{researchGroupId}/activate")
+    @Admin
+    public ResponseEntity<ResearchGroupDTO> activateResearchGroup(@PathVariable UUID researchGroupId) {
+        log.info("POST /api/research-groups/{}/activate", researchGroupId);
+        ResearchGroup activated = researchGroupService.activateResearchGroup(researchGroupId);
+        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(activated));
+    }
+
+    /**
+     * Denies a DRAFT research group (admin only).
+     *
+     * @param researchGroupId the ID of the research group to deny
+     * @return the denied research group
+     */
+    @Admin
+    @PostMapping("/{researchGroupId}/deny")
+    public ResponseEntity<ResearchGroupDTO> denyResearchGroup(@PathVariable UUID researchGroupId) {
+        log.info("POST /api/research-groups/{}/deny", researchGroupId);
+        ResearchGroup denied = researchGroupService.denyResearchGroup(researchGroupId);
+        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(denied));
+    }
+
+    /**
+     * Withdraws an ACTIVE research group back to DRAFT state (admin only).
+     *
+     * @param researchGroupId the ID of the research group to withdraw
+     * @return the withdrawn research group
+     */
+    @Admin
+    @PostMapping("/{researchGroupId}/withdraw")
+    public ResponseEntity<ResearchGroupDTO> withdrawResearchGroup(@PathVariable UUID researchGroupId) {
+        log.info("POST /api/research-groups/{}/withdraw", researchGroupId);
+        ResearchGroup withdrawn = researchGroupService.withdrawResearchGroup(researchGroupId);
+        return ResponseEntity.ok(ResearchGroupDTO.getFromEntity(withdrawn));
     }
 
     /**

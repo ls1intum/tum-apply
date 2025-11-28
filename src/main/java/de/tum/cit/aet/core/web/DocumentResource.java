@@ -27,7 +27,6 @@ public class DocumentResource {
      * @param documentDictionaryId the UUID of the DocumentDictionary
      * @return the file as a downloadable HTTP resource
      */
-    @Authenticated
     @GetMapping("/{documentDictionaryId}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentDictionaryId) {
         DocumentDictionary documentDictionary = documentDictionaryService.findDocumentDictionaryById(documentDictionaryId);

@@ -43,6 +43,7 @@ export * from './jobDetailDTO';
 export * from './jobFiltersDTO';
 export * from './jobFormDTO';
 export * from './jobPreviewRequest';
+export * from './link';
 export * from './loginRequestDTO';
 export * from './otpCompleteDTO';
 export * from './pageApplicationOverviewDTO';
