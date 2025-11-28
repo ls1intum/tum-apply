@@ -254,35 +254,37 @@ describe('ResearchGroupMembersComponent', () => {
     expect(row.role).toBe('Professor');
   });
 
-  it('should open add members modal and reload members on close if added', () => {
-    const mockRef = {
-      onClose: of(true),
-    } as DynamicDialogRef;
-    const dialogService = TestBed.inject(DialogService);
-    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+  describe('openAddMembersModal', () => {
+    let dialogService: DialogService;
 
-    fixture.detectChanges();
+    beforeEach(() => {
+      dialogService = TestBed.inject(DialogService);
+      mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+      fixture.detectChanges();
+    });
 
-    component.openAddMembersModal();
+    it('should open add members modal and reload members on close if added', () => {
+      const mockRef = {
+        onClose: of(true),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
 
-    expect(dialogService.open).toHaveBeenCalled();
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(2);
-  });
+      component.openAddMembersModal();
 
-  it('should open add members modal and NOT reload members on close if NOT added', () => {
-    const mockRef = {
-      onClose: of(false),
-    } as DynamicDialogRef;
-    const dialogService = TestBed.inject(DialogService);
-    vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(2);
+    });
 
-    fixture.detectChanges();
+    it('should open add members modal and NOT reload members on close if NOT added', () => {
+      const mockRef = {
+        onClose: of(false),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
 
-    component.openAddMembersModal();
+      component.openAddMembersModal();
 
-    expect(dialogService.open).toHaveBeenCalled();
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+    });
   });
 });
