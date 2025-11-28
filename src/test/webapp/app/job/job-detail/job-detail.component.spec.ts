@@ -270,7 +270,7 @@ describe('JobDetailComponent', () => {
     const confirmSpy = vi.fn();
     (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
     // mock professor ownership
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.closeButtonLabel);
@@ -279,7 +279,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should return null for PUBLISHED job when user is professor but not owner', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
 
     const job = {
       belongsToResearchGroup: false,
@@ -324,13 +324,13 @@ describe('JobDetailComponent', () => {
   });
 
   it('isOwnerOfJob should return false when not professor', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(false);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(false);
     const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: true } as JobDetails);
     expect(result).toBe(false);
   });
 
   it('isOwnerOfJob should return false when job does not belong to research group', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: false } as JobDetails);
     expect(result).toBe(false);
   });

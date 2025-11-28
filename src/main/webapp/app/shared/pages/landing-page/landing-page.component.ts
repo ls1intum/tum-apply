@@ -26,7 +26,7 @@ export class LandingPageComponent {
 
   private redirectEffect = effect(() => {
     const user = this.accountService.user();
-    if (user && this.accountService.hasAnyAuthority(['PROFESSOR'])) {
+    if (user && this.accountService.hasAnyAuthority(['PROFESSOR', 'EMPLOYEE'])) {
       void this.router.navigate(['/professor']);
     }
   });

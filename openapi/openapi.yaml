@@ -2415,7 +2415,7 @@ components:
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         role:
           type: string
-          enum: [APPLICANT, PROFESSOR, ADMIN]
+          enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         user: {$ref: '#/components/schemas/User'}
         userResearchGroupRoleId: {type: string, format: uuid}
     UserShortDTO:
@@ -2429,5 +2429,5 @@ components:
           type: array
           items:
             type: string
-            enum: [APPLICANT, PROFESSOR, ADMIN]
+            enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         userId: {type: string, format: uuid}

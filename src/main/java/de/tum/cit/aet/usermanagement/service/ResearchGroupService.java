@@ -62,7 +62,7 @@ public class ResearchGroupService {
      */
     public PageResponseDTO<UserShortDTO> getResearchGroupMembers(PageDTO pageDTO) {
         // Get the current user's research group ID
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
@@ -89,7 +89,7 @@ public class ResearchGroupService {
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
         // Get the current user's research group ID for validation
-        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
@@ -108,6 +108,17 @@ public class ResearchGroupService {
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
             throw new IllegalArgumentException("Cannot remove yourself from the research group");
+        }
+
+        boolean currentUserIsProfessor = currentUserService.getCurrentUser().isProfessor();
+
+        boolean userToRemoveIsProfessor = userToRemove
+            .getResearchGroupRoles()
+            .stream()
+            .anyMatch(r -> UserRole.PROFESSOR.equals(r.getRole()));
+
+        if (!currentUserIsProfessor && userToRemoveIsProfessor) {
+            throw new AccessDeniedException("You do not have permission to remove a Professor.");
         }
 
         // Remove the direct research group membership
@@ -240,13 +251,10 @@ public class ResearchGroupService {
             .findById(dto.researchGroupId())
             .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
 
-        boolean userGroupChanged = false;
         if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
-            userGroupChanged = true;
         }
-        String roleOutcome = "unchanged";
 
         Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
@@ -255,11 +263,9 @@ public class ResearchGroupService {
             mapping.setResearchGroup(group);
             mapping.setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(mapping);
-            roleOutcome = "created";
         } else if (existing.get().getRole() != UserRole.PROFESSOR) {
             existing.get().setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(existing.get());
-            roleOutcome = "updated";
         }
 
         return group;
@@ -554,7 +560,7 @@ public class ResearchGroupService {
      */
     @Transactional
     public void addMembersToResearchGroup(List<UUID> userIds, UUID researchGroupId) {
-        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfProfessor();
+        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 
         for (UUID userId : userIds) {
@@ -564,7 +570,7 @@ public class ResearchGroupService {
                 .orElseGet(() -> {
                     UserResearchGroupRole newRole = new UserResearchGroupRole();
                     newRole.setUser(user);
-                    newRole.setRole(UserRole.APPLICANT);
+                    newRole.setRole(UserRole.EMPLOYEE);
                     return newRole;
                 });
 

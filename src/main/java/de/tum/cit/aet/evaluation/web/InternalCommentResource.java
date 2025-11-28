@@ -1,6 +1,7 @@
 package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.evaluation.dto.InternalCommentDTO;
 import de.tum.cit.aet.evaluation.dto.InternalCommentUpdateDTO;
 import de.tum.cit.aet.evaluation.service.InternalCommentService;
@@ -25,8 +26,8 @@ public class InternalCommentResource {
      * @param applicationId the UUID of the application to fetch comments for
      * @return a {@link ResponseEntity} containing a list of {@link InternalCommentDTO}
      */
+    @ProfessorOrEmployee
     @GetMapping("/applications/{applicationId}/comments")
-    @Professor
     public ResponseEntity<List<InternalCommentDTO>> listComments(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(internalCommentService.getComments(applicationId));
     }
@@ -38,8 +39,8 @@ public class InternalCommentResource {
      * @param body          the comment payload containing the message (validated)
      * @return a {@link ResponseEntity} with status {@code 201 Created} and the created {@link InternalCommentDTO}
      */
+    @ProfessorOrEmployee
     @PostMapping(path = "/applications/{applicationId}/comments")
-    @Professor
     public ResponseEntity<InternalCommentDTO> createComment(
         @PathVariable UUID applicationId,
         @Valid @RequestBody InternalCommentUpdateDTO body
@@ -55,8 +56,8 @@ public class InternalCommentResource {
      * @param body      the updated comment payload (validated)
      * @return a {@link ResponseEntity} containing the updated {@link InternalCommentDTO}
      */
+    @ProfessorOrEmployee
     @PutMapping(path = "/comments/{commentId}")
-    @Professor
     public ResponseEntity<InternalCommentDTO> updateComment(
         @PathVariable UUID commentId,
         @Valid @RequestBody InternalCommentUpdateDTO body
@@ -70,8 +71,8 @@ public class InternalCommentResource {
      * @param commentId the UUID of the comment to delete
      * @return a {@link ResponseEntity} with status {@code 204 No Content} if deletion was successful
      */
+    @ProfessorOrEmployee
     @DeleteMapping("/comments/{commentId}")
-    @Professor
     public ResponseEntity<Void> deleteComment(@PathVariable UUID commentId) {
         internalCommentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();

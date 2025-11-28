@@ -1,7 +1,7 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.security.annotations.Authenticated;
-import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.core.service.PDFExportService;
 import de.tum.cit.aet.job.dto.JobPreviewRequest;
@@ -31,8 +31,8 @@ public class PDFExportResource {
      * @param labels translation labels for PDF content
      * @return the PDF file as downloadable attachment
      */
-    @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     @Authenticated
+    @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportApplicationToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
         Resource pdf = pdfExportService.exportApplicationToPDF(id, labels);
         String filename = pdfExportService.generateApplicationFilename(id, labels.get("application"));
@@ -69,7 +69,7 @@ public class PDFExportResource {
      * @param request the JobPreviewRequest containing job data and labels
      * @return the PDF file as downloadable attachment
      */
-    @Professor
+    @ProfessorOrEmployee
     @PostMapping(value = "/job/preview/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportJobPreviewToPDF(@RequestBody JobPreviewRequest request) {
         Resource pdf = pdfExportService.exportJobPreviewToPDF(request.job(), request.labels());

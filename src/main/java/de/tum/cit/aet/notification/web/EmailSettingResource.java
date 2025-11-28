@@ -1,5 +1,6 @@
 package de.tum.cit.aet.notification.web;
 
+import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.service.EmailSettingService;
@@ -22,6 +23,7 @@ public class EmailSettingResource {
      *
      * @return ResponseEntity containing a set of EmailSettingDTO objects with the user's current email preferences
      */
+    @Authenticated
     @GetMapping
     public ResponseEntity<Set<EmailSettingDTO>> getEmailSettings() {
         return ResponseEntity.ok(emailSettingService.getSettingsForUser(currentUserService.getUser()));
@@ -34,6 +36,7 @@ public class EmailSettingResource {
      * @param emailSettingDTOs a set of EmailSettingDTO objects containing the updated email preferences
      * @return ResponseEntity containing the updated set of EmailSettingDTO objects after successful persistence
      */
+    @Authenticated
     @PutMapping
     public ResponseEntity<Set<EmailSettingDTO>> updateEmailSettings(@RequestBody Set<EmailSettingDTO> emailSettingDTOs) {
         return ResponseEntity.ok(emailSettingService.updateSettingsForUser(emailSettingDTOs, currentUserService.getUser()));

@@ -4,7 +4,7 @@ import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
-import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +31,7 @@ public class ImageResource {
      * @param researchGroupId optional research group ID (used to determine the school to filter by)
      * @return a list of default job banner images (all schools if null, or all images for one school)
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/defaults/job-banners")
     public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID researchGroupId) {
         log.info("GET /api/images/defaults/job-banners?researchGroupId={}", researchGroupId);
@@ -45,7 +45,7 @@ public class ImageResource {
      *
      * @return a list of images uploaded by the current user
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/my-uploads")
     public ResponseEntity<List<ImageDTO>> getMyUploadedImages() {
         log.info("GET /api/images/my-uploads");
@@ -60,7 +60,7 @@ public class ImageResource {
      *
      * @return a list of job banner images belonging to the user's research group
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/research-group/job-banners")
     public ResponseEntity<List<ImageDTO>> getResearchGroupJobBanners() {
         log.info("GET /api/images/research-group/job-banners");
@@ -75,7 +75,7 @@ public class ImageResource {
      * @param file the image file
      * @return the uploaded image DTO
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @PostMapping(value = "/upload/job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadJobBanner(@RequestParam("file") MultipartFile file) {
         log.info("POST /api/images/upload/job-banner filename={}", file.getOriginalFilename());
@@ -109,7 +109,7 @@ public class ImageResource {
      * @param imageId the ID of the image to delete
      * @return HTTP 204 NO CONTENT if the image is deleted successfully
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable UUID imageId) {
         log.info("DELETE /api/images/{}", imageId);
