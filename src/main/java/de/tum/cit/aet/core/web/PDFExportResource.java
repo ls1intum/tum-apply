@@ -31,8 +31,8 @@ public class PDFExportResource {
      * @param labels translation labels for PDF content
      * @return the PDF file as downloadable attachment
      */
-    @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     @Authenticated
+    @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportApplicationToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
         Resource pdf = pdfExportService.exportApplicationToPDF(id, labels);
         String filename = pdfExportService.generateApplicationFilename(id, labels.get("application"));

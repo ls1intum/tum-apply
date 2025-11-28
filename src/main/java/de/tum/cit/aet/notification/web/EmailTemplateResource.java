@@ -2,6 +2,7 @@ package de.tum.cit.aet.notification.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
 import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
@@ -12,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,8 +29,8 @@ public class EmailTemplateResource {
      * @param pageDTO pagination parameters including page number and size
      * @return a list of {@link EmailTemplateOverviewDTO} wrapped in a {@link ResponseEntity}
      */
+    @ProfessorOrEmployee
     @GetMapping
-    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<PageResponseDTO<EmailTemplateOverviewDTO>> getTemplates(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         return ResponseEntity.ok(emailTemplateService.getTemplates(currentUserService.getResearchGroupIfProfessor(), pageDTO));
     }
@@ -41,8 +41,8 @@ public class EmailTemplateResource {
      * @param templateId the ID of the template to retrieve
      * @return the full {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity}
      */
+    @ProfessorOrEmployee
     @GetMapping("/{templateId}")
-    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<EmailTemplateDTO> getTemplate(@PathVariable UUID templateId) {
         return ResponseEntity.ok(emailTemplateService.getTemplate(templateId));
     }
@@ -53,8 +53,8 @@ public class EmailTemplateResource {
      * @param emailTemplateDTO the updated template data
      * @return the updated {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity}
      */
+    @ProfessorOrEmployee
     @PutMapping
-    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<EmailTemplateDTO> updateTemplate(@RequestBody EmailTemplateDTO emailTemplateDTO) {
         return ResponseEntity.ok(emailTemplateService.updateTemplate(emailTemplateDTO));
     }
@@ -65,8 +65,8 @@ public class EmailTemplateResource {
      * @param emailTemplateDTO the template data to create
      * @return the created {@link EmailTemplateDTO} wrapped in a {@link ResponseEntity} with status 201 (Created)
      */
+    @ProfessorOrEmployee
     @PostMapping
-    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<EmailTemplateDTO> createTemplate(@RequestBody EmailTemplateDTO emailTemplateDTO) {
         EmailTemplateDTO createdTemplates = emailTemplateService.createTemplate(
             emailTemplateDTO,
@@ -83,8 +83,8 @@ public class EmailTemplateResource {
      * @param templateId the ID of the template to delete
      * @return an empty {@link ResponseEntity} with status 204 (No Content)
      */
+    @ProfessorOrEmployee
     @DeleteMapping("/{templateId}")
-    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<Void> deleteTemplate(@PathVariable UUID templateId) {
         emailTemplateService.deleteTemplate(templateId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

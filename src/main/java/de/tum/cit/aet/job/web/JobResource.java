@@ -2,7 +2,7 @@ package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.dto.*;
@@ -87,7 +87,7 @@ public class JobResource {
      * @param jobForm the job posting data.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)}.
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @PostMapping("/create")
     public ResponseEntity<JobFormDTO> createJob(@RequestBody JobFormDTO jobForm) {
         JobFormDTO createdJob = jobService.createJob(jobForm);
@@ -104,7 +104,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
      * updated job.
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @PutMapping("/update/{jobId}")
     public ResponseEntity<JobFormDTO> updateJob(@PathVariable UUID jobId, @RequestBody JobFormDTO jobForm) {
         JobFormDTO updatedJob = jobService.updateJob(jobId, jobForm);
@@ -117,7 +117,7 @@ public class JobResource {
      * @param jobId the ID of the job to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}.
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @DeleteMapping("/{jobId}")
     public ResponseEntity<Void> deleteJob(@PathVariable UUID jobId) {
         jobService.deleteJob(jobId);
@@ -138,7 +138,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
      *         updated job.
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @PutMapping("/changeState/{jobId}")
     public ResponseEntity<JobFormDTO> changeJobState(
         @PathVariable UUID jobId,
@@ -167,7 +167,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link Page} of {@link CreatedJobDTO}
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/professor")
     public ResponseEntity<Page<CreatedJobDTO>> getJobsByProfessor(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
@@ -185,7 +185,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the job
      *         details.
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/{jobId}")
     public ResponseEntity<JobDTO> getJobById(@PathVariable UUID jobId) {
         return ResponseEntity.ok(jobService.getJobById(jobId));
