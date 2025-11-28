@@ -271,9 +271,6 @@ WHERE
 -- Daniel Kim
 
 
---============================================--
--- Extra assignment for employees
---============================================--
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
@@ -285,14 +282,14 @@ UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
-    user_id = '11111111-0000-0000-0000-000000000020';
+    user_id = '11111111-0000-0000-0000-000000000021';
 -- George Mensah
 
 UPDATE users
 SET
     research_group_id = '00000000-0000-0000-0000-000000000001' -- Applied Education Technologies
 WHERE
-    user_id = '11111111-0000-0000-0000-000000000020';
+    user_id = '11111111-0000-0000-0000-000000000022';
 -- Eva Fischer
 
 UPDATE users
