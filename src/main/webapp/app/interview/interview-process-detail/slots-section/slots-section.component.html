@@ -14,8 +14,7 @@
       <p class="text-[var(--p-text-secondary)]" jhiTranslate="interview.detail.error.description">
         There was an error loading the interview slots. Please try again.
       </p>
-      <jhi-button [label]="'interview.detail.error.retry'" [shouldTranslate]="true" [icon]="'rotate-right'"
-                  (click)="refreshSlots()" />
+      <jhi-button [label]="'interview.detail.error.retry'" [shouldTranslate]="true" [icon]="'rotate-right'" (click)="refreshSlots()" />
     </div>
   </div>
 }
@@ -29,9 +28,7 @@
       <p class="text-[var(--p-text-secondary)]" jhiTranslate="interview.detail.empty.description">
         Create your first interview slots to get started.
       </p>
-      <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'"
-                  (click)="openCreateSlotsModal()" />
-
+      <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
     </div>
   </div>
 }
@@ -40,15 +37,18 @@
 @if (!loading() && !error() && groupedSlots().length > 0) {
   <div>
     <!-- Month Navigation -->
-    <jhi-month-navigation [currentMonth]="currentMonth()" (previousMonth)="previousMonth()" (nextMonth)="nextMonth()"
-                          (addSlots)="openCreateSlotsModal()" />
+    <jhi-month-navigation
+      [currentMonth]="currentMonth()"
+      (previousMonth)="previousMonth()"
+      (nextMonth)="nextMonth()"
+      (addSlots)="openCreateSlotsModal()"
+    />
 
     @if (currentMonthSlots().length > 0) {
       <div class="flex items-start gap-4">
         <!-- Left Pagination Arrow -->
         <div class="flex-shrink-0 pt-8">
-          <jhi-button [icon]="'chevron-left'" [variant]="'text'" [disabled]="!canGoPreviousDate()"
-                      (click)="previousDatePage()" />
+          <jhi-button [icon]="'chevron-left'" [variant]="'text'" [disabled]="!canGoPreviousDate()" (click)="previousDatePage()" />
         </div>
 
         <!-- Date Grid (max 5 dates visible) -->
@@ -61,20 +61,32 @@
               <!-- Slot Cards -->
               <div class="flex flex-col gap-2">
                 @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
-                  <jhi-slot-card [slot]="slot" (editSlot)="onEditSlot()" (deleteSlot)="onDeleteSlot()"
-                                 (assignApplicant)="onAssignApplicant()" />
+                  <jhi-slot-card
+                    [slot]="slot"
+                    (editSlot)="onEditSlot()"
+                    (deleteSlot)="onDeleteSlot()"
+                    (assignApplicant)="onAssignApplicant()"
+                  />
                 }
 
                 <!-- Show More/Less Button -->
                 @if (group.slots.length > 3) {
-                  <jhi-button class="w-full" [fullWidth]="true" [variant]="'text'"
-                              [icon]="isExpanded(group.date) ? 'chevron-up' : 'chevron-down'" [label]="
+                  <jhi-button
+                    class="w-full"
+                    [fullWidth]="true"
+                    [variant]="'text'"
+                    [icon]="isExpanded(group.date) ? 'chevron-up' : 'chevron-down'"
+                    [label]="
                       isExpanded(group.date)
                         ? 'interview.detail.showLess'
                         : getShowMoreText(getRemainingCount(group.date, group.slots.length))
-                    " [shouldTranslate]="isExpanded(group.date)" [styleClass]="
+                    "
+                    [shouldTranslate]="isExpanded(group.date)"
+                    [styleClass]="
                       'w-full py-2 border border-[var(--p-border-default)] rounded-md bg-[var(--p-background-default)] text-[var(--p-text-secondary)] text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-[var(--p-background-surface)] hover:border-[var(--p-border-default)] transition-all'
-                    " (click)="toggleExpanded(group.date)" />
+                    "
+                    (click)="toggleExpanded(group.date)"
+                  />
                 }
               </div>
             </div>
@@ -98,4 +110,4 @@
   </div>
 }
 
-<jhi-slot-creation-form [(visible)]="showSlotCreationForm" [processId]="processId()" (onSuccess)="refreshSlots()" />
+<jhi-slot-creation-form [(visible)]="showSlotCreationForm" [processId]="processId()" (success)="onSlotsCreated()" />

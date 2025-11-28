@@ -8,7 +8,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TooltipModule } from 'primeng/tooltip';
-import { ButtonComponent } from "app/shared/components/atoms/button/button.component";
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 export interface SlotRange {
   id: string;
@@ -58,8 +58,8 @@ export class DateSlotCardComponent {
       range.slots.map(slot => ({
         rangeId: range.id,
         start: new Date(slot.startDateTime!).getTime(),
-        end: new Date(slot.endDateTime!).getTime()
-      }))
+        end: new Date(slot.endDateTime!).getTime(),
+      })),
     );
 
     // Check for overlaps
@@ -68,11 +68,9 @@ export class DateSlotCardComponent {
         const s1 = allSlotsWithIds[i];
         const s2 = allSlotsWithIds[j];
 
-        // Skip if they belong to the same range (internal overlap in a range is handled by generation logic usually, but if not, we might want to flag it too?
-        // For now, let's assume range generation is sequential and non-overlapping.
-        // Actually, if a range generates overlapping slots, that's a bug in generation.
-        // We are mostly concerned with conflicts BETWEEN ranges.)
-        if (s1.rangeId === s2.rangeId) continue;
+        if (s1.rangeId === s2.rangeId) {
+          continue;
+        }
 
         if (s1.start < s2.end && s2.start < s1.end) {
           conflicts.add(s1.rangeId);
@@ -87,8 +85,8 @@ export class DateSlotCardComponent {
 
   constructor() {
     effect(() => {
-      const newDuration = Number(this.duration()) || 30;
-      const newBreak = Number(this.breakDuration()) || 0;
+      const newDuration = this.duration() || 30;
+      const newBreak = this.breakDuration() || 0;
       untracked(() => {
         this.recalculateAllRanges(newDuration, newBreak);
       });
@@ -113,32 +111,7 @@ export class DateSlotCardComponent {
     });
   }
 
-  /**
-   * Initializes slot ranges from a list of existing slots.
-   * Distinguishes between 'scheduled' (persisted) slots and 'single' (draft) slots based on the presence of an ID.
-   */
-  private initializeRangesFromSlots(slots: InterviewSlotDTO[]) {
-    const ranges = slots.map(slot => {
-      const start = new Date(slot.startDateTime!);
-      const end = new Date(slot.endDateTime!);
-      // If slot has an ID, it's scheduled (persisted). If not, it's a draft (copied).
-      const type = slot.id ? 'scheduled' : 'single';
-
-      return {
-        id: this.generateId(),
-        startStr: this.formatTime(start),
-        endStr: this.formatTime(end),
-        startTime: start,
-        endTime: end,
-        type: type,
-        duration: (end.getTime() - start.getTime()) / 60000,
-        slots: [slot]
-      } as SlotRange;
-    });
-    this.slotRanges.set(ranges);
-  }
-
-  addSingleSlot() {
+  addSingleSlot(): void {
     this.slotRanges.update(ranges => [
       ...ranges,
       {
@@ -148,13 +121,13 @@ export class DateSlotCardComponent {
         startTime: null,
         endTime: null,
         type: 'single',
-        duration: Number(this.duration()) || 30,
+        duration: this.duration() || 30,
         slots: [],
       },
     ]);
   }
 
-  addRange() {
+  addRange(): void {
     this.slotRanges.update(ranges => [
       ...ranges,
       {
@@ -164,17 +137,17 @@ export class DateSlotCardComponent {
         startTime: null,
         endTime: null,
         type: 'range',
-        duration: Number(this.duration()) || 30,
+        duration: this.duration() || 30,
         slots: [],
       },
     ]);
   }
 
-  removeRange(index: number) {
+  removeRange(index: number): void {
     this.slotRanges.update(ranges => ranges.filter((_, i) => i !== index));
   }
 
-  removeSlot(rangeIndex: number, slotIndex: number) {
+  removeSlot(rangeIndex: number, slotIndex: number): void {
     this.slotRanges.update(ranges => {
       const newRanges = [...ranges];
       const range = { ...newRanges[rangeIndex] };
@@ -184,7 +157,7 @@ export class DateSlotCardComponent {
     });
   }
 
-  onStartInput(index: number, timeString: string) {
+  onStartInput(index: number, timeString: string): void {
     this.slotRanges.update(ranges => {
       const newRanges = [...ranges];
       const range = { ...newRanges[index] };
@@ -194,20 +167,21 @@ export class DateSlotCardComponent {
 
       if (range.startTime) {
         if (range.type === 'single') {
-          const duration = Number(this.duration()) || 30;
+          const duration = this.duration() || 30;
           const endDate = new Date(range.startTime);
           endDate.setMinutes(endDate.getMinutes() + duration);
 
           range.endTime = endDate;
           range.endStr = this.formatTime(endDate);
 
-          range.slots = [{
-            startDateTime: range.startTime.toISOString(),
-            endDateTime: range.endTime.toISOString(),
-            location: 'in-person'
-          } as InterviewSlotDTO];
-        }
-        else if (range.type === 'range') {
+          range.slots = [
+            {
+              startDateTime: range.startTime.toISOString(),
+              endDateTime: range.endTime.toISOString(),
+              location: 'in-person',
+            } as InterviewSlotDTO,
+          ];
+        } else if (range.type === 'range') {
           this.updateRangeLogic(range);
         }
       } else {
@@ -225,7 +199,7 @@ export class DateSlotCardComponent {
     });
   }
 
-  onEndInput(index: number, timeString: string) {
+  onEndInput(index: number, timeString: string): void {
     this.slotRanges.update(ranges => {
       const newRanges = [...ranges];
       const range = { ...newRanges[index] };
@@ -243,10 +217,35 @@ export class DateSlotCardComponent {
   }
 
   /**
+   * Initializes slot ranges from a list of existing slots.
+   * Distinguishes between 'scheduled' (persisted) slots and 'single' (draft) slots based on the presence of an ID.
+   */
+  private initializeRangesFromSlots(slots: InterviewSlotDTO[]): void {
+    const ranges = slots.map(slot => {
+      const start = new Date(slot.startDateTime!);
+      const end = new Date(slot.endDateTime!);
+      // If slot has an ID, it's scheduled (persisted). If not, it's a draft (copied).
+      const type = slot.id ? 'scheduled' : 'single';
+
+      return {
+        id: this.generateId(),
+        startStr: this.formatTime(start),
+        endStr: this.formatTime(end),
+        startTime: start,
+        endTime: end,
+        type,
+        duration: (end.getTime() - start.getTime()) / 60000,
+        slots: [slot],
+      } as SlotRange;
+    });
+    this.slotRanges.set(ranges);
+  }
+
+  /**
    * Updates the start and end times of a range and regenerates slots.
    * Ensures that the start and end times are on the correct date.
    */
-  private updateRangeLogic(range: SlotRange) {
+  private updateRangeLogic(range: SlotRange): void {
     if (range.startTime && range.endTime) {
       const baseDate = new Date(this.date());
 
@@ -268,10 +267,12 @@ export class DateSlotCardComponent {
    * Recalculates all slot ranges when the global duration or break duration changes.
    * Skips 'scheduled' slots as they are immutable.
    */
-  private recalculateAllRanges(duration: number, breakDuration: number) {
+  private recalculateAllRanges(duration: number, breakDuration: number): void {
     this.slotRanges.update(ranges => {
       return ranges.map(range => {
-        if (range.type === 'scheduled') return range;
+        if (range.type === 'scheduled') {
+          return range;
+        }
 
         const newRange = { ...range, duration };
 
@@ -281,11 +282,13 @@ export class DateSlotCardComponent {
           newRange.endTime = endDate;
           newRange.endStr = this.formatTime(endDate);
 
-          newRange.slots = [{
-            startDateTime: newRange.startTime.toISOString(),
-            endDateTime: newRange.endTime.toISOString(),
-            location: 'in-person'
-          } as InterviewSlotDTO];
+          newRange.slots = [
+            {
+              startDateTime: newRange.startTime.toISOString(),
+              endDateTime: newRange.endTime.toISOString(),
+              location: 'in-person',
+            } as InterviewSlotDTO,
+          ];
         } else if (newRange.type === 'range') {
           this.generateRangeSlots(newRange, duration, breakDuration);
         }
@@ -299,7 +302,7 @@ export class DateSlotCardComponent {
    * Takes into account the slot duration and break duration.
    * Includes a safeguard to prevent infinite loops.
    */
-  private generateRangeSlots(range: SlotRange, overrideDuration?: number, overrideBreak?: number) {
+  private generateRangeSlots(range: SlotRange, overrideDuration?: number, overrideBreak?: number): void {
     if (!range.startTime || !range.endTime) {
       range.slots = [];
       return;
@@ -310,8 +313,8 @@ export class DateSlotCardComponent {
       return;
     }
 
-    const duration = overrideDuration ?? (Number(this.duration()) || 30);
-    const breakDur = overrideBreak ?? (Number(this.breakDuration()) || 0);
+    const duration = overrideDuration ?? (this.duration() || 30);
+    const breakDur = overrideBreak ?? (this.breakDuration() || 0);
 
     const slots: InterviewSlotDTO[] = [];
     let current = new Date(range.startTime);
@@ -321,18 +324,22 @@ export class DateSlotCardComponent {
       const slotEnd = new Date(current);
       slotEnd.setMinutes(slotEnd.getMinutes() + duration);
 
-      if (slotEnd.getTime() > range.endTime.getTime()) break;
+      if (slotEnd.getTime() > range.endTime.getTime()) {
+        break;
+      }
 
       slots.push({
         startDateTime: current.toISOString(),
         endDateTime: slotEnd.toISOString(),
-        location: 'in-person'
+        location: 'in-person',
       } as InterviewSlotDTO);
 
       current = new Date(slotEnd);
       current.setMinutes(current.getMinutes() + breakDur);
 
-      if (current.getTime() >= range.endTime.getTime()) break;
+      if (current.getTime() >= range.endTime.getTime()) {
+        break;
+      }
       safeGuard++;
     }
 
@@ -340,11 +347,17 @@ export class DateSlotCardComponent {
   }
 
   private parseTime(timeStr: string): Date | null {
-    if (!timeStr) return null;
+    if (!timeStr) {
+      return null;
+    }
     const parts = timeStr.split(':');
-    if (parts.length !== 2) return null;
+    if (parts.length !== 2) {
+      return null;
+    }
     const [hours, minutes] = parts.map(Number);
-    if (isNaN(hours) || isNaN(minutes)) return null;
+    if (isNaN(hours) || isNaN(minutes)) {
+      return null;
+    }
 
     const date = new Date(this.date());
     date.setHours(hours, minutes, 0, 0);
@@ -366,8 +379,12 @@ export class DateSlotCardComponent {
    * Used to prevent infinite loops when updating the parent component.
    */
   private isSameSlots(a: InterviewSlotDTO[], b: InterviewSlotDTO[] | null): boolean {
-    if (!b) return false;
-    if (a.length !== b.length) return false;
+    if (!b) {
+      return false;
+    }
+    if (a.length !== b.length) {
+      return false;
+    }
     return JSON.stringify(a) === JSON.stringify(b);
   }
 }

@@ -10,11 +10,11 @@ import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
-import { SlotCardComponent } from './slot-card/slot-card.component'
-import { SlotCreationFormComponent } from "app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component";
+import { SlotCardComponent } from './slot-card/slot-card.component';
 
 interface GroupedSlots {
   date: string;
@@ -103,17 +103,17 @@ export class SlotsSectionComponent {
   paginatedSlots = computed(() => {
     // Get all date groups for the currently selected month
     const monthDates = this.currentMonthSlots();
-    //Get current page
+    // Get current page
     const page = this.currentDatePage();
-    //Calculate start index
+    // Calculate start index
     const start = page * this.DATES_PER_PAGE;
-    //Calculate end index
+    // Calculate end index
     const end = start + this.DATES_PER_PAGE;
-    //Returns the slots for current page
+    // Returns the slots for current page
     return monthDates.slice(start, end);
   });
 
-  //Formats the current month and year for display * Returns the formatted month and year string for the currently selected month.
+  // Formats the current month and year for display * Returns the formatted month and year string for the currently selected month.
   currentMonth = computed(() => {
     const targetDate = new Date();
     targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
@@ -168,7 +168,6 @@ export class SlotsSectionComponent {
   });
 
   openCreateSlotsModal(): void {
-    console.log('Opening create slots modal');
     this.showSlotCreationForm.set(true);
   }
 
@@ -177,6 +176,10 @@ export class SlotsSectionComponent {
     if (id) {
       await this.loadSlots(id);
     }
+  }
+
+  onSlotsCreated(): void {
+    this.refreshSlots();
   }
 
   previousMonth(): void {

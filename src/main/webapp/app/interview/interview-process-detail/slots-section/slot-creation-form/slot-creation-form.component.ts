@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,7 +15,7 @@ import { ToastService } from 'app/service/toast-service';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { SlotInput } from 'app/generated/model/slotInput';
 import { firstValueFrom } from 'rxjs';
-import { DateSlotCardComponent} from "app/interview/interview-process-detail/slots-section/slot-creation-form/date-slot-card.component";
+import { DateSlotCardComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/date-slot-card.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
@@ -41,16 +41,13 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SlotCreationFormComponent {
-  // Dependencies
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly toastService = inject(ToastService);
-
-  // Inputs & Outputs
+  // Inputs
   readonly visible = input.required<boolean>();
   readonly processId = input.required<string>();
 
+  // Outputs
   readonly visibleChange = output<boolean>();
-  readonly onSuccess = output<InterviewSlotDTO[]>();
+  readonly success = output<InterviewSlotDTO[]>();
 
   // State
   readonly isSubmitting = signal(false);
@@ -79,12 +76,16 @@ export class SlotCreationFormComponent {
 
   readonly minDate = new Date();
 
+  // Dependencies
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly toastService = inject(ToastService);
+
   /**
    * Handles date selection from the calendar.
    * Ensures that the selected dates are sorted chronologically.
    * Handles null input by resetting the selection.
    */
-  onDateSelect(dates: Date | Date[] | null) {
+  onDateSelect(dates: Date | Date[] | null): void {
     if (!dates) {
       this.selectedDates.set([]);
       return;
@@ -96,7 +97,7 @@ export class SlotCreationFormComponent {
     this.selectedDates.set(dateArray);
   }
 
-  updateSlotsForDate(date: Date, slots: InterviewSlotDTO[]) {
+  updateSlotsForDate(date: Date, slots: InterviewSlotDTO[]): void {
     const dateStr = date.toISOString().split('T')[0];
     this.slotsByDate.update(map => {
       const newMap = new Map(map);
@@ -109,14 +110,18 @@ export class SlotCreationFormComponent {
    * Copies the slots from the first selected date to all other selected dates.
    * Adjusts the date part of the start and end times to match the target date.
    */
-  copySlotsToAllDays() {
+  copySlotsToAllDays(): void {
     const dates = this.selectedDates();
-    if (dates.length < 2) return;
+    if (dates.length < 2) {
+      return;
+    }
 
     const firstDateStr = dates[0].toISOString().split('T')[0];
-    const firstDateSlots = this.slotsByDate().get(firstDateStr) || [];
+    const firstDateSlots = this.slotsByDate().get(firstDateStr) ?? [];
 
-    if (firstDateSlots.length === 0) return;
+    if (firstDateSlots.length === 0) {
+      return;
+    }
 
     this.slotsByDate.update(map => {
       const newMap = new Map(map);
@@ -173,17 +178,15 @@ export class SlotCreationFormComponent {
           date: start.toISOString().split('T')[0],
           startTime: start.toTimeString().slice(0, 5),
           endTime: end.toTimeString().slice(0, 5),
-          location: (slot.location as 'in-person' | 'virtual') || 'in-person',
+          location: slot.location as 'in-person' | 'virtual',
           streamLink: slot.streamLink,
         };
       });
 
-      const createdSlots = await firstValueFrom(
-        this.interviewService.createSlots(this.processId(), { slots: slotsToCreate })
-      );
+      const createdSlots = await firstValueFrom(this.interviewService.createSlots(this.processId(), { slots: slotsToCreate }));
 
       this.toastService.showSuccessKey('interview.slots.create.success');
-      this.onSuccess.emit(createdSlots);
+      this.success.emit(createdSlots);
       this.close();
     } catch (error) {
       // Error handling
@@ -194,7 +197,7 @@ export class SlotCreationFormComponent {
     }
   }
 
-  private resetState() {
+  private resetState(): void {
     this.selectedDates.set([]);
     this.slotsByDate.set(new Map());
     this.isSubmitting.set(false);
