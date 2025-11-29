@@ -1,4 +1,4 @@
-import { filterNaN, isPresent } from './operators';
+import { filterNaN, isPresent } from 'app/core/util/operators';
 
 describe('Operators Test', () => {
   describe('isPresent', () => {

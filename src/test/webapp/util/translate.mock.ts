@@ -1,10 +1,10 @@
 // src/test/webapp/util/translate.mock.ts
 import {
-  TranslateService,
-  LangChangeEvent,
-  TranslationChangeEvent,
   FallbackLangChangeEvent,
   InterpolatableTranslationObject,
+  LangChangeEvent,
+  TranslateService,
+  TranslationChangeEvent,
 } from '@ngx-translate/core';
 import { type Provider } from '@angular/core';
 import { of, Subject } from 'rxjs';
@@ -20,6 +20,7 @@ export type TranslateServiceMock = Pick<
   | 'onDefaultLangChange'
   | 'onFallbackLangChange'
   | 'currentLang'
+  | 'getCurrentLang'
   | 'use'
   | 'setDefaultLang'
   | 'setFallbackLang'
@@ -51,6 +52,7 @@ export function createTranslateServiceMock(): TranslateServiceMock {
     onDefaultLangChange: onFallbackLangChangeSubject.asObservable(), // Deprecated, aliased to onFallbackLangChange
     onFallbackLangChange: onFallbackLangChangeSubject.asObservable(),
     currentLang: 'en',
+    getCurrentLang: () => mock.currentLang,
     use: (_lang: string) => {
       mock.currentLang = _lang;
       onLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });

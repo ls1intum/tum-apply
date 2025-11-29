@@ -1,12 +1,35 @@
 import { vi } from 'vitest';
-import { Router } from '@angular/router';
+import { Event as RouterEvent, Router } from '@angular/router';
 import { Provider } from '@angular/core';
+import { Subject } from 'rxjs';
 
-export type RouterMock = Pick<Router, 'navigate'>;
+export type RouterMock = {
+  navigate: ReturnType<typeof vi.fn>;
+  url: string;
+  events: Subject<RouterEvent>;
+  routerState: {
+    snapshot: {
+      root: {
+        firstChild: null;
+        data: Record<string, unknown>;
+      };
+    };
+  };
+};
 
 export function createRouterMock(): RouterMock {
   return {
-    navigate: vi.fn(),
+    navigate: vi.fn().mockResolvedValue(true),
+    url: '/',
+    events: new Subject<RouterEvent>(),
+    routerState: {
+      snapshot: {
+        root: {
+          firstChild: null,
+          data: {},
+        },
+      },
+    },
   };
 }
 

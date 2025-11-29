@@ -13,7 +13,7 @@ token is sent with each request and validated by the Spring Boot server.
 - Three **test users** with password login:
 
   | Username     | Password    | Role        |
-    | ------------ | ----------- | ----------- |
+  | ------------ | ----------- | ----------- |
   | `admin1`     | `admin`     | `ADMIN`     |
   | `professor1` | `professor` | `PROFESSOR` |
   | `applicant1` | `applicant` | `APPLICANT` |
@@ -78,9 +78,7 @@ Example response:
 {
   "userId": "...",
   "email": "admin1@tumapply.local",
-  "roles": [
-    "APPLICANT"
-  ],
+  "roles": ["APPLICANT"],
   "researchGroup": {
     "researchGroupId": "...",
     "name": "Data Science Group"
