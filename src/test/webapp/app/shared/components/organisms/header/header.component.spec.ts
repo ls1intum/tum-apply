@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { By } from '@angular/platform-browser';
+import { NavigationEnd } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -132,6 +133,57 @@ describe('HeaderComponent', () => {
     expect(component.isProfessorPage()).toBe(true);
   });
 
+  it('should consider page as professor page when nested route snapshot contains Professor role (initial snapshot)', () => {
+    router.url = '/some-nested-route';
+    accountService.setAuthorities([]);
+
+    (
+      router.routerState.snapshot.root as {
+        firstChild: unknown;
+        data: Record<string, unknown>;
+      }
+    ).firstChild = {
+      firstChild: {
+        firstChild: null,
+        data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+      },
+      data: {},
+    };
+
+    fixture = TestBed.createComponent(HeaderComponent);
+    component = fixture.componentInstance as HeaderComponentTestInstance;
+    fixture.detectChanges();
+
+    expect(component.isProfessorPage()).toBe(true);
+  });
+
+  it('should update isProfessorPage when NavigationEnd occurs and nested child has authorities', () => {
+    router.url = '/some-other-route';
+    accountService.setAuthorities([]);
+
+    fixture = TestBed.createComponent(HeaderComponent);
+    component = fixture.componentInstance as HeaderComponentTestInstance;
+    fixture.detectChanges();
+
+    (
+      router.routerState.snapshot.root as {
+        firstChild: unknown;
+        data: Record<string, unknown>;
+      }
+    ).firstChild = {
+      firstChild: {
+        firstChild: null,
+        data: { authorities: [UserShortDTO.RolesEnum.Professor] },
+      },
+      data: {},
+    };
+
+    router.events.next(new NavigationEnd(1, '/some-other-route', '/some-other-route'));
+    fixture.detectChanges();
+
+    expect(component.isProfessorPage()).toBe(true);
+  });
+
   it('should open login dialog when login is called on applicant page', () => {
     component.isProfessorPage = () => false;
 
@@ -214,6 +266,28 @@ describe('HeaderComponent', () => {
   it('should expose isDarkMode signal without throwing', () => {
     const darkMode = component.isDarkMode();
     expect(typeof darkMode).toBe('boolean');
+  });
+
+  it('should default to EN for currentLanguage when translateService has no current lang', () => {
+    vi.spyOn(translate, 'getCurrentLang').mockReturnValue('');
+    fixture = TestBed.createComponent(HeaderComponent);
+    component = fixture.componentInstance as HeaderComponentTestInstance;
+    fixture.detectChanges();
+
+    expect(component.currentLanguage()).toBe('EN');
+  });
+
+  it('should default to an empty array for routeAuthorities when route data is missing authorities', () => {
+    router.routerState.snapshot.root.data = {};
+    fixture = TestBed.createComponent(HeaderComponent);
+    component = fixture.componentInstance as HeaderComponentTestInstance;
+    fixture.detectChanges();
+
+    expect(component.routeAuthorities()).toEqual([]);
+
+    router.events.next(new NavigationEnd(1, '/', '/'));
+    fixture.detectChanges();
+    expect(component.routeAuthorities()).toEqual([]);
   });
 
   it('should render header template with language buttons and logo', () => {

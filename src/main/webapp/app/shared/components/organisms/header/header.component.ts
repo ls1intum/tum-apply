@@ -103,9 +103,7 @@ export class HeaderComponent {
   openLoginDialog(): void {
     this.authDialogService.open({
       mode: 'login',
-      onSuccess() {
-        // TODO: reload or show toast
-      },
+      onSuccess() {},
     });
   }
 
