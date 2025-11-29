@@ -8,12 +8,29 @@ import { provideTranslateMock } from 'util/translate.mock';
 
 import { PasswordInputComponent } from 'app/shared/components/atoms/password-input/password-input';
 
+type PasswordInputComponentTestInstance = Omit<
+  PasswordInputComponent,
+  'formControl' | 'inputState' | 'isFocused' | 'errorMessage' | 'tooltipText'
+> & {
+  formControl?: () => FormControl<string | null>;
+  inputState?: () => 'untouched' | 'valid' | 'invalid' | string;
+  isFocused?: () => boolean;
+  errorMessage?: () => string | null;
+  tooltipText?: () => string | undefined;
+};
+
 describe('PasswordInputComponent', () => {
-  const getFormControl = (component: PasswordInputComponent) => (component as any).formControl();
+  const getFormControl = (component: PasswordInputComponentTestInstance) => {
+    if (!component.formControl) {
+      throw new Error('formControl is not defined on PasswordInputComponent');
+    }
+
+    return component.formControl();
+  };
 
   function createComponent(runInitialDetect = true) {
     const fixture = TestBed.createComponent(PasswordInputComponent);
-    const component = fixture.componentInstance as any;
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
 
     if (!component.formControl || component.formControl() == null) {
       const ctrl = new FormControl('');
@@ -36,7 +53,7 @@ describe('PasswordInputComponent', () => {
 
   it('should create and render the password input', () => {
     const fixture = createComponent();
-    const component = fixture.componentInstance;
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
 
     expect(component).toBeTruthy();
 
@@ -46,7 +63,7 @@ describe('PasswordInputComponent', () => {
 
   it('should emit modelChange and update form control on input change', () => {
     const fixture = createComponent();
-    const component = fixture.componentInstance;
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
 
     const emitSpy = vi.spyOn(component.modelChange, 'emit');
     const value = 'MySecurePassword123!';
@@ -61,7 +78,7 @@ describe('PasswordInputComponent', () => {
 
   it('should wire template events to component methods', () => {
     const fixture = createComponent();
-    const component = fixture.componentInstance;
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
 
     const changeSpy = vi.spyOn(component, 'onInputChange');
     const blurSpy = vi.spyOn(component, 'onBlur');
@@ -117,17 +134,18 @@ describe('PasswordInputComponent', () => {
     const iconDebug = fixture.debugElement.query(By.css('label.custom-label fa-icon'));
     expect(iconDebug).toBeTruthy();
 
-    const tooltipTextFn = (fixture.componentInstance as any).tooltipText as () => string;
-    expect(tooltipTextFn()).toBe('Tooltip text');
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
+    const tooltipTextFn = component.tooltipText;
+    expect(tooltipTextFn?.()).toBe('Tooltip text');
   });
 
   it('should apply error class when input state is invalid', () => {
     const fixture = createComponent(false);
-    const component = fixture.componentInstance;
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
 
-    (component as any).inputState = () => 'invalid';
-    (component as any).isFocused = () => false;
-    (component as any).errorMessage = () => 'Invalid password';
+    component.inputState = () => 'invalid';
+    component.isFocused = () => false;
+    component.errorMessage = () => 'Invalid password';
 
     fixture.detectChanges();
 
@@ -140,10 +158,10 @@ describe('PasswordInputComponent', () => {
 
   it('should not apply error class when input state is valid', () => {
     const fixture = createComponent(false);
-    const component = fixture.componentInstance;
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
 
-    (component as any).inputState = () => 'valid';
-    (component as any).isFocused = () => false;
+    component.inputState = () => 'valid';
+    component.isFocused = () => false;
 
     fixture.detectChanges();
 
@@ -156,7 +174,7 @@ describe('PasswordInputComponent', () => {
 
   it('should render hidden form control input when formControl exists', () => {
     const fixture = createComponent();
-    const component = fixture.componentInstance;
+    const component = fixture.componentInstance as PasswordInputComponentTestInstance;
 
     const ctrl = getFormControl(component);
     expect(ctrl).toBeTruthy();
