@@ -33,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((err: HttpErrorResponse) => {
         if (err.status === 401) {
           console.warn('Unauthorized – logging out');
-          void this.authFacade.logout();
+          void this.authFacade.logout(true);
         }
         return throwError(() => err);
       }),
