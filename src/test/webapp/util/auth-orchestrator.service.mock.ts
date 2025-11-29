@@ -13,6 +13,8 @@ export interface AuthOrchestratorServiceMock {
   mode: WritableSignal<AuthFlowMode>;
   loginStep: WritableSignal<LoginStep>;
   registerStep: WritableSignal<RegisterStep>;
+  registerProgress: WritableSignal<number>;
+  totalRegisterSteps: number;
   error: WritableSignal<string | null>;
   nextStep: ReturnType<typeof vi.fn>;
   authSuccess: ReturnType<typeof vi.fn>;
@@ -54,6 +56,8 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
     mode: signal<AuthFlowMode>('login'),
     loginStep: signal<LoginStep>('email'),
     registerStep: signal<RegisterStep>('email'),
+    registerProgress: signal<number>(1),
+    totalRegisterSteps: 3,
     error: errorSignal,
     nextStep: vi.fn(),
     authSuccess: vi.fn(),
