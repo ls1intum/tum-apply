@@ -7,6 +7,8 @@ export type AccountServiceMock = Pick<AccountService, 'user' | 'loadedUser' | 's
   loadUser: ReturnType<typeof vi.fn>;
   authorities: UserShortDTO.RolesEnum[];
   setAuthorities: (roles: UserShortDTO.RolesEnum[]) => void;
+  updateUser: ReturnType<typeof vi.fn>;
+  updatePassword: ReturnType<typeof vi.fn>;
 };
 
 export let defaultUser: User = {
@@ -38,6 +40,8 @@ export function createAccountServiceMock(signedIn?: boolean, loaded?: boolean): 
     setAuthorities: (roles: UserShortDTO.RolesEnum[]) => {
       mock.authorities = roles;
     },
+    updateUser: vi.fn().mockResolvedValue(undefined),
+    updatePassword: vi.fn().mockResolvedValue(undefined),
   };
 
   return mock;
