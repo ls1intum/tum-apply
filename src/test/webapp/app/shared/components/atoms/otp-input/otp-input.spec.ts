@@ -21,12 +21,7 @@ import { provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
 
 describe('OtpInput', () => {
   let mockApplicationConfigService: { otp: { length: number; ttlSeconds: number } };
-  let mockAuthOrchestratorService: ReturnType<typeof createAuthOrchestratorServiceMock> & {
-    cooldownSeconds: ReturnType<typeof signal<number>>;
-    isBusy: ReturnType<typeof signal<boolean>>;
-    error: ReturnType<typeof signal<string | null>>;
-    clearError: () => void;
-  };
+  let mockAuthOrchestratorService: ReturnType<typeof createAuthOrchestratorServiceMock>;
   let mockAuthFacadeService: ReturnType<typeof createAuthFacadeServiceMock>;
   let mockTranslateService: ReturnType<typeof createTranslateServiceMock>;
   let mockDynamicDialogConfig: DynamicDialogConfig;
@@ -40,12 +35,7 @@ describe('OtpInput', () => {
       },
     };
 
-    mockAuthOrchestratorService = Object.assign(createAuthOrchestratorServiceMock(), {
-      cooldownSeconds: signal(0),
-      isBusy: signal(false),
-      error: signal<string | null>(null),
-      clearError: vi.fn(),
-    });
+    mockAuthOrchestratorService = createAuthOrchestratorServiceMock();
     mockAuthFacadeService = createAuthFacadeServiceMock();
     mockTranslateService = createTranslateServiceMock();
     // Patch instant to return the expected label for the test
@@ -177,6 +167,7 @@ describe('OtpInput', () => {
     const mockCtrl = new FormControl('');
     vi.spyOn(comp, 'formControl').mockReturnValue(mockCtrl);
     const emitSpy = vi.spyOn(comp.modelChange, 'emit');
+    const clearErrorSpy = vi.spyOn(mockAuthOrchestratorService, 'clearError');
 
     const event: InputOtpChangeEvent = { value: 'a@b#1$2', originalEvent: new Event('input') };
     comp.onChange(event);
@@ -184,7 +175,7 @@ describe('OtpInput', () => {
     expect(comp.otpValue()).toBe('AB12');
     expect(emitSpy).toHaveBeenCalledWith('AB12');
     expect(mockCtrl.value).toBe('AB12');
-    expect(mockAuthOrchestratorService.clearError).toHaveBeenCalled();
+    expect(clearErrorSpy).toHaveBeenCalled();
   });
 
   it('should handle onSubmit when valid', () => {
@@ -195,10 +186,11 @@ describe('OtpInput', () => {
     mockAuthOrchestratorService.error.set(null);
     comp.otpValue.set('123456');
     fixture.componentRef.setInput('registration', false);
+    const clearErrorSpy = vi.spyOn(mockAuthOrchestratorService, 'clearError');
 
     comp.onSubmit();
 
-    expect(mockAuthOrchestratorService.clearError).toHaveBeenCalled();
+    expect(clearErrorSpy).toHaveBeenCalled();
     expect(mockAuthFacadeService.verifyOtp).toHaveBeenCalledWith('123456', false);
   });
 
@@ -212,10 +204,11 @@ describe('OtpInput', () => {
     mockAuthOrchestratorService.cooldownSeconds.set(0);
     comp.otpValue.set('123456');
     fixture.componentRef.setInput('registration', false);
+    const clearErrorSpy = vi.spyOn(mockAuthOrchestratorService, 'clearError');
 
     comp.onResend();
 
-    expect(mockAuthOrchestratorService.clearError).toHaveBeenCalled();
+    expect(clearErrorSpy).toHaveBeenCalled();
     expect(comp.otpValue()).toBe('');
     expect(mockCtrl.value).toBe('');
     expect(mockCtrl.pristine).toBe(true);

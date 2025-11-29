@@ -82,9 +82,10 @@ describe('AuthFacadeService', () => {
 
   it('loginWithEmail error surfaces orchestrator error', async () => {
     const { facade, server, orchestrator } = setup();
+    const setErrorSpy = vi.spyOn(orchestrator, 'setError');
     server.login.mockRejectedValue(new Error('bad'));
     await expect(facade.loginWithEmail('x@y', 'pw')).rejects.toThrow();
-    expect(orchestrator.setError).toHaveBeenCalled();
+    expect(setErrorSpy).toHaveBeenCalled();
   });
 
   it('requestOtp success advances step', async () => {
