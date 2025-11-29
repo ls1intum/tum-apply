@@ -231,6 +231,18 @@
         "already_uploaded": "Bereits hochgeladen",
         "remove": "Diese Datei aus der Upload-Liste entfernen",
         "delete": "Diese Datei vom Server löschen"
+      },
+      "duplicate": {
+        "title": "Dokument bereits vorhanden",
+        "message": "Ein Dokument mit dem Namen \"{{filename}}\" existiert bereits. Möchtest du es ersetzen?",
+        "replace": "Ersetzen"
+      },
+      "error": {
+        "replace_failed": "Dokument konnte nicht ersetzt werden",
+        "too_large": "Dateien sind zu groß",
+        "upload_failed": "Upload fehlgeschlagen",
+        "delete_failed": "Dokument konnte nicht gelöscht werden",
+        "rename_failed": "Dokument konnte nicht umbenannt werden"
       }
     },
     "application_overview": {
