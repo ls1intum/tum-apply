@@ -9,12 +9,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, fromEventPattern, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
+import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
+import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 
-import { ButtonComponent } from '../../atoms/button/button.component';
-import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
-import { AuthDialogService } from '../../../../core/auth/auth-dialog.service';
 import TranslateDirective from '../../../language/translate.directive';
-import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
+import { ButtonComponent } from '../../atoms/button/button.component';
 
 @Component({
   selector: 'jhi-header',
@@ -46,7 +46,7 @@ export class HeaderComponent {
   });
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
-    initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
+    initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
   languages = LANGUAGES.map(lang => lang.toUpperCase());
   accountService = inject(AccountService);
