@@ -19,7 +19,7 @@ export type RouterMock = {
 
 export function createRouterMock(): RouterMock {
   return {
-    navigate: vi.fn(),
+    navigate: vi.fn().mockResolvedValue(true),
     url: '/',
     events: new Subject<RouterEvent>(),
     routerState: {
