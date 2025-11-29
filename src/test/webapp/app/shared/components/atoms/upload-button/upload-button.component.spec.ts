@@ -199,7 +199,7 @@ describe('UploadButtonComponent', () => {
 
     const newFile = new File([''], 'new.pdf');
 
-    const uploadSpy = vi.spyOn(component, 'onUpload').mockImplementation(async () => { });
+    const uploadSpy = vi.spyOn(component, 'onUpload').mockImplementation(async () => {});
 
     await component.onFileSelected({ currentFiles: [newFile] } as FileSelectEvent);
 
@@ -329,7 +329,9 @@ describe('UploadButtonComponent', () => {
 
       // Mock delete and upload
       vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation((): rxjs.Observable<any> => of({}));
-      vi.spyOn(applicationService, 'uploadDocuments').mockImplementation((): rxjs.Observable<any> => of([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]));
+      vi.spyOn(applicationService, 'uploadDocuments').mockImplementation(
+        (): rxjs.Observable<any> => of([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]),
+      );
 
       await component.onDuplicateReplace();
 
@@ -380,7 +382,7 @@ describe('UploadButtonComponent', () => {
       component.showDuplicateDialog.set(true);
 
       const toastSpy = vi.spyOn(toastService, 'showErrorKey');
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Mock delete failure
       vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => new Error('Delete failed')));
@@ -409,7 +411,9 @@ describe('UploadButtonComponent', () => {
 
       // Subject to control when the delete completes
       const deleteSubject = new rxjs.Subject<any>();
-      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation((): rxjs.Observable<any> => deleteSubject.asObservable());
+      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation(
+        (): rxjs.Observable<any> => deleteSubject.asObservable(),
+      );
       vi.spyOn(applicationService, 'uploadDocuments').mockImplementation((): rxjs.Observable<any> => of([]));
 
       // Start the replace process
