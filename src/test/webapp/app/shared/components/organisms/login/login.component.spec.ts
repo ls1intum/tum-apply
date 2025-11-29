@@ -7,12 +7,16 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../../util/toast-service.mock';
 import { AuthFacadeServiceMock, createAuthFacadeServiceMock, provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
 import { AuthOrchestratorServiceMock, provideAuthOrchestratorServiceMock } from 'util/auth-orchestrator.service.mock';
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 import { Login } from 'app/shared/components/organisms/login/login';
 import { createAuthOrchestratorServiceMock } from '../../../../../util/auth-orchestrator.service.mock';
 import { provideFontAwesomeTesting } from '../../../../../util/fontawesome.testing';
 import { provideDynamicDialogConfigMock } from '../../../../../util/dynamicdialogref.mock';
+import {
+  ApplicationConfigServiceMock,
+  createApplicationConfigServiceMock,
+  provideApplicationConfigServiceMock,
+} from '../../../../../util/application-config.service.mock';
 
 describe('Login Component', () => {
   let component: Login;
@@ -21,13 +25,15 @@ describe('Login Component', () => {
   let authFacade: AuthFacadeServiceMock;
   let authOrchestrator: AuthOrchestratorServiceMock;
   let toastService: ToastServiceMock;
+  let applicationConfigService: ApplicationConfigServiceMock;
 
   beforeEach(async () => {
     authFacade = createAuthFacadeServiceMock();
     authOrchestrator = createAuthOrchestratorServiceMock();
     toastService = createToastServiceMock();
+    applicationConfigService = createApplicationConfigServiceMock();
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [Login],
       providers: [
         provideAuthFacadeServiceMock(authFacade),
@@ -36,14 +42,9 @@ describe('Login Component', () => {
         provideAuthOrchestratorServiceMock(authOrchestrator),
         provideFontAwesomeTesting(),
         provideDynamicDialogConfigMock(),
+        provideApplicationConfigServiceMock(applicationConfigService),
       ],
-    }).compileComponents();
-
-    const appConfigService = TestBed.inject(ApplicationConfigService);
-    vi.spyOn(appConfigService, 'otp', 'get').mockReturnValue({
-      enabled: true,
-      length: 6,
-    } as never);
+    });
 
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
