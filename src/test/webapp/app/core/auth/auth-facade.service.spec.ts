@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 import {
-  provideAuthOrchestratorServiceMock,
-  createAuthOrchestratorServiceMock,
   AuthOrchestratorServiceMock,
+  createAuthOrchestratorServiceMock,
+  provideAuthOrchestratorServiceMock,
 } from 'util/auth-orchestrator.service.mock';
-import { provideAccountServiceMock, createAccountServiceMock, AccountServiceMock } from 'util/account.service.mock';
+import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
-import { KeycloakAuthenticationService, IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 import { vi } from 'vitest';
 
@@ -149,10 +149,12 @@ describe('AuthFacadeService', () => {
 
   it('runAuthAction throws when busy', async () => {
     const { facade, orchestrator } = setup();
-    orchestrator.isBusy = Object.assign(
-      vi.fn(() => true),
-      { set: vi.fn() },
-    );
+
+    orchestrator.isBusy.set(true);
+    const setSpy = vi.spyOn(orchestrator.isBusy, 'set');
+
     await expect(facade.loginWithEmail('a', 'b')).rejects.toThrow('AuthOrchestrator is busy');
+
+    expect(setSpy).not.toHaveBeenCalled();
   });
 });
