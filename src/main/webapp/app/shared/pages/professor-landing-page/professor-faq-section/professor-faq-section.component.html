@@ -2,9 +2,9 @@
   <h2 class="title" jhiTranslate="professorLandingPage.faq.headline"></h2>
   <p class="subtitle" jhiTranslate="professorLandingPage.faq.subheadline"></p>
   <div class="sub-subtitle-container">
-    <a href="https://ls1intum.github.io/tum-apply" target="_blank" class="sub-subtitle-link">
+    <a class="sub-subtitle-link" href="https://ls1intum.github.io/tum-apply" target="_blank">
       <span jhiTranslate="professorLandingPage.faq.sub-subheadline"></span>
-      <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" />
+      <fa-icon [icon]="faArrowUpRightFromSquare" class="external-icon" size="xs" />
     </a>
   </div>
   <p-accordion [value]="0">
@@ -13,6 +13,16 @@
         <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
         <p-accordion-content>
           <div [innerHTML]="tab.content | translate"></div>
+          <div class="registration-button">
+            @if (tab.value === 'registration') {
+              <jhi-button
+                (click)="openRegistrationForm()"
+                [shouldTranslate]="true"
+                label="onboarding.actions.openForm"
+                variant="outlined"
+              />
+            }
+          </div>
         </p-accordion-content>
       </p-accordion-panel>
     }

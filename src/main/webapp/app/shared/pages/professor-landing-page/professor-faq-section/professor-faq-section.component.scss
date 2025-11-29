@@ -39,4 +39,10 @@
   .p-accordioncontent-content {
     color: var(--p-text-secondary);
   }
+
+  .registration-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
 }
