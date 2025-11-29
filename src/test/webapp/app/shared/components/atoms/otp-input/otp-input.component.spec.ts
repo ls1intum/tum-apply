@@ -51,6 +51,11 @@ describe('OtpInput', () => {
         resendCooldownSeconds: 60,
       },
     });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
     authFacadeMock = createAuthFacadeServiceMock();
     authOrchestratorServiceMock = createAuthOrchestratorServiceMock();
     breakpointState = {
