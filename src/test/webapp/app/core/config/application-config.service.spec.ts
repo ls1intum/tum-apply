@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { provideToastServiceMock } from '../../../util/toast-service.mock';
+import { provideToastServiceMock } from 'util/toast-service.mock';
 
 describe('ApplicationConfigService', () => {
   let service: ApplicationConfigService;

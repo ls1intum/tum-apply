@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { EventManager, EventWithContent } from './event-manager.service';
+import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 
 describe('Event Manager tests', () => {
   describe('EventWithContent', () => {

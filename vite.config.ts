@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
       reportsDirectory: 'build/test-results/lcov-report',
       provider: 'v8',
       all: false,
-      exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts'],
+      exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts', 'src/test/webapp/util/**'],
     },
   },
   define: {
