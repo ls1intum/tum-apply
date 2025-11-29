@@ -74,7 +74,7 @@ describe('ProfileComponent', () => {
   });
 
   it('should not call submitHandler when loading is true', () => {
-    authOrchestratorMock.isBusy.mockReturnValue(true);
+    authOrchestratorMock.isBusy.set(true);
 
     fixture = TestBed.createComponent(ProfileComponent);
     fixture.detectChanges();
