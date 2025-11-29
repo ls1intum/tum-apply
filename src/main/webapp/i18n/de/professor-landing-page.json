@@ -48,6 +48,10 @@
       "subheadline": "Finde Antworten auf häufige Fragen zur Nutzung von TUMApply",
       "sub-subheadline": "Bei weiteren Fragen wende dich bitte an die <a href='https://ls1intum.github.io/tum-apply' class='external-link'><strong>Dokumentation</strong></a>",
       "questions": {
+        "registration": {
+          "title": "Wie kann ich mich als Mitarbeiter:in oder Professor:in registrieren?",
+          "content": "Bevor du Zugriff auf deine Forschungsgruppe bekommen kannst, klicke bitte auf den untenstehenden Registrierungslink und fülle das Formular aus. Nach der Überprüfung deiner Angaben erhältst du eine Bestätigungs-E-Mail mit weiteren Anweisungen."
+        },
         "login": {
           "title": "Wie melde ich mich bei TUMApply an?",
           "content": "Du meldest dich mit deinen TUM SSO-Anmeldedaten an. Klicke auf den Anmelde-Button und du wirst zum TUMApply-Authentifizierungssystem weitergeleitet."
