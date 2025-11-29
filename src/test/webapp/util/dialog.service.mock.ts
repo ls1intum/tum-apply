@@ -2,7 +2,9 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 
-export type DialogServiceMock = Pick<DialogService, 'open'>;
+export type DialogServiceMock = {
+  open: ReturnType<typeof vi.fn>;
+};
 
 export function createDialogServiceMock(): DialogServiceMock {
   return {
