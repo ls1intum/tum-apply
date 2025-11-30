@@ -29,6 +29,7 @@ public record ResearchGroupAdminDTO(
     UUID id,
     String researchGroup,
     String professorName,
+    DepartmentDTO department,
     ResearchGroupState status,
     LocalDateTime createdAt
 ) {
@@ -43,6 +44,7 @@ public record ResearchGroupAdminDTO(
             researchGroup.getResearchGroupId(),
             researchGroup.getName(),
             researchGroup.getHead(),
+            DepartmentDTO.fromEntity(researchGroup.getDepartment()),
             researchGroup.getState(),
             researchGroup.getCreatedAt()
         );
