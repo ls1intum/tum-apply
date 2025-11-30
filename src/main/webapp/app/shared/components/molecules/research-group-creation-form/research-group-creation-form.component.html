@@ -139,6 +139,7 @@
         [label]="'onboarding.professorRequest.school.label' | translate"
         [placeholder]="'onboarding.professorRequest.school.placeholder' | translate"
         [items]="schoolOptions()"
+        [required]="true"
         [selected]="selectedSchoolOption()"
         (selectedChange)="onSchoolChange($event)"
       />
