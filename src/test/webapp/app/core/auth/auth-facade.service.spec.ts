@@ -150,10 +150,8 @@ describe('AuthFacadeService', () => {
 
   it('runAuthAction throws when busy', async () => {
     const { facade, orchestrator } = setup();
-    orchestrator.isBusy = Object.assign(
-      vi.fn(() => true),
-      { set: vi.fn() },
-    );
+    // Use the WritableSignal API to mark orchestrator busy
+    orchestrator.isBusy.set(true);
     await expect(facade.loginWithEmail('a', 'b')).rejects.toThrow('AuthOrchestrator is busy');
   });
 });
