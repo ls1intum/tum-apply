@@ -39,7 +39,6 @@ public class PageUtil {
                 "abbreviation",
                 "email",
                 "website",
-                "school",
                 "description",
                 "defaultFieldOfStudies",
                 "street",

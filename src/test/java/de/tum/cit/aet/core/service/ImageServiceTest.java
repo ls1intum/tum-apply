@@ -10,11 +10,15 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ImageTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -47,6 +51,8 @@ class ImageServiceTest {
 
     private static final UUID TEST_USER_ID = UUID.randomUUID();
     private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
+    private static final UUID TEST_SCHOOL_ID = UUID.randomUUID();
+    private static final UUID TEST_DEPARTMENT_ID = UUID.randomUUID();
     private static final UUID TEST_IMAGE_ID = UUID.randomUUID();
     private static final String IMAGE_ROOT = "/tmp/test-images";
     private static final long MAX_FILE_SIZE = 5242880L; // 5MB
@@ -54,6 +60,8 @@ class ImageServiceTest {
     private static final int MAX_HEIGHT = 4096;
 
     private User testUser;
+    private School testSchool;
+    private Department testDepartment;
     private ResearchGroup testResearchGroup;
 
     @BeforeEach
@@ -68,6 +76,14 @@ class ImageServiceTest {
             MAX_HEIGHT
         );
 
+        // Initialize test school
+        testSchool = SchoolTestData.newSchoolAll("School of Computation, Information and Technology", "CIT");
+        testSchool.setSchoolId(TEST_SCHOOL_ID);
+
+        // Initialize test department
+        testDepartment = DepartmentTestData.newDepartmentAll("Computer Science", testSchool);
+        testDepartment.setDepartmentId(TEST_DEPARTMENT_ID);
+
         // Initialize test research group
         testResearchGroup = ResearchGroupTestData.newRgAll(
             "Prof. Test",
@@ -78,12 +94,12 @@ class ImageServiceTest {
             "Test description",
             "test@research.com",
             "12345",
-            "Test University",
             "Test Street",
             "https://test.com",
             "ACTIVE"
         );
         testResearchGroup.setResearchGroupId(TEST_RESEARCH_GROUP_ID);
+        testResearchGroup.setDepartment(testDepartment);
 
         // Initialize test user
         testUser = UserTestData.newUserAll(TEST_USER_ID, "test@example.com", "Test", "User");
@@ -238,7 +254,7 @@ class ImageServiceTest {
             assertThat(result).hasSize(2);
             assertThat(result).containsExactlyInAnyOrder(defaultImage1, defaultImage2);
             verify(imageRepository).findDefaultJobBanners();
-            verify(imageRepository, never()).findDefaultJobBannersByResearchGroup(any(UUID.class));
+            verify(imageRepository, never()).findDefaultJobBannersBySchool(any(UUID.class));
         }
 
         @Test
@@ -247,7 +263,8 @@ class ImageServiceTest {
             Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
             List<Image> defaultImages = List.of(defaultImage);
 
-            when(imageRepository.findDefaultJobBannersByResearchGroup(TEST_RESEARCH_GROUP_ID)).thenReturn(defaultImages);
+            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
+            when(imageRepository.findDefaultJobBannersBySchool(TEST_SCHOOL_ID)).thenReturn(defaultImages);
 
             // Act
             List<Image> result = imageService.getDefaultJobBanners(TEST_RESEARCH_GROUP_ID);
@@ -255,7 +272,8 @@ class ImageServiceTest {
             // Assert
             assertThat(result).hasSize(1);
             assertThat(result).contains(defaultImage);
-            verify(imageRepository).findDefaultJobBannersByResearchGroup(TEST_RESEARCH_GROUP_ID);
+            verify(researchGroupRepository).findById(TEST_RESEARCH_GROUP_ID);
+            verify(imageRepository).findDefaultJobBannersBySchool(TEST_SCHOOL_ID);
             verify(imageRepository, never()).findDefaultJobBanners();
         }
 
