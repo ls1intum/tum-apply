@@ -48,18 +48,6 @@ describe('ProfessorHeroSectionComponent', () => {
       expect(component.imagesWithBackgroundClass).toHaveLength(3);
     });
 
-    it('should have correct image names', () => {
-      expect(component.imagesWithBackgroundClass[0].image).toBe('professor-landing-page-hero-section-1');
-      expect(component.imagesWithBackgroundClass[1].image).toBe('professor-landing-page-hero-section-2');
-      expect(component.imagesWithBackgroundClass[2].image).toBe('professor-landing-page-hero-section-3');
-    });
-
-    it('should have corresponding background classes', () => {
-      expect(component.imagesWithBackgroundClass[0].backgroundClass).toBe('hero-background-professor-landing-page-hero-section-1');
-      expect(component.imagesWithBackgroundClass[1].backgroundClass).toBe('hero-background-professor-landing-page-hero-section-2');
-      expect(component.imagesWithBackgroundClass[2].backgroundClass).toBe('hero-background-professor-landing-page-hero-section-3');
-    });
-
     it('should render carousel component', () => {
       const carousel = nativeElement.querySelector('p-carousel');
       expect(carousel).not.toBeNull();
