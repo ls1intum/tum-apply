@@ -75,9 +75,9 @@
             <jhi-select
               [label]="'researchGroup.detailView.department' | translate"
               [placeholder]="'researchGroup.detailView.placeholders.department' | translate"
-              [items]="departmentOptions"
+              [items]="departmentOptions()"
               [required]="true"
-              [selected]="selectedDepartmentOption"
+              [selected]="selectedDepartmentOption()"
               (selectedChange)="onDepartmentChange($event)"
             />
           </div>

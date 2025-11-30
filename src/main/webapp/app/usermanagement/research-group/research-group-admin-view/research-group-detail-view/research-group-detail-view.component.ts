@@ -50,10 +50,21 @@ export class ResearchGroupDetailViewComponent implements OnInit {
   isLoading = signal<boolean>(true);
 
   // Department data
-  departments: DepartmentDTO[] = [];
-  departmentOptions: SelectOption[] = [];
-  selectedDepartmentId?: string;
-  selectedDepartmentOption?: SelectOption;
+  departments = signal<DepartmentDTO[]>([]);
+  selectedDepartmentId = signal<string | undefined>(undefined);
+
+  departmentOptions = computed<SelectOption[]>(() =>
+    this.departments().map(dept => ({
+      name: dept.name ?? '',
+      value: dept.departmentId ?? '',
+    })),
+  );
+
+  selectedDepartmentOption = computed<SelectOption | undefined>(() => {
+    const deptId = this.selectedDepartmentId();
+    if (!deptId) return undefined;
+    return this.departmentOptions().find(opt => opt.value === deptId);
+  });
 
   readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
   private readonly departmentService = inject(DepartmentResourceApiService);
@@ -67,11 +78,8 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   async loadDepartments(): Promise<void> {
     try {
-      this.departments = await firstValueFrom(this.departmentService.getDepartments());
-      this.departmentOptions = this.departments.map(dept => ({
-        name: dept.name ?? '',
-        value: dept.departmentId ?? '',
-      }));
+      const departments = await firstValueFrom(this.departmentService.getDepartments());
+      this.departments.set(departments);
     } catch {
       this.toastService.showErrorKey('researchGroup.detailView.errors.loadDepartments');
     }
@@ -79,8 +87,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   onDepartmentChange(option: SelectOption): void {
     const deptId = option.value as string;
-    this.selectedDepartmentId = deptId;
-    this.selectedDepartmentOption = option;
+    this.selectedDepartmentId.set(deptId);
     this.form.patchValue({ departmentId: deptId });
   }
 
@@ -156,10 +163,9 @@ export class ResearchGroupDetailViewComponent implements OnInit {
       departmentId: data?.departmentId,
     });
 
-    // Set selected department for the dropdown
+    // Set selected department for the dropdown (selectedDepartmentOption is computed automatically)
     if (data?.departmentId) {
-      this.selectedDepartmentId = data.departmentId;
-      this.selectedDepartmentOption = this.departmentOptions.find(opt => opt.value === data.departmentId);
+      this.selectedDepartmentId.set(data.departmentId);
     }
 
     this.form.updateValueAndValidity();
