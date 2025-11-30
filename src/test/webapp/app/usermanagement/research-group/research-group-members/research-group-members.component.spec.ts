@@ -10,6 +10,8 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
+import { provideDialogServiceMock } from 'util/dialog.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
@@ -52,8 +54,10 @@ describe('ResearchGroupMembersComponent', () => {
       providers: [
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: AccountService, useValue: { userId: 'current-user' } },
+        provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
+        provideFontAwesomeTesting(),
       ],
     }).compileComponents();
 

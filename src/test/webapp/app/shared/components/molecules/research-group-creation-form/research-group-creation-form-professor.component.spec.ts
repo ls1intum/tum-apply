@@ -7,13 +7,20 @@ import { of, throwError } from 'rxjs';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
+import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { ToastService } from 'app/service/toast-service';
+import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { DepartmentDTO } from 'app/generated/model/departmentDTO';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 /**
  * Test suite for ResearchGroupCreationFormComponent - Professor Mode
@@ -28,6 +35,8 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
   let mockDialogConfig: Partial<DynamicDialogConfig>;
   let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
+  let mockSchoolService: Partial<SchoolResourceApiService>;
+  let mockDepartmentService: Partial<DepartmentResourceApiService>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
@@ -37,24 +46,53 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
-      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
-      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as any)),
-    };
+      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
+      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
+    } as unknown as ResearchGroupResourceApiService;
 
     mockProfOnboardingService = {
-      confirmOnboarding: vi.fn(() => of(undefined)) as any,
-    };
+      confirmOnboarding: vi.fn(() => of(undefined)),
+    } as unknown as ProfOnboardingResourceApiService;
+
+    mockSchoolService = {
+      getAllSchools: vi.fn(() =>
+        of([
+          { schoolId: 'school-1', name: 'Test School 1' } as Partial<SchoolShortDTO> as SchoolShortDTO,
+          { schoolId: 'school-2', name: 'Test School 2' } as Partial<SchoolShortDTO> as SchoolShortDTO,
+        ]),
+      ),
+    } as unknown as SchoolResourceApiService;
+
+    mockDepartmentService = {
+      getDepartments: vi.fn(() =>
+        of([
+          {
+            departmentId: 'dept-1',
+            name: 'Test Department 1',
+            school: { schoolId: 'school-1' },
+          } as Partial<DepartmentDTO> as DepartmentDTO,
+          {
+            departmentId: 'dept-2',
+            name: 'Test Department 2',
+            school: { schoolId: 'school-2' },
+          } as Partial<DepartmentDTO> as DepartmentDTO,
+        ]),
+      ),
+    } as unknown as DepartmentResourceApiService;
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
       providers: [
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideHttpClientMock(),
         provideToastServiceMock(mockToastService),
         provideDynamicDialogRefMock(mockDialogRef),
         provideDynamicDialogConfigMock(mockDialogConfig),
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
+        { provide: SchoolResourceApiService, useValue: mockSchoolService },
+        { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
       ],
     }).compileComponents();
 
@@ -79,6 +117,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       tumID: 'ab12cde',
       researchGroupHead: 'Prof. Dr. Max Mustermann',
       researchGroupName: 'AI Research Group',
+      departmentId: 'dept-1',
       ...overrides,
     });
   }
@@ -194,8 +233,8 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
     it('should trigger confirm dialog when form is valid', () => {
       fillValidForm();
 
-      const mockConfirmDialog = { confirm: vi.fn() };
-      vi.spyOn(component, 'confirmDialog').mockReturnValue(mockConfirmDialog as any);
+      const mockConfirmDialog = { confirm: vi.fn() } as Partial<ConfirmDialog> as ConfirmDialog;
+      vi.spyOn(component, 'confirmDialog').mockReturnValue(mockConfirmDialog);
 
       component.onSubmit();
 
@@ -282,7 +321,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       fillValidForm({
         researchGroupAbbreviation: '',
         researchGroupWebsite: '',
-        researchGroupSchool: '',
+        researchGroupCity: '',
       });
 
       component.onConfirmSubmit();
@@ -293,7 +332,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         expect.objectContaining({
           abbreviation: '',
           website: '',
-          school: '',
+          city: '',
         }),
       );
     });
@@ -495,6 +534,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
           providers: [
             provideTranslateMock(),
             provideFontAwesomeTesting(),
+            provideHttpClientMock(),
             { provide: DynamicDialogRef, useValue: mockDialogRefNull },
             { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
             { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
@@ -548,8 +588,8 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
       fillValidForm({
         researchGroupAbbreviation: '   ',
         researchGroupWebsite: '  ',
-        researchGroupSchool: '\t\n',
         researchGroupCity: '    ',
+        researchGroupDescription: '\t\n',
       });
 
       component.onConfirmSubmit();
@@ -560,8 +600,8 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         expect.objectContaining({
           abbreviation: '',
           website: '',
-          school: '',
           city: '',
+          description: '',
         }),
       );
     });
@@ -674,6 +714,7 @@ describe('ResearchGroupCreationFormComponent - Professor Mode', () => {
         providers: [
           provideTranslateMock(),
           provideFontAwesomeTesting(),
+          provideHttpClientMock(),
           provideToastServiceMock(mockToastService),
           provideDynamicDialogRefMock(mockDialogRef),
           { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
