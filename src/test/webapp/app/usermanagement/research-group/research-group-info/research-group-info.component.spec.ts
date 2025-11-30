@@ -14,6 +14,7 @@ import {
   createResearchGroupResourceApiServiceMock,
   ResearchGroupResourceApiServiceMock,
 } from 'util/research-group-resource-api.service.mock';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ResearchGroupInfoComponent', () => {
   let component: ResearchGroupInfoComponent;
@@ -26,7 +27,6 @@ describe('ResearchGroupInfoComponent', () => {
     name: 'Test Research Group',
     abbreviation: 'TRG',
     head: 'Dr. John Doe',
-    school: 'Computer Science',
     website: 'https://test.com',
     email: 'test@example.com',
     city: 'Munich',
@@ -63,6 +63,7 @@ describe('ResearchGroupInfoComponent', () => {
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideHttpClientMock(),
       ],
     }).compileComponents();
 
@@ -91,7 +92,6 @@ describe('ResearchGroupInfoComponent', () => {
       expect(component.form.controls.name).toBeTruthy();
       expect(component.form.controls.abbreviation).toBeTruthy();
       expect(component.form.controls.head).toBeTruthy();
-      expect(component.form.controls.school).toBeTruthy();
       expect(component.form.controls.website).toBeTruthy();
       expect(component.form.controls.email).toBeTruthy();
       expect(component.form.controls.city).toBeTruthy();
@@ -167,7 +167,6 @@ describe('ResearchGroupInfoComponent', () => {
         name: mockResearchGroupData.name,
         abbreviation: mockResearchGroupData.abbreviation,
         head: mockResearchGroupData.head,
-        school: mockResearchGroupData.school,
         website: mockResearchGroupData.website,
         email: mockResearchGroupData.email,
         city: mockResearchGroupData.city,
@@ -422,7 +421,6 @@ describe('ResearchGroupInfoComponent', () => {
       await fixture.whenStable();
 
       expect(component.form.value.abbreviation).toBeUndefined();
-      expect(component.form.value.school).toBeUndefined();
       expect(component.form.value.website).toBeUndefined();
       expect(component.form.value.email).toBeUndefined();
     });
@@ -441,7 +439,6 @@ describe('ResearchGroupInfoComponent', () => {
         'rg-1',
         expect.objectContaining({
           abbreviation: '',
-          school: '',
           website: '',
           email: '',
           city: '',
