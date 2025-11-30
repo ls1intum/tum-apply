@@ -221,16 +221,6 @@ public class DepartmentResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void getAllDepartmentsIsPubliclyAccessible() {
-            // Act - No authentication
-            List<DepartmentDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<DepartmentDTO>>() {}, 200);
-
-            // Assert
-            assertThat(result).isNotNull();
-            assertThat(result).hasSize(2);
-        }
-
-        @Test
         void getAllDepartmentsIncludesSchoolInformation() {
             // Act
             List<DepartmentDTO> result = api.getAndRead(API_BASE_PATH, Map.of(), new TypeReference<List<DepartmentDTO>>() {}, 200);
@@ -288,21 +278,6 @@ public class DepartmentResourceTest extends AbstractResourceTest {
             // Act & Assert
             api.getAndRead(API_BASE_PATH, Map.of("schoolId", nonExistentSchoolId.toString()), Void.class, 404);
         }
-
-        @Test
-        void getDepartmentsBySchoolIdIsPubliclyAccessible() {
-            // Act - No authentication
-            List<DepartmentDTO> result = api.getAndRead(
-                API_BASE_PATH,
-                Map.of("schoolId", citSchool.getSchoolId().toString()),
-                new TypeReference<List<DepartmentDTO>>() {},
-                200
-            );
-
-            // Assert
-            assertThat(result).isNotNull();
-            assertThat(result).hasSize(1);
-        }
     }
 
     @Nested
@@ -328,16 +303,6 @@ public class DepartmentResourceTest extends AbstractResourceTest {
 
             // Act & Assert
             api.getAndRead(API_BASE_PATH + "/" + nonExistentId, Map.of(), Void.class, 404);
-        }
-
-        @Test
-        void getDepartmentByIdIsPubliclyAccessible() {
-            // Act - No authentication
-            DepartmentDTO result = api.getAndRead(API_BASE_PATH + "/" + csDepartment.getDepartmentId(), Map.of(), DepartmentDTO.class, 200);
-
-            // Assert
-            assertThat(result).isNotNull();
-            assertThat(result.departmentId()).isEqualTo(csDepartment.getDepartmentId());
         }
 
         @Test

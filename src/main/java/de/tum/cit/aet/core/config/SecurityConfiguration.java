@@ -134,10 +134,16 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers("/api/export/job/**")
                     .permitAll()
-                    // Allow public GET access to schools and departments (for browsing)
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/schools", "/api/schools/**")
+                    // Public GET endpoints for schools
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.GET,
+                        "/api/schools",
+                        "/api/schools/with-departments",
+                        "/api/schools/*"
+                    )
                     .permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/departments", "/api/departments/**")
+                    // Public GET endpoints for departments
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/departments", "/api/departments/*")
                     .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()

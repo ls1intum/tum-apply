@@ -17,7 +17,9 @@ public interface DepartmentRepository extends TumApplyJpaRepository<Department, 
         return getArbitraryValueElseThrow(findById(departmentId));
     }
 
-    List<Department> findBySchoolSchoolId(UUID schoolId);
+    List<Department> findBySchoolSchoolIdOrderByNameAsc(UUID schoolId);
+
+    List<Department> findAllByOrderBySchoolSchoolIdAscNameAsc();
 
     boolean existsByNameIgnoreCaseAndSchoolSchoolId(String name, UUID schoolId);
 }

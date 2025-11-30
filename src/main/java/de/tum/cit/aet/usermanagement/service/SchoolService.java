@@ -10,10 +10,12 @@ import de.tum.cit.aet.usermanagement.dto.SchoolShortDTO;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 /**
@@ -54,23 +56,27 @@ public class SchoolService {
      * @return list of all schools without departments
      */
     public List<SchoolShortDTO> getAllSchools() {
-        return schoolRepository.findAll().stream().map(SchoolShortDTO::fromEntity).collect(Collectors.toList());
+        return schoolRepository.findAll(Sort.by(Sort.Direction.ASC, "name")).stream().map(SchoolShortDTO::fromEntity).toList();
     }
 
     /**
-     * Get all schools with their departments (heavier response, fetches departments for each school).
+     * Get all schools with their departments (fetches all data in 2 queries to avoid N+1 problem).
      *
      * @return list of all schools with their departments
      */
     public List<SchoolDTO> getAllSchoolsWithDepartments() {
-        return schoolRepository
-            .findAll()
+        List<School> schools = schoolRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+
+        // Fetch all departments in a single query and group by school ID
+        Map<UUID, List<Department>> departmentsBySchoolId = departmentRepository
+            .findAllByOrderBySchoolSchoolIdAscNameAsc()
             .stream()
-            .map(school -> {
-                List<Department> departments = departmentRepository.findBySchoolSchoolId(school.getSchoolId());
-                return SchoolDTO.fromEntity(school, departments);
-            })
-            .collect(Collectors.toList());
+            .collect(Collectors.groupingBy(dept -> dept.getSchool().getSchoolId()));
+
+        return schools
+            .stream()
+            .map(school -> SchoolDTO.fromEntity(school, departmentsBySchoolId.getOrDefault(school.getSchoolId(), List.of())))
+            .toList();
     }
 
     /**
@@ -84,7 +90,7 @@ public class SchoolService {
         School school = schoolRepository
             .findById(schoolId)
             .orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + schoolId));
-        List<Department> departments = departmentRepository.findBySchoolSchoolId(schoolId);
+        List<Department> departments = departmentRepository.findBySchoolSchoolIdOrderByNameAsc(schoolId);
         return SchoolDTO.fromEntity(school, departments);
     }
 }
