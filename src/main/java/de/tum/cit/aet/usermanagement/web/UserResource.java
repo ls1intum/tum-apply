@@ -1,7 +1,9 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
-import de.tum.cit.aet.core.security.annotations.Public;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.service.AuthenticationService;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.UpdateUserNameDTO;
@@ -10,41 +12,39 @@ import de.tum.cit.aet.usermanagement.service.KeycloakUserService;
 import de.tum.cit.aet.usermanagement.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserResource {
 
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final KeycloakUserService keycloakUserService;
 
-    public UserResource(AuthenticationService authenticationService, UserService userService, KeycloakUserService keycloakUserService) {
-        this.authenticationService = authenticationService;
-        this.userService = userService;
-        this.keycloakUserService = keycloakUserService;
-    }
-
     /**
      * Returns information about the currently authenticated user.
      * If the user does not exist yet, a new user is created and assigned a default role.
-     * If no JWT is present, or it is not valid, the response will HTTP 401 Unauthorized.
      *
      * @param jwt of the authenticated user
      * @return the user data as {@link UserShortDTO}, or an empty response if unauthenticated
      */
-    @Public
+    @Authenticated
     @GetMapping("/me")
     public ResponseEntity<UserShortDTO> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-        if (jwt == null) {
-            return ResponseEntity.ok().build(); // no token = no user
-        }
-
         User user = authenticationService.provisionUserIfMissing(jwt);
+
+        if (user == null) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(new UserShortDTO(user));
     }
 
@@ -74,6 +74,23 @@ public class UserResource {
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdatePasswordDTO dto) {
         boolean updated = keycloakUserService.setPassword(jwt.getSubject(), dto.newPassword());
         return updated ? ResponseEntity.noContent().build() : ResponseEntity.badRequest().build();
+    }
+
+    /**
+     * Retrieves a paginated list of users who are TUM-affiliated and not currently assigned to any research group.
+     *
+     * @param pageDTO     pagination parameters
+     * @param searchQuery optional search query to filter users by name or email
+     * @return paginated list of available users as {@link UserShortDTO}
+     */
+    @ProfessorOrAdmin
+    @GetMapping("/available-for-research-group")
+    public ResponseEntity<PageResponseDTO<UserShortDTO>> getAvailableUsersForResearchGroup(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @RequestParam(required = false) String searchQuery
+    ) {
+        log.info("Fetching available users for research group with search query: {}", searchQuery);
+        return ResponseEntity.ok(userService.getAvailableUsersForResearchGroup(pageDTO, searchQuery));
     }
 
     public record UpdatePasswordDTO(@NotBlank String newPassword) {}

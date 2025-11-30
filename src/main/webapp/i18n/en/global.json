@@ -37,7 +37,8 @@
       },
       "about-us": "TumApply - About Us",
       "interview": {
-        "overview": "TUMApply - Interview Overview"
+        "overview": "TUMApply - Interview Overview",
+        "detail": "Interview - {{jobTitle}}"
       }
     },
     "menu": {
@@ -151,8 +152,7 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}",
-      "pdf": "Export PDF"
+      "show": "Show {{otherEntity}}"
     },
     "detail": {
       "field": "Field",

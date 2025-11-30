@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/ interview-process-card.component';
+import { InterviewProcessCardComponent } from 'app/interview/interview-processes-overview/interview-process-card/interview-process-card.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
 import { InterviewResourceApiService } from 'app/generated';
@@ -30,7 +30,12 @@ export class InterviewProcessesOverviewComponent {
   }
 
   viewDetails(jobId: string): void {
-    this.router.navigate(['/interviews', jobId]);
+    const process = this.interviewProcesses().find(p => p.jobId === jobId);
+    if (process?.processId) {
+      this.router.navigate(['/interviews', process.processId], {
+        state: { jobTitle: process.jobTitle },
+      });
+    }
   }
 
   private async loadInterviewProcesses(): Promise<void> {
