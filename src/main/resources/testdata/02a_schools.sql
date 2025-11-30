@@ -25,4 +25,24 @@ VALUES (
         '00000000-0000-0000-0000-000000000003',
         'School of Engineering and Design',
         'ED'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000004',
+        'School of Natural Sciences',
+        'NAT'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000005',
+        'School of Life Sciences',
+        'LS'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000006',
+        'School of Medicine and Health',
+        'MH'
+    ),
+    (
+        '00000000-0000-0000-0000-000000000007',
+        'School of Social Sciences and Technology',
+        'SOT'
     );
