@@ -7,7 +7,12 @@ import { of, throwError } from 'rxjs';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
+import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { provideTranslateMock } from 'util/translate.mock';
+import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
@@ -29,6 +34,8 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   let mockDialogConfig: Partial<DynamicDialogConfig>;
   let mockResearchGroupService: Partial<ResearchGroupResourceApiService>;
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
+  let mockSchoolService: Partial<SchoolResourceApiService>;
+  let mockDepartmentService: Partial<DepartmentResourceApiService>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
@@ -38,13 +45,39 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     mockToastService = createToastServiceMock();
 
     mockResearchGroupService = {
-      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as any)),
-      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as any)),
-    };
+      createProfessorResearchGroupRequest: vi.fn(() => of({ researchGroupId: 'test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
+      createResearchGroupAsAdmin: vi.fn(() => of({ researchGroupId: 'admin-test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO)),
+    } as unknown as ResearchGroupResourceApiService;
 
     mockProfOnboardingService = {
-      confirmOnboarding: vi.fn(() => of(undefined)) as any,
-    };
+      confirmOnboarding: vi.fn(() => of(undefined)),
+    } as unknown as ProfOnboardingResourceApiService;
+
+    mockSchoolService = {
+      getAllSchools: vi.fn(() =>
+        of([
+          { schoolId: 'school-1', name: 'Test School 1' } as Partial<SchoolShortDTO> as SchoolShortDTO,
+          { schoolId: 'school-2', name: 'Test School 2' } as Partial<SchoolShortDTO> as SchoolShortDTO,
+        ]),
+      ),
+    } as unknown as SchoolResourceApiService;
+
+    mockDepartmentService = {
+      getDepartments: vi.fn(() =>
+        of([
+          {
+            departmentId: 'dept-1',
+            name: 'Test Department 1',
+            school: { schoolId: 'school-1' },
+          } as Partial<DepartmentDTO> as DepartmentDTO,
+          {
+            departmentId: 'dept-2',
+            name: 'Test Department 2',
+            school: { schoolId: 'school-2' },
+          } as Partial<DepartmentDTO> as DepartmentDTO,
+        ]),
+      ),
+    } as unknown as DepartmentResourceApiService;
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
@@ -57,6 +90,8 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         provideHttpClientMock(),
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
+        { provide: SchoolResourceApiService, useValue: mockSchoolService },
+        { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
       ],
     }).compileComponents();
 
@@ -78,6 +113,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       tumID: 'ab12cde',
       researchGroupHead: 'Prof. Dr. Admin Test',
       researchGroupName: 'Admin Research Group',
+      departmentId: 'dept-1',
       ...overrides,
     });
   }
@@ -171,8 +207,10 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should close dialog with result after successful admin creation', async () => {
-      const expectedResult = { researchGroupId: 'admin-test-id' };
-      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() => of(expectedResult as any));
+      const expectedResult = { researchGroupId: 'admin-test-id' } as Partial<ResearchGroupDTO> as ResearchGroupDTO;
+      mockResearchGroupService.createResearchGroupAsAdmin = vi.fn(() =>
+        of(expectedResult),
+      ) as unknown as typeof mockResearchGroupService.createResearchGroupAsAdmin;
 
       fillValidForm();
 
@@ -342,6 +380,123 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
           website: '',
         }),
       );
+    });
+  });
+
+  describe('onSchoolChange', () => {
+    it('should update selected school and clear department if it does not belong to the new school', () => {
+      // Setup: Set a department from school-1
+      component.selectedDepartmentId.set('dept-1');
+      component.form.patchValue({ departmentId: 'dept-1' });
+
+      // Action: Change school to school-2
+      component.onSchoolChange({ value: 'school-2', name: 'Test School 2' });
+
+      // Assert: Department should be cleared since dept-1 belongs to school-1, not school-2
+      expect(component.selectedSchoolId()).toBe('school-2');
+      expect(component.selectedDepartmentId()).toBeUndefined();
+      expect(component.form.get('departmentId')?.value).toBe('');
+    });
+
+    it('should update selected school and keep department if it belongs to the new school', () => {
+      // Setup: Set a department from school-1
+      component.selectedDepartmentId.set('dept-1');
+      component.form.patchValue({ departmentId: 'dept-1' });
+
+      // Action: Change school to school-1 (same school)
+      component.onSchoolChange({ value: 'school-1', name: 'Test School 1' });
+
+      // Assert: Department should remain since dept-1 belongs to school-1
+      expect(component.selectedSchoolId()).toBe('school-1');
+      expect(component.selectedDepartmentId()).toBe('dept-1');
+      expect(component.form.get('departmentId')?.value).toBe('dept-1');
+    });
+
+    it('should update selected school when no department is selected', () => {
+      // Setup: No department selected
+      component.selectedDepartmentId.set(undefined);
+
+      // Action: Change school
+      component.onSchoolChange({ value: 'school-1', name: 'Test School 1' });
+
+      // Assert: School should be updated, no department operations
+      expect(component.selectedSchoolId()).toBe('school-1');
+      expect(component.selectedDepartmentId()).toBeUndefined();
+    });
+
+    it('should update selected school when department is empty string', () => {
+      // Setup: Empty department string
+      component.selectedDepartmentId.set('');
+
+      // Action: Change school
+      component.onSchoolChange({ value: 'school-1', name: 'Test School 1' });
+
+      // Assert: School should be updated, no department operations
+      expect(component.selectedSchoolId()).toBe('school-1');
+      expect(component.selectedDepartmentId()).toBe('');
+    });
+  });
+
+  describe('onDepartmentChange', () => {
+    it('should update selected department and auto-update school filter', () => {
+      // Setup: Start with no selections
+      component.selectedDepartmentId.set(undefined);
+      component.selectedSchoolId.set(undefined);
+
+      // Action: Select dept-1 which belongs to school-1
+      component.onDepartmentChange({ value: 'dept-1', name: 'Test Department 1' });
+
+      // Assert: Both department and school should be updated
+      expect(component.selectedDepartmentId()).toBe('dept-1');
+      expect(component.form.get('departmentId')?.value).toBe('dept-1');
+      expect(component.selectedSchoolId()).toBe('school-1');
+    });
+
+    it('should update selected department to a different school', () => {
+      // Setup: Start with school-1 selected
+      component.selectedSchoolId.set('school-1');
+
+      // Action: Select dept-2 which belongs to school-2
+      component.onDepartmentChange({ value: 'dept-2', name: 'Test Department 2' });
+
+      // Assert: School should auto-update to school-2
+      expect(component.selectedDepartmentId()).toBe('dept-2');
+      expect(component.selectedSchoolId()).toBe('school-2');
+    });
+
+    it('should handle department with no school gracefully', () => {
+      // Setup: Add a department without school to the list
+      component.departments.set([
+        {
+          departmentId: 'dept-no-school',
+          name: 'Department Without School',
+        } as Partial<DepartmentDTO> as DepartmentDTO,
+      ]);
+
+      // Action: Select department without school
+      component.onDepartmentChange({ value: 'dept-no-school', name: 'Department Without School' });
+
+      // Assert: Department should be set, school should remain unchanged
+      expect(component.selectedDepartmentId()).toBe('dept-no-school');
+      expect(component.form.get('departmentId')?.value).toBe('dept-no-school');
+    });
+
+    it('should handle department with empty school string', () => {
+      // Setup: Add a department with empty school string
+      component.departments.set([
+        {
+          departmentId: 'dept-empty-school',
+          name: 'Department With Empty School',
+          school: { schoolId: '' },
+        } as Partial<DepartmentDTO> as DepartmentDTO,
+      ]);
+
+      // Action: Select department with empty school
+      component.onDepartmentChange({ value: 'dept-empty-school', name: 'Department With Empty School' });
+
+      // Assert: Department should be set, school should not be updated to empty string
+      expect(component.selectedDepartmentId()).toBe('dept-empty-school');
+      expect(component.form.get('departmentId')?.value).toBe('dept-empty-school');
     });
   });
 

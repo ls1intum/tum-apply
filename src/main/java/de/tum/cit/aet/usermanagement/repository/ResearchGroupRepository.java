@@ -44,10 +44,21 @@ public interface ResearchGroupRepository extends TumApplyJpaRepository<ResearchG
                 rg.researchGroupId,
                 rg.name,
                 rg.head,
+                new de.tum.cit.aet.usermanagement.dto.DepartmentDTO(
+                    rg.department.departmentId,
+                    rg.department.name,
+                    new de.tum.cit.aet.usermanagement.dto.SchoolShortDTO(
+                        rg.department.school.schoolId,
+                        rg.department.school.name,
+                        rg.department.school.abbreviation
+                    )
+                ),
                 rg.state,
                 rg.createdAt
             )
             FROM ResearchGroup rg
+            LEFT JOIN rg.department
+            LEFT JOIN rg.department.school
             WHERE (:states IS NULL OR rg.state IN :states)
             AND (:searchQuery IS NULL OR
                  LOWER(rg.name) LIKE LOWER(CONCAT('%', :searchQuery, '%')) OR

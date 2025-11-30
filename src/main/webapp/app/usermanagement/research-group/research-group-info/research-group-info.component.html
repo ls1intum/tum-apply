@@ -60,27 +60,6 @@
             <div class="form-row">
               <div class="form-field">
                 <jhi-string-input
-                  [id]="'rg-school'"
-                  label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
-                  [control]="form.controls.school"
-                  [model]="form.controls.school.value || ''"
-                  placeholder="{{ 'researchGroup.groupInfo.placeholders.school' | translate }}"
-                />
-              </div>
-              <div class="form-field">
-                <jhi-string-input
-                  [id]="'rg-defaultFieldOfStudies'"
-                  label="{{ 'researchGroup.groupInfo.fields.defaultFieldOfStudies' | translate }}"
-                  [control]="form.controls.defaultFieldOfStudies"
-                  [model]="form.controls.defaultFieldOfStudies.value || ''"
-                  placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
-                />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <jhi-string-input
                   [id]="'rg-website'"
                   label="{{ 'researchGroup.groupInfo.fields.website' | translate }}"
                   [control]="form.controls.website"
@@ -97,6 +76,19 @@
                   placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
                 />
               </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-defaultFieldOfStudies'"
+                  label="{{ 'researchGroup.groupInfo.fields.defaultFieldOfStudies' | translate }}"
+                  [control]="form.controls.defaultFieldOfStudies"
+                  [model]="form.controls.defaultFieldOfStudies.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
+                />
+              </div>
+              <div class="form-field"></div>
             </div>
 
             <!-- Address section -->

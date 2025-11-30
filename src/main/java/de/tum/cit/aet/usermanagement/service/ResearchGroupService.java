@@ -15,10 +15,12 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.*;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
@@ -47,6 +49,7 @@ public class ResearchGroupService {
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
+    private final DepartmentRepository departmentRepository;
 
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final AsyncEmailSender emailSender;
@@ -182,6 +185,7 @@ public class ResearchGroupService {
 
     /**
      * Updates a ResearchGroup entity with values from the provided DTO.
+     * Includes department updates when departmentId is provided.
      */
     private void updateEntityFromDTO(ResearchGroup entity, ResearchGroupDTO dto) {
         entity.setName(dto.name());
@@ -189,20 +193,27 @@ public class ResearchGroupService {
         entity.setHead(dto.head());
         entity.setEmail(dto.email());
         entity.setWebsite(dto.website());
-        entity.setSchool(dto.school());
         entity.setDescription(dto.description());
         entity.setStreet(dto.street());
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
         entity.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
+
+        // Update department if departmentId is provided
+        if (dto.departmentId() != null) {
+            Department department = departmentRepository.findByIdElseThrow(dto.departmentId());
+            entity.setDepartment(department);
+        }
     }
 
     /**
      * Populates a ResearchGroup entity with values from a ResearchGroupRequestDTO.
      * Normalizes name, abbreviation, and universityId fields.
+     * Fetches and sets the department from the provided departmentId.
      *
      * @param entity the research group entity to populate
      * @param request the request DTO containing the data
+     * @throws EntityNotFoundException if the department does not exist
      */
     private void populateResearchGroupFromRequest(ResearchGroup entity, ResearchGroupRequestDTO request) {
         entity.setName(StringUtil.normalize(request.researchGroupName(), false));
@@ -211,7 +222,11 @@ public class ResearchGroupService {
         entity.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
         entity.setEmail(request.contactEmail());
         entity.setWebsite(request.website());
-        entity.setSchool(request.school());
+
+        // Fetch and set department
+        Department department = departmentRepository.findByIdElseThrow(request.departmentId());
+        entity.setDepartment(department);
+
         entity.setDescription(request.description());
         entity.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
         entity.setStreet(request.street());

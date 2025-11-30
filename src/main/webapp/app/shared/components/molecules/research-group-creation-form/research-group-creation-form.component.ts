@@ -7,6 +7,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupRequestDTO';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
+import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
+import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -15,6 +19,7 @@ import { StringInputComponent } from '../../atoms/string-input/string-input.comp
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
 import { InfoBoxComponent } from '../../atoms/info-box/info-box.component';
+import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { ToastService } from '../../../../service/toast-service';
 import { tumIdValidator } from '../../../validators/custom-validators';
 import TranslateDirective from '../../../language/translate.directive';
@@ -29,6 +34,7 @@ type FormMode = 'professor' | 'admin';
     ReactiveFormsModule,
     StringInputComponent,
     ButtonComponent,
+    SelectComponent,
     TranslateModule,
     TranslateDirective,
     ConfirmDialog,
@@ -48,6 +54,54 @@ export class ResearchGroupCreationFormComponent {
   // Loading state
   isSubmitting = signal(false);
 
+  // School and Department data
+  schools = signal<SchoolShortDTO[]>([]);
+  departments = signal<DepartmentDTO[]>([]);
+  selectedSchoolId = signal<string | undefined>(undefined);
+  selectedDepartmentId = signal<string | undefined>(undefined);
+
+  // Computed select options
+  schoolOptions = computed<SelectOption[]>(() =>
+    this.schools().map(school => ({
+      name: school.name ?? '',
+      value: school.schoolId ?? '',
+    })),
+  );
+
+  departmentOptions = computed<SelectOption[]>(() =>
+    this.departments().map(dept => ({
+      name: dept.name ?? '',
+      value: dept.departmentId ?? '',
+    })),
+  );
+
+  // Filtered departments based on selected school
+  filteredDepartmentOptions = computed<SelectOption[]>(() => {
+    const schoolId = this.selectedSchoolId();
+    if (schoolId === undefined || schoolId === '') {
+      return this.departmentOptions();
+    }
+    return this.departments()
+      .filter(dept => dept.school?.schoolId === schoolId)
+      .map(dept => ({
+        name: dept.name ?? '',
+        value: dept.departmentId ?? '',
+      }));
+  });
+
+  // Selected options for binding
+  selectedSchoolOption = computed<SelectOption | undefined>(() => {
+    const schoolId = this.selectedSchoolId();
+    if (schoolId === undefined || schoolId === '') return undefined;
+    return this.schoolOptions().find(opt => opt.value === schoolId);
+  });
+
+  selectedDepartmentOption = computed<SelectOption | undefined>(() => {
+    const deptId = this.selectedDepartmentId();
+    if (deptId === undefined || deptId === '') return undefined;
+    return this.departmentOptions().find(opt => opt.value === deptId);
+  });
+
   // Template references
   confirmDialog = viewChild<ConfirmDialog>('confirmDialog');
 
@@ -57,10 +111,54 @@ export class ResearchGroupCreationFormComponent {
   private readonly ref = inject(DynamicDialogRef, { optional: true });
   private readonly researchGroupService = inject(ResearchGroupResourceApiService);
   private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
+  private readonly schoolService = inject(SchoolResourceApiService);
+  private readonly departmentService = inject(DepartmentResourceApiService);
   private readonly toastService = inject(ToastService);
 
   constructor() {
     this.form = this.createForm();
+    void this.loadSchoolsAndDepartments();
+  }
+
+  async loadSchoolsAndDepartments(): Promise<void> {
+    try {
+      const [schools, departments] = await Promise.all([
+        firstValueFrom(this.schoolService.getAllSchools()),
+        firstValueFrom(this.departmentService.getDepartments()),
+      ]);
+      this.schools.set(schools);
+      this.departments.set(departments);
+    } catch {
+      this.toastService.showErrorKey('onboarding.professorRequest.loadDataFailed');
+    }
+  }
+
+  onSchoolChange(option: SelectOption): void {
+    const schoolId = option.value as string;
+    this.selectedSchoolId.set(schoolId);
+
+    // Clear department if it doesn't belong to the selected school
+    const currentDeptId = this.selectedDepartmentId();
+    if (currentDeptId !== undefined && currentDeptId !== '') {
+      const dept = this.departments().find(d => d.departmentId === currentDeptId);
+      if (dept?.school?.schoolId !== schoolId) {
+        this.selectedDepartmentId.set(undefined);
+        this.form.patchValue({ departmentId: '' });
+      }
+    }
+  }
+
+  onDepartmentChange(option: SelectOption): void {
+    const deptId = option.value as string;
+    this.selectedDepartmentId.set(deptId);
+    this.form.patchValue({ departmentId: deptId });
+
+    // Auto-update the school filter based on the selected department
+    const dept = this.departments().find(d => d.departmentId === deptId);
+    const schoolId = dept?.school?.schoolId;
+    if (schoolId !== undefined && schoolId !== '') {
+      this.selectedSchoolId.set(schoolId);
+    }
   }
 
   onSubmit(): void {
@@ -90,9 +188,9 @@ export class ResearchGroupCreationFormComponent {
       researchGroupHead: ['', [Validators.required]],
       researchGroupName: ['', [Validators.required]],
       researchGroupAbbreviation: [''],
+      departmentId: ['', [Validators.required]],
       researchGroupContactEmail: ['', [Validators.email, Validators.pattern(/.+\..{2,}$/)]],
       researchGroupWebsite: [''],
-      researchGroupSchool: [''],
       researchGroupDescription: ['', [Validators.maxLength(1000)]],
       researchGroupFieldOfStudies: [''],
       researchGroupStreetAndNumber: [''],
@@ -170,9 +268,9 @@ export class ResearchGroupCreationFormComponent {
       researchGroupHead: s(v.researchGroupHead),
       researchGroupName: s(v.researchGroupName),
       abbreviation: s(v.researchGroupAbbreviation),
+      departmentId: s(v.departmentId),
       contactEmail: s(v.researchGroupContactEmail),
       website: s(v.researchGroupWebsite),
-      school: s(v.researchGroupSchool),
       description: s(v.researchGroupDescription),
       defaultFieldOfStudies: s(v.researchGroupFieldOfStudies),
       street: s(v.researchGroupStreetAndNumber),
