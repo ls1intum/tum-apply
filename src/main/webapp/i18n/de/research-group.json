@@ -7,11 +7,13 @@
     "groupInfoHeader": "Meine Gruppe",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
+      "organizationInfo": "Um das Department und die School zu ändern, wende dich bitte an einen Administrator.",
       "fields": {
         "name": "Name",
         "abbreviation": "Abkürzung",
         "head": "Leitung",
         "school": "School",
+        "department": "Department",
         "defaultFieldOfStudies": "Studienrichtung",
         "website": "Webseite",
         "email": "E-Mail",
@@ -20,7 +22,8 @@
         "city": "Stadt",
         "description": "Beschreibung",
         "section1": "Grundlegende Informationen",
-        "section2": "Schule und Website",
+        "sectionOrganization": "Organisation",
+        "section2": "Kontakt und Webseite",
         "section3": "Adresse"
       },
       "placeholders": {

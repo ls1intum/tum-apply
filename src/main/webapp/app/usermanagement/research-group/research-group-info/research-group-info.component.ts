@@ -11,7 +11,9 @@ import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { DividerModule } from 'primeng/divider';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 export interface ResearchGroupFormData {
   name: string;
@@ -37,6 +39,7 @@ export interface ResearchGroupFormData {
     TranslateDirective,
     ReactiveFormsModule,
     DividerModule,
+    InfoBoxComponent,
   ],
   templateUrl: './research-group-info.component.html',
   styleUrl: './research-group-info.component.scss',
@@ -53,6 +56,8 @@ export class ResearchGroupInfoComponent {
   // State signals
   isSaving = signal<boolean>(false);
   hasInitialized = signal<boolean>(false);
+  departmentName = signal<string | null>(null);
+  schoolName = signal<string | null>(null);
 
   // Computed properties
   researchGroupId = computed(() => this.currentUser()?.researchGroup?.researchGroupId);
@@ -74,6 +79,7 @@ export class ResearchGroupInfoComponent {
   // Services
   private accountService = inject(AccountService);
   private researchGroupService = inject(ResearchGroupResourceApiService);
+  private departmentService = inject(DepartmentResourceApiService);
   private toastService = inject(ToastService);
   private translate = inject(TranslateService);
 
@@ -143,6 +149,11 @@ export class ResearchGroupInfoComponent {
 
       const researchGroup = await firstValueFrom(this.researchGroupService.getResearchGroup(researchGroupId));
       this.populateFormData(researchGroup);
+
+      // Fetch department info if departmentId exists
+      if (researchGroup.departmentId != null) {
+        await this.loadDepartmentInfo(researchGroup.departmentId);
+      }
     } catch {
       this.toastService.showError({
         summary: this.translate.instant(`${this.translationKey}.toasts.loadFailed`),
@@ -150,6 +161,21 @@ export class ResearchGroupInfoComponent {
       });
     } finally {
       this.hasInitialized.set(true);
+    }
+  }
+
+  /**
+   * Loads department and school information from the API.
+   */
+  private async loadDepartmentInfo(departmentId: string): Promise<void> {
+    try {
+      const department = await firstValueFrom(this.departmentService.getDepartmentById(departmentId));
+      this.departmentName.set(department.name ?? null);
+      this.schoolName.set(department.school?.name ?? null);
+    } catch {
+      // Silently fail - the organization info is optional display-only data
+      this.departmentName.set(null);
+      this.schoolName.set(null);
     }
   }
 

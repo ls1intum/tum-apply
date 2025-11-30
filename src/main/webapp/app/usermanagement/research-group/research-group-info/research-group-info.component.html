@@ -52,7 +52,7 @@
               <div class="form-field"></div>
             </div>
 
-            <!-- School and website section -->
+            <!-- Contact and website section -->
             <p-divider layout="horizontal">
               <span jhiTranslate="researchGroup.groupInfo.fields.section2"></span>
             </p-divider>
@@ -140,6 +140,34 @@
               placeholder="researchGroup.groupInfo.placeholders.description"
               [shouldTranslate]="true"
             />
+          }
+
+          <!-- Organization section -->
+          @if (departmentName()) {
+            <p-divider layout="horizontal">
+              <span jhiTranslate="researchGroup.groupInfo.fields.sectionOrganization"></span>
+            </p-divider>
+
+            <jhi-info-box severity="secondary" message="researchGroup.groupInfo.organizationInfo" [shouldTranslate]="true" />
+
+            <div class="form-row mt-4">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-department'"
+                  label="{{ 'researchGroup.groupInfo.fields.department' | translate }}"
+                  [model]="departmentName() || ''"
+                  [disabled]="true"
+                />
+              </div>
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-school'"
+                  label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
+                  [model]="schoolName() || ''"
+                  [disabled]="true"
+                />
+              </div>
+            </div>
           }
         </form>
       </div>
