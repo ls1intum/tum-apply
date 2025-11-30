@@ -135,7 +135,12 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/export/job/**")
                     .permitAll()
                     // Public GET endpoints for schools
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/schools", "/api/schools/with-departments", "/api/schools/*")
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.GET,
+                        "/api/schools",
+                        "/api/schools/with-departments",
+                        "/api/schools/*"
+                    )
                     .permitAll()
                     // Public GET endpoints for departments
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/departments", "/api/departments/*")
