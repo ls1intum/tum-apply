@@ -143,32 +143,30 @@
           }
 
           <!-- Organization section -->
-          @if (departmentName()) {
-            <p-divider layout="horizontal">
-              <span jhiTranslate="researchGroup.groupInfo.fields.sectionOrganization"></span>
-            </p-divider>
+          <p-divider layout="horizontal">
+            <span jhiTranslate="researchGroup.groupInfo.fields.sectionOrganization"></span>
+          </p-divider>
 
-            <jhi-info-box severity="secondary" message="researchGroup.groupInfo.organizationInfo" [shouldTranslate]="true" />
+          <jhi-info-box severity="secondary" message="researchGroup.groupInfo.organizationInfo" [shouldTranslate]="true" />
 
-            <div class="form-row mt-4">
-              <div class="form-field">
-                <jhi-string-input
-                  [id]="'rg-department'"
-                  label="{{ 'researchGroup.groupInfo.fields.department' | translate }}"
-                  [model]="departmentName() || ''"
-                  [disabled]="true"
-                />
-              </div>
-              <div class="form-field">
-                <jhi-string-input
-                  [id]="'rg-school'"
-                  label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
-                  [model]="schoolName() || ''"
-                  [disabled]="true"
-                />
-              </div>
+          <div class="form-row mt-4">
+            <div class="form-field">
+              <jhi-string-input
+                [id]="'rg-department'"
+                label="{{ 'researchGroup.groupInfo.fields.department' | translate }}"
+                [model]="departmentName() || ('researchGroup.groupInfo.noDepartment' | translate)"
+                [disabled]="true"
+              />
             </div>
-          }
+            <div class="form-field">
+              <jhi-string-input
+                [id]="'rg-school'"
+                label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
+                [model]="schoolName() || ('researchGroup.groupInfo.noSchool' | translate)"
+                [disabled]="true"
+              />
+            </div>
+          </div>
         </form>
       </div>
     </div>

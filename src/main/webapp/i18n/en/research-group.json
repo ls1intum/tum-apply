@@ -8,6 +8,8 @@
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
       "organizationInfo": "To change the department and school, please contact an administrator.",
+      "noDepartment": "No department",
+      "noSchool": "No school",
       "fields": {
         "name": "Name",
         "abbreviation": "Abbreviation",
