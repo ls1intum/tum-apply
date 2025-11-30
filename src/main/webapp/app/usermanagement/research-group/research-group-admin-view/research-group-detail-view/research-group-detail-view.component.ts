@@ -62,7 +62,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   selectedDepartmentOption = computed<SelectOption | undefined>(() => {
     const deptId = this.selectedDepartmentId();
-    if (!deptId) return undefined;
+    if (deptId == null || deptId === '') return undefined;
     return this.departmentOptions().find(opt => opt.value === deptId);
   });
 
@@ -164,7 +164,7 @@ export class ResearchGroupDetailViewComponent implements OnInit {
     });
 
     // Set selected department for the dropdown (selectedDepartmentOption is computed automatically)
-    if (data?.departmentId) {
+    if (data?.departmentId != null) {
       this.selectedDepartmentId.set(data.departmentId);
     }
 
