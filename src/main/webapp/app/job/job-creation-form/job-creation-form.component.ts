@@ -122,8 +122,8 @@ export class JobCreationFormComponent {
 
   uploadInnerClasses = computed(() => {
     const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
-    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-blue-50' : '';
-    return `${base} border-gray-300 ${hover}`.trim();
+    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
+    return `${base} border-border-default ${hover}`.trim();
   });
 
   // Forms

@@ -94,97 +94,8 @@
   position: relative;
 }
 
-/* -------------------------------
-   Custom Global Styles for Job Card
----------------------------------- */
-.job-card {
-  overflow: hidden;
-  border: 0.1rem solid var(--p-primary-color);
-  // max-width: 20rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: var(--p-background-default);
-  color: var(--p-text-color);
-
-  .card-header {
-    position: relative;
-    background: linear-gradient(to right, var(--header-color, var(--p-secondary-color)), var(--p-secondary-color));
-    height: 6rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--p-text-on-primary);
-    padding: 0 1rem;
-
-    .card-icon {
-      font-size: 1.5rem;
-      color: var(--p-text-on-primary);
-    }
-
-    .timestamp {
-      position: absolute;
-      bottom: 0.5rem;
-      left: 1rem;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 1rem;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.75rem;
-    }
-  }
-
-  // Make the card title have consistent height
-  .p-card-title {
-    min-height: 3rem;
-    display: flex;
-    align-items: center;
-
-    .card-title {
-      line-height: 1.2;
-      overflow: hidden;
-    }
-  }
-
-  .p-card-body {
-    padding: 0.7rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-
-    .card-info {
-      margin: 0 0 1rem 0;
-      flex: 1;
-
-      .info-item {
-        display: flex;
-        font-size: 0.95rem;
-        margin-bottom: 0.25rem;
-
-        fa-icon {
-          color: var(--p-primary-color);
-          margin-right: 0.5rem;
-
-          .svg-inline--fa {
-            width: 1.2rem;
-          }
-        }
-      }
-    }
-
-    .card-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: auto; // Push buttons to bottom
-      flex-shrink: 0; // Prevent buttons from shrinking
-    }
-  }
+.icon {
+  color: var(--p-primary-color);
 }
 
 /* --------------------------------------------------
@@ -223,7 +134,6 @@
 
 /* Toolbar background */
 .ql-toolbar,
-.ql-toolbar.ql-snow,
 .custom-quill-editor .ql-toolbar {
   background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
@@ -233,28 +143,17 @@
 /* Default text color for toolbar buttons and pickers */
 .ql-picker-label,
 .ql-picker-item,
-.p-editor .ql-snow.ql-toolbar button,
-.ql-snow.ql-toolbar button,
-.ql-toolbar.ql-snow button,
 .custom-quill-editor .ql-toolbar button {
   color: var(--p-text-secondary) !important;
 }
 
 /* Default icon styling */
-.p-editor .ql-snow.ql-toolbar .ql-fill,
-.p-editor .ql-snow .ql-toolbar .ql-fill,
-.ql-snow.ql-toolbar .ql-fill,
-.ql-snow .ql-toolbar .ql-fill,
-.ql-toolbar.ql-snow .ql-fill,
+.p-editor .ql-toolbar .ql-fill,
 .custom-quill-editor .ql-fill {
   fill: var(--p-text-secondary) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar .ql-stroke,
-.p-editor .ql-snow .ql-toolbar .ql-stroke,
-.ql-snow.ql-toolbar .ql-stroke,
-.ql-snow .ql-toolbar .ql-stroke,
-.ql-toolbar.ql-snow .ql-stroke,
+.p-editor .ql-toolbar .ql-stroke,
 .custom-quill-editor .ql-stroke {
   stroke: var(--p-text-secondary) !important;
 }
@@ -268,27 +167,16 @@
 /* -------------------------------
    Active State
 ---------------------------------- */
-.p-editor .ql-snow.ql-toolbar button.ql-active,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
-.ql-snow.ql-toolbar button.ql-active,
-.ql-toolbar.ql-snow button.ql-active,
+.p-editor button.ql-active,
 .custom-quill-editor .ql-toolbar button.ql-active {
   color: var(--p-primary-color) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar button.ql-active .ql-fill,
-.ql-snow.ql-toolbar button.ql-active .ql-fill,
-.ql-toolbar.ql-snow button.ql-active .ql-fill,
 .custom-quill-editor .ql-toolbar button.ql-active .ql-fill {
   fill: var(--p-primary-color) !important;
 }
 
 .p-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
-.ql-snow.ql-toolbar button.ql-active .ql-stroke,
-.ql-toolbar.ql-snow button.ql-active .ql-stroke,
 .custom-quill-editor .ql-toolbar button.ql-active .ql-stroke {
   stroke: var(--p-primary-color) !important;
 }
@@ -296,27 +184,17 @@
 /* -------------------------------
    Hover State
 ---------------------------------- */
-.p-editor .ql-snow.ql-toolbar button:hover,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label:hover,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover,
-.ql-snow.ql-toolbar button:hover,
-.ql-toolbar.ql-snow button:hover,
+.p-editor button:hover,
 .custom-quill-editor .ql-toolbar button:hover {
   color: var(--p-primary-color) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar button:hover .ql-fill,
-.ql-snow.ql-toolbar button:hover .ql-fill,
-.ql-toolbar.ql-snow button:hover .ql-fill,
+.p-editor button:hover .ql-fill,
 .custom-quill-editor .ql-toolbar button:hover .ql-fill {
   fill: var(--p-primary-color) !important;
 }
 
 .p-editor .ql-snow.ql-toolbar button:hover .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,
-.ql-snow.ql-toolbar button:hover .ql-stroke,
-.ql-toolbar.ql-snow button:hover .ql-stroke,
 .custom-quill-editor .ql-toolbar button:hover .ql-stroke {
   stroke: var(--p-primary-color) !important;
 }
@@ -335,8 +213,7 @@
 /* -------------------------------
    Primeng Editor Border Styling
 ---------------------------------- */
-.p-editor-toolbar.ql-toolbar.ql-snow,
-.ql-toolbar.ql-snow,
+.p-editor-toolbar.ql-toolbar,
 .custom-quill-editor .ql-toolbar {
   border-bottom: none !important;
   border-color: var(--p-border-default) !important;
@@ -344,7 +221,6 @@
 }
 
 .p-editor-content.ql-container.ql-snow,
-.ql-container.ql-snow,
 .custom-quill-editor .ql-container {
   background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
@@ -373,6 +249,10 @@
   .fa-circle-info {
     color: var(--p-primary-color);
   }
+}
+
+.p-dialog-header {
+  color: var(--p-text-primary);
 }
 
 /* Styles for the tooltip icon in the Upload component */
@@ -428,11 +308,11 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 ------------------------------- */
 .p-fileupload-content {
   color: var(--p-text-color);
-  background: var(--p-background-default);
 }
 
 .p-fileupload-header {
   background: var(--p-background-default);
+  color: var(--p-text-color);
 }
 
 /* ---------------------------
@@ -538,10 +418,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
       text-align: left !important;
     }
   }
-}
-
-.icon {
-  color: var(--p-primary-color);
 }
 
 /* ---------------------------

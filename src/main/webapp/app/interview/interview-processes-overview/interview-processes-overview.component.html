@@ -33,18 +33,14 @@
 
       <!-- Loading State -->
       @if (loading() && !error()) {
-        <div
-          class="flex items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
-        >
+        <div class="flex items-center justify-center bg-background-default border border-border-default rounded-lg p-12">
           <i class="pi pi-spin pi-spinner text-4xl text-[var(--p-primary-400)]"></i>
         </div>
       }
 
       <!-- Empty State -->
       @if (!loading() && !error() && interviewProcesses().length === 0) {
-        <div
-          class="flex flex-col items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
-        >
+        <div class="flex flex-col items-center justify-center bg-background-default border border-border-default rounded-lg p-12">
           <i class="pi pi-inbox text-[var(--p-text-tertiary)] text-5xl mb-4"></i>
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="interview.overview.empty.title">No interview processes</h3>
           <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.empty.description"></p>

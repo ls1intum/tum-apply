@@ -117,10 +117,7 @@
 
           &:hover {
             background: var(--p-primary-color);
-
-            .option-label {
-              color: #fff;
-            }
+            color: var(--p-text-on-primary);
           }
 
           .option-label {

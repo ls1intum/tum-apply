@@ -16,7 +16,6 @@
 
     .p-inputtext {
       border: 0.1rem solid var(--p-border-default);
-      background: var(--p-background-default);
 
       &:disabled {
         background-color: var(--p-background-disabled);
@@ -31,7 +30,6 @@
 
     .p-datepicker-dropdown {
       background-color: var(--p-primary-color);
-      color: var(--p-background-default);
       border: 0.1rem;
 
       &:disabled {
