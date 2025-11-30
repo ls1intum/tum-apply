@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 /**
@@ -59,7 +60,7 @@ public class DepartmentService {
      * @return list of all departments
      */
     public List<DepartmentDTO> getAllDepartments() {
-        return departmentRepository.findAll().stream().map(DepartmentDTO::fromEntity).toList();
+        return departmentRepository.findAll(Sort.by(Sort.Direction.ASC, "name")).stream().map(DepartmentDTO::fromEntity).toList();
     }
 
     /**
@@ -74,7 +75,7 @@ public class DepartmentService {
             throw new EntityNotFoundException("School not found with ID: " + schoolId);
         }
 
-        return departmentRepository.findBySchoolSchoolId(schoolId).stream().map(DepartmentDTO::fromEntity).toList();
+        return departmentRepository.findBySchoolSchoolIdOrderByNameAsc(schoolId).stream().map(DepartmentDTO::fromEntity).toList();
     }
 
     /**
