@@ -333,7 +333,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         );
 
         ResearchGroupDTO result = api
-            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_APPLICANT"))
             .postAndRead(API_BASE_PATH + "/professor-request", request, ResearchGroupDTO.class, 201);
 
         assertThat(result).isNotNull();
@@ -365,7 +365,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         );
 
         ResearchGroupDTO result = api
-            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_APPLICANT"))
             .postAndRead(API_BASE_PATH + "/professor-request", minimalRequest, ResearchGroupDTO.class, 201);
 
         assertThat(result).isNotNull();
@@ -405,7 +405,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         EmployeeResearchGroupRequestDTO request = new EmployeeResearchGroupRequestDTO("Prof. Smith");
 
         api
-            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead(API_BASE_PATH + "/employee-request", request, Void.class, 204);
     }
 
@@ -416,7 +416,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         EmployeeResearchGroupRequestDTO invalidRequest = new EmployeeResearchGroupRequestDTO("");
 
         api
-            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_USER"))
+            .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead(API_BASE_PATH + "/employee-request", invalidRequest, Void.class, 400);
     }
 
