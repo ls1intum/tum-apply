@@ -29,32 +29,6 @@ export const TUMApplyPreset = definePreset(Lara, {
       900: '#184262',
       950: '#102a41',
     },
-    tertiary: {
-      50: '#f2f7fc',
-      100: '#e2eef7',
-      200: '#cbe1f2',
-      300: '#a7cee9',
-      400: '#7db4dd',
-      500: '#5e98d3',
-      600: '#4a80c6',
-      700: '#406db5',
-      800: '#395994',
-      900: '#324c76',
-      950: '#223049',
-    },
-    pastel: {
-      50: '#F3F6FC',
-      100: '#E5EDF9',
-      200: '#C6D9F1',
-      300: '#93BAE6',
-      400: '#5A97D6',
-      500: '#3070B3',
-      600: '#245FA5',
-      700: '#1F4D85',
-      800: '#1D426F',
-      900: '#1D385D',
-      950: '#13243E',
-    },
     success: {
       50: '#E6FAEE',
       100: '#D0F5E1',
@@ -125,7 +99,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       100: '#edeef1',
       800: '#24272e',
       900: '#1a1d22',
-      950: '#121417',
+      950: '#18181b',
     },
     base: {
       white: '#ffffff',
@@ -234,7 +208,6 @@ export const TUMApplyPreset = definePreset(Lara, {
           default: '{base.white}', // canvas
           surface: '{background.50}', // cards, panels
           surfaceAlt: '{background.100}', // sidebars etc.
-          special: '{tertiary.50}', // info areas
           disabled: '{neutral.200}',
           footer: '{base.white}',
         },
@@ -286,14 +259,6 @@ export const TUMApplyPreset = definePreset(Lara, {
           activeColor: '{secondary.100}',
           disabledColor: '{secondary.50}',
           hoverColorOutlined: '{secondary.800}',
-        },
-        tertiary: {
-          color: '{tertiary.300}',
-          inverseColor: '{text.onTertiary}',
-          hoverColor: '{tertiary.200}',
-          activeColor: '{tertiary.100}',
-          disabledColor: '{tertiary.50}',
-          hoverColorOutlined: '{tertiary.800}',
         },
         accent: {
           color: '{accent.400}',
@@ -353,7 +318,6 @@ export const TUMApplyPreset = definePreset(Lara, {
           default: '{background.950}',
           surface: '{background.900}',
           surfaceAlt: '{background.800}',
-          special: '{tertiary.900}',
           disabled: '{neutral.700}',
           footer: '{background.950}',
         },
@@ -974,47 +938,11 @@ export const TUMApplyPreset = definePreset(Lara, {
         focusColor: '{base.white}',
       },
     },
-    select: {
-      overlay: {
-        background: '{background.default}',
-      },
-    },
     inputtext: {
       root: {
         color: '{text.primary}',
         background: '{background.default}',
         borderRadius: '0.5rem',
-      },
-    },
-    datepicker: {
-      panel: {
-        background: '{background.default}',
-      },
-      header: {
-        background: '{background.default}',
-      },
-    },
-    dialog: {
-      root: {
-        color: '{text.primary}',
-        background: '{background.default}',
-      },
-    },
-    fileupload: {
-      root: {
-        color: '{text.primary}',
-        background: '{background.default}',
-      },
-      header: {
-        borderWidth: '0',
-        gap: '0',
-        color: '{background.default}',
-      },
-    },
-    accordion: {
-      content: {
-        background: '{background.default}',
-        color: '{text.secondary}',
       },
     },
     divider: {
@@ -1023,16 +951,9 @@ export const TUMApplyPreset = definePreset(Lara, {
         color: '{text.primary}',
       },
     },
-    datatable: {
-      headerCell: {
-        borderColor: '{divider.default}',
-        color: '{text.primary}',
-      },
-      bodyCell: {
-        borderColor: '{divider.default}',
-      },
-      row: {
-        color: '{text.primary}',
+    textarea: {
+      root: {
+        background: '{background.default}',
       },
     },
   },
