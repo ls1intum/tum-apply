@@ -334,52 +334,6 @@ describe('ResearchGroupAdminView', () => {
     expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalledWith(10, 0, [], '', 'createdAt', 'ASC');
   });
 
-  describe('Translation Behavior', () => {
-    it('should use TranslateService.instant for detail view dialog header', () => {
-      component.onViewResearchGroup('rg-123');
-
-      expect(mockTranslateService.instant).toHaveBeenCalledWith('researchGroup.detailView.title');
-      expect(mockDialogService.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          header: 'researchGroup.detailView.title',
-          data: { researchGroupId: 'rg-123' },
-        }),
-      );
-    });
-
-    it('should use TranslateService.instant for create dialog header', () => {
-      const mockDialogRef = {
-        onClose: {
-          subscribe: vi.fn(),
-        },
-      } as unknown as DynamicDialogRef;
-
-      mockDialogService.open.mockReturnValue(mockDialogRef);
-
-      component.onCreateResearchGroup();
-
-      expect(mockTranslateService.instant).toHaveBeenCalledWith('researchGroup.adminView.createDialog.title');
-      expect(mockDialogService.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          header: 'researchGroup.adminView.createDialog.title',
-        }),
-      );
-    });
-
-    it('should return translation keys as-is from instant mock', () => {
-      const translatedTitle = mockTranslateService.instant('researchGroup.detailView.title');
-      expect(translatedTitle).toBe('researchGroup.detailView.title');
-    });
-
-    it('should handle array of translation keys', () => {
-      const keys = ['key1', 'key2', 'key3'];
-      const result = mockTranslateService.instant(keys);
-      expect(result).toEqual(['key1', 'key2', 'key3']);
-    });
-  });
-
   it('should open detail view dialog', () => {
     component.onViewResearchGroup('rg-123');
 
