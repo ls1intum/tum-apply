@@ -5,6 +5,7 @@ import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -34,6 +35,32 @@ public class KeycloakUserService {
             .clientId(clientId)
             .clientSecret(clientSecret)
             .build();
+    }
+
+    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName, String email) {}
+
+    /**
+     * Retrieves all Keycloak users matching the given search key.
+     * The search is performed against username, first name, last name, and email.
+     *
+     * @param searchKey the search key to filter users; must not be {@code null}
+     * @return a list of {@link KeycloakUserInformation} matching the search criteria
+     */
+    public List<KeycloakUserInformation> getAllUsers(String searchKey) {
+        // TODO: welcher maxResults limit wäre hier sinnvoll?
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, 100);
+        return users
+            .stream()
+            .map(user ->
+                new KeycloakUserInformation(
+                    UUID.fromString(user.getId()),
+                    user.getUsername(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail()
+                )
+            )
+            .toList();
     }
 
     /**
