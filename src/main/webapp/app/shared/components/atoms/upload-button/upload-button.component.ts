@@ -105,8 +105,7 @@ export class UploadButtonComponent {
         await firstValueFrom(this.applicationService.deleteDocumentFromApplication(existingDoc.id));
         const updatedList = this.documentIds()?.filter(doc => doc.id !== existingDoc.id) ?? [];
         this.documentIds.set(updatedList);
-      } catch (err) {
-        console.error('Failed to delete existing document', err);
+      } catch {
         this.toastService.showErrorKey('entity.upload.error.replace_failed');
         this.closeDuplicateDialog();
         return;
