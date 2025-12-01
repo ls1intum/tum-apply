@@ -154,7 +154,6 @@ export class JobDetailComponent {
               {
                 label: 'button.edit',
                 severity: 'primary',
-                variant: 'outlined',
                 onClick: () => this.onEditApplication(),
                 disabled: false,
                 shouldTranslate: true,
@@ -186,7 +185,6 @@ export class JobDetailComponent {
           {
             label: 'button.edit',
             severity: 'primary',
-            variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
             shouldTranslate: true,
