@@ -39,9 +39,9 @@ public record ApplicationForApplicantDTO(
             new JobCardDTO(
                 job.getJobId(),
                 job.getTitle(),
-                job.getFieldOfStudies(),
                 job.getLocation(),
                 job.getSupervisingProfessor().getLastName(),
+                job.getResearchGroup().getDepartment().getName(),
                 application.getApplicationId(),
                 application.getState(),
                 job.getWorkload(),
