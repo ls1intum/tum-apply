@@ -6,16 +6,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.*;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.web.ResearchGroupResource;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +53,19 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     UserRepository userRepository;
 
     @Autowired
+    SchoolRepository schoolRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
+
+    @Autowired
     DatabaseCleaner databaseCleaner;
 
     @Autowired
     MvcTestClient api;
 
+    School testSchool;
+    Department testDepartment;
     ResearchGroup researchGroup;
     ResearchGroup secondResearchGroup;
     User researchGroupUser;
@@ -60,6 +74,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
+        testSchool = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
+        testDepartment = DepartmentTestData.saved(departmentRepository, "Computer Science", testSchool);
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Prof. Smith",
@@ -306,11 +322,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "Updated ML Lab",
                 "UML",
                 "Prof. Smith",
+                testDepartment.getDepartmentId(),
                 "updated@ml.tum.de",
                 "https://updated.ml.tum.de",
                 "Computer Science",
                 "Updated description",
-                "AI",
                 "Arcisstr. 21",
                 "80333",
                 "Munich",
@@ -333,11 +349,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "", // Invalid: empty name
                 "ML",
                 "",
+                testDepartment.getDepartmentId(),
                 "invalid-email", // Invalid email
                 "https://ml.tum.de",
                 "Computer Science",
                 "Description",
-                "AI",
                 "Street",
                 "80333",
                 "Munich",
@@ -364,10 +380,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "ab12cde",
                 "Dr. John Doe",
                 "New Research Lab",
+                testDepartment.getDepartmentId(),
                 "NRL",
                 "contact@newlab.tum.de",
                 "https://newlab.tum.de",
-                "Engineering",
                 "Research on new topics",
                 "Engineering Science",
                 "Boltzmannstr. 3",
@@ -376,7 +392,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             );
 
             ResearchGroupDTO result = api
-                .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+                .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(API_BASE_PATH + "/professor-request", request, ResearchGroupDTO.class, 201);
 
             assertThat(result).isNotNull();
@@ -402,7 +418,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "mn33zzz",
                 "Prof. Minimal User",
                 "Minimal Research Lab",
-                "",
+                testDepartment.getDepartmentId(),
                 "",
                 "",
                 "",
@@ -414,7 +430,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             );
 
             ResearchGroupDTO result = api
-                .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+                .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(API_BASE_PATH + "/professor-request", minimalRequest, ResearchGroupDTO.class, 201);
 
             assertThat(result).isNotNull();
@@ -431,10 +447,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
                 "ab12cde",
                 "Dr. John Doe",
                 "New Research Lab",
+                testDepartment.getDepartmentId(),
                 "NRL",
                 "contact@newlab.tum.de",
                 "https://newlab.tum.de",
-                "Engineering",
                 "Research on new topics",
                 "Engineering Science",
                 "Boltzmannstr. 3",
@@ -447,7 +463,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
         @Test
         void createProfessorResearchGroupRequestWhenAlreadyMemberThrowsException() {
-            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("Another Group");
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest(
+                "Another Group",
+                testDepartment.getDepartmentId()
+            );
 
             api
                 .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -457,10 +476,13 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         @Test
         void createProfessorResearchGroupRequestWithExistingNameThrowsException() {
             User requestUser = UserTestData.createUserWithoutResearchGroup(userRepository, "req.exist@tum.de", "Req", "Exist", "req999");
-            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest(researchGroup.getName());
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest(
+                researchGroup.getName(),
+                testDepartment.getDepartmentId()
+            );
 
             api
-                .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_USER"))
+                .with(JwtPostProcessors.jwtUser(requestUser.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(API_BASE_PATH + "/professor-request", request, Void.class, 409);
         }
     }
@@ -481,7 +503,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             EmployeeResearchGroupRequestDTO request = new EmployeeResearchGroupRequestDTO("Prof. Smith");
 
             api
-                .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_USER"))
+                .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(API_BASE_PATH + "/employee-request", request, Void.class, 204);
         }
 
@@ -498,7 +520,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             EmployeeResearchGroupRequestDTO invalidRequest = new EmployeeResearchGroupRequestDTO("");
 
             api
-                .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_USER"))
+                .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(API_BASE_PATH + "/employee-request", invalidRequest, Void.class, 400);
         }
 
@@ -810,7 +832,23 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         void createResearchGroupAsAdminReturnsCreatedGroup() {
             UUID adminUserID = UUID.randomUUID();
             UserTestData.createUserWithoutResearchGroup(userRepository, "prof.new@tum.de", "Prof.", "New", "adm1234");
-            ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest("Admin Created Lab", "adm1234");
+            ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
+                "Prof.",
+                "New",
+                "User",
+                "adm1234",
+                "Prof. New User",
+                "Admin Created Lab",
+                testDepartment.getDepartmentId(),
+                "admin.created@tum.de",
+                "ACL",
+                "https://acl.tum.de",
+                "Description",
+                "CS",
+                "Street",
+                "12345",
+                "City"
+            );
 
             ResearchGroupDTO result = api
                 .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
@@ -825,7 +863,23 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         @Test
         void createResearchGroupAsAdminWithNonExistentUserThrowsException() {
             UUID adminUserID = UUID.randomUUID();
-            ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest("Fail Lab", "nonexistent");
+            ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
+                "Prof.",
+                "Fail",
+                "User",
+                "nonexistent",
+                "Prof. Fail",
+                "Fail Lab",
+                testDepartment.getDepartmentId(),
+                "fail@tum.de",
+                "FL",
+                "https://fail.tum.de",
+                "Description",
+                "CS",
+                "Street",
+                "12345",
+                "City"
+            );
 
             api
                 .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
@@ -836,7 +890,23 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         void createResearchGroupAsAdminWithExistingNameThrowsException() {
             UUID adminUserID = UUID.randomUUID();
             UserTestData.createUserWithoutResearchGroup(userRepository, "prof.exist@tum.de", "Prof.", "Exist", "ex123st");
-            ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest(researchGroup.getName(), "ex123st");
+            ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
+                "Prof.",
+                "Exist",
+                "User",
+                "ex123st",
+                "Prof. Exist",
+                researchGroup.getName(),
+                testDepartment.getDepartmentId(),
+                "exist@tum.de",
+                "EX",
+                "https://exist.tum.de",
+                "Description",
+                "CS",
+                "Street",
+                "12345",
+                "City"
+            );
 
             api
                 .with(JwtPostProcessors.jwtUser(adminUserID, "ROLE_ADMIN"))
@@ -847,9 +917,22 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         void createResearchGroupAsAdminWithUserAlreadyInGroupThrowsException() {
             UUID adminUserID = UUID.randomUUID();
             User userWithGroup = UserTestData.savedProfessor(userRepository, researchGroup);
-            ResearchGroupRequestDTO requestDTO = ResearchGroupTestData.createResearchGroupRequest(
+            ResearchGroupRequestDTO requestDTO = new ResearchGroupRequestDTO(
+                "Prof.",
+                "Group",
+                "User",
+                userWithGroup.getUniversityId(),
+                "Prof. Group",
                 "Another Lab",
-                userWithGroup.getUniversityId()
+                testDepartment.getDepartmentId(),
+                "group@tum.de",
+                "AL",
+                "https://group.tum.de",
+                "Description",
+                "CS",
+                "Street",
+                "12345",
+                "City"
             );
 
             api

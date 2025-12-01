@@ -98,6 +98,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = getOk(url, params, accepts);
+            case 204 -> result = getNoContent(url, params, accepts);
             case 400 -> result = getInvalid(url, params, accepts);
             case 401 -> result = getUnauthorized(url, params, accepts);
             case 403 -> result = getForbidden(url, params, accepts);
@@ -315,6 +316,18 @@ public class MvcTestClient {
             return get(url, params, accepts).andExpect(status().isOk()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("GET " + url + " failed", e);
+        }
+    }
+
+    /**
+     * Low-level GET that asserts 200 OK and returns the MvcResult.
+     * Wraps checked exceptions as AssertionError for cleaner tests.
+     */
+    private MvcResult getNoContent(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isNoContent()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with 204", e);
         }
     }
 

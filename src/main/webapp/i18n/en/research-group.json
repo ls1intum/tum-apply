@@ -269,6 +269,10 @@
         "save": {
           "summary": "Error",
           "detail": "Error saving research group information. Please try again or contact an admin."
+        },
+        "loadDepartments": {
+          "summary": "Error",
+          "detail": "Failed to load departments. Please refresh the page."
         }
       },
       "success": {
@@ -283,6 +287,7 @@
       "abbreviation": "Abbreviation",
       "name": "Name",
       "school": "School",
+      "department": "Department",
       "defaultFieldOfStudies": "Field of Studies",
       "head": "Head",
       "email": "Email",
@@ -295,6 +300,7 @@
         "abbreviation": "e.g. AI",
         "name": "e.g. Research Group for Artificial Intelligence",
         "school": "e.g. Informatics",
+        "department": "Select...",
         "defaultFieldOfStudies": "e.g. Computer Science",
         "head": "e.g. Prof. Dr. Max Mustermann",
         "email": "e.g. contact@researchgroup.com",

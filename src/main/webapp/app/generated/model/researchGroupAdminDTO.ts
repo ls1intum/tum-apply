@@ -7,10 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DepartmentDTO } from './departmentDTO';
 
 
 export interface ResearchGroupAdminDTO { 
     createdAt?: string;
+    department?: DepartmentDTO;
     id?: string;
     professorName?: string;
     researchGroup?: string;
