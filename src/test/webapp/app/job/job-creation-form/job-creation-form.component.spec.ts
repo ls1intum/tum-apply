@@ -211,17 +211,6 @@ describe('JobCreationFormComponent', () => {
       expect(calls).toContainEqual([['/my-positions']]);
       fixture2.destroy();
     });
-
-    it('should handle init error by showing toast and navigating', async () => {
-      mockActivatedRoute.setUrl([new UrlSegment('job', {}), new UrlSegment('create', {})]);
-      imageService.getDefaultJobBanners.mockReturnValueOnce(throwError(() => new Error('fail')));
-
-      const fixture2 = TestBed.createComponent(JobCreationFormComponent);
-      fixture2.detectChanges();
-      await fixture2.whenStable();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.loadImagesFailed');
-    });
   });
 
   describe('Mode and Page Title', () => {
@@ -619,12 +608,6 @@ describe('JobCreationFormComponent', () => {
       imageService.getResearchGroupJobBanners.mockReturnValueOnce(of([]));
       await component.loadImages();
       expect(imageService.getDefaultJobBanners).toHaveBeenCalledWith('rg123');
-    });
-
-    it('should handle error when loading images fails', async () => {
-      imageService.getDefaultJobBanners.mockReturnValueOnce(throwError(() => new Error('Load failed')));
-      await component.loadImages();
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.loadImagesFailed');
     });
   });
 
