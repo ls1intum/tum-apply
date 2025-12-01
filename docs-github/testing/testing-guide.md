@@ -53,6 +53,15 @@ You can also run tests with code coverage:
 - **AssertJ:** Used for fluent assertions.
 - **Mockito:** For mocking dependencies in isolated unit tests.
 
+Run all tests with:
 ```bash
-# Run all tests
-./gradlew test
+ ./gradlew test
+```
+Generate test coverage report with:
+ ```bash
+  ./gradlew test jacocoTestReport
+ ```
+View coverage report of tests:
+```bash
+ open build/reports/jacoco/test/html/index.html
+```
