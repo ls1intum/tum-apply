@@ -248,7 +248,7 @@
         }
       </div>
       @if (showDelete) {
-        <div class="absolute top-2 right-2 -translate-x-1/2" (click)="$event.stopPropagation()">
+        <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
           <jhi-confirm-dialog
             #deleteDialog
             [label]="'button.delete' | translate"
