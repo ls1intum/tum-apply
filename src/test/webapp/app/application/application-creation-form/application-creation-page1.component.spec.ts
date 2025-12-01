@@ -138,7 +138,6 @@ describe('ApplicationPage1Component', () => {
       job: {
         jobId: '2345',
         professorName: 'Professor Name',
-        fieldOfStudies: 'Field of Studies',
         location: 'Garching',
         title: 'Example Job',
       },
@@ -248,7 +247,6 @@ describe('ApplicationPage1Component', () => {
       job: {
         jobId: '2345',
         professorName: 'Professor Name',
-        fieldOfStudies: 'Field of Studies',
         location: 'Garching',
         title: 'Example Job',
       },

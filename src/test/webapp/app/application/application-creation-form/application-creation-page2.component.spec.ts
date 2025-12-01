@@ -232,7 +232,6 @@ describe('ApplicationPage2Component', () => {
         user: {},
       },
       job: {
-        fieldOfStudies: 'fieldOfStudies',
         jobId: 'id-123',
         location: 'Garching',
         professorName: 'Pr. Test',

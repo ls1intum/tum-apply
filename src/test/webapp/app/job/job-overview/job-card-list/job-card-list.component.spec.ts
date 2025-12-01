@@ -234,14 +234,14 @@ describe('JobCardListComponent', () => {
         title: 'A',
         professorName: 'P1',
         location: LocationEnum.Heilbronn,
-        fieldOfStudies: '',
+        departmentName: 'D1',
       },
       {
         jobId: '2',
         title: 'B',
         professorName: 'P2',
         location: LocationEnum.Heilbronn,
-        fieldOfStudies: '',
+        departmentName: 'D2',
       },
     ]);
     fixture.detectChanges();
@@ -258,7 +258,7 @@ describe('JobCardListComponent', () => {
         professorName: 'P1',
         location: LocationEnum.Heilbronn,
         applicationState: undefined,
-        fieldOfStudies: '',
+        departmentName: 'D1',
       },
     ]);
     fixture.detectChanges();
@@ -278,7 +278,7 @@ describe('JobCardListComponent', () => {
         location: LocationEnum.Garching,
         relativeTimeEnglish: '2 days ago',
         relativeTimeGerman: 'vor 2 Tagen',
-        fieldOfStudies: '',
+        departmentName: 'D1',
       },
     ]);
     fixture.detectChanges();

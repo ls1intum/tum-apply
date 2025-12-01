@@ -26,7 +26,6 @@ export const createMockApplicationDTO = (
   applicationId: '456',
   job: {
     jobId: '123',
-    fieldOfStudies: '',
     location: 'Garching',
     professorName: 'Prof. Dr. Abc',
     title: 'Sophisticated Studies',
