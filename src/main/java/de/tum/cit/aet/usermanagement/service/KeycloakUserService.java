@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
@@ -46,13 +48,15 @@ public class KeycloakUserService {
      * @param searchKey the search key to filter users; must not be {@code null}
      * @return a list of {@link KeycloakUserInformation} matching the search criteria
      */
-    public List<KeycloakUserInformation> getAllUsers(String searchKey) {
-        // TODO: welcher maxResults limit wäre hier sinnvoll?
-        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, 100);
+    public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
+        int firstResult = pageDTO.pageNumber() * pageDTO.pageSize();
+        int maxResults = pageDTO.pageSize();
+
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
         return users
             .stream()
             .map(user ->
-                new KeycloakUserInformation(
+                new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
                     user.getUsername(),
                     user.getFirstName(),
