@@ -132,6 +132,29 @@
         [shouldTranslate]="true"
       />
     </div>
+
+    <!-- School and Department Selection -->
+    <div class="mb-6">
+      <jhi-select
+        [label]="'onboarding.professorRequest.school.label' | translate"
+        [placeholder]="'onboarding.professorRequest.school.placeholder' | translate"
+        [items]="schoolOptions()"
+        [required]="true"
+        [selected]="selectedSchoolOption()"
+        (selectedChange)="onSchoolChange($event)"
+      />
+    </div>
+
+    <div class="mb-6">
+      <jhi-select
+        [label]="'onboarding.professorRequest.department.label' | translate"
+        [placeholder]="'onboarding.professorRequest.department.placeholder' | translate"
+        [items]="filteredDepartmentOptions()"
+        [required]="true"
+        [selected]="selectedDepartmentOption()"
+        (selectedChange)="onDepartmentChange($event)"
+      />
+    </div>
   </div>
 
   <!-- Optional Information -->
@@ -170,16 +193,6 @@
         [model]="form.get('researchGroupWebsite')?.value"
         [control]="form.get('researchGroupWebsite') ?? undefined"
         icon="globe"
-        [shouldTranslate]="true"
-      />
-    </div>
-
-    <div>
-      <jhi-string-input
-        label="onboarding.professorRequest.researchGroupSchool.label"
-        placeholder="onboarding.professorRequest.researchGroupSchool.placeholder"
-        [model]="form.get('researchGroupSchool')?.value"
-        [control]="form.get('researchGroupSchool') ?? undefined"
         [shouldTranslate]="true"
       />
     </div>

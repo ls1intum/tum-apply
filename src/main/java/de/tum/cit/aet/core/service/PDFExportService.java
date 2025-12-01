@@ -2,20 +2,29 @@ package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.service.ApplicationService;
+import de.tum.cit.aet.core.dto.JobOverviewData;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
+import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.util.PDFBuilder;
 import de.tum.cit.aet.job.dto.JobDetailDTO;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
-import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PDFExportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -25,11 +34,9 @@ public class PDFExportService {
     private final JobService jobService;
     private final CurrentUserService currentUserService;
 
-    public PDFExportService(ApplicationService applicationService, JobService jobService, CurrentUserService currentUserService) {
-        this.applicationService = applicationService;
-        this.jobService = jobService;
-        this.currentUserService = currentUserService;
-    }
+    private final UserRepository userRepository;
+
+    // ------------------- Main methods -------------------
 
     /**
      * Exports application details to PDF
@@ -42,16 +49,18 @@ public class PDFExportService {
         ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
         UUID jobId = app.jobId();
         JobDetailDTO job = jobService.getJobDetails(jobId);
-        User user = currentUserService.getUser();
-        String firstName = user.getFirstName() != null ? user.getFirstName() : "";
-        String lastName = user.getLastName() != null ? user.getLastName() : "";
-
-        String fullName = (firstName + " " + lastName).trim();
 
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
         builder
-            .addHeaderItem(labels.get("applicationBy") + fullName + labels.get("forPosition") + "'" + app.jobTitle() + "'")
+            .addHeaderItem(
+                labels.get("applicationBy") +
+                    currentUserService.getCurrentUserFullName() +
+                    labels.get("forPosition") +
+                    "'" +
+                    app.jobTitle() +
+                    "'"
+            )
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
         // Overview Section
@@ -60,22 +69,20 @@ public class PDFExportService {
             .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
             .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
             .addOverviewItem(labels.get("location"), getValue(app.jobLocation()))
-            .addOverviewItem(labels.get("fieldsOfStudies") + ":", getValue(job.fieldOfStudies()))
-            .addOverviewItem(labels.get("researchArea") + ":", getValue(job.researchArea()))
-            .addOverviewItem(labels.get("workload") + ":", formatWorkload(job.workload(), labels.get("hoursPerWeek")))
-            .addOverviewItem(labels.get("duration") + ":", formatContractDuration(job.contractDuration(), labels.get("years")))
-            .addOverviewItem(labels.get("fundingType") + ":", getValue(job.fundingType()))
-            .addOverviewItem(labels.get("startDate") + ":", formatDate(job.startDate()))
+            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
+            .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
+            .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
+            .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
+            .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
+            .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
+            .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
             .setOverviewDescriptionTitle(labels.get("jobDescription"))
             .setOverviewDescription(job.description());
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
-
         builder.startInfoSection(labels.get("motivation")).addSectionContent(getValue(app.motivation()));
-
         builder.startInfoSection(labels.get("skills")).addSectionContent(getValue(app.specialSkills()));
-
         builder.startInfoSection(labels.get("researchExperience")).addSectionContent(getValue(app.projects()));
 
         // Personal Information Group
@@ -130,6 +137,173 @@ public class PDFExportService {
     }
 
     /**
+     * Exports job details to PDF
+     *
+     * @param jobId  the job ID
+     * @param labels translation labels for PDF content
+     * @return the PDF file as Resource
+     */
+    public Resource exportJobToPDF(UUID jobId, Map<String, String> labels) {
+        JobDetailDTO job = jobService.getJobDetails(jobId);
+
+        PDFBuilder builder = new PDFBuilder(job.title());
+
+        builder.addHeaderItem(labels.get("jobBy") + job.supervisingProfessorName() + labels.get("forJob") + "'" + job.title() + "'");
+        try {
+            if (currentUserService.isProfessor()) {
+                builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
+            }
+        } catch (Exception e) {}
+
+        // Overview Section
+        addJobOverview(
+            builder,
+            labels,
+            new JobOverviewData(
+                job.supervisingProfessorName(),
+                job.location(),
+                job.fieldOfStudies(),
+                job.researchArea(),
+                formatWorkload(job.workload(), labels.get("hoursPerWeek")),
+                formatContractDuration(job.contractDuration(), labels.get("years")),
+                getValue(job.fundingType()),
+                formatDate(job.startDate()),
+                formatDate(job.endDate())
+            )
+        );
+
+        // Job Details Section
+        addJobDetailsSection(builder, labels, job.description(), job.tasks(), job.requirements());
+
+        // Research Group Section
+        addResearchGroupSection(builder, job.researchGroup(), labels);
+
+        // Metadata
+        String metadataText = buildMetadataText(labels);
+        builder.setMetadata(metadataText);
+        builder.setMetadataEnd(labels.get("metaEndText"));
+
+        builder.setPageLabels(labels.get("page"), labels.get("of"));
+
+        return builder.build();
+    }
+
+    /**
+     * Exports job details to PDF
+     *
+     * @param jobFormDTO the job form data
+     * @param labels     translation labels for PDF content
+     * @return the PDF file as Resource
+     */
+    public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels) {
+        PDFBuilder builder = new PDFBuilder(jobFormDTO.title());
+
+        String supervisingProfessorName = userRepository
+            .findById(jobFormDTO.supervisingProfessor())
+            .map(user -> (user.getFirstName() + " " + user.getLastName()).trim())
+            .orElse("-");
+
+        builder
+            .addHeaderItem(labels.get("jobBy") + supervisingProfessorName + labels.get("forJob") + "'" + jobFormDTO.title() + "'")
+            .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(jobFormDTO.state()));
+
+        // Overview Section
+        addJobOverview(
+            builder,
+            labels,
+            new JobOverviewData(
+                supervisingProfessorName,
+                UiTextFormatter.formatEnumValue(jobFormDTO.location()),
+                jobFormDTO.fieldOfStudies(),
+                jobFormDTO.researchArea(),
+                jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
+                jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
+                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
+                jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
+                jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
+            )
+        );
+
+        // Job Details Section
+        addJobDetailsSection(builder, labels, jobFormDTO.description(), jobFormDTO.tasks(), jobFormDTO.requirements());
+
+        // Metadata
+        builder.setMetadata(buildMetadataText(labels));
+        builder.setMetadataEnd(labels.get("metaEndText"));
+        builder.setPageLabels(labels.get("page"), labels.get("of"));
+
+        try {
+            ResearchGroup group = currentUserService.getResearchGroupIfProfessor();
+            addResearchGroupSection(builder, group, labels);
+        } catch (AccessDeniedException ignored) {
+            // no research group → nothing added
+        }
+
+        return builder.build();
+    }
+
+    // ------------------- Helper methods -------------------
+
+    private void addJobOverview(PDFBuilder builder, Map<String, String> labels, JobOverviewData data) {
+        builder
+            .setOverviewTitle(labels.get("overview"))
+            .addOverviewItem(labels.get("supervisor"), getValue(data.supervisor()))
+            .addOverviewItem(labels.get("location"), getValue(data.location()))
+            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(data.fieldsOfStudies()))
+            .addOverviewItem(labels.get("researchArea"), getValue(data.researchArea()))
+            .addOverviewItem(labels.get("workload"), getValue(data.workload()))
+            .addOverviewItem(labels.get("duration"), getValue(data.duration()))
+            .addOverviewItem(labels.get("fundingType"), getValue(data.fundingType()))
+            .addOverviewItem(labels.get("startDate"), getValue(data.startDate()))
+            .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
+    }
+
+    private void addJobDetailsSection(
+        PDFBuilder builder,
+        Map<String, String> labels,
+        String description,
+        String tasks,
+        String requirements
+    ) {
+        builder.startSectionGroup(labels.get("jobDetails"));
+
+        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(description));
+
+        builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(getValue(tasks));
+
+        builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(getValue(requirements));
+    }
+
+    private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
+        builder.startSectionGroup(labels.get("researchGroup"));
+
+        addResearchGroupMainInfo(builder, group);
+        addResearchGroupContactInfo(builder, group, labels);
+    }
+
+    private void addResearchGroupMainInfo(PDFBuilder builder, ResearchGroup group) {
+        builder.startInfoSection(group.getName()).addSectionContent(getValue(group.getDescription()));
+    }
+
+    private void addResearchGroupContactInfo(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
+        String address = formatAddress(group.getStreet(), group.getPostalCode(), group.getCity());
+        Map<String, String> items = new LinkedHashMap<>();
+
+        if (hasValue(address)) items.put(labels.get("address"), address);
+        if (hasValue(group.getEmail())) items.put(labels.get("email"), group.getEmail());
+        if (hasValue(group.getWebsite())) items.put(labels.get("website"), group.getWebsite());
+
+        if (items.isEmpty()) return;
+
+        builder.startInfoSection(labels.get("contactDetails"));
+        items.forEach(builder::addSectionData);
+    }
+
+    private boolean hasValue(String value) {
+        return value != null && !value.isEmpty();
+    }
+
+    /**
      * Generates filename for application PDF
      *
      * @param applicationId    the application ID
@@ -154,7 +328,7 @@ public class PDFExportService {
         metadata.append(labels.get("thisDocumentWasGeneratedOn"));
         metadata.append(currentDateTime);
 
-        Optional<String> userName = getCurrentUserFullName();
+        Optional<String> userName = currentUserService.getCurrentUserFullNameIfAvailable();
         if (userName.isPresent()) {
             metadata.append(labels.get("byUser"));
             metadata.append(userName.get());
@@ -166,22 +340,26 @@ public class PDFExportService {
     }
 
     /**
-     * Gets the full name of the current user if available
+     * Generates filename for job PDF
      *
-     * @return Optional containing the user's full name, or empty if not available
+     * @param jobId    the job ID
+     * @param jobLabel label for application used as ending of the filename
+     * @return sanitized filename for the PDF
      */
-    private Optional<String> getCurrentUserFullName() {
-        try {
-            User user = currentUserService.getUser();
-            String firstName = user.getFirstName() != null ? user.getFirstName() : "";
-            String lastName = user.getLastName() != null ? user.getLastName() : "";
+    public String generateJobFilename(UUID jobId, String jobLabel) {
+        JobDetailDTO job = jobService.getJobDetails(jobId);
+        return sanitizeFilename(job.title()) + "_" + jobLabel + ".pdf";
+    }
 
-            String fullName = (firstName + " " + lastName).trim();
-
-            return fullName.isEmpty() ? Optional.empty() : Optional.of(fullName);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+    /**
+     * Generates filename for job PDF
+     *
+     * @param jobFormDTO the job form data
+     * @param jobLabel   label for application used as ending of the filename
+     * @return sanitized filename for the PDF
+     */
+    public String generateJobFilenameForPreview(JobFormDTO jobFormDTO, String jobLabel) {
+        return sanitizeFilename(jobFormDTO.title()) + "_" + jobLabel + ".pdf";
     }
 
     // Helper methods
@@ -213,5 +391,27 @@ public class PDFExportService {
             return "document";
         }
         return filename.replaceAll("[^a-zA-Z0-9-_]", "_").substring(0, Math.min(filename.length(), 50));
+    }
+
+    private String formatAddress(String street, String postalCode, String city) {
+        List<String> parts = new ArrayList<>();
+
+        if (hasValue(street)) {
+            parts.add(street);
+        }
+
+        List<String> postalCodeParts = new ArrayList<>();
+        if (hasValue(postalCode)) {
+            postalCodeParts.add(postalCode);
+        }
+        if (hasValue(city)) {
+            postalCodeParts.add(city);
+        }
+
+        if (!postalCodeParts.isEmpty()) {
+            parts.add(String.join(" ", postalCodeParts));
+        }
+
+        return String.join(", ", parts);
     }
 }

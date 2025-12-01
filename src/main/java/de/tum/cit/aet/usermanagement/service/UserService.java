@@ -1,17 +1,24 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,6 +111,39 @@ public class UserService {
 
             userRepository.save(user);
         }
+    }
+
+    /**
+     * Retrieves all users that are eligible to be added to a research group.
+     *
+     * <p>The result excludes any users who are already associated with a research group and
+     * excludes users with administrative privileges. Each returned entry is converted to a
+     * UserShortDTO to provide a concise representation suitable for selection or display
+     * in UI components.</p>
+     *
+     * <p>Uses a two-query approach to avoid pagination issues with JOIN FETCH:
+     * 1. First query fetches paginated user IDs
+     * 2. Second query fetches full user data with eagerly loaded collections</p>
+     *
+     * @param pageDTO           pagination parameters including page number and size
+     * @param searchQuery       an optional search query to filter users by name or email
+     * @return                  a paginated response of UserShortDTO instances representing non-admin users
+     *                          who are not currently assigned to any research group
+     */
+    public PageResponseDTO<UserShortDTO> getAvailableUsersForResearchGroup(PageDTO pageDTO, String searchQuery) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+        String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
+
+        Page<UUID> userIdsPage = userRepository.findAvailableUserIdsForResearchGroup(normalizedSearchQuery, pageable);
+
+        if (userIdsPage.isEmpty()) {
+            return new PageResponseDTO<>(List.of(), 0L);
+        }
+
+        List<User> users = userRepository.findUsersWithRolesByIds(userIdsPage.getContent());
+        List<UserShortDTO> userDTOs = users.stream().map(UserShortDTO::new).toList();
+
+        return new PageResponseDTO<>(userDTOs, userIdsPage.getTotalElements());
     }
 
     /**

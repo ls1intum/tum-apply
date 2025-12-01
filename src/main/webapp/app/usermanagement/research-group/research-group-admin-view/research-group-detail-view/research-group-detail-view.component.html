@@ -64,20 +64,21 @@
         <div class="form-row">
           <div class="form-field">
             <jhi-string-input
-              [id]="'rg-school'"
-              label="{{ 'researchGroup.detailView.school' | translate }}"
-              [control]="form.controls.school"
-              [model]="form.controls.school.value || ''"
-              placeholder="{{ 'researchGroup.detailView.placeholders.school' | translate }}"
-            />
-          </div>
-          <div class="form-field">
-            <jhi-string-input
               [id]="'rg-defaultFieldOfStudies'"
               label="{{ 'researchGroup.detailView.defaultFieldOfStudies' | translate }}"
               [control]="form.controls.defaultFieldOfStudies"
               [model]="form.controls.defaultFieldOfStudies.value || ''"
               placeholder="{{ 'researchGroup.detailView.placeholders.defaultFieldOfStudies' | translate }}"
+            />
+          </div>
+          <div class="form-field">
+            <jhi-select
+              [label]="'researchGroup.detailView.department' | translate"
+              [placeholder]="'researchGroup.detailView.placeholders.department' | translate"
+              [items]="departmentOptions()"
+              [required]="true"
+              [selected]="selectedDepartmentOption()"
+              (selectedChange)="onDepartmentChange($event)"
             />
           </div>
         </div>
@@ -92,6 +93,7 @@
               placeholder="{{ 'researchGroup.detailView.placeholders.website' | translate }}"
             />
           </div>
+
           <div class="form-field">
             <jhi-string-input
               [id]="'rg-email'"

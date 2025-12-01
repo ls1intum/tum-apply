@@ -7,6 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Department } from './department';
+import { School } from './school';
 import { UserResearchGroupRole } from './userResearchGroupRole';
 
 
@@ -15,6 +17,7 @@ export interface ResearchGroup {
     city?: string;
     createdAt?: string;
     defaultFieldOfStudies?: string;
+    department?: Department;
     description?: string;
     email?: string;
     head?: string;
@@ -22,7 +25,7 @@ export interface ResearchGroup {
     name?: string;
     postalCode?: string;
     researchGroupId?: string;
-    school?: string;
+    school?: School;
     state?: ResearchGroup.StateEnum;
     street?: string;
     universityId?: string;
