@@ -150,17 +150,17 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   private populateFormData(data?: ResearchGroupDTO): void {
     this.form.patchValue({
-      abbreviation: data?.abbreviation,
-      name: data?.name,
-      defaultFieldOfStudies: data?.defaultFieldOfStudies,
-      head: data?.head,
-      email: data?.email,
-      website: data?.website,
-      description: data?.description,
-      city: data?.city,
-      postalCode: data?.postalCode,
-      street: data?.street,
-      departmentId: data?.departmentId,
+      abbreviation: data?.abbreviation ?? '',
+      name: data?.name ?? '',
+      defaultFieldOfStudies: data?.defaultFieldOfStudies ?? '',
+      head: data?.head ?? '',
+      email: data?.email ?? '',
+      website: data?.website ?? '',
+      description: data?.description ?? '',
+      city: data?.city ?? '',
+      postalCode: data?.postalCode ?? '',
+      street: data?.street ?? '',
+      departmentId: data?.departmentId ?? '',
     });
 
     // Set selected department for the dropdown (selectedDepartmentOption is computed automatically)
