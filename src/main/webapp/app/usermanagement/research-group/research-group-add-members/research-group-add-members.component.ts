@@ -38,7 +38,7 @@ export class ResearchGroupAddMembersComponent {
   searchQuery = signal<string>('');
 
   users = signal<KeycloakUserDTO[]>([]);
-  selectedUserCount = computed(() => this.selectedUserIds().size);
+  selectedUserCount = computed(() => this.selectedUsers().size);
 
   userService = inject(UserResourceApiService);
   researchGroupService = inject(ResearchGroupResourceApiService);
@@ -51,7 +51,7 @@ export class ResearchGroupAddMembersComponent {
   // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
   private loaderTimeout: number | null = null;
-  private selectedUserIds = signal<Set<string>>(new Set());
+  private selectedUsers = signal<Set<KeycloakUserDTO>>(new Set());
 
   constructor() {
     void this.loadAvailableUsers();
@@ -135,20 +135,19 @@ export class ResearchGroupAddMembersComponent {
   }
 
   toggleUserSelection(user: KeycloakUserDTO): void {
-    const userId = user.id;
-    if (!userId) {
+    if (!user.id) {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
       return;
     }
-    const currentSet = new Set(this.selectedUserIds());
+    const currentSet = new Set(this.selectedUsers());
 
-    if (currentSet.has(userId)) {
-      currentSet.delete(userId);
+    if (currentSet.has(user)) {
+      currentSet.delete(user);
     } else {
-      currentSet.add(userId);
+      currentSet.add(user);
     }
 
-    this.selectedUserIds.set(currentSet);
+    this.selectedUsers.set(currentSet);
   }
 
   onCancel(): void {
@@ -156,15 +155,15 @@ export class ResearchGroupAddMembersComponent {
   }
 
   async onAddMembers(): Promise<void> {
-    const userIds = Array.from(this.selectedUserIds());
-    const researchGroupId = this.researchGroupId();
-
-    if (userIds.length === 0) {
+    if (this.selectedUsers().size === 0) {
       return;
     }
 
     try {
-      await lastValueFrom(this.researchGroupService.addMembersToResearchGroup({ userIds, researchGroupId }));
+      const researchGroupId = this.researchGroupId();
+
+      const data = { keycloakUsers: Array.from(this.selectedUsers()), researchGroupId };
+      await lastValueFrom(this.researchGroupService.addMembersToResearchGroup(data));
       this.toastService.showSuccessKey(`${I18N_BASE}.toastMessages.addMembersSuccess`);
       this.dialogRef.close(true);
     } catch {
@@ -174,11 +173,10 @@ export class ResearchGroupAddMembersComponent {
   }
 
   isUserSelected(user: KeycloakUserDTO): boolean {
-    const userId = user.id;
-    if (!userId) {
+    if (!user.id) {
       return false;
     }
 
-    return this.selectedUserIds().has(userId);
+    return this.selectedUsers().has(user);
   }
 }

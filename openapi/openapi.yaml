@@ -1591,12 +1591,12 @@ components:
     AddMembersToResearchGroupDTO:
       type: object
       properties:
-        researchGroupId: {type: string, format: uuid}
-        userIds:
+        keycloakUsers:
           type: array
-          items: {type: string, format: uuid}
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
           minItems: 1
-      required: [userIds]
+        researchGroupId: {type: string, format: uuid}
+      required: [keycloakUsers]
     Applicant:
       type: object
       properties:
