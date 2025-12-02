@@ -116,7 +116,7 @@ export class ResearchGroupMembersComponent {
   openAddMembersModal(): void {
     const ref = this.dialogService.open(ResearchGroupAddMembersComponent, {
       header: this.translate.instant('researchGroup.members.addMembers'),
-      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      style: { background: 'var(--p-background-default)', width: '60rem', maxWidth: '60rem' },
       modal: true,
       closable: true,
     });
