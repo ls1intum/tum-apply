@@ -383,7 +383,8 @@
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
-        "closed": "Closed"
+        "closed": "Closed",
+        "inReview": "In Review"
       },
       "columns": {
         "positionTitle": "Position Title",

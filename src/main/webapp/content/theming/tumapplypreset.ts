@@ -778,7 +778,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       colorScheme: {
         light: {
           secondary: {
-            background: '{secondary.color}',
+            background: '{secondary.400}',
             color: '{base.black}',
           },
           info: {
@@ -786,7 +786,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             color: '{info.inverseColor}',
           },
           success: {
-            background: '{success.color}',
+            background: '{success.400}',
             color: '{success.inverseColor}',
           },
           warn: {
@@ -794,7 +794,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             color: '{warn.inverseColor}',
           },
           danger: {
-            background: '{danger.color}',
+            background: '{danger.400}',
             color: '{danger.inverseColor}',
           },
           contrast: {
