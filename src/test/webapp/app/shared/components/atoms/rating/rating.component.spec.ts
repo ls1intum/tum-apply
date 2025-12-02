@@ -61,23 +61,23 @@ describe('RatingComponent', () => {
   it('returns correct colors for each likert value', () => {
     fixture.componentRef.setInput('rating', -2);
     fixture.detectChanges();
-    expect(component.getSectionColor(0)).toBe('var(--p-danger-active-color)');
+    expect(component.getSectionColor(0)).toBe('var(--color-negative-active)');
 
     fixture.componentRef.setInput('rating', -1);
     fixture.detectChanges();
-    expect(component.getSectionColor(1)).toBe('var(--p-danger-hover-color)');
+    expect(component.getSectionColor(1)).toBe('var(--color-negative-hover)');
 
     fixture.componentRef.setInput('rating', 0);
     fixture.detectChanges();
-    expect(component.getSectionColor(2)).toBe('var(--p-warn-color)');
+    expect(component.getSectionColor(2)).toBe('var(--color-warning-default)');
 
     fixture.componentRef.setInput('rating', 1);
     fixture.detectChanges();
-    expect(component.getSectionColor(3)).toBe('var(--p-success-hover-color)');
+    expect(component.getSectionColor(3)).toBe('var(--color-positive-hover)');
 
     fixture.componentRef.setInput('rating', 2);
     fixture.detectChanges();
-    expect(component.getSectionColor(4)).toBe('var(--p-success-active-color)');
+    expect(component.getSectionColor(4)).toBe('var(--color-positive-active)');
   });
 
   it('falls back to background color when section does not match current rating', () => {

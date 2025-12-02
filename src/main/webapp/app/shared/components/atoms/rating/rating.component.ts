@@ -37,7 +37,7 @@ export class RatingComponent {
     const sectionValue = this.likertValues[index];
 
     if (currentRating === undefined) {
-      return 'var(--color-background-surface-alt)';
+      return 'var(--p-background-surface-alt)';
     }
 
     if (sectionValue === currentRating) {
@@ -54,7 +54,7 @@ export class RatingComponent {
           return 'var(--color-positive-active)';
       }
     }
-    return 'var(--color-background-surface-alt)';
+    return 'var(--p-background-surface-alt)';
   }
 
   getTooltip(index: number): string {
