@@ -3,9 +3,16 @@ package de.tum.cit.aet.utility.testdata;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
+import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
+import de.tum.cit.aet.usermanagement.dto.EmployeeResearchGroupRequestDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupAdminDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupDTO;
+import de.tum.cit.aet.usermanagement.dto.ResearchGroupProvisionDTO;
 import de.tum.cit.aet.usermanagement.dto.ResearchGroupRequestDTO;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -228,5 +235,40 @@ public final class ResearchGroupTestData {
             departmentId,
             state
         );
+    }
+
+    /**
+     * Creates a ResearchGroupProvisionDTO.
+     */
+    public static ResearchGroupProvisionDTO createResearchGroupProvisionDTO(String universityId, UUID researchGroupId) {
+        return new ResearchGroupProvisionDTO(universityId, researchGroupId);
+    }
+
+    /**
+     * Creates an EmployeeResearchGroupRequestDTO.
+     */
+    public static EmployeeResearchGroupRequestDTO createEmployeeResearchGroupRequestDTO(String professorName) {
+        return new EmployeeResearchGroupRequestDTO(professorName);
+    }
+
+    /**
+     * Creates an AdminResearchGroupFilterDTO.
+     */
+    public static AdminResearchGroupFilterDTO createAdminResearchGroupFilterDTO(List<ResearchGroupState> states, String search) {
+        return new AdminResearchGroupFilterDTO(states, search);
+    }
+
+    /**
+     * Creates a ResearchGroupAdminDTO.
+     */
+    public static ResearchGroupAdminDTO createResearchGroupAdminDTO(
+        UUID id,
+        String name,
+        String head,
+        DepartmentDTO department,
+        ResearchGroupState state,
+        LocalDateTime creationDate
+    ) {
+        return new ResearchGroupAdminDTO(id, name, head, department, state, creationDate);
     }
 }

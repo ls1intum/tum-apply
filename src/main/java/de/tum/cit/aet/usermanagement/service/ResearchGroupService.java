@@ -6,6 +6,7 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -31,6 +32,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -110,7 +112,7 @@ public class ResearchGroupService {
         // Prevent removing oneself (for now)
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
-            throw new IllegalArgumentException("Cannot remove yourself from the research group");
+            throw new BadRequestException("Cannot remove yourself from the research group");
         }
 
         // Remove the direct research group membership
@@ -255,13 +257,10 @@ public class ResearchGroupService {
             .findById(dto.researchGroupId())
             .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
 
-        boolean userGroupChanged = false;
         if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
-            userGroupChanged = true;
         }
-        String roleOutcome = "unchanged";
 
         Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
@@ -270,11 +269,9 @@ public class ResearchGroupService {
             mapping.setResearchGroup(group);
             mapping.setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(mapping);
-            roleOutcome = "created";
         } else if (existing.get().getRole() != UserRole.PROFESSOR) {
             existing.get().setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(existing.get());
-            roleOutcome = "updated";
         }
 
         return group;
@@ -489,7 +486,12 @@ public class ResearchGroupService {
         populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.ACTIVE);
 
-        ResearchGroup saved = researchGroupRepository.save(researchGroup);
+        ResearchGroup saved;
+        try {
+            saved = researchGroupRepository.save(researchGroup);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
+        }
 
         // Assign the professor to the research group
         professor.setResearchGroup(saved);
@@ -574,6 +576,13 @@ public class ResearchGroupService {
 
         for (UUID userId : userIds) {
             User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+
+            if (
+                user.getResearchGroup() != null && user.getResearchGroup().getResearchGroupId().equals(researchGroup.getResearchGroupId())
+            ) {
+                continue;
+            }
+
             UserResearchGroupRole role = userResearchGroupRoleRepository
                 .findByUserAndResearchGroup(user, researchGroup)
                 .orElseGet(() -> {
@@ -610,7 +619,7 @@ public class ResearchGroupService {
                 user.getEmail(),
                 "You have been added to the research group " + researchGroup.getName(),
                 emailBody,
-                Language.fromCode(user.getSelectedLanguage())
+                user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
             );
         }
     }
