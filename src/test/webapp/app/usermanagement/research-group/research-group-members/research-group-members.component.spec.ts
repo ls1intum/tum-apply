@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -10,6 +11,8 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
+import { provideDialogServiceMock } from 'util/dialog.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
@@ -52,8 +55,10 @@ describe('ResearchGroupMembersComponent', () => {
       providers: [
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: AccountService, useValue: { userId: 'current-user' } },
+        provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
+        provideFontAwesomeTesting(),
       ],
     }).compileComponents();
 
@@ -247,5 +252,39 @@ describe('ResearchGroupMembersComponent', () => {
     component.members.set([memberWithLowercaseRole]);
     const row = component.tableData()[0];
     expect(row.role).toBe('Professor');
+  });
+
+  describe('openAddMembersModal', () => {
+    let dialogService: DialogService;
+
+    beforeEach(() => {
+      dialogService = TestBed.inject(DialogService);
+      mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+      fixture.detectChanges();
+    });
+
+    it('should open add members modal and reload members on close if added', () => {
+      const mockRef = {
+        onClose: of(true),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+
+      component.openAddMembersModal();
+
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(2);
+    });
+
+    it('should open add members modal and NOT reload members on close if NOT added', () => {
+      const mockRef = {
+        onClose: of(false),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+
+      component.openAddMembersModal();
+
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+    });
   });
 });
