@@ -12,6 +12,8 @@ import { KeycloakAuthenticationService, IdpProvider } from 'app/core/auth/keyclo
 import { DocumentCacheService } from 'app/service/document-cache.service';
 import { createKeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import { vi } from 'vitest';
+import { provideMessageServiceMock } from 'util/message-service.mock';
+import { provideTranslateMock } from 'util/translate.mock';
 
 function setup() {
   const server = { refreshTokens: vi.fn(), login: vi.fn(), sendOtp: vi.fn(), verifyOtp: vi.fn(), logout: vi.fn() };
@@ -33,6 +35,8 @@ function setup() {
       provideAccountServiceMock(account),
       provideAuthOrchestratorServiceMock(orchestrator),
       provideRouterMock(router),
+      provideMessageServiceMock(),
+      provideTranslateMock(),
     ],
   });
   const facade = TestBed.inject(AuthFacadeService);

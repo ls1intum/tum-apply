@@ -6,7 +6,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
 import { ToastService } from 'app/service/toast-service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
@@ -107,6 +107,9 @@ export class MyPositionsPageComponent {
   private accountService = inject(AccountService);
   private router = inject(Router);
   private toastService = inject(ToastService);
+  private translate = inject(TranslateService);
+
+  private readonly translationKey: string = 'myPositionsPage';
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -165,11 +168,11 @@ export class MyPositionsPageComponent {
   async onDeleteJob(jobId: string): Promise<void> {
     try {
       await firstValueFrom(this.jobService.deleteJob(jobId));
-      this.toastService.showSuccess({ detail: 'Job successfully deleted' });
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteJobSuccess`);
       await this.loadJobs();
     } catch (error) {
       if (error instanceof Error) {
-        this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
+        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.deleteJobFailed`, { detail: error.message });
       }
     }
   }
@@ -177,11 +180,11 @@ export class MyPositionsPageComponent {
   async onCloseJob(jobId: string): Promise<void> {
     try {
       await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
-      this.toastService.showSuccess({ detail: 'Job successfully closed' });
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
       await this.loadJobs();
     } catch (error) {
       if (error instanceof Error) {
-        this.toastService.showError({ detail: `Error closing job: ${error.message}` });
+        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.closeJobFailed`, { detail: error.message });
       }
     }
   }
