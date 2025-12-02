@@ -100,9 +100,7 @@ export class ResearchGroupAddMembersComponent {
     this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
 
     try {
-      const response = await lastValueFrom(
-        this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query || undefined),
-      );
+      const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
       this.totalRecords.set(response.totalElements ?? 0);
       this.users.set(response.content ?? []);
     } catch {
