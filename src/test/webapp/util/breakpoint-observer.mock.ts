@@ -7,6 +7,14 @@ export type BreakpointObserverMock = {
   observe: ReturnType<typeof vi.fn>;
 };
 
+function buildBreakpoints(breakpoints: Partial<Record<string, boolean>> = {}) {
+  return {
+    [Breakpoints.XSmall]: breakpoints[Breakpoints.XSmall] ?? false,
+    [Breakpoints.Small]: breakpoints[Breakpoints.Small] ?? false,
+    [Breakpoints.XLarge]: breakpoints[Breakpoints.XLarge] ?? false,
+  };
+}
+
 export function createBreakpointObserverMock(
   breakpointState: {
     matches?: boolean;
@@ -17,11 +25,7 @@ export function createBreakpointObserverMock(
     observe: vi.fn(() =>
       of({
         matches: breakpointState.matches ?? false,
-        breakpoints: {
-          [Breakpoints.XSmall]: breakpointState.breakpoints?.[Breakpoints.XSmall] ?? false,
-          [Breakpoints.Small]: breakpointState.breakpoints?.[Breakpoints.Small] ?? false,
-          [Breakpoints.XLarge]: breakpointState.breakpoints?.[Breakpoints.XLarge] ?? false,
-        },
+        breakpoints: buildBreakpoints(breakpointState.breakpoints),
       }),
     ),
   };
