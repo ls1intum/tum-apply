@@ -165,7 +165,7 @@ export class ResearchGroupAdminView {
     });
 
     dialogRef?.onClose.subscribe(result => {
-      if (result !== null && result !== undefined) {
+      if (result === true) {
         void this.loadResearchGroups();
       }
     });
