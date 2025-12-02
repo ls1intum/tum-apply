@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
+import { formatEnumValue } from 'app/shared/util/text.util';
 import { Button, ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
@@ -494,8 +495,8 @@ export class JobDetailComponent {
       lastModifiedAt = dayjs(jobDetailDTO.lastModifiedAt).format('DD.MM.YYYY');
     }
 
-    const location = data.location ?? '';
-    const fundingType = data.fundingType ?? '';
+    const location = isForm ? formatEnumValue(data.location) : (data.location ?? '');
+    const fundingType = isForm ? formatEnumValue(data.fundingType) : (data.fundingType ?? '');
     const startDate = data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '';
     const endDate = data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '';
 

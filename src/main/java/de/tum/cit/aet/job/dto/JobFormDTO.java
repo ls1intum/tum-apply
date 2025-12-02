@@ -18,56 +18,18 @@ public record JobFormDTO(
     String researchArea,
     @NotNull String fieldOfStudies,
     @NotNull UUID supervisingProfessor,
-    @NotNull String location,
+    @NotNull Campus location,
     LocalDate startDate,
     LocalDate endDate,
     Integer workload,
     Integer contractDuration,
-    String fundingType,
+    FundingType fundingType,
     String description,
     String tasks,
     String requirements,
     @NotNull JobState state,
-    UUID imageId
+    UUID imageId // Optional job banner image
 ) {
-    public JobFormDTO(
-        UUID jobId,
-        @NotNull String title,
-        String researchArea,
-        @NotNull String fieldOfStudies,
-        @NotNull UUID supervisingProfessor,
-        @NotNull Campus location,
-        LocalDate startDate,
-        LocalDate endDate,
-        Integer workload,
-        Integer contractDuration,
-        FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
-        @NotNull JobState state,
-        UUID imageId
-    ) {
-        this(
-            jobId,
-            title,
-            researchArea,
-            fieldOfStudies,
-            supervisingProfessor,
-            UiTextFormatter.formatEnumValue(location),
-            startDate,
-            endDate,
-            workload,
-            contractDuration,
-            UiTextFormatter.formatEnumValue(fundingType),
-            description,
-            tasks,
-            requirements,
-            state,
-            imageId
-        );
-    }
-
     /**
      * @param job The job entity to convert
      * @return A JobFormDTO containing the data from the job entity.

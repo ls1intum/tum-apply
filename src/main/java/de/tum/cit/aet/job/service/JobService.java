@@ -338,14 +338,12 @@ public class JobService {
         job.setTitle(dto.title());
         job.setResearchArea(dto.researchArea());
         job.setFieldOfStudies(dto.fieldOfStudies());
-        job.setLocation(Campus.valueOf(dto.location().toUpperCase().replace(" ", "_")));
+        job.setLocation(dto.location());
         job.setStartDate(dto.startDate());
         job.setEndDate(dto.endDate());
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
-        if (dto.fundingType() != null && !dto.fundingType().isEmpty()) {
-            job.setFundingType(FundingType.valueOf(dto.fundingType().toUpperCase().replace(" ", "_")));
-        }
+        job.setFundingType(dto.fundingType());
         job.setDescription(dto.description());
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
