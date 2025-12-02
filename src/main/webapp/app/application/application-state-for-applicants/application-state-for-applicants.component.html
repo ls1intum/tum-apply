@@ -3,7 +3,7 @@
     <jhi-tag [text]="'entity.applicationOverview.state.draft' | translate" color="info" width="7rem" />
   }
   @case ('SENT') {
-    <jhi-tag [text]="'entity.applicationOverview.state.submitted' | translate" color="primary" width="7rem" />
+    <jhi-tag [text]="'entity.applicationOverview.state.submitted' | translate" color="secondary" width="7rem" />
   }
   @case ('ACCEPTED') {
     <jhi-tag [text]="'entity.applicationOverview.state.accepted' | translate" color="success" width="7rem" />
@@ -15,10 +15,10 @@
     <jhi-tag [text]="'entity.applicationOverview.state.rejected' | translate" color="danger" width="7rem" />
   }
   @case ('WITHDRAWN') {
-    <jhi-tag [text]="'entity.applicationOverview.state.withdrawn' | translate" color="contrast" width="7rem" />
+    <jhi-tag [text]="'entity.applicationOverview.state.withdrawn' | translate" color="info" width="7rem" />
   }
   @case ('JOB_CLOSED') {
-    <jhi-tag [text]="'entity.applicationOverview.state.closed' | translate" color="contrast" width="7rem" />
+    <jhi-tag [text]="'entity.applicationOverview.state.closed' | translate" color="info" width="7rem" />
   }
   @default {
     <jhi-tag [text]="state()" color="warn" width="7rem" />

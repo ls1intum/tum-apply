@@ -777,10 +777,6 @@ export const TUMApplyPreset = definePreset(Lara, {
       },
       colorScheme: {
         light: {
-          primary: {
-            background: '{primary.color}',
-            color: '{base.black}',
-          },
           secondary: {
             background: '{secondary.color}',
             color: '{base.black}',
@@ -807,10 +803,6 @@ export const TUMApplyPreset = definePreset(Lara, {
           },
         },
         dark: {
-          primary: {
-            background: '{primary.color}',
-            color: '{base.black}',
-          },
           secondary: {
             background: '{secondary.color}',
             color: '{base.black}',
