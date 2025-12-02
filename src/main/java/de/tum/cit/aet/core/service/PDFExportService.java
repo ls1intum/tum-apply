@@ -213,12 +213,12 @@ public class PDFExportService {
             labels,
             new JobOverviewData(
                 supervisingProfessorName,
-                UiTextFormatter.formatEnumValue(jobFormDTO.location()),
+                jobFormDTO.location(),
                 jobFormDTO.fieldOfStudies(),
                 jobFormDTO.researchArea(),
                 jobFormDTO.workload() != null ? jobFormDTO.workload() + labels.get("hoursPerWeek") : "-",
                 jobFormDTO.contractDuration() != null ? jobFormDTO.contractDuration() + labels.get("years") : "-",
-                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType().name() : "-",
+                jobFormDTO.fundingType() != null ? jobFormDTO.fundingType() : "-",
                 jobFormDTO.startDate() != null ? jobFormDTO.startDate().format(DATE_FORMATTER) : "-",
                 jobFormDTO.endDate() != null ? jobFormDTO.endDate().format(DATE_FORMATTER) : "-"
             )

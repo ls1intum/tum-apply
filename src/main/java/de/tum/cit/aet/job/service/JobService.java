@@ -15,6 +15,8 @@ import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.evaluation.constants.RejectReason;
 import de.tum.cit.aet.interview.service.InterviewService;
+import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
@@ -336,12 +338,14 @@ public class JobService {
         job.setTitle(dto.title());
         job.setResearchArea(dto.researchArea());
         job.setFieldOfStudies(dto.fieldOfStudies());
-        job.setLocation(dto.location());
+        job.setLocation(Campus.valueOf(dto.location().toUpperCase().replace(" ", "_")));
         job.setStartDate(dto.startDate());
         job.setEndDate(dto.endDate());
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
-        job.setFundingType(dto.fundingType());
+        if (dto.fundingType() != null && !dto.fundingType().isEmpty()) {
+            job.setFundingType(FundingType.valueOf(dto.fundingType().toUpperCase().replace(" ", "_")));
+        }
         job.setDescription(dto.description());
         job.setTasks(dto.tasks());
         job.setRequirements(dto.requirements());
