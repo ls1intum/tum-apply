@@ -947,10 +947,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         @Test
         void addMembersToResearchGroupAsProfessorAddsMembers() {
             User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.me@tum.de", "Add", "Me", "add123");
-            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(
-                List.of(userToAdd.getUserId()),
-                researchGroup.getResearchGroupId()
-            );
+            KeycloakUserDTO kcUser = UserTestData.kcUserFrom(userToAdd);
+            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
 
             api
                 .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -963,10 +961,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         @Test
         void addMembersToResearchGroupAsAdminAddsMembers() {
             User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.admin@tum.de", "Add", "Admin", "adm999");
-            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(
-                List.of(userToAdd.getUserId()),
-                researchGroup.getResearchGroupId()
-            );
+            KeycloakUserDTO kcUser = UserTestData.kcUserFrom(userToAdd);
+            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
             UUID adminId = UUID.randomUUID();
 
             api.with(JwtPostProcessors.jwtUser(adminId, "ROLE_ADMIN")).postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
@@ -976,11 +972,26 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void addMembersToResearchGroupWithNonExistentUserThrowsException() {
-            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(
-                List.of(UUID.randomUUID()),
-                researchGroup.getResearchGroupId()
-            );
+        void addMembersToResearchGroupWithNonExistentUserCreatesUser() {
+            UUID randomId = UUID.randomUUID();
+            KeycloakUserDTO kcUser = UserTestData.newKeycloakUser(randomId, null, "New", "User", "new.user@tum.de");
+            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
+
+            api
+                .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
+
+            User created = userRepository.findById(randomId).orElseThrow();
+            assertThat(created.getResearchGroup()).isNotNull();
+            assertThat(created.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
+            assertThat(created.getEmail()).isEqualTo("new.user@tum.de");
+        }
+
+        @Test
+        void addMembersToResearchGroupWithNonExistentGroupThrowsException() {
+            User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.fail@tum.de", "Add", "Fail", "fail123");
+            KeycloakUserDTO kcUser = UserTestData.kcUserFrom(userToAdd);
+            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), UUID.randomUUID());
 
             api
                 .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
@@ -988,13 +999,42 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void addMembersToResearchGroupWithNonExistentGroupThrowsException() {
-            User userToAdd = UserTestData.createUserWithoutResearchGroup(userRepository, "add.fail@tum.de", "Add", "Fail", "fail123");
-            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(userToAdd.getUserId()), UUID.randomUUID());
+        void addMembersToResearchGroupWithAlreadyMemberIsNoOp() {
+            // create a user and assign to the same research group already
+            User alreadyMember = UserTestData.createUserWithoutResearchGroup(userRepository, "already@tum.de", "Al", "Ready", "ab12abc");
+            alreadyMember.setResearchGroup(researchGroup);
+            userRepository.save(alreadyMember);
+
+            KeycloakUserDTO kcUser = UserTestData.kcUserFrom(alreadyMember);
+            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
 
             api
                 .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 404);
+                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
+
+            User u = userRepository.findById(alreadyMember.getUserId()).orElseThrow();
+            assertThat(u.getResearchGroup()).isNotNull();
+            assertThat(u.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
+        }
+
+        @Test
+        void addMembersToResearchGroupAsAdminAddsMultipleMembers() {
+            User userA = UserTestData.createUserWithoutResearchGroup(userRepository, "multi1@tum.de", "Multi", "One", "multi01");
+            User userB = UserTestData.createUserWithoutResearchGroup(userRepository, "multi2@tum.de", "Multi", "Two", "multi02");
+
+            KeycloakUserDTO kcA = UserTestData.kcUserFrom(userA);
+            KeycloakUserDTO kcB = UserTestData.kcUserFrom(userB);
+            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcA, kcB), researchGroup.getResearchGroupId());
+
+            UUID adminId = UUID.randomUUID();
+            api.with(JwtPostProcessors.jwtUser(adminId, "ROLE_ADMIN")).postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
+
+            User ua = userRepository.findById(userA.getUserId()).orElseThrow();
+            User ub = userRepository.findById(userB.getUserId()).orElseThrow();
+            assertThat(ua.getResearchGroup()).isNotNull();
+            assertThat(ub.getResearchGroup()).isNotNull();
+            assertThat(ua.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
+            assertThat(ub.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
         }
     }
 }

@@ -7,8 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { UserDTO } from 'app/generated/model/userDTO';
-import { ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
+import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -38,7 +37,7 @@ export class ResearchGroupAddMembersComponent {
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
 
-  users = signal<UserDTO[]>([]);
+  users = signal<KeycloakUserDTO[]>([]);
   selectedUserCount = computed(() => this.selectedUserIds().size);
 
   userService = inject(UserResourceApiService);
@@ -135,8 +134,8 @@ export class ResearchGroupAddMembersComponent {
     void this.loadAvailableUsers(this.searchQuery() || undefined);
   }
 
-  toggleUserSelection(user: UserDTO): void {
-    const userId = user.userId;
+  toggleUserSelection(user: KeycloakUserDTO): void {
+    const userId = user.id;
     if (!userId) {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
       return;
@@ -174,8 +173,8 @@ export class ResearchGroupAddMembersComponent {
     }
   }
 
-  isUserSelected(user: UserDTO): boolean {
-    const userId = user.userId;
+  isUserSelected(user: KeycloakUserDTO): boolean {
+    const userId = user.id;
     if (!userId) {
       return false;
     }

@@ -1,39 +1,32 @@
 package de.tum.cit.aet.usermanagement.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.exception.AccessDeniedException;
-import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
-import de.tum.cit.aet.core.exception.BadRequestException;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
+import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
-import de.tum.cit.aet.usermanagement.domain.Department;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.domain.School;
-import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.domain.*;
 import de.tum.cit.aet.usermanagement.dto.*;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
-import de.tum.cit.aet.utility.testdata.DepartmentTestData;
-import de.tum.cit.aet.utility.testdata.PageTestData;
-import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
-import de.tum.cit.aet.utility.testdata.SchoolTestData;
-import de.tum.cit.aet.utility.testdata.UserTestData;
+import de.tum.cit.aet.utility.testdata.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -49,6 +42,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class ResearchGroupServiceTest {
+
+    private static final UUID TEST_USER_ID = UUID.randomUUID();
+    private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
+    private static final UUID TEST_SCHOOL_ID = UUID.randomUUID();
+    private static final UUID TEST_DEPARTMENT_ID = UUID.randomUUID();
+    private static final String SUPPORT_EMAIL = "support@test.com";
+    private static final UUID OTHER_USER_ID = UUID.randomUUID();
 
     @Mock
     private CurrentUserService currentUserService;
@@ -70,13 +70,6 @@ class ResearchGroupServiceTest {
 
     @InjectMocks
     private ResearchGroupService researchGroupService;
-
-    private static final UUID TEST_USER_ID = UUID.randomUUID();
-    private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
-    private static final UUID TEST_SCHOOL_ID = UUID.randomUUID();
-    private static final UUID TEST_DEPARTMENT_ID = UUID.randomUUID();
-    private static final String SUPPORT_EMAIL = "support@test.com";
-    private static final UUID OTHER_USER_ID = UUID.randomUUID();
 
     private User testUser;
     private School testSchool;
@@ -513,7 +506,6 @@ class ResearchGroupServiceTest {
             when(departmentRepository.findByIdElseThrow(TEST_DEPARTMENT_ID)).thenReturn(testDepartment);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(false);
             when(researchGroupRepository.save(any(ResearchGroup.class))).thenAnswer(invocation -> invocation.getArgument(0));
-            when(userResearchGroupRoleRepository.findAllByUser(testUser)).thenReturn(Set.of());
 
             // Act
             ResearchGroup result = researchGroupService.createProfessorResearchGroupRequest(request);

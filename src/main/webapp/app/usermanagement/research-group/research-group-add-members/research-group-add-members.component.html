@@ -33,7 +33,7 @@
     }
 
     @if (users().length !== 0) {
-      @for (user of users(); track user.userId) {
+      @for (user of users(); track user.id) {
         <div
           class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
           [class.bg-blue-50]="isUserSelected(user)"
