@@ -36,7 +36,8 @@ describe('LocalStorageService', () => {
     service.saveApplicationDraft(draft);
     const raw = localStorage.getItem('application_draft_A123');
     expect(raw).not.toBeNull();
-    expect(JSON.parse(raw!).applicationId).toBe('A123');
+    if (!raw) throw new Error('Draft not found in localStorage');
+    expect(JSON.parse(raw).applicationId).toBe('A123');
   });
 
   it('saves application draft with jobId when applicationId absent', () => {
@@ -49,7 +50,8 @@ describe('LocalStorageService', () => {
     service.saveApplicationDraft(draftOnlyJob);
     const raw = localStorage.getItem('application_draft_job_J123');
     expect(raw).not.toBeNull();
-    expect(JSON.parse(raw!).jobId).toBe('J123');
+    if (!raw) throw new Error('Draft not found in localStorage');
+    expect(JSON.parse(raw).jobId).toBe('J123');
   });
 
   it('loads application draft when not expired', () => {
@@ -57,7 +59,8 @@ describe('LocalStorageService', () => {
     service.saveApplicationDraft(draft);
     const loaded = service.loadApplicationDraft(draft.applicationId, undefined);
     expect(loaded).not.toBeNull();
-    expect(loaded?.applicationId).toBe('A123');
+    if (!loaded) throw new Error('Loaded draft is null');
+    expect(loaded.applicationId).toBe('A123');
   });
 
   it('returns null when draft expired (older than 30 days) and clears it', () => {
@@ -77,10 +80,9 @@ describe('LocalStorageService', () => {
   });
 
   it('throws error when neither applicationId nor jobId provided to load', () => {
-    // Access private helper via bracket notation without casting entire service
-    expect(() =>
-      (service as unknown as { getApplicationKey: (a?: string, b?: string) => string }).getApplicationKey(undefined, undefined),
-    ).toThrowError();
+    // Access private helper via bracket notation without any cast
+    const getApplicationKey = (service as { [key: string]: any })['getApplicationKey'];
+    expect(() => getApplicationKey.call(service, undefined, undefined)).toThrowError();
   });
 
   it('rethrows error when JSON.stringify fails (circular data)', () => {

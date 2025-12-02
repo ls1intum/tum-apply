@@ -111,8 +111,11 @@ describe('grade-format.validator', () => {
     });
 
     it('should detect boundary mismatch', () => {
-      group.get('upper')!.setValue('B');
-      group.get('lower')!.setValue('A');
+      const upper = group.get('upper');
+      const lower = group.get('lower');
+      if (!upper || !lower) throw new Error('Form controls missing');
+      upper.setValue('B');
+      lower.setValue('A');
       expect(validator(group)).toEqual({ formatMismatch: true });
     });
   });
