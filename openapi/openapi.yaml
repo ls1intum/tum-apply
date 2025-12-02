@@ -2039,16 +2039,10 @@ components:
         description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
-        fundingType:
-          type: string
-          enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
-            GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        fundingType: {type: string}
         imageId: {type: string, format: uuid}
         jobId: {type: string, format: uuid}
-        location:
-          type: string
-          enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
-            SINGAPORE]
+        location: {type: string}
         requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
