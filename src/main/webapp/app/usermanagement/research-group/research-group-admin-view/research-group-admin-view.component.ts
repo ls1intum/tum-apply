@@ -177,6 +177,7 @@ export class ResearchGroupAdminView {
       data: { researchGroupId },
       styleClass: 'research-group-add-members-dialog',
       style: { background: 'var(--p-background-default)', width: '60rem', maxWidth: '60rem' },
+      draggable: false,
       closable: true,
       modal: true,
     });

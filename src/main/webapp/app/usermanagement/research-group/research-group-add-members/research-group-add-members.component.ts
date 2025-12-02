@@ -33,6 +33,7 @@ export class ResearchGroupAddMembersComponent {
   totalRecords = signal<number>(0);
   page = signal<number>(0);
   pageSize = signal<number>(10);
+  loading = signal<boolean>(false);
 
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
@@ -44,21 +45,76 @@ export class ResearchGroupAddMembersComponent {
   researchGroupService = inject(ResearchGroupResourceApiService);
   toastService = inject(ToastService);
 
+  public readonly MIN_SEARCH_LENGTH = 3;
+
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);
+  // Delay before showing the loading spinner to avoid flickering on fast queries
+  private readonly LOADER_DELAY_MS = 250;
+  private loaderTimeout: number | null = null;
   private selectedUserIds = signal<Set<string>>(new Set());
 
   constructor() {
     void this.loadAvailableUsers();
   }
 
+  /**
+   * Loads the available users for the research group based on the provided search query.
+   * This method handles debouncing, manages a loading spinner, and updates the user list
+   * and total record count based on the response from the user service.
+   *
+   * @param searchQuery - An optional string representing the search query to filter users.
+   *                      If not provided, the current search query is used.
+   *
+   * @returns A promise that resolves when the operation is complete.
+   *
+   * Behavior:
+   * - If the search query is empty and there are existing users, the user list and total
+   *   record count are cleared.
+   * - If the search query is empty and there are no users, the method exits early.
+   * - If the search query is shorter than the minimum search length, the method exits early.
+   * - A loading spinner is displayed after a delay while the user data is being fetched.
+   * - Ensures that the loading spinner is hidden and any pending timers are cleared.
+   */
   async loadAvailableUsers(searchQuery?: string): Promise<void> {
+    const rawQuery = searchQuery ?? this.searchQuery();
+    const query = rawQuery.trim();
+
+    if (query === '' && this.users().length > 0) {
+      this.users.set([]);
+      this.totalRecords.set(0);
+      return;
+    }
+
+    if (query === '' && this.users().length === 0) {
+      return;
+    }
+
+    if (query !== '' && query.length < this.MIN_SEARCH_LENGTH) {
+      return;
+    }
+
+    if (this.loaderTimeout) {
+      clearTimeout(this.loaderTimeout);
+      this.loaderTimeout = null;
+    }
+    this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
+
     try {
-      const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), searchQuery));
+      const response = await lastValueFrom(
+        this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query || undefined),
+      );
       this.totalRecords.set(response.totalElements ?? 0);
       this.users.set(response.content ?? []);
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
+    } finally {
+      // clear pending timer and ensure spinner is hidden
+      if (this.loaderTimeout) {
+        clearTimeout(this.loaderTimeout);
+        this.loaderTimeout = null;
+      }
+      this.loading.set(false);
     }
   }
 

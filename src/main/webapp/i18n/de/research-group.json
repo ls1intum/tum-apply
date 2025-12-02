@@ -92,6 +92,7 @@
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
       "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
+      "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
       "me": "Ich",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
