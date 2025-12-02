@@ -39,6 +39,15 @@
         "label": "Location",
         "placeholder": "Select a Location..."
       },
+        "locations": {
+        "Garching": "Garching",
+        "GarchingHochbrueck": "Garching Hochbrueck",
+        "Heilbronn": "Heilbronn",
+        "Munich": "Munich",
+        "Singapore": "Singapore",
+        "Straubing": "Straubing",
+        "Weihenstephan": "Weihenstephan"
+      },
       "startDate": {
         "label": "Start Date of Job",
         "placeholder": "Select a Start Date...",
@@ -62,6 +71,14 @@
       "fundingType": {
         "label": "Funding Type",
         "placeholder": "Select a Funding Type..."
+      },
+      "fundingTypes": {
+        "FullyFunded": "Fully Funded",
+        "GovernmentFunded": "Government Funded",
+        "IndustrySponsored": "Industry Sponsored",
+        "ResearchGrant": "Research Grant",
+        "Scholarship": "Scholarship",
+        "SelfFunded": "Self Funded"
       }
     },
     "positionDetailsSection": {

@@ -4,13 +4,13 @@ import { JobFormDTO } from '../generated/model/jobFormDTO';
  * Dropdown options used in the Job Creation Form
  */
 export const locations = [
-  { name: 'Garching', value: JobFormDTO.LocationEnum.Garching },
-  { name: 'Garching Hochbrueck', value: JobFormDTO.LocationEnum.GarchingHochbrueck },
-  { name: 'Heilbronn', value: JobFormDTO.LocationEnum.Heilbronn },
-  { name: 'Munich', value: JobFormDTO.LocationEnum.Munich },
-  { name: 'Singapore', value: JobFormDTO.LocationEnum.Singapore },
-  { name: 'Straubing', value: JobFormDTO.LocationEnum.Straubing },
-  { name: 'Weihenstephan', value: JobFormDTO.LocationEnum.Weihenstephan },
+  { value: JobFormDTO.LocationEnum.Garching, name: 'jobCreationForm.basicInformationSection.locations.Garching' },
+  { value: JobFormDTO.LocationEnum.GarchingHochbrueck, name: 'jobCreationForm.basicInformationSection.locations.GarchingHochbrueck' },
+  { value: JobFormDTO.LocationEnum.Heilbronn, name: 'jobCreationForm.basicInformationSection.locations.Heilbronn' },
+  { value: JobFormDTO.LocationEnum.Munich, name: 'jobCreationForm.basicInformationSection.locations.Munich' },
+  { value: JobFormDTO.LocationEnum.Singapore, name: 'jobCreationForm.basicInformationSection.locations.Singapore' },
+  { value: JobFormDTO.LocationEnum.Straubing, name: 'jobCreationForm.basicInformationSection.locations.Straubing' },
+  { value: JobFormDTO.LocationEnum.Weihenstephan, name: 'jobCreationForm.basicInformationSection.locations.Weihenstephan' },
 ];
 export const fieldsOfStudies = [
   { name: 'Aerospace Engineering', value: 'Aerospace Engineering' },
@@ -47,12 +47,12 @@ export const fieldsOfStudies = [
   { name: 'Urban Planning', value: 'Urban Planning' },
 ];
 export const fundingTypes = [
-  { name: 'Fully Funded', value: JobFormDTO.FundingTypeEnum.FullyFunded },
-  { name: 'Government Funding', value: JobFormDTO.FundingTypeEnum.GovernmentFunded },
-  { name: 'Industry Sponsored', value: JobFormDTO.FundingTypeEnum.IndustrySponsored },
-  { name: 'Research Grant', value: JobFormDTO.FundingTypeEnum.ResearchGrant },
-  { name: 'Scholarship', value: JobFormDTO.FundingTypeEnum.Scholarship },
-  { name: 'Self Funding', value: JobFormDTO.FundingTypeEnum.SelfFunded },
+  { value: JobFormDTO.FundingTypeEnum.FullyFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.FullyFunded' },
+  { value: JobFormDTO.FundingTypeEnum.GovernmentFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.GovernmentFunded' },
+  { value: JobFormDTO.FundingTypeEnum.IndustrySponsored, name: 'jobCreationForm.basicInformationSection.fundingTypes.IndustrySponsored' },
+  { value: JobFormDTO.FundingTypeEnum.ResearchGrant, name: 'jobCreationForm.basicInformationSection.fundingTypes.ResearchGrant' },
+  { value: JobFormDTO.FundingTypeEnum.Scholarship, name: 'jobCreationForm.basicInformationSection.fundingTypes.Scholarship' },
+  { value: JobFormDTO.FundingTypeEnum.SelfFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.SelfFunded' },
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));
