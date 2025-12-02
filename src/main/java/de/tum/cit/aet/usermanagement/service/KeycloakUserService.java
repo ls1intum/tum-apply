@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -39,22 +40,31 @@ public class KeycloakUserService {
             .build();
     }
 
-    public record KeycloakUserInformation(UUID id, String username, String firstName, String lastName, String email) {}
-
     /**
      * Retrieves all Keycloak users matching the given search key.
      * The search is performed against username, first name, last name, and email.
      *
      * @param searchKey the search key to filter users; must not be {@code null}
      * @param pageDTO   pagination information
-     * @return a list of {@link KeycloakUserInformation} matching the search criteria
+     * @return a list of {@link KeycloakUserDTO} matching the search criteria
      */
+    private static final int SAFETY_MAX = 10000;
+    private static final Pattern TUM_DOMAIN_PATTERN = Pattern.compile("@[^@]*tum[^@]*$", Pattern.CASE_INSENSITIVE);
+
     public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
-        int firstResult = pageDTO.pageNumber() * pageDTO.pageSize();
-        int maxResults = pageDTO.pageSize();
+        // Keycloak search does not allow domain-specific filtering, so we fetch a reasonably sized
+        // chunk and filter locally by users whose email domain contains "tum". We then apply
+        // pagination locally to return exactly the requested page of filtered results.
+        int firstResult = 0; // always fetch from beginning and filter
+        int maxResults = SAFETY_MAX;
         List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
-        return users
+        if (users == null || users.isEmpty()) {
+            return List.of();
+        }
+
+        List<KeycloakUserDTO> filtered = users
             .stream()
+            .filter(u -> isTumDomain(u.getEmail()))
             .map(user ->
                 new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
@@ -65,6 +75,14 @@ public class KeycloakUserService {
                 )
             )
             .toList();
+
+        // apply pagination locally
+        int start = pageDTO.pageNumber() * pageDTO.pageSize();
+        if (start >= filtered.size()) {
+            return List.of();
+        }
+        int end = Math.min(start + pageDTO.pageSize(), filtered.size());
+        return filtered.subList(start, end);
     }
 
     /**
@@ -75,12 +93,22 @@ public class KeycloakUserService {
      * @return total number of matching users
      */
     public long countUsers(String searchKey) {
-        // Keycloak does not offer a direct count API for search results. We therefore fetch all users
-        // matching the searchKey with a sufficiently large max parameter and return the size.
-        // Choose a reasonable upper bound based on expected dataset size.
-        final int SAFETY_MAX = 10000;
+        // Count only the users matching the searchKey which also have a TUM domain.
         List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, SAFETY_MAX);
-        return users == null ? 0L : users.size();
+        if (users == null || users.isEmpty()) {
+            return 0L;
+        }
+        return users
+            .stream()
+            .filter(u -> isTumDomain(u.getEmail()))
+            .count();
+    }
+
+    private static boolean isTumDomain(String email) {
+        if (email == null) {
+            return false;
+        }
+        return TUM_DOMAIN_PATTERN.matcher(email).find();
     }
 
     /**
