@@ -52,7 +52,6 @@ public class KeycloakUserService {
     public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
         int firstResult = pageDTO.pageNumber() * pageDTO.pageSize();
         int maxResults = pageDTO.pageSize();
-
         List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
         return users
             .stream()
@@ -66,6 +65,22 @@ public class KeycloakUserService {
                 )
             )
             .toList();
+    }
+
+    /**
+     * Returns the number of Keycloak users matching the given search key.
+     * Note: Querying all users for a count may be expensive. Use reasonable limits or adjust as needed.
+     *
+     * @param searchKey filter for username, first name, last name or email
+     * @return total number of matching users
+     */
+    public long countUsers(String searchKey) {
+        // Keycloak does not offer a direct count API for search results. We therefore fetch all users
+        // matching the searchKey with a sufficiently large max parameter and return the size.
+        // Choose a reasonable upper bound based on expected dataset size.
+        final int SAFETY_MAX = 10000;
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, SAFETY_MAX);
+        return users == null ? 0L : users.size();
     }
 
     /**

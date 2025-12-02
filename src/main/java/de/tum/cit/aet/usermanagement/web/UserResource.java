@@ -93,7 +93,8 @@ public class UserResource {
     ) {
         log.info("Fetching available users for research group with search query: {}", searchQuery);
         List<KeycloakUserDTO> users = keycloakUserService.getAllUsers(searchQuery, pageDTO);
-        return ResponseEntity.ok(new PageResponseDTO<KeycloakUserDTO>(users, users.size()));
+        long total = keycloakUserService.countUsers(searchQuery);
+        return ResponseEntity.ok(new PageResponseDTO<KeycloakUserDTO>(users, total));
     }
 
     public record UpdatePasswordDTO(@NotBlank String newPassword) {}
