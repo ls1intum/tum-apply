@@ -96,11 +96,11 @@ export class MyPositionsPageComponent {
 
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
-  readonly stateSeverityMap = signal<Record<string, 'info' | 'success' | 'secondary' | 'primary'>>({
+  readonly stateSeverityMap = signal<Record<string, 'info' | 'success' | 'danger' | 'warn'>>({
     DRAFT: 'info',
     PUBLISHED: 'success',
-    CLOSED: 'info',
-    APPLICANT_FOUND: 'secondary',
+    CLOSED: 'danger',
+    APPLICANT_FOUND: 'warn',
   });
 
   private jobService = inject(JobResourceApiService);

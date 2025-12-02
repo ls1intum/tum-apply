@@ -782,7 +782,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             color: '{base.black}',
           },
           info: {
-            background: '{neutral.300}',
+            background: '{neutral.400}',
             color: '{info.inverseColor}',
           },
           success: {
@@ -790,7 +790,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             color: '{success.inverseColor}',
           },
           warn: {
-            background: '{warn.color}',
+            background: '{warn.400}',
             color: '{warn.inverseColor}',
           },
           danger: {
@@ -798,33 +798,33 @@ export const TUMApplyPreset = definePreset(Lara, {
             color: '{danger.inverseColor}',
           },
           contrast: {
-            background: '{accent.color}',
+            background: '{accent.400}',
             color: '{base.black}',
           },
         },
         dark: {
           secondary: {
-            background: '{secondary.color}',
+            background: '{secondary.400}',
             color: '{base.black}',
           },
           info: {
-            background: '{neutral.300}',
+            background: '{neutral.400}',
             color: '{info.inverseColor}',
           },
           success: {
-            background: '{success.color}',
+            background: '{success.400}',
             color: '{success.inverseColor}',
           },
           warn: {
-            background: '{warn.color}',
+            background: '{warn.400}',
             color: '{warn.inverseColor}',
           },
           danger: {
-            background: '{danger.color}',
+            background: '{danger.400}',
             color: '{danger.inverseColor}',
           },
           contrast: {
-            background: '{accent.color}',
+            background: '{accent.400}',
             color: '{base.black}',
           },
         },
