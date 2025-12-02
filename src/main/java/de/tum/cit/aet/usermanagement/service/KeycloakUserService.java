@@ -46,6 +46,7 @@ public class KeycloakUserService {
      * The search is performed against username, first name, last name, and email.
      *
      * @param searchKey the search key to filter users; must not be {@code null}
+     * @param pageDTO   pagination information
      * @return a list of {@link KeycloakUserInformation} matching the search criteria
      */
     public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
