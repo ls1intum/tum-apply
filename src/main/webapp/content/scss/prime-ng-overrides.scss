@@ -28,3 +28,34 @@ p-step[data-p-active='true'] .p-step-title {
   filter: drop-shadow(0 0 0.075rem white);
   background: rgba(255, 255, 255, 0.05);
 }
+
+/* -------------------------------
+   Custom Global Styles for Tags
+---------------------------------- */
+.p-tag {
+  border: 0.1rem solid var(--p-border-default) !important;
+}
+
+.p-tag-success {
+  border-color: var(--p-success-500) !important;
+}
+
+.p-tag-info {
+  border-color: var(--p-neutral-500) !important;
+}
+
+.p-tag-secondary {
+  border-color: var(--p-secondary-500) !important;
+}
+
+.p-tag-danger {
+  border-color: var(--p-danger-500) !important;
+}
+
+.p-tag-warn {
+  border-color: var(--p-warn-500) !important;
+}
+
+.p-tag-contrast {
+  border-color: var(--p-accent-500) !important;
+}

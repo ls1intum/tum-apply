@@ -778,53 +778,53 @@ export const TUMApplyPreset = definePreset(Lara, {
       colorScheme: {
         light: {
           secondary: {
-            background: '{secondary.400}',
+            background: '{secondary.100}',
             color: '{base.black}',
           },
           info: {
-            background: '{neutral.400}',
+            background: '{neutral.100}',
             color: '{info.inverseColor}',
           },
           success: {
-            background: '{success.400}',
+            background: '{success.100}',
             color: '{success.inverseColor}',
           },
           warn: {
-            background: '{warn.400}',
+            background: '{warn.100}',
             color: '{warn.inverseColor}',
           },
           danger: {
-            background: '{danger.400}',
+            background: '{danger.100}',
             color: '{danger.inverseColor}',
           },
           contrast: {
-            background: '{accent.400}',
+            background: '{accent.100}',
             color: '{base.black}',
           },
         },
         dark: {
           secondary: {
-            background: '{secondary.400}',
+            background: '{secondary.300}',
             color: '{base.black}',
           },
           info: {
-            background: '{neutral.400}',
+            background: '{neutral.300}',
             color: '{info.inverseColor}',
           },
           success: {
-            background: '{success.400}',
+            background: '{success.300}',
             color: '{success.inverseColor}',
           },
           warn: {
-            background: '{warn.400}',
+            background: '{warn.300}',
             color: '{warn.inverseColor}',
           },
           danger: {
-            background: '{danger.400}',
+            background: '{danger.300}',
             color: '{danger.inverseColor}',
           },
           contrast: {
-            background: '{accent.400}',
+            background: '{accent.300}',
             color: '{base.black}',
           },
         },
