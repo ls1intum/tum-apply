@@ -33,11 +33,11 @@ type ThemeOption = 'light' | 'dark' | 'blossom';
 export class HeaderComponent {
   bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
     const observer = new MutationObserver(handler as MutationCallback);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return () => observer.disconnect();
-  }).pipe(map(() => document.body.classList.contains('tum-apply-dark-mode')));
+  }).pipe(map(() => document.documentElement.classList.contains('tum-apply-dark-mode')));
   isDarkMode = toSignal(this.bodyClassChanges$, {
-    initialValue: document.body.classList.contains('tum-apply-dark-mode'),
+    initialValue: document.documentElement.classList.contains('tum-apply-dark-mode'),
   });
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
@@ -174,7 +174,6 @@ export class HeaderComponent {
   onThemeChange(option: SelectOption): void {
     this.setTheme(option.value as ThemeOption);
   }
-  */
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {
