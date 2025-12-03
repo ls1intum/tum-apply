@@ -20,10 +20,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeycloakUserService {
 
-    private static final String TUM_LDAP_PROVIDER = "TUM LDAP";
-
     private final Keycloak keycloak;
     private final String realm;
+
+    private static final int SAFETY_MAX = 1_000;
 
     public KeycloakUserService(
         @Value("${keycloak.url}") String url,
@@ -49,13 +49,22 @@ public class KeycloakUserService {
      * @param pageDTO   pagination information
      * @return a list of {@link KeycloakUserInformation} matching the search criteria
      */
-    public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
-        int firstResult = pageDTO.pageNumber() * pageDTO.pageSize();
-        int maxResults = pageDTO.pageSize();
-        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
-        return users
+    public List<KeycloakUserDTO> getAllUsers(String username, PageDTO pageDTO) {
+        // Da wir filtern müssen, rufen wir mehr Benutzer ab, als die PageSize verlangt,
+        // um sicherzustellen, dass wir nach dem Filtern genug Ergebnisse haben.
+        // Hinweis: Das ist ein Kompromiss. Für sehr große Ergebnismengen ist das ineffizient.
+        int fetchSize = 100;
+
+        // Wir suchen allgemein nach dem Text (matcht username, email, first/last name)
+        List<UserRepresentation> candidates = keycloak.realm(realm).users().search(username, 0, fetchSize);
+
+        List<KeycloakUserDTO> filteredUsers = candidates
             .stream()
-            .filter(user -> user.getFederationLink() != null && user.getFederationLink().equals(TUM_LDAP_PROVIDER))
+            .filter(user -> {
+                // Prüfen, ob das Attribut "idp" existiert und den Wert "tum" enthält
+                var attrs = user.getAttributes();
+                return attrs != null && attrs.containsKey("idp") && attrs.get("idp").contains("tum");
+            })
             .map(user ->
                 new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
@@ -66,6 +75,12 @@ public class KeycloakUserService {
                 )
             )
             .toList();
+
+        // Manuelle Paginierung auf der gefilterten Liste
+        int start = Math.min(pageDTO.pageNumber() * pageDTO.pageSize(), filteredUsers.size());
+        int end = Math.min(start + pageDTO.pageSize(), filteredUsers.size());
+
+        return filteredUsers.subList(start, end);
     }
 
     /**
@@ -75,17 +90,19 @@ public class KeycloakUserService {
      * @param searchKey filter for username, first name, last name or email
      * @return total number of matching users
      */
-    public long countUsers(String searchKey) {
+    public long countUsers(String username) {
         // Keycloak does not offer a direct count API for search results. We therefore fetch all users
         // matching the searchKey with a sufficiently large max parameter and return the size.
         // Choose a reasonable upper bound based on expected dataset size.
-        final int SAFETY_MAX = 10000;
         return keycloak
             .realm(realm)
             .users()
-            .search(searchKey, 0, SAFETY_MAX)
+            .search(username, 0, SAFETY_MAX)
             .stream()
-            .filter(user -> user.getFederationLink() != null && user.getFederationLink().equals(TUM_LDAP_PROVIDER))
+            .filter(user -> {
+                var attrs = user.getAttributes();
+                return attrs != null && attrs.containsKey("idp") && attrs.get("idp").contains("tum");
+            })
             .count();
     }
 
