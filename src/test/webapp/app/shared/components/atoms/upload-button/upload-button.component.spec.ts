@@ -337,7 +337,7 @@ describe('UploadButtonComponent', () => {
 
       // Expect delete then upload
       expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
-      expect(applicationService.uploadDocuments).toHaveBeenCalled();
+      expect(applicationService.uploadDocuments).toHaveBeenCalledTimes(1);
       expect(component.showDuplicateDialog()).toBe(false);
 
       // Check if list updated
