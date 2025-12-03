@@ -105,4 +105,23 @@ public class InterviewResource {
         log.info("Returning {} slots for interview process: {}", slots.size(), processId);
         return ResponseEntity.ok(slots);
     }
+
+    /**
+     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
+     * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
+     *
+     * @param slotId the ID of the slot to delete
+     * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
+     * @throws EntityNotFoundException if the slot is not found
+     * @throws AccessDeniedException if the user is not authorized to delete this slot
+     * @throws de.tum.cit.aet.core.exception.BadRequestException if the slot is booked
+     */
+    @Professor
+    @DeleteMapping("/slots/{slotId}")
+    public ResponseEntity<Void> deleteSlot(@PathVariable UUID slotId) {
+        log.debug("REST request to delete slot: {}", slotId);
+        interviewService.deleteSlot(slotId);
+        log.debug("Successfully deleted slot: {}", slotId);
+        return ResponseEntity.noContent().build();
+    }
 }
