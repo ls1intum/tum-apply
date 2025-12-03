@@ -948,6 +948,17 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/slots/{slotId}:
+    delete:
+      tags: [interview-resource]
+      operationId: deleteSlot
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/jobs/available:
     get:
       tags: [job-resource]
