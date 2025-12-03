@@ -146,15 +146,15 @@ export class HeaderComponent {
     // turn off transitions
     root.classList.add('theme-switching');
 
-    const willBeDark = !root.classList.contains('tum-apply-dark-mode');
+    const isDark = !root.classList.contains('tum-apply-dark-mode');
 
-    if (willBeDark) {
+    if (isDark) {
       root.classList.add('tum-apply-dark-mode');
     } else {
       root.classList.remove('tum-apply-dark-mode');
     }
 
-    localStorage.setItem('tumApplyTheme', willBeDark ? 'dark' : 'light');
+    localStorage.setItem('tumApplyTheme', isDark ? 'dark' : 'light');
 
     // allow one frame for styles to apply, then restore transitions
     window.requestAnimationFrame(() => {
