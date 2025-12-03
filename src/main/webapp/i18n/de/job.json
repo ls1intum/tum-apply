@@ -136,7 +136,11 @@
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, JPEG, PNG. Maximale Abmessungen: 1920x1080px",
       "selectedImage": "Ausgewähltes Bild",
       "myUploads": "Meine hochgeladenen Bilder",
-      "noImage": "Kein Bild"
+      "noImage": "Kein Bild",
+      "deleteImageDialog": {
+        "header": "Bild löschen",
+        "message": "Möchtest du dieses Bild wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden. Falls Positionen dieses Bild nutzen, erscheinen sie danach ohne Bild."
+      }
     },
     "additionalInformationSection": {
       "extras": {
