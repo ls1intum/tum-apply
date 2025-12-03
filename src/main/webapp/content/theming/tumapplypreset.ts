@@ -878,5 +878,11 @@ export const TUMApplyPreset = definePreset(Lara, {
         background: '{background.default}',
       },
     },
+    dialog: {
+      root: {
+        background: '{background.default}',
+        color: '{text.primary}',
+      },
+    },
   },
 });
