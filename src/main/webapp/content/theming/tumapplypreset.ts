@@ -205,9 +205,9 @@ export const TUMApplyPreset = definePreset(Lara, {
           hoverColorOutlined: '{neutral.200}',
         },
         background: {
-          default: '{base.white}', // canvas
-          surface: '{background.50}', // cards, panels
-          surfaceAlt: '{background.100}', // sidebars etc.
+          default: '{base.white}',
+          surface: '{background.50}',
+          surfaceAlt: '{background.100}',
           disabled: '{neutral.200}',
           footer: '{base.white}',
         },
