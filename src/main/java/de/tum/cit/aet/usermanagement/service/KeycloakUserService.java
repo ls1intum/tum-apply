@@ -59,7 +59,7 @@ public class KeycloakUserService {
                     user
                         .getFederatedIdentities()
                         .stream()
-                        .anyMatch(identity -> "ldap".equals(identity.getIdentityProvider()))
+                        .anyMatch(identity -> "TUM LDAP".equals(identity.getIdentityProvider()))
             )
             .map(user ->
                 new KeycloakUserDTO(
@@ -85,8 +85,20 @@ public class KeycloakUserService {
         // matching the searchKey with a sufficiently large max parameter and return the size.
         // Choose a reasonable upper bound based on expected dataset size.
         final int SAFETY_MAX = 10000;
-        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, SAFETY_MAX);
-        return users == null ? 0L : users.size();
+        return keycloak
+            .realm(realm)
+            .users()
+            .search(searchKey, 0, SAFETY_MAX)
+            .stream()
+            .filter(
+                user ->
+                    user.getFederatedIdentities() != null &&
+                    user
+                        .getFederatedIdentities()
+                        .stream()
+                        .anyMatch(identity -> "TUM LDAP".equals(identity.getIdentityProvider()))
+            )
+            .count();
     }
 
     /**
