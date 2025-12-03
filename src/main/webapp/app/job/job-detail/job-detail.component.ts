@@ -23,6 +23,7 @@ import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { JobPreviewRequest } from 'app/generated';
 
+import * as DropDownOptions from '.././dropdown-options';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../shared/language/translate.directive';
 
@@ -453,6 +454,21 @@ export class JobDetailComponent {
   get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
     const jobState = this.currentJobState;
     return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
+  }
+
+  getLocationTranslationKey(location: string | undefined): string {
+    if (location == null) return '-';
+    return new Map(DropDownOptions.locations.map(option => [option.value as string, option.name])).get(location) ?? location;
+  }
+
+  getFundingTypeTranslationKey(fundingType: string | undefined): string {
+    if (fundingType == null) return '-';
+    return new Map(DropDownOptions.fundingTypes.map(option => [option.value as string, option.name])).get(fundingType) ?? fundingType;
+  }
+
+  getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
+    if (fieldOfStudies == null) return '-';
+    return DropDownOptions.fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? fieldOfStudies;
   }
 
   private isOwnerOfJob(job: JobDetails): boolean {
