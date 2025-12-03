@@ -44,19 +44,25 @@ public class DocumentDictionaryService {
         DocumentType type,
         DocumentDictionaryOwnerSetter ownerSetter
     ) {
-        Set<UUID> existingDocumentIds = existingEntries
+        // Track existing entries by both documentId AND name to handle the case where
+        // the same file content is uploaded with different names (e.g., "transcript.pdf"
+        // and "backup_transcript.pdf" with identical content).
+        Set<String> existingDocumentKeys = existingEntries
             .stream()
-            .map(dd -> dd.getDocument().getDocumentId())
+            .map(dd -> dd.getDocument().getDocumentId() + ":" + dd.getName())
             .collect(Collectors.toSet());
 
         // Add new entries
         for (Pair<Document, String> doc : newDocuments) {
             Document document = doc.getFirst();
-            if (!existingDocumentIds.contains(document.getDocumentId())) {
+            String name = doc.getSecond();
+            String key = document.getDocumentId() + ":" + name;
+
+            if (!existingDocumentKeys.contains(key)) {
                 DocumentDictionary newEntry = new DocumentDictionary();
                 ownerSetter.accept(newEntry); // Set owning entity (applicant/application)
                 newEntry.setDocument(document);
-                newEntry.setName(doc.getSecond());
+                newEntry.setName(name);
                 newEntry.setDocumentType(type);
                 save(newEntry);
             }
