@@ -53,6 +53,14 @@ public class KeycloakUserService {
         List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
         return users
             .stream()
+            .filter(
+                user ->
+                    user.getFederatedIdentities() != null &&
+                    user
+                        .getFederatedIdentities()
+                        .stream()
+                        .anyMatch(identity -> "ldap".equals(identity.getIdentityProvider()))
+            )
             .map(user ->
                 new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
