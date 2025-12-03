@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, WritableSignal, computed, inject } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -8,29 +8,24 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, fromEventPattern, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { PrimeNG } from 'primeng/config';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 import { AuthDialogService } from '../../../../core/auth/auth-dialog.service';
 import TranslateDirective from '../../../language/translate.directive';
 import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
+import { TUMApplyPreset } from '../../../../../content/theming/tumapplypreset';
+import { BlossomTheme } from '../../../../../content/theming/custompreset';
+
+type ThemeOption = 'light' | 'dark' | 'blossom';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
-    DynamicDialogModule,
-    TranslateDirective,
-  ],
+  imports: [CommonModule, ButtonComponent, SelectComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -52,6 +47,15 @@ export class HeaderComponent {
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
   router = inject(Router);
+  theme = signal<ThemeOption>(this.getInitialTheme());
+
+  themeOptions: SelectOption[] = [
+    { name: 'Light', value: 'light' },
+    { name: 'Dark', value: 'dark' },
+    { name: 'Blossom', value: 'blossom' },
+  ];
+
+  selectedTheme = computed(() => this.themeOptions.find(opt => opt.value === this.theme()));
 
   routeAuthorities = toSignal(
     this.router.events.pipe(
@@ -83,6 +87,24 @@ export class HeaderComponent {
 
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
+  private primeNG = inject(PrimeNG);
+  private readonly rootElement = document.documentElement;
+
+  getInitialTheme(): ThemeOption {
+    const stored = localStorage.getItem('tumApplyTheme') as ThemeOption | null;
+
+    if (stored === 'dark' || stored === 'blossom' || stored === 'light') {
+      return stored;
+    }
+    const classList = document.documentElement.classList;
+    if (classList.contains('tum-apply-blossom')) {
+      return 'blossom';
+    }
+    if (classList.contains('tum-apply-dark-mode')) {
+      return 'dark';
+    }
+    return 'light';
+  }
 
   navigateToHome(): void {
     if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
@@ -125,10 +147,32 @@ export class HeaderComponent {
     void this.authFacadeService.logout();
   }
 
-  /*
-  toggleColorScheme(): void {
-    const className = 'tum-apply-dark-mode';
-    document.body.classList.toggle(className);
+  setTheme(theme: ThemeOption): void {
+    this.theme.set(theme);
+
+    const root = this.rootElement;
+    root.classList.remove('tum-apply-dark-mode', 'tum-apply-blossom');
+
+    const themeOptions = {
+      darkModeSelector: '.tum-apply-dark-mode',
+      cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
+    };
+
+    if (theme === 'blossom') {
+      this.primeNG.theme.set({ preset: BlossomTheme, options: themeOptions });
+      root.classList.add('tum-apply-blossom');
+    } else {
+      this.primeNG.theme.set({ preset: TUMApplyPreset, options: themeOptions });
+      if (theme === 'dark') {
+        root.classList.add('tum-apply-dark-mode');
+      }
+    }
+
+    localStorage.setItem('tumApplyTheme', theme);
+  }
+
+  onThemeChange(option: SelectOption): void {
+    this.setTheme(option.value as ThemeOption);
   }
   */
 

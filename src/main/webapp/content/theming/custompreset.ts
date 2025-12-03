@@ -1,0 +1,584 @@
+import { definePreset } from '@primeuix/themes';
+import Lara from '@primeuix/themes/lara';
+
+export const BlossomTheme = definePreset(Lara, {
+  semantic: {
+    primary: {
+      50: '#fbf4f8',
+      100: '#f9eaf3',
+      200: '#f4d6e7',
+      300: '#e7a2c7',
+      400: '#df87b4',
+      500: '#d26298',
+      600: '#be4479',
+      700: '#a33361',
+      800: '#872d50',
+      900: '#722945',
+      950: '#441326',
+    },
+    secondary: {
+      50: '#fbf4f9',
+      100: '#f8ebf3',
+      200: '#f2d8e9',
+      300: '#e8b9d7',
+      400: '#d37eb1',
+      500: '#c96ba0',
+      600: '#b54d83',
+      700: '#9b3b6a',
+      800: '#803459',
+      900: '#6c2f4c',
+      950: '#40172a',
+    },
+    success: {
+      50: '#f0f9f2',
+      100: '#dbf0dd',
+      200: '#bae0c1',
+      300: '#8cc99a',
+      400: '#5fae74',
+      500: '#399053',
+      600: '#297241',
+      700: '#205c35',
+      800: '#1c492b',
+      900: '#183c26',
+      950: '#0c2215',
+    },
+    danger: {
+      50: '#fcf5f4',
+      100: '#faeae9',
+      200: '#f4d7d7',
+      300: '#ecb5b7',
+      400: '#e08c90',
+      500: '#d1636c',
+      600: '#bb4352',
+      700: '#9d3344',
+      800: '#842d3d',
+      900: '#712a3a',
+      950: '#3e131b',
+    },
+    warn: {
+      50: '#faf5f0',
+      100: '#f1e1d4',
+      200: '#e1c1a6',
+      300: '#d29e77',
+      400: '#c47b4f',
+      500: '#bc6644',
+      600: '#a64d39',
+      700: '#8b3a32',
+      800: '#72312e',
+      900: '#5f2928',
+      950: '#351313',
+    },
+    info: {
+      50: '#f3f7fb',
+      100: '#e3ecf6',
+      200: '#cde0f0',
+      300: '#abcae5',
+      400: '#83afd7',
+      500: '#5f8fc9',
+      600: '#527cbe',
+      700: '#4869ad',
+      800: '#3f588e',
+      900: '#374a71',
+      950: '#252f46',
+    },
+    neutral: {
+      50: '#f8f7f8',
+      100: '#f3f0f3',
+      200: '#e8e2e6',
+      300: '#d6cbd3',
+      400: '#bcaab6',
+      500: '#a58f9e',
+      600: '#8d7584',
+      700: '#76606d',
+      800: '#63515b',
+      900: '#55464f',
+      950: '#3a2e35',
+    },
+    background: {
+      50: '#f9f6f8',
+      100: '#f3edf1',
+      200: '#ecdde6',
+    },
+    base: {
+      white: '#ffffff',
+      black: '#000000',
+    },
+    accent: {
+      50: '#fbf9f1',
+      100: '#f6f1de',
+      200: '#ecdfbc',
+      300: '#e0c891',
+      400: '#d8b67a',
+      500: '#c89447',
+      600: '#ba7f3c',
+      700: '#9b6533',
+      800: '#7d522f',
+      900: '#654329',
+      950: '#362114',
+    },
+    colorScheme: {
+      light: {
+        text: {
+          primary: '{neutral.950}',
+          secondary: '{neutral.600}',
+          tertiary: '{neutral.500}',
+          disabled: '{neutral.600}',
+          onPrimary: '{base.white}',
+          onSecondary: '{base.white}',
+          onAccent: '{base.white}',
+          onSuccess: '{neutral.950}',
+          onDanger: '{neutral.950}',
+          onWarn: '{neutral.950}',
+          onInfo: '{neutral.950}',
+          onNeutral: '{neutral.950}',
+        },
+        primary: {
+          color: '{primary.400}',
+          inverseColor: '{text.onPrimary}',
+          hoverColor: '{primary.600}',
+          activeColor: '{primary.700}',
+          disabledColor: '{primary.200}',
+          hoverColorOutlined: '{primary.100}',
+        },
+        secondary: {
+          color: '{secondary.500}',
+          inverseColor: '{text.onSecondary}',
+          hoverColor: '{secondary.600}',
+          activeColor: '{secondary.700}',
+          disabledColor: '{secondary.200}',
+          hoverColorOutlined: '{secondary.100}',
+        },
+        accent: {
+          color: '{accent.500}',
+          inverseColor: '{text.onAccent}',
+          hoverColor: '{accent.500}',
+          activeColor: '{accent.600}',
+          disabledColor: '{accent.200}',
+          hoverColorOutlined: '{accent.100}',
+        },
+        highlight: {
+          background: '{primary.950}',
+          focusBackground: '{primary.700}',
+          color: '{background.default}',
+          focusColor: '{background.default}',
+        },
+        success: {
+          color: '{success.500}',
+          inverseColor: '{text.onSuccess}',
+          hoverColor: '{success.600}',
+          activeColor: '{success.700}',
+          disabledColor: '{success.200}',
+          hoverColorOutlined: '{success.100}',
+        },
+        warn: {
+          color: '{warn.500}',
+          inverseColor: '{text.onWarn}',
+          hoverColor: '{warn.600}',
+          activeColor: '{warn.700}',
+          disabledColor: '{warn.200}',
+          hoverColorOutlined: '{warn.100}',
+        },
+        danger: {
+          color: '{danger.500}',
+          inverseColor: '{text.onDanger}',
+          hoverColor: '{danger.600}',
+          activeColor: '{danger.700}',
+          disabledColor: '{danger.200}',
+          hoverColorOutlined: '{danger.100}',
+        },
+        info: {
+          color: '{info.500}',
+          inverseColor: '{text.onInfo}',
+          hoverColor: '{info.600}',
+          activeColor: '{info.700}',
+          disabledColor: '{info.200}',
+          hoverColorOutlined: '{info.100}',
+        },
+        neutral: {
+          color: '{neutral.500}',
+          inverseColor: '{text.onNeutral}',
+          hoverColor: '{neutral.600}',
+          activeColor: '{neutral.700}',
+          disabledColor: '{neutral.200}',
+          hoverColorOutlined: '{neutral.200}',
+        },
+        background: {
+          default: '{background.50}', // canvas
+          surface: '{background.100}', // cards, panels
+          surfaceAlt: '{background.200}', // sidebars etc.
+          disabled: '{neutral.200}',
+          footer: '{background.50}',
+        },
+        border: {
+          default: '{neutral.200}',
+        },
+        divider: {
+          default: '{neutral.200}',
+        },
+        card: {
+          background: '{background.50}',
+          backgroundAlt: '{background.100}',
+          backgroundHover: '{background.200}',
+          border: '{background.200}',
+        },
+        informationBlock: {
+          background: '{background.50}',
+          border: '{primary.color}',
+        },
+      },
+    },
+  },
+  components: {
+    button: {
+      root: {
+        borderRadius: '0.75rem',
+        badgeSize: '1rem',
+        transitionDuration: '{form.field.transition.duration}',
+      },
+      colorScheme: {
+        light: {
+          root: {
+            primary: {
+              background: '{primary.color}',
+              color: '{primary.inverseColor}',
+              hoverBackground: '{primary.hoverColor}',
+              activeBackground: '{primary.activeColor}',
+            },
+            secondary: {
+              background: '{secondary.color}',
+              color: '{secondary.inverseColor}',
+              hoverBackground: '{secondary.hoverColor}',
+              hoverColor: '{secondary.inverseColor}',
+              activeBackground: '{secondary.activeColor}',
+            },
+            contrast: {
+              background: '{accent.color}',
+              color: '{accent.inverseColor}',
+              hoverBackground: '{accent.hoverColor}',
+              hoverColor: '{accent.inverseColor}',
+              borderColor: '{accent.color}',
+              hoverBorderColor: '{accent.hoverColor}',
+              activeBackground: '{accent.activeColor}',
+            },
+            success: {
+              background: '{success.color}',
+              color: '{success.inverseColor}',
+              hoverBackground: '{success.hoverColor}',
+              activeBackground: '{success.activeColor}',
+            },
+            danger: {
+              background: '{danger.color}',
+              color: '{danger.inverseColor}',
+              hoverColor: '{base.white}',
+              hoverBackground: '{danger.hoverColor}',
+              activeBackground: '{danger.activeColor}',
+            },
+            warn: {
+              background: '{warn.color}',
+              color: '{warn.inverseColor}',
+              hoverBackground: '{warn.hoverColor}',
+              activeBackground: '{warn.activeColor}',
+              borderColor: '{warn.color}',
+              hoverBorderColor: '{warn.hoverColor}',
+            },
+            info: {
+              background: '{neutral.color}',
+              color: '{neutral.inverseColor}',
+              hoverBackground: '{neutral.hoverColor}',
+              hoverColor: '{neutral.inverseColor}',
+              hoverBorderColor: '{neutral.hoverColor}',
+              activeBackground: '{neutral.activeColor}',
+              borderColor: '{neutral.color}',
+            },
+          },
+          outlined: {
+            primary: {
+              activeBackground: '{primary.activeColor}',
+              borderColor: '{primary.color}',
+              color: '{primary.color}',
+              hoverBackground: '{primary.hoverColorOutlined}',
+            },
+            secondary: {
+              activeBackground: '{secondary.activeColor}',
+              borderColor: '{secondary.color}',
+              color: '{secondary.color}',
+              hoverBackground: '{secondary.hoverColorOutlined}',
+            },
+            success: {
+              activeBackground: '{success.activeColor}',
+              borderColor: '{success.color}',
+              color: '{success.color}',
+              hoverBackground: '{success.hoverColorOutlined}',
+            },
+            info: {
+              activeBackground: '{neutral.activeColor}',
+              borderColor: '{neutral.color}',
+              color: '{neutral.color}',
+              hoverBackground: '{neutral.hoverColorOutlined}',
+            },
+            warn: {
+              activeBackground: '{warn.activeColor}',
+              borderColor: '{warn.color}',
+              color: '{warn.color}',
+              hoverBackground: '{warn.hoverColorOutlined}',
+            },
+            help: {
+              hoverBackground: '{purple.50}',
+              activeBackground: '{purple.100}',
+              borderColor: '{purple.200}',
+              color: '{purple.500}',
+            },
+            danger: {
+              activeBackground: '{danger.activeColor}',
+              borderColor: '{danger.color}',
+              color: '{danger.color}',
+              hoverBackground: '{danger.hoverColorOutlined}',
+            },
+            contrast: {
+              hoverBackground: '{surface.50}',
+              activeBackground: '{surface.100}',
+              borderColor: '{surface.700}',
+              color: '{surface.950}',
+            },
+            plain: {
+              hoverBackground: '{surface.50}',
+              activeBackground: '{surface.100}',
+              borderColor: '{surface.200}',
+              color: '{surface.700}',
+            },
+          },
+          text: {
+            primary: {
+              activeBackground: '{primary.activeColor}',
+              color: '{primary.color}',
+              hoverBackground: '{primary.hoverColorOutlined}',
+            },
+            secondary: {
+              activeBackground: '{secondary.activeColor}',
+              color: '{secondary.color}',
+              hoverBackground: '{secondary.hoverColorOutlined}',
+            },
+            success: {
+              activeBackground: '{success.activeColor}',
+              color: '{success.color}',
+              hoverBackground: '{success.hoverColorOutlined}',
+            },
+            info: {
+              activeBackground: '{neutral.activeColor}',
+              color: '{neutral.color}',
+              hoverBackground: '{neutral.hoverColorOutlined}',
+            },
+            warn: {
+              activeBackground: '{warn.activeColor}',
+              color: '{warn.color}',
+              hoverBackground: '{warn.hoverColorOutlined}',
+            },
+            danger: {
+              hoverBackground: '{danger.50}',
+              activeBackground: '{danger.100}',
+              color: '{danger.500}',
+            },
+            contrast: {
+              hoverBackground: '{surface.50}',
+              activeBackground: '{surface.100}',
+              color: '{surface.950}',
+            },
+            plain: {
+              hoverBackground: '{surface.50}',
+              activeBackground: '{surface.100}',
+              color: '{surface.700}',
+            },
+          },
+          link: {
+            color: '{primary.color}',
+            hoverColor: '{primary.color}',
+            activeColor: '{primary.color}',
+          },
+        },
+      },
+    },
+    stepper: {
+      step: {
+        padding: '0.5rem',
+        gap: '1rem',
+      },
+      stepHeader: {
+        padding: '0',
+        gap: '0.5rem',
+      },
+      separator: {
+        size: '0.1rem',
+        margin: '0 0 0 1.625rem',
+      },
+      stepTitle: {
+        fontWeight: '700',
+      },
+      stepNumber: {
+        size: '2.25rem',
+        fontSize: '1.125rem',
+        fontWeight: '700',
+        borderRadius: '50%',
+        shadow: 'none',
+      },
+      steppanels: {
+        padding: '0.875rem 0.5rem 1.125rem 0.5rem',
+      },
+      root: {
+        transitionDuration: '{transition.duration}',
+      },
+      colorScheme: {
+        light: {
+          separator: {
+            background: '{text.disabled}',
+            activeBackground: '{neutral.950}',
+          },
+          stepTitle: {
+            color: '{text.disabled}',
+            activeColor: '{neutral.950}',
+          },
+          stepNumber: {
+            background: '{background.surface}',
+            activeBackground: '{primary.color}',
+            borderColor: '{background.disabled}',
+            activeBorderColor: '{primary.color}',
+            color: '{text.disabled}',
+            activeColor: '{text.onPrimary}',
+          },
+        },
+      },
+    },
+    tabs: {
+      colorScheme: {
+        light: {
+          tab: {
+            background: '{background.default}',
+            activeBackground: '{background.surface}',
+            color: '{text.tertiary}',
+            activeColor: '{primary.color}',
+          },
+          tabpanel: {
+            background: '{background.surface}',
+          },
+        },
+      },
+    },
+    floatlabel: {
+      root: {
+        color: '{text.tertiary}',
+        focusColor: '{text.primary}',
+        activeColor: '{text.primary}',
+        transitionDuration: '0.2s',
+        fontWeight: '200',
+        active: {
+          fontSize: '0.5rem',
+          fontWeight: '200',
+        },
+      },
+    },
+    tag: {
+      root: {
+        fontSize: '0.75rem',
+        gap: '0',
+      },
+      colorScheme: {
+        light: {
+          secondary: {
+            background: '{secondary.100}',
+            color: '{base.black}',
+          },
+          info: {
+            background: '{neutral.100}',
+            color: '{info.inverseColor}',
+          },
+          success: {
+            background: '{success.100}',
+            color: '{success.inverseColor}',
+          },
+          warn: {
+            background: '{warn.100}',
+            color: '{warn.inverseColor}',
+          },
+          danger: {
+            background: '{danger.100}',
+            color: '{danger.inverseColor}',
+          },
+          contrast: {
+            background: '{accent.100}',
+            color: '{base.black}',
+          },
+        },
+      },
+    },
+    checkbox: {
+      root: {
+        background: 'background.surface',
+        checkedBackground: '{primary.color}',
+        checkedHoverBackground: '{primary.hoverColor}',
+      },
+    },
+    paginator: {
+      root: {
+        background: '{background.default}',
+      },
+      navButton: {
+        selectedBackground: '{primary.color}',
+      },
+    },
+    multiselect: {
+      root: {
+        background: '{background.surface}',
+        color: '{text.primary}',
+      },
+      overlay: {
+        background: '{background.surface}',
+      },
+      option: {
+        color: '{text.primary}',
+        selectedColor: '{text.primary}',
+        selectedBackground: '{background.surface}',
+        focusBackground: '{primary.color}',
+        focusColor: '{background.default}',
+      },
+    },
+    inputtext: {
+      root: {
+        color: '{text.primary}',
+        background: '{background.default}',
+        borderRadius: '0.5rem',
+      },
+    },
+    divider: {
+      content: {
+        background: '{background.default}',
+        color: '{text.primary}',
+      },
+    },
+    textarea: {
+      root: {
+        background: '{background.default}',
+      },
+    },
+    select: {
+      root: {
+        placeholderColor: '{text.tertiary}',
+      },
+      overlay: {
+        background: '{background.default}',
+      },
+    },
+    datepicker: {
+      panel: {
+        background: '{background.default}',
+      },
+      header: {
+        background: '{background.default}',
+      },
+    },
+    dialog: {
+      root: {
+        background: '{background.default}',
+        color: '{text.primary}',
+      },
+    },
+  },
+});
