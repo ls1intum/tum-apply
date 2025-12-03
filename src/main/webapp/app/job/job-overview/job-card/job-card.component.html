@@ -64,12 +64,12 @@
     <!-- Tags/Badges section -->
     <div class="flex flex-wrap gap-2 mt-auto">
       @if (formattedContractDuration()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary">
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-md border border-primary">
           {{ formattedContractDuration() }} <span jhiTranslate="jobDetailPage.units.years"></span>
         </span>
       }
       @if (formattedWorkload()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary"> {{ formattedWorkload() }} </span>
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-md border border-primary"> {{ formattedWorkload() }} </span>
       }
     </div>
   </div>

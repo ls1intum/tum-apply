@@ -773,7 +773,6 @@ export const TUMApplyPreset = definePreset(Lara, {
       root: {
         fontSize: '0.75rem',
         gap: '0',
-        roundedBorderRadius: '1rem',
       },
       colorScheme: {
         light: {
