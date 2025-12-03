@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeycloakUserService {
 
+    private static final String TUM_LDAP_PROVIDER = "TUM LDAP";
+
     private final Keycloak keycloak;
     private final String realm;
 
@@ -53,14 +55,7 @@ public class KeycloakUserService {
         List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
         return users
             .stream()
-            .filter(
-                user ->
-                    user.getFederatedIdentities() != null &&
-                    user
-                        .getFederatedIdentities()
-                        .stream()
-                        .anyMatch(identity -> "TUM LDAP".equals(identity.getIdentityProvider()))
-            )
+            .filter(user -> user.getFederationLink() != null && user.getFederationLink().equals(TUM_LDAP_PROVIDER))
             .map(user ->
                 new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
@@ -90,14 +85,7 @@ public class KeycloakUserService {
             .users()
             .search(searchKey, 0, SAFETY_MAX)
             .stream()
-            .filter(
-                user ->
-                    user.getFederatedIdentities() != null &&
-                    user
-                        .getFederatedIdentities()
-                        .stream()
-                        .anyMatch(identity -> "TUM LDAP".equals(identity.getIdentityProvider()))
-            )
+            .filter(user -> user.getFederationLink() != null && user.getFederationLink().equals(TUM_LDAP_PROVIDER))
             .count();
     }
 
