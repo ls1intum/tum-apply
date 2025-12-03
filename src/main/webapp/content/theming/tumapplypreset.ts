@@ -808,7 +808,7 @@ export const TUMApplyPreset = definePreset(Lara, {
             color: '{base.white}',
           },
           info: {
-            background: '{neutral.900}',
+            background: '{neutral.800}',
             color: '{base.white}',
           },
           success: {
