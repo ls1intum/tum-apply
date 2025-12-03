@@ -42,7 +42,7 @@ export class HeaderComponent {
     return () => observer.disconnect();
   }).pipe(map(() => document.documentElement.classList.contains('tum-apply-dark-mode')));
   isDarkMode = toSignal(this.bodyClassChanges$, {
-    initialValue: document.documentElement.classList.contains('tum-apply-dark-mode'),
+    initialValue: this.initThemeFromStorage(),
   });
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
@@ -83,6 +83,21 @@ export class HeaderComponent {
 
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
+
+  initThemeFromStorage(): boolean {
+    const root = document.documentElement;
+    const stored = localStorage.getItem('tumApplyTheme');
+
+    const isDark = stored === 'dark';
+
+    if (isDark) {
+      root.classList.add('tum-apply-dark-mode');
+    } else {
+      root.classList.remove('tum-apply-dark-mode');
+    }
+
+    return isDark;
+  }
 
   navigateToHome(): void {
     if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
@@ -131,7 +146,15 @@ export class HeaderComponent {
     // turn off transitions
     root.classList.add('theme-switching');
 
-    root.classList.toggle('tum-apply-dark-mode');
+    const willBeDark = !root.classList.contains('tum-apply-dark-mode');
+
+    if (willBeDark) {
+      root.classList.add('tum-apply-dark-mode');
+    } else {
+      root.classList.remove('tum-apply-dark-mode');
+    }
+
+    localStorage.setItem('tumApplyTheme', willBeDark ? 'dark' : 'light');
 
     // allow one frame for styles to apply, then restore transitions
     window.requestAnimationFrame(() => {
