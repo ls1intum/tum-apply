@@ -90,6 +90,10 @@ export class HeaderComponent {
   private primeNG = inject(PrimeNG);
   private readonly rootElement = document.documentElement;
 
+  constructor() {
+    this.setTheme(this.theme());
+  }
+
   getInitialTheme(): ThemeOption {
     const stored = localStorage.getItem('tumApplyTheme') as ThemeOption | null;
 
