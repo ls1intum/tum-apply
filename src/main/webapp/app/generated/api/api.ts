@@ -1,5 +1,3 @@
-export * from './actuatorApi.service';
-import { ActuatorApiService } from './actuatorApi.service';
 export * from './adminResourceApi.service';
 import { AdminResourceApiService } from './adminResourceApi.service';
 export * from './applicationEvaluationResourceApi.service';
@@ -42,4 +40,4 @@ export * from './schoolResourceApi.service';
 import { SchoolResourceApiService } from './schoolResourceApi.service';
 export * from './userResourceApi.service';
 import { UserResourceApiService } from './userResourceApi.service';
-export const APIS = [ActuatorApiService, AdminResourceApiService, ApplicationEvaluationResourceApiService, ApplicationResourceApiService, AuthenticationResourceApiService, DepartmentResourceApiService, DocumentResourceApiService, EmailSettingResourceApiService, EmailTemplateResourceApiService, EmailVerificationResourceApiService, GenderBiasAnalysisResourceApiService, ImageResourceApiService, InternalCommentResourceApiService, InterviewResourceApiService, JobResourceApiService, PdfExportResourceApiService, ProfOnboardingResourceApiService, PublicConfigResourceApiService, RatingResourceApiService, ResearchGroupResourceApiService, SchoolResourceApiService, UserResourceApiService];
+export const APIS = [AdminResourceApiService, ApplicationEvaluationResourceApiService, ApplicationResourceApiService, AuthenticationResourceApiService, DepartmentResourceApiService, DocumentResourceApiService, EmailSettingResourceApiService, EmailTemplateResourceApiService, EmailVerificationResourceApiService, GenderBiasAnalysisResourceApiService, ImageResourceApiService, InternalCommentResourceApiService, InterviewResourceApiService, JobResourceApiService, PdfExportResourceApiService, ProfOnboardingResourceApiService, PublicConfigResourceApiService, RatingResourceApiService, ResearchGroupResourceApiService, SchoolResourceApiService, UserResourceApiService];
