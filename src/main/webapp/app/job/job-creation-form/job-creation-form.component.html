@@ -252,7 +252,7 @@
           <jhi-confirm-dialog
             #deleteDialog
             [label]="'button.delete' | translate"
-            [confirmIcon]="'trash-can'"
+            [confirmIcon]="'trash'"
             [header]="'jobCreationForm.imageSection.deleteImageDialog.header' | translate"
             [message]="'jobCreationForm.imageSection.deleteImageDialog.message' | translate"
             [data]="image.imageId"
@@ -260,7 +260,7 @@
             severity="danger"
             [showOpenButton]="false"
           />
-          <jhi-button icon="trash-can" size="sm" [severity]="'danger'" (click)="deleteDialog.confirm()" />
+          <jhi-button icon="trash" size="sm" [severity]="'danger'" (click)="deleteDialog.confirm()" />
         </div>
       }
     </div>
