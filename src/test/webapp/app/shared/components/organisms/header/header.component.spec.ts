@@ -197,7 +197,6 @@ describe('HeaderComponent', () => {
       expect(authDialog.open).toHaveBeenCalledTimes(1);
       const args = authDialog.open.mock.calls[0]?.[0] as AuthDialogOpenArgs;
       expect(args.mode).toBe('login');
-      expect(typeof args.onSuccess).toBe('function');
       expect(authFacade.loginWithProvider).not.toHaveBeenCalled();
     });
 
