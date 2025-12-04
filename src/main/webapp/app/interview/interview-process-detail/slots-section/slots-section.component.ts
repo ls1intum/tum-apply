@@ -249,10 +249,7 @@ export class SlotsSectionComponent {
       this.loading.set(true);
 
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
-
-      // Success: Remove from UI
-      const filteredSlots = this.slots().filter(s => s.id !== slotId);
-      this.slots.set(filteredSlots);
+      await this.loadSlots(this.processId());
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
