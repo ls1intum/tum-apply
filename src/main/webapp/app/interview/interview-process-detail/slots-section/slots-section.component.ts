@@ -30,6 +30,7 @@ interface GroupedSlots {
     TranslateDirective,
     ButtonComponent,
     ProgressSpinnerModule,
+    ProgressSpinnerModule,
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
@@ -49,7 +50,7 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
 
-  // Computed properties (must be before private fields for lint)
+  // Computed properties
   /**
    * Groups slots by date and sorts them chronologically
    */
@@ -238,8 +239,34 @@ export class SlotsSectionComponent {
     // TODO: Open Edit Modal
   }
 
-  onDeleteSlot(): void {
-    // TODO: Open Delete Confirmation
+  async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
+    const slotId = slot.id;
+    if (!slotId) {
+      return;
+    }
+
+    try {
+      this.loading.set(true);
+
+      await firstValueFrom(this.interviewService.deleteSlot(slotId));
+
+      // Success: Remove from UI
+      const filteredSlots = this.slots().filter(s => s.id !== slotId);
+      this.slots.set(filteredSlots);
+
+      this.toastService.showSuccessKey('interview.slots.delete.success');
+    } catch (error: unknown) {
+      const httpError = error as { status?: number };
+      if (httpError.status === 400) {
+        this.toastService.showErrorKey('interview.slots.delete.errorBooked');
+      } else if (httpError.status === 403) {
+        this.toastService.showErrorKey('interview.slots.delete.errorForbidden');
+      } else {
+        this.toastService.showErrorKey('interview.slots.delete.error');
+      }
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   onAssignApplicant(): void {

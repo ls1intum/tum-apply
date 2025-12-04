@@ -58,6 +58,28 @@
       "location": {
         "virtual": "virtuell",
         "inPerson": "vor Ort"
+      },
+      "delete": {
+        "confirm": {
+          "header": "Löschvorgang bestätigen",
+          "message": "Möchtest du diesen Termin wirklich löschen?"
+        },
+        "success": {
+          "summary": "Termin gelöscht",
+          "detail": "Der Termin wurde erfolgreich gelöscht"
+        },
+        "error": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut."
+        },
+        "errorBooked": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Gebuchte Termine können nicht gelöscht werden."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
+        }
       }
     }
   }
