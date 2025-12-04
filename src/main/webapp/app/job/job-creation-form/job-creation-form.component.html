@@ -248,14 +248,19 @@
         }
       </div>
       @if (showDelete) {
-        <div class="absolute top-2 right-2">
-          <jhi-button
-            (click)="deleteImage(image.imageId); $event.stopPropagation()"
+        <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
+          <jhi-confirm-dialog
+            #deleteDialog
+            [label]="'button.delete' | translate"
+            [confirmIcon]="'trash-can'"
+            [header]="'jobCreationForm.imageSection.deleteImageDialog.header' | translate"
+            [message]="'jobCreationForm.imageSection.deleteImageDialog.message' | translate"
+            [data]="image.imageId"
+            (confirmed)="deleteImage($any($event))"
             severity="danger"
-            icon="trash-can"
-            size="sm"
-            class="shadow-lg"
+            [showOpenButton]="false"
           />
+          <jhi-button icon="trash-can" size="sm" [severity]="'danger'" (click)="deleteDialog.confirm()" />
         </div>
       }
     </div>

@@ -107,3 +107,32 @@
   </ng-template>
   <ng-template #file />
 </p-fileupload>
+
+<!-- Duplicate File Confirmation Dialog -->
+<p-dialog
+  [visible]="showDuplicateDialog()"
+  (visibleChange)="showDuplicateDialog.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [closable]="false"
+  [showHeader]="false"
+  [style]="{ width: '33rem', boxShadow: 'none', border: 'none' }"
+>
+  <div class="bg-[var(--p-background-default)] rounded-[var(--p-button-border-radius)] p-6">
+    <div class="flex items-center gap-2 mb-6">
+      <fa-icon icon="exclamation-triangle" class="text-[var(--p-warn-color)]" size="lg" />
+      <span class="text-[var(--p-text-primary)] text-xl font-semibold">
+        {{ 'entity.upload.duplicate.title' | translate }}
+      </span>
+    </div>
+
+    <p class="text-[var(--p-text-primary)] text-left mb-7">
+      {{ 'entity.upload.duplicate.message' | translate: { filename: duplicateFileName() } }}
+    </p>
+
+    <div class="flex justify-end gap-3">
+      <jhi-button [shouldTranslate]="true" label="button.cancel" variant="outlined" (click)="onDuplicateCancel()" />
+      <jhi-button [shouldTranslate]="true" label="entity.upload.duplicate.replace" (click)="onDuplicateReplace()" />
+    </div>
+  </div>
+</p-dialog>
