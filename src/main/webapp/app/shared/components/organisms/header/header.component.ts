@@ -103,7 +103,6 @@ export class HeaderComponent {
   openLoginDialog(): void {
     this.authDialogService.open({
       mode: 'login',
-      onSuccess() {},
     });
   }
 
