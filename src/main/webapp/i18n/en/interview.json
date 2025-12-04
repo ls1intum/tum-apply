@@ -66,11 +66,11 @@
         },
         "success": {
           "summary": "Slot deleted",
-          "detail": "The slot could not be deleted. Please try again."
+          "detail": "Slot deleted successfully."
         },
         "error": {
           "summary": "Delete failed",
-          "detail": "Failed to delete slot"
+          "detail": "The slot could not be deleted. Please try again."
         },
         "errorBooked": {
           "summary": "Delete failed",
