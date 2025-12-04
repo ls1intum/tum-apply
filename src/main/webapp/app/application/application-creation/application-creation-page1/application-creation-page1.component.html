@@ -3,7 +3,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.firstName' | translate }}"
+        [label]="'entity.applicationPage1.label.firstName'"
         id="firstName"
         [required]="true"
         [(model)]="data().firstName"
@@ -12,7 +12,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.lastName' | translate }}"
+        [label]="'entity.applicationPage1.label.lastName'"
         id="lastName"
         [required]="true"
         [(model)]="data().lastName"
@@ -24,7 +24,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.email' | translate }}"
+        [label]="'entity.applicationPage1.label.email'"
         [disabled]="disabledEmail()"
         id="email"
         [required]="true"
@@ -34,7 +34,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.phoneNumber' | translate }}"
+        [label]="'entity.applicationPage1.label.phoneNumber'"
         id="phoneNumber"
         [required]="true"
         [(model)]="data().phoneNumber"
@@ -47,7 +47,7 @@
     <div class="form-field">
       <jhi-select
         width="100%"
-        label="{{ 'entity.applicationPage1.label.gender' | translate }}"
+        [label]="'entity.applicationPage1.label.gender'"
         [items]="selectGenderLocal"
         id="gender"
         [(selected)]="data().gender"
@@ -58,7 +58,7 @@
     <div class="form-field">
       <jhi-select
         width="100%"
-        label="{{ 'entity.applicationPage1.label.nationality' | translate }}"
+        [label]="'entity.applicationPage1.label.nationality'"
         [items]="selectNationalityLocal"
         id="nationality"
         [(selected)]="data().nationality"
@@ -72,7 +72,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.website' | translate }}"
+        [label]="'entity.applicationPage1.label.website'"
         id="website"
         [(model)]="data().website"
         [control]="page1Form().controls.website"
@@ -80,7 +80,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.linkedIn' | translate }}"
+        [label]="'entity.applicationPage1.label.linkedIn'"
         id="linkedIn"
         [(model)]="data().linkedIn"
         [control]="page1Form().controls.linkedIn"
@@ -92,7 +92,7 @@
     <div class="form-field">
       <jhi-datepicker
         [selectedDate]="data().dateOfBirth"
-        label="{{ 'entity.applicationPage1.label.dateOfBirth' | translate }}"
+        [label]="'entity.applicationPage1.label.dateOfBirth'"
         width="100%"
         (selectedDateChange)="setDateOfBirth($event)"
         [minDate]="minDate"
@@ -108,7 +108,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.street' | translate }}"
+        [label]="'entity.applicationPage1.label.street'"
         id="street"
         [required]="true"
         [(model)]="data().street"
@@ -120,7 +120,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.city' | translate }}"
+        [label]="'entity.applicationPage1.label.city'"
         id="city"
         [required]="true"
         [(model)]="data().city"
@@ -132,7 +132,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-select
-        label="{{ 'entity.applicationPage1.label.country' | translate }}"
+        [label]="'entity.applicationPage1.label.country'"
         id="country"
         [required]="true"
         [(selected)]="data().country"
@@ -144,7 +144,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
-        label="{{ 'entity.applicationPage1.label.postcode' | translate }}"
+        [label]="'entity.applicationPage1.label.postcode'"
         id="postcode"
         [required]="true"
         [(model)]="data().postcode"
