@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
@@ -110,7 +111,7 @@ public class ImageResource {
      * @param imageId the ID of the image to delete
      * @return HTTP 204 NO CONTENT if the image is deleted successfully
      */
-    @Professor
+    @ProfessorOrAdmin
     @DeleteMapping("/{imageId}")
     public ResponseEntity<Void> deleteImage(@PathVariable UUID imageId) {
         log.info("DELETE /api/images/{}", imageId);
