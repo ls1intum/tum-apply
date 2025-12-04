@@ -1,9 +1,10 @@
-import { Component, Renderer2, RendererFactory2, afterNextRender, computed, inject, signal } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, afterNextRender, computed, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
+import { LocalStorageService } from 'app/service/localStorage.service';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 
 import FooterComponent from '../footer/footer.component';
@@ -20,10 +21,11 @@ import { OnboardingOrchestratorService } from '../../service/onboarding-orchestr
 })
 export default class MainComponent {
   readonly accountService = inject(AccountService);
-  readonly isSidebarCollapsed = signal(false);
   loggedIn = computed(() => {
     return this.accountService.signedIn();
   });
+  readonly localStorageService = inject(LocalStorageService);
+  readonly isSidebarCollapsed = this.localStorageService.getSidebarState();
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
@@ -39,5 +41,9 @@ export default class MainComponent {
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
     afterNextRender(() => this.onboardingOrchestratorService.hookToAuth(this.loggedIn));
+  }
+
+  toggleSidebar(): void {
+    this.localStorageService.setSidebarState(!this.isSidebarCollapsed());
   }
 }

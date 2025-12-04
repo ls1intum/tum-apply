@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal, signal } from '@angular/core';
 import { ApplicationCreationPage1Data } from 'app/application/application-creation/application-creation-page1/application-creation-page1.component';
 
 export interface ApplicationDraftData {
@@ -13,6 +13,8 @@ export interface ApplicationDraftData {
 })
 export class LocalStorageService {
   readonly APPLICATION_DRAFT_VALIDITY_DURATION_IN_DAYS = 30;
+  readonly SIDEBAR_STATE_KEY = 'sidebarCollapsed';
+  private collapsed = signal<boolean>(this.loadSidebarState());
 
   // =======================================================
   // STORING APPLICATION DRAFT DATA
@@ -55,6 +57,21 @@ export class LocalStorageService {
     } catch (error) {
       console.error('Failed to clear local storage:', error);
     }
+  }
+  // =======================================================
+  // SIDEBAR STATE MANAGEMENT
+  // =======================================================
+  getSidebarState(): Signal<boolean> {
+    return this.collapsed.asReadonly();
+  }
+
+  setSidebarState(collapsed: boolean): void {
+    this.collapsed.set(collapsed);
+    localStorage.setItem(this.SIDEBAR_STATE_KEY, JSON.stringify(collapsed));
+  }
+  private loadSidebarState(): boolean {
+    const stored = localStorage.getItem(this.SIDEBAR_STATE_KEY);
+    return stored ? JSON.parse(stored) : false;
   }
 
   private getApplicationKey(applicationId?: string, jobId?: string): string {
