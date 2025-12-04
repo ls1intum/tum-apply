@@ -48,7 +48,7 @@ export function createApplicationConfigServiceMock(overrides: Partial<Applicatio
  */
 export function provideApplicationConfigServiceMock(
   mock: ApplicationConfigServiceMock = createApplicationConfigServiceMock(),
-  provideToken: string | Type<any> = 'ApplicationConfigService',
+  provideToken: Type<any> = ApplicationConfigService,
 ): Provider {
   return { provide: provideToken, useValue: mock };
 }
