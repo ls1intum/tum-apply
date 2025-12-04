@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -70,7 +71,7 @@ public class ResearchGroupResource {
      * @param userId the ID of the user to remove from the research group
      * @return no content response
      */
-    @ProfessorOrAdmin
+    @Professor
     @DeleteMapping("/members/{userId}")
     public ResponseEntity<Void> removeMemberFromResearchGroup(@PathVariable UUID userId) {
         log.info("DELETE /api/research-groups/members/{}", userId);
