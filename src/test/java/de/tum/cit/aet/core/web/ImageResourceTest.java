@@ -8,16 +8,22 @@ import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ImageTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -47,6 +53,12 @@ public class ImageResourceTest extends AbstractResourceTest {
     ImageRepository imageRepository;
 
     @Autowired
+    SchoolRepository schoolRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
+
+    @Autowired
     ResearchGroupRepository researchGroupRepository;
 
     @Autowired
@@ -58,6 +70,8 @@ public class ImageResourceTest extends AbstractResourceTest {
     @Autowired
     MvcTestClient api;
 
+    School school;
+    Department department;
     ResearchGroup researchGroup;
     ResearchGroup secondResearchGroup;
     User professorUser;
@@ -78,8 +92,12 @@ public class ImageResourceTest extends AbstractResourceTest {
     }
 
     private void setupFirstResearchGroup() {
+        school = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
+        department = DepartmentTestData.saved(departmentRepository, "Computer Science", school);
+
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
+            department,
             "Prof. Smith",
             "ML Research Group",
             "ML",
@@ -88,7 +106,6 @@ public class ImageResourceTest extends AbstractResourceTest {
             "Machine Learning research",
             "ml@tum.de",
             "80333",
-            "TUM",
             "Arcisstr. 21",
             "https://ml.tum.de",
             "ACTIVE"
@@ -99,6 +116,7 @@ public class ImageResourceTest extends AbstractResourceTest {
     private void setupSecondResearchGroup() {
         secondResearchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
+            department,
             "Prof. Doe",
             "AI Research Group",
             "AI",
@@ -107,8 +125,7 @@ public class ImageResourceTest extends AbstractResourceTest {
             "Artificial Intelligence research",
             "ai@tum.de",
             "80333",
-            "TUM",
-            "Otherstr. 10",
+            "Arcisstr. 10",
             "https://ai.tum.de",
             "ACTIVE"
         );
@@ -711,18 +728,22 @@ public class ImageResourceTest extends AbstractResourceTest {
         return new MockMultipartFile("file", filename, "image/jpeg", imageBytes);
     }
 
-    private ResearchGroup createTestResearchGroup(String abbreviation, String department) {
+    private ResearchGroup createTestResearchGroup(String abbreviation, String departmentName) {
+        // Create a school if we're creating a new department
+        School testSchool = SchoolTestData.saved(schoolRepository, "School for " + abbreviation, abbreviation);
+        Department testDepartment = DepartmentTestData.saved(departmentRepository, departmentName, testSchool);
+
         return ResearchGroupTestData.savedAll(
             researchGroupRepository,
+            testDepartment,
             "Prof. " + abbreviation,
             abbreviation + " Research Group",
             abbreviation,
             "Munich",
-            department,
+            departmentName,
             abbreviation + " research",
             abbreviation.toLowerCase() + "@tum.de",
             "80333",
-            abbreviation,
             abbreviation + " Street 1",
             "https://" + abbreviation.toLowerCase() + ".tum.de",
             "ACTIVE"

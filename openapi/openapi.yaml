@@ -362,6 +362,52 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/departments:
+    get:
+      tags: [department-resource]
+      operationId: getDepartments
+      parameters:
+      - name: schoolId
+        in: query
+        required: false
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/DepartmentDTO'}
+    post:
+      tags: [department-resource]
+      operationId: createDepartment
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DepartmentCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
+  /api/departments/{id}:
+    get:
+      tags: [department-resource]
+      operationId: getDepartmentById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
   /api/documents/{documentDictionaryId}:
     get:
       tags: [document-resource]
@@ -1393,6 +1439,59 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/schools:
+    get:
+      tags: [school-resource]
+      operationId: getAllSchools
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/SchoolShortDTO'}
+    post:
+      tags: [school-resource]
+      operationId: createSchool
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SchoolCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SchoolShortDTO'}
+  /api/schools/with-departments:
+    get:
+      tags: [school-resource]
+      operationId: getAllSchoolsWithDepartments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/SchoolDTO'}
+  /api/schools/{id}:
+    get:
+      tags: [school-resource]
+      operationId: getSchoolById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SchoolDTO'}
   /api/settings/emails:
     get:
       tags: [email-setting-resource]
@@ -1763,6 +1862,31 @@ components:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
     CustomFieldDTO: {}
+    Department:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        departmentId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        name: {type: string}
+        school: {$ref: '#/components/schemas/School'}
+    DepartmentCreationDTO:
+      type: object
+      properties:
+        name: {type: string, maxLength: 200, minLength: 2}
+        schoolId: {type: string, format: uuid}
+      required: [name, schoolId]
+    DepartmentDTO:
+      type: object
+      properties:
+        departmentId: {type: string, format: uuid}
+        name: {type: string}
+        school: {$ref: '#/components/schemas/SchoolShortDTO'}
+    DepartmentShortDTO:
+      type: object
+      properties:
+        departmentId: {type: string, format: uuid}
+        name: {type: string}
     DocumentDTO: {}
     DocumentInformationHolderDTO:
       type: object
@@ -2212,6 +2336,7 @@ components:
         city: {type: string}
         createdAt: {type: string, format: date-time}
         defaultFieldOfStudies: {type: string}
+        department: {$ref: '#/components/schemas/Department'}
         description: {type: string}
         email: {type: string}
         head: {type: string}
@@ -2219,7 +2344,7 @@ components:
         name: {type: string}
         postalCode: {type: string}
         researchGroupId: {type: string, format: uuid}
-        school: {type: string}
+        school: {$ref: '#/components/schemas/School'}
         state:
           type: string
           enum: [DRAFT, ACTIVE, DENIED]
@@ -2234,6 +2359,7 @@ components:
       type: object
       properties:
         createdAt: {type: string, format: date-time}
+        department: {$ref: '#/components/schemas/DepartmentDTO'}
         id: {type: string, format: uuid}
         professorName: {type: string}
         researchGroup: {type: string}
@@ -2246,12 +2372,12 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         defaultFieldOfStudies: {type: string}
+        departmentId: {type: string, format: uuid}
         description: {type: string}
         email: {type: string, format: email}
         head: {type: string, minLength: 1}
         name: {type: string, minLength: 1}
         postalCode: {type: string}
-        school: {type: string}
         state:
           type: string
           enum: [DRAFT, ACTIVE, DENIED]
@@ -2280,22 +2406,52 @@ components:
         city: {type: string}
         contactEmail: {type: string}
         defaultFieldOfStudies: {type: string}
+        departmentId: {type: string, format: uuid}
         description: {type: string}
         firstName: {type: string}
         lastName: {type: string}
         postalCode: {type: string}
         researchGroupHead: {type: string}
         researchGroupName: {type: string}
-        school: {type: string}
         street: {type: string}
         title: {type: string}
         universityId: {type: string}
         website: {type: string}
+      required: [departmentId]
     ResearchGroupShortDTO:
       type: object
       properties:
         name: {type: string}
         researchGroupId: {type: string, format: uuid}
+    School:
+      type: object
+      properties:
+        abbreviation: {type: string}
+        createdAt: {type: string, format: date-time}
+        lastModifiedAt: {type: string, format: date-time}
+        name: {type: string}
+        schoolId: {type: string, format: uuid}
+    SchoolCreationDTO:
+      type: object
+      properties:
+        abbreviation: {type: string, maxLength: 20, minLength: 2}
+        name: {type: string, maxLength: 200, minLength: 2}
+      required: [abbreviation, name]
+    SchoolDTO:
+      type: object
+      properties:
+        abbreviation: {type: string}
+        departments:
+          type: array
+          items: {$ref: '#/components/schemas/DepartmentShortDTO'}
+        name: {type: string}
+        schoolId: {type: string, format: uuid}
+    SchoolShortDTO:
+      type: object
+      properties:
+        abbreviation: {type: string}
+        name: {type: string}
+        schoolId: {type: string, format: uuid}
     SendCodeRequest:
       type: object
       properties:

@@ -34,19 +34,18 @@ public class UserResource {
     /**
      * Returns information about the currently authenticated user.
      * If the user does not exist yet, a new user is created and assigned a default role.
-     * If no JWT is present, or it is not valid, the response will HTTP 401 Unauthorized.
      *
      * @param jwt of the authenticated user
      * @return the user data as {@link UserShortDTO}, or an empty response if unauthenticated
      */
-    @Public
+    @Authenticated
     @GetMapping("/me")
     public ResponseEntity<UserShortDTO> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-        if (jwt == null) {
-            return ResponseEntity.ok().build(); // no token = no user
-        }
-
         User user = authenticationService.provisionUserIfMissing(jwt);
+
+        if (user == null) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(new UserShortDTO(user));
     }
 
