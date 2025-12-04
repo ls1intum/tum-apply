@@ -458,13 +458,15 @@ export class JobDetailComponent {
 
   getLocationTranslationKey(location: string | undefined): string {
     if (location == null) return '-';
-    // maps e.g. MUNICH to 'jobCreationForm.basicInformationSection.locations.Munich'
-    return new Map(DropDownOptions.locations.map(option => [option.value as string, option.name])).get(location) ?? location;
+    // Support both display values (e.g., "Garching Hochbrueck") and enum keys (e.g., "GARCHING_HOCHBRUECK")
+    const enumKey = this.toEnumKey(location);
+    return new Map(DropDownOptions.locations.map(option => [option.value as string, option.name])).get(enumKey) ?? location;
   }
 
   getFundingTypeTranslationKey(fundingType: string | undefined): string {
     if (fundingType == null) return '-';
-    return new Map(DropDownOptions.fundingTypes.map(option => [option.value as string, option.name])).get(fundingType) ?? fundingType;
+    const enumKey = this.toEnumKey(fundingType);
+    return new Map(DropDownOptions.fundingTypes.map(option => [option.value as string, option.name])).get(enumKey) ?? fundingType;
   }
 
   getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
@@ -567,5 +569,27 @@ export class JobDetailComponent {
 
     this.jobDetails.set(this.mapToJobDetails(form, user, researchGroupDetails, true));
     this.dataLoaded.set(true);
+  }
+
+  private formatEnumValue(enumValue: string): string {
+    return enumValue
+      .split('_')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  // Convert display strings like "Garching Hochbrueck" to enum keys like "GARCHING_HOCHBRUECK";
+  // if already an enum key (e.g., "MUNICH") return as-is.
+  private toEnumKey(value: string): string {
+    // Heuristic: if it contains lowercase letters or spaces, treat it as display text
+    const looksLikeEnum = /^[A-Z_]+$/.test(value);
+    if (looksLikeEnum) return value;
+
+    return value
+      .trim()
+      .split(/\s+/)
+      .map(part => part.replace(/[^A-Za-z0-9]/g, '').toUpperCase())
+      .filter(part => part.length > 0)
+      .join('_');
   }
 }
