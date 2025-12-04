@@ -1,0 +1,14 @@
+.jobs-preview-wrap {
+  position: relative;
+  background-color: var(--p-background-default);
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .job-preview-card {
+    /* Keep consistent sizing for preview card wrappers; visual hover is handled by inner `jhi-job-card` */
+    display: block;
+  }
+}
