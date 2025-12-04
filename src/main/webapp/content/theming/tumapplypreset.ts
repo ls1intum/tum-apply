@@ -333,7 +333,7 @@ export const TUMApplyPreset = definePreset(Lara, {
   components: {
     button: {
       root: {
-        borderRadius: '0.75rem',
+        borderRadius: '0.5rem',
         badgeSize: '1rem',
         transitionDuration: '{form.field.transition.duration}',
       },
@@ -773,6 +773,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       root: {
         fontSize: '0.75rem',
         gap: '0',
+        borderRadius: '1rem',
       },
       colorScheme: {
         light: {
