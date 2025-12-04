@@ -156,6 +156,7 @@ public class ResearchGroupService {
      */
 
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
+        currentUserService.isAdminOrMemberOf(researchGroupId);
         ResearchGroup researchGroup = researchGroupRepository
             .findById(researchGroupId)
             .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
@@ -190,6 +191,7 @@ public class ResearchGroupService {
      * @return the updated research group DTO
      */
     public ResearchGroupDTO updateResearchGroup(UUID researchGroupId, ResearchGroupDTO researchGroupDTO) {
+        currentUserService.isAdminOrMemberOf(researchGroupId);
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(researchGroupId);
         updateEntityFromDTO(researchGroup, researchGroupDTO);
         ResearchGroup updatedResearchGroup = researchGroupRepository.save(researchGroup);

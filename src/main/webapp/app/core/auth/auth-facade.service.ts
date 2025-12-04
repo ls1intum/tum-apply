@@ -173,7 +173,7 @@ export class AuthFacadeService {
         this.authMethod = 'none';
         await this.keycloakAuthenticationService.logout(redirectUrl);
       } else {
-        void this.router.navigate([isProfessor ? '/professor' : '/']);
+        void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
       }
       // Reset states
       this.accountService.user.set(undefined);

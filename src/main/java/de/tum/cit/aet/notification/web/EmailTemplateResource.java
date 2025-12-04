@@ -2,6 +2,7 @@ package de.tum.cit.aet.notification.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.dto.EmailTemplateDTO;
@@ -83,7 +84,7 @@ public class EmailTemplateResource {
      * @param templateId the ID of the template to delete
      * @return an empty {@link ResponseEntity} with status 204 (No Content)
      */
-    @ProfessorOrEmployee
+    @Professor
     @DeleteMapping("/{templateId}")
     public ResponseEntity<Void> deleteTemplate(@PathVariable UUID templateId) {
         emailTemplateService.deleteTemplate(templateId);

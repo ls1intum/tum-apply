@@ -3,9 +3,9 @@ package de.tum.cit.aet.usermanagement.web;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.AddMembersToResearchGroupDTO;
@@ -70,7 +70,7 @@ public class ResearchGroupResource {
      * @param userId the ID of the user to remove from the research group
      * @return no content response
      */
-    @ProfessorOrEmployeeOrAdmin
+    @ProfessorOrAdmin
     @DeleteMapping("/members/{userId}")
     public ResponseEntity<Void> removeMemberFromResearchGroup(@PathVariable UUID userId) {
         log.info("DELETE /api/research-groups/members/{}", userId);
@@ -97,7 +97,7 @@ public class ResearchGroupResource {
      * @param researchGroupId the ID of the research group to get details for
      * @return the detailed research group information
      */
-    @CheckAccess
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/detail/{researchGroupId}")
     public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
         log.info("GET /api/research-groups/detail/{}", researchGroupId);
@@ -111,7 +111,7 @@ public class ResearchGroupResource {
      * @param researchGroupDTO the research group data to update
      * @return the updated research group
      */
-    @CheckAccess
+    @ProfessorOrEmployeeOrAdmin
     @PutMapping("/{id}")
     public ResponseEntity<ResearchGroupDTO> updateResearchGroup(
         @PathVariable UUID id,
