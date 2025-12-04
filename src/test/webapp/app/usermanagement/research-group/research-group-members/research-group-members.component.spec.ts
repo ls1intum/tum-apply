@@ -303,13 +303,13 @@ describe('ResearchGroupMembersComponent', () => {
     expect(row.canRemove).toBe(false);
   });
 
-  it('should allow employee to remove non-professor members', () => {
+  it('should not allow employee to remove members', () => {
     mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
-    const studentMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Applicant] };
+    const studentMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Employee] };
     component.members.set([studentMember]);
 
     const row = component.tableData()[0];
 
-    expect(row.canRemove).toBe(true);
+    expect(row.canRemove).toBe(false);
   });
 });

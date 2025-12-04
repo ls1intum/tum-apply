@@ -62,15 +62,13 @@ export class ResearchGroupMembersComponent {
   // Transform members data for display
   readonly tableData = computed(() => {
     const currentUserAuthorities = this.accountService.userAuthorities;
-    const isProfessor = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Professor);
     const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
 
     return this.members().map(member => {
       const isCurrentUser = this.isCurrentUser(member);
-      const memberIsProfessor = member.roles?.includes(UserShortDTO.RolesEnum.Professor);
       let canRemove = !isCurrentUser;
 
-      if (isEmployee && !isProfessor && memberIsProfessor) {
+      if (isEmployee) {
         canRemove = false;
       }
 
