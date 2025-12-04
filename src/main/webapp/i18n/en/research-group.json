@@ -7,11 +7,15 @@
     "groupInfoHeader": "My Group",
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
+      "organizationInfo": "To change the department and school, please contact an administrator.",
+      "noDepartment": "No department",
+      "noSchool": "No school",
       "fields": {
         "name": "Name",
         "abbreviation": "Abbreviation",
         "head": "Head",
         "school": "School",
+        "department": "Department",
         "defaultFieldOfStudies": "Field of Studies",
         "website": "Website",
         "email": "Email",
@@ -20,7 +24,8 @@
         "city": "City",
         "description": "Description",
         "section1": "Basic Information",
-        "section2": "School and Website",
+        "sectionOrganization": "Organization",
+        "section2": "Contact and Website",
         "section3": "Address"
       },
       "placeholders": {
