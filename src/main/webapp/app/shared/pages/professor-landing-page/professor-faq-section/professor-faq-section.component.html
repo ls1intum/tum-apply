@@ -9,7 +9,7 @@
   </div>
   <p-accordion [value]="0">
     @for (tab of tabs; track tab.value) {
-      @if (tab.value !== 'registration' || !loggedIn() || isApplicant()) {
+      @if (tab.value !== 'registration' || (loggedIn() && isApplicant())) {
         <p-accordion-panel [value]="tab.value">
           <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
           <p-accordion-content>
