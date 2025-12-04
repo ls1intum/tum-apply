@@ -90,7 +90,10 @@ export class JobCardListComponent {
   onFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterId === 'fieldOfStudies') {
       this.page.set(0);
-      this.selectedFieldOfStudiesFilters.set(filterChange.selectedValues);
+      const fieldOfStudyValue = filterChange.selectedValues.map(
+        key => DropdownOptions.fieldsOfStudies.find(fs => fs.name === key)?.value ?? key,
+      );
+      this.selectedFieldOfStudiesFilters.set(fieldOfStudyValue);
       void this.loadJobs();
     } else if (filterChange.filterId === 'location') {
       this.page.set(0);

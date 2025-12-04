@@ -11,6 +11,7 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import SharedModule from 'app/shared/shared.module';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 
+import * as DropDownOptions from '../.././dropdown-options';
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
 
 export const ApplicationStatusExtended = {
@@ -76,7 +77,28 @@ export class JobCardComponent {
 
   private router = inject(Router);
 
+  getLocationTranslationKey(location: string | undefined): string {
+    if (location == null) return '-';
+    // Maps formatted string (e.g. "Garching Hochbrueck") to translation key
+    return (
+      new Map(DropDownOptions.locations.map(option => [this.formatEnumValue(option.value as string), option.name])).get(location) ??
+      location
+    );
+  }
+
+  getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
+    if (fieldOfStudies == null) return '-';
+    return DropDownOptions.fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? fieldOfStudies;
+  }
+
   onViewDetails(): void {
     void this.router.navigate([`/job/detail/${this.jobId()}`]);
+  }
+
+  private formatEnumValue(enumValue: string): string {
+    return enumValue
+      .split('_')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(' ');
   }
 }

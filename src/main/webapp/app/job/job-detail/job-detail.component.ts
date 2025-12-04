@@ -458,6 +458,7 @@ export class JobDetailComponent {
 
   getLocationTranslationKey(location: string | undefined): string {
     if (location == null) return '-';
+    // maps e.g. MUNICH to 'jobCreationForm.basicInformationSection.locations.Munich'
     return new Map(DropDownOptions.locations.map(option => [option.value as string, option.name])).get(location) ?? location;
   }
 
