@@ -14,13 +14,13 @@ export interface ResearchGroupRequestDTO {
     city?: string;
     contactEmail?: string;
     defaultFieldOfStudies?: string;
+    departmentId: string;
     description?: string;
     firstName?: string;
     lastName?: string;
     postalCode?: string;
     researchGroupHead?: string;
     researchGroupName?: string;
-    school?: string;
     street?: string;
     title?: string;
     universityId?: string;
