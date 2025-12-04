@@ -24,6 +24,7 @@
       [icon]="isDarkMode() ? 'moon' : 'sun'"
       severity="primary"
       variant="text"
+      [tooltip]="'header.theme' | translate"
     />
 
     @if (user() === undefined) {
