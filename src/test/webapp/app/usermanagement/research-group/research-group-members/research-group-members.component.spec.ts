@@ -13,7 +13,6 @@ import { provideToastServiceMock, createToastServiceMock } from 'util/toast-serv
 import { provideDialogServiceMock } from 'util/dialog.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
