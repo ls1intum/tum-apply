@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { AccordionModule } from 'primeng/accordion';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -7,6 +7,8 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
 import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-dialog.constants';
 import { DialogService } from 'primeng/dynamicdialog';
+import { AccountService } from 'app/core/auth/account.service';
+import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -46,13 +48,24 @@ export class ProfessorFaqSectionComponent {
     },
   ];
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+  readonly accountService = inject(AccountService);
+  readonly loggedIn = computed(() => this.accountService.signedIn());
+  readonly isApplicant = computed(() => this.accountService.hasAnyAuthority(['APPLICANT']));
+
   private readonly translate = inject(TranslateService);
   private readonly dialogService = inject(DialogService);
 
-  openRegistrationForm(): void {
-    this.dialogService.open(EmployeeRequestAccessFormComponent, {
-      ...ONBOARDING_FORM_DIALOG_CONFIG,
-      header: this.translate.instant('onboarding.employeeRequest.dialogTitle'),
-    });
+  openRegistrationForm(employee = true): void {
+    if (employee) {
+      this.dialogService.open(EmployeeRequestAccessFormComponent, {
+        ...ONBOARDING_FORM_DIALOG_CONFIG,
+        header: this.translate.instant('onboarding.employeeRequest.dialogTitle'),
+      });
+    } else {
+      this.dialogService.open(ResearchGroupCreationFormComponent, {
+        ...ONBOARDING_FORM_DIALOG_CONFIG,
+        header: this.translate.instant('onboarding.professorRequest.dialogTitle'),
+      });
+    }
   }
 }

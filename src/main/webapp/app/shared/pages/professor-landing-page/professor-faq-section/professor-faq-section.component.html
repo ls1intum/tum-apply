@@ -9,22 +9,25 @@
   </div>
   <p-accordion [value]="0">
     @for (tab of tabs; track tab.value) {
-      <p-accordion-panel [value]="tab.value">
-        <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
-        <p-accordion-content>
-          <div [innerHTML]="tab.content | translate"></div>
-          <div class="registration-button">
-            @if (tab.value === 'registration') {
-              <jhi-button
-                (click)="openRegistrationForm()"
-                [shouldTranslate]="true"
-                label="onboarding.actions.openForm"
-                variant="outlined"
-              />
-            }
-          </div>
-        </p-accordion-content>
-      </p-accordion-panel>
+      @if (tab.value !== 'registration' || !loggedIn() || isApplicant()) {
+        <p-accordion-panel [value]="tab.value">
+          <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div [innerHTML]="tab.content | translate"></div>
+            <div class="registration-button">
+              @if (tab.value === 'registration') {
+                <jhi-button
+                  (click)="openRegistrationForm()"
+                  [shouldTranslate]="true"
+                  label="onboarding.actions.imEmployee"
+                  variant="outlined"
+                />
+                <jhi-button (click)="openRegistrationForm(false)" [shouldTranslate]="true" label="onboarding.actions.openForm" />
+              }
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+      }
     }
   </p-accordion>
 </div>
