@@ -1,10 +1,17 @@
-import { Provider } from '@angular/core';
+import { Provider, Type } from '@angular/core';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { KeycloakConfig, OtpConfig } from 'app/core/config/application-config.model';
 
 export type ApplicationConfigServiceMock = {
-  keycloak: KeycloakConfig;
-  otp: OtpConfig;
+  keycloak: {
+    url: string;
+    realm: string;
+    clientId: string;
+  };
+  otp: {
+    length: number;
+    ttlSeconds: number;
+    resendCooldownSeconds: number;
+  };
 };
 
 export function createApplicationConfigServiceMock(): ApplicationConfigServiceMock {
@@ -22,6 +29,9 @@ export function createApplicationConfigServiceMock(): ApplicationConfigServiceMo
   };
 }
 
-export function provideApplicationConfigServiceMock(mock: ApplicationConfigServiceMock = createApplicationConfigServiceMock()): Provider {
-  return { provide: ApplicationConfigService, useValue: mock };
+export function provideApplicationConfigServiceMock(
+  mock: ApplicationConfigServiceMock = createApplicationConfigServiceMock(),
+  provideToken: string | Type<any> = 'ApplicationConfigService',
+): Provider {
+  return { provide: provideToken, useValue: mock };
 }

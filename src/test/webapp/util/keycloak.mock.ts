@@ -20,6 +20,7 @@ export function createKeycloakMock(): KeycloakMock {
     updateToken: vi.fn().mockResolvedValue(undefined),
   };
 }
-export function provideKeycloakMock(mock: KeycloakMock = createKeycloakMock()): Provider {
-  return { provide: 'Keycloak', useValue: mock };
+
+export function provideKeycloakMock(mock: KeycloakMock = createKeycloakMock(), provideToken: any = 'Keycloak'): Provider {
+  return { provide: provideToken, useValue: mock };
 }

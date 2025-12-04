@@ -1,15 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { UploadButtonComponent, DocumentType } from 'app/shared/components/atoms/upload-button/upload-button.component';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { ToastService } from 'app/service/toast-service';
 import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideTranslateMock } from 'util/translate.mock';
 
 import { signal } from '@angular/core';
-import rxjs from 'rxjs';
+import rxjs, { of } from 'rxjs';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideHttpClientMock } from 'util/http-client.mock';
 import {
@@ -59,7 +57,7 @@ describe('UploadButtonComponent', () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
     const component = fixture.componentInstance;
 
-    component['toastService'].showError = vi.fn();
+    const toastSpy = vi.spyOn(toastService, 'showErrorKey');
 
     component.fileUploadComponent = signal({
       clear: vi.fn(),
@@ -68,10 +66,7 @@ describe('UploadButtonComponent', () => {
     const bigFile = new File([new ArrayBuffer(2 * 1024 * 1024)], 'bigfile.pdf'); // 2MB
     await component.onFileSelected({ currentFiles: [bigFile] } as FileSelectEvent);
 
-    expect(component['toastService'].showError).toHaveBeenCalledWith({
-      summary: 'Error',
-      detail: 'Files are too large',
-    });
+    expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.too_large');
     expect(component.selectedFiles()).toBe(undefined);
   });
 
@@ -122,22 +117,20 @@ describe('UploadButtonComponent', () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
     const component = fixture.componentInstance;
 
+    const toastSpy = vi.spyOn(toastService, 'showErrorKey');
+
     const error = new Error('Delete failed');
-    (applicationService.deleteDocumentFromApplication as any).mockReturnValue({
-      subscribe: () => {
-        throw error;
-      },
-    });
+
+    vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => error));
+
+    vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(error);
 
     const document = { id: '1', name: 'doc1', size: 1234 };
     component.documentIds.set([document]);
 
     await component.deleteDictionary(document);
 
-    expect(toastService.showError).toHaveBeenCalledWith({
-      summary: 'Error',
-      detail: 'Failed to delete document',
-    });
+    expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.delete_failed');
   });
 
   it('should set isUploading to false on clear', () => {
@@ -178,19 +171,19 @@ describe('UploadButtonComponent', () => {
   it('should show error toast if renaming fails', async () => {
     const fixture = createUploadButtonFixture({ applicationId: 'app-id', documentType: 'CV' });
     const component = fixture.componentInstance;
-    (applicationService.renameDocument as any).mockImplementation(() => {
-      throw new Error('Rename failed');
-    });
+
+    const toastSpy = vi.spyOn(toastService, 'showErrorKey');
+
+    vi.spyOn(applicationService, 'renameDocument').mockReturnValue(rxjs.throwError(() => new Error('Rename failed')));
+
+    vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Rename failed'));
 
     const doc = { id: '1', name: 'newName', size: 1234 };
     component.documentIds.set([doc]);
 
     await component.renameDocument(doc);
 
-    expect(toastService.showError).toHaveBeenCalledWith({
-      summary: 'Error',
-      detail: 'Failed to rename document',
-    });
+    expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.rename_failed');
   });
 
   it('should append new files if selectedFiles is already defined', async () => {
@@ -226,29 +219,22 @@ describe('UploadButtonComponent', () => {
     const mockFile = new File(['test content'], 'test.pdf');
     component.selectedFiles.set([mockFile]);
 
-    const toastSpy = vi.spyOn(component['toastService'], 'showError');
+    const toastSpy = vi.spyOn(toastService, 'showErrorKey');
 
     component.fileUploadComponent = signal({ clear: vi.fn() } as unknown as FileUpload);
 
-    const uploadError = new Error('Simulated upload failure');
-    vi.spyOn(applicationService as any, 'uploadDocuments').mockReturnValue({
-      subscribe: vi.fn(),
-      pipe: vi.fn(),
-      toPromise: vi.fn(),
-    });
-
     const firstValueFromSpy = vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Simulated upload failure'));
+
     await component.onUpload();
 
-    expect(toastSpy).toHaveBeenCalledWith({
-      summary: 'Error',
-      detail: 'Upload failed',
-    });
+    expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.upload_failed');
 
     expect(component.isUploading()).toBe(false);
     expect(component.documentIds()).toBe(undefined);
+
     firstValueFromSpy.mockRestore();
   });
+
   it('should not rename document if name is null or undefined', async () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -284,6 +270,7 @@ describe('UploadButtonComponent', () => {
     expect(updatedDocs?.find(d => d.id === docId)?.name).toBe(newName);
     expect(updatedDocs?.find(d => d.id === 'doc-2')?.name).toBe('OtherDoc');
   });
+
   it('should handle deleteDictionary when documentIds is undefined (fallback to empty array)', async () => {
     const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
     const component = fixture.componentInstance;
@@ -306,5 +293,156 @@ describe('UploadButtonComponent', () => {
 
     const updatedDocs = component.documentIds();
     expect(updatedDocs?.length).toBe(0);
+  });
+
+  describe('Duplicate Handling', () => {
+    it('should detect duplicate filename and show dialog instead of uploading', async () => {
+      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+      const component = fixture.componentInstance;
+
+      // 1. Simulate existing document
+      component.documentIds.set([{ id: '1', name: 'existing.pdf', size: 1000 }]);
+
+      // 2. Select same file
+      const newFile = new File(['content'], 'existing.pdf');
+      const uploadSpy = vi.spyOn(component, 'onUpload');
+
+      await component.onFileSelected({ currentFiles: [newFile] } as FileSelectEvent);
+
+      // 3. Expect dialog open, upload NOT started
+      expect(component.showDuplicateDialog()).toBe(true);
+      expect(component.pendingDuplicateFile()).toBe(newFile);
+      expect(component.duplicateFileName()).toBe('existing.pdf');
+      expect(uploadSpy).not.toHaveBeenCalled();
+    });
+
+    it('should replace duplicate file: delete old then upload new', async () => {
+      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+      const component = fixture.componentInstance;
+
+      const existingDoc = { id: 'old-id', name: 'duplicate.pdf', size: 1000 };
+      component.documentIds.set([existingDoc]);
+
+      const newFile = new File(['new content'], 'duplicate.pdf');
+      component.pendingDuplicateFile.set(newFile);
+      component.showDuplicateDialog.set(true);
+
+      // Mock delete and upload
+      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation((): rxjs.Observable<any> => of({}));
+      vi.spyOn(applicationService, 'uploadDocuments').mockImplementation(
+        (): rxjs.Observable<any> => of([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]),
+      );
+
+      await component.onDuplicateReplace();
+
+      // Expect delete then upload
+      expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
+      expect(applicationService.uploadDocuments).toHaveBeenCalledTimes(1);
+      expect(component.showDuplicateDialog()).toBe(false);
+
+      // Check if list updated
+      expect(component.documentIds()).toEqual([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]);
+    });
+
+    it('should close dialog on cancel', () => {
+      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+      const component = fixture.componentInstance;
+
+      component.showDuplicateDialog.set(true);
+      component.pendingDuplicateFile.set(new File([], 'test.pdf'));
+
+      component.onDuplicateCancel();
+
+      expect(component.showDuplicateDialog()).toBe(false);
+      expect(component.pendingDuplicateFile()).toBeNull();
+    });
+
+    it('should close dialog if no pending file is set during replace', async () => {
+      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+      const component = fixture.componentInstance;
+
+      component.showDuplicateDialog.set(true);
+      component.pendingDuplicateFile.set(null);
+
+      await component.onDuplicateReplace();
+
+      expect(component.showDuplicateDialog()).toBe(false);
+      expect(applicationService.deleteDocumentFromApplication).not.toHaveBeenCalled();
+    });
+
+    it('should handle error when deleting existing document during replace', async () => {
+      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+      const component = fixture.componentInstance;
+
+      const existingDoc = { id: 'old-id', name: 'duplicate.pdf', size: 1000 };
+      component.documentIds.set([existingDoc]);
+
+      const newFile = new File(['new content'], 'duplicate.pdf');
+      component.pendingDuplicateFile.set(newFile);
+      component.showDuplicateDialog.set(true);
+
+      const toastSpy = vi.spyOn(toastService, 'showErrorKey');
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Mock delete failure
+      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => new Error('Delete failed')));
+      vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Delete failed'));
+
+      await component.onDuplicateReplace();
+
+      expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
+      expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.replace_failed');
+      expect(component.showDuplicateDialog()).toBe(false);
+      expect(applicationService.uploadDocuments).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle documentIds becoming undefined during replace (race condition)', async () => {
+      const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+      const component = fixture.componentInstance;
+
+      const existingDoc = { id: 'old-id', name: 'duplicate.pdf', size: 1000 };
+      component.documentIds.set([existingDoc]);
+
+      const newFile = new File(['new content'], 'duplicate.pdf');
+      component.pendingDuplicateFile.set(newFile);
+      component.showDuplicateDialog.set(true);
+
+      // Subject to control when the delete completes
+      const deleteSubject = new rxjs.Subject<any>();
+      vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation(
+        (): rxjs.Observable<any> => deleteSubject.asObservable(),
+      );
+      vi.spyOn(applicationService, 'uploadDocuments').mockImplementation((): rxjs.Observable<any> => of([]));
+
+      // Start the replace process
+      const replacePromise = component.onDuplicateReplace();
+
+      // Simulate race condition: documentIds cleared while delete is pending
+      component.documentIds.set(undefined);
+
+      // Complete the delete
+      deleteSubject.next({});
+      deleteSubject.complete();
+
+      await replacePromise;
+
+      // Verify that it handled the undefined documentIds gracefully (fallback to [])
+      expect(component.documentIds()).toEqual([]);
+    });
+  });
+
+  it('should do nothing on upload if no files selected', async () => {
+    const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
+    const component = fixture.componentInstance;
+
+    component.selectedFiles.set(undefined);
+    await component.onUpload();
+    expect(applicationService.uploadDocuments).not.toHaveBeenCalled();
+
+    component.selectedFiles.set([]);
+    await component.onUpload();
+    expect(applicationService.uploadDocuments).not.toHaveBeenCalled();
   });
 });

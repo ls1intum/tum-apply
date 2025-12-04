@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import ApplicationDetailForApplicantComponent from 'app/application/application-detail-for-applicant/application-detail-for-applicant.component';
 import { convertToParamMap, ActivatedRoute } from '@angular/router';
+import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 import { TranslateService } from '@ngx-translate/core';
 import { createTranslateServiceMock, TranslateServiceMock, provideTranslateMock } from 'util/translate.mock';
 import { createToastServiceMock, ToastServiceMock, provideToastServiceMock } from 'util/toast-service.mock';
@@ -23,9 +24,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
     ...(appServiceOverrides ?? {}),
   };
 
-  const route: Partial<ActivatedRoute> = {
-    snapshot: { paramMap: convertToParamMap(paramId ? { application_id: paramId } : {}) } as unknown as ActivatedRoute['snapshot'],
-  };
+  const routeMock = createActivatedRouteMock(paramId ? { application_id: paramId } : {});
   const translate: TranslateServiceMock = createTranslateServiceMock();
   const pdfExportService = createPdfExportResourceApiServiceMock();
   const toast: ToastServiceMock = createToastServiceMock();
@@ -34,7 +33,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
 
   TestBed.configureTestingModule({
     providers: [
-      { provide: ActivatedRoute, useValue: route },
+      provideActivatedRouteMock(routeMock),
       provideApplicationResourceApiServiceMock(applicationService),
       providePdfExportResourceApiServiceMock(pdfExportService),
       provideTranslateMock(translate),
@@ -47,7 +46,7 @@ function setupTest(paramId: string | null, appServiceOverrides?: Partial<Applica
 
   const fixture = TestBed.createComponent(ApplicationDetailForApplicantComponent);
   const component = fixture.componentInstance;
-  return { component, applicationService, pdfExportService, translate, toast, router, location };
+  return { component, applicationService, pdfExportService, translate, toast, router, location, routeMock };
 }
 
 const DEFAULT_APPLICATION_DETAIL: ApplicationDetailDTO = {

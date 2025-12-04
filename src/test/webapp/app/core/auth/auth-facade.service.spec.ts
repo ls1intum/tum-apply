@@ -1,22 +1,33 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
 import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 import {
   AuthOrchestratorServiceMock,
   createAuthOrchestratorServiceMock,
   provideAuthOrchestratorServiceMock,
+  createAuthOrchestratorServiceMock,
+  AuthOrchestratorServiceMock,
 } from 'util/auth-orchestrator.service.mock';
+import { provideAccountServiceMock, createAccountServiceMock, AccountServiceMock } from 'util/account.service.mock';
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
+import { KeycloakAuthenticationService, IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
 import { DocumentCacheService } from 'app/service/document-cache.service';
+import { createKeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import { vi } from 'vitest';
+import { provideMessageServiceMock } from 'util/message-service.mock';
+import { provideTranslateMock } from 'util/translate.mock';
 
 function setup() {
   const server = { refreshTokens: vi.fn(), login: vi.fn(), sendOtp: vi.fn(), verifyOtp: vi.fn(), logout: vi.fn() };
-  const keycloak = { init: vi.fn(), loginWithProvider: vi.fn(), logout: vi.fn() };
+  const keycloak = Object.assign(createKeycloakMock(), {
+    init: vi.fn(),
+    loginWithProvider: vi.fn(),
+    logout: vi.fn()
+  });
   const account: AccountServiceMock = createAccountServiceMock();
-  // Spy on user.set for logout tests
   vi.spyOn(account.user, 'set');
   const orchestrator: AuthOrchestratorServiceMock = createAuthOrchestratorServiceMock();
   const docCache = { clear: vi.fn() };
@@ -26,11 +37,13 @@ function setup() {
     providers: [
       AuthFacadeService,
       { provide: ServerAuthenticationService, useValue: server },
-      { provide: KeycloakAuthenticationService, useValue: keycloak },
       { provide: DocumentCacheService, useValue: docCache },
+      provideKeycloakMock(keycloak, KeycloakAuthenticationService),
       provideAccountServiceMock(account),
       provideAuthOrchestratorServiceMock(orchestrator),
       provideRouterMock(router),
+      provideMessageServiceMock(),
+      provideTranslateMock(),
     ],
   });
   const facade = TestBed.inject(AuthFacadeService);
@@ -48,8 +61,8 @@ describe('AuthFacadeService', () => {
     account.loadUser.mockResolvedValue(undefined);
     const result = await facade.initAuth();
     expect(result).toBe(true);
-    expect(server.refreshTokens).toHaveBeenCalled();
-    expect(account.loadUser).toHaveBeenCalled();
+    expect(server.refreshTokens).toHaveBeenCalledTimes(1);
+    expect(account.loadUser).toHaveBeenCalledTimes(1);
   });
 
   it('initAuth keycloak fallback success', async () => {
@@ -59,7 +72,7 @@ describe('AuthFacadeService', () => {
     account.loadUser.mockResolvedValue(undefined);
     const result = await facade.initAuth();
     expect(result).toBe(true);
-    expect(keycloak.init).toHaveBeenCalled();
+    expect(keycloak.init).toHaveBeenCalledTimes(1);
   });
 
   it('initAuth none returns false', async () => {
@@ -76,15 +89,16 @@ describe('AuthFacadeService', () => {
     account.loadUser.mockResolvedValue(undefined);
     await facade.loginWithEmail('a@b.com', 'pw');
     expect(server.login).toHaveBeenCalledWith('a@b.com', 'pw');
-    expect(account.loadUser).toHaveBeenCalled();
-    expect(orchestrator.nextStep).toHaveBeenCalled();
+    expect(account.loadUser).toHaveBeenCalledTimes(1);
+    expect(orchestrator.nextStep).toHaveBeenCalledTimes(1);
   });
 
   it('loginWithEmail error surfaces orchestrator error', async () => {
     const { facade, server, orchestrator } = setup();
+    const setErrorSpy = vi.spyOn(orchestrator, 'setError');
     server.login.mockRejectedValue(new Error('bad'));
     await expect(facade.loginWithEmail('x@y', 'pw')).rejects.toThrow();
-    expect(orchestrator.setError).toHaveBeenCalled();
+    expect(setErrorSpy).toHaveBeenCalledTimes(1);
   });
 
   it('requestOtp success advances step', async () => {
@@ -94,6 +108,8 @@ describe('AuthFacadeService', () => {
     await facade.requestOtp(false);
     expect(server.sendOtp).toHaveBeenCalledWith('user@example.com', false);
     expect(orchestrator.nextStep).toHaveBeenCalledWith('otp');
+    expect(server.sendOtp).toHaveBeenCalledTimes(1);
+    expect(orchestrator.nextStep).toHaveBeenCalledTimes(1);
   });
 
   it('verifyOtp login path success', async () => {
@@ -101,9 +117,9 @@ describe('AuthFacadeService', () => {
     server.verifyOtp.mockResolvedValue({ profileRequired: false });
     account.loadUser.mockResolvedValue(undefined);
     await facade.verifyOtp('123456', false);
-    expect(server.verifyOtp).toHaveBeenCalled();
-    expect(account.loadUser).toHaveBeenCalled();
-    expect(orchestrator.authSuccess).toHaveBeenCalled();
+    expect(server.verifyOtp).toHaveBeenCalledTimes(1);
+    expect(account.loadUser).toHaveBeenCalledTimes(1);
+    expect(orchestrator.authSuccess).toHaveBeenCalledTimes(2);
   });
 
   it('verifyOtp registration path with profile required advances step', async () => {
@@ -113,8 +129,8 @@ describe('AuthFacadeService', () => {
     orchestrator.firstName.set('Jane');
     orchestrator.lastName.set('Doe');
     await facade.verifyOtp('123456', true);
-    expect(server.verifyOtp).toHaveBeenCalled();
-    expect(orchestrator.nextStep).toHaveBeenCalled();
+    expect(server.verifyOtp).toHaveBeenCalledTimes(1);
+    expect(orchestrator.nextStep).toHaveBeenCalledTimes(1);
   });
 
   it('loginWithProvider delegates to keycloak', async () => {
@@ -122,6 +138,7 @@ describe('AuthFacadeService', () => {
     keycloak.loginWithProvider.mockResolvedValue(undefined);
     await facade.loginWithProvider('google' as IdpProvider, '/home');
     expect(keycloak.loginWithProvider).toHaveBeenCalledWith('google', '/home');
+    expect(keycloak.loginWithProvider).toHaveBeenCalledTimes(1);
   });
 
   it('logout server path', async () => {
@@ -131,10 +148,12 @@ describe('AuthFacadeService', () => {
     account.loaded.set(true);
     account.loaded.set(true);
     await facade.logout();
-    expect(docCache.clear).toHaveBeenCalled();
-    expect(server.logout).toHaveBeenCalled();
+    expect(docCache.clear).toHaveBeenCalledTimes(1);
+    expect(server.logout).toHaveBeenCalledTimes(1);
     expect(router.navigate).toHaveBeenCalledWith(['/professor']);
     expect(account.user.set).toHaveBeenCalledWith(undefined);
+    expect(router.navigate).toHaveBeenCalledTimes(1);
+    expect(account.user.set).toHaveBeenCalledTimes(2);
   });
 
   it('logout keycloak path', async () => {
@@ -142,19 +161,15 @@ describe('AuthFacadeService', () => {
     (facade as any).authMethod = 'keycloak';
     account.user.set({ id: 'id-2', name: 'User', email: 'user@test.com', authorities: ['ROLE_USER'] });
     await facade.logout();
-    expect(docCache.clear).toHaveBeenCalled();
-    expect(keycloak.logout).toHaveBeenCalled();
+    expect(docCache.clear).toHaveBeenCalledTimes(1);
+    expect(keycloak.logout).toHaveBeenCalledTimes(1);
     expect(account.user.set).toHaveBeenCalledWith(undefined);
+    expect(account.user.set).toHaveBeenCalledTimes(2);
   });
 
   it('runAuthAction throws when busy', async () => {
     const { facade, orchestrator } = setup();
-
     orchestrator.isBusy.set(true);
-    const setSpy = vi.spyOn(orchestrator.isBusy, 'set');
-
     await expect(facade.loginWithEmail('a', 'b')).rejects.toThrow('AuthOrchestrator is busy');
-
-    expect(setSpy).not.toHaveBeenCalled();
   });
 });

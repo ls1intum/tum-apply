@@ -4,13 +4,11 @@ import { OtpInput } from 'app/shared/components/atoms/otp-input/otp-input';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
-import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
-import { TranslateService } from '@ngx-translate/core';
+import { createApplicationConfigServiceMock, provideApplicationConfigServiceMock } from 'util/application-config.service.mock';
+import { createDynamicDialogConfigMock, provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { of } from 'rxjs';
-import { signal } from '@angular/core';
 import { InputOtpChangeEvent } from 'primeng/inputotp';
 
 import { createAuthOrchestratorServiceMock } from 'util/auth-orchestrator.service.mock';
@@ -20,32 +18,17 @@ import { provideAuthOrchestratorServiceMock } from 'util/auth-orchestrator.servi
 import { provideAuthFacadeServiceMock } from 'util/auth-facade.service.mock';
 
 describe('OtpInput', () => {
-  let mockApplicationConfigService: { otp: { length: number; ttlSeconds: number } };
-  let mockAuthOrchestratorService: ReturnType<typeof createAuthOrchestratorServiceMock> & {
-    cooldownSeconds: ReturnType<typeof signal<number>>;
-    isBusy: ReturnType<typeof signal<boolean>>;
-    error: ReturnType<typeof signal<string | null>>;
-    clearError: () => void;
-  };
+  let mockApplicationConfigService: ReturnType<typeof createApplicationConfigServiceMock>;
+  let mockAuthOrchestratorService: ReturnType<typeof createAuthOrchestratorServiceMock>;
   let mockAuthFacadeService: ReturnType<typeof createAuthFacadeServiceMock>;
   let mockTranslateService: ReturnType<typeof createTranslateServiceMock>;
   let mockDynamicDialogConfig: DynamicDialogConfig;
   let mockBreakpointObserver: { observe: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    mockApplicationConfigService = {
-      otp: {
-        length: 6,
-        ttlSeconds: 300,
-      },
-    };
+    mockApplicationConfigService = createApplicationConfigServiceMock();
 
-    mockAuthOrchestratorService = Object.assign(createAuthOrchestratorServiceMock(), {
-      cooldownSeconds: signal(0),
-      isBusy: signal(false),
-      error: signal<string | null>(null),
-      clearError: vi.fn(),
-    });
+    mockAuthOrchestratorService = createAuthOrchestratorServiceMock();
     mockAuthFacadeService = createAuthFacadeServiceMock();
     mockTranslateService = createTranslateServiceMock();
     // Patch instant to return the expected label for the test
@@ -55,7 +38,7 @@ describe('OtpInput', () => {
       return key;
     };
 
-    mockDynamicDialogConfig = { data: {} } as DynamicDialogConfig;
+    mockDynamicDialogConfig = createDynamicDialogConfigMock({});
 
     mockBreakpointObserver = {
       observe: vi.fn(() =>
@@ -75,11 +58,11 @@ describe('OtpInput', () => {
       providers: [
         provideFontAwesomeTesting(),
         provideTranslateMock(mockTranslateService),
-        { provide: ApplicationConfigService, useValue: mockApplicationConfigService as unknown as ApplicationConfigService },
+        provideApplicationConfigServiceMock(mockApplicationConfigService, ApplicationConfigService),
         provideAuthOrchestratorServiceMock(mockAuthOrchestratorService),
         provideAuthFacadeServiceMock(mockAuthFacadeService),
-        { provide: DynamicDialogConfig, useValue: mockDynamicDialogConfig },
-        { provide: BreakpointObserver, useValue: mockBreakpointObserver as unknown as BreakpointObserver },
+        provideDynamicDialogConfigMock(mockDynamicDialogConfig),
+        { provide: BreakpointObserver, useValue: mockBreakpointObserver },
       ],
     }).compileComponents();
   });
@@ -177,6 +160,7 @@ describe('OtpInput', () => {
     const mockCtrl = new FormControl('');
     vi.spyOn(comp, 'formControl').mockReturnValue(mockCtrl);
     const emitSpy = vi.spyOn(comp.modelChange, 'emit');
+    const clearErrorSpy = vi.spyOn(mockAuthOrchestratorService, 'clearError');
 
     const event: InputOtpChangeEvent = { value: 'a@b#1$2', originalEvent: new Event('input') };
     comp.onChange(event);
@@ -184,7 +168,7 @@ describe('OtpInput', () => {
     expect(comp.otpValue()).toBe('AB12');
     expect(emitSpy).toHaveBeenCalledWith('AB12');
     expect(mockCtrl.value).toBe('AB12');
-    expect(mockAuthOrchestratorService.clearError).toHaveBeenCalled();
+    expect(clearErrorSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should handle onSubmit when valid', () => {
@@ -195,10 +179,11 @@ describe('OtpInput', () => {
     mockAuthOrchestratorService.error.set(null);
     comp.otpValue.set('123456');
     fixture.componentRef.setInput('registration', false);
+    const clearErrorSpy = vi.spyOn(mockAuthOrchestratorService, 'clearError');
 
     comp.onSubmit();
 
-    expect(mockAuthOrchestratorService.clearError).toHaveBeenCalled();
+    expect(clearErrorSpy).toHaveBeenCalledTimes(1);
     expect(mockAuthFacadeService.verifyOtp).toHaveBeenCalledWith('123456', false);
   });
 
@@ -212,10 +197,11 @@ describe('OtpInput', () => {
     mockAuthOrchestratorService.cooldownSeconds.set(0);
     comp.otpValue.set('123456');
     fixture.componentRef.setInput('registration', false);
+    const clearErrorSpy = vi.spyOn(mockAuthOrchestratorService, 'clearError');
 
     comp.onResend();
 
-    expect(mockAuthOrchestratorService.clearError).toHaveBeenCalled();
+    expect(clearErrorSpy).toHaveBeenCalledTimes(1);
     expect(comp.otpValue()).toBe('');
     expect(mockCtrl.value).toBe('');
     expect(mockCtrl.pristine).toBe(true);
@@ -232,8 +218,8 @@ describe('OtpInput', () => {
 
     comp.onKeyDown(event);
 
-    expect(preventDefaultSpy).toHaveBeenCalled();
-    expect(submitSpy).toHaveBeenCalled();
+    expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+    expect(submitSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should block non-alphanumeric keys in onKeyDown', () => {
@@ -245,7 +231,7 @@ describe('OtpInput', () => {
 
     comp.onKeyDown(event);
 
-    expect(preventDefaultSpy).toHaveBeenCalled();
+    expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should compute otpSize based on breakpoint', () => {

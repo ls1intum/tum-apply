@@ -7,19 +7,19 @@ export interface AuthOrchestratorServiceMock {
   email: WritableSignal<string>;
   firstName: WritableSignal<string>;
   lastName: WritableSignal<string>;
+  nextStep: ReturnType<typeof vi.fn>;
+  authSuccess: ReturnType<typeof vi.fn>;
+  clearError: () => void;
+  setError: (msg: string | null) => void;
   isBusy: WritableSignal<boolean>;
-  isOpen: WritableSignal<boolean>;
+  error: WritableSignal<string | null>;
   cooldownSeconds: WritableSignal<number>;
+  isOpen: WritableSignal<boolean>;
   mode: WritableSignal<AuthFlowMode>;
   loginStep: WritableSignal<LoginStep>;
   registerStep: WritableSignal<RegisterStep>;
   registerProgress: WritableSignal<number>;
   totalRegisterSteps: number;
-  error: WritableSignal<string | null>;
-  nextStep: ReturnType<typeof vi.fn>;
-  authSuccess: ReturnType<typeof vi.fn>;
-  clearError: ReturnType<typeof vi.fn>;
-  setError: ReturnType<typeof vi.fn>;
   open: ReturnType<typeof vi.fn>;
   close: ReturnType<typeof vi.fn>;
   previousStep: ReturnType<typeof vi.fn>;
@@ -27,6 +27,9 @@ export interface AuthOrchestratorServiceMock {
 }
 
 export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock {
+  const isBusy = signal(false);
+  const error = signal<string | null>(null);
+  const cooldownSeconds = signal(0);
   const isOpenSignal = signal<boolean>(true);
   const errorSignal = signal<string | null>(null);
 
@@ -38,31 +41,23 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
     isOpenSignal.set(false);
   });
 
-  const clearErrorMock = vi.fn(() => {
-    errorSignal.set(null);
-  });
-
-  const setErrorMock = vi.fn((message: string) => {
-    errorSignal.set(message);
-  });
-
   return {
     email: signal<string>('user@example.com'),
     firstName: signal<string>('Jane'),
     lastName: signal<string>('Doe'),
-    isBusy: signal<boolean>(false),
+    nextStep: vi.fn(),
+    authSuccess: vi.fn(),
+    clearError: () => error.set(null),
+    setError: (msg: string | null) => error.set(msg),
+    isBusy,
+    error,
+    cooldownSeconds,
     isOpen: isOpenSignal,
-    cooldownSeconds: signal<number>(0),
     mode: signal<AuthFlowMode>('login'),
     loginStep: signal<LoginStep>('email'),
     registerStep: signal<RegisterStep>('email'),
     registerProgress: signal<number>(1),
     totalRegisterSteps: 3,
-    error: errorSignal,
-    nextStep: vi.fn(),
-    authSuccess: vi.fn(),
-    clearError: clearErrorMock,
-    setError: setErrorMock,
     open: openMock,
     close: closeMock,
     previousStep: vi.fn(),
