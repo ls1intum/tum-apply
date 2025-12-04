@@ -81,12 +81,12 @@ describe('Login Component', () => {
     fixture.detectChanges();
 
     const email = 'test@example.com';
-    const password = 'password123';
+    const test_pw = 'password123';
     const loginSpy = vi.spyOn(component, 'onEmailLogin').mockResolvedValue(true);
 
-    await component.submitHandler(email, password);
+    await component.submitHandler(email, test_pw);
 
-    expect(loginSpy).toHaveBeenCalledWith(email, password);
+    expect(loginSpy).toHaveBeenCalledWith(email, test_pw);
   });
 
   it('should switch to password step on second button click', () => {
