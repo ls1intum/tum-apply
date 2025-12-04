@@ -55,13 +55,11 @@ public class KeycloakUserService {
         // Hinweis: Das ist ein Kompromiss. Für sehr große Ergebnismengen ist das ineffizient.
         int fetchSize = 100;
 
-        // Wir suchen allgemein nach dem Text (matcht username, email, first/last name)
         List<UserRepresentation> candidates = keycloak.realm(realm).users().search(username, 0, fetchSize);
 
         List<KeycloakUserDTO> filteredUsers = candidates
             .stream()
             .filter(user -> {
-                // Prüfen, ob das Attribut "idp" existiert und den Wert "tum" enthält
                 var attrs = user.getAttributes();
                 return attrs != null && attrs.containsKey("idp") && attrs.get("idp").contains("tum");
             })
@@ -91,9 +89,6 @@ public class KeycloakUserService {
      * @return total number of matching users
      */
     public long countUsers(String username) {
-        // Keycloak does not offer a direct count API for search results. We therefore fetch all users
-        // matching the searchKey with a sufficiently large max parameter and return the size.
-        // Choose a reasonable upper bound based on expected dataset size.
         return keycloak
             .realm(realm)
             .users()
