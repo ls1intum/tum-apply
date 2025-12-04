@@ -59,89 +59,97 @@ describe('Login Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show password fields when login step is "password"', () => {
-    authOrchestrator.loginStep.set('password');
-    fixture.detectChanges();
-    expect(component.showPassword()).toBe(true);
+  describe('login steps', () => {
+    it('should show password fields when login step is "password"', () => {
+      authOrchestrator.loginStep.set('password');
+      fixture.detectChanges();
+      expect(component.showPassword()).toBe(true);
+    });
+
+    it('should show OTP input when login step is "otp"', () => {
+      authOrchestrator.loginStep.set('otp');
+      fixture.detectChanges();
+
+      const otpInput = fixture.debugElement.query(By.css('jhi-otp-input'));
+      const credentialsGroup = fixture.debugElement.query(By.css('jhi-credentials-group'));
+
+      expect(otpInput).toBeTruthy();
+      expect(credentialsGroup).toBeFalsy();
+    });
   });
 
-  it('should request OTP on submit when in email step', async () => {
-    const email = 'test@example.com';
-    const requestOtpSpy = vi.spyOn(authFacade, 'requestOtp').mockResolvedValue(undefined);
+  describe('submitHandler', () => {
+    it('should request OTP on submit when in email step', async () => {
+      const email = 'test@example.com';
+      const requestOtpSpy = vi.spyOn(authFacade, 'requestOtp').mockResolvedValue(undefined);
 
-    const result = await component.submitHandler(email);
+      const result = await component.submitHandler(email);
 
-    expect(authOrchestrator.email()).toBe(email);
-    expect(requestOtpSpy).toHaveBeenCalled();
-    expect(result).toBe(true);
+      expect(authOrchestrator.email()).toBe(email);
+      expect(requestOtpSpy).toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('should attempt email login on submit when in password step', async () => {
+      authOrchestrator.loginStep.set('password');
+      fixture.detectChanges();
+
+      const email = 'test@example.com';
+      const test_pw = 'password123';
+      const loginSpy = vi.spyOn(component, 'onEmailLogin').mockResolvedValue(true);
+
+      await component.submitHandler(email, test_pw);
+
+      expect(loginSpy).toHaveBeenCalledWith(email, test_pw);
+    });
   });
 
-  it('should attempt email login on submit when in password step', async () => {
-    authOrchestrator.loginStep.set('password');
-    fixture.detectChanges();
+  describe('navigation', () => {
+    it('should switch to password step on second button click', () => {
+      const setStepSpy = vi.spyOn(authOrchestrator.loginStep, 'set');
+      component.secondButtonHandler();
+      expect(setStepSpy).toHaveBeenCalledWith('password');
+    });
 
-    const email = 'test@example.com';
-    const test_pw = 'password123';
-    const loginSpy = vi.spyOn(component, 'onEmailLogin').mockResolvedValue(true);
+    it('should go to previous step on back button click', () => {
+      const previousStepSpy = vi.spyOn(authOrchestrator, 'previousStep');
+      component.backButtonHandler();
+      expect(previousStepSpy).toHaveBeenCalled();
+    });
 
-    await component.submitHandler(email, test_pw);
+    it('should call orchestrator to switch to register view', () => {
+      const switchToRegisterSpy = vi.spyOn(authOrchestrator, 'switchToRegister');
+      const registerLink = fixture.debugElement.query(By.css('a'));
+      registerLink.triggerEventHandler('click', null);
 
-    expect(loginSpy).toHaveBeenCalledWith(email, test_pw);
+      expect(switchToRegisterSpy).toHaveBeenCalled();
+    });
   });
 
-  it('should switch to password step on second button click', () => {
-    const setStepSpy = vi.spyOn(authOrchestrator.loginStep, 'set');
-    component.secondButtonHandler();
-    expect(setStepSpy).toHaveBeenCalledWith('password');
-  });
+  describe('onEmailLogin', () => {
+    it('should return false if password is not provided for email login', async () => {
+      const result = await component.onEmailLogin('test@example.com');
+      expect(result).toBe(false);
+    });
 
-  it('should go to previous step on back button click', () => {
-    const previousStepSpy = vi.spyOn(authOrchestrator, 'previousStep');
-    component.backButtonHandler();
-    expect(previousStepSpy).toHaveBeenCalled();
-  });
+    it('should return true and not show error on successful email login', async () => {
+      vi.spyOn(authFacade, 'loginWithEmail').mockResolvedValue(true);
+      const showErrorSpy = vi.spyOn(toastService, 'showError');
 
-  it('should return false if password is not provided for email login', async () => {
-    const result = await component.onEmailLogin('test@example.com');
-    expect(result).toBe(false);
-  });
+      const result = await component.onEmailLogin('test@example.com', 'password');
 
-  it('should return true and not show error on successful email login', async () => {
-    vi.spyOn(authFacade, 'loginWithEmail').mockResolvedValue(true);
-    const showErrorSpy = vi.spyOn(toastService, 'showError');
+      expect(result).toBe(true);
+      expect(showErrorSpy).not.toHaveBeenCalled();
+    });
 
-    const result = await component.onEmailLogin('test@example.com', 'password');
+    it('should return false and show error on failed email login', async () => {
+      vi.spyOn(authFacade, 'loginWithEmail').mockResolvedValue(false);
+      const showErrorSpy = vi.spyOn(toastService, 'showError');
 
-    expect(result).toBe(true);
-    expect(showErrorSpy).not.toHaveBeenCalled();
-  });
+      const result = await component.onEmailLogin('test@example.com', 'password');
 
-  it('should return false and show error on failed email login', async () => {
-    vi.spyOn(authFacade, 'loginWithEmail').mockResolvedValue(false);
-    const showErrorSpy = vi.spyOn(toastService, 'showError');
-
-    const result = await component.onEmailLogin('test@example.com', 'password');
-
-    expect(result).toBe(false);
-    expect(showErrorSpy).toHaveBeenCalled();
-  });
-
-  it('should show OTP input when login step is "otp"', () => {
-    authOrchestrator.loginStep.set('otp');
-    fixture.detectChanges();
-
-    const otpInput = fixture.debugElement.query(By.css('jhi-otp-input'));
-    const credentialsGroup = fixture.debugElement.query(By.css('jhi-credentials-group'));
-
-    expect(otpInput).toBeTruthy();
-    expect(credentialsGroup).toBeFalsy();
-  });
-
-  it('should call orchestrator to switch to register view', () => {
-    const switchToRegisterSpy = vi.spyOn(authOrchestrator, 'switchToRegister');
-    const registerLink = fixture.debugElement.query(By.css('a'));
-    registerLink.triggerEventHandler('click', null);
-
-    expect(switchToRegisterSpy).toHaveBeenCalled();
+      expect(result).toBe(false);
+      expect(showErrorSpy).toHaveBeenCalled();
+    });
   });
 });

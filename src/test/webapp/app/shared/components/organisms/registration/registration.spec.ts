@@ -70,74 +70,82 @@ describe('Registration Component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('sendOtp should return false for empty email', async () => {
-    const res = await component.sendOtp('   ');
-    expect(res).toBe(false);
+  describe('sendOtp', () => {
+    it('should return false for empty email', async () => {
+      const res = await component.sendOtp('   ');
+      expect(res).toBe(false);
+    });
+
+    it('should normalize email, set orchestrator email and request OTP', async () => {
+      const email = '  test@example.com  ';
+      const requestOtpSpy = vi.spyOn(authFacade, 'requestOtp').mockResolvedValue(undefined);
+
+      const res = await component.sendOtp(email);
+
+      expect(res).toBe(true);
+      expect(authOrchestrator.email()).toBe('test@example.com');
+      expect(requestOtpSpy).toHaveBeenCalledWith(true);
+    });
   });
 
-  it('sendOtp should normalize email, set orchestrator email and request OTP', async () => {
-    const email = '  test@example.com  ';
-    const requestOtpSpy = vi.spyOn(authFacade, 'requestOtp').mockResolvedValue(undefined);
+  describe('setProfile', () => {
+    it('should call accountService.updateUser and advance step on success', async () => {
+      const updateSpy = vi.spyOn(accountService, 'updateUser').mockResolvedValue(undefined);
+      const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
 
-    const res = await component.sendOtp(email);
+      await component.setProfile('John', 'Doe');
 
-    expect(res).toBe(true);
-    expect(authOrchestrator.email()).toBe('test@example.com');
-    expect(requestOtpSpy).toHaveBeenCalledWith(true);
+      expect(updateSpy).toHaveBeenCalledWith('John', 'Doe');
+      expect(nextStepSpy).toHaveBeenCalled();
+    });
+
+    it('should set orchestrator error on failure', async () => {
+      vi.spyOn(accountService, 'updateUser').mockRejectedValue(new Error('fail'));
+      const setErrorSpy = vi.spyOn(authOrchestrator, 'setError');
+      const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
+      await component.setProfile('John', 'Doe');
+
+      expect(setErrorSpy).toHaveBeenCalledWith('Could not update your profile name. Please try again.');
+      expect(nextStepSpy).not.toHaveBeenCalled();
+    });
   });
 
-  it('setProfile should call accountService.updateUser and advance step on success', async () => {
-    const updateSpy = vi.spyOn(accountService, 'updateUser').mockResolvedValue(undefined);
-    const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
+  describe('setPassword', () => {
+    it('should call accountService.updatePassword and advance step on success', async () => {
+      component.passwordForm.controls['password'].setValue('secret123');
+      const updateSpy = vi.spyOn(accountService, 'updatePassword').mockResolvedValue(undefined);
+      const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
 
-    await component.setProfile('John', 'Doe');
+      await component.setPassword();
 
-    expect(updateSpy).toHaveBeenCalledWith('John', 'Doe');
-    expect(nextStepSpy).toHaveBeenCalled();
+      expect(updateSpy).toHaveBeenCalledWith('secret123');
+      expect(nextStepSpy).toHaveBeenCalled();
+    });
+
+    it('should set orchestrator error on failure', async () => {
+      component.passwordForm.controls['password'].setValue('secret123');
+      vi.spyOn(accountService, 'updatePassword').mockRejectedValue(new Error('fail'));
+      const setErrorSpy = vi.spyOn(authOrchestrator, 'setError');
+      const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
+
+      await component.setPassword();
+
+      expect(setErrorSpy).toHaveBeenCalledWith('Could not update your password. Please try again.');
+      expect(nextStepSpy).not.toHaveBeenCalled();
+    });
   });
 
-  it('setProfile should set orchestrator error on failure', async () => {
-    vi.spyOn(accountService, 'updateUser').mockRejectedValue(new Error('fail'));
-    const setErrorSpy = vi.spyOn(authOrchestrator, 'setError');
-    const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
-    await component.setProfile('John', 'Doe');
+  describe('navigation', () => {
+    it('onBack should call orchestrator.previousStep', () => {
+      const prevSpy = vi.spyOn(authOrchestrator, 'previousStep');
+      component.onBack();
+      expect(prevSpy).toHaveBeenCalled();
+    });
 
-    expect(setErrorSpy).toHaveBeenCalledWith('Could not update your profile name. Please try again.');
-    expect(nextStepSpy).not.toHaveBeenCalled();
-  });
-
-  it('setPassword should call accountService.updatePassword and advance step on success', async () => {
-    component.passwordForm.controls['password'].setValue('secret123');
-    const updateSpy = vi.spyOn(accountService, 'updatePassword').mockResolvedValue(undefined);
-    const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
-
-    await component.setPassword();
-
-    expect(updateSpy).toHaveBeenCalledWith('secret123');
-    expect(nextStepSpy).toHaveBeenCalled();
-  });
-
-  it('setPassword should set orchestrator error on failure', async () => {
-    component.passwordForm.controls['password'].setValue('secret123');
-    vi.spyOn(accountService, 'updatePassword').mockRejectedValue(new Error('fail'));
-    const setErrorSpy = vi.spyOn(authOrchestrator, 'setError');
-    const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
-
-    await component.setPassword();
-
-    expect(setErrorSpy).toHaveBeenCalledWith('Could not update your password. Please try again.');
-    expect(nextStepSpy).not.toHaveBeenCalled();
-  });
-
-  it('onBack should call orchestrator.previousStep', () => {
-    const prevSpy = vi.spyOn(authOrchestrator, 'previousStep');
-    component.onBack();
-    expect(prevSpy).toHaveBeenCalled();
-  });
-
-  it('onSkip should call orchestrator.nextStep', () => {
-    const nextSpy = vi.spyOn(authOrchestrator, 'nextStep');
-    component.onSkip();
-    expect(nextSpy).toHaveBeenCalled();
+    it('onSkip should call orchestrator.nextStep', () => {
+      const nextSpy = vi.spyOn(authOrchestrator, 'nextStep');
+      component.onSkip();
+      expect(nextSpy).toHaveBeenCalled();
+    });
   });
 });

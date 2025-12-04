@@ -47,103 +47,109 @@ describe('AuthDialogService', () => {
     return { ref, onClose$, onDestroy$ };
   }
 
-  it('should open the dialog and notify orchestrator with provided options', () => {
-    const { ref } = createDialogRefMocks();
-    dialogService.open.mockReturnValue(ref);
+  describe('open', () => {
+    it('should open the dialog and notify orchestrator with provided options', () => {
+      const { ref } = createDialogRefMocks();
+      dialogService.open.mockReturnValue(ref);
 
-    const opts: AuthOpenOptions = { mode: 'login' };
+      const opts: AuthOpenOptions = { mode: 'login' };
 
-    authDialogService.open(opts);
+      authDialogService.open(opts);
 
-    expect(authOrchestratorMock.open).toHaveBeenCalledTimes(1);
-    expect(authOrchestratorMock.open).toHaveBeenCalledWith(opts);
-    expect(dialogService.open).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.open).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.open).toHaveBeenCalledWith(opts);
+      expect(dialogService.open).toHaveBeenCalledTimes(1);
 
-    const [component, config] = dialogService.open.mock.calls[0];
-    expect(component).toBe(AuthCardComponent);
-    expect(config).toMatchObject({
-      modal: true,
-      dismissableMask: true,
-      closeOnEscape: true,
-      showHeader: false,
+      const [component, config] = dialogService.open.mock.calls[0];
+      expect(component).toBe(AuthCardComponent);
+      expect(config).toMatchObject({
+        modal: true,
+        dismissableMask: true,
+        closeOnEscape: true,
+        showHeader: false,
+      });
+
+      expect(ref.close).not.toHaveBeenCalled();
     });
 
-    expect(ref.close).not.toHaveBeenCalled();
+    it('should close existing dialog before opening a new one', () => {
+      const first = createDialogRefMocks();
+      const second = createDialogRefMocks();
+
+      dialogService.open.mockReturnValueOnce(first.ref).mockReturnValueOnce(second.ref);
+
+      authDialogService.open();
+      authDialogService.open();
+
+      expect(first.ref.close).toHaveBeenCalledTimes(1);
+      expect(second.ref.close).not.toHaveBeenCalled();
+      expect(dialogService.open).toHaveBeenCalledTimes(2);
+    });
   });
 
-  it('should close existing dialog before opening a new one', () => {
-    const first = createDialogRefMocks();
-    const second = createDialogRefMocks();
+  describe('close', () => {
+    it('should close dialog and orchestrator when close is called', () => {
+      const { ref } = createDialogRefMocks();
+      dialogService.open.mockReturnValue(ref);
 
-    dialogService.open.mockReturnValueOnce(first.ref).mockReturnValueOnce(second.ref);
+      authDialogService.open();
+      authDialogService.close();
 
-    authDialogService.open();
-    authDialogService.open();
+      expect(ref.close).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
+    });
 
-    expect(first.ref.close).toHaveBeenCalledTimes(1);
-    expect(second.ref.close).not.toHaveBeenCalled();
-    expect(dialogService.open).toHaveBeenCalledTimes(2);
+    it('should be idempotent when close is called multiple times', () => {
+      const { ref } = createDialogRefMocks();
+      dialogService.open.mockReturnValue(ref);
+
+      authDialogService.open();
+      authDialogService.close();
+      authDialogService.close();
+
+      expect(ref.close).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(2);
+    });
   });
 
-  it('should close dialog and orchestrator when close is called', () => {
-    const { ref } = createDialogRefMocks();
-    dialogService.open.mockReturnValue(ref);
+  describe('reactive closing events', () => {
+    it('should close dialog and orchestrator when onClose event is emitted', () => {
+      const { ref, onClose$ } = createDialogRefMocks();
+      dialogService.open.mockReturnValue(ref);
 
-    authDialogService.open();
-    authDialogService.close();
+      authDialogService.open();
 
-    expect(ref.close).toHaveBeenCalledTimes(1);
-    expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
-  });
+      onClose$.next({});
+      TestBed.tick();
 
-  it('should be idempotent when close is called multiple times', () => {
-    const { ref } = createDialogRefMocks();
-    dialogService.open.mockReturnValue(ref);
+      expect(ref.close).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
+    });
 
-    authDialogService.open();
-    authDialogService.close();
-    authDialogService.close();
+    it('should close dialog and orchestrator when onDestroy event is emitted', () => {
+      const { ref, onDestroy$ } = createDialogRefMocks();
+      dialogService.open.mockReturnValue(ref);
 
-    expect(ref.close).toHaveBeenCalledTimes(1);
-    expect(authOrchestratorMock.close).toHaveBeenCalledTimes(2);
-  });
+      authDialogService.open();
 
-  it('should close dialog and orchestrator when onClose event is emitted', () => {
-    const { ref, onClose$ } = createDialogRefMocks();
-    dialogService.open.mockReturnValue(ref);
+      onDestroy$.next({});
+      TestBed.tick();
 
-    authDialogService.open();
+      expect(ref.close).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
+    });
 
-    onClose$.next({});
-    TestBed.tick();
+    it('should close dialog when orchestrator isOpen becomes false', () => {
+      const { ref } = createDialogRefMocks();
+      dialogService.open.mockReturnValue(ref);
 
-    expect(ref.close).toHaveBeenCalledTimes(1);
-    expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
-  });
+      authDialogService.open();
 
-  it('should close dialog and orchestrator when onDestroy event is emitted', () => {
-    const { ref, onDestroy$ } = createDialogRefMocks();
-    dialogService.open.mockReturnValue(ref);
+      authOrchestratorMock.isOpen.set(false);
+      TestBed.tick();
 
-    authDialogService.open();
-
-    onDestroy$.next({});
-    TestBed.tick();
-
-    expect(ref.close).toHaveBeenCalledTimes(1);
-    expect(authOrchestratorMock.close).toHaveBeenCalledTimes(1);
-  });
-
-  it('should close dialog when orchestrator isOpen becomes false', () => {
-    const { ref } = createDialogRefMocks();
-    dialogService.open.mockReturnValue(ref);
-
-    authDialogService.open();
-
-    authOrchestratorMock.isOpen.set(false);
-    TestBed.tick();
-
-    expect(ref.close).toHaveBeenCalledTimes(1);
-    expect(authOrchestratorMock.close).not.toHaveBeenCalled();
+      expect(ref.close).toHaveBeenCalledTimes(1);
+      expect(authOrchestratorMock.close).not.toHaveBeenCalled();
+    });
   });
 });
