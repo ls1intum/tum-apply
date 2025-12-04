@@ -1,31 +1,27 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouterMock, createRouterMock, RouterMock } from 'util/router.mock';
-import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
-import {
-  AuthOrchestratorServiceMock,
-  createAuthOrchestratorServiceMock,
-  provideAuthOrchestratorServiceMock,
-  createAuthOrchestratorServiceMock,
-  AuthOrchestratorServiceMock,
-} from 'util/auth-orchestrator.service.mock';
-import { provideAccountServiceMock, createAccountServiceMock, AccountServiceMock } from 'util/account.service.mock';
+
 import { AccountServiceMock, createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { ServerAuthenticationService } from 'app/core/auth/server-authentication.service';
-import { KeycloakAuthenticationService, IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 import { createKeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import { vi } from 'vitest';
 import { provideMessageServiceMock } from 'util/message-service.mock';
 import { provideTranslateMock } from 'util/translate.mock';
+import {
+  AuthOrchestratorServiceMock,
+  createAuthOrchestratorServiceMock,
+  provideAuthOrchestratorServiceMock,
+} from '../../../util/auth-orchestrator.service.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from '../../../util/router.mock';
 
 function setup() {
   const server = { refreshTokens: vi.fn(), login: vi.fn(), sendOtp: vi.fn(), verifyOtp: vi.fn(), logout: vi.fn() };
   const keycloak = Object.assign(createKeycloakMock(), {
     init: vi.fn(),
     loginWithProvider: vi.fn(),
-    logout: vi.fn()
+    logout: vi.fn(),
   });
   const account: AccountServiceMock = createAccountServiceMock();
   vi.spyOn(account.user, 'set');
