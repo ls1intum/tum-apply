@@ -7,11 +7,15 @@
     "groupInfoHeader": "Meine Gruppe",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
+      "organizationInfo": "Um das Department und die School zu ändern, wende dich bitte an eine:n Administrator:in.",
+      "noDepartment": "Kein Department",
+      "noSchool": "Keine School",
       "fields": {
         "name": "Name",
         "abbreviation": "Abkürzung",
         "head": "Leitung",
         "school": "School",
+        "department": "Department",
         "defaultFieldOfStudies": "Studienrichtung",
         "website": "Webseite",
         "email": "E-Mail",
@@ -20,7 +24,8 @@
         "city": "Stadt",
         "description": "Beschreibung",
         "section1": "Grundlegende Informationen",
-        "section2": "Schule und Website",
+        "sectionOrganization": "Organisation",
+        "section2": "Kontakt und Webseite",
         "section3": "Adresse"
       },
       "placeholders": {
@@ -269,6 +274,10 @@
         "save": {
           "summary": "Fehler",
           "detail": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "loadDepartments": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Laden der Departments. Bitte aktualisiere die Seite."
         }
       },
       "success": {
@@ -283,6 +292,7 @@
       "abbreviation": "Abkürzung",
       "name": "Name",
       "school": "School",
+      "department": "Department",
       "defaultFieldOfStudies": "Studienrichtung",
       "head": "Leitung",
       "email": "E-Mail",
@@ -295,6 +305,7 @@
         "abbreviation": "z.B. KI",
         "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",
         "school": "z.B. Informatik",
+        "department": "Wählen...",
         "defaultFieldOfStudies": "z.B. Computer Science",
         "head": "z.B. Prof. Dr. Max Mustermann",
         "email": "z.B. kontakt@forschung.de",

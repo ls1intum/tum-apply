@@ -1,43 +1,36 @@
+import { vi } from 'vitest';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
-import { Provider, signal, WritableSignal } from '@angular/core';
+import { Provider, signal, WritableSignal, computed } from '@angular/core';
 
 export interface AuthOrchestratorServiceMock {
   email: WritableSignal<string>;
   firstName: WritableSignal<string>;
   lastName: WritableSignal<string>;
-
-  cooldownSecondsSignal: WritableSignal<number>;
-  isBusySignal: WritableSignal<boolean>;
-  errorSignal: WritableSignal<unknown | null>;
-
-  cooldownSeconds(): number;
-  isBusy(): boolean;
-  error(): unknown | null;
-  clearError(): void;
+  nextStep: ReturnType<typeof vi.fn>;
+  authSuccess: ReturnType<typeof vi.fn>;
+  clearError: () => void;
+  setError: (msg: string | null) => void;
+  isBusy: WritableSignal<boolean>;
+  error: WritableSignal<string | null>;
+  cooldownSeconds: WritableSignal<number>;
 }
 
 export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock {
-  const email = signal<string>('');
-  const firstName = signal<string>('');
-  const lastName = signal<string>('');
-
-  const cooldownSecondsSignal = signal<number>(0);
-  const isBusySignal = signal<boolean>(false);
-  const errorSignal = signal<unknown | null>(null);
+  const isBusy = signal(false);
+  const error = signal<string | null>(null);
+  const cooldownSeconds = signal(0);
 
   return {
-    email,
-    firstName,
-    lastName,
-
-    cooldownSecondsSignal,
-    isBusySignal,
-    errorSignal,
-
-    cooldownSeconds: () => cooldownSecondsSignal(),
-    isBusy: () => isBusySignal(),
-    error: () => errorSignal(),
-    clearError: () => errorSignal.set(null),
+    email: signal<string>('user@example.com'),
+    firstName: signal<string>('Jane'),
+    lastName: signal<string>('Doe'),
+    nextStep: vi.fn(),
+    authSuccess: vi.fn(),
+    clearError: () => error.set(null),
+    setError: (msg: string | null) => error.set(msg),
+    isBusy,
+    error,
+    cooldownSeconds,
   };
 }
 
