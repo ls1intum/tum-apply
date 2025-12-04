@@ -5,10 +5,10 @@ import { of, throwError } from 'rxjs';
 import { ResearchGroupTemplates } from 'app/usermanagement/research-group/research-group-templates/research-group-templates';
 import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateOverviewDTO } from 'app/generated/model/emailTemplateOverviewDTO';
-import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
-import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
-import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
-import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
+import { createRouterMock, provideRouterMock } from '../../../../util/router.mock';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../util/toast-service.mock';
+import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
+import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
 
 class EmailTemplateResourceApiServiceMock {
   getTemplates = vi.fn();

@@ -136,7 +136,11 @@
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, JPEG, PNG. Maximale Abmessungen: 1920x1080px",
       "selectedImage": "Ausgewähltes Bild",
       "myUploads": "Meine hochgeladenen Bilder",
-      "noImage": "Kein Bild"
+      "noImage": "Kein Bild",
+      "deleteImageDialog": {
+        "header": "Bild löschen",
+        "message": "Möchtest du dieses Bild wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden. Falls Positionen dieses Bild nutzen, erscheinen sie danach ohne Bild."
+      }
     },
     "additionalInformationSection": {
       "extras": {
@@ -224,6 +228,24 @@
       "loadJobs": {
         "summary": "Fehler",
         "detail": "Laden der Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      }
+    },
+    "toastMessages": {
+      "deleteJobSuccess": {
+        "summary": "Stelle gelöscht",
+        "detail": "Die Stelle wurde erfolgreich gelöscht."
+      },
+      "deleteJobFailed": {
+        "summary": "Stelle löschen fehlgeschlagen",
+        "detail": "Die Stelle konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "closeJobSuccess": {
+        "summary": "Stelle geschlossen",
+        "detail": "Die Stelle wurde erfolgreich geschlossen."
+      },
+      "closeJobFailed": {
+        "summary": "Stelle schließen fehlgeschlagen",
+        "detail": "Die Stelle konnte nicht geschlossen werden. Bitte versuche es erneut oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   },
