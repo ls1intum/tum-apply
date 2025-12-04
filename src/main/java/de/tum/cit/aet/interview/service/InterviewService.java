@@ -392,25 +392,18 @@ public class InterviewService {
      * @param slotId the ID of the slot to delete
      * @throws EntityNotFoundException if the slot is not found
      * @throws AccessDeniedException if the user is not authorized to delete this slot
-     * @throws de.tum.cit.aet.core.exception.BadRequestException if the slot is booked
+     * @throws BadRequestException if the slot is booked
      */
     public void deleteSlot(UUID slotId) {
         // 1. Load the slot
         InterviewSlot slot = interviewSlotRepository
             .findById(slotId)
-            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
+            .orElseThrow(() -> {
+                return new EntityNotFoundException("Slot " + slotId + " not found");
+            });
 
-        // 2. Security: Verify current user is the job owner
-        Job job = slot.getInterviewProcess().getJob();
-        User supervisingProfessor = job.getSupervisingProfessor();
-        UUID currentUserId = currentUserService.getUserId();
-
-        if (!supervisingProfessor.getUserId().equals(currentUserId)) {
-            throw new AccessDeniedException("You can only delete your own slots");
-        }
-
-        // 3. Business rule: Cannot delete booked slots
-        //TODO: Implement deletion of booked slots with unassignment of applicant
+        // 3.Cannot delete booked slots
+        // TODO: Implement deletion of booked slots with unassignment of applicant
         if (slot.getIsBooked()) {
             throw new BadRequestException("Cannot delete booked slot.");
         }
