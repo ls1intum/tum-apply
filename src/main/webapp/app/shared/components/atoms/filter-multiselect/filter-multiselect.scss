@@ -55,7 +55,6 @@
 
     .filter-icon {
       transition: transform 0.2s ease;
-      color: var(--p-primary-color);
 
       &.rotated {
         transform: rotate(180deg);
