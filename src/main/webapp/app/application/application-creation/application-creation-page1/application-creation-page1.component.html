@@ -90,10 +90,9 @@
 
   <div class="form-row mb-6">
     <div class="form-field">
-      <label jhiTranslate="entity.applicationPage1.label.dateOfBirth"></label>
       <jhi-datepicker
         [selectedDate]="data().dateOfBirth"
-        label=""
+        label="{{ 'entity.applicationPage1.label.dateOfBirth' | translate }}"
         width="100%"
         (selectedDateChange)="setDateOfBirth($event)"
         [minDate]="minDate"
