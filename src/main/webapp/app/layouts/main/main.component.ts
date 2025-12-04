@@ -7,7 +7,6 @@ import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
 
 import FooterComponent from '../footer/footer.component';
-import PageRibbonComponent from '../profiles/page-ribbon.component';
 import { HeaderComponent } from '../../shared/components/organisms/header/header.component';
 import { OnboardingOrchestratorService } from '../../service/onboarding-orchestrator.service';
 
@@ -16,7 +15,7 @@ import { OnboardingOrchestratorService } from '../../service/onboarding-orchestr
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent, PageRibbonComponent],
+  imports: [HeaderComponent, RouterOutlet, SidebarComponent, FooterComponent],
 })
 export default class MainComponent {
   readonly accountService = inject(AccountService);
