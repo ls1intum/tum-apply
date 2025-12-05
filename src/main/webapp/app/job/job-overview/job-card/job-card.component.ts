@@ -47,6 +47,7 @@ export class JobCardComponent {
   icon = input<string>('flask-vial');
   ref: DynamicDialogRef | undefined;
 
+  readonly dropDownOptions = DropDownOptions;
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
   translate = inject(TranslateService);
 
@@ -76,20 +77,6 @@ export class JobCardComponent {
   ApplicationStateEnumLocal = JobCardDTO.ApplicationStateEnum;
 
   private router = inject(Router);
-
-  getLocationTranslationKey(location: string | undefined): string {
-    if (location == null) return '-';
-    // Maps formatted string (e.g. "Garching Hochbrueck") to translation key
-    return (
-      new Map(DropDownOptions.locations.map(option => [this.formatEnumValue(option.value as string), option.name])).get(location) ??
-      location
-    );
-  }
-
-  getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
-    if (fieldOfStudies == null) return '-';
-    return DropDownOptions.fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? fieldOfStudies;
-  }
 
   onViewDetails(): void {
     void this.router.navigate([`/job/detail/${this.jobId()}`]);

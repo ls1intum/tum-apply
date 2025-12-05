@@ -42,7 +42,7 @@ export class JobCardListComponent {
   readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
 
-  readonly allFieldOfStudies = signal<string[]>([]);
+  readonly allFieldOfStudies = this.DropdownOptions.fieldsOfStudies.map(option => option.name);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
   readonly allSupervisorNames = signal<string[]>([]);
 
@@ -117,10 +117,8 @@ export class JobCardListComponent {
   async loadAllFilter(): Promise<void> {
     try {
       const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
-      this.allFieldOfStudies.set(filterOptions.fieldsOfStudy ?? []);
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
-      this.allFieldOfStudies.set([]);
       this.allSupervisorNames.set([]);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
     }

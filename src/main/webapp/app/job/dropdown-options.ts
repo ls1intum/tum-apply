@@ -35,6 +35,7 @@ export const fieldsOfStudies = [
   { value: 'Geosciences', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Geosciences' },
   { value: 'Industrial Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.IndustrialEngineering' },
   { value: 'Information Systems', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.InformationSystems' },
+  { value: 'Informatics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Informatics' },
   { value: 'Linguistics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Linguistics' },
   { value: 'Marine Biology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.MarineBiology' },
   { value: 'Materials Science', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.MaterialsScience' },
@@ -60,9 +61,47 @@ export const fundingTypes = [
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));
+export const fieldOfStudyNameToValueMap = new Map(fieldsOfStudies.map(option => [option.name, option.value]));
 
 export function mapLocationNames(translationKeys: string[]): JobFormDTO.LocationEnum[] {
   return translationKeys
     .map(key => locationNameToValueMap.get(key))
     .filter((value): value is JobFormDTO.LocationEnum => value !== undefined);
+}
+
+export function mapFieldOfStudyNames(translationKeys: string[]): string[] {
+  return translationKeys.map(key => fieldOfStudyNameToValueMap.get(key)).filter((value): value is string => value !== undefined);
+}
+
+export function getLocationTranslationKey(location: string | undefined): string {
+  if (location == null) return '-';
+  // Maps formatted string (e.g. "Garching Hochbrueck", "GARCHING_HOCHBRUECK") to translation key
+  return new Map(locations.map(option => [option.value as string, option.name])).get(toEnumString(location)) ?? toEnumString(location);
+}
+
+export function getFundingTypeTranslationKey(fundingType: string | undefined): string {
+  if (fundingType == null) return '-';
+  // Maps formatted string (e.g. "Fully Funded", "FULLY_FUNDED") to translation key
+  return (
+    new Map(fundingTypes.map(option => [option.value as string, option.name])).get(toEnumString(fundingType)) ?? toEnumString(fundingType)
+  );
+}
+
+export function getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
+  if (fieldOfStudies == null) return '-';
+  return fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? '';
+}
+
+// Converts a string like "Garching Hochbrueck" to "GARCHING_HOCHBRUECK";
+export function toEnumString(value: string): string {
+  if (/^[A-Z_]+$/.test(value)) {
+    return value;
+  }
+  return value
+    .trim()
+    .split(/\s+/)
+    .map((part: string) => part.replace(/[^A-Za-z0-9]/g, ''))
+    .filter((part: string) => part.length > 0)
+    .map((part: string) => part.toUpperCase())
+    .join('_');
 }
