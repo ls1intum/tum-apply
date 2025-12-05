@@ -1,14 +1,18 @@
 package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.dto.*;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.job.domain.Job;
@@ -25,14 +29,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @AllArgsConstructor
 @Service
+@Transactional
 public class InterviewService {
 
     private final InterviewProcessRepository interviewProcessRepository;
     private final InterviewSlotRepository interviewSlotRepository;
+    private final IntervieweeRepository intervieweeRepository;
     private final ApplicationRepository applicationRepository;
     private final CurrentUserService currentUserService;
     private final JobRepository jobRepository;
@@ -52,7 +61,7 @@ public class InterviewService {
      */
 
     public List<InterviewOverviewDTO> getInterviewOverview() {
-        // 1. Get the ID of the currently logged-in professor
+        // 1. Get the ID of the currently logged in professor
         UUID professorId = currentUserService.getUserId();
 
         //2. Load all active interview processes for this professor
@@ -100,13 +109,13 @@ public class InterviewService {
                 long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
 
                 // TODO: Replace with InterviewInvitation entity lookup
-                // Calculate "uncontacted" - applications that haven't been invited to interview yet
+                // Calculate "uncontacted"  applications that haven't been invited to interview yet
                 // Currently: uncontacted = applications not yet moved to interview process
                 // These states represent applications that are still in the review process (or submitted applications) but have not yet transitioned to the interview phase
                 // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
                     stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
-                    stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
+                        stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
                 // Calculate total number of all applications in this interview process
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
@@ -142,7 +151,6 @@ public class InterviewService {
         // 2. Security: Verify current user is the job owner
         UUID currentUserId = currentUserService.getUserId();
 
-        // Extract job and professor to avoid long get-chain
         Job job = interviewProcess.getJob();
         User supervisingProfessor = job.getSupervisingProfessor();
         UUID professorUserId = supervisingProfessor.getUserId();
@@ -382,5 +390,118 @@ public class InterviewService {
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
 
         return slots.stream().map(InterviewSlotDTO::fromEntity).toList();
+    }
+
+    /**
+     * Adds applicants to an interview process by creating Interviewee entities.
+     * Skips duplicates - if an applicant is already added, they are not added again.
+     *
+     *
+     * - Only the job owner (supervising professor) can add applicants
+     * - All applications must belong to the same job as the interview process
+     * - Duplicate entries are silently skipped (idempotent operation)
+     *
+     * @param processId the ID of the interview process
+     * @param dto containing the list of application IDs to add
+     * @return list of newly created IntervieweeDTOs (excludes duplicates)
+     * @throws EntityNotFoundException if the process or any application is not found
+     * @throws AccessDeniedException if the user is not the job owner
+     * @throws BadRequestException if any application belongs to a different job
+     */
+    public List<IntervieweeDTO> addApplicantsToInterview(UUID processId, AddIntervieweesDTO dto) {
+
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("Interview process " + processId + " not found"));
+
+        // 2. Security: Verify current user is the job owner
+        UUID currentUserId = currentUserService.getUserId();
+        Job job = process.getJob();
+        UUID jobOwnerId = job.getSupervisingProfessor().getUserId();
+
+        if (!currentUserId.equals(jobOwnerId)) {
+            throw new AccessDeniedException("Only the job owner can add applicants to the interview");
+        }
+
+        // 3. Load all applications
+        List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
+        if (applications.size() != dto.applicationIds().size()) {
+            Set<UUID> foundIds = new HashSet<>();
+            for (Application app : applications) {
+                foundIds.add(app.getApplicationId());
+            }
+            List<UUID> missingIds = dto.applicationIds().stream()
+                .filter(id -> !foundIds.contains(id))
+                .toList();
+            throw new EntityNotFoundException("Applications not found: " + missingIds);
+        }
+
+        // 4. Validate: All applications belong to this job
+        UUID jobId = job.getJobId();
+        for (Application app : applications) {
+            if (!app.getJob().getJobId().equals(jobId)) {
+                throw new BadRequestException(
+                    "Application " + app.getApplicationId() + " belongs to a different job"
+                );
+            }
+        }
+
+        // 5. Create Interviewees (skip if already exists)
+        List<Interviewee> createdInterviewees = new ArrayList<>();
+        for (Application application : applications) {
+            // Check if already exists
+            if (intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
+                continue;
+            }
+
+            // Create new Interviewee
+            Interviewee interviewee = new Interviewee();
+            interviewee.setInterviewProcess(process);
+            interviewee.setApplication(application);
+            interviewee.setLastInvited(null);
+
+            createdInterviewees.add(interviewee);
+        }
+
+        // 6. Save all
+        List<Interviewee> savedInterviewees = intervieweeRepository.saveAll(createdInterviewees);
+
+        // 7. Return DTOs
+        return savedInterviewees.stream()
+            .map(IntervieweeDTO::fromEntity)
+            .toList();
+    }
+
+    /**
+     * Retrieves all interviewees for a given interview process.
+     *
+     * @param processId the ID of the interview process
+     * @return list of interviewees with their details
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException if the user is not authorized
+     */
+    public List<IntervieweeDTO> getIntervieweesByProcessId(UUID processId) {
+
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("Interview process " + processId + " not found"));
+
+        // 2. Security: Verify current user is the job owner
+        Job job = process.getJob();
+        User supervisingProfessor = job.getSupervisingProfessor();
+        UUID currentUserId = currentUserService.getUserId();
+
+        if (!supervisingProfessor.getUserId().equals(currentUserId)) {
+            throw new AccessDeniedException("You can only view interviewees for your own jobs");
+        }
+
+        // 3. Load and return interviewees with details
+        List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
+
+        return interviewees.stream()
+            .map(IntervieweeDTO::fromEntity)
+            .toList();
     }
 }
