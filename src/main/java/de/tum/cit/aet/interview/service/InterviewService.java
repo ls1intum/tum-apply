@@ -396,7 +396,6 @@ public class InterviewService {
      * Adds applicants to an interview process by creating Interviewee entities.
      * Skips duplicates - if an applicant is already added, they are not added again.
      *
-     *
      * - Only the job owner (supervising professor) can add applicants
      * - All applications must belong to the same job as the interview process
      * - Duplicate entries are silently skipped (idempotent operation)
@@ -500,7 +499,8 @@ public class InterviewService {
         return interviewees.stream().map(IntervieweeDTO::fromEntity).toList();
     }
 
-     /* Deletes a single interview slot.
+    /**
+     * Deletes a single interview slot.
      * Only unbooked slots can be deleted.
      *
      * @param slotId the ID of the slot to delete
