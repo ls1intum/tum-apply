@@ -84,7 +84,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     );
 
     /**
-     * Checks if a slot exists and belongs to a specific professor.
+     * Checks if a slot exists and belongs to a specific  professor.
      *
      * @param slotId      the ID of the slot
      * @param professorId the ID of the supervising professor
