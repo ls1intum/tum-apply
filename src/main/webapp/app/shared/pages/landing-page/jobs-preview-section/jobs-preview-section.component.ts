@@ -13,7 +13,6 @@ import { TranslateDirective } from 'app/shared/language';
   standalone: true,
   imports: [CommonModule, JobCardComponent, TranslateDirective],
   templateUrl: './jobs-preview-section.component.html',
-  styleUrl: './jobs-preview-section.component.scss',
 })
 export class JobsPreviewSectionComponent {
   readonly jobService = inject(JobResourceApiService);
