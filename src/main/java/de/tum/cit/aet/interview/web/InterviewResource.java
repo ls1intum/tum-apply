@@ -1,6 +1,7 @@
 package de.tum.cit.aet.interview.web;
 
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
@@ -100,5 +101,24 @@ public class InterviewResource {
         List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
         log.info("Returning {} slots for interview process: {}", slots.size(), processId);
         return ResponseEntity.ok(slots);
+    }
+
+    /**
+     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
+     * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
+     *
+     * @param slotId the ID of the slot to delete
+     * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
+     * @throws EntityNotFoundException if the slot is not found
+     * @throws AccessDeniedException if the user is not authorized to delete this slot
+     * @throws BadRequestException if the slot is booked
+     */
+    @Professor
+    @DeleteMapping("/slots/{slotId}")
+    public ResponseEntity<Void> deleteSlot(@PathVariable UUID slotId) {
+        log.info("REST request to delete slot: {}", slotId);
+        interviewService.deleteSlot(slotId);
+        log.info("Successfully deleted slot: {}", slotId);
+        return ResponseEntity.noContent().build();
     }
 }
