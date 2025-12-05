@@ -58,6 +58,7 @@ export const fundingTypes = [
   { value: JobFormDTO.FundingTypeEnum.ResearchGrant, name: 'jobCreationForm.basicInformationSection.fundingTypes.ResearchGrant' },
   { value: JobFormDTO.FundingTypeEnum.Scholarship, name: 'jobCreationForm.basicInformationSection.fundingTypes.Scholarship' },
   { value: JobFormDTO.FundingTypeEnum.SelfFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.SelfFunded' },
+  { value: JobFormDTO.FundingTypeEnum.PartiallyFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.PartiallyFunded' },
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));

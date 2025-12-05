@@ -120,7 +120,8 @@
         "IndustrySponsored": "Industry Sponsored",
         "ResearchGrant": "Research Grant",
         "Scholarship": "Scholarship",
-        "SelfFunded": "Self Funded"
+        "SelfFunded": "Self Funded",
+        "PartiallyFunded": "Partially Funded"
       }
     },
     "positionDetailsSection": {

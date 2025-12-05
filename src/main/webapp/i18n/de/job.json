@@ -120,7 +120,8 @@
         "IndustrySponsored": "Industriegesponsert",
         "ResearchGrant": "Forschungsstipendium",
         "Scholarship": "Stipendium",
-        "SelfFunded": "Selbstfinanziert"
+        "SelfFunded": "Selbstfinanziert",
+        "PartiallyFunded": "Teilweise finanziert"
       }
     },
     "positionDetailsSection": {
