@@ -113,7 +113,7 @@ public class InterviewResource {
      * @throws AccessDeniedException if the user is not authorized to delete this slot
      * @throws BadRequestException if the slot is booked
      */
-    @Professor
+    @ProfessorOrEmployee
     @DeleteMapping("/slots/{slotId}")
     public ResponseEntity<Void> deleteSlot(@PathVariable UUID slotId) {
         log.info("REST request to delete slot: {}", slotId);
