@@ -50,7 +50,10 @@
       "showMoreSingular": "more slot",
       "showMorePlural": "more slots",
       "error": {
-        "loadFailed": "Failed to load interview slots"
+        "loadFailed": {
+          "summary": "Failed to load interview slots",
+          "detail": "The interview slots could not be loaded. Please refresh the page or contact an admin."
+        }
       },
       "status": {
         "booked": "booked"

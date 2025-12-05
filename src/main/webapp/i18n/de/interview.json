@@ -50,7 +50,10 @@
       "showMoreSingular": "weiteren Termin",
       "showMorePlural": "weitere Termine",
       "error": {
-        "loadFailed": "Interview Termine konnten nicht geladen werden"
+        "loadFailed": {
+          "summary": "Interview Termine konnten nicht geladen werden",
+          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
       },
       "status": {
         "booked": "Gebucht"
