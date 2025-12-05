@@ -25,7 +25,7 @@ export default class MainComponent {
     return this.accountService.signedIn();
   });
   readonly localStorageService = inject(LocalStorageService);
-  readonly isSidebarCollapsed = this.localStorageService.getSidebarState();
+  readonly isSidebarCollapsed = this.localStorageService.sidebarCollapsed;
   private readonly router = inject(Router);
   private readonly renderer: Renderer2;
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
@@ -44,6 +44,6 @@ export default class MainComponent {
   }
 
   toggleSidebar(): void {
-    this.localStorageService.setSidebarState(!this.isSidebarCollapsed());
+    this.localStorageService.toggle();
   }
 }
