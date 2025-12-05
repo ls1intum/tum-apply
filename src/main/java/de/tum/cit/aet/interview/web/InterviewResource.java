@@ -119,9 +119,9 @@ public class InterviewResource {
     @Professor
     @DeleteMapping("/slots/{slotId}")
     public ResponseEntity<Void> deleteSlot(@PathVariable UUID slotId) {
-        log.debug("REST request to delete slot: {}", slotId);
+        log.info("REST request to delete slot: {}", slotId);
         interviewService.deleteSlot(slotId);
-        log.debug("Successfully deleted slot: {}", slotId);
+        log.info("Successfully deleted slot: {}", slotId);
         return ResponseEntity.noContent().build();
     }
 }
