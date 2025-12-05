@@ -402,6 +402,12 @@ public class InterviewService {
                 return new EntityNotFoundException("Slot " + slotId + " not found");
             });
 
+        // 2. Security: Verify current user is the job owner
+        UUID currentUserId = currentUserService.getUserId();
+        if (!interviewSlotRepository.existsByIdAndSupervisingProfessorId(slotId, currentUserId)) {
+            throw new AccessDeniedException("You don't have permission to delete this slot");
+        }
+
         // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
         if (slot.getIsBooked()) {
