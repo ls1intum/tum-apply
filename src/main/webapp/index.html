@@ -4,8 +4,8 @@
     <script>
       (function () {
         try {
-          var root = document.documentElement;
-          var stored = localStorage.getItem('tumApplyTheme');
+          const root = document.documentElement;
+          const stored = localStorage.getItem('tumApplyTheme');
           if (stored === 'dark') {
             root.classList.add('tum-apply-dark-mode');
           } else {
