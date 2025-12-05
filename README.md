@@ -42,16 +42,22 @@ scalable, secure, and transparent recruitment processes.
 
 1. Visit the portal: [TUMApply](https://tumapply.aet.cit.tum.de/)
 2. Browse available doctoral positions
-3. Log in with your preferred account
+3. Register/Log in with your preferred account
 4. Start applying or managing applications
+
+## Registration
+
+New users can register directly on the TUMApply portal using their email address or social login
+options. ([Video](https://live.rbg.tum.de/w/artemisintro/67995))
 
 ## 🔐 Login
 
 TUMApply supports **secure login** via:
 
-- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/61951))
+- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/67993))
 - Apple, Google and Microsoft ([Video](https://live.rbg.tum.de/w/artemisintro/61949))
-- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/61950))
+- Email and code ([Video](https://live.rbg.tum.de/w/artemisintro/67994))
+- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/67996))
 
 ## 🧱 Architecture Overview
 
@@ -61,7 +67,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Technology Stack
 
 | Component      | Technology                                     |
-| -------------- | ---------------------------------------------- |
+|----------------|------------------------------------------------|
 | Client         | Angular                                        |
 | Server         | Spring Boot (Java)                             |
 | Proxy          | Nginx                                          |
@@ -72,7 +78,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Core Modules & Responsibilities
 
 | Module/Service         | Responsibilities                                     |
-| ---------------------- | ---------------------------------------------------- |
+|------------------------|------------------------------------------------------|
 | User Authentication    | Handles logins via Keycloak                          |
 | Job Management         | Professors create and manage doctoral positions      |
 | Application Handling   | Applicants submit documents for a position           |
@@ -83,7 +89,7 @@ architecture for now, clear service boundaries allow for potential migration to 
 ### Areas of Work
 
 | Area                      | Tasks                                                       |
-| ------------------------- | ----------------------------------------------------------- |
+|---------------------------|-------------------------------------------------------------|
 | Client-Side               | Angular UI development with role-based views                |
 | Server-Side               | Implement REST APIs using Spring Boot                       |
 | Database Management       | Design and optimize MySQL schema                            |
