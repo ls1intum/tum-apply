@@ -74,9 +74,9 @@ describe('JobCardListComponent', () => {
   it('should load filters successfully', async () => {
     await component.loadAllFilter();
 
-  expect(jobService.getAllFilters).toHaveBeenCalled();
-  // allFieldOfStudies is a static list of i18n keys from DropdownOptions
-  expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    expect(jobService.getAllFilters).toHaveBeenCalled();
+    // allFieldOfStudies is a static list of i18n keys from DropdownOptions
+    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
     expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
   });
@@ -187,8 +187,8 @@ describe('JobCardListComponent', () => {
 
     await component.loadAllFilter();
 
-  // allFieldOfStudies remains the static list of i18n keys
-  expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
+    // allFieldOfStudies remains the static list of i18n keys
+    expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual([]);
   });
 
