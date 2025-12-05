@@ -84,7 +84,7 @@ export function getFundingTypeTranslationKey(fundingType: string | undefined): s
 
 export function getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
   if (fieldOfStudies == null) return '-';
-  return fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? '';
+  return fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? fieldOfStudies;
 }
 
 // Converts a string like "Garching Hochbrueck" to "GARCHING_HOCHBRUECK";

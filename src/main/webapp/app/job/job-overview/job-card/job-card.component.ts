@@ -11,7 +11,7 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import SharedModule from 'app/shared/shared.module';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 
-import * as DropDownOptions from '../.././dropdown-options';
+import * as DropDownOptions from '../../dropdown-options';
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
 
 export const ApplicationStatusExtended = {
