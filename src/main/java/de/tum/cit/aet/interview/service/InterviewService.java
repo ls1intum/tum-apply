@@ -473,6 +473,7 @@ public class InterviewService {
     /**
      * Retrieves all interviewees for a given interview process.
      *
+     *
      * @param processId the ID of the interview process
      * @return list of interviewees with their details
      * @throws EntityNotFoundException if the interview process is not found
@@ -497,7 +498,9 @@ public class InterviewService {
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
 
         return interviewees.stream().map(IntervieweeDTO::fromEntity).toList();
-     * Deletes a single interview slot.
+    }
+
+     /* Deletes a single interview slot.
      * Only unbooked slots can be deleted.
      *
      * @param slotId the ID of the slot to delete

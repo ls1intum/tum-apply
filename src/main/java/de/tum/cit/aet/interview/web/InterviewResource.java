@@ -4,8 +4,8 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.Professor;
-import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
+import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
@@ -153,7 +153,9 @@ public class InterviewResource {
         log.info("Returning {} interviewees for interview process: {}", interviewees.size(), processId);
 
         return ResponseEntity.ok(interviewees);
-     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
+    }
+
+    /* {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
      * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
      *
      * @param slotId the ID of the slot to delete
