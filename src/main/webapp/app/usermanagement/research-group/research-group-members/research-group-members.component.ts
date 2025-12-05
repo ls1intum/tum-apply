@@ -61,12 +61,25 @@ export class ResearchGroupMembersComponent {
 
   // Transform members data for display
   readonly tableData = computed(() => {
-    return this.members().map(member => ({
-      ...member,
-      name: `${member.firstName} ${member.lastName}`,
-      role: this.formatRoles(member.roles),
-      isCurrentUser: this.isCurrentUser(member),
-    }));
+    const currentUserAuthorities = this.accountService.userAuthorities;
+    const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
+
+    return this.members().map(member => {
+      const isCurrentUser = this.isCurrentUser(member);
+      let canRemove = !isCurrentUser;
+
+      if (isEmployee) {
+        canRemove = false;
+      }
+
+      return {
+        ...member,
+        name: `${member.firstName} ${member.lastName}`,
+        role: this.formatRoles(member.roles),
+        isCurrentUser,
+        canRemove,
+      };
+    });
   });
 
   private researchGroupService = inject(ResearchGroupResourceApiService);

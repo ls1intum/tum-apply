@@ -2,7 +2,7 @@ package de.tum.cit.aet.interview.web;
 
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
@@ -14,10 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST controller for managing interview processes.
@@ -43,7 +39,7 @@ public class InterviewResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewOverviewDTO}
      */
-    @Professor
+    @ProfessorOrEmployee
     @GetMapping("/overview")
     public ResponseEntity<List<InterviewOverviewDTO>> getInterviewOverview() {
         log.info("REST request to get all interview processes{}");
@@ -58,7 +54,7 @@ public class InterviewResource {
      * @param processId the ID of the interview process
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the {@link InterviewOverviewDTO}
      */
-    @Professor
+    @ProfessorOrEmployee
     @GetMapping("/processes/{processId}")
     public ResponseEntity<InterviewOverviewDTO> getInterviewProcessDetails(@PathVariable UUID processId) {
         log.info("REST request to get interview process id {}", processId);
@@ -77,7 +73,7 @@ public class InterviewResource {
      * @param dto       the slot definitions sent from the frontend
      * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing the created {@link InterviewSlotDTO}s
      */
-    @Professor
+    @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/slots/create")
     public ResponseEntity<List<InterviewSlotDTO>> createSlots(@PathVariable UUID processId, @Valid @RequestBody CreateSlotsDTO dto) {
         log.info("REST request to create {} slots for interview process: {}", dto.slots().size(), processId);
@@ -97,7 +93,7 @@ public class InterviewResource {
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException if the user is not authorized
      */
-    @Professor
+    @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
     public ResponseEntity<List<InterviewSlotDTO>> getSlotsByProcessId(@PathVariable UUID processId) {
         log.info("REST request to get all slots for interview process: {}", processId);

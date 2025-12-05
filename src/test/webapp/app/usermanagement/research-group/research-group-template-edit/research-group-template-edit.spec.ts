@@ -11,6 +11,8 @@ import { createTranslateServiceMock, provideTranslateMock } from 'util/translate
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { ResearchGroupTemplateEdit } from 'app/usermanagement/research-group/research-group-template-edit/research-group-template-edit';
 import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 class ResizeObserverMock {
   observe() {}
@@ -34,6 +36,7 @@ describe('ResearchGroupTemplateEdit', () => {
   let mockToast: ToastServiceMock;
   let paramMapSubject: BehaviorSubject<ParamMap>;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
+  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
 
   const mockRouter = createRouterMock();
   const mockTranslate = createTranslateServiceMock();
@@ -58,6 +61,8 @@ describe('ResearchGroupTemplateEdit', () => {
   beforeEach(async () => {
     mockToast = createToastServiceMock();
     mockActivatedRoute = createActivatedRouteMock();
+    mockAccountService = createAccountServiceMock();
+    mockAccountService.user.set({ id: 'current-user', name: 'Current User', email: 'test@test.com', authorities: [] });
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupTemplateEdit],
@@ -68,6 +73,7 @@ describe('ResearchGroupTemplateEdit', () => {
         provideTranslateMock(mockTranslate),
         provideFontAwesomeTesting(),
         provideActivatedRouteMock(mockActivatedRoute),
+        provideAccountServiceMock(mockAccountService),
       ],
     })
       .overrideComponent(ResearchGroupTemplateEdit, {
@@ -157,6 +163,20 @@ describe('ResearchGroupTemplateEdit', () => {
       component.formModel.set({ ...baseDto, templateName: '', emailType: undefined });
       await component['performAutoSave']();
       expect(component.savingState()).toBe('SAVED');
+    });
+
+    it('does not autosave for employees', () => {
+      mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+      component.formModel.set({
+        templateName: 'Valid',
+        emailType: 'APPLICATION_ACCEPTED',
+        isDefault: false,
+        english: { subject: '', body: '' },
+        german: { subject: '', body: '' },
+      });
+      fixture.detectChanges();
+      expect(component.savingState()).toBe('UNSAVED');
+      expect(component['autoSaveTimer']).toBeUndefined();
     });
   });
 
