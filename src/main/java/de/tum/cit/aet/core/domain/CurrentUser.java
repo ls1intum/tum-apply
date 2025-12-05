@@ -15,10 +15,23 @@ public record CurrentUser(UUID userId, String email, String firstName, String la
         return researchGroupRoles.stream().anyMatch(r -> r.role() == UserRole.PROFESSOR);
     }
 
+    public boolean isEmployee() {
+        return researchGroupRoles.stream().anyMatch(r -> r.role() == UserRole.EMPLOYEE);
+    }
+
     public Optional<UUID> getResearchGroupIdIfProfessor() {
         return researchGroupRoles
             .stream()
             .filter(r -> r.role() == UserRole.PROFESSOR)
+            .map(ResearchGroupRole::researchGroupId)
+            .filter(Objects::nonNull)
+            .findFirst();
+    }
+
+    public Optional<UUID> getResearchGroupIdIfMember() {
+        return researchGroupRoles
+            .stream()
+            .filter(r -> r.role() == UserRole.EMPLOYEE || r.role() == UserRole.PROFESSOR)
             .map(ResearchGroupRole::researchGroupId)
             .filter(Objects::nonNull)
             .findFirst();
