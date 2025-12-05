@@ -395,7 +395,8 @@
         "accepted": "Angenommen",
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
-        "closed": "Geschlossen"
+        "closed": "Geschlossen",
+        "inReview": "In Prüfung"
       },
       "columns": {
         "positionTitle": "Stellentitel",

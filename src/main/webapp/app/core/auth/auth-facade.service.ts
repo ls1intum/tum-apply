@@ -162,17 +162,18 @@ export class AuthFacadeService {
     this.documentCache.clear();
     return this.runAuthAction(async () => {
       const user = this.accountService.user();
-      const isProfessor = user?.authorities?.includes('PROFESSOR') ?? false;
-      const redirectUrl = isProfessor ? window.location.origin + '/professor' : window.location.origin + '/';
+      const isProfessorOrEmployee =
+        (user?.authorities?.includes('PROFESSOR') ?? false) || (user?.authorities?.includes('EMPLOYEE') ?? false);
+      const redirectUrl = isProfessorOrEmployee ? window.location.origin + '/professor' : window.location.origin + '/';
       if (this.authMethod === 'server') {
         this.authMethod = 'none';
         await this.serverAuthenticationService.logout();
-        void this.router.navigate([isProfessor ? '/professor' : '/']);
+        void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
       } else if (this.authMethod === 'keycloak') {
         this.authMethod = 'none';
         await this.keycloakAuthenticationService.logout(redirectUrl);
       } else {
-        void this.router.navigate([isProfessor ? '/professor' : '/']);
+        void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
       }
       // Reset states
       this.accountService.user.set(undefined);
