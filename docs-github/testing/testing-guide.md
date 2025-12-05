@@ -30,6 +30,7 @@ Test reports will be available under `build/reports/tests/` and `build/reports/j
   npm run test:ci
   ```
 - View coverage report of tests:
+
   ```bash
   open build/test-results/lcov-report/index.html
   ```
@@ -37,12 +38,12 @@ Test reports will be available under `build/reports/tests/` and `build/reports/j
 - Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
   Keep unit tests close to the component you change. Prefer focused DOM and behavior tests (validation, visibility of actions, rendering of states, sorting/filter effects).
 
-
 You can also run tests with code coverage:
 
 ```bash
 ./npmw test -- --coverage
 ```
+
 ---
 
 ## Server-Side Testing (Spring Boot)
@@ -54,14 +55,19 @@ You can also run tests with code coverage:
 - **Mockito:** For mocking dependencies in isolated unit tests.
 
 Run all tests with:
+
 ```bash
  ./gradlew test
 ```
+
 Generate test coverage report with:
- ```bash
-  ./gradlew test jacocoTestReport
- ```
+
+```bash
+ ./gradlew test jacocoTestReport
+```
+
 View coverage report of tests:
+
 ```bash
  open build/reports/jacoco/test/html/index.html
 ```

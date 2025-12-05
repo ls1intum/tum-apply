@@ -1,7 +1,7 @@
 # Account Creation
 
 As a professor, you **do not need a separate registration form**. Your TUMApply account is created automatically the
-first time you sign in via the official TUM Login.
+first time you sign in via the official TUM Login. ([Video](https://live.rbg.tum.de/w/artemisintro/67993))
 
 ## Where to start
 

@@ -3,6 +3,7 @@
 This document explains how to set up and run the TUMApply project locally for development.
 
 ---
+
 ## Prerequisites
 
 Make sure you have the following installed:
@@ -14,6 +15,7 @@ Make sure you have the following installed:
 - **Git**
 
 ---
+
 ## Initial Setup
 
 Install npm dependencies:
@@ -23,6 +25,7 @@ npm install
 ```
 
 Make sure Docker Desktop is running, then execute:
+
 ```bash
 docker compose -f src/main/docker/services.yml up -d
 ```

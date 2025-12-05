@@ -9,6 +9,8 @@ at [https://tumapply.aet.cit.tum.de/professor](https://tumapply.aet.cit.tum.de/p
 
 ## How to Log In
 
+A video guide is also available here: [Video](https://live.rbg.tum.de/w/artemisintro/67993)
+
 1. Click on the **Login** button.
 2. You will be redirected to the TUM Login page.
 3. Enter your **university ID** (e.g., ab12cde) as your username and the same password you use for other TUM services
@@ -23,4 +25,3 @@ at [https://tumapply.aet.cit.tum.de/professor](https://tumapply.aet.cit.tum.de/p
 
 If you already logged in before and your rights have been assigned, you can directly access your Research Group and see
 all positions you have published.
-

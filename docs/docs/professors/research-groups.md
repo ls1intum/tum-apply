@@ -9,30 +9,41 @@ Research Groups are organizational units within TUMApply that allow you to manag
 to your academic team. They serve as the basis for assigning responsibilities and rights to professors. In general,
 Research Groups correspond to chairs and professorships at TUM.
 
-## How to set up a Research Group and receive rights
+## How to request access to a Research Group and receive rights
 
-:::danger[Important]
-Please log in once with your TUM Login before sending us your email. This ensures your account is created
-in the system. See our [login documentation](./login) for more information.
-:::
+Once you log in as a **professor** or **employee** for the first time, a **dialog will automatically appear** that
+guides you
+through the process of requesting access to a Research Group.
 
-To receive the correct permissions and have your Research Group created, you need to send us an email with the following
-information:
+### Request Process
 
-- **Research Group name**
-- **Name of the head of the Research Group** (including academic title if applicable)
+1. Log in with your account.
+2. The **access request dialog opens automatically**.
+3. Depending on your role, you will be guided through different request steps:
+  - **Professor:** You must provide several details, such as:
+    - Research Group
+    - Address
+    - Additional required organizational information
+  - **Employee:** You only need to provide the **name of the responsible professor**.
+4. After submitting the request, it will be reviewed by our team.
+5. Within the following days, you will receive an **email with further instructions**.
 
-If a Research Group already exists, please send us an email with the name of the Research Group and the name of its
-head, so that you can be added to it.
+### If the Dialog Does Not Appear
 
-Please send your email to: **support-tum-apply.aet@xcit.tum.de**
+If the dialog does not open automatically after login, you can request access manually at any time:
+
+1. Go to the professor landing page:  
+   https://tumapply.aet.cit.tum.de/professor
+2. **Log in** with your account.
+3. Scroll down to the **FAQ section**.
+4. Use the **button in the FAQ section** to open the same access request form manually.
 
 ## What happens next
 
-- After receiving your request, our team will verify the details.
-- We will then set up your Research Group in the system.
-- You will receive a confirmation email once the Research Group has been created and the appropriate rights have been
-  assigned.
-- After that, you have the correct professor rights and can manage your Research Group and its job postings.
+- After receiving your request, our team will verify your details.
+- You will receive an **email with the next steps** once your request has been processed.
+- After successful verification, you will receive the appropriate rights to manage or work within your Research Group.
+- From that point on, you can manage job postings and applications according to your role.
 
-We aim to process these requests as quickly as possible so you can start working with your Research Group without delay.
+We aim to process all access requests as quickly as possible so you can start working with your Research Group without
+delay.

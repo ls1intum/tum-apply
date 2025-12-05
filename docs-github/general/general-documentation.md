@@ -56,6 +56,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 
 **Endpoint Security:**
 **Path:** `src/main/java/**/web/`
+
 - `@ApplicantOrAdmin` — Restricts access to applicants (owners) or system administrators.
   - Used for: Create, Update, Delete, Upload, Withdraw operations.
   - Enforces ownership check: Applicant can only access their own applications.
@@ -119,6 +120,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 
 We have a set of custom exceptions (e.g. for specific conflict scenarios or business logic errors) that can be utilized:
 `src/main/java/de/tum/cit/aet/core/exception`
+
 ## 5) Performance Optimizations
 
 The following points are some of several strategies used across the TUMApply application to boost the performance and responsiveness of the site:
