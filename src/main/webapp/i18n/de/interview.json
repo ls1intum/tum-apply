@@ -70,7 +70,7 @@
         },
         "error": {
           "summary": "Löschen fehlgeschlagen",
-          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut."
+          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
         "errorBooked": {
           "summary": "Löschen fehlgeschlagen",

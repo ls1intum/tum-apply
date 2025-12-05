@@ -70,7 +70,7 @@
         },
         "error": {
           "summary": "Delete failed",
-          "detail": "The slot could not be deleted. Please try again."
+          "detail": "The slot could not be deleted. Please try again or contact an admin."
         },
         "errorBooked": {
           "summary": "Delete failed",

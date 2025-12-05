@@ -30,7 +30,6 @@ interface GroupedSlots {
     TranslateDirective,
     ButtonComponent,
     ProgressSpinnerModule,
-    ProgressSpinnerModule,
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
