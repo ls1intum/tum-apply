@@ -335,7 +335,7 @@ keycloak:
 
 security:
   otp:
-    length: ${OTP_LENGTH:8}
+    length: ${OTP_LENGTH:4}
     ttl-seconds: ${OTP_TTL_SECONDS:900}
     max-attempts: ${OTP_MAX_ATTEMPTS:6}
     resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}

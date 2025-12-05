@@ -22,7 +22,7 @@ export function createApplicationConfigServiceMock(): ApplicationConfigServiceMo
       clientId: 'mock-client',
     },
     otp: {
-      length: 6,
+      length: 4,
       ttlSeconds: 300,
       resendCooldownSeconds: 60,
     },
