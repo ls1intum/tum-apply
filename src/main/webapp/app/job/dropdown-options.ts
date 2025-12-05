@@ -61,16 +61,11 @@ export const fundingTypes = [
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));
-export const fieldOfStudyNameToValueMap = new Map(fieldsOfStudies.map(option => [option.name, option.value]));
 
 export function mapLocationNames(translationKeys: string[]): JobFormDTO.LocationEnum[] {
   return translationKeys
     .map(key => locationNameToValueMap.get(key))
     .filter((value): value is JobFormDTO.LocationEnum => value !== undefined);
-}
-
-export function mapFieldOfStudyNames(translationKeys: string[]): string[] {
-  return translationKeys.map(key => fieldOfStudyNameToValueMap.get(key)).filter((value): value is string => value !== undefined);
 }
 
 export function getLocationTranslationKey(location: string | undefined): string {
