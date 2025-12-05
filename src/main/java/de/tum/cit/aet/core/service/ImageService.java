@@ -213,7 +213,7 @@ public class ImageService {
      * @return list of job banner images belonging to the current user's research group
      */
     public List<Image> getResearchGroupJobBanners() {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
         List<Image> images = imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, researchGroupId);
         return images;
     }

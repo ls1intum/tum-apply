@@ -3,10 +3,6 @@
   justify-content: space-between;
   min-height: 2rem;
 
-  .char-counter-normal {
-    color: var(--p-text-primary);
-  }
-
   .char-counter-warning {
     color: var(--p-warn-color);
   }
@@ -16,8 +12,8 @@
   }
 
   .helper-text {
-    color: var(--p-text-primary);
     font-size: 0.8rem;
+    color: var(--p-text-primary);
   }
 
   .error-text {

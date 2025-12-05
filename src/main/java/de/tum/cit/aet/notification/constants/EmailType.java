@@ -15,7 +15,7 @@ public enum EmailType {
      * To: Applicant whose application was accepted
      * BCC: Supervising Professor of accepted application
      */
-    APPLICATION_ACCEPTED("APPLICATION_ACCEPTED", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR), true, true),
+    APPLICATION_ACCEPTED("APPLICATION_ACCEPTED", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE), true, true),
 
     /**
      * When an application was rejected
@@ -27,7 +27,7 @@ public enum EmailType {
      * When a new application was received for a job
      * To: Supervising professor of the job
      */
-    APPLICATION_RECEIVED("APPLICATION_RECEIVED", Set.of(UserRole.PROFESSOR), false, false),
+    APPLICATION_RECEIVED("APPLICATION_RECEIVED", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
 
     /**
      * Confirmation that application was successfully submitted
