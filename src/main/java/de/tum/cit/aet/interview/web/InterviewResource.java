@@ -1,6 +1,7 @@
 package de.tum.cit.aet.interview.web;
 
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
@@ -114,7 +115,7 @@ public class InterviewResource {
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
      * @throws EntityNotFoundException if the slot is not found
      * @throws AccessDeniedException if the user is not authorized to delete this slot
-     * @throws de.tum.cit.aet.core.exception.BadRequestException if the slot is booked
+     * @throws BadRequestException if the slot is booked
      */
     @Professor
     @DeleteMapping("/slots/{slotId}")

@@ -83,12 +83,19 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("endTime") Instant endTime
     );
 
+    /**
+     * Checks if a slot exists and belongs to a specific professor.
+     *
+     * @param slotId      the ID of the slot
+     * @param professorId the ID of the supervising professor
+     * @return true if the slot exists and belongs to the professor
+     */
     @Query(
         """
             SELECT COUNT(s) > 0
             FROM InterviewSlot s
             WHERE s.id = :slotId
-              AND s.interviewProcess.job.supervisingProfessor.id = :professorId
+              AND s.interviewProcess.job.supervisingProfessor.userId = :professorId
         """
     )
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
