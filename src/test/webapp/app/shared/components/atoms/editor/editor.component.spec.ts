@@ -319,7 +319,10 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      comp.analysisResult.set({ coding: 'masculine-coded', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'masculine-coded',
+        words: [],
+      } as GenderBiasAnalysisResponse);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(true);
@@ -330,7 +333,7 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      comp.analysisResult.set(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(false);
@@ -373,7 +376,7 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
       fixture.detectChanges();
 
       expect(comp.codingDisplay()).toBeNull();
@@ -383,7 +386,7 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set({} as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({} as GenderBiasAnalysisResponse);
       fixture.detectChanges();
 
       expect(comp.codingDisplay()).toBeNull();
@@ -393,7 +396,11 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set({ coding: 'masculine-coded', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'masculine-coded',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       fixture.detectChanges();
 
       const result = comp.codingDisplay();
@@ -404,7 +411,11 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set({ coding: 'feminine-coded', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'masculine-coded',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       fixture.detectChanges();
 
       const result = comp.codingDisplay();
@@ -415,7 +426,11 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set({ coding: 'neutral', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'neutral',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       fixture.detectChanges();
 
       const result = comp.codingDisplay();
@@ -426,7 +441,11 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set({ coding: 'empty', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'empty',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       fixture.detectChanges();
 
       const result = comp.codingDisplay();
@@ -437,7 +456,11 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set({ coding: 'masculine-coded', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'masculine-coded',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       fixture.detectChanges();
 
       const result1 = comp.codingDisplay();
@@ -458,7 +481,11 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', false);
-      comp.analysisResult.set({ coding: 'neutral', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'neutral',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(false);
@@ -469,7 +496,7 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      comp.analysisResult.set(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(false);
@@ -480,7 +507,11 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
-      comp.analysisResult.set({ coding: 'neutral', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'neutral',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       fixture.detectChanges();
 
       expect(comp.shouldShowButton()).toBe(true);
@@ -492,7 +523,11 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set({ coding: 'masculine-coded', words: [] } as GenderBiasAnalysisResponse);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue({
+        coding: 'masculine-coded',
+        words: [],
+      } as GenderBiasAnalysisResponse);
+
       comp.onGenderDecoderClick();
 
       expect(comp.showAnalysisModal()).toBe(true);
@@ -502,7 +537,7 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      comp.analysisResult.set(null);
+      vi.spyOn(comp, 'analysisResult').mockReturnValue(null);
       comp.showAnalysisModal.set(false);
       comp.onGenderDecoderClick();
 

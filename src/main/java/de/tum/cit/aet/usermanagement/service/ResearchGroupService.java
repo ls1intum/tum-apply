@@ -4,9 +4,9 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.dto.SortDTO.Direction;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -16,10 +16,12 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.*;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
@@ -30,6 +32,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +51,7 @@ public class ResearchGroupService {
     private final UserRepository userRepository;
     private final CurrentUserService currentUserService;
     private final ResearchGroupRepository researchGroupRepository;
+    private final DepartmentRepository departmentRepository;
 
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final AsyncEmailSender emailSender;
@@ -63,7 +67,7 @@ public class ResearchGroupService {
      */
     public PageResponseDTO<UserShortDTO> getResearchGroupMembers(PageDTO pageDTO) {
         // Get the current user's research group ID
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
@@ -90,7 +94,7 @@ public class ResearchGroupService {
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
         // Get the current user's research group ID for validation
-        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
@@ -108,7 +112,18 @@ public class ResearchGroupService {
         // Prevent removing oneself (for now)
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
-            throw new IllegalArgumentException("Cannot remove yourself from the research group");
+            throw new BadRequestException("Cannot remove yourself from the research group");
+        }
+
+        boolean currentUserIsProfessor = currentUserService.getCurrentUser().isProfessor();
+
+        boolean userToRemoveIsProfessor = userToRemove
+            .getResearchGroupRoles()
+            .stream()
+            .anyMatch(r -> UserRole.PROFESSOR.equals(r.getRole()));
+
+        if (!currentUserIsProfessor && userToRemoveIsProfessor) {
+            throw new AccessDeniedException("You do not have permission to remove a Professor.");
         }
 
         // Remove the direct research group membership
@@ -141,6 +156,7 @@ public class ResearchGroupService {
      */
 
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
+        currentUserService.isAdminOrMemberOf(researchGroupId);
         ResearchGroup researchGroup = researchGroupRepository
             .findById(researchGroupId)
             .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
@@ -175,6 +191,7 @@ public class ResearchGroupService {
      * @return the updated research group DTO
      */
     public ResearchGroupDTO updateResearchGroup(UUID researchGroupId, ResearchGroupDTO researchGroupDTO) {
+        currentUserService.isAdminOrMemberOf(researchGroupId);
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(researchGroupId);
         updateEntityFromDTO(researchGroup, researchGroupDTO);
         ResearchGroup updatedResearchGroup = researchGroupRepository.save(researchGroup);
@@ -183,6 +200,7 @@ public class ResearchGroupService {
 
     /**
      * Updates a ResearchGroup entity with values from the provided DTO.
+     * Includes department updates when departmentId is provided.
      */
     private void updateEntityFromDTO(ResearchGroup entity, ResearchGroupDTO dto) {
         entity.setName(dto.name());
@@ -190,20 +208,27 @@ public class ResearchGroupService {
         entity.setHead(dto.head());
         entity.setEmail(dto.email());
         entity.setWebsite(dto.website());
-        entity.setSchool(dto.school());
         entity.setDescription(dto.description());
         entity.setStreet(dto.street());
         entity.setPostalCode(dto.postalCode());
         entity.setCity(dto.city());
         entity.setDefaultFieldOfStudies(dto.defaultFieldOfStudies());
+
+        // Update department if departmentId is provided
+        if (dto.departmentId() != null) {
+            Department department = departmentRepository.findByIdElseThrow(dto.departmentId());
+            entity.setDepartment(department);
+        }
     }
 
     /**
      * Populates a ResearchGroup entity with values from a ResearchGroupRequestDTO.
      * Normalizes name, abbreviation, and universityId fields.
+     * Fetches and sets the department from the provided departmentId.
      *
      * @param entity the research group entity to populate
      * @param request the request DTO containing the data
+     * @throws EntityNotFoundException if the department does not exist
      */
     private void populateResearchGroupFromRequest(ResearchGroup entity, ResearchGroupRequestDTO request) {
         entity.setName(StringUtil.normalize(request.researchGroupName(), false));
@@ -212,7 +237,11 @@ public class ResearchGroupService {
         entity.setAbbreviation(StringUtil.normalize(request.abbreviation(), false));
         entity.setEmail(request.contactEmail());
         entity.setWebsite(request.website());
-        entity.setSchool(request.school());
+
+        // Fetch and set department
+        Department department = departmentRepository.findByIdElseThrow(request.departmentId());
+        entity.setDepartment(department);
+
         entity.setDescription(request.description());
         entity.setDefaultFieldOfStudies(request.defaultFieldOfStudies());
         entity.setStreet(request.street());
@@ -241,13 +270,10 @@ public class ResearchGroupService {
             .findById(dto.researchGroupId())
             .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
 
-        boolean userGroupChanged = false;
         if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
             user.setResearchGroup(group);
             userRepository.save(user);
-            userGroupChanged = true;
         }
-        String roleOutcome = "unchanged";
 
         Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
         if (existing.isEmpty()) {
@@ -256,11 +282,9 @@ public class ResearchGroupService {
             mapping.setResearchGroup(group);
             mapping.setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(mapping);
-            roleOutcome = "created";
         } else if (existing.get().getRole() != UserRole.PROFESSOR) {
             existing.get().setRole(UserRole.PROFESSOR);
             userResearchGroupRoleRepository.save(existing.get());
-            roleOutcome = "updated";
         }
 
         return group;
@@ -475,7 +499,12 @@ public class ResearchGroupService {
         populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.ACTIVE);
 
-        ResearchGroup saved = researchGroupRepository.save(researchGroup);
+        ResearchGroup saved;
+        try {
+            saved = researchGroupRepository.save(researchGroup);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
+        }
 
         // Assign the professor to the research group
         professor.setResearchGroup(saved);
@@ -509,11 +538,6 @@ public class ResearchGroupService {
     public void createEmployeeResearchGroupRequest(EmployeeResearchGroupRequestDTO request) {
         User currentUser = currentUserService.getUser();
 
-        // Create a dummy admin user for sending the email to support
-        User supportUser = new User();
-        supportUser.setEmail(supportEmail);
-        supportUser.setSelectedLanguage(Language.ENGLISH.getCode());
-
         String emailBody = String.format(
             """
             <html>
@@ -546,15 +570,89 @@ public class ResearchGroupService {
             request.professorName()
         );
 
-        Email email = Email.builder()
-            .to(supportUser)
-            .customSubject("Employee Research Group Access Request - " + currentUser.getEmail())
-            .customBody(emailBody)
-            .sendAlways(true)
-            .language(Language.ENGLISH)
-            .build();
+        sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
+
+        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
+    }
+
+    /**
+     * Adds multiple members to a research group.
+     * Sends an email notification to each added user.
+     *
+     * @param userIds the IDs of the users to be added to the research group
+     * @param researchGroupId the ID of the research group to add members to; if null, uses current user's group
+     */
+    @Transactional
+    public void addMembersToResearchGroup(List<UUID> userIds, UUID researchGroupId) {
+        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
+        ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
+
+        for (UUID userId : userIds) {
+            User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+
+            if (
+                user.getResearchGroup() != null && user.getResearchGroup().getResearchGroupId().equals(researchGroup.getResearchGroupId())
+            ) {
+                continue;
+            }
+
+            UserResearchGroupRole role = userResearchGroupRoleRepository
+                .findByUserAndResearchGroup(user, researchGroup)
+                .orElseGet(() -> {
+                    UserResearchGroupRole newRole = new UserResearchGroupRole();
+                    newRole.setUser(user);
+                    newRole.setRole(UserRole.EMPLOYEE);
+                    return newRole;
+                });
+
+            user.setResearchGroup(researchGroup);
+            userRepository.save(user);
+
+            role.setResearchGroup(researchGroup);
+            userResearchGroupRoleRepository.save(role);
+
+            String emailBody = String.format(
+                """
+                <html>
+                <body>
+                    <h2>Welcome to the Research Group!</h2>
+                    <p>Dear %s %s,</p>
+                    <p>You have been successfully added to the research group <strong>%s</strong>.</p>
+                    <p>Feel free to contact your head or our support.</p>
+                    <p>Best regards,<br>The TumApply Team</p>
+                </body>
+                </html>
+                """,
+                user.getFirstName(),
+                user.getLastName(),
+                researchGroup.getName()
+            );
+
+            sendEmail(
+                user.getEmail(),
+                "You have been added to the research group " + researchGroup.getName(),
+                emailBody,
+                user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
+            );
+        }
+    }
+
+    /**
+     * Sends an email with custom subject and body to a recipient.
+     * This is a general-purpose email sending method that can be reused for various notification types.
+     *
+     * @param recipientEmail the email address of the recipient
+     * @param subject the email subject
+     * @param body the HTML email body
+     * @param language the language preference for the email
+     */
+    private void sendEmail(String recipientEmail, String subject, String body, Language language) {
+        User recipient = new User();
+        recipient.setEmail(recipientEmail);
+        recipient.setSelectedLanguage(language.getCode());
+
+        Email email = Email.builder().to(recipient).customSubject(subject).customBody(body).sendAlways(true).language(language).build();
 
         emailSender.sendAsync(email);
-        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
 }

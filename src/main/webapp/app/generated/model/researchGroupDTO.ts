@@ -13,12 +13,12 @@ export interface ResearchGroupDTO {
     abbreviation?: string;
     city?: string;
     defaultFieldOfStudies?: string;
+    departmentId?: string;
     description?: string;
     email?: string;
     head: string;
     name: string;
     postalCode?: string;
-    school?: string;
     state?: ResearchGroupDTO.StateEnum;
     street?: string;
     website?: string;

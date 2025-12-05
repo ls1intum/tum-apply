@@ -65,7 +65,8 @@ public class CurrentUserService {
      * Loads the current authenticated user from the security context.
      * Initializes the {@link User} entity and the {@link CurrentUser} DTO.
      *
-     * @throws AccessDeniedException if the user cannot be resolved from the security context
+     * @throws AccessDeniedException if the user cannot be resolved from the
+     *                               security context
      */
     private void loadCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -100,7 +101,8 @@ public class CurrentUserService {
     /**
      * Returns the current user's ID if available.
      *
-     * @return an {@link Optional} containing the user ID, or empty if access is denied
+     * @return an {@link Optional} containing the user ID, or empty if access is
+     *         denied
      */
     public Optional<UUID> getUserIdIfAvailable() {
         try {
@@ -111,10 +113,35 @@ public class CurrentUserService {
     }
 
     /**
+     * Returns the full name of the current authenticated user.
+     *
+     * @return "FirstName LastName"
+     */
+    public String getCurrentUserFullName() {
+        User user = getUser();
+        return user.getFirstName() + " " + user.getLastName();
+    }
+
+    /**
+     * Returns the full name of the current user if available.
+     *
+     * @return an {@link Optional} containing the full name, or empty if access is
+     *         denied
+     */
+    public Optional<String> getCurrentUserFullNameIfAvailable() {
+        try {
+            return Optional.of(getCurrentUserFullName());
+        } catch (AccessDeniedException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Returns the research group ID if the current user is a professor.
      *
      * @return the research group ID if user is a professor
-     * @throws AccessDeniedException if the user is not a professor or has no research group
+     * @throws AccessDeniedException if the user is not a professor or has no
+     *                               research group
      */
     public UUID getResearchGroupIdIfProfessor() {
         return getCurrentUser()
@@ -123,10 +150,23 @@ public class CurrentUserService {
     }
 
     /**
+     * Returns the research group ID if the current user is a professor or employee.
+     *
+     * @return the research group ID if user is a professor or employee
+     * @throws AccessDeniedException if the user is not a member of any research group
+     */
+    public UUID getResearchGroupIdIfMember() {
+        return getCurrentUser()
+            .getResearchGroupIdIfMember()
+            .orElseThrow(() -> new AccessDeniedException("Current User does not have a research group"));
+    }
+
+    /**
      * Returns the research group if the current user is a professor.
      *
      * @return the research group ID if user is a professor
-     * @throws AccessDeniedException if the user is not a professor or has no research group
+     * @throws AccessDeniedException if the user is not a professor or has no
+     *                               research group
      */
     public ResearchGroup getResearchGroupIfProfessor() {
         return Optional.ofNullable(getUser().getResearchGroup()).orElseThrow(() ->
@@ -163,16 +203,27 @@ public class CurrentUserService {
     }
 
     /**
-     * Checks whether the current user is either an admin or professor of the specified research group.
+     * Checks if the current user has a employee role.
+     *
+     * @return true if the user is a employee, false otherwise
+     */
+    public boolean isEmployee() {
+        return getCurrentUser().isEmployee();
+    }
+
+    /**
+     * Checks whether the current user is either an admin or professor of the
+     * specified research group.
      *
      * @param researchGroupId the ID of the research group
-     * @throws AccessDeniedException if the current user does not belong to the research group
+     * @throws AccessDeniedException if the current user does not belong to the
+     *                               research group
      */
     public void isAdminOrMemberOf(UUID researchGroupId) {
         if (
             isAdmin() ||
             getCurrentUser()
-                .getResearchGroupIdIfProfessor()
+                .getResearchGroupIdIfMember()
                 .map(id -> id.equals(researchGroupId))
                 .orElse(false)
         ) {
@@ -182,7 +233,8 @@ public class CurrentUserService {
     }
 
     /**
-     * Checks whether the current user is either an admin or is a professor of the given research group.
+     * Checks whether the current user is either an admin or is a professor of the
+     * given research group.
      *
      * @param researchGroup the research group to check
      */
@@ -194,11 +246,13 @@ public class CurrentUserService {
     }
 
     /**
-     * Checks whether the current user is either an admin or is a professor of the same research group
+     * Checks whether the current user is either an admin or is a professor of the
+     * same research group
      * as the given professor identified by their user ID.
      *
      * @param professor the professor of whom the research group is to be checked
-     * @throws AccessDeniedException if the professor cannot be found or has no research group
+     * @throws AccessDeniedException if the professor cannot be found or has no
+     *                               research group
      */
     public void isAdminOrMemberOfResearchGroupOfProfessor(User professor) {
         if (professor == null) {
@@ -214,7 +268,8 @@ public class CurrentUserService {
     }
 
     /**
-     * Checks whether the given userId matches the current user or the current user is an admin.
+     * Checks whether the given userId matches the current user or the current user
+     * is an admin.
      *
      * @param userId the user ID to check
      */

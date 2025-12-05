@@ -7,6 +7,7 @@ api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
 api/authenticationResourceApi.service.ts
+api/departmentResourceApi.service.ts
 api/documentResourceApi.service.ts
 api/emailSettingResourceApi.service.ts
 api/emailTemplateResourceApi.service.ts
@@ -21,12 +22,14 @@ api/profOnboardingResourceApi.service.ts
 api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
 api/researchGroupResourceApi.service.ts
+api/schoolResourceApi.service.ts
 api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
 index.ts
 model/acceptDTO.ts
+model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
@@ -47,6 +50,10 @@ model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
 model/customFieldAnswerDTO.ts
+model/department.ts
+model/departmentCreationDTO.ts
+model/departmentDTO.ts
+model/departmentShortDTO.ts
 model/documentInformationHolderDTO.ts
 model/emailSetting.ts
 model/emailSettingDTO.ts
@@ -69,6 +76,7 @@ model/jobDTO.ts
 model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
+model/jobPreviewRequest.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
@@ -92,6 +100,10 @@ model/researchGroupLargeDTO.ts
 model/researchGroupProvisionDTO.ts
 model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
+model/school.ts
+model/schoolCreationDTO.ts
+model/schoolDTO.ts
+model/schoolShortDTO.ts
 model/sendCodeRequest.ts
 model/slotInput.ts
 model/sortObject.ts

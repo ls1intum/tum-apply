@@ -4,11 +4,13 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import de.tum.cit.aet.core.domain.CurrentUser;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -16,15 +18,20 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.*;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.PageTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -57,6 +64,9 @@ class ResearchGroupServiceTest {
     private UserResearchGroupRoleRepository userResearchGroupRoleRepository;
 
     @Mock
+    private DepartmentRepository departmentRepository;
+
+    @Mock
     private AsyncEmailSender emailSender;
 
     @InjectMocks
@@ -64,16 +74,28 @@ class ResearchGroupServiceTest {
 
     private static final UUID TEST_USER_ID = UUID.randomUUID();
     private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
+    private static final UUID TEST_SCHOOL_ID = UUID.randomUUID();
+    private static final UUID TEST_DEPARTMENT_ID = UUID.randomUUID();
     private static final String SUPPORT_EMAIL = "support@test.com";
     private static final UUID OTHER_USER_ID = UUID.randomUUID();
 
     private User testUser;
+    private School testSchool;
+    private Department testDepartment;
     private ResearchGroup testResearchGroup;
     private PageDTO pageDTO;
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(researchGroupService, "supportEmail", SUPPORT_EMAIL);
+
+        // Initialize test school
+        testSchool = SchoolTestData.newSchoolAll("School of Computation, Information and Technology", "CIT");
+        testSchool.setSchoolId(TEST_SCHOOL_ID);
+
+        // Initialize test department
+        testDepartment = DepartmentTestData.newDepartmentAll("Computer Science", testSchool);
+        testDepartment.setDepartmentId(TEST_DEPARTMENT_ID);
 
         // Initialize test research group using utility class
         testResearchGroup = ResearchGroupTestData.newRgAll(
@@ -85,12 +107,12 @@ class ResearchGroupServiceTest {
             "Test description",
             "test@research.com",
             "12345",
-            "Test University",
             "Test Street",
             "https://test.com",
             ResearchGroupState.ACTIVE.toString()
         );
         testResearchGroup.setResearchGroupId(TEST_RESEARCH_GROUP_ID);
+        testResearchGroup.setDepartment(testDepartment);
 
         // Initialize test user using utility class
         testUser = UserTestData.newUserAll(TEST_USER_ID, "test@example.com", "Test", "User");
@@ -103,7 +125,7 @@ class ResearchGroupServiceTest {
 
         @BeforeEach
         void setup() {
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
         }
 
         @Test
@@ -149,7 +171,7 @@ class ResearchGroupServiceTest {
 
         @BeforeEach
         void setup() {
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
         }
 
         @Test
@@ -160,6 +182,11 @@ class ResearchGroupServiceTest {
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
 
+            // Mock CurrentUser
+            CurrentUser currentUserMock = mock(CurrentUser.class);
+            when(currentUserMock.isProfessor()).thenReturn(true);
+            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
+
             // Act
             researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID);
 
@@ -167,6 +194,30 @@ class ResearchGroupServiceTest {
             assertThat(memberToRemove.getResearchGroup()).isNull();
             verify(userRepository).save(memberToRemove);
             verify(userResearchGroupRoleRepository).removeResearchGroupFromUserRoles(OTHER_USER_ID);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenEmployeeRemovesProfessor() {
+            // Arrange
+            User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "prof@test.com", null, null);
+            memberToRemove.setResearchGroup(testResearchGroup);
+
+            UserResearchGroupRole role = new UserResearchGroupRole();
+            role.setRole(UserRole.PROFESSOR);
+            memberToRemove.setResearchGroupRoles(Set.of(role));
+
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
+
+            // Mock CurrentUser as Employee
+            CurrentUser currentUserMock = mock(CurrentUser.class);
+            when(currentUserMock.isProfessor()).thenReturn(false);
+            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
+
+            // Act & Assert
+            assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("You do not have permission to remove a Professor");
         }
 
         @Test
@@ -219,7 +270,7 @@ class ResearchGroupServiceTest {
 
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(TEST_USER_ID))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Cannot remove yourself");
         }
     }
@@ -291,12 +342,12 @@ class ResearchGroupServiceTest {
                 "Prof. Updated",
                 "updated@test.com",
                 "https://updated.com",
-                "Updated School",
                 "Updated description",
                 "Computer Science",
                 "Updated Street",
                 "54321",
                 "Updated City",
+                TEST_DEPARTMENT_ID,
                 ResearchGroupState.ACTIVE
             );
 
@@ -485,10 +536,11 @@ class ResearchGroupServiceTest {
         @Test
         void shouldCreateResearchGroupRequestSuccessfully() {
             // Arrange
-            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("New Research Group");
+            ResearchGroupRequestDTO request = ResearchGroupTestData.createResearchGroupRequest("New Research Group", TEST_DEPARTMENT_ID);
 
             testUser.setResearchGroup(null);
             when(currentUserService.getUser()).thenReturn(testUser);
+            when(departmentRepository.findByIdElseThrow(TEST_DEPARTMENT_ID)).thenReturn(testDepartment);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(false);
             when(researchGroupRepository.save(any(ResearchGroup.class))).thenAnswer(invocation -> invocation.getArgument(0));
             when(userResearchGroupRoleRepository.findAllByUser(testUser)).thenReturn(Set.of());
@@ -500,6 +552,8 @@ class ResearchGroupServiceTest {
             assertThat(result).isNotNull();
             assertThat(result.getState()).isEqualTo(ResearchGroupState.DRAFT);
             assertThat(result.getName()).contains("New Research Group");
+            assertThat(result.getDepartment()).isEqualTo(testDepartment);
+            verify(departmentRepository).findByIdElseThrow(TEST_DEPARTMENT_ID);
             verify(researchGroupRepository).save(any(ResearchGroup.class));
             verify(userRepository).save(testUser);
             verify(userResearchGroupRoleRepository).save(any(UserResearchGroupRole.class));
@@ -608,10 +662,14 @@ class ResearchGroupServiceTest {
             AdminResearchGroupFilterDTO filterDTO = new AdminResearchGroupFilterDTO(List.of(ResearchGroupState.ACTIVE), "Test");
             SortDTO sortDTO = new SortDTO("name", SortDTO.Direction.ASC);
 
+            SchoolShortDTO schoolDTO = new SchoolShortDTO(UUID.randomUUID(), "School of CIT", "CIT");
+            DepartmentDTO departmentDTO = new DepartmentDTO(UUID.randomUUID(), "Computer Science", schoolDTO);
+
             ResearchGroupAdminDTO adminDTO = new ResearchGroupAdminDTO(
                 TEST_RESEARCH_GROUP_ID,
                 "Test Group",
                 "Prof. Test",
+                departmentDTO,
                 ResearchGroupState.ACTIVE,
                 LocalDateTime.now()
             );

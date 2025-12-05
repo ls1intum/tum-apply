@@ -37,7 +37,8 @@
       },
       "about-us": "TumApply - About Us",
       "interview": {
-        "overview": "TUMApply - Interview Overview"
+        "overview": "TUMApply - Interview Overview",
+        "detail": "Interview - {{jobTitle}}"
       }
     },
     "menu": {
@@ -151,8 +152,7 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}",
-      "pdf": "Export PDF"
+      "show": "Show {{otherEntity}}"
     },
     "detail": {
       "field": "Field",
@@ -231,6 +231,18 @@
         "already_uploaded": "Already uploaded",
         "remove": "Remove this file from the upload list",
         "delete": "Delete this file from the server"
+      },
+      "duplicate": {
+        "title": "Document already exists",
+        "message": "A document with the name \"{{filename}}\" already exists. Do you want to replace it?",
+        "replace": "Replace"
+      },
+      "error": {
+        "replace_failed": "Failed to replace document",
+        "too_large": "Files are too large",
+        "upload_failed": "Upload failed",
+        "delete_failed": "Failed to delete document",
+        "rename_failed": "Failed to rename document"
       }
     },
     "application_overview": {
@@ -383,7 +395,8 @@
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
-        "closed": "Closed"
+        "closed": "Closed",
+        "inReview": "In Review"
       },
       "columns": {
         "positionTitle": "Position Title",

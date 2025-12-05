@@ -8,6 +8,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -16,10 +18,12 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
 import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
+import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
+    ButtonComponent,
     TranslateDirective,
     FontAwesomeModule,
     TranslateModule,
@@ -57,18 +61,32 @@ export class ResearchGroupMembersComponent {
 
   // Transform members data for display
   readonly tableData = computed(() => {
-    return this.members().map(member => ({
-      ...member,
-      name: `${member.firstName} ${member.lastName}`,
-      role: this.formatRoles(member.roles),
-      isCurrentUser: this.isCurrentUser(member),
-    }));
+    const currentUserAuthorities = this.accountService.userAuthorities;
+    const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
+
+    return this.members().map(member => {
+      const isCurrentUser = this.isCurrentUser(member);
+      let canRemove = !isCurrentUser;
+
+      if (isEmployee) {
+        canRemove = false;
+      }
+
+      return {
+        ...member,
+        name: `${member.firstName} ${member.lastName}`,
+        role: this.formatRoles(member.roles),
+        isCurrentUser,
+        canRemove,
+      };
+    });
   });
 
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
+  private readonly dialogService = inject(DialogService);
 
   private readonly translationKey: string = 'researchGroup.members';
 
@@ -106,6 +124,21 @@ export class ResearchGroupMembersComponent {
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
     }
+  }
+
+  openAddMembersModal(): void {
+    const ref = this.dialogService.open(ResearchGroupAddMembersComponent, {
+      header: this.translate.instant('researchGroup.members.addMembers'),
+      style: { background: 'var(--p-background-default)', width: '50rem' },
+      modal: true,
+      closable: true,
+    });
+
+    ref?.onClose.subscribe((added: boolean) => {
+      if (added) {
+        void this.loadMembers();
+      }
+    });
   }
 
   /** Internal methods */

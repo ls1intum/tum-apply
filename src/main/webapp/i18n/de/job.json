@@ -8,6 +8,7 @@
       "steps": {
         "basicInfo": "Grundlegende Informationen",
         "positionDetails": "Stellenbeschreibung",
+        "imageSelection": "Bannerbild",
         "additionalInfo": "Zusätzliche Informationen",
         "summary": "Zusammenfassung"
       },
@@ -82,6 +83,63 @@
         "placeholder": "Liste die Mindestanforderungen für Bewerber auf...",
         "descriptionHelper": "Gib die Mindestanforderungen an, die erfüllt sein müssen (z. B. Abschluss, Noten, Sprachkenntnisse).",
         "toolTipText": "Stelle sicher, dass die Bewerber über die erwarteten Qualifikationen informiert sind."
+      }
+    },
+    "imageSection": {
+      "title": "Wähle ein Bannerbild",
+      "description": "Wähle ein optionales Bannerbild aus, das in deiner Jobkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe. Hochgeladene Bilder werden innerhalb deiner Forschungsgruppe geteilt und können für mehrere Stellenausschreibungen wiederverwendet werden.",
+      "defaultImages": "Standardbilder",
+      "orDivider": "oder",
+      "researchGroupImages": "Forschungsgruppen-Bildbibliothek",
+      "researchGroupImagesDescription": "Diese Bilder werden innerhalb deiner Forschungsgruppe geteilt. Lade neue Bilder hoch, um sie zur Bibliothek hinzuzufügen, und wähle ein beliebiges Bild für diese Stelle aus.",
+      "uploadRecommendation": "Empfohlen: 1200x675px (16:9 Format) · Max 5MB",
+      "uploadFormats": "JPG, JPEG, PNG Formate akzeptiert",
+      "uploadSuccess": {
+        "summary": "Upload erfolgreich",
+        "detail": "Bild erfolgreich hochgeladen"
+      },
+      "uploadFailed": {
+        "summary": "Upload fehlgeschlagen",
+        "detail": "Bild konnte nicht hochgeladen werden. Bitte versuche es erneut."
+      },
+      "deleteImageSuccess": {
+        "summary": "Bild gelöscht",
+        "detail": "Bild erfolgreich gelöscht"
+      },
+      "deleteImageFailed": {
+        "summary": "Löschen fehlgeschlagen",
+        "detail": "Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
+      },
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Das Bild muss kleiner als 5MB sein"
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte wähle eine Bilddatei (JPG, JPEG, PNG)"
+      },
+      "loadImagesFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Bilder konnten nicht geladen werden. Bitte lade die Seite neu."
+      },
+      "dimensionsTooLarge": {
+        "summary": "Bild zu groß",
+        "detail": "Bildabmessungen dürfen 4096x4096 Pixel nicht überschreiten"
+      },
+      "invalidImage": {
+        "summary": "Ungültiges Bild",
+        "detail": "Bilddatei kann nicht gelesen werden. Bitte wähle ein gültiges Bild."
+      },
+      "uploadNew": "Neues Bild hochladen",
+      "uploading": "Wird hochgeladen...",
+      "noDefaultImages": "Keine Standard-Banner verfügbar. Bitte lade dein eigenes Bild hoch.",
+      "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, JPEG, PNG. Maximale Abmessungen: 1920x1080px",
+      "selectedImage": "Ausgewähltes Bild",
+      "myUploads": "Meine hochgeladenen Bilder",
+      "noImage": "Kein Bild",
+      "deleteImageDialog": {
+        "header": "Bild löschen",
+        "message": "Möchtest du dieses Bild wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden. Falls Positionen dieses Bild nutzen, erscheinen sie danach ohne Bild."
       }
     },
     "additionalInformationSection": {
@@ -170,6 +228,24 @@
       "loadJobs": {
         "summary": "Fehler",
         "detail": "Laden der Stellen fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      }
+    },
+    "toastMessages": {
+      "deleteJobSuccess": {
+        "summary": "Stelle gelöscht",
+        "detail": "Die Stelle wurde erfolgreich gelöscht."
+      },
+      "deleteJobFailed": {
+        "summary": "Stelle löschen fehlgeschlagen",
+        "detail": "Die Stelle konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere uns, wenn das Problem weiterhin besteht."
+      },
+      "closeJobSuccess": {
+        "summary": "Stelle geschlossen",
+        "detail": "Die Stelle wurde erfolgreich geschlossen."
+      },
+      "closeJobFailed": {
+        "summary": "Stelle schließen fehlgeschlagen",
+        "detail": "Die Stelle konnte nicht geschlossen werden. Bitte versuche es erneut oder kontaktiere uns, wenn das Problem weiterhin besteht."
       }
     }
   },
