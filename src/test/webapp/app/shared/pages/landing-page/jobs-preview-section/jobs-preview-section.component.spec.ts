@@ -78,8 +78,9 @@ describe('JobsPreviewSectionComponent', () => {
 
   it('should show fallback header image when job.imageUrl is missing', () => {
     fixture.detectChanges();
-    const el = fixture.nativeElement.querySelector('.job-preview-card');
-    const header = el.querySelector('.relative');
+    const jobCardEl = fixture.nativeElement.querySelector('jhi-job-card');
+    expect(jobCardEl).toBeTruthy();
+    const header = jobCardEl.querySelector('div.relative');
     expect(header.style.backgroundImage || header.style.backgroundColor).toBeTruthy();
   });
 
