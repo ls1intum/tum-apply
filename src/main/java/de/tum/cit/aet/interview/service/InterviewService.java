@@ -8,13 +8,13 @@ import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
-import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.dto.*;
-import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -115,7 +115,7 @@ public class InterviewService {
                 // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
                     stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
-                        stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
+                    stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
                 // Calculate total number of all applications in this interview process
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
@@ -409,7 +409,6 @@ public class InterviewService {
      * @throws BadRequestException if any application belongs to a different job
      */
     public List<IntervieweeDTO> addApplicantsToInterview(UUID processId, AddIntervieweesDTO dto) {
-
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
@@ -431,7 +430,9 @@ public class InterviewService {
             for (Application app : applications) {
                 foundIds.add(app.getApplicationId());
             }
-            List<UUID> missingIds = dto.applicationIds().stream()
+            List<UUID> missingIds = dto
+                .applicationIds()
+                .stream()
                 .filter(id -> !foundIds.contains(id))
                 .toList();
             throw new EntityNotFoundException("Applications not found: " + missingIds);
@@ -441,9 +442,7 @@ public class InterviewService {
         UUID jobId = job.getJobId();
         for (Application app : applications) {
             if (!app.getJob().getJobId().equals(jobId)) {
-                throw new BadRequestException(
-                    "Application " + app.getApplicationId() + " belongs to a different job"
-                );
+                throw new BadRequestException("Application " + app.getApplicationId() + " belongs to a different job");
             }
         }
 
@@ -468,9 +467,7 @@ public class InterviewService {
         List<Interviewee> savedInterviewees = intervieweeRepository.saveAll(createdInterviewees);
 
         // 7. Return DTOs
-        return savedInterviewees.stream()
-            .map(IntervieweeDTO::fromEntity)
-            .toList();
+        return savedInterviewees.stream().map(IntervieweeDTO::fromEntity).toList();
     }
 
     /**
@@ -482,7 +479,6 @@ public class InterviewService {
      * @throws AccessDeniedException if the user is not authorized
      */
     public List<IntervieweeDTO> getIntervieweesByProcessId(UUID processId) {
-
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
@@ -500,8 +496,6 @@ public class InterviewService {
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
 
-        return interviewees.stream()
-            .map(IntervieweeDTO::fromEntity)
-            .toList();
+        return interviewees.stream().map(IntervieweeDTO::fromEntity).toList();
     }
 }

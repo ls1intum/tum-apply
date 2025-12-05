@@ -1,8 +1,8 @@
 package de.tum.cit.aet.interview.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.util.UUID;
@@ -31,30 +31,18 @@ public record IntervieweeDTO(
         /** Interview slot has been scheduled */
         SCHEDULED,
         /** Interview has been completed */
-        COMPLETED
+        COMPLETED,
     }
 
     /**
      * Lightweight user DTO for interviewee display.
      */
-    public record IntervieweeUserDTO(
-        UUID userId,
-        String email,
-        String firstName,
-        String lastName,
-        String avatar
-    ) {
+    public record IntervieweeUserDTO(UUID userId, String email, String firstName, String lastName, String avatar) {
         public static IntervieweeUserDTO fromUser(User user) {
             if (user == null) {
                 return null;
             }
-            return new IntervieweeUserDTO(
-                user.getUserId(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getAvatar()
-            );
+            return new IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getAvatar());
         }
     }
 

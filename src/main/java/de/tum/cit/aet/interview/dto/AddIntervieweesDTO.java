@@ -10,7 +10,5 @@ import java.util.UUID;
  * Contains a list of application IDs to be added as interviewees.
  */
 public record AddIntervieweesDTO(
-    @NotNull(message = "Application IDs cannot be null")
-    @NotEmpty(message = "Application IDs cannot be empty")
-    List<UUID> applicationIds
+    @NotNull(message = "Application IDs cannot be null") @NotEmpty(message = "Application IDs cannot be empty") List<UUID> applicationIds
 ) {}

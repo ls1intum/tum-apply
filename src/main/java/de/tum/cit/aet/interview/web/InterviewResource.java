@@ -5,9 +5,9 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
-import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
+import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -126,13 +126,11 @@ public class InterviewResource {
         @PathVariable UUID processId,
         @Valid @RequestBody AddIntervieweesDTO dto
     ) {
-        log.info("REST request to add {} applicants to interview process: {}",
-            dto.applicationIds().size(), processId);
+        log.info("REST request to add {} applicants to interview process: {}", dto.applicationIds().size(), processId);
 
         List<IntervieweeDTO> result = interviewService.addApplicantsToInterview(processId, dto);
 
-        log.info("Successfully added {} interviewees to interview process: {}",
-            result.size(), processId);
+        log.info("Successfully added {} interviewees to interview process: {}", result.size(), processId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
