@@ -65,5 +65,9 @@
 
   .registration-footer {
     @include layout.auth-footer;
+
+    a {
+      color: var(--p-accent-color);
+    }
   }
 }

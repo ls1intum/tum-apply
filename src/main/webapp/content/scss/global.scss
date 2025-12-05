@@ -568,3 +568,22 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   font-weight: bold;
   color: var(--p-primary-color);
 }
+
+/* -------------------------------
+   Registration Page: Orange Buttons
+---------------------------------- */
+.registration-content {
+
+  jhi-auth-idp-buttons .p-button-outlined {
+    background: transparent !important;
+    border-color: var(--p-accent-color) !important;
+    color: var(--p-accent-color) !important;
+
+    &:hover {
+      background: rgba(255, 140, 0, 0.15) !important;
+      border-color: var(--p-accent-color) !important;
+      color: var(--p-accent-color) !important;
+    }
+  }
+}
+
