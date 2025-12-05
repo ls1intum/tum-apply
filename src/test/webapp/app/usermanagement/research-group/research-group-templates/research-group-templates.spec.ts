@@ -5,10 +5,12 @@ import { of, throwError } from 'rxjs';
 import { ResearchGroupTemplates } from 'app/usermanagement/research-group/research-group-templates/research-group-templates';
 import { EmailTemplateResourceApiService } from 'app/generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateOverviewDTO } from 'app/generated/model/emailTemplateOverviewDTO';
-import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
-import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
-import { createTranslateServiceMock, provideTranslateMock } from '../../../util/translate.mock';
-import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
+import { createRouterMock, provideRouterMock } from '../../../../util/router.mock';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../util/toast-service.mock';
+import { createTranslateServiceMock, provideTranslateMock } from '../../../../util/translate.mock';
+import { provideFontAwesomeTesting } from '../../../../util/fontawesome.testing';
+import { createAccountServiceMock, provideAccountServiceMock } from '../../../../util/account.service.mock';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 class EmailTemplateResourceApiServiceMock {
   getTemplates = vi.fn();
@@ -22,6 +24,7 @@ describe('ResearchGroupTemplates', () => {
   let mockToast: ToastServiceMock;
   let mockRouter = createRouterMock();
   let mockTranslate = createTranslateServiceMock();
+  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
 
   function mockGetTemplates(content: EmailTemplateOverviewDTO[] = [], total = 0) {
     api.getTemplates.mockReturnValue(of({ content, totalElements: total }));
@@ -33,6 +36,8 @@ describe('ResearchGroupTemplates', () => {
 
   beforeEach(async () => {
     mockToast = createToastServiceMock();
+    mockAccountService = createAccountServiceMock();
+    mockAccountService.user.set({ id: 'current-user', name: 'Current User', email: 'test@test.com', authorities: [] });
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupTemplates],
@@ -42,6 +47,7 @@ describe('ResearchGroupTemplates', () => {
         provideToastServiceMock(mockToast),
         provideTranslateMock(mockTranslate),
         provideFontAwesomeTesting(),
+        provideAccountServiceMock(mockAccountService),
       ],
     })
       .overrideComponent(ResearchGroupTemplates, {
@@ -184,5 +190,23 @@ describe('ResearchGroupTemplates', () => {
       expect(component['pageNumber']()).toBe(expectedPage);
       expect(spy).toHaveBeenCalled();
     });
+  });
+
+  it('should hide delete column for employees', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    fixture.detectChanges();
+
+    const columns = component['columns']();
+    expect(columns).toHaveLength(3); // Name, CreatedBy, Edit
+    expect(columns.find(c => c.template === component['deleteTemplate']())).toBeUndefined();
+  });
+
+  it('should show delete column for non-employees', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Professor] } : u));
+    fixture.detectChanges();
+
+    const columns = component['columns']();
+    expect(columns).toHaveLength(4); // Name, CreatedBy, Edit, Delete
+    expect(columns.find(c => c.template === component['deleteTemplate']())).toBeDefined();
   });
 });

@@ -237,28 +237,33 @@
         [style.border-color]="isSelected ? 'var(--p-primary-color)' : 'transparent'"
       >
         @if (isNoImage) {
-          <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100">
-            <fa-icon [icon]="['fas', 'image']" [size]="'3x'" class="text-gray-300" />
-            <span class="text-sm text-gray-600" jhiTranslate="jobCreationForm.imageSection.noImage"></span>
+          <div class="w-full h-full flex flex-col items-center justify-center bg-background-surface-alt">
+            <fa-icon [icon]="['fas', 'image']" [size]="'3x'" class="text-text-secondary" />
+            <span class="text-sm text-text-secondary" jhiTranslate="jobCreationForm.imageSection.noImage"></span>
           </div>
         } @else {
           <img [src]="image.url" class="w-full h-full object-cover" />
         }
         @if (isSelected) {
-          <div class="absolute inset-0 flex items-center justify-center bg-white/30">
+          <div class="absolute inset-0 flex items-center justify-center bg-background-surface/50">
             <fa-icon [icon]="['fas', 'check']" [size]="'2x'" class="text-primary" />
           </div>
         }
       </div>
       @if (showDelete) {
-        <div class="absolute top-2 right-2">
-          <jhi-button
-            (click)="deleteImage(image.imageId); $event.stopPropagation()"
+        <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
+          <jhi-confirm-dialog
+            #deleteDialog
+            [label]="'button.delete' | translate"
+            [confirmIcon]="'trash'"
+            [header]="'jobCreationForm.imageSection.deleteImageDialog.header' | translate"
+            [message]="'jobCreationForm.imageSection.deleteImageDialog.message' | translate"
+            [data]="image.imageId"
+            (confirmed)="deleteImage($any($event))"
             severity="danger"
-            icon="trash-can"
-            size="sm"
-            class="shadow-lg"
+            [showOpenButton]="false"
           />
+          <jhi-button icon="trash" size="sm" [severity]="'danger'" (click)="deleteDialog.confirm()" />
         </div>
       }
     </div>
@@ -267,13 +272,13 @@
   <!-- Step 3: Image Selection/Upload -->
   <ng-template #panel3>
     <h2 class="text-2xl font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.title"></h2>
-    <p class="text-gray-600 mb-8" jhiTranslate="jobCreationForm.imageSection.description"></p>
+    <p class="text-text-secondary mb-8" jhiTranslate="jobCreationForm.imageSection.description"></p>
 
     <!-- Default Image Section -->
     <div class="mb-8">
       <h3 class="text-lg font-semibold mb-4" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
       @if (defaultImages().length === 0) {
-        <div class="p-3 mb-4 border border-blue-300 rounded-lg bg-blue-50 flex items-center gap-2">
+        <div class="p-3 mb-4 border border-border-default rounded-lg bg-background-surface-alt flex items-center gap-2">
           <fa-icon [icon]="['fas', 'circle-info']" class="text-primary" />
           <p class="text-sm" jhiTranslate="jobCreationForm.imageSection.noDefaultImages"></p>
         </div>
@@ -304,7 +309,7 @@
     <!-- Research Group Image Section -->
     <div>
       <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
-      <p class="text-gray-600 mb-4 text-sm" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
+      <p class="text-text-secondary mb-4 text-sm" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
 
       <!-- Grid of research group images + upload button -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">

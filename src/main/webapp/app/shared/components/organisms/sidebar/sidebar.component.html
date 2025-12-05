@@ -1,4 +1,4 @@
-<div [class.sidebar-collapsed]="isSidebarCollapsed()" [class.sidebar]="!isSidebarCollapsed()">
+<div [class.sidebar-collapsed]="isSidebarCollapsed()" [class.sidebar]="!isSidebarCollapsed()" class="border-r border-divider-default">
   <div class="sidebar-content">
     @for (category of categories; track category.title) {
       @if (isSidebarCollapsed()) {
@@ -36,7 +36,6 @@
       <p-button
         (click)="toggleSidebar()"
         [icon]="isSidebarCollapsed() ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
-        [rounded]="true"
         [text]="true"
         class="sidebar-collapse-button"
       />

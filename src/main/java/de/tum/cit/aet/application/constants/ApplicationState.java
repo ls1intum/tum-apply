@@ -13,14 +13,14 @@ import lombok.Getter;
 public enum ApplicationState {
     SAVED("SAVED", EnumSet.of(UserRole.APPLICANT)),
     SENT("SENT", EnumSet.of(UserRole.APPLICANT)),
-    ACCEPTED("ACCEPTED", EnumSet.of(UserRole.PROFESSOR)),
-    IN_REVIEW("IN_REVIEW", EnumSet.of(UserRole.PROFESSOR)),
-    REJECTED("REJECTED", EnumSet.of(UserRole.PROFESSOR)),
+    ACCEPTED("ACCEPTED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
+    IN_REVIEW("IN_REVIEW", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
+    REJECTED("REJECTED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
     WITHDRAWN("WITHDRAWN", EnumSet.of(UserRole.APPLICANT)),
-    JOB_CLOSED("JOB_CLOSED", EnumSet.of(UserRole.PROFESSOR)),
-    INVITED("INVITED", EnumSet.of(UserRole.PROFESSOR)),
-    SCHEDULED("SCHEDULED", EnumSet.of(UserRole.PROFESSOR)),
-    COMPLETED("COMPLETED", EnumSet.of(UserRole.PROFESSOR));
+    JOB_CLOSED("JOB_CLOSED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
+    INVITED("INVITED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
+    SCHEDULED("SCHEDULED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE)),
+    COMPLETED("COMPLETED", EnumSet.of(UserRole.PROFESSOR, UserRole.EMPLOYEE));
 
     private final String value;
     private final Set<UserRole> UserRoles;

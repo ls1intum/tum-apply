@@ -23,6 +23,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
   Page-level sections that orchestrate molecules/atoms; should remain data-agnostic where possible.
 
 > **Tip:** Favor **reusable atomic components**. Prefer composing existing atoms/molecules before introducing new ones. When you must add a component:
+>
 > - Avoid embedding business logic; bubble events and accept data/config via inputs.
 > - Provide i18n-ready labels (see §3).
 
@@ -67,6 +68,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
   - Professors can view applications they're evaluating.
 
 **Service-Level Authorization:**
+
 - `CurrentUserService` provides authenticated user context.
 - Ownership validation: Compares `application.applicant.userId` with `currentUser.userId`.
 - Throws `AccessDeniedException` for unauthorized access attempts.
@@ -119,7 +121,7 @@ We have a set of custom exceptions (e.g. for specific conflict scenarios or busi
 `src/main/java/de/tum/cit/aet/core/exception`
 ## 5) Performance Optimizations
 
-The following points are some of several strategies used across the TUMApply application to boost the performance and responsiveness of the site: 
+The following points are some of several strategies used across the TUMApply application to boost the performance and responsiveness of the site:
 
 **DTO Projections:**
 
