@@ -7,6 +7,7 @@ import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service'
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { ApplicationStatusExtended, JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
+import * as DropdownOptions from 'app/job/dropdown-options';
 import { Job } from 'app/generated/model/job';
 import LocationEnum = Job.LocationEnum;
 import { By } from '@angular/platform-browser';
@@ -73,8 +74,9 @@ describe('JobCardListComponent', () => {
   it('should load filters successfully', async () => {
     await component.loadAllFilter();
 
-    expect(jobService.getAllFilters).toHaveBeenCalled();
-    expect(component.allFieldOfStudies()).toEqual(['AI', 'ML']);
+  expect(jobService.getAllFilters).toHaveBeenCalled();
+  // allFieldOfStudies is a static list of i18n keys from DropdownOptions
+  expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual(['Prof. X']);
     expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
   });
@@ -136,7 +138,10 @@ describe('JobCardListComponent', () => {
   it('should handle filter changes for location', async () => {
     const spy = vi.spyOn(component, 'loadJobs').mockResolvedValue();
 
-    component.onFilterEmit({ filterId: 'location', selectedValues: ['Munich'] });
+    component.onFilterEmit({
+      filterId: 'location',
+      selectedValues: ['jobCreationForm.basicInformationSection.locations.Munich'],
+    });
     expect(component.selectedLocationFilters()).toEqual(['MUNICH']);
     expect(spy).toHaveBeenCalled();
   });
@@ -182,7 +187,8 @@ describe('JobCardListComponent', () => {
 
     await component.loadAllFilter();
 
-    expect(component.allFieldOfStudies()).toEqual([]);
+  // allFieldOfStudies remains the static list of i18n keys
+  expect(component.allFieldOfStudies).toEqual(DropdownOptions.fieldsOfStudies.map(option => option.name));
     expect(component.allSupervisorNames()).toEqual([]);
   });
 
