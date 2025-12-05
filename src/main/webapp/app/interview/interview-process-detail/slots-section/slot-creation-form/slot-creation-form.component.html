@@ -1,65 +1,46 @@
-<p-dialog
-  [visible]="visible()"
-  (visibleChange)="close()"
-  [modal]="true"
-  [draggable]="false"
-  [resizable]="false"
-  styleClass="w-[95vw] max-w-6xl"
-  [header]="'interview.slots.create.title' | translate"
->
-  <div class="flex h-[70vh] flex-col gap-8">
+<p-dialog [visible]="visible()" (visibleChange)="close()" [modal]="true" [draggable]="false" [resizable]="false"
+  [style]="{ width: '95vw', maxWidth: '80rem', height: '90vh' }"
+  [contentStyle]="{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }"
+  [header]="'interview.slots.create.title' | translate">
+  <div class="flex h-full flex-col gap-6">
     <!-- Top Controls: Duration & Breaks -->
-    <div class="flex flex-wrap gap-8">
+    <div class="flex flex-wrap gap-3">
       <div class="flex flex-col gap-1">
-        <span class="text-sm font-semibold text-[var(--p-text-secondary)]">{{ 'interview.slots.create.interviewLength' | translate }}</span>
-        <p-selectButton
-          [options]="durationOptions"
-          [ngModel]="duration()"
-          (ngModelChange)="duration.set($event)"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="[&_.p-highlight]:bg-[var(--p-pastel-100)] [&_.p-highlight]:text-[var(--p-pastel-700)] [&_.p-highlight]:border-transparent"
-          [allowEmpty]="false"
-        />
+        <span class="text-sm font-semibold text-[var(--p-text-secondary)]">{{ 'interview.slots.create.interviewLength' |
+          translate }}</span>
+        <div
+          style="--p-selectbutton-checked-background: #3070B3 !important; --p-selectbutton-checked-border-color: #3070B3 !important; --p-selectbutton-checked-color: #ffffff !important; --p-highlight-background: #3070B3 !important; --p-highlight-color: #ffffff !important;"
+          class="[&_.p-togglebutton]:!py-0 [&_.p-button]:!py-0 [&_.p-button]:!h-7 [&_.p-button]:!text-xs">
+          <p-selectButton [options]="durationOptions" [ngModel]="duration()" (ngModelChange)="duration.set($event)"
+            optionLabel="label" optionValue="value" [allowEmpty]="false" />
+        </div>
       </div>
 
       <div class="flex flex-col gap-1">
         <div class="flex items-center gap-2">
           <span class="text-sm font-semibold text-[var(--p-text-secondary)]">{{
             'interview.slots.create.interviewBreaks' | translate
-          }}</span>
-          <i
-            class="fa-regular fa-circle-question text-[var(--p-text-tertiary)]"
-            [pTooltip]="'interview.slots.create.breakTooltip' | translate"
-            tooltipPosition="top"
-          ></i>
+            }}</span>
+          <i class="fa-regular fa-circle-question text-[var(--p-text-tertiary)]"
+            [pTooltip]="'interview.slots.create.breakTooltip' | translate" tooltipPosition="top"></i>
         </div>
-        <p-selectButton
-          [options]="breakOptions"
-          [ngModel]="breakDuration()"
-          (ngModelChange)="breakDuration.set($event)"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="[&_.p-highlight]:bg-[var(--p-pastel-100)] [&_.p-highlight]:text-[var(--p-pastel-700)] [&_.p-highlight]:border-transparent"
-          [allowEmpty]="false"
-        />
+        <div
+          style="--p-selectbutton-checked-background: #3070B3 !important; --p-selectbutton-checked-border-color: #3070B3 !important; --p-selectbutton-checked-color: #ffffff !important; --p-highlight-background: #3070B3 !important; --p-highlight-color: #ffffff !important;"
+          class="[&_.p-togglebutton]:!py-0 [&_.p-button]:!py-0 [&_.p-button]:!h-7 [&_.p-button]:!text-xs">
+          <p-selectButton [options]="breakOptions" [ngModel]="breakDuration()"
+            (ngModelChange)="breakDuration.set($event)" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+        </div>
       </div>
     </div>
 
     <!-- Main Content: Split View -->
-    <div class="flex flex-1 gap-8 overflow-hidden">
+    <div class="flex flex-1 gap-3 overflow-hidden">
       <!-- Left: Calendar -->
       <div class="flex w-full flex-col gap-2 sm:w-auto">
         <h3 class="text-lg font-semibold">{{ 'interview.slots.create.selectDates' | translate }}</h3>
         <div class="flex justify-center rounded-lg border border-[var(--p-border-default)] p-4">
-          <p-datepicker
-            [inline]="true"
-            selectionMode="multiple"
-            [minDate]="minDate"
-            [ngModel]="selectedDates()"
-            (ngModelChange)="onDateSelect($event)"
-            styleClass="w-full"
-          />
+          <p-datepicker [inline]="true" selectionMode="multiple" [minDate]="minDate" [ngModel]="selectedDates()"
+            (ngModelChange)="onDateSelect($event)" styleClass="w-full" />
         </div>
       </div>
 
@@ -70,49 +51,33 @@
         <h3 class="text-lg font-semibold">{{ 'interview.slots.create.create' | translate }}</h3>
 
         @if (selectedDates().length === 0) {
-          <div class="flex h-full flex-col items-center justify-center text-[var(--p-text-secondary)]">
-            <i class="fa-regular fa-calendar text-4xl mb-4"></i>
-            <h4 class="text-lg font-medium">{{ 'interview.slots.create.noDateSelected' | translate }}</h4>
-            <p>{{ 'interview.slots.create.noDateSelectedDesc' | translate }}</p>
-          </div>
+        <div class="flex h-full flex-col items-center justify-center text-[var(--p-text-secondary)]">
+          <i class="fa-regular fa-calendar text-4xl mb-4"></i>
+          <h4 class="text-lg font-medium">{{ 'interview.slots.create.noDateSelected' | translate }}</h4>
+          <p>{{ 'interview.slots.create.noDateSelectedDesc' | translate }}</p>
+        </div>
         } @else {
-          <p-scrollPanel styleClass="h-full w-full">
-            <div class="flex flex-col gap-4 pr-4 pb-4">
-              @for (date of selectedDates(); track date; let i = $index) {
-                <jhi-date-slot-card
-                  [date]="date"
-                  [duration]="duration()"
-                  [breakDuration]="breakDuration()"
-                  [existingSlots]="slotsByDate().get(date.toISOString().split('T')[0]) || []"
-                  (slotsChange)="updateSlotsForDate(date, $event)"
-                />
+        <div class="flex-1 overflow-y-auto pr-2">
+          <div class="flex flex-col gap-4 pb-4">
+            @for (date of selectedDates(); track date; let i = $index) {
+            <jhi-date-slot-card [date]="date" [duration]="duration()" [breakDuration]="breakDuration()"
+              [existingSlots]="slotsByDate().get(date.toISOString().split('T')[0]) || []"
+              (slotsChange)="updateSlotsForDate(date, $event)" />
 
-                @if (i === 0 && selectedDates().length > 1) {
-                  <jhi-button
-                    [label]="'interview.slots.create.sameSlotsForAllDays' | translate"
-                    variant="outlined"
-                    size="sm"
-                    styleClass="self-start"
-                    (click)="copySlotsToAllDays()"
-                  />
-                }
-              }
-            </div>
-          </p-scrollPanel>
+            @if (i === 0 && selectedDates().length > 1) {
+            <jhi-button [label]="'interview.slots.create.sameSlotsForAllDays' | translate" variant="outlined" size="sm"
+              styleClass="self-start !py-0 !px-2 !text-xs !h-7 !rounded-md" (click)="copySlotsToAllDays()" />
+            }
+            }
+          </div>
+        </div>
+
+        <div class="mt-2 flex justify-end">
+          <jhi-button [label]="'interview.slots.create.saveSlots' | translate" size="sm" styleClass="!py-2"
+            (click)="submit()" [loading]="isSubmitting()" [disabled]="isSubmitting()" />
+        </div>
         }
       </div>
-    </div>
-
-    <!-- Bottom Action -->
-    <div class="mt-auto">
-      <jhi-button
-        [label]="'interview.slots.create.saveSlots' | translate"
-        [fullWidth]="true"
-        size="lg"
-        (click)="submit()"
-        [loading]="isSubmitting()"
-        [disabled]="isSubmitting()"
-      />
     </div>
   </div>
 </p-dialog>

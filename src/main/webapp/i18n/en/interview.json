@@ -107,7 +107,11 @@
         "bookedSlot": "Booked Slot",
         "addStartTime": "Add a start time to create this slot",
         "addStartAndEndTime": "Add a start and end time to see slots in this range",
-        "saveSlots": "Save Slots"
+        "saveSlots": "Save Slots",
+        "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
+        "useForAll": "Use same location for all slots",
+        "locationDetectedVirtual": "Virtual location detected",
+        "locationDetectedInPerson": "In-person location detected"
       }
     }
   }
