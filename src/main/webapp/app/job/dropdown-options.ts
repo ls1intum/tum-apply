@@ -62,6 +62,8 @@ export const fundingTypes = [
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));
+export const locationValueToNameMap = new Map(locations.map(option => [option.value as string, option.name]));
+export const fundingTypeValueToNameMap = new Map(fundingTypes.map(option => [option.value as string, option.name]));
 
 export function mapLocationNames(translationKeys: string[]): JobFormDTO.LocationEnum[] {
   return translationKeys
@@ -69,26 +71,41 @@ export function mapLocationNames(translationKeys: string[]): JobFormDTO.Location
     .filter((value): value is JobFormDTO.LocationEnum => value !== undefined);
 }
 
+/**
+ * Converts a location string value to its corresponding i18n translation key.
+ * @param location - The location string value (e.g., "GARCHING_HOCHBRUECK", "Garching Hochbrueck")
+ * @returns The i18n translation key (or the value itself if location is null/undefined)
+ */
 export function getLocationTranslationKey(location: string | undefined): string {
   if (location == null) return '-';
-  // Maps formatted string (e.g. "Garching Hochbrueck", "GARCHING_HOCHBRUECK") to translation key
-  return new Map(locations.map(option => [option.value as string, option.name])).get(toEnumString(location)) ?? toEnumString(location);
+  return locationValueToNameMap.get(toEnumString(location)) ?? toEnumString(location);
 }
 
+/**
+ * Converts a fundingType string value to its corresponding i18n translation key.
+ * @param fundingType - The fundingType string value (e.g., "FULLY_FUNDED", "Fully Funded")
+ * @returns The i18n translation key (or the value itself if fundingType is null/undefined)
+ */
 export function getFundingTypeTranslationKey(fundingType: string | undefined): string {
   if (fundingType == null) return '-';
-  // Maps formatted string (e.g. "Fully Funded", "FULLY_FUNDED") to translation key
-  return (
-    new Map(fundingTypes.map(option => [option.value as string, option.name])).get(toEnumString(fundingType)) ?? toEnumString(fundingType)
-  );
+  return fundingTypeValueToNameMap.get(toEnumString(fundingType)) ?? toEnumString(fundingType);
 }
 
+/**
+ * Converts a FieldOfStudy string value to its corresponding i18n translation key.
+ * @param fieldOfStudies - The FieldOfStudy string value (e.g., "Computer Science")
+ * @returns The i18n translation key (or the value itself if fieldOfStudies is null/undefined)
+ */
 export function getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
   if (fieldOfStudies == null) return '-';
   return fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? fieldOfStudies;
 }
 
-// Converts a string like "Garching Hochbrueck" to "GARCHING_HOCHBRUECK";
+/**
+ * Converts a normal string to its enum format string.
+ * @param value - A string (e.g., "Garching Hochbrueck")
+ * @returns A string in enum format (e.g., "GARCHING_HOCHBRUECK")
+ */
 export function toEnumString(value: string): string {
   if (/^[A-Z_]+$/.test(value)) {
     return value;
