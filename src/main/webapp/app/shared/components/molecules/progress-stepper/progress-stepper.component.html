@@ -17,7 +17,7 @@
   <ng-container [ngTemplateOutlet]="steps()[currentStep() - 1].panelTemplate" />
 </div>
 
-<div class="sticky bottom-0 mt-auto py-4 bg-white transition-all duration-300 w-full z-[1000] ease-in-out">
+<div class="sticky bottom-0 mt-auto py-4 bg-background-default transition-all duration-300 w-full z-[1000] ease-in-out">
   <div class="flex justify-between transition-opacity duration-200 ease-in-out">
     <div>
       <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
