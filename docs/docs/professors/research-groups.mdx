@@ -2,6 +2,10 @@
 sidebar_label: Research Groups
 ---
 
+
+import registrationImg from './images/research-group/faq-research-group-registration.png';
+import Image, { ImageSize } from '../../src/components/Image/Image';
+
 # Research Groups and Rights
 
 When you log in to TUMApply for the first time as a professor, your account will only have basic rights. To proceed and
@@ -24,11 +28,19 @@ through the process of requesting access to a Research Group.
 1. Log in with your account.
 2. The **access request dialog opens automatically**.
 3. Depending on your role, you will be guided through different request steps:
-  - **Professor:** You must provide several details, such as:
-    - Research Group
-    - Address
-    - Additional required organizational information
-  - **Employee:** You only need to provide the **name of the responsible professor**.
+- **Professor:** You need to provide the following information about you and your Research Group, which can be
+changed later if needed:
+  - Personal Information:
+    - Title
+    - First Name
+    - Last Name
+    - TUM ID
+  - Research Group Information:
+    - Head
+    - Name
+    - School
+    - Department
+- **Employee:** You only need to provide the **name of the responsible professor**.
 4. After submitting the request, it will be reviewed by our team.
 5. Within the following days, you will receive an **email with further instructions**.
 
@@ -37,10 +49,12 @@ through the process of requesting access to a Research Group.
 If the dialog does not open automatically after login, you can request access manually at any time:
 
 1. Go to the professor landing page:
-   https://tumapply.aet.cit.tum.de/professor
+https://tumapply.aet.cit.tum.de/professor
 2. **Log in** with your account.
 3. Scroll down to the **FAQ section**.
 4. Use the **button in the FAQ section** to open the same access request form manually.
+
+<Image src={registrationImg} alt="Research Group Registration Button" size={ImageSize.large}/>
 
 ## What happens next
 
