@@ -23,6 +23,8 @@ public class KeycloakUserService {
 
     private final Keycloak keycloak;
     private final String realm;
+    private static final int SAFETY_MAX = 1000;
+    private static final Pattern TUM_DOMAIN_PATTERN = Pattern.compile("@[^@]*tum[^@]*$", Pattern.CASE_INSENSITIVE);
 
     public KeycloakUserService(
         @Value("${keycloak.url}") String url,
@@ -48,9 +50,6 @@ public class KeycloakUserService {
      * @param pageDTO   pagination information
      * @return a list of {@link KeycloakUserDTO} matching the search criteria
      */
-    private static final int SAFETY_MAX = 1000;
-    private static final Pattern TUM_DOMAIN_PATTERN = Pattern.compile("@[^@]*tum[^@]*$", Pattern.CASE_INSENSITIVE);
-
     public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
         // Keycloak search does not allow domain-specific filtering, so we fetch a reasonably sized
         // chunk and filter locally by users whose email domain contains "tum". We then apply
