@@ -20,8 +20,8 @@ export default class LocalizedDatePipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (this.isEmpty(value)) return '';
     const parsed = this.parseIsoDate(value as string);
-    if (!parsed) return value as string;
-    if (!this.isValid(parsed.y, parsed.m, parsed.d)) return value as string;
+    if (!parsed) return value!;
+    if (!this.isValid(parsed.y, parsed.m, parsed.d)) return value!;
     const lang = this.translate.getCurrentLang() || 'en';
     return this.format(parsed.y, parsed.m, parsed.d, lang);
   }
