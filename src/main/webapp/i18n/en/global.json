@@ -301,6 +301,10 @@
         "country": "Country",
         "postcode": "Postcode"
       },
+      "placeholder": {
+        "selectNationality": "Select your nationality...",
+        "selectGender": "Select your gender..."
+      },
       "section": {
         "contactInformation": "Contact Information",
         "voluntaryInformation": "Voluntary Information",

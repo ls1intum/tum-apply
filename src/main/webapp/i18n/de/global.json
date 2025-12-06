@@ -301,6 +301,10 @@
         "country": "Land",
         "postcode": "Postleitzahl"
       },
+      "placeholder": {
+        "selectNationality": "Wähle deine Nationalität...",
+        "selectGender": "Wähle dein Geschlecht..."
+      },
       "section": {
         "contactInformation": "Kontaktinformationen",
         "voluntaryInformation": "Freiwillige Informationen",
