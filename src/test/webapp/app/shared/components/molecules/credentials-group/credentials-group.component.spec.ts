@@ -149,17 +149,17 @@ describe('CredentialsGroupComponent', () => {
     fixture.componentRef.setInput('submitHandler', submitHandler);
 
     const email = 'success@example.com';
-    const password = 'Secret123!';
+    const testPwd = 'Secret123!';
 
     component.form.controls.email.setValue(email);
-    component.form.controls.password.setValue(password);
+    component.form.controls.password.setValue(testPwd);
     expect(component.form.valid).toBe(true);
 
     component.submitError.set(true);
 
     await component.onSubmit();
 
-    expect(submitHandler).toHaveBeenCalledWith(email, password);
+    expect(submitHandler).toHaveBeenCalledWith(email, testPwd);
     expect(component.submitError()).toBe(false);
     expect(component.form.pristine).toBe(true);
     expect(component.form.controls.password.value).toBeNull();
@@ -174,19 +174,19 @@ describe('CredentialsGroupComponent', () => {
     fixture.componentRef.setInput('submitHandler', submitHandler);
 
     const email = 'fail@example.com';
-    const password = 'Secret123!';
+    const testPwd = 'Secret123!';
 
     component.form.controls.email.setValue(email);
-    component.form.controls.password.setValue(password);
+    component.form.controls.password.setValue(testPwd);
     expect(component.form.valid).toBe(true);
 
     await component.onSubmit();
 
-    expect(submitHandler).toHaveBeenCalledWith(email, password);
+    expect(submitHandler).toHaveBeenCalledWith(email, testPwd);
     expect(component.submitError()).toBe(true);
     expect(component.form.pristine).toBe(true);
     expect(component.form.controls.email.value).toBe(email);
-    expect(component.form.controls.password.value).toBe(password);
+    expect(component.form.controls.password.value).toBe(testPwd);
   });
 
   it('should set submitError and mark form as pristine when submitHandler throws', async () => {
@@ -199,18 +199,18 @@ describe('CredentialsGroupComponent', () => {
     fixture.componentRef.setInput('submitHandler', submitHandler);
 
     const email = 'error@example.com';
-    const password = 'Secret123!';
+    const testPwd = 'Secret123!';
 
     component.form.controls.email.setValue(email);
-    component.form.controls.password.setValue(password);
+    component.form.controls.password.setValue(testPwd);
     expect(component.form.valid).toBe(true);
 
     await component.onSubmit();
 
-    expect(submitHandler).toHaveBeenCalledWith(email, password);
+    expect(submitHandler).toHaveBeenCalledWith(email, testPwd);
     expect(component.submitError()).toBe(true);
     expect(component.form.pristine).toBe(true);
     expect(component.form.controls.email.value).toBe(email);
-    expect(component.form.controls.password.value).toBe(password);
+    expect(component.form.controls.password.value).toBe(testPwd);
   });
 });
