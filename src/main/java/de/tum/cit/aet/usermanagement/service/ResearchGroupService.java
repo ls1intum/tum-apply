@@ -571,8 +571,7 @@ public class ResearchGroupService {
             userRepository.save(user);
 
             // Ensure the user has a role in the research group
-            // TODO: This should be changed to "EMPLOYEE" once that role is implemented
-            ensureUserRoleInGroup(user, researchGroup, UserRole.APPLICANT);
+            ensureUserRoleInGroup(user, researchGroup, UserRole.EMPLOYEE);
 
             // Send notification email because the group was newly assigned or changed
             sendWelcomeToResearchGroupEmail(user, researchGroup);
