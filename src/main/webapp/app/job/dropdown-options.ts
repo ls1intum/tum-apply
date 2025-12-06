@@ -1,69 +1,72 @@
 import { JobFormDTO } from '../generated/model/jobFormDTO';
 
+const BASIC_INFO_I18N = 'jobCreationForm.basicInformationSection';
+
 export const locations = [
-  { value: JobFormDTO.LocationEnum.Garching, name: 'jobCreationForm.basicInformationSection.locations.Garching' },
-  { value: JobFormDTO.LocationEnum.GarchingHochbrueck, name: 'jobCreationForm.basicInformationSection.locations.GarchingHochbrueck' },
-  { value: JobFormDTO.LocationEnum.Heilbronn, name: 'jobCreationForm.basicInformationSection.locations.Heilbronn' },
-  { value: JobFormDTO.LocationEnum.Munich, name: 'jobCreationForm.basicInformationSection.locations.Munich' },
-  { value: JobFormDTO.LocationEnum.Singapore, name: 'jobCreationForm.basicInformationSection.locations.Singapore' },
-  { value: JobFormDTO.LocationEnum.Straubing, name: 'jobCreationForm.basicInformationSection.locations.Straubing' },
-  { value: JobFormDTO.LocationEnum.Weihenstephan, name: 'jobCreationForm.basicInformationSection.locations.Weihenstephan' },
+  { value: JobFormDTO.LocationEnum.Garching, name: `${BASIC_INFO_I18N}.locations.Garching` },
+  { value: JobFormDTO.LocationEnum.GarchingHochbrueck, name: `${BASIC_INFO_I18N}.locations.GarchingHochbrueck` },
+  { value: JobFormDTO.LocationEnum.Heilbronn, name: `${BASIC_INFO_I18N}.locations.Heilbronn` },
+  { value: JobFormDTO.LocationEnum.Munich, name: `${BASIC_INFO_I18N}.locations.Munich` },
+  { value: JobFormDTO.LocationEnum.Singapore, name: `${BASIC_INFO_I18N}.locations.Singapore` },
+  { value: JobFormDTO.LocationEnum.Straubing, name: `${BASIC_INFO_I18N}.locations.Straubing` },
+  { value: JobFormDTO.LocationEnum.Weihenstephan, name: `${BASIC_INFO_I18N}.locations.Weihenstephan` },
 ];
 export const fieldsOfStudies = [
-  { value: 'Aerospace Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.AerospaceEngineering' },
-  { value: 'Agricultural Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.AgriculturalEngineering' },
-  { value: 'Architecture', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Architecture' },
-  { value: 'Art History', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.ArtHistory' },
-  { value: 'Automotive Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.AutomotiveEngineering' },
-  { value: 'Bioengineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Bioengineering' },
-  { value: 'Biology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Biology' },
-  { value: 'Biotechnology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Biotechnology' },
-  { value: 'Chemistry', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Chemistry' },
-  { value: 'Computer Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.ComputerEngineering' },
-  { value: 'Computer Science', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.ComputerScience' },
-  { value: 'Data Science', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.DataScience' },
-  { value: 'Economics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Economics' },
-  { value: 'Education Technology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.EducationTechnology' },
-  { value: 'Electrical Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.ElectricalEngineering' },
-  { value: 'Environmental Biology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.EnvironmentalBiology' },
-  { value: 'Environmental Chemistry', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.EnvironmentalChemistry' },
-  { value: 'Environmental Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.EnvironmentalEngineering' },
-  { value: 'Environmental Science', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.EnvironmentalScience' },
-  { value: 'Financial Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.FinancialEngineering' },
-  { value: 'Food Technology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.FoodTechnology' },
-  { value: 'Geology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Geology' },
-  { value: 'Geosciences', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Geosciences' },
-  { value: 'Industrial Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.IndustrialEngineering' },
-  { value: 'Information Systems', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.InformationSystems' },
-  { value: 'Informatics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Informatics' },
-  { value: 'Linguistics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Linguistics' },
-  { value: 'Marine Biology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.MarineBiology' },
-  { value: 'Materials Science', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.MaterialsScience' },
-  { value: 'Mathematics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Mathematics' },
-  { value: 'Mechanical Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.MechanicalEngineering' },
-  { value: 'Medical Informatics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.MedicalInformatics' },
-  { value: 'Neuroscience', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Neuroscience' },
-  { value: 'Philosophy', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Philosophy' },
-  { value: 'Physics', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Physics' },
-  { value: 'Psychology', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Psychology' },
-  { value: 'Software Engineering', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.SoftwareEngineering' },
-  { value: 'Sports Science', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.SportsScience' },
-  { value: 'Telecommunications', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.Telecommunications' },
-  { value: 'Urban Planning', name: 'jobCreationForm.basicInformationSection.fieldsOfStudies.UrbanPlanning' },
+  { value: 'Aerospace Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.AerospaceEngineering` },
+  { value: 'Agricultural Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.AgriculturalEngineering` },
+  { value: 'Architecture', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Architecture` },
+  { value: 'Art History', name: `${BASIC_INFO_I18N}.fieldsOfStudies.ArtHistory` },
+  { value: 'Automotive Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.AutomotiveEngineering` },
+  { value: 'Bioengineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Bioengineering` },
+  { value: 'Biology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Biology` },
+  { value: 'Biotechnology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Biotechnology` },
+  { value: 'Chemistry', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Chemistry` },
+  { value: 'Computer Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.ComputerEngineering` },
+  { value: 'Computer Science', name: `${BASIC_INFO_I18N}.fieldsOfStudies.ComputerScience` },
+  { value: 'Data Science', name: `${BASIC_INFO_I18N}.fieldsOfStudies.DataScience` },
+  { value: 'Economics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Economics` },
+  { value: 'Education Technology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.EducationTechnology` },
+  { value: 'Electrical Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.ElectricalEngineering` },
+  { value: 'Environmental Biology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.EnvironmentalBiology` },
+  { value: 'Environmental Chemistry', name: `${BASIC_INFO_I18N}.fieldsOfStudies.EnvironmentalChemistry` },
+  { value: 'Environmental Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.EnvironmentalEngineering` },
+  { value: 'Environmental Science', name: `${BASIC_INFO_I18N}.fieldsOfStudies.EnvironmentalScience` },
+  { value: 'Financial Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.FinancialEngineering` },
+  { value: 'Food Technology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.FoodTechnology` },
+  { value: 'Geology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Geology` },
+  { value: 'Geosciences', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Geosciences` },
+  { value: 'Industrial Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.IndustrialEngineering` },
+  { value: 'Information Systems', name: `${BASIC_INFO_I18N}.fieldsOfStudies.InformationSystems` },
+  { value: 'Informatics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Informatics` },
+  { value: 'Linguistics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Linguistics` },
+  { value: 'Marine Biology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.MarineBiology` },
+  { value: 'Materials Science', name: `${BASIC_INFO_I18N}.fieldsOfStudies.MaterialsScience` },
+  { value: 'Mathematics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Mathematics` },
+  { value: 'Mechanical Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.MechanicalEngineering` },
+  { value: 'Medical Informatics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.MedicalInformatics` },
+  { value: 'Neuroscience', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Neuroscience` },
+  { value: 'Philosophy', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Philosophy` },
+  { value: 'Physics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Physics` },
+  { value: 'Psychology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Psychology` },
+  { value: 'Software Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.SoftwareEngineering` },
+  { value: 'Sports Science', name: `${BASIC_INFO_I18N}.fieldsOfStudies.SportsScience` },
+  { value: 'Telecommunications', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Telecommunications` },
+  { value: 'Urban Planning', name: `${BASIC_INFO_I18N}.fieldsOfStudies.UrbanPlanning` },
 ];
 export const fundingTypes = [
-  { value: JobFormDTO.FundingTypeEnum.FullyFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.FullyFunded' },
-  { value: JobFormDTO.FundingTypeEnum.GovernmentFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.GovernmentFunded' },
-  { value: JobFormDTO.FundingTypeEnum.IndustrySponsored, name: 'jobCreationForm.basicInformationSection.fundingTypes.IndustrySponsored' },
-  { value: JobFormDTO.FundingTypeEnum.ResearchGrant, name: 'jobCreationForm.basicInformationSection.fundingTypes.ResearchGrant' },
-  { value: JobFormDTO.FundingTypeEnum.Scholarship, name: 'jobCreationForm.basicInformationSection.fundingTypes.Scholarship' },
-  { value: JobFormDTO.FundingTypeEnum.SelfFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.SelfFunded' },
-  { value: JobFormDTO.FundingTypeEnum.PartiallyFunded, name: 'jobCreationForm.basicInformationSection.fundingTypes.PartiallyFunded' },
+  { value: JobFormDTO.FundingTypeEnum.FullyFunded, name: `${BASIC_INFO_I18N}.fundingTypes.FullyFunded` },
+  { value: JobFormDTO.FundingTypeEnum.GovernmentFunded, name: `${BASIC_INFO_I18N}.fundingTypes.GovernmentFunded` },
+  { value: JobFormDTO.FundingTypeEnum.IndustrySponsored, name: `${BASIC_INFO_I18N}.fundingTypes.IndustrySponsored` },
+  { value: JobFormDTO.FundingTypeEnum.ResearchGrant, name: `${BASIC_INFO_I18N}.fundingTypes.ResearchGrant` },
+  { value: JobFormDTO.FundingTypeEnum.Scholarship, name: `${BASIC_INFO_I18N}.fundingTypes.Scholarship` },
+  { value: JobFormDTO.FundingTypeEnum.SelfFunded, name: `${BASIC_INFO_I18N}.fundingTypes.SelfFunded` },
+  { value: JobFormDTO.FundingTypeEnum.PartiallyFunded, name: `${BASIC_INFO_I18N}.fundingTypes.PartiallyFunded` },
 ];
 
 export const locationNameToValueMap = new Map(locations.map(option => [option.name, option.value]));
 export const locationValueToNameMap = new Map(locations.map(option => [option.value as string, option.name]));
 export const fundingTypeValueToNameMap = new Map(fundingTypes.map(option => [option.value as string, option.name]));
+export const fieldOfStudiesMap = new Map(fieldsOfStudies.map(option => [option.value, option.name]));
 
 export function mapLocationNames(translationKeys: string[]): JobFormDTO.LocationEnum[] {
   return translationKeys
@@ -72,33 +75,28 @@ export function mapLocationNames(translationKeys: string[]): JobFormDTO.Location
 }
 
 /**
- * Converts a location string value to its corresponding i18n translation key.
- * @param location - The location string value (e.g., "GARCHING_HOCHBRUECK", "Garching Hochbrueck")
- * @returns The i18n translation key (or the value itself if location is null/undefined)
+ * Generic resolver to convert a raw value to its i18n translation key using a provided map.
+ * - Returns '-' when value is null/undefined.
+ * - Normalizes input via toEnumString before lookup.
+ * - Falls back to normalized value if no mapping exists.
  */
+function getTranslationKey(value: string | undefined, valueToNameMap: Map<string, string>): string {
+  if (value == null) return '-';
+  const normalized = toEnumString(value);
+  return valueToNameMap.get(normalized) ?? normalized;
+}
+
 export function getLocationTranslationKey(location: string | undefined): string {
-  if (location == null) return '-';
-  return locationValueToNameMap.get(toEnumString(location)) ?? toEnumString(location);
+  return getTranslationKey(location, locationValueToNameMap);
 }
 
-/**
- * Converts a fundingType string value to its corresponding i18n translation key.
- * @param fundingType - The fundingType string value (e.g., "FULLY_FUNDED", "Fully Funded")
- * @returns The i18n translation key (or the value itself if fundingType is null/undefined)
- */
 export function getFundingTypeTranslationKey(fundingType: string | undefined): string {
-  if (fundingType == null) return '-';
-  return fundingTypeValueToNameMap.get(toEnumString(fundingType)) ?? toEnumString(fundingType);
+  return getTranslationKey(fundingType, fundingTypeValueToNameMap);
 }
 
-/**
- * Converts a FieldOfStudy string value to its corresponding i18n translation key.
- * @param fieldOfStudies - The FieldOfStudy string value (e.g., "Computer Science")
- * @returns The i18n translation key (or the value itself if fieldOfStudies is null/undefined)
- */
 export function getFieldOfStudiesTranslationKey(fieldOfStudies: string | undefined): string {
   if (fieldOfStudies == null) return '-';
-  return fieldsOfStudies.find(fs => fs.value === fieldOfStudies)?.name ?? fieldOfStudies;
+  return fieldOfStudiesMap.get(fieldOfStudies) ?? fieldOfStudies;
 }
 
 /**

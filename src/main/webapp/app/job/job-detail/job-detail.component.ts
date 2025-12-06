@@ -23,7 +23,7 @@ import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 
-import * as DropDownOptions from '.././dropdown-options';
+import * as DropDownOptions from '../dropdown-options';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../shared/language/translate.directive';
 
