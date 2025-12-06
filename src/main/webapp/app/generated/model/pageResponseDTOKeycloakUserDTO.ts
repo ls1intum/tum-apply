@@ -10,8 +10,8 @@
 import { KeycloakUserDTO } from './keycloakUserDTO';
 
 
-export interface AddMembersToResearchGroupDTO { 
-    keycloakUsers: Array<KeycloakUserDTO>;
-    researchGroupId?: string;
+export interface PageResponseDTOKeycloakUserDTO { 
+    content?: Array<KeycloakUserDTO>;
+    totalElements?: number;
 }
 

@@ -130,6 +130,7 @@ export class ResearchGroupMembersComponent {
     const ref = this.dialogService.open(ResearchGroupAddMembersComponent, {
       header: this.translate.instant('researchGroup.members.addMembers'),
       style: { background: 'var(--p-background-default)', width: '50rem' },
+      draggable: false,
       modal: true,
       closable: true,
     });

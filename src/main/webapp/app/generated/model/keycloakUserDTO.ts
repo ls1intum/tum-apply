@@ -7,11 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { KeycloakUserDTO } from './keycloakUserDTO';
 
 
-export interface AddMembersToResearchGroupDTO { 
-    keycloakUsers: Array<KeycloakUserDTO>;
-    researchGroupId?: string;
+export interface KeycloakUserDTO { 
+    email?: string;
+    firstName?: string;
+    id?: string;
+    lastName?: string;
+    username?: string;
 }
 

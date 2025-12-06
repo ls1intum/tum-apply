@@ -17,6 +17,7 @@ import {
   provideDynamicDialogConfigMock,
   provideDynamicDialogRefMock,
 } from 'util/dynamicdialogref.mock';
+import { KeycloakUserDTO } from 'app/generated';
 
 describe('ResearchGroupAddMembersComponent', () => {
   let component: ResearchGroupAddMembersComponent;
@@ -31,18 +32,20 @@ describe('ResearchGroupAddMembersComponent', () => {
   let mockDialogConfig: DynamicDialogConfig;
   let mockToastService: ToastServiceMock;
 
-  const mockUser1: UserDTO = {
-    userId: 'user-1',
+  const mockUser1: KeycloakUserDTO = {
+    id: 'user-1',
     firstName: 'John',
     lastName: 'Doe',
     email: 'john.doe@example.com',
+    username: 'johndoe',
   };
 
-  const mockUser2: UserDTO = {
-    userId: 'user-2',
+  const mockUser2: KeycloakUserDTO = {
+    id: 'user-2',
     firstName: 'Jane',
     lastName: 'Smith',
     email: 'jane.smith@example.com',
+    username: 'janesmith',
   };
 
   const mockPageResponse: PageResponseDTOUserShortDTO = {
@@ -90,288 +93,342 @@ describe('ResearchGroupAddMembersComponent', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize with default values', () => {
-    expect(component.totalRecords()).toBe(0);
-    expect(component.page()).toBe(0);
-    expect(component.pageSize()).toBe(10);
-    expect(component.users()).toEqual([]);
-    expect(component.searchQuery()).toBe('');
-    expect(component.selectedUserCount()).toBe(0);
-  });
-
-  it('should load available users on component init', () => {
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, undefined);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-    expect(component.users()).toEqual([]);
-    expect(component.totalRecords()).toBe(0);
-  });
-
-  it('should compute researchGroupId from dialog config data', () => {
-    expect(component.researchGroupId()).toBe('research-group-1');
-  });
-
-  it('should handle undefined researchGroupId in dialog config', () => {
-    mockDialogConfig.data = undefined;
-    expect(component.researchGroupId()).toBeUndefined();
-  });
-
-  it('should load available users successfully', async () => {
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    await component.loadAvailableUsers();
-
-    expect(component.users()).toEqual(mockPageResponse.content);
-    expect(component.totalRecords()).toBe(mockPageResponse.totalElements);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, undefined);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should load available users with search query', async () => {
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    await component.loadAvailableUsers('john');
-
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'john');
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should handle empty or undefined response when loading users', async () => {
-    vi.clearAllMocks();
-    const emptyResponse: PageResponseDTOUserShortDTO = {};
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(emptyResponse));
-
-    await component.loadAvailableUsers();
-
-    expect(component.users()).toEqual([]);
-    expect(component.totalRecords()).toBe(0);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should handle error and show error toast when loading users fails', async () => {
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-
-    await component.loadAvailableUsers();
-
-    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadUsersFailed');
-    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should reset page to 0 and load users when search query changes', async () => {
-    component.page.set(2);
-    component.searchQuery.set('old-query');
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    component.onSearch('new-query');
-    await Promise.resolve(); // Wait for async operation
-
-    expect(component.page()).toBe(0);
-    expect(component.searchQuery()).toBe('new-query');
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'new-query');
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should not reload users when search query is the same', () => {
-    component.searchQuery.set('same-query');
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    component.onSearch('same-query');
-
-    expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
-  });
-
-  it('should update page and pageSize and load users on page change', async () => {
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    component.onPageChange({ first: 20, rows: 10 });
-    await Promise.resolve(); // Wait for async operation
-
-    expect(component.page()).toBe(2); // 20 / 10 = 2
-    expect(component.pageSize()).toBe(10);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 2, undefined);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should handle undefined first and rows in page change event', async () => {
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    component.onPageChange({});
-    await Promise.resolve();
-
-    expect(component.page()).toBe(0);
-    expect(component.pageSize()).toBe(10); // Unchanged
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, undefined);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should update pageSize when rows is provided in page change event', async () => {
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    component.onPageChange({ first: 0, rows: 25 });
-    await Promise.resolve();
-
-    expect(component.pageSize()).toBe(25);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(25, 0, undefined);
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should load users with current search query on page change', async () => {
-    component.searchQuery.set('test-search');
-    vi.clearAllMocks();
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-
-    component.onPageChange({ first: 10, rows: 10 });
-    await Promise.resolve();
-
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 1, 'test-search');
-    expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
-  });
-
-  it('should toggle user selection - add user', () => {
-    component.toggleUserSelection(mockUser1);
-
-    expect(component.selectedUserCount()).toBe(1);
-    expect(component.isUserSelected(mockUser1)).toBe(true);
-  });
-
-  it('should toggle user selection - remove user', () => {
-    component.toggleUserSelection(mockUser1);
-    expect(component.selectedUserCount()).toBe(1);
-
-    component.toggleUserSelection(mockUser1);
-    expect(component.selectedUserCount()).toBe(0);
-    expect(component.isUserSelected(mockUser1)).toBe(false);
-  });
-
-  it('should handle multiple user selections', () => {
-    component.toggleUserSelection(mockUser1);
-    component.toggleUserSelection(mockUser2);
-
-    expect(component.selectedUserCount()).toBe(2);
-    expect(component.isUserSelected(mockUser1)).toBe(true);
-    expect(component.isUserSelected(mockUser2)).toBe(true);
-  });
-
-  it('should show error toast when toggling user with undefined userId', () => {
-    const userWithoutId: UserDTO = { ...mockUser1, userId: undefined };
-
-    component.toggleUserSelection(userWithoutId);
-
-    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.invalidUser');
-    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(component.selectedUserCount()).toBe(0);
-  });
-
-  it('should return false for isUserSelected when user has no userId', () => {
-    const userWithoutId: UserDTO = { ...mockUser1, userId: undefined };
-
-    expect(component.isUserSelected(userWithoutId)).toBe(false);
-  });
-
-  it('should return false for isUserSelected when user is not selected', () => {
-    expect(component.isUserSelected(mockUser1)).toBe(false);
-  });
-
-  it('should close dialog on cancel', () => {
-    component.onCancel();
-
-    expect(mockDialogRef.close).toHaveBeenCalledWith();
-    expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
-  });
-
-  it('should not add members when no users are selected', async () => {
-    await component.onAddMembers();
-
-    expect(mockResearchGroupService.addMembersToResearchGroup).not.toHaveBeenCalled();
-    expect(mockDialogRef.close).not.toHaveBeenCalled();
-  });
-
-  it('should add members successfully and close dialog with true', async () => {
-    component.toggleUserSelection(mockUser1);
-    component.toggleUserSelection(mockUser2);
-    mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(of(void 0));
-
-    await component.onAddMembers();
-
-    expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
-      userIds: ['user-1', 'user-2'],
-      researchGroupId: 'research-group-1',
+  describe('Initialization', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
     });
-    expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
-    expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersSuccess');
-    expect(mockToastService.showSuccessKey).toHaveBeenCalledTimes(1);
-    expect(mockDialogRef.close).toHaveBeenCalledWith(true);
-    expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
-  });
 
-  it('should handle error and show error toast when adding members fails', async () => {
-    component.toggleUserSelection(mockUser1);
-    mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
-
-    await component.onAddMembers();
-
-    expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
-      userIds: ['user-1'],
-      researchGroupId: 'research-group-1',
+    it('should initialize with default values', () => {
+      expect(component.totalRecords()).toBe(0);
+      expect(component.page()).toBe(0);
+      expect(component.pageSize()).toBe(10);
+      expect(component.users()).toEqual([]);
+      expect(component.searchQuery()).toBe('');
+      expect(component.selectedUserCount()).toBe(0);
     });
-    expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
-    expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailed');
-    expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(mockDialogRef.close).toHaveBeenCalledWith(false);
-    expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
   });
 
-  it('should add members with undefined researchGroupId', async () => {
-    mockDialogConfig.data = undefined;
-    component.toggleUserSelection(mockUser1);
-    mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(of(void 0));
-
-    await component.onAddMembers();
-
-    expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
-      userIds: ['user-1'],
-      researchGroupId: undefined,
+  describe('Load users', () => {
+    it('should not call userService on init when there is no search query', () => {
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
+      expect(component.users()).toEqual([]);
+      expect(component.totalRecords()).toBe(0);
     });
-    expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
+
+    it('should load available users successfully when a search query is provided', async () => {
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+
+      await component.loadAvailableUsers('john');
+
+      expect(component.users()).toEqual(mockPageResponse.content);
+      expect(component.totalRecords()).toBe(mockPageResponse.totalElements);
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'john');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should load available users with search query', async () => {
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+
+      await component.loadAvailableUsers('john');
+
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'john');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle empty or undefined response when loading users', async () => {
+      vi.clearAllMocks();
+      const emptyResponse: PageResponseDTOUserShortDTO = {};
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(emptyResponse));
+
+      await component.loadAvailableUsers('john');
+
+      expect(component.users()).toEqual([]);
+      expect(component.totalRecords()).toBe(0);
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle error and show error toast when loading users fails', async () => {
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+
+      await component.loadAvailableUsers('john');
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadUsersFailed');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reset page to 0 and load users when search query changes', async () => {
+      component.page.set(2);
+      component.searchQuery.set('old-query');
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+
+      component.onSearch('new-query');
+      await Promise.resolve(); // Wait for async operation
+
+      expect(component.page()).toBe(0);
+      expect(component.searchQuery()).toBe('new-query');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'new-query');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not reload users when search query is the same', () => {
+      component.searchQuery.set('same-query');
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+
+      component.onSearch('same-query');
+
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
+    });
+
+    it('should clear users when given an empty query and users exist', async () => {
+      component.users.set([mockUser1]);
+      component.totalRecords.set(1);
+      vi.clearAllMocks();
+
+      await component.loadAvailableUsers();
+
+      expect(component.users()).toEqual([]);
+      expect(component.totalRecords()).toBe(0);
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
+    });
+
+    it('should not load users for short search queries (< MIN_SEARCH_LENGTH)', async () => {
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+
+      await component.loadAvailableUsers('ab');
+
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
+      expect(component.users()).toEqual([]);
+    });
+
+    it('should clear existing loader timeout when starting a new load', async () => {
+      vi.spyOn(window, 'clearTimeout');
+      // simulate an existing pending timeout
+      (component as any).loaderTimeout = 123;
+
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+
+      await component.loadAvailableUsers('abc');
+
+      expect(window.clearTimeout).toHaveBeenCalledWith(123);
+      // loaderTimeout should be set again and cleared by finally block, so it's not null
+      expect(component.users()).toEqual(mockPageResponse.content);
+    });
   });
 
-  it('should maintain selection state across page changes', async () => {
-    component.toggleUserSelection(mockUser1);
-    expect(component.selectedUserCount()).toBe(1);
+  describe('Dialog Config', () => {
+    it('should compute researchGroupId from dialog config data', () => {
+      expect(component.researchGroupId()).toBe('research-group-1');
+    });
 
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-    component.onPageChange({ first: 10, rows: 10 });
-    await Promise.resolve();
-
-    // Selection should persist
-    expect(component.selectedUserCount()).toBe(1);
-    expect(component.isUserSelected(mockUser1)).toBe(true);
+    it('should handle undefined researchGroupId in dialog config', () => {
+      mockDialogConfig.data = undefined;
+      expect(component.researchGroupId()).toBeUndefined();
+    });
   });
 
-  it('should maintain selection state across search queries', async () => {
-    component.toggleUserSelection(mockUser1);
-    component.toggleUserSelection(mockUser2);
-    expect(component.selectedUserCount()).toBe(2);
+  describe('Pagination', () => {
+    it('should update page and pageSize and load users on page change', async () => {
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+      // Set a search query to ensure the component makes the API call
+      component.searchQuery.set('test-search');
 
-    mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
-    component.onSearch('new-search');
-    await Promise.resolve();
+      component.onPageChange({ first: 20, rows: 10 });
+      await Promise.resolve(); // Wait for async operation
 
-    // Selection should persist
-    expect(component.selectedUserCount()).toBe(2);
-    expect(component.isUserSelected(mockUser1)).toBe(true);
-    expect(component.isUserSelected(mockUser2)).toBe(true);
+      expect(component.page()).toBe(2); // 20 / 10 = 2
+      expect(component.pageSize()).toBe(10);
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 2, 'test-search');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle undefined first and rows in page change event', async () => {
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+      component.searchQuery.set('abc');
+
+      component.onPageChange({});
+      await Promise.resolve();
+
+      expect(component.page()).toBe(0);
+      expect(component.pageSize()).toBe(10); // Unchanged
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 0, 'abc');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should update pageSize when rows is provided in page change event', async () => {
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+      component.searchQuery.set('abc');
+
+      component.onPageChange({ first: 0, rows: 25 });
+      await Promise.resolve();
+
+      expect(component.pageSize()).toBe(25);
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(25, 0, 'abc');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+
+    it('should load users with current search query on page change', async () => {
+      component.searchQuery.set('test-search');
+      vi.clearAllMocks();
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+
+      component.onPageChange({ first: 10, rows: 10 });
+      await Promise.resolve();
+
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledWith(10, 1, 'test-search');
+      expect(mockUserService.getAvailableUsersForResearchGroup).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('User Selection', () => {
+    it('should toggle user selection - add user', () => {
+      component.toggleUserSelection(mockUser1);
+
+      expect(component.selectedUserCount()).toBe(1);
+      expect(component.isUserSelected(mockUser1)).toBe(true);
+    });
+
+    it('should toggle user selection - remove user', () => {
+      component.toggleUserSelection(mockUser1);
+      expect(component.selectedUserCount()).toBe(1);
+
+      component.toggleUserSelection(mockUser1);
+      expect(component.selectedUserCount()).toBe(0);
+      expect(component.isUserSelected(mockUser1)).toBe(false);
+    });
+
+    it('should handle multiple user selections', () => {
+      component.toggleUserSelection(mockUser1);
+      component.toggleUserSelection(mockUser2);
+
+      expect(component.selectedUserCount()).toBe(2);
+      expect(component.isUserSelected(mockUser1)).toBe(true);
+      expect(component.isUserSelected(mockUser2)).toBe(true);
+    });
+
+    it('should show error toast when toggling user with undefined id', () => {
+      const userWithoutId: KeycloakUserDTO = { ...mockUser1, id: undefined } as KeycloakUserDTO;
+
+      component.toggleUserSelection(userWithoutId);
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.invalidUser');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
+      expect(component.selectedUserCount()).toBe(0);
+    });
+
+    it('should return false for isUserSelected when user has no id', () => {
+      const userWithoutId: KeycloakUserDTO = { ...mockUser1, id: undefined } as KeycloakUserDTO;
+
+      expect(component.isUserSelected(userWithoutId)).toBe(false);
+    });
+
+    it('should return false for isUserSelected when user is not selected', () => {
+      expect(component.isUserSelected(mockUser1)).toBe(false);
+    });
+  });
+
+  describe('Dialog Actions', () => {
+    it('should close dialog on cancel', () => {
+      component.onCancel();
+
+      expect(mockDialogRef.close).toHaveBeenCalledWith();
+      expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not add members when no users are selected', async () => {
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should add members successfully and close dialog with true', async () => {
+      component.toggleUserSelection(mockUser1);
+      component.toggleUserSelection(mockUser2);
+      mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(of(void 0));
+
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
+        keycloakUsers: [mockUser1, mockUser2],
+        researchGroupId: 'research-group-1',
+      });
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersSuccess');
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledTimes(1);
+      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+      expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle error and show error toast when adding members fails', async () => {
+      component.toggleUserSelection(mockUser1);
+      mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
+        keycloakUsers: [mockUser1],
+        researchGroupId: 'research-group-1',
+      });
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailed');
+      expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+      expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('should add members with undefined researchGroupId', async () => {
+      mockDialogConfig.data = undefined;
+      component.toggleUserSelection(mockUser1);
+      mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(of(void 0));
+
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
+        keycloakUsers: [mockUser1],
+        researchGroupId: undefined,
+      });
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('State Persistence', () => {
+    it('should maintain selection state across page changes', async () => {
+      component.toggleUserSelection(mockUser1);
+      expect(component.selectedUserCount()).toBe(1);
+
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+      component.onPageChange({ first: 10, rows: 10 });
+      await Promise.resolve();
+
+      // Selection should persist
+      expect(component.selectedUserCount()).toBe(1);
+      expect(component.isUserSelected(mockUser1)).toBe(true);
+    });
+
+    it('should maintain selection state across search queries', async () => {
+      component.toggleUserSelection(mockUser1);
+      component.toggleUserSelection(mockUser2);
+      expect(component.selectedUserCount()).toBe(2);
+
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
+      component.onSearch('new-search');
+      await Promise.resolve();
+
+      // Selection should persist
+      expect(component.selectedUserCount()).toBe(2);
+      expect(component.isUserSelected(mockUser1)).toBe(true);
+      expect(component.isUserSelected(mockUser2)).toBe(true);
+    });
   });
 });

@@ -7,8 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { UserDTO } from 'app/generated/model/userDTO';
-import { ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
+import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -33,32 +32,86 @@ export class ResearchGroupAddMembersComponent {
   totalRecords = signal<number>(0);
   page = signal<number>(0);
   pageSize = signal<number>(10);
+  loading = signal<boolean>(false);
 
   researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
   searchQuery = signal<string>('');
 
-  users = signal<UserDTO[]>([]);
-  selectedUserCount = computed(() => this.selectedUserIds().size);
+  users = signal<KeycloakUserDTO[]>([]);
+  selectedUserCount = computed(() => this.selectedUsers().size);
 
   userService = inject(UserResourceApiService);
   researchGroupService = inject(ResearchGroupResourceApiService);
   toastService = inject(ToastService);
 
+  public readonly MIN_SEARCH_LENGTH = 3;
+
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);
-  private selectedUserIds = signal<Set<string>>(new Set());
+  // Delay before showing the loading spinner to avoid flickering on fast queries
+  private readonly LOADER_DELAY_MS = 250;
+  private loaderTimeout: number | null = null;
+  private selectedUsers = signal<Set<KeycloakUserDTO>>(new Set());
 
   constructor() {
     void this.loadAvailableUsers();
   }
 
+  /**
+   * Loads the available users for the research group based on the provided search query.
+   * This method handles debouncing, manages a loading spinner, and updates the user list
+   * and total record count based on the response from the user service.
+   *
+   * @param searchQuery - An optional string representing the search query to filter users.
+   *                      If not provided, the current search query is used.
+   *
+   * @returns A promise that resolves when the operation is complete.
+   *
+   * Behavior:
+   * - If the search query is empty and there are existing users, the user list and total
+   *   record count are cleared.
+   * - If the search query is empty and there are no users, the method exits early.
+   * - If the search query is shorter than the minimum search length, the method exits early.
+   * - A loading spinner is displayed after a delay while the user data is being fetched.
+   * - Ensures that the loading spinner is hidden and any pending timers are cleared.
+   */
   async loadAvailableUsers(searchQuery?: string): Promise<void> {
+    const rawQuery = searchQuery ?? this.searchQuery();
+    const query = rawQuery.trim();
+
+    if (query === '' && this.users().length > 0) {
+      this.users.set([]);
+      this.totalRecords.set(0);
+      return;
+    }
+
+    if (query === '' && this.users().length === 0) {
+      return;
+    }
+
+    if (query !== '' && query.length < this.MIN_SEARCH_LENGTH) {
+      return;
+    }
+
+    if (this.loaderTimeout) {
+      clearTimeout(this.loaderTimeout);
+      this.loaderTimeout = null;
+    }
+    this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
+
     try {
-      const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), searchQuery));
+      const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
       this.totalRecords.set(response.totalElements ?? 0);
       this.users.set(response.content ?? []);
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
+    } finally {
+      // clear pending timer and ensure spinner is hidden
+      if (this.loaderTimeout) {
+        clearTimeout(this.loaderTimeout);
+        this.loaderTimeout = null;
+      }
+      this.loading.set(false);
     }
   }
 
@@ -79,21 +132,20 @@ export class ResearchGroupAddMembersComponent {
     void this.loadAvailableUsers(this.searchQuery() || undefined);
   }
 
-  toggleUserSelection(user: UserDTO): void {
-    const userId = user.userId;
-    if (!userId) {
+  toggleUserSelection(user: KeycloakUserDTO): void {
+    if (!user.id) {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
       return;
     }
-    const currentSet = new Set(this.selectedUserIds());
+    const currentSet = new Set(this.selectedUsers());
 
-    if (currentSet.has(userId)) {
-      currentSet.delete(userId);
+    if (currentSet.has(user)) {
+      currentSet.delete(user);
     } else {
-      currentSet.add(userId);
+      currentSet.add(user);
     }
 
-    this.selectedUserIds.set(currentSet);
+    this.selectedUsers.set(currentSet);
   }
 
   onCancel(): void {
@@ -101,15 +153,15 @@ export class ResearchGroupAddMembersComponent {
   }
 
   async onAddMembers(): Promise<void> {
-    const userIds = Array.from(this.selectedUserIds());
-    const researchGroupId = this.researchGroupId();
-
-    if (userIds.length === 0) {
+    if (this.selectedUsers().size === 0) {
       return;
     }
 
     try {
-      await lastValueFrom(this.researchGroupService.addMembersToResearchGroup({ userIds, researchGroupId }));
+      const researchGroupId = this.researchGroupId();
+
+      const data = { keycloakUsers: Array.from(this.selectedUsers()), researchGroupId };
+      await lastValueFrom(this.researchGroupService.addMembersToResearchGroup(data));
       this.toastService.showSuccessKey(`${I18N_BASE}.toastMessages.addMembersSuccess`);
       this.dialogRef.close(true);
     } catch {
@@ -118,12 +170,11 @@ export class ResearchGroupAddMembersComponent {
     }
   }
 
-  isUserSelected(user: UserDTO): boolean {
-    const userId = user.userId;
-    if (!userId) {
+  isUserSelected(user: KeycloakUserDTO): boolean {
+    if (!user.id) {
       return false;
     }
 
-    return this.selectedUserIds().has(userId);
+    return this.selectedUsers().has(user);
   }
 }

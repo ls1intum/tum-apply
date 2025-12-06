@@ -1558,7 +1558,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
+              schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1602,12 +1602,12 @@ components:
     AddMembersToResearchGroupDTO:
       type: object
       properties:
-        researchGroupId: {type: string, format: uuid}
-        userIds:
+        keycloakUsers:
           type: array
-          items: {type: string, format: uuid}
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
           minItems: 1
-      required: [userIds]
+        researchGroupId: {type: string, format: uuid}
+      required: [keycloakUsers]
     Applicant:
       type: object
       properties:
@@ -2202,6 +2202,14 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+    KeycloakUserDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        id: {type: string, format: uuid}
+        lastName: {type: string}
+        username: {type: string}
     LoginRequestDTO:
       type: object
       properties:
@@ -2276,6 +2284,13 @@ components:
         content:
           type: array
           items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOKeycloakUserDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOResearchGroupAdminDTO:
       type: object

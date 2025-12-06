@@ -176,7 +176,8 @@ export class ResearchGroupAdminView {
       header: this.translate.instant('researchGroup.members.addMembers'),
       data: { researchGroupId },
       styleClass: 'research-group-add-members-dialog',
-      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      style: { background: 'var(--p-background-default)', width: '60rem', maxWidth: '60rem' },
+      draggable: false,
       closable: true,
       modal: true,
     });

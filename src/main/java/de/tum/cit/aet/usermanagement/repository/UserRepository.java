@@ -105,6 +105,14 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     boolean existsByEmailIgnoreCase(String email);
 
     /**
+     * Checks if a user exists with the given user ID.
+     *
+     * @param userId the user ID
+     * @return true if a user exists with the ID, false otherwise
+     */
+    boolean existsById(UUID userId);
+
+    /**
      * Finds user IDs for users available to be added to a research group.
      * Returns only IDs without JOIN FETCH for safe pagination.
      * Only includes TUM-affiliated users (email domain contains 'tum').
