@@ -76,12 +76,13 @@ describe('JobsPreviewSectionComponent', () => {
     expect(spy).toHaveBeenCalledWith(['/job-overview']);
   });
 
-  it('should show fallback header image when job.imageUrl is missing', () => {
+  it('should not set header image when job.imageUrl is missing', () => {
     fixture.detectChanges();
     const jobCardEl = fixture.nativeElement.querySelector('jhi-job-card');
     expect(jobCardEl).toBeTruthy();
     const header = jobCardEl.querySelector('div.relative');
-    expect(header.style.backgroundImage || header.style.backgroundColor).toBeTruthy();
+    // When there's no job image, background-image should not be set (fallback images disabled)
+    expect(header.style.backgroundImage).toBe('none');
   });
 
   it('should handle error on load and show toast', async () => {

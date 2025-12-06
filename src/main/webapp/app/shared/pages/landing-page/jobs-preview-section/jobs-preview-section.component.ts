@@ -22,12 +22,6 @@ export class JobsPreviewSectionComponent {
 
   readonly jobs = signal<JobCardDTO[]>([]);
   readonly pageSize = signal<number>(4);
-  readonly fallbackImages = [
-    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80',
-    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80',
-    'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=1200&q=80',
-    'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=1200&q=80',
-  ];
 
   readonly hasJobs = computed(() => this.jobs().length > 0);
 
@@ -47,10 +41,7 @@ export class JobsPreviewSectionComponent {
     }
   }
 
-  getFallbackImage(index: number): string {
-    const images = this.fallbackImages;
-    return images[index % images.length];
-  }
+  // No fallback images: we only show an image when the job provides one
 
   goToJobOverview(): void {
     void this.router.navigate(['/job-overview']);
