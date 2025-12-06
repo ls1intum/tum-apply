@@ -7,11 +7,13 @@ import { ApplicationStepsSectionComponent } from './application-steps-section/ap
 import { DoctoralJourneySectionComponent } from './doctoral-journey-section/doctoral-journey-section.component';
 import { InformationSectionComponent } from './information-section/information-section.component';
 import { FaqSectionComponent } from './faq-section/faq-section.component';
+import { JobsPreviewSectionComponent } from './jobs-preview-section/jobs-preview-section.component';
 
 @Component({
   selector: 'jhi-landing-page',
   imports: [
     HeroSectionComponent,
+    JobsPreviewSectionComponent,
     ApplicationStepsSectionComponent,
     DoctoralJourneySectionComponent,
     InformationSectionComponent,

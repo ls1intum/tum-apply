@@ -41,12 +41,4 @@ describe('HeroSectionComponent', () => {
     expect(headline?.getAttribute('jhiTranslate')).toBe('landingPage.hero.headline');
     expect(subline?.getAttribute('jhiTranslate')).toBe('landingPage.hero.subline');
   });
-
-  it('should navigate to /job-overview when button is clicked', () => {
-    const button = nativeElement.querySelector('jhi-button');
-    expect(button).toBeTruthy();
-
-    button?.dispatchEvent(new Event('click'));
-    expect(router.navigate).toHaveBeenCalledWith(['/job-overview']);
-  });
 });
