@@ -336,7 +336,7 @@ class ImageServiceTest {
             Image banner2 = ImageTestData.newJobBanner(testUser, testResearchGroup);
             List<Image> banners = List.of(banner1, banner2);
 
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, TEST_RESEARCH_GROUP_ID)).thenReturn(banners);
 
             // Act
@@ -351,7 +351,7 @@ class ImageServiceTest {
         @Test
         void shouldReturnEmptyListWhenNoJobBannersExist() {
             // Arrange
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
             when(imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, TEST_RESEARCH_GROUP_ID)).thenReturn(List.of());
 
             // Act

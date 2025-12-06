@@ -34,7 +34,7 @@
   </ng-template>
 
   <ng-template #deleteTemplate let-member>
-    @if (!member.isCurrentUser) {
+    @if (member.canRemove) {
       <jhi-confirm-dialog
         [label]="'button.remove' | translate"
         [header]="'researchGroup.members.removeMemberModal.title' | translate"

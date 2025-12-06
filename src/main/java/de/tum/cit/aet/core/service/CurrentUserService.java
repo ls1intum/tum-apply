@@ -150,6 +150,18 @@ public class CurrentUserService {
     }
 
     /**
+     * Returns the research group ID if the current user is a professor or employee.
+     *
+     * @return the research group ID if user is a professor or employee
+     * @throws AccessDeniedException if the user is not a member of any research group
+     */
+    public UUID getResearchGroupIdIfMember() {
+        return getCurrentUser()
+            .getResearchGroupIdIfMember()
+            .orElseThrow(() -> new AccessDeniedException("Current User does not have a research group"));
+    }
+
+    /**
      * Returns the research group if the current user is a professor.
      *
      * @return the research group ID if user is a professor
@@ -191,6 +203,15 @@ public class CurrentUserService {
     }
 
     /**
+     * Checks if the current user has a employee role.
+     *
+     * @return true if the user is a employee, false otherwise
+     */
+    public boolean isEmployee() {
+        return getCurrentUser().isEmployee();
+    }
+
+    /**
      * Checks whether the current user is either an admin or professor of the
      * specified research group.
      *
@@ -202,7 +223,7 @@ public class CurrentUserService {
         if (
             isAdmin() ||
             getCurrentUser()
-                .getResearchGroupIdIfProfessor()
+                .getResearchGroupIdIfMember()
                 .map(id -> id.equals(researchGroupId))
                 .orElse(false)
         ) {
