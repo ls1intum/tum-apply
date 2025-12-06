@@ -50,7 +50,10 @@
       "showMoreSingular": "more slot",
       "showMorePlural": "more slots",
       "error": {
-        "loadFailed": "Failed to load interview slots"
+        "loadFailed": {
+          "summary": "Failed to load interview slots",
+          "detail": "The interview slots could not be loaded. Please refresh the page or contact an admin."
+        }
       },
       "status": {
         "booked": "booked"
@@ -58,6 +61,28 @@
       "location": {
         "virtual": "virtual",
         "inPerson": "in-person"
+      },
+      "delete": {
+        "confirm": {
+          "header": "Slot Deletion",
+          "message": "Are you sure you want to delete this slot?"
+        },
+        "success": {
+          "summary": "Slot deleted",
+          "detail": "Slot deleted successfully."
+        },
+        "error": {
+          "summary": "Delete failed",
+          "detail": "The slot could not be deleted. Please try again or contact an admin."
+        },
+        "errorBooked": {
+          "summary": "Delete failed",
+          "detail": "Cannot delete booked slots."
+        },
+        "errorForbidden": {
+          "summary": "Permission denied",
+          "detail": "You don't have permission to delete this slot"
+        }
       }
     }
   }
