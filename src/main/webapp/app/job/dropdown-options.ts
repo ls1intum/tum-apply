@@ -37,7 +37,6 @@ export const fieldsOfStudies = [
   { value: 'Geosciences', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Geosciences` },
   { value: 'Industrial Engineering', name: `${BASIC_INFO_I18N}.fieldsOfStudies.IndustrialEngineering` },
   { value: 'Information Systems', name: `${BASIC_INFO_I18N}.fieldsOfStudies.InformationSystems` },
-  { value: 'Informatics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Informatics` },
   { value: 'Linguistics', name: `${BASIC_INFO_I18N}.fieldsOfStudies.Linguistics` },
   { value: 'Marine Biology', name: `${BASIC_INFO_I18N}.fieldsOfStudies.MarineBiology` },
   { value: 'Materials Science', name: `${BASIC_INFO_I18N}.fieldsOfStudies.MaterialsScience` },
