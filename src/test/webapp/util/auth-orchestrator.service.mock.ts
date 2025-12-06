@@ -19,6 +19,7 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
   const isBusy = signal(false);
   const error = signal<string | null>(null);
   const cooldownSeconds = signal(0);
+
   return {
     email: signal<string>('user@example.com'),
     firstName: signal<string>('Jane'),
