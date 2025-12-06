@@ -14,7 +14,9 @@ export class PrimengTranslationService {
   constructor() {
     const initial = this.translate.getCurrentLang() || 'en';
     this.applyLocale(initial);
-    this.translate.onLangChange.subscribe(event => this.applyLocale(event.lang));
+    this.translate.onLangChange.subscribe(event => {
+      this.applyLocale(event.lang);
+    });
   }
 
   private applyLocale(lang: string): void {

@@ -18,38 +18,26 @@ export default class LocalizedDatePipe implements PipeTransform {
   private translate = inject(TranslateService);
 
   transform(value: string | null | undefined): string {
-    if (value === null || value === undefined) {
-      return '';
-    }
-    if (typeof value !== 'string') {
-      return '';
-    }
-    if (value.trim() === '') {
-      return '';
-    }
+    if (value === null || value === undefined || typeof value !== 'string') return '';
 
-    const parts = value.split('-');
-    if (parts.length !== 3) {
-      return value;
-    }
+    const trimmed = value.trim();
+    if (trimmed === '') return '';
 
-    const [yStr, mStr, dStr] = parts;
-    const year = Number(yStr);
-    const month = Number(mStr);
-    const day = Number(dStr);
+    // Parse strict ISO date (YYYY-MM-DD)
+    const match = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.exec(trimmed);
+    if (!match) return value;
 
-    if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day) || year < 1900 || month < 1 || month > 12 || day < 1 || day > 31) {
-      return value;
-    }
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+
+    if (year < 1 || month < 1 || month > 12 || day < 1 || day > 31) return value;
+
+    const dd = day.toString().padStart(2, '0');
+    const mm = month.toString().padStart(2, '0');
+    const yyyy = year.toString();
 
     const lang = this.translate.getCurrentLang() || 'en';
-    const dd = String(day).padStart(2, '0');
-    const mm = String(month).padStart(2, '0');
-    const yyyy = String(year).padStart(4, '0');
-
-    if (lang === 'de') {
-      return `${dd}.${mm}.${yyyy}`;
-    }
-    return `${mm}/${dd}/${yyyy}`;
+    return lang === 'de' ? `${dd}.${mm}.${yyyy}` : `${mm}/${dd}/${yyyy}`;
   }
 }

@@ -119,11 +119,11 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.gender"></span>
-                <span class="value">{{ ('genders.' + application.applicant?.user?.gender | translate) || '-' }}</span>
+                <span class="value">{{ application.applicant?.user?.gender ? ('genders.' + application.applicant?.user?.gender | translate) : '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.nationality"></span>
-                <span class="value">{{ ('nationalities.' + application.applicant?.user?.nationality | translate) || '-' }}</span>
+                <span class="value">{{ application.applicant?.user?.nationality ? ('nationalities.' + application.applicant?.user?.nationality | translate) : '-' }}</span>
               </div>
             </div>
             @if (application.applicant?.user?.website || application.applicant?.user?.linkedinUrl) {
