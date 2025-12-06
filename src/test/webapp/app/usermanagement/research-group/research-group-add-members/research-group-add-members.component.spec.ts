@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Observable } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 import { ResearchGroupAddMembersComponent } from 'app/usermanagement/research-group/research-group-add-members/research-group-add-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
-import { UserDTO } from 'app/generated/model/userDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
@@ -220,6 +219,42 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(window.clearTimeout).toHaveBeenCalledWith(123);
       // loaderTimeout should be set again and cleared by finally block, so it's not null
       expect(component.users()).toEqual(mockPageResponse.content);
+    });
+
+    it('should ignore stale requests and only apply the latest result', async () => {
+      vi.clearAllMocks();
+
+      let firstSubscriber: any;
+      const first$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+        firstSubscriber = sub;
+      });
+
+      let secondSubscriber: any;
+      const second$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+        secondSubscriber = sub;
+      });
+
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValueOnce(first$).mockReturnValueOnce(second$);
+
+      // start first request (older)
+      const p1 = component.loadAvailableUsers('wag');
+      // start second request (newer)
+      const p2 = component.loadAvailableUsers('wagne');
+
+      // complete second request first (newer arrives earlier)
+      secondSubscriber.next({ content: [mockUser2], totalElements: 1 });
+      secondSubscriber.complete();
+      await p2; // wait for the newer request to be applied
+
+      expect(component.users()).toEqual([mockUser2]);
+
+      // now complete the first request (older arrives later) - should be ignored
+      firstSubscriber.next({ content: [mockUser1], totalElements: 1 });
+      firstSubscriber.complete();
+      await p1; // wait for the older request to finish (it should have no effect)
+
+      expect(component.users()).toEqual([mockUser2]);
+      expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
     });
   });
 

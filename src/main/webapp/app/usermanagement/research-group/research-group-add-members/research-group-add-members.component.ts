@@ -48,9 +48,12 @@ export class ResearchGroupAddMembersComponent {
 
   private readonly dialogRef = inject(DynamicDialogRef);
   private readonly config = inject(DynamicDialogConfig);
+
   // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
   private loaderTimeout: number | null = null;
+
+  private latestRequestId = 0;
   private selectedUsers = signal<Set<KeycloakUserDTO>>(new Set());
 
   constructor() {
@@ -99,19 +102,28 @@ export class ResearchGroupAddMembersComponent {
     }
     this.loaderTimeout = window.setTimeout(() => this.loading.set(true), this.LOADER_DELAY_MS);
 
+    // ensure we only apply the latest response
+    const requestId = ++this.latestRequestId;
+
     try {
       const response = await lastValueFrom(this.userService.getAvailableUsersForResearchGroup(this.pageSize(), this.page(), query));
+      // If another newer request has been started, ignore the response of this (stale) one
+      if (requestId !== this.latestRequestId) {
+        return;
+      }
       this.totalRecords.set(response.totalElements ?? 0);
       this.users.set(response.content ?? []);
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
     } finally {
-      // clear pending timer and ensure spinner is hidden
-      if (this.loaderTimeout) {
-        clearTimeout(this.loaderTimeout);
-        this.loaderTimeout = null;
+      // only touch loading/timeout if this is the latest request
+      if (requestId === this.latestRequestId) {
+        if (this.loaderTimeout) {
+          clearTimeout(this.loaderTimeout);
+          this.loaderTimeout = null;
+        }
+        this.loading.set(false);
       }
-      this.loading.set(false);
     }
   }
 
