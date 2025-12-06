@@ -7,11 +7,12 @@ import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 import { ToastService } from 'app/service/toast-service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-jobs-preview-section',
   standalone: true,
-  imports: [CommonModule, JobCardComponent, TranslateDirective],
+  imports: [CommonModule, ButtonComponent, JobCardComponent, TranslateDirective],
   templateUrl: './jobs-preview-section.component.html',
 })
 export class JobsPreviewSectionComponent {
