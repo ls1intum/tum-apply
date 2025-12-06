@@ -18,32 +18,17 @@ export default class LocalizedDatePipe implements PipeTransform {
   private translate = inject(TranslateService);
 
   transform(value: string | null | undefined): string {
-    if (this.isEmpty(value)) return '';
-    const parsed = this.parseIsoDate(value as string);
-    if (!parsed) return value!;
-    if (!this.isValid(parsed.y, parsed.m, parsed.d)) return value!;
+    if (value === null || value === undefined || typeof value !== 'string') return '';
+
+    const trimmed = value.trim();
+    if (trimmed === '') return '';
+
+    // Parse strict ISO date (YYYY-MM-DD)
+    const match = LocalizedDatePipe.ISO_REGEX.exec(trimmed);
+    if (!match) return value;
+
     const lang = this.translate.getCurrentLang() || 'en';
-    return this.format(parsed.y, parsed.m, parsed.d, lang);
-  }
-
-  private isEmpty(input: unknown): boolean {
-    return input === null || input === undefined || typeof input !== 'string' || input.trim() === '';
-  }
-
-  private parseIsoDate(input: string): { y: number; m: number; d: number } | null {
-    const m = LocalizedDatePipe.ISO_REGEX.exec(input.trim());
-    if (!m) return null;
-    const y = Number(m[1]);
-    const mo = Number(m[2]);
-    const d = Number(m[3]);
-    return { y, m: mo, d };
-  }
-
-  private isValid(y: number, m: number, d: number): boolean {
-    if (!(y >= 1 && m >= 1 && m <= 12 && d >= 1 && d <= 31)) return false;
-    // Month/day realism (Feb 30, etc.) using Date round-trip
-    const dt = new Date(y, m - 1, d);
-    return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+    return this.format(Number(match[1]), Number(match[2]), Number(match[3]), lang);
   }
 
   private format(y: number, m: number, d: number, lang: string): string {
