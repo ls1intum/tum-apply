@@ -8,11 +8,16 @@
   .p-divider {
     &.p-divider-horizontal {
       margin: 0.1rem 0;
+      background: var(--p-background-default);
+
+      .p-divider-content {
+        background: var(--p-background-default);
+      }
     }
 
     .divider-text {
       font-size: 0.75rem;
-      color: var(--p-background-disabled);
+      color: var(--p-text-primary);
     }
   }
 
@@ -38,6 +43,7 @@
     align-items: center;
     padding: 0.75rem;
     border: var(--p-border-default) solid 0.1rem;
+    background: var(--p-background-default);
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -87,7 +93,7 @@
         box-shadow: none;
 
         &::placeholder {
-          color: var(--p-background-disabled);
+          color: var(--p-text-tertiary);
         }
       }
     }
@@ -111,10 +117,7 @@
 
           &:hover {
             background: var(--p-primary-color);
-
-            .option-label {
-              color: #fff;
-            }
+            color: var(--p-text-on-primary);
           }
 
           .option-label {

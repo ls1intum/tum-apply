@@ -52,31 +52,10 @@
               <div class="form-field"></div>
             </div>
 
-            <!-- School and website section -->
+            <!-- Contact and website section -->
             <p-divider layout="horizontal">
               <span jhiTranslate="researchGroup.groupInfo.fields.section2"></span>
             </p-divider>
-
-            <div class="form-row">
-              <div class="form-field">
-                <jhi-string-input
-                  [id]="'rg-school'"
-                  label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
-                  [control]="form.controls.school"
-                  [model]="form.controls.school.value || ''"
-                  placeholder="{{ 'researchGroup.groupInfo.placeholders.school' | translate }}"
-                />
-              </div>
-              <div class="form-field">
-                <jhi-string-input
-                  [id]="'rg-defaultFieldOfStudies'"
-                  label="{{ 'researchGroup.groupInfo.fields.defaultFieldOfStudies' | translate }}"
-                  [control]="form.controls.defaultFieldOfStudies"
-                  [model]="form.controls.defaultFieldOfStudies.value || ''"
-                  placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
-                />
-              </div>
-            </div>
 
             <div class="form-row">
               <div class="form-field">
@@ -97,6 +76,19 @@
                   placeholder="{{ 'researchGroup.groupInfo.placeholders.email' | translate }}"
                 />
               </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <jhi-string-input
+                  [id]="'rg-defaultFieldOfStudies'"
+                  label="{{ 'researchGroup.groupInfo.fields.defaultFieldOfStudies' | translate }}"
+                  [control]="form.controls.defaultFieldOfStudies"
+                  [model]="form.controls.defaultFieldOfStudies.value || ''"
+                  placeholder="{{ 'researchGroup.groupInfo.placeholders.defaultFieldOfStudies' | translate }}"
+                />
+              </div>
+              <div class="form-field"></div>
             </div>
 
             <!-- Address section -->
@@ -149,6 +141,32 @@
               [shouldTranslate]="true"
             />
           }
+
+          <!-- Organization section -->
+          <p-divider layout="horizontal">
+            <span jhiTranslate="researchGroup.groupInfo.fields.sectionOrganization"></span>
+          </p-divider>
+
+          <jhi-info-box severity="secondary" message="researchGroup.groupInfo.organizationInfo" [shouldTranslate]="true" />
+
+          <div class="form-row mt-4">
+            <div class="form-field">
+              <jhi-string-input
+                [id]="'rg-department'"
+                label="{{ 'researchGroup.groupInfo.fields.department' | translate }}"
+                [model]="departmentName() || ('researchGroup.groupInfo.noDepartment' | translate)"
+                [disabled]="true"
+              />
+            </div>
+            <div class="form-field">
+              <jhi-string-input
+                [id]="'rg-school'"
+                label="{{ 'researchGroup.groupInfo.fields.school' | translate }}"
+                [model]="schoolName() || ('researchGroup.groupInfo.noSchool' | translate)"
+                [disabled]="true"
+              />
+            </div>
+          </div>
         </form>
       </div>
     </div>

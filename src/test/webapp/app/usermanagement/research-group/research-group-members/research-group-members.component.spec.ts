@@ -2,16 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideDialogServiceMock } from 'util/dialog.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
@@ -21,6 +22,7 @@ describe('ResearchGroupMembersComponent', () => {
     removeMemberFromResearchGroup: ReturnType<typeof vi.fn>;
   };
   let mockToastService: ReturnType<typeof createToastServiceMock>;
+  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
 
   const mockUserData: UserShortDTO = {
     userId: 'user-1',
@@ -48,12 +50,14 @@ describe('ResearchGroupMembersComponent', () => {
     };
 
     mockToastService = createToastServiceMock();
+    mockAccountService = createAccountServiceMock();
+    mockAccountService.user.set({ id: 'current-user', name: 'Current User', email: 'test@test.com', authorities: [] });
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent],
       providers: [
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: AccountService, useValue: { userId: 'current-user' } },
+        provideAccountServiceMock(mockAccountService),
         provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
@@ -213,12 +217,14 @@ describe('ResearchGroupMembersComponent', () => {
       name: 'John Doe',
       role: 'Professor',
       isCurrentUser: false,
+      canRemove: true,
     });
     expect(tableData[1]).toEqual({
       ...mockCurrentUser,
       name: 'Current User',
       role: 'Admin',
       isCurrentUser: true,
+      canRemove: false,
     });
   });
 
@@ -251,5 +257,59 @@ describe('ResearchGroupMembersComponent', () => {
     component.members.set([memberWithLowercaseRole]);
     const row = component.tableData()[0];
     expect(row.role).toBe('Professor');
+  });
+
+  describe('openAddMembersModal', () => {
+    let dialogService: DialogService;
+
+    beforeEach(() => {
+      dialogService = TestBed.inject(DialogService);
+      mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+      fixture.detectChanges();
+    });
+
+    it('should open add members modal and reload members on close if added', () => {
+      const mockRef = {
+        onClose: of(true),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+
+      component.openAddMembersModal();
+
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(2);
+    });
+
+    it('should open add members modal and NOT reload members on close if NOT added', () => {
+      const mockRef = {
+        onClose: of(false),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+
+      component.openAddMembersModal();
+
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('should prevent employee from removing a professor', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    const professorMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Professor] };
+    component.members.set([professorMember]);
+
+    const row = component.tableData()[0];
+
+    expect(row.canRemove).toBe(false);
+  });
+
+  it('should not allow employee to remove members', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    const studentMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Employee] };
+    component.members.set([studentMember]);
+
+    const row = component.tableData()[0];
+
+    expect(row.canRemove).toBe(false);
   });
 });

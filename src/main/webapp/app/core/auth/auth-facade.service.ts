@@ -1,10 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { DocumentCacheService } from 'app/service/document-cache.service';
-
-import { OtpCompleteDTO } from '../../generated/model/otpCompleteDTO';
-import { UserProfileDTO } from '../../generated/model/userProfileDTO';
-import { AuthSessionInfoDTO } from '../../generated/model/authSessionInfoDTO';
+import { AuthSessionInfoDTO, OtpCompleteDTO, UserProfileDTO } from 'app/generated';
+import { ToastService } from 'app/service/toast-service';
 
 import { ServerAuthenticationService } from './server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentication.service';
@@ -43,6 +41,7 @@ export class AuthFacadeService {
   private readonly router = inject(Router);
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly documentCache = inject(DocumentCacheService);
+  private readonly toastService = inject(ToastService);
 
   private authMethod: AuthMethod = 'none';
 
@@ -156,26 +155,35 @@ export class AuthFacadeService {
    * The branching prevents mixed flows (e.g., trying Keycloak logout when only a server session exists)
    * and avoids unnecessary calls when no auth method is active.
    */
-  async logout(): Promise<void> {
-    if (this.authMethod === 'none') {
+  async logout(sessionExpired = false): Promise<void> {
+    if (this.authMethod === 'none' && !sessionExpired) {
       return;
     }
     this.documentCache.clear();
     return this.runAuthAction(async () => {
       const user = this.accountService.user();
-      const isProfessor = user?.authorities?.includes('PROFESSOR') ?? false;
-      const redirectUrl = isProfessor ? window.location.origin + '/professor' : window.location.origin + '/';
+      const isProfessorOrEmployee =
+        (user?.authorities?.includes('PROFESSOR') ?? false) || (user?.authorities?.includes('EMPLOYEE') ?? false);
+      const redirectUrl = isProfessorOrEmployee ? window.location.origin + '/professor' : window.location.origin + '/';
       if (this.authMethod === 'server') {
         this.authMethod = 'none';
         await this.serverAuthenticationService.logout();
-        void this.router.navigate([isProfessor ? '/professor' : '/']);
+        void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
       } else if (this.authMethod === 'keycloak') {
         this.authMethod = 'none';
         await this.keycloakAuthenticationService.logout(redirectUrl);
+      } else {
+        void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
       }
       // Reset states
       this.accountService.user.set(undefined);
       this.accountService.loaded.set(true);
+
+      if (sessionExpired) {
+        this.toastService.showWarnKey('auth.common.toast.logout.sessionExpired');
+      } else {
+        this.toastService.showSuccessKey('auth.common.toast.logout.successfullyLoggedOut');
+      }
     }, 'Logout failed.');
   }
 
