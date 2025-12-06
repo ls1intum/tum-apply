@@ -51,7 +51,7 @@
           <div class="info-item">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
             <span jhiTranslate="entity.application_detail.location"></span>
-            <span class="value">{{ dropDownOptions.getLocationTranslationKey(application.jobLocation) | translate }}</span>
+            <span class="value">{{ (dropDownOptions.getLocationTranslationKey(application.jobLocation) | translate) || '-' }}</span>
           </div>
         </div>
       </section>

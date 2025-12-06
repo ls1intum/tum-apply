@@ -37,7 +37,7 @@
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
             <span
               ><strong jhiTranslate="jobDetailPage.header.location"></strong>
-              {{ dropDownOptions.getLocationTranslationKey(job.location) | translate }}</span
+              {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
             >
           </div>
         </div>
@@ -86,7 +86,7 @@
             <div class="info-list">
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
-                <span class="value">{{ dropDownOptions.getFieldOfStudiesTranslationKey(job.fieldOfStudies) | translate }}</span>
+                <span class="value">{{ (dropDownOptions.getFieldOfStudiesTranslationKey(job.fieldOfStudies) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.researchArea"></span>
@@ -110,7 +110,7 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fundingType"></span>
-                <span class="value">{{ dropDownOptions.getFundingTypeTranslationKey(job.fundingType) | translate }}</span>
+                <span class="value">{{ (dropDownOptions.getFundingTypeTranslationKey(job.fundingType) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
