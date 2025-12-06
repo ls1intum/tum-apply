@@ -36,6 +36,7 @@ import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
+import { PrimengTranslationService } from './shared/language/primeng-translation.service';
 
 /**
  * Application initializer that enforces strict order:
@@ -51,10 +52,15 @@ export async function initializeApp(): Promise<void> {
   await authFacade.initAuth();
 }
 
+export function initializePrimeNgI18n(): void {
+  inject(PrimengTranslationService);
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
     provideAppInitializer(initializeApp),
+    provideAppInitializer(initializePrimeNgI18n),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
