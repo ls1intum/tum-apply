@@ -3,10 +3,11 @@ package de.tum.cit.aet.usermanagement.web;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.security.CheckAccess;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.dto.AddMembersToResearchGroupDTO;
 import de.tum.cit.aet.usermanagement.dto.AdminResearchGroupFilterDTO;
@@ -56,8 +57,8 @@ public class ResearchGroupResource {
      * @param pageDTO the pagination parameters
      * @return paginated list of members
      */
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/members")
-    @ProfessorOrAdmin
     public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembers(@ParameterObject @Valid @ModelAttribute PageDTO pageDTO) {
         log.info("GET /api/research-groups/members?pageNumber={}&pageSize={}", pageDTO.pageNumber(), pageDTO.pageSize());
         PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembers(pageDTO);
@@ -70,8 +71,8 @@ public class ResearchGroupResource {
      * @param userId the ID of the user to remove from the research group
      * @return no content response
      */
+    @Professor
     @DeleteMapping("/members/{userId}")
-    @ProfessorOrAdmin
     public ResponseEntity<Void> removeMemberFromResearchGroup(@PathVariable UUID userId) {
         log.info("DELETE /api/research-groups/members/{}", userId);
         researchGroupService.removeMemberFromResearchGroup(userId);
@@ -97,8 +98,8 @@ public class ResearchGroupResource {
      * @param researchGroupId the ID of the research group to get details for
      * @return the detailed research group information
      */
+    @ProfessorOrEmployeeOrAdmin
     @GetMapping("/detail/{researchGroupId}")
-    @CheckAccess
     public ResponseEntity<ResearchGroupLargeDTO> getResourceGroupDetails(@PathVariable UUID researchGroupId) {
         log.info("GET /api/research-groups/detail/{}", researchGroupId);
         return ResponseEntity.ok(researchGroupService.getResearchGroupDetails(researchGroupId));
@@ -111,8 +112,8 @@ public class ResearchGroupResource {
      * @param researchGroupDTO the research group data to update
      * @return the updated research group
      */
+    @ProfessorOrEmployeeOrAdmin
     @PutMapping("/{id}")
-    @CheckAccess
     public ResponseEntity<ResearchGroupDTO> updateResearchGroup(
         @PathVariable UUID id,
         @Valid @RequestBody ResearchGroupDTO researchGroupDTO
@@ -129,8 +130,8 @@ public class ResearchGroupResource {
      * @param request the professor's research group request
      * @return the created research group in DRAFT state
      */
-    @PostMapping("/professor-request")
     @Authenticated
+    @PostMapping("/professor-request")
     public ResponseEntity<ResearchGroupDTO> createProfessorResearchGroupRequest(@Valid @RequestBody ResearchGroupRequestDTO request) {
         log.info("POST /api/research-groups/professor-request name={} uniId={}", request.researchGroupName(), request.universityId());
         ResearchGroup created = researchGroupService.createProfessorResearchGroupRequest(request);
@@ -144,8 +145,8 @@ public class ResearchGroupResource {
      * @param request the research group creation request
      * @return the created research group in ACTIVE state
      */
-    @PostMapping("/admin-create")
     @Admin
+    @PostMapping("/admin-create")
     public ResponseEntity<ResearchGroupDTO> createResearchGroupAsAdmin(@Valid @RequestBody ResearchGroupRequestDTO request) {
         log.info("POST /api/research-groups/admin-create name={}", request.researchGroupName());
         ResearchGroup created = researchGroupService.createResearchGroupAsAdmin(request);
@@ -159,8 +160,8 @@ public class ResearchGroupResource {
      * @param request the employee's research group request
      * @return HTTP 204 No Content on success
      */
-    @PostMapping("/employee-request")
     @Authenticated
+    @PostMapping("/employee-request")
     public ResponseEntity<Void> createEmployeeResearchGroupRequest(@Valid @RequestBody EmployeeResearchGroupRequestDTO request) {
         log.info("POST /api/research-groups/employee-request professorName={}", request.professorName());
         researchGroupService.createEmployeeResearchGroupRequest(request);
@@ -177,8 +178,8 @@ public class ResearchGroupResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} containing a
      *         {@link Page} of {@link ResearchGroupAdminDTO}
      */
-    @GetMapping("/admin")
     @Admin
+    @GetMapping("/admin")
     public ResponseEntity<PageResponseDTO<ResearchGroupAdminDTO>> getResearchGroupsForAdmin(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @ParameterObject @Valid @ModelAttribute AdminResearchGroupFilterDTO filterDTO,
@@ -203,8 +204,8 @@ public class ResearchGroupResource {
      * @param pageDTO the pagination parameters
      * @return paginated list of DRAFT research groups
      */
-    @GetMapping("/draft")
     @Admin
+    @GetMapping("/draft")
     public ResponseEntity<PageResponseDTO<ResearchGroupDTO>> getDraftResearchGroups(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
     ) {
@@ -233,8 +234,8 @@ public class ResearchGroupResource {
      * @param researchGroupId the ID of the research group to deny
      * @return the denied research group
      */
-    @PostMapping("/{researchGroupId}/deny")
     @Admin
+    @PostMapping("/{researchGroupId}/deny")
     public ResponseEntity<ResearchGroupDTO> denyResearchGroup(@PathVariable UUID researchGroupId) {
         log.info("POST /api/research-groups/{}/deny", researchGroupId);
         ResearchGroup denied = researchGroupService.denyResearchGroup(researchGroupId);
@@ -247,8 +248,8 @@ public class ResearchGroupResource {
      * @param researchGroupId the ID of the research group to withdraw
      * @return the withdrawn research group
      */
-    @PostMapping("/{researchGroupId}/withdraw")
     @Admin
+    @PostMapping("/{researchGroupId}/withdraw")
     public ResponseEntity<ResearchGroupDTO> withdrawResearchGroup(@PathVariable UUID researchGroupId) {
         log.info("POST /api/research-groups/{}/withdraw", researchGroupId);
         ResearchGroup withdrawn = researchGroupService.withdrawResearchGroup(researchGroupId);
@@ -261,8 +262,8 @@ public class ResearchGroupResource {
      * @param dto the DTO containing user IDs to add
      * @return no content response
      */
+    @ProfessorOrEmployeeOrAdmin
     @PostMapping("/members")
-    @ProfessorOrAdmin
     public ResponseEntity<Void> addMembersToResearchGroup(@Valid @RequestBody AddMembersToResearchGroupDTO dto) {
         log.info("POST /api/research-groups/members - adding {} members", dto.keycloakUsers().size());
         researchGroupService.addMembersToResearchGroup(dto.keycloakUsers(), dto.researchGroupId());

@@ -1,6 +1,7 @@
 package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.evaluation.dto.RatingOverviewDTO;
 import de.tum.cit.aet.evaluation.service.RatingService;
 import jakarta.validation.constraints.Max;
@@ -24,7 +25,7 @@ public class RatingResource {
      * @return a {@link ResponseEntity} containing the {@link RatingOverviewDTO} for the specified application
      */
     @GetMapping
-    @Professor
+    @ProfessorOrEmployee
     public ResponseEntity<RatingOverviewDTO> getRatings(@PathVariable("applicationId") UUID applicationId) {
         return ResponseEntity.ok(ratingService.getRatingOverview(applicationId));
     }
@@ -37,7 +38,7 @@ public class RatingResource {
      * @return a {@link ResponseEntity} containing the updated {@link RatingOverviewDTO} for the specified application
      */
     @PutMapping
-    @Professor
+    @ProfessorOrEmployee
     public ResponseEntity<RatingOverviewDTO> updateRating(
         @PathVariable("applicationId") UUID applicationId,
         @RequestParam(required = false) @Min(-2) @Max(2) Integer rating

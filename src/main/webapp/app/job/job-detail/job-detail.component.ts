@@ -21,8 +21,9 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
 import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
-import { JobPreviewRequest } from 'app/generated';
+import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 
+import * as DropDownOptions from '../dropdown-options';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../shared/language/translate.directive';
 
@@ -76,6 +77,7 @@ export interface JobDetails {
   styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
+  readonly dropDownOptions = DropDownOptions;
   readonly closeButtonLabel = 'button.close';
   readonly closeButtonSeverity = 'danger' as ButtonColor;
   readonly closeButtonIcon = 'xmark';
@@ -132,7 +134,7 @@ export class JobDetailComponent {
     };
 
     // Case 1: Not a research group member or professor → show Apply button
-    if (!job.belongsToResearchGroup && !this.isProfessor()) {
+    if (!job.belongsToResearchGroup && !this.isProfessorOrEmployee()) {
       switch (job.applicationState) {
         case undefined:
           return {
@@ -154,7 +156,6 @@ export class JobDetailComponent {
               {
                 label: 'button.edit',
                 severity: 'primary',
-                variant: 'outlined',
                 onClick: () => this.onEditApplication(),
                 disabled: false,
                 shouldTranslate: true,
@@ -186,7 +187,6 @@ export class JobDetailComponent {
           {
             label: 'button.edit',
             severity: 'primary',
-            variant: 'outlined',
             onClick: () => this.onEditJob(),
             disabled: false,
             shouldTranslate: true,
@@ -263,8 +263,8 @@ export class JobDetailComponent {
     this.location.back();
   }
 
-  isProfessor(): boolean {
-    return this.accountService.hasAnyAuthority(['PROFESSOR']);
+  isProfessorOrEmployee(): boolean {
+    return this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee]);
   }
 
   onEditResearchGroup(): void {
@@ -457,7 +457,7 @@ export class JobDetailComponent {
 
   private isOwnerOfJob(job: JobDetails): boolean {
     const user = this.accountService.loadedUser();
-    return !!user && this.isProfessor() && job.belongsToResearchGroup;
+    return !!user && this.isProfessorOrEmployee() && job.belongsToResearchGroup;
   }
 
   private mapToJobDetails(

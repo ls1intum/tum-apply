@@ -1,26 +1,26 @@
 @switch (state()) {
   @case ('SAVED') {
-    <p-badge [value]="'entity.applicationOverview.state.draft' | translate" severity="secondary" />
+    <jhi-tag [text]="'entity.applicationOverview.state.draft' | translate" color="info" width="7rem" />
   }
   @case ('SENT') {
-    <p-badge [value]="'entity.applicationOverview.state.submitted' | translate" />
+    <jhi-tag [text]="'entity.applicationOverview.state.submitted' | translate" color="secondary" width="7rem" />
   }
   @case ('ACCEPTED') {
-    <p-badge [value]="'entity.applicationOverview.state.accepted' | translate" severity="success" />
+    <jhi-tag [text]="'entity.applicationOverview.state.accepted' | translate" color="success" width="7rem" />
   }
   @case ('IN_REVIEW') {
-    <p-badge [value]="'entity.applicationOverview.state.submitted' | translate" />
+    <jhi-tag [text]="'entity.applicationOverview.state.inReview' | translate" color="warn" width="7rem" />
   }
   @case ('REJECTED') {
-    <p-badge [value]="'entity.applicationOverview.state.rejected' | translate" severity="danger" />
+    <jhi-tag [text]="'entity.applicationOverview.state.rejected' | translate" color="danger" width="7rem" />
   }
   @case ('WITHDRAWN') {
-    <p-badge [value]="'entity.applicationOverview.state.withdrawn' | translate" severity="contrast" />
+    <jhi-tag [text]="'entity.applicationOverview.state.withdrawn' | translate" color="contrast" width="7rem" />
   }
   @case ('JOB_CLOSED') {
-    <p-badge [value]="'entity.applicationOverview.state.closed' | translate" severity="contrast" />
+    <jhi-tag [text]="'entity.applicationOverview.state.closed' | translate" color="contrast" width="7rem" />
   }
   @default {
-    <p-badge [value]="state()" severity="warn" />
+    <jhi-tag [text]="state()" color="warn" width="7rem" />
   }
 }

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.tum.cit.aet.core.domain.CurrentUser;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -117,7 +118,7 @@ class ResearchGroupServiceTest {
 
         @BeforeEach
         void setup() {
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
         }
 
         @Test
@@ -163,7 +164,7 @@ class ResearchGroupServiceTest {
 
         @BeforeEach
         void setup() {
-            when(currentUserService.getResearchGroupIdIfProfessor()).thenReturn(TEST_RESEARCH_GROUP_ID);
+            when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
         }
 
         @Test
@@ -174,6 +175,11 @@ class ResearchGroupServiceTest {
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
 
+            // Mock CurrentUser
+            CurrentUser currentUserMock = mock(CurrentUser.class);
+            when(currentUserMock.isProfessor()).thenReturn(true);
+            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
+
             // Act
             researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID);
 
@@ -181,6 +187,30 @@ class ResearchGroupServiceTest {
             assertThat(memberToRemove.getResearchGroup()).isNull();
             verify(userRepository).save(memberToRemove);
             verify(userResearchGroupRoleRepository).removeResearchGroupFromUserRoles(OTHER_USER_ID);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenEmployeeRemovesProfessor() {
+            // Arrange
+            User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "prof@test.com", null, null);
+            memberToRemove.setResearchGroup(testResearchGroup);
+
+            UserResearchGroupRole role = new UserResearchGroupRole();
+            role.setRole(UserRole.PROFESSOR);
+            memberToRemove.setResearchGroupRoles(Set.of(role));
+
+            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
+            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
+
+            // Mock CurrentUser as Employee
+            CurrentUser currentUserMock = mock(CurrentUser.class);
+            when(currentUserMock.isProfessor()).thenReturn(false);
+            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
+
+            // Act & Assert
+            assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessageContaining("You do not have permission to remove a Professor");
         }
 
         @Test

@@ -10,13 +10,11 @@
   .title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--p-text-primary);
   }
 
   .subtitle {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--p-text-primary);
   }
 
   .sub-subtitle-container {
@@ -29,14 +27,9 @@
     margin: 0;
   }
 
-  .p-accordionheader {
-    background: var(--p-background-default);
-    color: var(--p-text-secondary);
-    border: 0.0625rem solid var(--p-text-secondary);
-    border-radius: 0;
-  }
-
-  .p-accordioncontent-content {
-    color: var(--p-text-secondary);
+  .registration-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
   }
 }

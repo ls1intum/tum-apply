@@ -57,10 +57,10 @@ export class InfoBoxComponent {
    * Uses PrimeNG color variables for consistency.
    */
   containerClasses = computed(() => {
-    const baseClasses = 'flex items-center gap-3 p-4 rounded-r-lg border-l-4';
+    const baseClasses = 'flex items-center gap-3 p-4 border-l-4';
     const severityClasses: Record<InfoBoxSeverity, string> = {
-      primary: 'bg-[var(--p-primary-50)] border-[var(--p-primary-color)]',
-      secondary: 'bg-[var(--p-surface-100)] border-[var(--p-surface-500)]',
+      primary: 'bg-[var(--p-background-surface)] border-[var(--p-primary-color)]',
+      secondary: 'bg-[var(--p-border-default)] border-[var(--p-text-disabled)]',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });
@@ -73,7 +73,7 @@ export class InfoBoxComponent {
     const baseClasses = 'text-xl mt-0.5';
     const severityClasses: Record<InfoBoxSeverity, string> = {
       primary: 'text-[var(--p-primary-color)]',
-      secondary: 'text-[var(--p-surface-500)]',
+      secondary: 'text-[var(--p-text-disabled)]',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });

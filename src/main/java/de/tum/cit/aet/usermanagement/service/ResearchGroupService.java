@@ -67,7 +67,7 @@ public class ResearchGroupService {
      */
     public PageResponseDTO<UserShortDTO> getResearchGroupMembers(PageDTO pageDTO) {
         // Get the current user's research group ID
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
@@ -94,7 +94,7 @@ public class ResearchGroupService {
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
         // Get the current user's research group ID for validation
-        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
@@ -113,6 +113,17 @@ public class ResearchGroupService {
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
             throw new BadRequestException("Cannot remove yourself from the research group");
+        }
+
+        boolean currentUserIsProfessor = currentUserService.getCurrentUser().isProfessor();
+
+        boolean userToRemoveIsProfessor = userToRemove
+            .getResearchGroupRoles()
+            .stream()
+            .anyMatch(r -> UserRole.PROFESSOR.equals(r.getRole()));
+
+        if (!currentUserIsProfessor && userToRemoveIsProfessor) {
+            throw new AccessDeniedException("You do not have permission to remove a Professor.");
         }
 
         // Remove the direct research group membership
@@ -145,6 +156,7 @@ public class ResearchGroupService {
      */
 
     public ResearchGroupLargeDTO getResearchGroupDetails(UUID researchGroupId) {
+        currentUserService.isAdminOrMemberOf(researchGroupId);
         ResearchGroup researchGroup = researchGroupRepository
             .findById(researchGroupId)
             .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
@@ -179,6 +191,7 @@ public class ResearchGroupService {
      * @return the updated research group DTO
      */
     public ResearchGroupDTO updateResearchGroup(UUID researchGroupId, ResearchGroupDTO researchGroupDTO) {
+        currentUserService.isAdminOrMemberOf(researchGroupId);
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(researchGroupId);
         updateEntityFromDTO(researchGroup, researchGroupDTO);
         ResearchGroup updatedResearchGroup = researchGroupRepository.save(researchGroup);
@@ -529,7 +542,7 @@ public class ResearchGroupService {
      */
     @Transactional
     public void addMembersToResearchGroup(List<KeycloakUserDTO> keycloakUsers, UUID researchGroupId) {
-        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfProfessor();
+        UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 
         for (KeycloakUserDTO keycloakUser : keycloakUsers) {

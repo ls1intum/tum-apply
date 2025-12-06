@@ -8,7 +8,7 @@
       <jhi-sidebar
         class="sidebar shadow-[1px_0px_3px_0px_rgba(0,0,0,0.1)]"
         [isSidebarCollapsed]="isSidebarCollapsed()"
-        (sidebarCollapsedChange)="isSidebarCollapsed.set($event)"
+        (sidebarCollapsedChange)="toggleSidebar()"
       />
     }
     <div class="content">

@@ -70,7 +70,6 @@ function getPersonalInformationsLabel(translate: TranslateService): Record<strin
   return {
     personalInformation: translate.instant('entity.application_detail.personal_information'),
     applicantInfo: translate.instant('entity.detail_card.applicant_info'),
-    preferredLanguage: translate.instant('entity.detail_card.preferred_language'),
     desiredStartDate: translate.instant('entity.detail_card.desired_start_date'),
     gender: translate.instant('entity.detail_card.gender'),
     nationality: translate.instant('entity.detail_card.nationality'),
