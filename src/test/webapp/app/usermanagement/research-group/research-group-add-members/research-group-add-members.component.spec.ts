@@ -256,6 +256,45 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(component.users()).toEqual([mockUser2]);
       expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
     });
+
+    it('should not display error toast when stale request errors and a newer response succeeds', async () => {
+      vi.clearAllMocks();
+
+      let firstSubscriber: any;
+      const first$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+        firstSubscriber = sub;
+      });
+
+      let secondSubscriber: any;
+      const second$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+        secondSubscriber = sub;
+      });
+
+      mockUserService.getAvailableUsersForResearchGroup.mockReturnValueOnce(first$).mockReturnValueOnce(second$);
+
+      // start first request (older)
+      const p1 = component.loadAvailableUsers('wag');
+      // start second request (newer)
+      const p2 = component.loadAvailableUsers('wagne');
+
+      // complete second request first (newer arrives earlier)
+      secondSubscriber.next({ content: [mockUser2], totalElements: 1 });
+      secondSubscriber.complete();
+      await p2; // wait for the newer request to be applied
+
+      expect(component.users()).toEqual([mockUser2]);
+
+      // now complete the first request (older arrives later and errors) - should be ignored
+      firstSubscriber.error(new Error('Api error older')); // older request fails
+      try {
+        await p1;
+      } catch (e) {
+        // ignore error from p1 (older)
+      }
+
+      // No toast should be shown for the stale error
+      expect(mockToastService.showErrorKey).not.toHaveBeenCalled();
+    });
   });
 
   describe('Dialog Config', () => {

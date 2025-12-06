@@ -114,7 +114,10 @@ export class ResearchGroupAddMembersComponent {
       this.totalRecords.set(response.totalElements ?? 0);
       this.users.set(response.content ?? []);
     } catch {
-      this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
+      // Only show an error toast for the most recent request; stale errors shouldn't alarm the user
+      if (requestId === this.latestRequestId) {
+        this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.loadUsersFailed`);
+      }
     } finally {
       // only touch loading/timeout if this is the latest request
       if (requestId === this.latestRequestId) {
