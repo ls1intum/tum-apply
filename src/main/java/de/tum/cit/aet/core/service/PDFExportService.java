@@ -150,7 +150,7 @@ public class PDFExportService {
 
         builder.addHeaderItem(labels.get("jobBy") + job.supervisingProfessorName() + labels.get("forJob") + "'" + job.title() + "'");
         try {
-            if (currentUserService.isProfessor()) {
+            if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
             }
         } catch (Exception e) {}

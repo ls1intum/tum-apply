@@ -2,19 +2,26 @@
   <h2 class="title" jhiTranslate="professorLandingPage.faq.headline"></h2>
   <p class="subtitle" jhiTranslate="professorLandingPage.faq.subheadline"></p>
   <div class="sub-subtitle-container">
-    <a href="https://ls1intum.github.io/tum-apply" target="_blank" class="sub-subtitle-link">
+    <a class="sub-subtitle-link" href="https://ls1intum.github.io/tum-apply" target="_blank">
       <span jhiTranslate="professorLandingPage.faq.sub-subheadline"></span>
-      <fa-icon class="external-icon" size="xs" [icon]="faArrowUpRightFromSquare" />
+      <fa-icon [icon]="faArrowUpRightFromSquare" class="external-icon" size="xs" />
     </a>
   </div>
   <p-accordion [value]="0">
     @for (tab of tabs; track tab.value) {
-      <p-accordion-panel [value]="tab.value">
-        <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
-        <p-accordion-content>
-          <div [innerHTML]="tab.content | translate"></div>
-        </p-accordion-content>
-      </p-accordion-panel>
+      @if (tab.value !== 'registration' || (loggedIn() && isApplicant())) {
+        <p-accordion-panel [value]="tab.value">
+          <p-accordion-header>{{ tab.title | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div [innerHTML]="tab.content | translate"></div>
+            <div class="registration-button">
+              @if (tab.value === 'registration') {
+                <jhi-button (click)="openRegistrationForm()" [shouldTranslate]="true" [label]="translationKey + '.registration.button'" />
+              }
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+      }
     }
   </p-accordion>
 </div>

@@ -4,8 +4,8 @@ import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import {
   createUserResourceApiServiceMock,
-  UserResourceApiServiceMock,
   provideUserResourceApiServiceMock,
+  UserResourceApiServiceMock,
 } from 'util/user-resource-api.service.mock';
 
 describe('AccountService', () => {
@@ -58,7 +58,7 @@ describe('AccountService', () => {
     api.getCurrentUser.mockReturnValue(throwError(() => new Error('fail')));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     await service.loadUser();
-    expect(consoleSpy).toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledOnce();
     expect(service.loaded()).toBe(true);
     expect(service.user()).toBeUndefined();
     consoleSpy.mockRestore();
@@ -78,7 +78,7 @@ describe('AccountService', () => {
     const loadSpy = vi.spyOn(service, 'loadUser');
     await service.updateUser('  New  ', '  Name  ');
     expect(api.updateUserName).toHaveBeenCalledWith({ firstName: 'New', lastName: 'Name' });
-    expect(loadSpy).toHaveBeenCalled();
+    expect(loadSpy).toHaveBeenCalledOnce();
   });
 
   it('updatePassword trims and calls API when non-empty', async () => {
@@ -94,7 +94,15 @@ describe('AccountService', () => {
   });
 
   it('exposes convenience getters', async () => {
-    api.getCurrentUser.mockReturnValue(of({ userId: 'U4', email: 'mail@test.org', firstName: 'A', lastName: 'B', roles: ['R1'] }));
+    api.getCurrentUser.mockReturnValue(
+      of({
+        userId: 'U4',
+        email: 'mail@test.org',
+        firstName: 'A',
+        lastName: 'B',
+        roles: ['R1'],
+      }),
+    );
     await service.loadUser();
     expect(service.userId).toBe('U4');
     expect(service.userEmail).toBe('mail@test.org');
