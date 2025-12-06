@@ -11,30 +11,30 @@
   </div>
 
   <!-- User List -->
-  <div class="flex flex-col max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+  <div class="flex flex-col max-h-96 overflow-y-auto border border-border-default rounded-lg">
     @if (users().length === 0) {
-      <div class="p-8 text-center text-gray-500">
+      <div class="p-8 text-center text-text-secondary">
         {{ 'researchGroup.members.noUsers' | translate }}
       </div>
     } @else {
       @for (user of users(); track user.userId) {
         <div
           class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
-          [class.bg-blue-50]="isUserSelected(user)"
-          [class.hover:bg-blue-100]="isUserSelected(user)"
-          [class.hover:bg-gray-50]="!isUserSelected(user)"
+          [class.bg-background-surface-alt]="isUserSelected(user)"
+          [class.hover:bg-background-surface-alt]="isUserSelected(user)"
+          [class.hover:bg-background-surface]="!isUserSelected(user)"
           role="button"
           tabindex="0"
           (click)="toggleUserSelection(user)"
         >
           <div
-            class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--p-primary-color)] flex items-center justify-center text-white font-semibold"
+            class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-default flex items-center justify-center text-text-on-primary font-semibold"
           >
             {{ user.firstName ? user.firstName.charAt(0) : '' }}{{ user.lastName ? user.lastName.charAt(0) : '' }}
           </div>
           <div class="flex-1">
-            <div class="font-medium">{{ user.firstName }} {{ user.lastName }}</div>
-            <div class="text-sm text-gray-600">{{ user.email }}</div>
+            <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
+            <div class="text-sm text-text-secondary">{{ user.email }}</div>
           </div>
           <p-checkbox [ngModel]="isUserSelected(user)" [binary]="true" (click)="$event.stopPropagation()" />
         </div>

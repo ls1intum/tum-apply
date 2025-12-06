@@ -2,12 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 @Component({
   selector: 'jhi-slot-card',
-  imports: [CommonModule, TranslateDirective, ButtonComponent, FontAwesomeModule],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule, ConfirmDialog],
   templateUrl: './slot-card.component.html',
   host: {
     '(document:click)': 'handleOutsideClick($event)',

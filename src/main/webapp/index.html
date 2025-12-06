@@ -1,6 +1,21 @@
 <!doctype html>
 <html class="no-js" dir="ltr" lang="en">
   <head>
+    <script>
+      (function () {
+        try {
+          const root = document.documentElement;
+          const stored = localStorage.getItem('tumApplyTheme');
+          if (stored === 'dark') {
+            root.classList.add('tum-apply-dark-mode');
+          } else {
+            root.classList.remove('tum-apply-dark-mode');
+          }
+        } catch (e) {
+          // ignore if localStorage not available
+        }
+      })();
+    </script>
     <meta charset="utf-8" />
     <meta content="IE=edge" http-equiv="X-UA-Compatible" />
     <title>TUMApply – Doctoral Application Management Platform | Technical University of Munich</title>
