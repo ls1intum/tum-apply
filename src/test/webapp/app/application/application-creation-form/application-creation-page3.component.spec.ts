@@ -188,7 +188,6 @@ describe('ApplicationPage3Component', () => {
       projects: 'Built multiple apps',
       applicationState: 'SAVED',
       job: {
-        fieldOfStudies: 'field',
         jobId: 'id-123',
         location: 'location',
         professorName: 'profName',

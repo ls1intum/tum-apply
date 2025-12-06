@@ -26,7 +26,7 @@ export const ApplicationStatusExtended = {
 export class JobCardComponent {
   jobId = input<string>('');
   jobTitle = input<string>('');
-  fieldOfStudies = input<string>('');
+  departmentName = input<string>('');
   researchArea = input<string>('');
   location = input<string>('');
   professor = input<string>('');
