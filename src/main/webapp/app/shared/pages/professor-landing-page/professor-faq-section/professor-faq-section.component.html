@@ -16,13 +16,7 @@
             <div [innerHTML]="tab.content | translate"></div>
             <div class="registration-button">
               @if (tab.value === 'registration') {
-                <jhi-button
-                  (click)="openRegistrationForm()"
-                  [shouldTranslate]="true"
-                  label="onboarding.actions.imEmployee"
-                  variant="outlined"
-                />
-                <jhi-button (click)="openRegistrationForm(false)" [shouldTranslate]="true" label="onboarding.actions.openForm" />
+                <jhi-button (click)="openRegistrationForm()" [shouldTranslate]="true" [label]="translationKey + '.registration.button'" />
               }
             </div>
           </p-accordion-content>

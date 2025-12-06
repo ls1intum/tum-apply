@@ -7,8 +7,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideHttpClientMock } from 'util/http-client.mock';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from '../../../../../util/dialog.service.mock';
-import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
-import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
+import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 
 describe('ProfessorFaqSectionComponent', () => {
   let fixture: ComponentFixture<ProfessorFaqSectionComponent>;
@@ -124,29 +123,16 @@ describe('ProfessorFaqSectionComponent', () => {
   });
 
   describe('openRegistrationForm', () => {
-    it('should open employee request dialog when called without arguments (default = employee)', () => {
+    it('should open onboarding dialog with correct header', () => {
       const openSpy = vi.spyOn(mockDialogService, 'open');
 
       component.openRegistrationForm();
 
       expect(openSpy).toHaveBeenCalledTimes(1);
       const [componentType, config] = openSpy.mock.calls[0];
-      expect(componentType).toBe(EmployeeRequestAccessFormComponent);
+      expect(componentType).toBe(OnboardingDialog);
       expect(config).toMatchObject({
-        header: 'onboarding.employeeRequest.dialogTitle',
-      });
-    });
-
-    it('should open professor request dialog when employee flag is false', () => {
-      const openSpy = vi.spyOn(mockDialogService, 'open');
-
-      component.openRegistrationForm(false);
-
-      expect(openSpy).toHaveBeenCalledTimes(1);
-      const [componentType, config] = openSpy.mock.calls[0];
-      expect(componentType).toBe(ResearchGroupCreationFormComponent);
-      expect(config).toMatchObject({
-        header: 'onboarding.professorRequest.dialogTitle',
+        header: 'onboarding.title',
       });
     });
   });

@@ -50,7 +50,8 @@
       "questions": {
         "registration": {
           "title": "How do I register as a staff member or professor?",
-          "content": "Before you can gain access to your research group, please click on the registration link below and fill out the form. After verifying your information, you will receive a confirmation email with further instructions."
+          "content": "Before you can gain access to your research group, please click on the registration link below and fill out the form. After verifying your information, you will receive a confirmation email with further instructions.",
+          "button": "Start Registration"
         },
         "login": {
           "title": "How do I log in to TUMApply?",

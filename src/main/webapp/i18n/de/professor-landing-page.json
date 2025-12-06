@@ -50,7 +50,8 @@
       "questions": {
         "registration": {
           "title": "Wie kann ich mich als Mitarbeiter:in oder Professor:in registrieren?",
-          "content": "Bevor du Zugriff auf deine Forschungsgruppe bekommen kannst, klicke bitte auf den untenstehenden Registrierungslink und fülle das Formular aus. Nach der Überprüfung deiner Angaben erhältst du eine Bestätigungs-E-Mail mit weiteren Anweisungen."
+          "content": "Bevor du Zugriff auf deine Forschungsgruppe bekommen kannst, klicke bitte auf den untenstehenden Registrierungslink und fülle das Formular aus. Nach der Überprüfung deiner Angaben erhältst du eine Bestätigungs-E-Mail mit weiteren Anweisungen.",
+          "button": "Registrierung starten"
         },
         "login": {
           "title": "Wie melde ich mich bei TUMApply an?",
