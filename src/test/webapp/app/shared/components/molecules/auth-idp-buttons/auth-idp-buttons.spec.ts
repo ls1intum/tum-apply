@@ -126,7 +126,7 @@ describe('AuthIdpButtons', () => {
     appleButton.onClick();
     googleButton.onClick();
 
-    expect(authFacadeMock.loginWithProvider).toHaveBeenCalledWith(IdpProvider.Apple, origin);
-    expect(authFacadeMock.loginWithProvider).toHaveBeenCalledWith(IdpProvider.Google, origin);
+    expect(authFacadeMock.loginWithProvider).toHaveBeenNthCalledWith(1, IdpProvider.Apple, origin);
+    expect(authFacadeMock.loginWithProvider).toHaveBeenLastCalledWith(IdpProvider.Google, origin);
   });
 });

@@ -159,7 +159,7 @@ describe('CredentialsGroupComponent', () => {
 
     await component.onSubmit();
 
-    expect(submitHandler).toHaveBeenCalledWith(email, testPwd);
+    expect(submitHandler).toHaveBeenCalledExactlyOnceWith(email, testPwd);
     expect(component.submitError()).toBe(false);
     expect(component.form.pristine).toBe(true);
     expect(component.form.controls.password.value).toBeNull();
@@ -182,7 +182,7 @@ describe('CredentialsGroupComponent', () => {
 
     await component.onSubmit();
 
-    expect(submitHandler).toHaveBeenCalledWith(email, testPwd);
+    expect(submitHandler).toHaveBeenCalledExactlyOnceWith(email, testPwd);
     expect(component.submitError()).toBe(true);
     expect(component.form.pristine).toBe(true);
     expect(component.form.controls.email.value).toBe(email);
@@ -207,7 +207,7 @@ describe('CredentialsGroupComponent', () => {
 
     await component.onSubmit();
 
-    expect(submitHandler).toHaveBeenCalledWith(email, testPwd);
+    expect(submitHandler).toHaveBeenCalledExactlyOnceWith(email, testPwd);
     expect(component.submitError()).toBe(true);
     expect(component.form.pristine).toBe(true);
     expect(component.form.controls.email.value).toBe(email);
