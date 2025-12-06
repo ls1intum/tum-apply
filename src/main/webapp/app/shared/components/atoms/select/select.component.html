@@ -27,7 +27,7 @@
     [ngModel]="selected()"
     [optionLabel]="labelField()"
     [options]="items()"
-    [placeholder]="placeholder()"
+    [placeholder]="placeholder() | translate"
     [style]="{ width: width() }"
     [filter]="filter()"
     [showClear]="showClear()"

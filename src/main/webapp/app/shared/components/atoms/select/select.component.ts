@@ -27,7 +27,7 @@ export class SelectComponent {
   selected = input<SelectOption | undefined>(undefined);
   label = input<string>('');
   required = input<boolean>(false);
-  placeholder = input<string>('Select...');
+  placeholder = input<string>('shared.select.placeholder');
   disabled = input<boolean>(false);
   labelField = input<string>('name');
   valueField = input<string>('value');

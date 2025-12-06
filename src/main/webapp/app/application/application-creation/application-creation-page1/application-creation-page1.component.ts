@@ -32,9 +32,9 @@ export type ApplicationCreationPage1Data = {
 };
 
 export const selectGender: SelectOption[] = [
-  { value: 'female', name: 'Female' },
-  { value: 'male', name: 'Male' },
-  { value: 'other', name: 'Other' },
+  { value: 'female', name: 'genders.female' },
+  { value: 'male', name: 'genders.male' },
+  { value: 'other', name: 'genders.other' },
 ];
 
 export const selectLanguage: SelectOption[] = [
