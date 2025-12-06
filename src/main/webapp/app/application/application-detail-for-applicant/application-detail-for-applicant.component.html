@@ -115,7 +115,7 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.desired_start_date"></span>
-                <span class="value">{{ application.desiredDate || '-' }}</span>
+                <span class="value">{{ application.desiredDate ? (application.desiredDate | localizedDate) : '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.gender"></span>
