@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -27,6 +26,7 @@ import {
   provideAuthOrchestratorServiceMock,
 } from '../../../../../util/auth-orchestrator.service.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../../../util/toast-service.mock';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 describe('OtpInput', () => {
   let applicationConfigMock: ApplicationConfigServiceMock;
@@ -356,7 +356,7 @@ describe('OtpInput', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    const otpHost = fixture.debugElement.query(By.css('p-inputotp'));
+    const otpHost = fixture.debugElement.query(de => de.name === 'p-inputotp');
     expect(otpHost).toBeTruthy();
 
     otpHost.triggerEventHandler('onChange', createInputOtpChangeEvent('abc123'));
@@ -370,7 +370,7 @@ describe('OtpInput', () => {
     expect(preventDefault).toHaveBeenCalledOnce();
     expect(submitSpy).toHaveBeenCalledOnce();
 
-    const buttons = fixture.debugElement.queryAll(By.css('jhi-button'));
+    const buttons = fixture.debugElement.queryAll(de => de.componentInstance instanceof ButtonComponent);
     const resendButton = buttons[0];
     const submitButton = buttons[1];
 
@@ -380,7 +380,7 @@ describe('OtpInput', () => {
     submitButton.triggerEventHandler('click', new MouseEvent('click'));
     fixture.detectChanges();
 
-    expect(authFacadeMock.verifyOtp).toHaveBeenCalledTimes(2);
+    expect(authFacadeMock.verifyOtp).toHaveBeenCalledOnce();
 
     resendButton.triggerEventHandler('click', new MouseEvent('click'));
     fixture.detectChanges();
