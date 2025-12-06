@@ -30,6 +30,7 @@ export function createAuthOrchestratorServiceMock(): AuthOrchestratorServiceMock
   const isBusy = signal(false);
   const error = signal<string | null>(null);
   const cooldownSeconds = signal(0);
+
   const isOpenSignal = signal<boolean>(true);
   const errorSignal = signal<string | null>(null);
 
