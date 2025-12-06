@@ -25,8 +25,8 @@
             <div
               class="grow cursor-pointer px-3 py-2 hover:rounded-lg"
               (click)="selectDoc(item.document.id)"
-              [class.bg-[var(--p-primary-color)]]="isSelected(item.document.id)()"
-              [class.hover:bg-[var(--p-primary-hover-color-outlined)]]="!isSelected(item.document.id)()"
+              [class.bg-[var(--p-background-surface-alt)]]="isSelected(item.document.id)()"
+              [class.hover:bg-[var(--p-primary-color)]]="!isSelected(item.document.id)()"
               [class.rounded-lg]="isSelected(item.document.id)()"
               role="button"
               tabindex="0"

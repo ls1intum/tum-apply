@@ -3,7 +3,10 @@ import { vi } from 'vitest';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
-export type AccountServiceMock = Pick<AccountService, 'user' | 'loadedUser' | 'signedIn' | 'loaded' | 'hasAnyAuthority'> & {
+export type AccountServiceMock = Pick<
+  AccountService,
+  'user' | 'loadedUser' | 'signedIn' | 'loaded' | 'hasAnyAuthority' | 'userId' | 'userAuthorities'
+> & {
   loadUser: ReturnType<typeof vi.fn>;
   authorities: UserShortDTO.RolesEnum[];
   setAuthorities: (roles: UserShortDTO.RolesEnum[]) => void;
@@ -15,6 +18,7 @@ export let defaultUser: User = {
   id: 'id-2',
   name: 'User',
   email: 'user@test.com',
+  authorities: [],
 };
 
 export function createAccountServiceMock(signedIn?: boolean, loaded?: boolean): AccountServiceMock {
@@ -42,6 +46,12 @@ export function createAccountServiceMock(signedIn?: boolean, loaded?: boolean): 
     },
     updateUser: vi.fn().mockResolvedValue(undefined),
     updatePassword: vi.fn().mockResolvedValue(undefined),
+    get userId(): string | undefined {
+      return userLocal()?.id;
+    },
+    get userAuthorities(): string[] | undefined {
+      return userLocal()?.authorities;
+    },
   };
 
   return mock;
