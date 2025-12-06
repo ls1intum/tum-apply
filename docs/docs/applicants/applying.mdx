@@ -2,6 +2,12 @@
 sidebar_label: Apply
 ---
 
+import Image, {ImageSize} from "../../src/components/Image/Image";
+import page1Img from './images/applying/application-form-page1.png';
+import page2Img from './images/applying/application-form-page2.png';
+import page3Img_part1 from './images/applying/application-form-page3_1.png';
+import page3Img_part2 from './images/applying/application-form-page3_2.png';
+
 # How to Apply for a Doctoral Position: Step-by-Step Guide
 
 ## Getting Started
@@ -11,14 +17,14 @@ Welcome to the TUMApply Doctoral Portal application system! This guide will walk
 ## Step 1: Finding and Selecting a Position
 
 1. **Navigate to Available Positions**
-   - Log into the TUMApply Doctoral Portal using your credentials
-   - Go to the "Find Positions" section
-   - Browse available positions filtered by your academic background and research interests
+- Log into the TUMApply Doctoral Portal using your credentials
+- Go to the "Find Positions" section
+- Browse available positions filtered by your academic background and research interests
 
 2. **Select Your Position**
-   - Click on a position that matches your qualifications
-   - Review the position requirements and supervisor information
-   - Click "Apply" to begin your application
+- Click on a position that matches your qualifications
+- Review the position requirements and supervisor information
+- Click "Apply" to begin your application
 
 ## Step 2: Application Creation - Multi-Step Process
 
@@ -31,24 +37,26 @@ The application form is designed as a **4-page wizard** to make the process mana
 - **Auto-save feature**: Your progress is automatically saved every few seconds
 - Click "Next" to proceed (only enabled when all required fields are completed)
 
-![Application Form Page 1](images/application-form-page1.png)
+<Image src={page1Img} alt="Application Form Page 1" size={ImageSize.large}/>
 
 ### Page 2: Academic Background & Documents
 - **University information**: Previous degrees and their grades, institutions attended
-- **Upload academic documents**: 
-  - Degree certificates (PDF format, max 10MB)
+- **Upload academic documents**:
+- Degree certificates (PDF format, max 10MB)
 - **Document validation**: The system checks file format and size
 
-![Application Form Page 2](images/application-form-page2.png)
+<Image src={page2Img} alt="Application Form Page 2" size={ImageSize.large}/>
 
 ### Page 3: Application Questions & Additional Documents
 - **Answer position-specific questions**: These vary by supervisor and research area
 - **Upload supporting documents**:
-  - CV/Resume
-  - Reference letters
+- CV/Resume
+- Reference letters
 - **Progress indicator**: Shows completion status of each section
-![Application Form Page 3](images/application-form-page3_1.png)
-![Application Form Page 3](images/application-form-page3_2.png)
+<Image src={page3Img_part1} alt="Application Form Page 3 - Part 1"
+       size={ImageSize.large}/>
+<Image src={page3Img_part2} alt="Application Form Page 3 - Part 2"
+       size={ImageSize.large}/>
 ### Page 4: Review & Submit
 - **Complete application summary**: Review all entered information
 - **Document checklist**: Verify all required documents are uploaded
@@ -70,12 +78,12 @@ You have two choices on the final page:
 - Simply exit the application form
 - Application is saved with all current progress
 - You can return anytime to continue editing
-- Draft applications appear in your ["My Applications" dashboard](overview.md)
+- Draft applications appear in your "My Applications" dashboard
 
 ## Step 4: After Submission
 
 ### Immediate Actions
-- You're redirected to your [**Application Dashboard**](overview.md)
+- You're redirected to your **Application Dashboard**
 - Submission confirmation is displayed
 - Application status changes to "Submitted"
 
