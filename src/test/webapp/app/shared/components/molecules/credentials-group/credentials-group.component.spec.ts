@@ -149,7 +149,7 @@ describe('CredentialsGroupComponent', () => {
     fixture.componentRef.setInput('submitHandler', submitHandler);
 
     const email = 'success@example.com';
-    const testPwd = 'Secret123!';
+    const testPwd = 'test-password';
 
     component.form.controls.email.setValue(email);
     component.form.controls.password.setValue(testPwd);
@@ -174,7 +174,7 @@ describe('CredentialsGroupComponent', () => {
     fixture.componentRef.setInput('submitHandler', submitHandler);
 
     const email = 'fail@example.com';
-    const testPwd = 'Secret123!';
+    const testPwd = 'test-password';
 
     component.form.controls.email.setValue(email);
     component.form.controls.password.setValue(testPwd);
@@ -199,7 +199,7 @@ describe('CredentialsGroupComponent', () => {
     fixture.componentRef.setInput('submitHandler', submitHandler);
 
     const email = 'error@example.com';
-    const testPwd = 'Secret123!';
+    const testPwd = 'test-password';
 
     component.form.controls.email.setValue(email);
     component.form.controls.password.setValue(testPwd);
