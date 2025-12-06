@@ -24,7 +24,7 @@ describe('DatePickerComponent', () => {
   };
 
   const LANGUAGE_FORMATS = {
-    en: 'dd/mm/yy',
+    en: 'mm/dd/yy',
     de: 'dd.mm.yy',
     fr: 'dd.mm.yy', // defaults to German format
   };
@@ -202,7 +202,7 @@ describe('DatePickerComponent', () => {
 
       // Test with custom minDate
       setInputAndDetectChanges(fixture, 'minDate', TEST_DATES.customMinDate);
-      expect(fixture.componentInstance.effectiveMinDate()).toBe(TEST_DATES.customMinDate);
+      expect(fixture.componentInstance.effectiveMinDate()).toStrictEqual(TEST_DATES.customMinDate);
     });
   });
 
