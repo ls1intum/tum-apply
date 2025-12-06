@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 
 /**
  * DTO for professor research group creation requests during onboarding.
@@ -18,11 +20,13 @@ public record ResearchGroupRequestDTO(
     String researchGroupHead,
     String researchGroupName,
 
+    // Required Organizational Information
+    @NotNull UUID departmentId,
+
     // Optional Research Group Information
     String abbreviation,
     String contactEmail,
     String website,
-    String school,
     String description,
     String defaultFieldOfStudies,
 

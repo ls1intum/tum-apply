@@ -23,6 +23,7 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
   Page-level sections that orchestrate molecules/atoms; should remain data-agnostic where possible.
 
 > **Tip:** Favor **reusable atomic components**. Prefer composing existing atoms/molecules before introducing new ones. When you must add a component:
+>
 > - Avoid embedding business logic; bubble events and accept data/config via inputs.
 > - Provide i18n-ready labels (see §3).
 
@@ -51,17 +52,23 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 - Avoid leaking persistence concerns (IDs, timestamps) into write DTOs unless required.
 - Validate DTOs at the boundary; map cleanly to domain entities within services.
 
-### 2.1 Authorization and Security
+### 2.2 Authorization and Security
 
 **Endpoint Security:**
+**Path:** `src/main/java/**/web/`
 - `@ApplicantOrAdmin` — Restricts access to applicants (owners) or system administrators.
   - Used for: Create, Update, Delete, Upload, Withdraw operations.
   - Enforces ownership check: Applicant can only access their own applications.
+
+- `@ProfessorOrAdmin`
+  - Works analogously to `@ApplicantOrAdmin`.
+
 - `@Authenticated` — Requires any authenticated user (applicant or professor).
   - Used for: Read operations (GetById, GetDocumentIds).
   - Professors can view applications they're evaluating.
 
 **Service-Level Authorization:**
+
 - `CurrentUserService` provides authenticated user context.
 - Ownership validation: Compares `application.applicant.userId` with `currentUser.userId`.
 - Throws `AccessDeniedException` for unauthorized access attempts.
@@ -72,8 +79,8 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 
 ### 3.1 Sorting & filtering (client-side)
 
-- Use **molecules**: `search-filter-sort-bar`, `filter-multiselect`.  
-  Use the **atom**: `sorting`.
+- Use **molecules**: `search-filter-sort-bar`.  
+  Use the **atom**: `sorting`, `filter-multiselect`.
 - Feed options from `dropdown-options.ts` to keep labels/values centralized.
 - Keep UI state (selected filters, sort key/order, search term) **serializable** so it can be:
   - Reflected in the URL (optional)
@@ -102,21 +109,19 @@ This guide covers **cross-cutting conventions** and shared building blocks used 
 - Returns `404 Not Found` for invalid application IDs.
 - User interface gracefully handles missing resources.
 
-**Conflict Errors:**
-
-- Duplicate application detection returns existing draft (no error thrown).
-- State transition validation prevents invalid operations (e.g., editing submitted application).
-- Returns `409 Conflict` for invalid state transitions.
-
 **Server Errors:**
 
 - Unhandled exceptions return `500 Internal Server Error`.
 - Logged with full stack trace for debugging.
 - User interface displays generic error message to user.
 
+**Custom Exceptions:**
+
+We have a set of custom exceptions (e.g. for specific conflict scenarios or business logic errors) that can be utilized:
+`src/main/java/de/tum/cit/aet/core/exception`
 ## 5) Performance Optimizations
 
-The following points are some of several strategies used across the TUMApply application to boost the performance and responsiveness of the site: 
+The following points are some of several strategies used across the TUMApply application to boost the performance and responsiveness of the site:
 
 **DTO Projections:**
 
@@ -129,6 +134,8 @@ The following points are some of several strategies used across the TUMApply app
 - Criteria API enables database-level pagination (LIMIT / OFFSET).
 - Prevents loading entire datasets into memory.
 - Configurable page size (default 25, max 100).
+- Use the helper class **`PageUtil`** located in:
+  `src/main/java/de/tum/cit/aet/core/util/PageUtil.java`.
 
 **Lazy Loading:**
 
@@ -151,22 +158,3 @@ The following points are some of several strategies used across the TUMApply app
 - Separate document loading via dedicated endpoint (`getDocumentDictionaryIds`).
 - Prevents eager loading of heavy document metadata in list views.
 - Client requests document IDs only when rendering detail view.
-
----
-
-## 5) Testing & quality
-
-### Client-side
-
-- Test runner: **Vitest**  
-  Example command:
-  ```bash
-  npm run test:ci
-  ```
-- View coverage report of tests:
-  ```bash
-  open build/test-results/lcov-report/index.html
-  ```
-
-- Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
-  Keep unit tests close to the component you change. Prefer focused DOM and behavior tests (validation, visibility of actions, rendering of states, sorting/filter effects).

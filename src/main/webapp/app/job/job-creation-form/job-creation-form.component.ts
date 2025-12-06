@@ -122,8 +122,8 @@ export class JobCreationFormComponent {
 
   uploadInnerClasses = computed(() => {
     const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
-    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-blue-50' : '';
-    return `${base} border-gray-300 ${hover}`.trim();
+    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
+    return `${base} border-border-default ${hover}`.trim();
   });
 
   // Forms
@@ -503,9 +503,12 @@ export class JobCreationFormComponent {
       const user = this.accountService.loadedUser();
       const researchGroupId = user?.researchGroup?.researchGroupId;
 
-      // Load default images
-      const defaults = await firstValueFrom(this.imageResourceService.getDefaultJobBanners(researchGroupId));
-      this.defaultImages.set(defaults);
+      try {
+        const defaults = await firstValueFrom(this.imageResourceService.getDefaultJobBanners(researchGroupId));
+        this.defaultImages.set(defaults);
+      } catch {
+        // If loading fails (e.g., department not set), don't show any default images and don't show error toast
+      }
 
       // Load research group's custom images
       const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());

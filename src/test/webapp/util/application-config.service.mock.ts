@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import { Provider, Type } from '@angular/core';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { ApplicationConfig, KeycloakConfig, OtpConfig } from 'app/core/config/application-config.model';
 import { vi } from 'vitest';
@@ -18,9 +18,9 @@ export interface ApplicationConfigServiceMock extends Partial<ApplicationConfigS
 export function createApplicationConfigServiceMock(overrides: Partial<ApplicationConfigServiceMock> = {}): ApplicationConfigServiceMock {
   const defaultConfig: ApplicationConfigServiceMock = {
     keycloak: {
-      url: '',
-      realm: '',
-      clientId: '',
+      url: 'http://mock-keycloak',
+      realm: 'mock-realm',
+      clientId: 'mock-client',
       ...overrides.keycloak,
     },
     otp: {
@@ -46,6 +46,9 @@ export function createApplicationConfigServiceMock(overrides: Partial<Applicatio
 /**
  * Provider wrapper for Angular test modules.
  */
-export function provideApplicationConfigServiceMock(mock: ApplicationConfigServiceMock = createApplicationConfigServiceMock()): Provider {
-  return { provide: ApplicationConfigService, useValue: mock };
+export function provideApplicationConfigServiceMock(
+  mock: ApplicationConfigServiceMock = createApplicationConfigServiceMock(),
+  provideToken: Type<ApplicationConfigService> = ApplicationConfigService,
+): Provider {
+  return { provide: provideToken, useValue: mock };
 }

@@ -2,26 +2,38 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
-  imports: [TranslateModule, StringInputComponent, ButtonComponent, ReactiveFormsModule, DividerModule, EditorComponent, InfoBoxComponent],
+  imports: [
+    TranslateModule,
+    StringInputComponent,
+    SelectComponent,
+    ButtonComponent,
+    ReactiveFormsModule,
+    DividerModule,
+    EditorComponent,
+    InfoBoxComponent,
+  ],
   templateUrl: './research-group-detail-view.component.html',
 })
 export class ResearchGroupDetailViewComponent implements OnInit {
   form = new FormGroup({
     abbreviation: new FormControl(''),
     name: new FormControl('', [Validators.required]),
-    school: new FormControl(''),
+    departmentId: new FormControl('', [Validators.required]),
     defaultFieldOfStudies: new FormControl(''),
     head: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email, Validators.pattern(/.+\..{2,}$/)]),
@@ -37,12 +49,46 @@ export class ResearchGroupDetailViewComponent implements OnInit {
   isSaving = signal<boolean>(false);
   isLoading = signal<boolean>(true);
 
+  // Department data
+  departments = signal<DepartmentDTO[]>([]);
+  selectedDepartmentId = signal<string | undefined>(undefined);
+
+  departmentOptions = computed<SelectOption[]>(() =>
+    this.departments().map(dept => ({
+      name: dept.name ?? '',
+      value: dept.departmentId ?? '',
+    })),
+  );
+
+  selectedDepartmentOption = computed<SelectOption | undefined>(() => {
+    const deptId = this.selectedDepartmentId();
+    if (deptId == null || deptId === '') return undefined;
+    return this.departmentOptions().find(opt => opt.value === deptId);
+  });
+
   readonly ResearchGroupService = inject(ResearchGroupResourceApiService);
+  private readonly departmentService = inject(DepartmentResourceApiService);
   private readonly config = inject(DynamicDialogConfig);
   private toastService = inject(ToastService);
 
   ngOnInit(): void {
+    void this.loadDepartments();
     void this.init();
+  }
+
+  async loadDepartments(): Promise<void> {
+    try {
+      const departments = await firstValueFrom(this.departmentService.getDepartments());
+      this.departments.set(departments);
+    } catch {
+      this.toastService.showErrorKey('researchGroup.detailView.errors.loadDepartments');
+    }
+  }
+
+  onDepartmentChange(option: SelectOption): void {
+    const deptId = option.value as string;
+    this.selectedDepartmentId.set(deptId);
+    this.form.patchValue({ departmentId: deptId });
   }
 
   async onSave(): Promise<void> {
@@ -66,12 +112,12 @@ export class ResearchGroupDetailViewComponent implements OnInit {
         head: formValue.head ?? '',
         email: formValue.email ?? '',
         website: formValue.website ?? '',
-        school: formValue.school ?? '',
         description: formValue.description ?? '',
         street: formValue.street ?? '',
         postalCode: formValue.postalCode ?? '',
         city: formValue.city ?? '',
         defaultFieldOfStudies: formValue.defaultFieldOfStudies ?? '',
+        departmentId: formValue.departmentId ?? undefined,
       };
 
       await firstValueFrom(this.ResearchGroupService.updateResearchGroup(researchGroupId, updateData));
@@ -104,18 +150,24 @@ export class ResearchGroupDetailViewComponent implements OnInit {
 
   private populateFormData(data?: ResearchGroupDTO): void {
     this.form.patchValue({
-      abbreviation: data?.abbreviation,
-      name: data?.name,
-      school: data?.school,
-      defaultFieldOfStudies: data?.defaultFieldOfStudies,
-      head: data?.head,
-      email: data?.email,
-      website: data?.website,
-      description: data?.description,
-      city: data?.city,
-      postalCode: data?.postalCode,
-      street: data?.street,
+      abbreviation: data?.abbreviation ?? '',
+      name: data?.name ?? '',
+      defaultFieldOfStudies: data?.defaultFieldOfStudies ?? '',
+      head: data?.head ?? '',
+      email: data?.email ?? '',
+      website: data?.website ?? '',
+      description: data?.description ?? '',
+      city: data?.city ?? '',
+      postalCode: data?.postalCode ?? '',
+      street: data?.street ?? '',
+      departmentId: data?.departmentId ?? '',
     });
+
+    // Set selected department for the dropdown (selectedDepartmentOption is computed automatically)
+    if (data?.departmentId != null) {
+      this.selectedDepartmentId.set(data.departmentId);
+    }
+
     this.form.updateValueAndValidity();
   }
 }

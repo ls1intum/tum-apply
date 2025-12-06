@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { extractTextFromHtml } from 'app/shared/util/text.util';
 
-afterEach(() => {
-  vi.restoreAllMocks();
+beforeEach(() => {
+  vi.clearAllMocks();
 });
 
 describe('extractTextFromHtml', () => {

@@ -1,12 +1,11 @@
 .footer {
   display: flex;
-  background-color: var(--background-default);
-  color: var(--p-text-primary);
+  background-color: var(--p-background-footer);
+
   padding: 1rem 0;
   border-top: 0.07rem solid var(--p-divider-border-color);
   font-size: 0.9rem;
   align-items: center;
-  margin: 0 1rem;
 
   .logo-section {
     display: flex;

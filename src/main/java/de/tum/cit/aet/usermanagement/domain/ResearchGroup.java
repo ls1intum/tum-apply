@@ -41,8 +41,9 @@ public class ResearchGroup extends AbstractAuditingEntity {
     @Column(name = "website")
     private String website;
 
-    @Column(name = "school")
-    private String school;
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @Column(name = "description")
     private String description;
@@ -68,4 +69,14 @@ public class ResearchGroup extends AbstractAuditingEntity {
 
     @OneToMany(mappedBy = "researchGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserResearchGroupRole> userRoles = new HashSet<>();
+
+    /**
+     * Derived method to get the school through the department relationship.
+     * This ensures consistency - the school is always derived from the department.
+     *
+     * @return the school that this research group belongs to, or null if no department is set
+     */
+    public School getSchool() {
+        return department != null ? department.getSchool() : null;
+    }
 }
