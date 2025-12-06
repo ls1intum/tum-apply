@@ -96,7 +96,7 @@ describe('Registration Component', () => {
       await component.setProfile('John', 'Doe');
 
       expect(updateSpy).toHaveBeenCalledWith('John', 'Doe');
-      expect(nextStepSpy).toHaveBeenCalled();
+      expect(nextStepSpy).toHaveBeenCalledOnce();
     });
 
     it('should set orchestrator error on failure', async () => {
@@ -119,7 +119,7 @@ describe('Registration Component', () => {
       await component.setPassword();
 
       expect(updateSpy).toHaveBeenCalledWith('secret123');
-      expect(nextStepSpy).toHaveBeenCalled();
+      expect(nextStepSpy).toHaveBeenCalledOnce();
     });
 
     it('should set orchestrator error on failure', async () => {
@@ -139,13 +139,13 @@ describe('Registration Component', () => {
     it('onBack should call orchestrator.previousStep', () => {
       const prevSpy = vi.spyOn(authOrchestrator, 'previousStep');
       component.onBack();
-      expect(prevSpy).toHaveBeenCalled();
+      expect(prevSpy).toHaveBeenCalledOnce();
     });
 
     it('onSkip should call orchestrator.nextStep', () => {
       const nextSpy = vi.spyOn(authOrchestrator, 'nextStep');
       component.onSkip();
-      expect(nextSpy).toHaveBeenCalled();
+      expect(nextSpy).toHaveBeenCalledOnce();
     });
   });
 });

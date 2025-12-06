@@ -25,7 +25,7 @@ describe('AuthOrchestratorService', () => {
     service.open({ onSuccess: cb });
     service.authSuccess();
     expect(service.isOpen()).toBe(false);
-    expect(cb).toHaveBeenCalled();
+    expect(cb).toHaveBeenCalledOnce();
   });
 
   it('should go to nextStep in login flow', () => {
@@ -51,7 +51,13 @@ describe('AuthOrchestratorService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AuthOrchestratorService, { provide: ApplicationConfigService, useClass: MockApplicationConfigService }],
+      providers: [
+        AuthOrchestratorService,
+        {
+          provide: ApplicationConfigService,
+          useClass: MockApplicationConfigService,
+        },
+      ],
     });
     service = TestBed.inject(AuthOrchestratorService);
   });

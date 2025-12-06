@@ -5,12 +5,12 @@ import { OtpCompleteDTO } from 'app/generated/model/otpCompleteDTO';
 import { vi } from 'vitest';
 import {
   AuthenticationResourceApiServiceMock,
-  EmailVerificationResourceApiServiceMock,
   createAuthenticationResourceApiServiceMock,
   createEmailVerificationResourceApiServiceMock,
+  EmailVerificationResourceApiServiceMock,
+  mockSessionInfo,
   provideAuthenticationResourceApiServiceMock,
   provideEmailVerificationResourceApiServiceMock,
-  mockSessionInfo,
 } from 'util/authentication-resource-api.service.mock';
 
 describe('ServerAuthenticationService', () => {
@@ -52,7 +52,7 @@ describe('ServerAuthenticationService', () => {
 
     it('should logout successfully', async () => {
       await service.logout();
-      expect(authApi.logout).toHaveBeenCalled();
+      expect(authApi.logout).toHaveBeenCalledOnce();
     });
 
     it('should handle logout error', async () => {
@@ -105,7 +105,7 @@ describe('ServerAuthenticationService', () => {
   describe('token refresh', () => {
     it('should refresh tokens successfully', async () => {
       const result = await service.refreshTokens();
-      expect(authApi.refresh).toHaveBeenCalled();
+      expect(authApi.refresh).toHaveBeenCalledOnce();
       expect(result).toBe(true);
     });
 
@@ -127,14 +127,14 @@ describe('ServerAuthenticationService', () => {
     it('should schedule automatic token refresh after login', async () => {
       const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
       await service.login('test@example.com', 'password');
-      expect(setTimeoutSpy).toHaveBeenCalled();
+      expect(setTimeoutSpy).toHaveBeenCalledOnce();
       setTimeoutSpy.mockRestore();
     });
 
     it('should schedule automatic token refresh after OTP verification', async () => {
       const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
       await service.verifyOtp('test@example.com', '123456', OtpCompleteDTO.PurposeEnum.Login);
-      expect(setTimeoutSpy).toHaveBeenCalled();
+      expect(setTimeoutSpy).toHaveBeenCalledOnce();
       setTimeoutSpy.mockRestore();
     });
 
@@ -150,7 +150,7 @@ describe('ServerAuthenticationService', () => {
       const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
       await service.login('test@example.com', 'password');
       await service.logout();
-      expect(clearTimeoutSpy).toHaveBeenCalled();
+      expect(clearTimeoutSpy).toHaveBeenCalledOnce();
       clearTimeoutSpy.mockRestore();
     });
 
@@ -158,7 +158,7 @@ describe('ServerAuthenticationService', () => {
       const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
       await service.login('test@example.com', 'password');
       await service.login('test@example.com', 'password');
-      expect(clearTimeoutSpy).toHaveBeenCalled();
+      expect(clearTimeoutSpy).toHaveBeenCalledOnce();
       clearTimeoutSpy.mockRestore();
     });
   });
@@ -182,7 +182,7 @@ describe('ServerAuthenticationService', () => {
       await service.login('test@example.com', 'password');
       vi.clearAllMocks();
       await service.login('test@example.com', 'password');
-      expect(addEventListenerSpy).toHaveBeenCalled();
+      expect(addEventListenerSpy).toHaveBeenCalledOnce();
       addEventListenerSpy.mockRestore();
     });
 

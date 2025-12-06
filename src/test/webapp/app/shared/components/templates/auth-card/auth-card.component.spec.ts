@@ -56,7 +56,7 @@ describe('AuthCardComponent', () => {
 
   it('onClose should call authOrchestrator.close', () => {
     component.onClose();
-    expect(authOrchestrator.close).toHaveBeenCalled();
+    expect(authOrchestrator.close).toHaveBeenCalledOnce();
   });
 
   it('should display login component when mode is "login"', () => {

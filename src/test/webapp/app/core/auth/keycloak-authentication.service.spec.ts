@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { KeycloakAuthenticationService, IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { IdpProvider, KeycloakAuthenticationService } from 'app/core/auth/keycloak-authentication.service';
 import { createKeycloakMock, KeycloakMock, provideKeycloakMock } from 'util/keycloak.mock';
 import { createApplicationConfigServiceMock, provideApplicationConfigServiceMock } from 'util/application-config.service.mock';
 import { MessageService } from 'primeng/api';
@@ -136,7 +136,7 @@ describe('KeycloakAuthenticationService', () => {
       await expect(service.ensureFreshToken()).rejects.toThrow('Token refresh failed');
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to refresh token, logging out...', expect.any(Error));
-      expect(logoutSpy).toHaveBeenCalled();
+      expect(logoutSpy).toHaveBeenCalledOnce();
       consoleErrorSpy.mockRestore();
       logoutSpy.mockRestore();
     });
@@ -199,7 +199,7 @@ describe('KeycloakAuthenticationService', () => {
 
       await service.logout();
 
-      expect(clearIntervalSpy).toHaveBeenCalled();
+      expect(clearIntervalSpy).toHaveBeenCalledOnce();
       clearIntervalSpy.mockRestore();
     });
   });

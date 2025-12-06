@@ -86,7 +86,7 @@ describe('Login Component', () => {
       const result = await component.submitHandler(email);
 
       expect(authOrchestrator.email()).toBe(email);
-      expect(requestOtpSpy).toHaveBeenCalled();
+      expect(requestOtpSpy).toHaveBeenCalledOnce();
       expect(result).toBe(true);
     });
 
@@ -114,7 +114,7 @@ describe('Login Component', () => {
     it('should go to previous step on back button click', () => {
       const previousStepSpy = vi.spyOn(authOrchestrator, 'previousStep');
       component.backButtonHandler();
-      expect(previousStepSpy).toHaveBeenCalled();
+      expect(previousStepSpy).toHaveBeenCalledOnce();
     });
 
     it('should call orchestrator to switch to register view', () => {
@@ -122,7 +122,7 @@ describe('Login Component', () => {
       const registerLink = fixture.debugElement.query(By.css('a'));
       registerLink.triggerEventHandler('click', null);
 
-      expect(switchToRegisterSpy).toHaveBeenCalled();
+      expect(switchToRegisterSpy).toHaveBeenCalledOnce();
     });
   });
 
@@ -149,7 +149,7 @@ describe('Login Component', () => {
       const result = await component.onEmailLogin('test@example.com', 'password');
 
       expect(result).toBe(false);
-      expect(showErrorSpy).toHaveBeenCalled();
+      expect(showErrorSpy).toHaveBeenCalledOnce();
     });
   });
 });
