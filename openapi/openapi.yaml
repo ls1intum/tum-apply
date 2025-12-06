@@ -948,6 +948,17 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/slots/{slotId}:
+    delete:
+      tags: [interview-resource]
+      operationId: deleteSlot
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -2571,7 +2582,7 @@ components:
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         role:
           type: string
-          enum: [APPLICANT, PROFESSOR, ADMIN]
+          enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         user: {$ref: '#/components/schemas/User'}
         userResearchGroupRoleId: {type: string, format: uuid}
     UserShortDTO:
@@ -2585,5 +2596,5 @@ components:
           type: array
           items:
             type: string
-            enum: [APPLICANT, PROFESSOR, ADMIN]
+            enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         userId: {type: string, format: uuid}
