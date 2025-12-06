@@ -285,4 +285,44 @@ describe('HeaderComponent', () => {
       expect(component.routeAuthorities()).toEqual([]);
     });
   });
+
+  describe('theme handling', () => {
+    beforeEach(() => {
+      document.documentElement.classList.remove('tum-apply-dark-mode', 'theme-switching');
+      localStorage.clear();
+    });
+
+    it('should enable dark mode and persist preference when currently light', () => {
+      const requestAnimationFrameSpy = vi
+        .spyOn(window, 'requestAnimationFrame')
+        .mockImplementation((callback: FrameRequestCallback): number => {
+          callback(0);
+          return 0;
+        });
+
+      component.toggleColorScheme();
+
+      expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(true);
+      expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
+      expect(document.documentElement.classList.contains('theme-switching')).toBe(false);
+      expect(requestAnimationFrameSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should disable dark mode and persist preference when currently dark', () => {
+      document.documentElement.classList.add('tum-apply-dark-mode');
+      const requestAnimationFrameSpy = vi
+        .spyOn(window, 'requestAnimationFrame')
+        .mockImplementation((callback: FrameRequestCallback): number => {
+          callback(0);
+          return 0;
+        });
+
+      component.toggleColorScheme();
+
+      expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(false);
+      expect(localStorage.getItem('tumApplyTheme')).toBe('light');
+      expect(document.documentElement.classList.contains('theme-switching')).toBe(false);
+      expect(requestAnimationFrameSpy).toHaveBeenCalledOnce();
+    });
+  });
 });

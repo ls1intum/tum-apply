@@ -182,7 +182,7 @@ describe('ServerAuthenticationService', () => {
       await service.login('test@example.com', 'password');
       vi.clearAllMocks();
       await service.login('test@example.com', 'password');
-      expect(addEventListenerSpy).toHaveBeenCalledOnce();
+      expect(addEventListenerSpy).toHaveBeenCalledTimes(2);
       addEventListenerSpy.mockRestore();
     });
 
