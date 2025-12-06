@@ -201,8 +201,8 @@ describe('OtpInput', () => {
 
     component.onSubmit();
 
-    expect(clearSpy).toHaveBeenCalled();
-    expect(authFacadeMock.verifyOtp).not.toHaveBeenCalled();
+    expect(clearSpy).toHaveBeenCalledOnce();
+    expect(authFacadeMock.verifyOtp).not.toHaveBeenCalledOnce();
   });
 
   it('should submit OTP and call verifyOtp when form is valid', () => {
@@ -219,7 +219,7 @@ describe('OtpInput', () => {
 
     component.onSubmit();
 
-    expect(clearSpy).toHaveBeenCalled();
+    expect(clearSpy).toHaveBeenCalledOnce();
     expect(authFacadeMock.verifyOtp).toHaveBeenCalledWith(otp, registrationFlagBefore);
   });
 
@@ -232,8 +232,8 @@ describe('OtpInput', () => {
 
     component.onKeyDown(createKeyboardEvent('Enter', preventDefault));
 
-    expect(preventDefault).toHaveBeenCalled();
-    expect(submitSpy).toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalledOnce();
+    expect(submitSpy).toHaveBeenCalledOnce();
   });
 
   it('should allow non-character keys like Backspace without preventing default', () => {
@@ -244,7 +244,7 @@ describe('OtpInput', () => {
     component.onKeyDown(createKeyboardEvent('Backspace', preventDefault));
 
     // Backspace has key.length > 1 and should not be prevented
-    expect(preventDefault).not.toHaveBeenCalled();
+    expect(preventDefault).not.toHaveBeenCalledOnce();
   });
 
   it('should block non-alphanumeric single-character keys', () => {
@@ -254,7 +254,7 @@ describe('OtpInput', () => {
     const preventDefault = vi.fn();
     component.onKeyDown(createKeyboardEvent('@', preventDefault));
 
-    expect(preventDefault).toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalledOnce();
   });
 
   it('should allow alphanumeric keys without preventing default', () => {
@@ -264,7 +264,7 @@ describe('OtpInput', () => {
     const preventDefault = vi.fn();
     component.onKeyDown(createKeyboardEvent('A', preventDefault));
 
-    expect(preventDefault).not.toHaveBeenCalled();
+    expect(preventDefault).not.toHaveBeenCalledOnce();
   });
 
   it('should not resend OTP when disableResend is true (busy or cooldown)', () => {
@@ -276,7 +276,7 @@ describe('OtpInput', () => {
 
     component.onResend();
 
-    expect(authFacadeMock.requestOtp).not.toHaveBeenCalled();
+    expect(authFacadeMock.requestOtp).not.toHaveBeenCalledOnce();
   });
 
   it('should resend OTP, clear errors and reset value when allowed', () => {
@@ -296,7 +296,7 @@ describe('OtpInput', () => {
     expect(component.otpValue()).toBe('');
     expect(ctrl.value).toBe('');
     expect(ctrl.pristine).toBe(true);
-    expect(clearSpy).toHaveBeenCalled();
+    expect(clearSpy).toHaveBeenCalledOnce();
     expect(authFacadeMock.requestOtp).toHaveBeenCalledWith(registrationFlagBefore);
   });
 
@@ -367,8 +367,8 @@ describe('OtpInput', () => {
     const preventDefault = vi.fn();
     otpHost.triggerEventHandler('keydown', createKeyboardEvent('Enter', preventDefault));
 
-    expect(preventDefault).toHaveBeenCalled();
-    expect(submitSpy).toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalledOnce();
+    expect(submitSpy).toHaveBeenCalledOnce();
 
     const buttons = fixture.debugElement.queryAll(By.css('jhi-button'));
     const resendButton = buttons[0];
@@ -380,11 +380,11 @@ describe('OtpInput', () => {
     submitButton.triggerEventHandler('click', new MouseEvent('click'));
     fixture.detectChanges();
 
-    expect(authFacadeMock.verifyOtp).toHaveBeenCalled();
+    expect(authFacadeMock.verifyOtp).toHaveBeenCalledTimes(2);
 
     resendButton.triggerEventHandler('click', new MouseEvent('click'));
     fixture.detectChanges();
 
-    expect(authFacadeMock.requestOtp).toHaveBeenCalled();
+    expect(authFacadeMock.requestOtp).toHaveBeenCalledOnce();
   });
 });
