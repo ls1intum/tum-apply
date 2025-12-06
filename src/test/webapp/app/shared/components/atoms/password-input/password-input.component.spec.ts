@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
-import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Password } from 'primeng/password';
 
@@ -82,16 +81,16 @@ describe('PasswordInputComponent', () => {
     const blurSpy = vi.spyOn(component, 'onBlur');
     const focusSpy = vi.spyOn(component, 'onFocus');
 
-    const passwordDebug = fixture.debugElement.query(By.directive(Password));
+    const passwordDebug = fixture.debugElement.query(de => de.componentInstance instanceof Password);
     expect(passwordDebug).toBeTruthy();
 
     passwordDebug.triggerEventHandler('ngModelChange', 'test123');
     expect(changeSpy).toHaveBeenCalledWith('test123');
 
     passwordDebug.triggerEventHandler('onBlur', {});
-    expect(blurSpy).toHaveBeenCalled();
+    expect(blurSpy).toHaveBeenCalledOnce();
 
     passwordDebug.triggerEventHandler('onFocus', {});
-    expect(focusSpy).toHaveBeenCalled();
+    expect(focusSpy).toHaveBeenCalledOnce();
   });
 });
