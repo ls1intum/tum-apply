@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { By } from '@angular/platform-browser';
 import { signal } from '@angular/core';
 
 import { provideTranslateMock } from 'util/translate.mock';
@@ -70,8 +69,8 @@ describe('Login Component', () => {
       authOrchestrator.loginStep.set('otp');
       fixture.detectChanges();
 
-      const otpInput = fixture.debugElement.query(By.css('jhi-otp-input'));
-      const credentialsGroup = fixture.debugElement.query(By.css('jhi-credentials-group'));
+      const otpInput = fixture.debugElement.query(de => de.name === 'jhi-otp-input');
+      const credentialsGroup = fixture.debugElement.query(de => de.name === 'jhi-credentials-group');
 
       expect(otpInput).toBeTruthy();
       expect(credentialsGroup).toBeFalsy();
@@ -119,7 +118,7 @@ describe('Login Component', () => {
 
     it('should call orchestrator to switch to register view', () => {
       const switchToRegisterSpy = vi.spyOn(authOrchestrator, 'switchToRegister');
-      const registerLink = fixture.debugElement.query(By.css('a'));
+      const registerLink = fixture.debugElement.query(de => de.nativeElement?.tagName === 'A');
       registerLink.triggerEventHandler('click', null);
 
       expect(switchToRegisterSpy).toHaveBeenCalledOnce();

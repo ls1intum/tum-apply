@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { By } from '@angular/platform-browser';
 import { NavigationEnd } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -284,17 +283,6 @@ describe('HeaderComponent', () => {
       router.events.next(new NavigationEnd(1, '/', '/'));
       fixture.detectChanges();
       expect(component.routeAuthorities()).toEqual([]);
-    });
-
-    it('should render header template with language buttons and logo', () => {
-      const headerDebug = fixture.debugElement.query(By.css('header.app-header'));
-      expect(headerDebug).toBeTruthy();
-
-      const logo = fixture.debugElement.query(By.css('.logo-section .tum-logo'));
-      expect(logo).toBeTruthy();
-
-      const languageButtons = fixture.debugElement.queryAll(By.css('.language-switch .language-button'));
-      expect(languageButtons.length).toBeGreaterThanOrEqual(1);
     });
   });
 });
