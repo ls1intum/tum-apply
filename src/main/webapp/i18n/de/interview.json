@@ -61,7 +61,6 @@
       },
       "create": {
         "title": "Interview Termin erstellen",
-        "addSlot": "Weiteren Termin hinzufügen",
         "removeSlot": "Termin entfernen",
         "slotNumber": "Termin {{number}}",
         "date": "Datum",
@@ -93,7 +92,14 @@
         },
         "interviewLength": "Interviewdauer",
         "interviewBreaks": "Pausen",
-        "breakTooltip": "Pausenzeit zwischen aufeinanderfolgenden Interview-Slots",
+        "breakTooltip": "Pausenzeit zwischen aufeinanderfolgenden Interview Terminen",
+        "durationTooltip": "Dauer eines Interview Termins",
+        "addRangeTooltip": "Mehrere Termine automatisch innerhalb eines Zeitfensters, mit festgelegter Pausenzeit, erstellen",
+        "addSlotsTooltip": "Einzelne Termine hinzufügen",
+        "copySuccess": {
+          "summary": "Termine erfolgreich kopiert",
+          "detail": "Die Terminkonfigurationen wurden erfolgreich auf alle anderen Tage übertragen."
+        },
         "selectDates": "Daten auswählen",
         "noDateSelected": "Kein Datum ausgewählt",
         "noDateSelectedDesc": "Bitte wählen Sie ein oder mehrere Daten im Kalender aus",

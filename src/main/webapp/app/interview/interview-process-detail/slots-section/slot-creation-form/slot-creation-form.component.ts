@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -38,7 +38,6 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
     TooltipModule,
   ],
   templateUrl: './slot-creation-form.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SlotCreationFormComponent {
   // Inputs
@@ -51,9 +50,25 @@ export class SlotCreationFormComponent {
 
   // State
   readonly isSubmitting = signal(false);
-  readonly selectedDates = signal<Date[]>([]);
+
+  // Use regular property for PrimeNG two-way binding compatibility
+  selectedDates: Date[] = [];
+
+  // Signal to track changes for the template
+  readonly selectedDatesSignal = signal<Date[]>([]);
+
+  // Sorted dates for display (cards)
+  readonly sortedDates = computed(() => [...this.selectedDatesSignal()].sort((a, b) => a.getTime() - b.getTime()));
+
   readonly duration = signal<number>(30);
   readonly breakDuration = signal<number>(0);
+
+  // Custom Duration/Break State
+  readonly customDuration = signal<number | null>(null);
+  readonly isCustomDurationMode = signal(false);
+
+  readonly customBreak = signal<number | null>(null);
+  readonly isCustomBreakMode = signal(false);
 
   // Map of date string -> slots for that date
   readonly slotsByDate = signal<Map<string, InterviewSlotDTO[]>>(new Map());
@@ -81,22 +96,117 @@ export class SlotCreationFormComponent {
   private readonly toastService = inject(ToastService);
 
   /**
+   * Selects a predefined duration.
+   * If value is -1, switches to custom duration mode.
+   * @param value The duration in minutes or -1 for custom.
+   */
+  selectDuration(value: number): void {
+    if (value === -1) {
+      this.isCustomDurationMode.set(true);
+      if (this.customDuration() === null) {
+        this.customDuration.set(this.duration());
+      }
+    } else {
+      this.isCustomDurationMode.set(false);
+      this.duration.set(value);
+    }
+  }
+
+  /**
+   * Updates the duration from the custom input field.
+   * @param value The new duration in minutes.
+   */
+  onCustomDurationInput(value: number): void {
+    this.customDuration.set(value);
+    this.duration.set(value);
+  }
+
+  /**
+   * Selects a predefined break duration.
+   * If value is -1, switches to custom break mode.
+   * @param value The break duration in minutes or -1 for custom.
+   */
+  selectBreak(value: number): void {
+    if (value === -1) {
+      this.isCustomBreakMode.set(true);
+      if (this.customBreak() === null) {
+        this.customBreak.set(this.breakDuration());
+      }
+    } else {
+      this.isCustomBreakMode.set(false);
+      this.breakDuration.set(value);
+    }
+  }
+
+  /**
+   * Updates the break duration from the custom input field.
+   * @param value The new break duration in minutes.
+   */
+  onCustomBreakInput(value: number): void {
+    this.customBreak.set(value);
+    this.breakDuration.set(value);
+  }
+
+  /**
    * Handles date selection from the calendar.
-   * Ensures that the selected dates are sorted chronologically.
-   * Handles null input by resetting the selection.
+   * Syncs the regular property with the signal for template reactivity.
    */
   onDateSelect(dates: Date | Date[] | null): void {
     if (!dates) {
-      this.selectedDates.set([]);
+      this.selectedDatesSignal.set([]);
       return;
     }
-    // p-datepicker with selectionMode="multiple" returns Date[]
-    const dateArray = Array.isArray(dates) ? dates : [dates];
-    // Sort dates
-    dateArray.sort((a, b) => a.getTime() - b.getTime());
-    this.selectedDates.set(dateArray);
+
+    const currentSelection = Array.isArray(dates) ? dates : [dates];
+    const previousSelection = this.selectedDatesSignal();
+
+    // If we receive exactly one date, we treat it as a toggle operation on the previous selection
+    // to support simple clicking without holding Ctrl/Meta key.
+    if (currentSelection.length === 1) {
+      const clickedDate = currentSelection[0];
+      const clickedTime = clickedDate.getTime();
+
+      // Check if the clicked date is already selected
+      const exists = previousSelection.some(d => d.getTime() === clickedTime);
+
+      let newSelection: Date[];
+      if (exists) {
+        // Deselect: If it exists, remove it from the list
+        newSelection = previousSelection.filter(d => d.getTime() !== clickedTime);
+      } else {
+        // Add: If it doesn't exist, append it to the list
+        newSelection = [...previousSelection, clickedDate];
+      }
+
+      // Always keep dates sorted chronologically
+      newSelection.sort((a, b) => a.getTime() - b.getTime());
+      this.selectedDatesSignal.set(newSelection);
+    } else {
+      // If multiple dates are selected (e.g. range select), just replace the selection
+      currentSelection.sort((a, b) => a.getTime() - b.getTime());
+      this.selectedDatesSignal.set(currentSelection);
+    }
+
+    // Sync the property for compatibility if needed
+    this.selectedDates = this.selectedDatesSignal();
   }
 
+  /**
+   * Removes a date from the selected dates list.
+   * @param dateToRemove The date to remove.
+   */
+  removeDate(dateToRemove: Date): void {
+    const timeToRemove = dateToRemove.getTime();
+    const newSelection = this.selectedDatesSignal().filter(d => d.getTime() !== timeToRemove);
+    this.selectedDatesSignal.set(newSelection);
+    this.selectedDates = newSelection;
+  }
+
+  /**
+   * Updates the slots map for a specific date.
+   * @param date The date to update.
+   * @param slots The new list of slots for that date.
+   */
   updateSlotsForDate(date: Date, slots: InterviewSlotDTO[]): void {
     const dateStr = date.toISOString().split('T')[0];
     this.slotsByDate.update(map => {
@@ -108,10 +218,9 @@ export class SlotCreationFormComponent {
 
   /**
    * Copies the slots from the first selected date to all other selected dates.
-   * Adjusts the date part of the start and end times to match the target date.
    */
   copySlotsToAllDays(): void {
-    const dates = this.selectedDates();
+    const dates = this.sortedDates();
     if (dates.length < 2) {
       return;
     }
@@ -125,18 +234,21 @@ export class SlotCreationFormComponent {
 
     this.slotsByDate.update(map => {
       const newMap = new Map(map);
+      // 1. Iterate over all other selected dates
       for (let i = 1; i < dates.length; i++) {
         const targetDate = dates[i];
         const targetDateStr = targetDate.toISOString().split('T')[0];
 
-        // Clone slots but update date (recalculate startDateTime/endDateTime)
+        // 2. Clone each slot from the first day, but shift the date to the target date
         const clonedSlots = firstDateSlots.map(slot => {
           const start = new Date(slot.startDateTime!);
           const end = new Date(slot.endDateTime!);
 
+          // 3. Create new start time: Target Date + Original Time
           const newStart = new Date(targetDate);
           newStart.setHours(start.getHours(), start.getMinutes(), 0, 0);
 
+          // 4. Create new end time: Target Date + Original Time
           const newEnd = new Date(targetDate);
           newEnd.setHours(end.getHours(), end.getMinutes(), 0, 0);
 
@@ -147,6 +259,7 @@ export class SlotCreationFormComponent {
           };
         });
 
+        // Overwrite slots for the target date with the cloned slots
         newMap.set(targetDateStr, clonedSlots);
       }
       return newMap;
@@ -155,11 +268,18 @@ export class SlotCreationFormComponent {
     this.toastService.showSuccessKey('interview.slots.create.copySuccess');
   }
 
+  /**
+   * Closes the dialog and resets the form state.
+   */
   close(): void {
     this.visibleChange.emit(false);
     this.resetState();
   }
 
+  /**
+   * Submits the created slots to server.
+   * Validates that slots exist before submitting.
+   */
   async submit(): Promise<void> {
     const allSlots = Array.from(this.slotsByDate().values()).flat();
 
@@ -189,7 +309,6 @@ export class SlotCreationFormComponent {
       this.success.emit(createdSlots);
       this.close();
     } catch (error) {
-      // Error handling
       console.error(error);
       this.toastService.showErrorKey('interview.slots.create.error');
     } finally {
@@ -197,8 +316,13 @@ export class SlotCreationFormComponent {
     }
   }
 
+  /**
+   * Resets the internal state of the form.
+   * Clears selected dates, slots, and resets duration/break settings.
+   */
   private resetState(): void {
-    this.selectedDates.set([]);
+    this.selectedDatesSignal.set([]);
+    this.selectedDates = [];
     this.slotsByDate.set(new Map());
     this.isSubmitting.set(false);
   }

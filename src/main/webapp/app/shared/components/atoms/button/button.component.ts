@@ -24,7 +24,7 @@ export type Button = {
   shouldTranslate?: boolean;
 };
 
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 @Component({
   selector: 'jhi-button',
@@ -66,6 +66,11 @@ export class ButtonComponent {
     if (this.label() === undefined) {
       sizeClass = `rounded-xl ${this.size() === 'sm' ? 'rounded-full w-10 h-10 scale-85' : this.size() === 'md' ? 'w-10 h-10' : 'w-14 h-14'}`;
     }
+
+    if (this.size() === 'xs') {
+      sizeClass += ' !py-0 !px-2 !text-xs !h-8';
+    }
+
     return `${sizeClass} ${this.fullWidth() ? 'flex-1 w-full' : ''} ${this.styleClass()}`;
   }
 }
