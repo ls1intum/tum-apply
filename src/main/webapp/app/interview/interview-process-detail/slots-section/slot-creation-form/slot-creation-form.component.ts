@@ -70,6 +70,9 @@ export class SlotCreationFormComponent {
   readonly customBreak = signal<number | null>(null);
   readonly isCustomBreakMode = signal(false);
 
+  readonly durationError = signal<string | null>(null);
+  readonly breakError = signal<string | null>(null);
+
   // Map of date string -> slots for that date
   readonly slotsByDate = signal<Map<string, InterviewSlotDTO[]>>(new Map());
 
@@ -108,6 +111,7 @@ export class SlotCreationFormComponent {
       }
     } else {
       this.isCustomDurationMode.set(false);
+      this.durationError.set(null); // Clear error when switching back to presets
       this.duration.set(value);
     }
   }
@@ -118,7 +122,14 @@ export class SlotCreationFormComponent {
    */
   onCustomDurationInput(value: number): void {
     this.customDuration.set(value);
-    this.duration.set(value);
+
+    if (value <= 0) {
+      this.durationError.set('interview.slots.create.validation.durationPositive');
+      // We do NOT update the main duration signal if invalid, to prevent breaking child components
+    } else {
+      this.durationError.set(null);
+      this.duration.set(value);
+    }
   }
 
   /**
@@ -134,6 +145,7 @@ export class SlotCreationFormComponent {
       }
     } else {
       this.isCustomBreakMode.set(false);
+      this.breakError.set(null); // Clear error when switching back to presets
       this.breakDuration.set(value);
     }
   }
@@ -144,7 +156,13 @@ export class SlotCreationFormComponent {
    */
   onCustomBreakInput(value: number): void {
     this.customBreak.set(value);
-    this.breakDuration.set(value);
+
+    if (value < 0) {
+      this.breakError.set('interview.slots.create.validation.breakPositive');
+    } else {
+      this.breakError.set(null);
+      this.breakDuration.set(value);
+    }
   }
 
   /**

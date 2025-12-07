@@ -89,7 +89,9 @@
           "required": "This field is required",
           "endBeforeStart": "End time must be after start time",
           "conflict": "Time conflict with another slot",
-          "streamLinkRequired": "Meeting link is required for virtual slots"
+          "streamLinkRequired": "Meeting link is required for virtual slots",
+          "durationPositive": "Duration must be at least 1 minute",
+          "breakPositive": "Break duration cannot be negative"
         },
         "interviewLength": "Interview Length",
         "interviewBreaks": "Interview Breaks",

@@ -88,7 +88,9 @@
           "required": "Dieses Feld ist erforderlich",
           "endBeforeStart": "Endzeit muss nach Startzeit liegen",
           "conflict": "Zeitkonflikt mit einem anderen Termin",
-          "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich"
+          "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
+          "durationPositive": "Dauer muss mindestens 1 Minute betragen",
+          "breakPositive": "Pausendauer darf nicht negativ sein"
         },
         "interviewLength": "Interviewdauer",
         "interviewBreaks": "Pausen",
