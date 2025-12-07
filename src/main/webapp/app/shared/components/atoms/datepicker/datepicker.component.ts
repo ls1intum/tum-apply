@@ -65,8 +65,10 @@ export class DatePickerComponent {
    */
   effectiveMinDate = computed(() => {
     const min = this.minDate();
+    if (min && min.getHours() === 0 && min.getMinutes() === 0 && min.getSeconds() === 0 && min.getMilliseconds() === 0) {
+      return min;
+    }
     const base = min ?? new Date();
-    // Normalize to start of day to avoid time-of-day edge cases that can mark "today" as unselectable/odd state
     const d = new Date(base);
     d.setHours(0, 0, 0, 0);
     return d;
