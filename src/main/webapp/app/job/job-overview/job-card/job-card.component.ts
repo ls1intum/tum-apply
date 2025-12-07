@@ -12,6 +12,7 @@ import SharedModule from 'app/shared/shared.module';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
+import * as DropDownOptions from '../../dropdown-options';
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
 
 export const ApplicationStatusExtended = {
@@ -47,6 +48,11 @@ export class JobCardComponent {
   icon = input<string>('flask-vial');
   ref: DynamicDialogRef | undefined;
 
+<<<<<<< HEAD
+=======
+  readonly dropDownOptions = DropDownOptions;
+  readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
+>>>>>>> 09da0ca8ac6f100b39f0d9154eff8b8ebe0009ec
   translate = inject(TranslateService);
 
   currentLang = toSignal(this.translate.onLangChange);

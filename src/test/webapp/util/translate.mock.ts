@@ -1,10 +1,10 @@
 // src/test/webapp/util/translate.mock.ts
 import {
-  TranslateService,
-  LangChangeEvent,
-  TranslationChangeEvent,
   FallbackLangChangeEvent,
   InterpolatableTranslationObject,
+  LangChangeEvent,
+  TranslateService,
+  TranslationChangeEvent,
 } from '@ngx-translate/core';
 import { type Provider } from '@angular/core';
 import { of, Subject } from 'rxjs';

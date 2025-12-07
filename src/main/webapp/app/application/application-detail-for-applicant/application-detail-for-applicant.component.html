@@ -51,7 +51,7 @@
           <div class="info-item">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
             <span jhiTranslate="entity.application_detail.location"></span>
-            <span class="value">{{ application.jobLocation || '-' }}</span>
+            <span class="value">{{ (dropDownOptions.getLocationTranslationKey(application.jobLocation) | translate) || '-' }}</span>
           </div>
         </div>
       </section>
@@ -109,10 +109,6 @@
           </div>
           <div class="section-card-body">
             <div class="info-list">
-              <div class="info-row">
-                <span jhiTranslate="entity.detail_card.preferred_language"></span>
-                <span class="value">{{ application.applicant?.user?.preferredLanguage || '-' }}</span>
-              </div>
               <div class="info-row">
                 <span jhiTranslate="entity.detail_card.desired_start_date"></span>
                 <span class="value">{{ application.desiredDate ? (application.desiredDate | localizedDate) : '-' }}</span>
