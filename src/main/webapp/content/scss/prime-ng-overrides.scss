@@ -59,3 +59,13 @@ p-step[data-p-active='true'] .p-step-title {
 .p-tag-contrast {
   border-color: var(--p-accent-500) !important;
 }
+
+/* -------------------------------
+   Progress Stepper Sticky Footer Buttons
+------------------------------- */
+jhi-progress-stepper .sticky-footer .p-button {
+  height: 2.25rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
