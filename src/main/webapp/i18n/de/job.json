@@ -32,12 +32,62 @@
         "label": "Studienfach",
         "placeholder": "Wähle ein Studienfach..."
       },
+      "fieldsOfStudies": {
+        "AerospaceEngineering": "Luft- und Raumfahrttechnik",
+        "AgriculturalEngineering": "Agrartechnik",
+        "Architecture": "Architektur",
+        "ArtHistory": "Kunstgeschichte",
+        "AutomotiveEngineering": "Fahrzeugtechnik",
+        "Bioengineering": "Bioingenieurwesen",
+        "Biology": "Biologie",
+        "Biotechnology": "Biotechnologie",
+        "Chemistry": "Chemie",
+        "ComputerEngineering": "Computertechnik",
+        "ComputerScience": "Informatik",
+        "DataScience": "Datenwissenschaft",
+        "Economics": "Wirtschaftswissenschaften",
+        "EducationTechnology": "Bildungstechnologie",
+        "ElectricalEngineering": "Elektrotechnik",
+        "EnvironmentalBiology": "Umweltbiologie",
+        "EnvironmentalChemistry": "Umweltchemie",
+        "EnvironmentalEngineering": "Umwelttechnik",
+        "EnvironmentalScience": "Umweltwissenschaften",
+        "FinancialEngineering": "Finanztechnik",
+        "FoodTechnology": "Lebensmitteltechnologie",
+        "Geology": "Geologie",
+        "Geosciences": "Geowissenschaften",
+        "IndustrialEngineering": "Wirtschaftsingenieurwesen",
+        "InformationSystems": "Wirtschaftsinformatik",
+        "Linguistics": "Linguistik",
+        "MarineBiology": "Meeresbiologie",
+        "MaterialsScience": "Materialwissenschaften",
+        "Mathematics": "Mathematik",
+        "MechanicalEngineering": "Maschinenbau",
+        "MedicalInformatics": "Medizinische Informatik",
+        "Neuroscience": "Neurowissenschaften",
+        "Philosophy": "Philosophie",
+        "Physics": "Physik",
+        "Psychology": "Psychologie",
+        "SoftwareEngineering": "Softwaretechnik",
+        "SportsScience": "Sportwissenschaft",
+        "Telecommunications": "Telekommunikation",
+        "UrbanPlanning": "Stadtplanung"
+      },
       "supervisingProfessor": {
         "label": "Betreuende:r Professor:in"
       },
       "location": {
         "label": "Standort",
         "placeholder": "Wähle einen Standort..."
+      },
+      "locations": {
+        "Garching": "Garching",
+        "GarchingHochbrueck": "Garching-Hochbrück",
+        "Heilbronn": "Heilbronn",
+        "Munich": "München",
+        "Singapore": "Singapur",
+        "Straubing": "Straubing",
+        "Weihenstephan": "Weihenstephan"
       },
       "startDate": {
         "label": "Startdatum der Stelle",
@@ -62,6 +112,15 @@
       "fundingType": {
         "label": "Finanzierungsart",
         "placeholder": "Wähle eine Finanzierungsart..."
+      },
+      "fundingTypes": {
+        "FullyFunded": "Vollständig finanziert",
+        "GovernmentFunded": "Staatlich finanziert",
+        "IndustrySponsored": "Industriegesponsert",
+        "ResearchGrant": "Forschungsstipendium",
+        "Scholarship": "Stipendium",
+        "SelfFunded": "Selbstfinanziert",
+        "PartiallyFunded": "Teilweise finanziert"
       }
     },
     "positionDetailsSection": {
@@ -136,7 +195,11 @@
       "uploadHint": "Maximale Dateigröße: 5MB. Unterstützte Formate: JPG, JPEG, PNG. Maximale Abmessungen: 1920x1080px",
       "selectedImage": "Ausgewähltes Bild",
       "myUploads": "Meine hochgeladenen Bilder",
-      "noImage": "Kein Bild"
+      "noImage": "Kein Bild",
+      "deleteImageDialog": {
+        "header": "Bild löschen",
+        "message": "Möchtest du dieses Bild wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden. Falls Positionen dieses Bild nutzen, erscheinen sie danach ohne Bild."
+      }
     },
     "additionalInformationSection": {
       "extras": {

@@ -7,6 +7,7 @@ Welcome! This document orients new contributors to the Job Module in **TUMApply*
 ## 1) What this module does (at a glance)
 
 The Job Module provides the UI and server-side logic for:
+
 - Creating structured doctorate position postings (multi-step form)
 - Managing positions (list, state badges, context-aware actions)
 - Discovering positions (applicant-facing overview and detail views)
@@ -22,7 +23,7 @@ It is intentionally **role-aware**: some controls render only for professors, wh
 Common locations you’ll work with:
 
 - **My Positions Dashboard** (professor view)
-  - `job-overview/` - dashboard for managing my positions 
+  - `job-overview/` - dashboard for managing my positions
 
 - **Find Positions Page** (applicant view)
   - `job-overview/job-overview-page/` – entry page for applicants to browse positions
@@ -39,7 +40,6 @@ Common locations you’ll work with:
   - `dropdown-options.ts` – central lists for select/sort options
   - `../../shared/constants/saving-states.ts` – shared saving-state labels
 
-
 ---
 
 ## 3) Server-side
@@ -47,6 +47,7 @@ Common locations you’ll work with:
 > Base path for the module: `src/main/java/de/tum/cit/aet/job/`
 
 ### 3.1 Package map (what lives where)
+
 - **`constants/`**
   - `Campus`, `CustomFieldType`, `FundingType`, `JobState`  
     Enum sources used across DTOs
@@ -68,7 +69,9 @@ Common locations you’ll work with:
 ## 4) Core concepts
 
 ### 4.1 Position state model
+
 The UI recognizes these states and surfaces them via badges and available actions:
+
 - **Draft** – not visible to applicants
 - **Published** – visible to applicants
 - **Applicant Found** – visible, but not accepting further applications (not visible in the **Find Positions** Overview)
@@ -77,10 +80,12 @@ The UI recognizes these states and surfaces them via badges and available action
 Action availability is state-dependent (e.g., **Delete** is only allowed for Draft, **Close** is only allowed for Published).
 
 ### 4.2 Role awareness
+
 - **Professors** see management controls (create, edit, delete drafts, close published).
 - **Applicants** see a read-only view with apply affordances (navigation to application flow is wired outside this module).
 
 ### 4.3 Form design & autosave
+
 - Multi-step creation form with progressive disclosure.
 - Inline validation and tooltips reduce user error.
 - Autosave/draft-save prevents data loss; saving state strings are unified in `shared/constants/saving-states.ts`.
@@ -118,7 +123,9 @@ Action availability is state-dependent (e.g., **Delete** is only allowed for Dra
   - `src/test/webapp/app/shared/components/**` (atoms/molecules used by this module)
 
 ### 6.2 Server-side tests
-  Useful test locations:
+
+Useful test locations:
+
 - `src/test/java/de/tum/cit/aet/job/web/rest/JobServiceTest.java`
 
 ---

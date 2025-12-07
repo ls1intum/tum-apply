@@ -11,6 +11,8 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateOverviewDTO } from '../../../generated/model/emailTemplateOverviewDTO';
+import { AccountService } from '../../../core/auth/account.service';
+import { UserShortDTO } from '../../../generated/model/userShortDTO';
 
 @Component({
   selector: 'jhi-research-group-templates',
@@ -27,6 +29,7 @@ export class ResearchGroupTemplates {
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
   protected readonly router = inject(Router);
+  protected readonly accountService = inject(AccountService);
 
   protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
 
@@ -36,12 +39,20 @@ export class ResearchGroupTemplates {
   protected readonly columns = computed<DynamicTableColumn[]>(() => {
     const editTemplate = this.editTemplate();
     const deleteTemplate = this.deleteTemplate();
-    return [
+    const currentUserAuthorities = this.accountService.userAuthorities;
+    const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
+
+    const cols: DynamicTableColumn[] = [
       { field: 'displayName', header: `${this.translationKey}.tableColumns.templateName`, width: '28rem' },
       { field: 'createdBy', header: `${this.translationKey}.tableColumns.createdBy`, width: '15rem' },
       { field: '', header: '', width: '1rem', template: editTemplate },
-      { field: '', header: '', width: '1rem', template: deleteTemplate },
     ];
+
+    if (!isEmployee) {
+      cols.push({ field: '', header: '', width: '1rem', template: deleteTemplate });
+    }
+
+    return cols;
   });
 
   protected readonly translationKey: string = 'researchGroup.emailTemplates';
