@@ -2,12 +2,32 @@ import { TestBed } from '@angular/core/testing';
 import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { vi } from 'vitest';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
 
 class MockApplicationConfigService {
   otp = { resendCooldownSeconds: 30 };
 }
 
 describe('AuthOrchestratorService', () => {
+  let service: AuthOrchestratorService;
+  let toastService: ToastServiceMock;
+
+  beforeEach(() => {
+    toastService = createToastServiceMock();
+
+    TestBed.configureTestingModule({
+      providers: [
+        AuthOrchestratorService,
+        {
+          provide: ApplicationConfigService,
+          useClass: MockApplicationConfigService,
+        },
+        provideToastServiceMock(toastService),
+      ],
+    });
+    service = TestBed.inject(AuthOrchestratorService);
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -47,20 +67,6 @@ describe('AuthOrchestratorService', () => {
     service.nextStep();
     expect(service.isOpen()).toBe(false);
   });
-  let service: AuthOrchestratorService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        AuthOrchestratorService,
-        {
-          provide: ApplicationConfigService,
-          useClass: MockApplicationConfigService,
-        },
-      ],
-    });
-    service = TestBed.inject(AuthOrchestratorService);
-  });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
@@ -81,8 +87,8 @@ describe('AuthOrchestratorService', () => {
   });
 
   it('should set and clear error', () => {
-    service.setError('Test error');
-    expect(service.error()).toBe('Test error');
+    service.setError({ summary: 'Test error' });
+    expect(service.error()).toStrictEqual({ summary: 'Test error' });
     service.clearError();
     expect(service.error()).toBeNull();
   });
@@ -97,7 +103,6 @@ describe('AuthOrchestratorService', () => {
   });
 
   it('should start OTP cooldown', () => {
-    // Simuliere das Setzen des OTP-Cooldowns direkt ohne as any
     service['startOtpRefreshCooldown']();
     expect(service.cooldownUntil()).not.toBeNull();
     expect(service.cooldownSeconds()).toBeGreaterThan(0);
