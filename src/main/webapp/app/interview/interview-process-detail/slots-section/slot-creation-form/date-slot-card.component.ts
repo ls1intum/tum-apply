@@ -137,7 +137,7 @@ export class DateSlotCardComponent {
     this.isCollapsed.update(isCollapsed => !isCollapsed);
   }
 
-  isVirtualLocation(location: string): boolean {
+  isVirtualLocation(location: string | undefined | null): boolean {
     if (!location) return false;
     const trimmed = location.trim().toLowerCase();
 
@@ -260,7 +260,7 @@ export class DateSlotCardComponent {
         }
       } else {
         // 4. Handle Invalid/Empty Input:
-        // If the start time is cleared, we must clear the generated slots and end time (for single slots).
+        // If the start time is cleared, clear the generated slots and end time (for single slots).
         if (range.type === 'single') {
           range.endTime = null;
           range.endTimeString = '';
@@ -292,9 +292,8 @@ export class DateSlotCardComponent {
       range.endTimeString = timeString;
       range.endTime = this.parseTime(timeString);
 
-      // 3. If it's a range type, we need to regenerate the slots.
-      // Single slots don't have an editable end time (it's derived from duration),
-      // so this only applies to 'range' types.
+      // 3. If it's a range type, regenerate the slots.
+      // Single slots don't have an editable end time (it's derived from duration)
       if (range.type === 'range') {
         const location = range.location;
         this.updateRangeLogic(range, location);
@@ -322,14 +321,12 @@ export class DateSlotCardComponent {
       range.location = location;
 
       // 3. Update the location in the generated slots
-      if (range.type === 'single' && range.startTime && range.endTime) {
-        // For single slots, recreate the single slot DTO with the new location
-        range.slots = [this.createSlotDTO(range.startTime, range.endTime, location)];
-      } else if (range.type === 'range' && range.startTime && range.endTime) {
-        // For ranges, regenerate all slots with the new location
-        this.generateRangeSlots(range, undefined, undefined, location);
-      }
-
+      const isVirtual = this.isVirtualLocation(location);
+      range.slots = range.slots.map(slot => ({
+        ...slot,
+        location: location,
+        streamLink: isVirtual ? location : undefined,
+      }));
       // 4. Update the array
       newRanges[index] = range;
       return newRanges;
@@ -348,7 +345,7 @@ export class DateSlotCardComponent {
     return {
       startDateTime: start.toISOString(),
       endDateTime: end.toISOString(),
-      location: locationType,
+      location: location,
       streamLink: locationType === 'virtual' ? location : undefined,
     } as InterviewSlotDTO;
   }
@@ -359,17 +356,17 @@ export class DateSlotCardComponent {
    * @param slots The list of existing InterviewSlotDTOs.
    */
   private initializeRangesFromSlots(slots: InterviewSlotDTO[]): void {
-    // Map existing slots (from backend or previous state) to our internal SlotRange structure
+    // Map existing slots (from server or previous state) to internal SlotRange structure
     const ranges = slots.map(slot => {
       const start = new Date(slot.startDateTime!);
       const end = new Date(slot.endDateTime!);
 
-      // If the slot has an ID, it's already saved in the backend ('scheduled').
+      // If the slot has an ID, it's already saved in the server ('scheduled').
       // Otherwise, it's a newly created 'single' slot.
       const type = slot.id ? 'scheduled' : 'single';
 
-      // Extract location (use streamLink if virtual)
-      const location = slot.location === 'virtual' && !!slot.streamLink ? slot.streamLink : '';
+      // Extract location
+      const location = slot.location || '';
 
       return {
         id: this.generateId(),
@@ -395,8 +392,6 @@ export class DateSlotCardComponent {
   private updateRangeLogic(range: SlotRange, location?: string): void {
     if (range.startTime && range.endTime) {
       // 1. Ensure the start and end times are on the correct date (this.date())
-      // The time picker might return a date object with a different day/month/year,
-      // so we sync it with the card's assigned date.
       const baseDate = new Date(this.date());
 
       const startDate = new Date(baseDate);
@@ -422,7 +417,6 @@ export class DateSlotCardComponent {
    */
   private recalculateAllRanges(duration: number, breakDuration: number): void {
     this.slotRanges.update(ranges => {
-      // We map to create new objects to ensure Angular signals detect the change (immutability)
       return ranges.map(range => {
         // 1. Skip scheduled slots
         // Scheduled slots are immutable regarding global duration changes
@@ -434,7 +428,6 @@ export class DateSlotCardComponent {
         const location = newRange.location;
 
         // 2. Update Single Slots
-        // For single slots, we just update the end time based on the new duration
         if (newRange.type === 'single' && newRange.startTime) {
           const endDate = new Date(newRange.startTime);
           endDate.setMinutes(endDate.getMinutes() + duration);
@@ -444,7 +437,6 @@ export class DateSlotCardComponent {
           newRange.slots = [this.createSlotDTO(newRange.startTime, newRange.endTime, location)];
         }
         // 3. Update Ranges
-        // For ranges, we need to regenerate the entire list of slots with the new duration/break
         else if (newRange.type === 'range') {
           this.generateRangeSlots(newRange, duration, breakDuration, location);
         }
@@ -479,15 +471,13 @@ export class DateSlotCardComponent {
     let current = new Date(range.startTime);
     let safeGuard = 0; // Prevent infinite loops if duration/break logic is faulty
 
-    // Iterate to create slots until we exceed the range's end time
-    while (safeGuard < 200) {
+    // Iterate to create slots until exceeding the range's end time
+    while (safeGuard < 70) {
       // 1. Calculate the potential end time for the current slot
       const slotEnd = new Date(current);
       slotEnd.setMinutes(slotEnd.getMinutes() + duration);
 
       // 2. Check if the slot fits within the range
-      // If the slot ends after the range's end time, we stop.
-      // We do not create partial slots.
       if (slotEnd.getTime() > range.endTime.getTime()) {
         break;
       }
@@ -549,7 +539,66 @@ export class DateSlotCardComponent {
    * @returns A random string ID.
    */
   private generateId(): string {
-    return Math.random().toString(36).substring(2, 9);
+    return Math.random().toString(36).substr(2, 9);
+  }
+
+  /**
+   * Returns the current slot ranges configuration.
+   */
+  getRanges(): SlotRange[] {
+    return this.slotRanges();
+  }
+
+  /**
+   * Sets the slot ranges for this date, adjusting the time to match this date.
+   * Used for "Copy to all" functionality to preserve range structure.
+   * @param sourceRanges The ranges to copy from.
+   */
+  setRanges(sourceRanges: SlotRange[]): void {
+    const targetDate = new Date(this.date());
+    const newRanges: SlotRange[] = sourceRanges.map(range => {
+      // 1. Calculate new start/end times based on the target date
+      const newStart = new Date(targetDate);
+      if (range.startTime) {
+        newStart.setHours(range.startTime.getHours(), range.startTime.getMinutes(), 0, 0);
+      }
+
+      const newEnd = new Date(targetDate);
+      if (range.endTime) {
+        newEnd.setHours(range.endTime.getHours(), range.endTime.getMinutes(), 0, 0);
+      }
+
+      // 2. Create the new range object
+      const newRange: SlotRange = {
+        ...range,
+        id: this.generateId(), // New ID for the new range
+        startTime: range.startTime ? newStart : null,
+        endTime: range.endTime ? newEnd : null,
+        slots: [], // Will be regenerated
+      };
+
+      // 3. Copy slots from the source range, adjusting the date
+      newRange.slots = range.slots.map(slot => {
+        const slotStart = new Date(slot.startDateTime!);
+        const slotEnd = new Date(slot.endDateTime!);
+
+        const newSlotStart = new Date(targetDate);
+        newSlotStart.setHours(slotStart.getHours(), slotStart.getMinutes(), 0, 0);
+
+        const newSlotEnd = new Date(targetDate);
+        newSlotEnd.setHours(slotEnd.getHours(), slotEnd.getMinutes(), 0, 0);
+
+        return {
+          ...slot,
+          startDateTime: newSlotStart.toISOString(),
+          endDateTime: newSlotEnd.toISOString(),
+        };
+      });
+
+      return newRange;
+    });
+
+    this.slotRanges.set(newRanges);
   }
 
   /**

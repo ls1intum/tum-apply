@@ -34,7 +34,10 @@
         "title": "Failed to load slots",
         "description": "There was an error loading the interview slots. Please try again.",
         "retry": "Retry",
-        "loadFailed": "Failed to load interview process details"
+        "loadFailed": {
+          "summary": "Load Failed",
+          "detail": "Failed to load interview process details"
+        }
       },
       "empty": {
         "title": "No slots yet",
@@ -50,7 +53,10 @@
       "showMoreSingular": "more slot",
       "showMorePlural": "more slots",
       "error": {
-        "loadFailed": "Failed to load interview slots"
+        "loadFailed": {
+          "summary": "Load Failed",
+          "detail": "Failed to load interview slots"
+        }
       },
       "status": {
         "booked": "booked"
@@ -61,7 +67,7 @@
       },
       "create": {
         "title": "Create Interview Slots",
-        "addSlot": "Add Another Slot",
+        "addSlot": "Add Slot",
         "removeSlot": "Remove Slot",
         "slotNumber": "Slot {{number}}",
         "date": "Date",
@@ -81,9 +87,22 @@
           "detail": "Interview slots have been created successfully."
         },
         "error": {
-          "generic": "Failed to create slots. Please try again.",
-          "conflict": "Some slots conflict with existing ones. Please adjust the times.",
-          "validation": "Please check the form for errors."
+          "generic": {
+            "summary": "Creation Failed",
+            "detail": "Failed to create slots. Please try again."
+          },
+          "conflict": {
+            "summary": "Conflict Detected",
+            "detail": "Some slots conflict with existing ones. Please adjust the times."
+          },
+          "validation": {
+            "summary": "Validation Error",
+            "detail": "Please check the form for errors."
+          },
+          "noSlots": {
+            "summary": "No Slots",
+            "detail": "Please create at least one slot before saving."
+          }
         },
         "validation": {
           "required": "This field is required",
@@ -108,7 +127,6 @@
         "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
         "sameSlotsForAllDays": "Same Slots for all days",
         "addRange": "Time range",
-        "addSlot": "Add slot",
         "noSlotsYet": "No Slots yet",
         "noSlotsYetDesc": "Add a range or a single slot to get started",
         "singleSlot": "Single Slot",

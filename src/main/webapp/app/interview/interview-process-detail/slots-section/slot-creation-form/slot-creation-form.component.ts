@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, computed, inject, input, model, output, signal, ViewChildren, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -40,8 +40,10 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
   templateUrl: './slot-creation-form.component.html',
 })
 export class SlotCreationFormComponent {
+  @ViewChildren(DateSlotCardComponent) dateCards!: QueryList<DateSlotCardComponent>;
+
   // Inputs
-  readonly visible = input.required<boolean>();
+  readonly visible = model.required<boolean>();
   readonly processId = input.required<string>();
 
   // Outputs
@@ -51,13 +53,13 @@ export class SlotCreationFormComponent {
   // State
   readonly isSubmitting = signal(false);
 
-  // Use regular property for PrimeNG two-way binding compatibility
+  // Regular property for PrimeNG two-way binding compatibility
   selectedDates: Date[] = [];
 
-  // Signal to track changes for the template
+  // Signal to track template changes
   readonly selectedDatesSignal = signal<Date[]>([]);
 
-  // Sorted dates for display (cards)
+  // Sorted dates for display
   readonly sortedDates = computed(() => [...this.selectedDatesSignal()].sort((a, b) => a.getTime() - b.getTime()));
 
   readonly duration = signal<number>(30);
@@ -73,7 +75,7 @@ export class SlotCreationFormComponent {
   readonly durationError = signal<string | null>(null);
   readonly breakError = signal<string | null>(null);
 
-  // Map of date string -> slots for that date
+  // Map date string to slots
   readonly slotsByDate = signal<Map<string, InterviewSlotDTO[]>>(new Map());
 
   // Options
@@ -111,7 +113,7 @@ export class SlotCreationFormComponent {
       }
     } else {
       this.isCustomDurationMode.set(false);
-      this.durationError.set(null); // Clear error when switching back to presets
+      this.durationError.set(null); // Clear error on preset switch
       this.duration.set(value);
     }
   }
@@ -125,11 +127,12 @@ export class SlotCreationFormComponent {
 
     if (value <= 0) {
       this.durationError.set('interview.slots.create.validation.durationPositive');
-      // We do NOT update the main duration signal if invalid, to prevent breaking child components
-    } else {
-      this.durationError.set(null);
-      this.duration.set(value);
+      // Prevent invalid updates to preserve child component stability
+      return;
     }
+
+    this.durationError.set(null);
+    this.duration.set(value);
   }
 
   /**
@@ -145,7 +148,7 @@ export class SlotCreationFormComponent {
       }
     } else {
       this.isCustomBreakMode.set(false);
-      this.breakError.set(null); // Clear error when switching back to presets
+      this.breakError.set(null); // Clear error on preset switch
       this.breakDuration.set(value);
     }
   }
@@ -178,34 +181,32 @@ export class SlotCreationFormComponent {
     const currentSelection = Array.isArray(dates) ? dates : [dates];
     const previousSelection = this.selectedDatesSignal();
 
-    // If we receive exactly one date, we treat it as a toggle operation on the previous selection
-    // to support simple clicking without holding Ctrl/Meta key.
+    // Single date selection toggles the state
     if (currentSelection.length === 1) {
       const clickedDate = currentSelection[0];
       const clickedTime = clickedDate.getTime();
 
-      // Check if the clicked date is already selected
+      // Check if date is already selected
       const exists = previousSelection.some(d => d.getTime() === clickedTime);
 
       let newSelection: Date[];
       if (exists) {
-        // Deselect: If it exists, remove it from the list
+        // Deselect if exists
         newSelection = previousSelection.filter(d => d.getTime() !== clickedTime);
       } else {
-        // Add: If it doesn't exist, append it to the list
+        // Add if new
         newSelection = [...previousSelection, clickedDate];
       }
 
-      // Always keep dates sorted chronologically
+      // Sort dates chronologically
       newSelection.sort((a, b) => a.getTime() - b.getTime());
       this.selectedDatesSignal.set(newSelection);
     } else {
-      // If multiple dates are selected (e.g. range select), just replace the selection
+      // Replace selection for range inputs
       currentSelection.sort((a, b) => a.getTime() - b.getTime());
       this.selectedDatesSignal.set(currentSelection);
     }
 
-    // Sync the property for compatibility if needed
     this.selectedDates = this.selectedDatesSignal();
   }
 
@@ -238,50 +239,24 @@ export class SlotCreationFormComponent {
    * Copies the slots from the first selected date to all other selected dates.
    */
   copySlotsToAllDays(): void {
-    const dates = this.sortedDates();
-    if (dates.length < 2) {
+    const cards = this.dateCards.toArray();
+    if (cards.length < 2) {
       return;
     }
 
-    const firstDateStr = dates[0].toISOString().split('T')[0];
-    const firstDateSlots = this.slotsByDate().get(firstDateStr) ?? [];
+    // 1. Get ranges from first card
+    const sourceCard = cards[0];
+    const sourceRanges = sourceCard.getRanges();
 
-    if (firstDateSlots.length === 0) {
+    if (sourceRanges.length === 0) {
       return;
     }
 
-    this.slotsByDate.update(map => {
-      const newMap = new Map(map);
-      // 1. Iterate over all other selected dates
-      for (let i = 1; i < dates.length; i++) {
-        const targetDate = dates[i];
-        const targetDateStr = targetDate.toISOString().split('T')[0];
-
-        // 2. Clone each slot from the first day, but shift the date to the target date
-        const clonedSlots = firstDateSlots.map(slot => {
-          const start = new Date(slot.startDateTime!);
-          const end = new Date(slot.endDateTime!);
-
-          // 3. Create new start time: Target Date + Original Time
-          const newStart = new Date(targetDate);
-          newStart.setHours(start.getHours(), start.getMinutes(), 0, 0);
-
-          // 4. Create new end time: Target Date + Original Time
-          const newEnd = new Date(targetDate);
-          newEnd.setHours(end.getHours(), end.getMinutes(), 0, 0);
-
-          return {
-            ...slot,
-            startDateTime: newStart.toISOString(),
-            endDateTime: newEnd.toISOString(),
-          };
-        });
-
-        // Overwrite slots for the target date with the cloned slots
-        newMap.set(targetDateStr, clonedSlots);
-      }
-      return newMap;
-    });
+    // 2. Apply ranges to other cards
+    for (let i = 1; i < cards.length; i++) {
+      const targetCard = cards[i];
+      targetCard.setRanges(sourceRanges);
+    }
 
     this.toastService.showSuccessKey('interview.slots.create.copySuccess');
   }
@@ -296,7 +271,7 @@ export class SlotCreationFormComponent {
 
   /**
    * Submits the created slots to server.
-   * Validates that slots exist before submitting.
+   * Validate slots before submission.
    */
   async submit(): Promise<void> {
     const allSlots = Array.from(this.slotsByDate().values()).flat();
@@ -328,7 +303,7 @@ export class SlotCreationFormComponent {
       this.close();
     } catch (error) {
       console.error(error);
-      this.toastService.showErrorKey('interview.slots.create.error');
+      this.toastService.showErrorKey('interview.slots.create.error.generic');
     } finally {
       this.isSubmitting.set(false);
     }

@@ -143,9 +143,9 @@
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2 text-sm font-medium text-[var(--p-text-primary)] font-bold">
                   <span>{{ slot.startDateTime | date: 'HH:mm' }} - {{ slot.endDateTime | date: 'HH:mm' }}</span>
-                  @if (slot.location === 'virtual') {
+                  @if (isVirtualLocation(slot.location)) {
                   <i class="fa-solid fa-video"></i>
-                  } @else if (slot.location === 'in-person') {
+                  } @else {
                   <i class="fa-solid fa-building"></i>
                   }
                 </div>
@@ -188,12 +188,9 @@
     </div>
 
     @if (showApplyAll()) {
-    <div class="mt-4 pt-3 border-t border-[var(--p-border-default)] flex items-center gap-2">
-      <p-checkbox [binary]="true" inputId="applyAll" (onChange)="applyAll.emit($event.checked)"
-        styleClass="scale-75 origin-left" />
-      <label for="applyAll" class="cursor-pointer text-xs font-medium text-[var(--p-text-secondary)] -ml-1">
-        {{ 'interview.slots.create.sameSlotsForAllDays' | translate }}
-      </label>
+    <div class="mt-4 pt-3 border-t border-[var(--p-border-default)] flex items-center">
+      <jhi-button [label]="'interview.slots.create.sameSlotsForAllDays' | translate" variant="outlined" size="xs"
+        (click)="applyAll.emit(true)" />
     </div>
     }
   </div>

@@ -34,7 +34,10 @@
         "title": "Termine konnten nicht geladen werden",
         "description": "Beim Laden der Interview Termine ist ein Fehler aufgetreten. Bitte versuche es erneut.",
         "retry": "Erneut versuchen",
-        "loadFailed": "Interview Prozess Informationen konnten nicht geladen werden"
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Interview Prozess Informationen konnten nicht geladen werden"
+        }
       },
       "empty": {
         "title": "Noch keine Termine",
@@ -50,7 +53,10 @@
       "showMoreSingular": "weiteren Termin",
       "showMorePlural": "weitere Termine",
       "error": {
-        "loadFailed": "Interview Termine konnten nicht geladen werden"
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Interview Termine konnten nicht geladen werden"
+        }
       },
       "status": {
         "booked": "Gebucht"
@@ -80,9 +86,22 @@
           "detail": "Die Interview Termine wurden erfolgreich erstellt."
         },
         "error": {
-          "generic": "Termine konnten nicht erstellt werden. Bitte versuchen Sie es erneut.",
-          "conflict": "Einige Termine überschneiden sich mit bestehenden. Bitte passen Sie die Zeiten an.",
-          "validation": "Bitte überprüfen Sie das Formular auf Fehler."
+          "generic": {
+            "summary": "Erstellung fehlgeschlagen",
+            "detail": "Termine konnten nicht erstellt werden. Bitte versuchen Sie es erneut."
+          },
+          "conflict": {
+            "summary": "Konflikt erkannt",
+            "detail": "Einige Termine überschneiden sich mit bestehenden. Bitte passen Sie die Zeiten an."
+          },
+          "validation": {
+            "summary": "Validierungsfehler",
+            "detail": "Bitte überprüfen Sie das Formular auf Fehler."
+          },
+          "noSlots": {
+            "summary": "Keine Termine",
+            "detail": "Bitte erstellen Sie mindestens einen Termin vor dem Speichern."
+          }
         },
         "validation": {
           "required": "Dieses Feld ist erforderlich",
