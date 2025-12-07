@@ -191,8 +191,11 @@ export class SlotCreationFormComponent {
 
       let newSelection: Date[];
       if (exists) {
-        // Deselect if exists
-        newSelection = previousSelection.filter(d => d.getTime() !== clickedTime);
+        if (previousSelection.length > 1) {
+          newSelection = currentSelection;
+        } else {
+          newSelection = [];
+        }
       } else {
         // Add if new
         newSelection = [...previousSelection, clickedDate];
