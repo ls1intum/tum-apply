@@ -5,12 +5,10 @@ import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
-import dayjs from 'dayjs/esm';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import SharedModule from 'app/shared/shared.module';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
-import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 import * as DropDownOptions from '../../dropdown-options';
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
@@ -47,12 +45,7 @@ export class JobCardComponent {
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
   icon = input<string>('flask-vial');
   ref: DynamicDialogRef | undefined;
-
-<<<<<<< HEAD
-=======
   readonly dropDownOptions = DropDownOptions;
-  readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
->>>>>>> 09da0ca8ac6f100b39f0d9154eff8b8ebe0009ec
   translate = inject(TranslateService);
 
   currentLang = toSignal(this.translate.onLangChange);
