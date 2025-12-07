@@ -23,6 +23,7 @@ import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 
+import * as DropDownOptions from '../dropdown-options';
 import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
 import TranslateDirective from '../../shared/language/translate.directive';
 
@@ -76,6 +77,7 @@ export interface JobDetails {
   styleUrl: './job-detail.component.scss',
 })
 export class JobDetailComponent {
+  readonly dropDownOptions = DropDownOptions;
   readonly closeButtonLabel = 'button.close';
   readonly closeButtonSeverity = 'danger' as ButtonColor;
   readonly closeButtonIcon = 'xmark';
