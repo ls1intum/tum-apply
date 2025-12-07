@@ -55,7 +55,7 @@ options. ([Video](https://live.rbg.tum.de/w/artemisintro/67995))
 TUMApply supports **secure login** via:
 
 - TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/67993))
-- Apple, Google and Microsoft ([Video](https://live.rbg.tum.de/w/artemisintro/61949))
+- Apple and Google
 - Email and code ([Video](https://live.rbg.tum.de/w/artemisintro/67994))
 - Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/67996))
 
@@ -66,14 +66,14 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ### Technology Stack
 
-| Component      | Technology                                     |
-| -------------- | ---------------------------------------------- |
-| Client         | Angular                                        |
-| Server         | Spring Boot (Java)                             |
-| Proxy          | Nginx                                          |
-| Database       | MySQL with Hibernate                           |
-| Authentication | Keycloak (with Google / Microsoft / Apple SSO) |
-| Deployment     | GitHub + GitHub Actions (CI/CD)                |
+| Component      | Technology                                  |
+| -------------- | ------------------------------------------- |
+| Client         | Angular                                     |
+| Server         | Spring Boot (Java)                          |
+| Proxy          | Nginx                                       |
+| Database       | MySQL with Hibernate                        |
+| Authentication | Keycloak (with Google / Apple SSO) |
+| Deployment     | GitHub + GitHub Actions (CI/CD)             |
 
 ### Core Modules & Responsibilities
 
