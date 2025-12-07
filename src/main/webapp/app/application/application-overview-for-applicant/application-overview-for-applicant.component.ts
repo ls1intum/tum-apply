@@ -11,6 +11,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { TimeSinceTranslatePipe } from 'app/shared/pipes/time-since-translate.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
@@ -29,6 +30,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
     RouterModule,
     ConfirmDialogModule,
     ConfirmDialog,
+    TimeSinceTranslatePipe,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
@@ -62,11 +64,15 @@ export default class ApplicationOverviewForApplicantComponent {
   // Template reference for job title display
   readonly jobNameTemplate = viewChild.required<TemplateRef<unknown>>('jobNameTemplate');
 
+  // Template reference for created column (relative time)
+  readonly timeSinceCreationTemplate = viewChild.required<TemplateRef<unknown>>('timeSinceCreationTemplate');
+
   // Computed table column definitions including custom templates
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const actionTemplate = this.actionTemplate();
     const badgeTemplate = this.badgeTemplate();
     const jobNameTemplate = this.jobNameTemplate();
+    const timeSinceCreationTemplate = this.timeSinceCreationTemplate();
     return [
       {
         field: 'jobTitle',
@@ -89,6 +95,7 @@ export default class ApplicationOverviewForApplicantComponent {
         field: 'timeSinceCreation',
         header: 'entity.applicationOverview.columns.created',
         width: '10rem',
+        template: timeSinceCreationTemplate,
       },
       {
         field: 'actions',
