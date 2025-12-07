@@ -59,7 +59,7 @@ export class AuthFacadeService {
     return this.runAuthAction(
       async () => {
         // 1) Email-Authentication-Flow (server session)
-        const refreshed = await this.serverAuthenticationService.refreshTokens();
+        const refreshed = await this.serverAuthenticationService.refreshTokens(true);
         if (refreshed) {
           await this.accountService.loadUser();
           this.authMethod = 'server';
