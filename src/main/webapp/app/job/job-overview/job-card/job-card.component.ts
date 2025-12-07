@@ -10,6 +10,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import SharedModule from 'app/shared/shared.module';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
 
@@ -46,7 +47,6 @@ export class JobCardComponent {
   icon = input<string>('flask-vial');
   ref: DynamicDialogRef | undefined;
 
-  readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
   translate = inject(TranslateService);
 
   currentLang = toSignal(this.translate.onLangChange);

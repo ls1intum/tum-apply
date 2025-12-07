@@ -48,7 +48,7 @@
         />
         <span class="truncate">{{ location() }}</span>
       </div>
-      @if (formattedStartDate()) {
+      @if (this.startDate() | localizedDate) {
         <div class="flex items-center gap-2 text-sm">
           <fa-icon
             [icon]="['fas', 'calendar']"
@@ -56,7 +56,7 @@
             [pTooltip]="'jobOverviewPage.tooltips.startDate' | translate"
             tooltipPosition="top"
           />
-          <span class="truncate">Start: {{ formattedStartDate() }}</span>
+          <span class="truncate">Start: {{ this.startDate() | localizedDate }}</span>
         </div>
       }
     </div>
