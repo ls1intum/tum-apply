@@ -66,14 +66,14 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ### Technology Stack
 
-| Component      | Technology                                  |
-| -------------- | ------------------------------------------- |
-| Client         | Angular                                     |
-| Server         | Spring Boot (Java)                          |
-| Proxy          | Nginx                                       |
-| Database       | MySQL with Hibernate                        |
+| Component      | Technology                         |
+| -------------- | ---------------------------------- |
+| Client         | Angular                            |
+| Server         | Spring Boot (Java)                 |
+| Proxy          | Nginx                              |
+| Database       | MySQL with Hibernate               |
 | Authentication | Keycloak (with Google / Apple SSO) |
-| Deployment     | GitHub + GitHub Actions (CI/CD)             |
+| Deployment     | GitHub + GitHub Actions (CI/CD)    |
 
 ### Core Modules & Responsibilities
 
