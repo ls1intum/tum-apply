@@ -35,7 +35,10 @@
           </div>
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-            <span><strong jhiTranslate="jobDetailPage.header.location"></strong> {{ job.location || '-' }}</span>
+            <span
+              ><strong jhiTranslate="jobDetailPage.header.location"></strong>
+              {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
+            >
           </div>
         </div>
       </div>
@@ -83,7 +86,7 @@
             <div class="info-list">
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
-                <span class="value">{{ job.fieldOfStudies || '-' }}</span>
+                <span class="value">{{ (dropDownOptions.getFieldOfStudiesTranslationKey(job.fieldOfStudies) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.researchArea"></span>
@@ -107,7 +110,7 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fundingType"></span>
-                <span class="value">{{ job.fundingType || '-' }}</span>
+                <span class="value">{{ (dropDownOptions.getFundingTypeTranslationKey(job.fundingType) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
@@ -127,7 +130,7 @@
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'research-group']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="jobDetailPage.cards.researchGroup"></h3>
-            @if (isProfessor() && job.belongsToResearchGroup) {
+            @if (isProfessorOrEmployee() && job.belongsToResearchGroup) {
               <fa-icon
                 [icon]="['fas', 'pencil']"
                 class="icon edit-icon cursor-pointer ml-auto"

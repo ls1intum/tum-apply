@@ -11,6 +11,7 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import SharedModule from 'app/shared/shared.module';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
 
+import * as DropDownOptions from '../../dropdown-options';
 export type ApplicationStatusExtended = JobCardDTO.ApplicationStateEnum | 'NOT_YET_APPLIED';
 
 export const ApplicationStatusExtended = {
@@ -46,6 +47,7 @@ export class JobCardComponent {
   icon = input<string>('flask-vial');
   ref: DynamicDialogRef | undefined;
 
+  readonly dropDownOptions = DropDownOptions;
   readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
   translate = inject(TranslateService);
 

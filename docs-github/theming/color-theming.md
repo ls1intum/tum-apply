@@ -44,6 +44,7 @@ src/main/webapp/content/theming/tumapplypreset.ts
 
 You can define new variables, override existing ones, or align Tailwind and PrimeNG settings for full consistency.
 For that please use:
+
 ```
 src/main/webapp/content/scss/prime-ng-overrides.scss
 ```

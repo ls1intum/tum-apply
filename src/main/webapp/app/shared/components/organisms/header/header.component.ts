@@ -10,6 +10,9 @@ import { filter, fromEventPattern, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { PrimeNG } from 'primeng/config';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
+import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
+import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
@@ -34,14 +37,17 @@ export class HeaderComponent {
   bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
     const observer = new MutationObserver(handler as MutationCallback);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return () => observer.disconnect();
   }).pipe(map(() => document.documentElement.classList.contains('tum-apply-dark-mode')));
+  }).pipe(map(() => document.documentElement.classList.contains('tum-apply-dark-mode')));
   isDarkMode = toSignal(this.bodyClassChanges$, {
+    initialValue: document.documentElement.classList.contains('tum-apply-dark-mode'),
     initialValue: document.documentElement.classList.contains('tum-apply-dark-mode'),
   });
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
-    initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
+    initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
   languages = LANGUAGES.map(lang => lang.toUpperCase());
   accountService = inject(AccountService);
@@ -129,9 +135,6 @@ export class HeaderComponent {
   openLoginDialog(): void {
     this.authDialogService.open({
       mode: 'login',
-      onSuccess() {
-        // TODO: reload or show toast
-      },
     });
   }
 

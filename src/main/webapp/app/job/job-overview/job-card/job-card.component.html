@@ -10,7 +10,7 @@
     [style.background-color]="!headerImageUrl() ? headerColor() : 'transparent'"
   >
     <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
-      {{ fieldOfStudies() }}
+      {{ (dropDownOptions.getFieldOfStudiesTranslationKey(fieldOfStudies()) | translate) || '-' }}
     </span>
   </div>
 
@@ -46,7 +46,7 @@
           [pTooltip]="'jobOverviewPage.tooltips.location' | translate"
           tooltipPosition="top"
         />
-        <span class="truncate">{{ location() }}</span>
+        <span class="truncate">{{ (dropDownOptions.getLocationTranslationKey(location()) | translate) || '-' }}</span>
       </div>
       @if (formattedStartDate()) {
         <div class="flex items-center gap-2 text-sm">
@@ -64,12 +64,12 @@
     <!-- Tags/Badges section -->
     <div class="flex flex-wrap gap-2 mt-auto">
       @if (formattedContractDuration()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-md border border-primary">
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary">
           {{ formattedContractDuration() }} <span jhiTranslate="jobDetailPage.units.years"></span>
         </span>
       }
       @if (formattedWorkload()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-md border border-primary"> {{ formattedWorkload() }} </span>
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary"> {{ formattedWorkload() }} </span>
       }
     </div>
   </div>
