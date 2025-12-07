@@ -3,8 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CredentialsGroupComponent } from 'app/shared/components/molecules/credentials-group/credentials-group.component';
 
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { of } from 'rxjs';
+import {
+  BreakpointObserverMock,
+  createBreakpointObserverMock,
+  provideBreakpointObserverMock,
+} from '../../../../../util/breakpoint-observer.mock';
 
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -28,7 +31,7 @@ describe('CredentialsGroupComponent', () => {
   let applicationConfigMock: ApplicationConfigServiceMock;
   let authOrchestratorServiceMock: AuthOrchestratorServiceMock;
   let authFacadeMock: AuthFacadeServiceMock;
-  let breakpointObserverMock: { observe: ReturnType<typeof vi.fn> };
+  let breakpointObserverMock: BreakpointObserverMock;
 
   function createComponent() {
     return TestBed.createComponent(CredentialsGroupComponent);
@@ -45,17 +48,7 @@ describe('CredentialsGroupComponent', () => {
     authFacadeMock = createAuthFacadeServiceMock();
     authOrchestratorServiceMock = createAuthOrchestratorServiceMock();
 
-    breakpointObserverMock = {
-      observe: vi.fn(() =>
-        of({
-          breakpoints: {
-            [Breakpoints.XSmall]: false,
-            [Breakpoints.Small]: false,
-          },
-          matches: false,
-        }),
-      ),
-    };
+    breakpointObserverMock = createBreakpointObserverMock();
 
     await TestBed.configureTestingModule({
       imports: [CredentialsGroupComponent],
@@ -65,10 +58,7 @@ describe('CredentialsGroupComponent', () => {
         provideApplicationConfigServiceMock(applicationConfigMock),
         provideAuthFacadeServiceMock(authFacadeMock),
         provideAuthOrchestratorServiceMock(authOrchestratorServiceMock),
-        {
-          provide: BreakpointObserver,
-          useValue: breakpointObserverMock,
-        },
+        provideBreakpointObserverMock(breakpointObserverMock),
       ],
     }).compileComponents();
   });

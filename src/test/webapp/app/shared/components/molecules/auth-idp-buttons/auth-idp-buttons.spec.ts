@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { of } from 'rxjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { AuthIdpButtons } from 'app/shared/components/molecules/auth-idp-buttons/auth-idp-buttons';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
@@ -10,10 +9,15 @@ import {
   createAuthFacadeServiceMock,
   provideAuthFacadeServiceMock,
 } from '../../../../../util/auth-facade.service.mock';
+import {
+  BreakpointObserverMock,
+  createBreakpointObserverMock,
+  provideBreakpointObserverMock,
+} from '../../../../../util/breakpoint-observer.mock';
 
 describe('AuthIdpButtons', () => {
   let authFacadeMock: AuthFacadeServiceMock;
-  let breakpointObserverMock: { observe: ReturnType<typeof vi.fn> };
+  let breakpointObserverMock: BreakpointObserverMock;
 
   function createComponent() {
     const fixture = TestBed.createComponent(AuthIdpButtons);
@@ -23,28 +27,14 @@ describe('AuthIdpButtons', () => {
 
   beforeEach(async () => {
     authFacadeMock = createAuthFacadeServiceMock();
-
-    breakpointObserverMock = {
-      observe: vi.fn(() =>
-        of({
-          breakpoints: {
-            [Breakpoints.XSmall]: false,
-            [Breakpoints.Small]: false,
-          },
-          matches: false,
-        }),
-      ),
-    };
+    breakpointObserverMock = createBreakpointObserverMock();
 
     await TestBed.configureTestingModule({
       imports: [AuthIdpButtons],
       providers: [
         provideFontAwesomeTesting(),
         provideAuthFacadeServiceMock(authFacadeMock),
-        {
-          provide: BreakpointObserver,
-          useValue: breakpointObserverMock,
-        },
+        provideBreakpointObserverMock(breakpointObserverMock),
       ],
     }).compileComponents();
   });
@@ -81,15 +71,15 @@ describe('AuthIdpButtons', () => {
   });
 
   it('should configure buttons as icon-only and horizontal on small screens', () => {
-    breakpointObserverMock.observe.mockReturnValue(
-      of({
-        breakpoints: {
-          [Breakpoints.XSmall]: true,
-          [Breakpoints.Small]: true,
-        },
-        matches: true,
-      }),
-    );
+    breakpointObserverMock = createBreakpointObserverMock({
+      matches: true,
+      breakpoints: {
+        [Breakpoints.XSmall]: true,
+        [Breakpoints.Small]: true,
+      },
+    });
+
+    TestBed.overrideProvider(BreakpointObserver, { useValue: breakpointObserverMock });
 
     const fixture = createComponent();
     const component = fixture.componentInstance;
