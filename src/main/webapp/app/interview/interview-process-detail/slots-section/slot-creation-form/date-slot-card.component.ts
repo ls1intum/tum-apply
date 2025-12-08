@@ -140,7 +140,7 @@ export class DateSlotCardComponent {
     const trimmed = location.trim().toLowerCase();
 
     // Regex to detect URLs (http, https, www, or common domains)
-    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})(\/.*)?$/;
+    const urlPattern = /^(https?:\/\/)?\S+\.[a-z]{2,}\S*$/i;
 
     // Specific check for common video conferencing tools even if the URL pattern might miss some edge cases
     const isVideoTool =
