@@ -189,35 +189,50 @@ export class AuthFacadeService {
     this.documentCache.clear();
     return this.runAuthAction(
       async () => {
-        const user = this.accountService.user();
-        const isProfessorOrEmployee =
-          (user?.authorities?.includes('PROFESSOR') ?? false) || (user?.authorities?.includes('EMPLOYEE') ?? false);
-        const redirectUrl = isProfessorOrEmployee ? window.location.origin + '/professor' : window.location.origin + '/';
-        if (this.authMethod === 'server') {
-          this.authMethod = 'none';
-          await this.serverAuthenticationService.logout();
-          void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
-        } else if (this.authMethod === 'keycloak') {
-          this.authMethod = 'none';
-          await this.keycloakAuthenticationService.logout(redirectUrl);
-        } else {
-          void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
-        }
-        // Reset states
-        this.accountService.user.set(undefined);
-        this.accountService.loaded.set(true);
+        const { targetRoute, redirectUrl } = this.getLogoutRedirectRoutes();
 
-        if (sessionExpired) {
-          this.toastService.showWarnKey('auth.common.toast.logout.sessionExpired');
-        } else {
-          this.toastService.showSuccessKey('auth.common.toast.logout.successfullyLoggedOut');
-        }
+        await this.performDomainLogout(targetRoute, redirectUrl);
+        this.handlePostLogoutState(sessionExpired);
       },
       {
         summary: this.translate.instant(`${this.translationKey}.logoutFailed.summary`),
         detail: this.translate.instant(`${this.translationKey}.logoutFailed.detail`),
       },
     );
+  }
+
+  private getLogoutRedirectRoutes(): { targetRoute: string; redirectUrl: string } {
+    const user = this.accountService.user();
+    const isProfessorOrEmployee = (user?.authorities?.includes('PROFESSOR') ?? false) || (user?.authorities?.includes('EMPLOYEE') ?? false);
+
+    const targetRoute = isProfessorOrEmployee ? '/professor' : '/';
+    const redirectUrl = window.location.origin + targetRoute;
+
+    return { targetRoute, redirectUrl };
+  }
+
+  private async performDomainLogout(targetRoute: string, redirectUrl: string): Promise<void> {
+    if (this.authMethod === 'server') {
+      this.authMethod = 'none';
+      await this.serverAuthenticationService.logout();
+      void this.router.navigate([targetRoute]);
+    } else if (this.authMethod === 'keycloak') {
+      this.authMethod = 'none';
+      await this.keycloakAuthenticationService.logout(redirectUrl);
+    } else {
+      void this.router.navigate([targetRoute]);
+    }
+  }
+
+  private handlePostLogoutState(sessionExpired: boolean): void {
+    this.accountService.user.set(undefined);
+    this.accountService.loaded.set(true);
+
+    if (sessionExpired) {
+      this.toastService.showWarnKey('auth.common.toast.logout.sessionExpired');
+    } else {
+      this.toastService.showSuccessKey('auth.common.toast.logout.successfullyLoggedOut');
+    }
   }
 
   // --------------- Helpers ---------------
