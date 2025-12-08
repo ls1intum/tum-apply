@@ -1,0 +1,40 @@
+<div class="py-8 px-4 lg:px-8">
+  <div class="max-w-[75rem] mx-auto">
+    <div class="header flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-2xl font-bold text-text-primary" jhiTranslate="landingPage.jobsPreview.headline">Jobs</h2>
+        <p class="text-sm text-text-secondary" jhiTranslate="landingPage.jobsPreview.subline">Latest jobs in your area</p>
+      </div>
+      <div>
+        <jhi-button [label]="'landingPage.jobsPreview.seeMore'" [shouldTranslate]="true" severity="primary" (click)="goToJobOverview()" />
+      </div>
+    </div>
+
+    @if (hasJobs()) {
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        @for (job of jobs(); track job.jobId; let i = $index) {
+          <div class="w-full min-w-[16.5rem] max-w-[20rem] flex-[1_1_16.5rem] mx-auto">
+            <jhi-job-card
+              [jobId]="job.jobId"
+              [jobTitle]="job.title"
+              [fieldOfStudies]="job.fieldOfStudies"
+              [location]="job.location"
+              [professor]="job.professorName"
+              [workload]="job.workload"
+              [startDate]="job.startDate"
+              [applicationId]="job.applicationId"
+              [contractDuration]="job.contractDuration"
+              [headerImageUrl]="job.imageUrl"
+            />
+          </div>
+        }
+      </div>
+    }
+
+    @if (!hasJobs()) {
+      <div class="text-center py-8 text-[var(--p-text-secondary)]">
+        <p jhiTranslate="landingPage.jobsPreview.noJobs">No jobs available at the moment</p>
+      </div>
+    }
+  </div>
+</div>

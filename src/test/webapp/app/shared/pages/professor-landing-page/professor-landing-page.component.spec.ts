@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ProfessorLandingPageComponent } from 'app/shared/pages/professor-landing-page/professor-landing-page.component';
 import { provideTranslateMock } from 'util/translate.mock';
@@ -9,6 +9,7 @@ import { createAccountServiceMock, provideAccountServiceMock } from 'util/accoun
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideDialogServiceMock } from '../../../../util/dialog.service.mock';
 
 describe('ProfessorLandingPageComponent', () => {
   let fixture: ComponentFixture<ProfessorLandingPageComponent>;
@@ -30,6 +31,7 @@ describe('ProfessorLandingPageComponent', () => {
         provideRouterMock(routerMock),
         provideFontAwesomeTesting(),
         provideNoopAnimations(),
+        provideDialogServiceMock(),
       ],
     }).compileComponents();
 

@@ -18,7 +18,7 @@ final acceptance.
 
 - **Client**: Angular, TypeScript, PrimeNG, Tailwind, Keycloak JS
 - **Server**: Spring Boot, Java, Hibernate, MySQL
-- **Authentication**: Keycloak with SSO (TUM, Google, Microsoft)
+- **Authentication**: Keycloak with SSO (TUM, Google, Apple)
 - **Infrastructure**: Docker, NGINX, GitHub Actions
 - **Design**: Figma (UI Prototypes & Ideas)
 
