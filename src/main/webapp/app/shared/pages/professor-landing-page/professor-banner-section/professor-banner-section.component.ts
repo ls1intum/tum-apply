@@ -7,6 +7,4 @@ import TranslateDirective from '../../../language/translate.directive';
   imports: [TranslateDirective],
   templateUrl: './professor-banner-section.component.html',
 })
-export class ProfessorBannerSectionComponent {
-  // empty component
-}
+export class ProfessorBannerSectionComponent {}
