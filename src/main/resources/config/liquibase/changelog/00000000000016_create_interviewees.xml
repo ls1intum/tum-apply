@@ -9,7 +9,7 @@
       Creates the interviewees table to link applications to interview processes.
       An interviewee represents an applicant who has been added to an interview process.
   -->
-  <changeSet id="20241205-create-interviewees-table" author="abinayasivaguru">
+  <changeSet id="016-create-interviewees-table" author="abinayasivaguru">
     <createTable tableName="interviewees">
       <column name="id" type="uuid">
         <constraints primaryKey="true" nullable="false"/>
