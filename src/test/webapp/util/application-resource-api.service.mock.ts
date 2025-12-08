@@ -44,7 +44,7 @@ const createMockApplicationOverview = (overrides?: Partial<ApplicationOverviewDT
   jobTitle: 'Software Engineer',
   researchGroup: 'Research Group A',
   applicationState: 'SENT',
-  timeSinceCreation: '2 days ago',
+  createdAt: '2025-01-01T12:00:00Z',
   ...overrides,
 });
 
