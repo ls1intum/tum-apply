@@ -154,8 +154,9 @@ export class KeycloakAuthenticationService {
     if (this.refreshInFlight) {
       return this.refreshInFlight;
     }
-    this.refreshInFlight = this.keycloak
-      .updateToken(20)
+
+    const refreshPromise = Promise.resolve(this.keycloak.updateToken(20));
+    this.refreshInFlight = refreshPromise
       .then(() => {})
       .catch(async (e: unknown) => {
         this.toastService.showError({

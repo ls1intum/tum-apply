@@ -17,7 +17,7 @@ export function createKeycloakMock(): KeycloakMock {
     init: vi.fn().mockResolvedValue(true),
     login: vi.fn().mockResolvedValue(undefined),
     logout: vi.fn().mockResolvedValue(undefined),
-    updateToken: vi.fn().mockResolvedValue(undefined),
+    updateToken: vi.fn().mockResolvedValue(true),
   };
 }
 
