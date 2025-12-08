@@ -56,7 +56,7 @@ ext {
 }
 
 wrapper {
-  gradleVersion = "9.2.0"
+  gradleVersion = "9.2.1"
 }
 
 spotless {
@@ -314,7 +314,7 @@ tasks.register("cleanResources", Delete) {
 }
 
 wrapper {
-  gradleVersion = "9.2.0"
+  gradleVersion = "9.2.1"
 }
 
 node {

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OnboardingDialog } from 'app/shared/components/molecules/onboarding-dialog/onboarding-dialog';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
@@ -7,8 +7,8 @@ import { ONBOARDING_FORM_DIALOG_CONFIG } from 'app/shared/constants/onboarding-d
 import { provideTranslateMock } from 'util/translate.mock';
 import { EmployeeRequestAccessFormComponent } from 'app/shared/components/molecules/onboarding-dialog/employee-request-access-form/employee-request-access-form.component';
 import { of } from 'rxjs/internal/observable/of';
-import { createDialogServiceMock, provideDialogServiceMock, DialogServiceMock } from 'util/dialog.service.mock';
-import { createDynamicDialogRefMock, provideDynamicDialogRefMock, DynamicDialogRefMock } from 'util/dynamicdialogref.mock';
+import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
+import { createDynamicDialogRefMock, DynamicDialogRefMock, provideDynamicDialogRefMock } from 'util/dynamicdialogref.mock';
 
 describe('OnboardingDialog', () => {
   let component: OnboardingDialog;
@@ -74,7 +74,7 @@ describe('OnboardingDialog', () => {
 
     it('should default to opening form when no parameter is provided', () => {
       component.markOnboarded();
-      expect(mockDialogService.open).toHaveBeenCalled();
+      expect(mockDialogService.open).toHaveBeenCalledOnce();
     });
 
     it('should not call confirmOnboarding when openForm is true', () => {
