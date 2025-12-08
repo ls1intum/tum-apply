@@ -12,9 +12,9 @@ import java.util.UUID;
 public record JobCardDTO(
     @NotNull UUID jobId,
     @NotNull String title,
-    @NotNull String fieldOfStudies,
     @NotNull String location,
     @NotNull String professorName,
+    String departmentName,
     UUID applicationId,
     ApplicationState applicationState,
     Integer workload,
@@ -27,9 +27,9 @@ public record JobCardDTO(
     public JobCardDTO(
         @NotNull UUID jobId,
         @NotNull String title,
-        @NotNull String fieldOfStudies,
         @NotNull Campus location,
         @NotNull String professorName,
+        String departmentName,
         UUID applicationId,
         ApplicationState applicationState,
         Integer workload,
@@ -41,9 +41,9 @@ public record JobCardDTO(
         this(
             jobId,
             title,
-            fieldOfStudies,
             UiTextFormatter.formatEnumValue(location),
             professorName,
+            departmentName,
             applicationId,
             applicationState,
             workload,
