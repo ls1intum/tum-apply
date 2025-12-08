@@ -73,6 +73,6 @@
   </ng-template>
 
   <ng-template #timeSinceCreationTemplate let-row>
-    {{ row.timeSinceCreation | timeSinceTranslate }}
+    {{ row.createdAt | timeAgo }}
   </ng-template>
 </div>

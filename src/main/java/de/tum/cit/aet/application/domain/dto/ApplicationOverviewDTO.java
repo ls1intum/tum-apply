@@ -4,6 +4,9 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.springframework.cglib.core.Local;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +19,7 @@ public class ApplicationOverviewDTO {
     private String jobTitle;
     private String researchGroup;
     private ApplicationState applicationState;
-    private String timeSinceCreation;
+    private LocalDateTime createdAt;
 
     public ApplicationOverviewDTO(
         UUID applicationId,
@@ -31,6 +34,6 @@ public class ApplicationOverviewDTO {
         this.jobTitle = jobTitle;
         this.researchGroup = researchGroup;
         this.applicationState = applicationState;
-        this.timeSinceCreation = UiTextFormatter.getRelativeTimeLabel(createdAt);
+        this.createdAt = createdAt;
     }
 }

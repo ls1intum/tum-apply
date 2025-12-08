@@ -11,7 +11,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import { TimeSinceTranslatePipe } from 'app/shared/pipes/time-since-translate.pipe';
+import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
@@ -30,7 +30,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
     RouterModule,
     ConfirmDialogModule,
     ConfirmDialog,
-    TimeSinceTranslatePipe,
+    TimeAgoPipe,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
@@ -92,7 +92,7 @@ export default class ApplicationOverviewForApplicantComponent {
         template: badgeTemplate,
       },
       {
-        field: 'timeSinceCreation',
+        field: 'createdAt',
         header: 'entity.applicationOverview.columns.created',
         width: '10rem',
         template: timeSinceCreationTemplate,

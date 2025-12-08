@@ -12,10 +12,10 @@
 export interface ApplicationOverviewDTO { 
     applicationId?: string;
     applicationState?: ApplicationOverviewDTO.ApplicationStateEnum;
+    createdAt?: string;
     jobId?: string;
     jobTitle?: string;
     researchGroup?: string;
-    timeSinceCreation?: string;
 }
 export namespace ApplicationOverviewDTO {
     export type ApplicationStateEnum = 'SAVED' | 'SENT' | 'ACCEPTED' | 'IN_REVIEW' | 'REJECTED' | 'WITHDRAWN' | 'JOB_CLOSED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';

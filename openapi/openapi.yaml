@@ -1789,10 +1789,10 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
+        createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         researchGroup: {type: string}
-        timeSinceCreation: {type: string}
     ApplicationReview:
       type: object
       properties:
