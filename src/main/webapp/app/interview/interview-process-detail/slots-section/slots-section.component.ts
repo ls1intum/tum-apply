@@ -51,7 +51,7 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
   showSlotCreationForm = signal(false);
-  // Computed properties (must be before private fields for lint)
+  // Computed properties 
   /**
    * Groups slots by date and sorts them chronologically
    */
@@ -244,8 +244,31 @@ export class SlotsSectionComponent {
     // TODO: Open Edit Modal
   }
 
-  onDeleteSlot(): void {
-    // TODO: Open Delete Confirmation
+  async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
+    const slotId = slot.id;
+    if (!slotId) {
+      return;
+    }
+
+    try {
+      this.loading.set(true);
+
+      await firstValueFrom(this.interviewService.deleteSlot(slotId));
+      await this.loadSlots(this.processId());
+
+      this.toastService.showSuccessKey('interview.slots.delete.success');
+    } catch (error: unknown) {
+      const httpError = error as { status?: number };
+      if (httpError.status === 400) {
+        this.toastService.showErrorKey('interview.slots.delete.errorBooked');
+      } else if (httpError.status === 403) {
+        this.toastService.showErrorKey('interview.slots.delete.errorForbidden');
+      } else {
+        this.toastService.showErrorKey('interview.slots.delete.error');
+      }
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   onAssignApplicant(): void {

@@ -78,7 +78,6 @@ export default class ApplicationCreationFormComponent {
     phoneNumber: '',
     gender: undefined,
     nationality: undefined,
-    language: undefined,
     dateOfBirth: '',
     website: '',
     linkedIn: '',
@@ -664,7 +663,6 @@ export default class ApplicationCreationFormComponent {
           birthday: p1.dateOfBirth,
           website: p1.website,
           linkedinUrl: p1.linkedIn,
-          preferredLanguage: p1.language?.value,
         },
         bachelorDegreeName: p2.bachelorDegreeName,
         bachelorUniversity: p2.bachelorDegreeUniversity,
@@ -699,7 +697,6 @@ export default class ApplicationCreationFormComponent {
             firstName: p1.firstName,
             lastName: p1.lastName,
             phoneNumber: p1.phoneNumber,
-            preferredLanguage: p1.language?.value,
           },
         },
       } as UpdateApplicationDTO;

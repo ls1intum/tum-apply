@@ -35,7 +35,18 @@
         [styleClass]="
           'px-4 py-2.5 text-left text-sm hover:bg-negative-hover flex items-center gap-2 text-negative-default transition-colors justify-start border-none rounded-none'
         "
-        (click)="onDelete()"
+        (click)="deleteDialog.confirm()"
+      />
+
+      <jhi-confirm-dialog
+        #deleteDialog
+        [label]="'button.delete' | translate"
+        [header]="'interview.slots.delete.confirm.header' | translate"
+        [message]="'interview.slots.delete.confirm.message' | translate"
+        [severity]="'danger'"
+        [confirmIcon]="'trash'"
+        [showOpenButton]="false"
+        (confirmed)="onDelete()"
       />
     </div>
   }
@@ -78,7 +89,6 @@
         </div>
       </div>
 
-      <!-- Assign Button -->
       <!-- Assign Button -->
       <jhi-button
         class="w-full"

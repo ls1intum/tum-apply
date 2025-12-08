@@ -54,8 +54,8 @@
       "showMorePlural": "weitere Termine",
       "error": {
         "loadFailed": {
-          "summary": "Laden fehlgeschlagen",
-          "detail": "Interview Termine konnten nicht geladen werden"
+          "summary": "Interview Termine konnten nicht geladen werden",
+          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         }
       },
       "status": {
@@ -137,6 +137,27 @@
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
         "useForAll": "Gleicher Ort für alle Termine"
+      "delete": {
+        "confirm": {
+          "header": "Löschvorgang bestätigen",
+          "message": "Möchtest du diesen Termin wirklich löschen?"
+        },
+        "success": {
+          "summary": "Termin gelöscht",
+          "detail": "Der Termin wurde erfolgreich gelöscht"
+        },
+        "error": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "errorBooked": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Gebuchte Termine können nicht gelöscht werden."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
+        }
       }
     }
   }
