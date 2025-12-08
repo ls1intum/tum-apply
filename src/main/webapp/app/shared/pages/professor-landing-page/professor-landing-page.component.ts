@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 
+import { BannerSectionComponent } from '../landing-page/banner-section/banner-section.component';
+
 import { ProfessorHeroSectionComponent } from './professor-hero-section/professor-hero-section.component';
 import { ProfessorBenefitsSectionComponent } from './professor-benefits-section/professor-benefits-section.component';
 import { ProfessorWorkflowSectionComponent } from './professor-workflow-section/professor-workflow-section.component';
 import { ProfessorInformationSectionComponent } from './professor-information-section/professor-information-section.component';
 import { ProfessorFaqSectionComponent } from './professor-faq-section/professor-faq-section.component';
-import { ProfessorBannerSectionComponent } from './professor-banner-section/professor-banner-section.component';
 
 @Component({
   selector: 'jhi-professor-landing-page',
@@ -15,7 +16,7 @@ import { ProfessorBannerSectionComponent } from './professor-banner-section/prof
     ProfessorWorkflowSectionComponent,
     ProfessorInformationSectionComponent,
     ProfessorFaqSectionComponent,
-    ProfessorBannerSectionComponent,
+    BannerSectionComponent,
   ],
   templateUrl: './professor-landing-page.component.html',
   styleUrl: './professor-landing-page.component.scss',
