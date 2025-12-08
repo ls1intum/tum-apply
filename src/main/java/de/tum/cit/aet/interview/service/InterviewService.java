@@ -610,8 +610,7 @@ public class InterviewService {
             user.getUserId(),
             user.getEmail(),
             user.getFirstName(),
-            user.getLastName(),
-            user.getAvatar()
+            user.getLastName()
         );
     }
 }

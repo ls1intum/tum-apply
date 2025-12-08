@@ -34,5 +34,5 @@ public record IntervieweeDTO(
     /**
      * Lightweight user DTO for interviewee display.
      */
-    public record IntervieweeUserDTO(UUID userId, String email, String firstName, String lastName, String avatar) {}
+    public record IntervieweeUserDTO(UUID userId, String email, String firstName, String lastName) {}
 }
