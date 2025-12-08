@@ -96,7 +96,7 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     background: {
       50: '#f5f7fb',
-      100: '#edeef1',
+      100: '#c6d9f1',
       800: '#24272e',
       900: '#1a1d22',
       950: '#18181b',
