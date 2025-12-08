@@ -88,19 +88,19 @@
         "error": {
           "generic": {
             "summary": "Erstellung fehlgeschlagen",
-            "detail": "Termine konnten nicht erstellt werden. Bitte versuchen Sie es erneut."
+            "detail": "Termine konnten nicht erstellt werden. Bitte versuche es erneut."
           },
           "conflict": {
             "summary": "Konflikt erkannt",
-            "detail": "Einige Termine überschneiden sich mit bestehenden. Bitte passen Sie die Zeiten an."
+            "detail": "Einige Termine überschneiden sich mit bestehenden. Bitte passe die Zeiten an."
           },
           "validation": {
             "summary": "Validierungsfehler",
-            "detail": "Bitte überprüfen Sie das Formular auf Fehler."
+            "detail": "Bitte überprüfe das Formular auf Fehler."
           },
           "noSlots": {
             "summary": "Keine Termine",
-            "detail": "Bitte erstellen Sie mindestens einen Termin vor dem Speichern."
+            "detail": "Bitte erstelle mindestens einen Termin vor dem Speichern."
           }
         },
         "validation": {
@@ -127,12 +127,12 @@
         },
         "selectDates": "Daten auswählen",
         "noDateSelected": "Kein Datum ausgewählt",
-        "noDateSelectedDesc": "Bitte wählen Sie ein oder mehrere Daten im Kalender aus",
+        "noDateSelectedDesc": "Bitte wähle ein oder mehrere Daten im Kalender aus",
         "sameSlotsForAllDays": "Gleicher Termin für alle Tage",
         "addRange": "Zeitraum",
         "addSlot": "Einzeltermin",
         "noSlotsYet": "Noch keine Termine",
-        "noSlotsYetDesc": "Fügen Sie einen Zeitraum oder einen einzelnen Termin hinzu, um zu beginnen",
+        "noSlotsYetDesc": "Füge einen Zeitraum oder einen einzelnen Termin hinzu, um zu beginnen",
         "singleSlot": "Einzelner Termin",
         "rangeSlot": "Zeitraum",
         "bookedSlot": "Gebuchter Termin",
