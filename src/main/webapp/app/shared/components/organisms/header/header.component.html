@@ -1,67 +1,65 @@
 <header class="app-header border border-border-default shadow-sm">
-  <header class="app-header border border-border-default shadow-sm">
-    <div (click)="navigateToHome()" class="logo-section">
-      <img alt="TUM Logo" class="tum-logo scale-150" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
-      <span class="app-name">TUMApply</span>
-      @if (isProfessorPage()) {
-        <span class="professor" jhiTranslate="header.professorTitle"></span>
+  <div (click)="navigateToHome()" class="logo-section">
+    <img alt="TUM Logo" class="tum-logo scale-150" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+    <span class="app-name">TUMApply</span>
+    @if (isProfessorPage()) {
+      <span class="professor" jhiTranslate="header.professorTitle"></span>
+    }
+  </div>
+
+  <div class="actions-section">
+    <div class="language-switch">
+      @for (language of languages; track language; let isLast = $last) {
+        <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage() === language }" class="language-button">
+          {{ language.toUpperCase() }}
+        </button>
+        @if (!isLast) {
+          <span class="divider">|</span>
+        }
       }
     </div>
 
-    <div class="actions-section">
-      <div class="language-switch">
-        @for (language of languages; track language; let isLast = $last) {
-          <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage() === language }" class="language-button">
-            {{ language.toUpperCase() }}
-          </button>
-          @if (!isLast) {
-            <span class="divider">|</span>
-          }
-        }
-      </div>
+    <div class="theme-switch">
+      <jhi-select
+        [items]="themeOptions"
+        [selected]="selectedTheme()"
+        (selectedChange)="onThemeChange($event)"
+        [placeholder]="'Theme'"
+        [appendTo]="'body'"
+      />
+    </div>
 
-      <div class="theme-switch">
-        <jhi-select
-          [items]="themeOptions"
-          [selected]="selectedTheme()"
-          (selectedChange)="onThemeChange($event)"
-          [placeholder]="'Theme'"
-          [appendTo]="'body'"
-        />
-      </div>
-
-      @if (user() === undefined) {
-        @if (isProfessorPage()) {
-          <jhi-button
-            class="header-button"
-            (click)="redirectToApplicantLandingPage()"
-            label="{{ 'header.applicant' | translate }}"
-            severity="primary"
-            variant="outlined"
-          />
-        } @else {
-          <jhi-button
-            class="header-button"
-            (click)="redirectToProfessorLandingPage()"
-            label="{{ 'header.professor' | translate }}"
-            severity="primary"
-            variant="outlined"
-          />
-        }
-        <jhi-button class="header-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
-      } @else {
-        <div class="profile">
-          <fa-icon class="profile-icon" icon="user" />
-          <span class="font-medium">{{ user()?.name }}</span>
-        </div>
+    @if (user() === undefined) {
+      @if (isProfessorPage()) {
         <jhi-button
           class="header-button"
-          (click)="logout()"
-          label="{{ 'header.logout' | translate }}"
+          (click)="redirectToApplicantLandingPage()"
+          label="{{ 'header.applicant' | translate }}"
+          severity="primary"
+          variant="outlined"
+        />
+      } @else {
+        <jhi-button
+          class="header-button"
+          (click)="redirectToProfessorLandingPage()"
+          label="{{ 'header.professor' | translate }}"
           severity="primary"
           variant="outlined"
         />
       }
-    </div>
-  </header>
+      <jhi-button class="header-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
+    } @else {
+      <div class="profile">
+        <fa-icon class="profile-icon" icon="user" />
+        <span class="font-medium">{{ user()?.name }}</span>
+      </div>
+      <jhi-button
+        class="header-button"
+        (click)="logout()"
+        label="{{ 'header.logout' | translate }}"
+        severity="primary"
+        variant="outlined"
+      />
+    }
+  </div>
 </header>

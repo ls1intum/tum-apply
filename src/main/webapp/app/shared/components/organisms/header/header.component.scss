@@ -36,14 +36,18 @@
     gap: 0.75rem;
     flex-shrink: 0;
 
-    .theme-toggle-button {
-      .p-button {
-        height: 2rem;
-        width: 2rem;
+    .theme-switch {
+      .p-select {
+        min-height: 2rem;
+        font-size: 0.9rem;
         border-radius: 0.5rem;
+        background: var(--p-background-default);
+        color: var(--p-text-primary);
       }
 
-      padding: 0 0.5rem;
+      .p-select-label {
+        padding: 0.25rem 0.5rem;
+      }
     }
 
     .language-switch {
