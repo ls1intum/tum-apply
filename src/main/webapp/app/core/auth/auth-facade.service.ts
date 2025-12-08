@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { DocumentCacheService } from 'app/service/document-cache.service';
 import { AuthSessionInfoDTO, OtpCompleteDTO, UserProfileDTO } from 'app/generated';
-import { ToastService } from 'app/service/toast-service';
+import { ToastMessageInput, ToastService } from 'app/service/toast-service';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ServerAuthenticationService } from './server-authentication.service';
 import { IdpProvider, KeycloakAuthenticationService } from './keycloak-authentication.service';
@@ -42,6 +43,8 @@ export class AuthFacadeService {
   private readonly authOrchestrator = inject(AuthOrchestratorService);
   private readonly documentCache = inject(DocumentCacheService);
   private readonly toastService = inject(ToastService);
+  private readonly translate = inject(TranslateService);
+  private readonly translationKey = 'auth.common.toast';
 
   private authMethod: AuthMethod = 'none';
 
@@ -53,26 +56,32 @@ export class AuthFacadeService {
    * @return true if the user is authenticated, false otherwise.
    */
   async initAuth(): Promise<boolean> {
-    return this.runAuthAction(async () => {
-      // 1) Email-Authentication-Flow (server session)
-      const refreshed = await this.serverAuthenticationService.refreshTokens();
-      if (refreshed) {
-        await this.accountService.loadUser();
-        this.authMethod = 'server';
-        return true;
-      }
+    return this.runAuthAction(
+      async () => {
+        // 1) Email-Authentication-Flow (server session)
+        const refreshed = await this.serverAuthenticationService.refreshTokens(true);
+        if (refreshed) {
+          await this.accountService.loadUser();
+          this.authMethod = 'server';
+          return true;
+        }
 
-      // 2) Keycloak-Flow
-      const keycloakInitialized = await this.keycloakAuthenticationService.init();
-      if (keycloakInitialized) {
-        await this.accountService.loadUser();
-        this.authMethod = 'keycloak';
-        return true;
-      }
+        // 2) Keycloak-Flow
+        const keycloakInitialized = await this.keycloakAuthenticationService.init();
+        if (keycloakInitialized) {
+          await this.accountService.loadUser();
+          this.authMethod = 'keycloak';
+          return true;
+        }
 
-      // 3) not authenticated
-      return false;
-    }, 'Automatic sign-in failed.');
+        // 3) not authenticated
+        return false;
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.autoSignInFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.autoSignInFailed.detail`),
+      },
+    );
   }
 
   // --------------- Email/Password ---------------
@@ -89,7 +98,10 @@ export class AuthFacadeService {
         this.authMethod = 'server';
         return true;
       },
-      'Email sign-in failed. Please check your credentials and try again.',
+      {
+        summary: this.translate.instant(`${this.translationKey}.emailLoginFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.emailLoginFailed.detail`),
+      },
       true,
     );
   }
@@ -98,10 +110,16 @@ export class AuthFacadeService {
   /** Request an OTP to be sent to the user's email. */
   async requestOtp(registration = false): Promise<void> {
     const email = this.authOrchestrator.email();
-    return this.runAuthAction(async () => {
-      await this.serverAuthenticationService.sendOtp(email, registration);
-      this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
-    }, 'Could not send OTP. Please try again.');
+    return this.runAuthAction(
+      async () => {
+        await this.serverAuthenticationService.sendOtp(email, registration);
+        this.authOrchestrator.nextStep(!registration ? 'otp' : undefined);
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.otpSendFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.otpSendFailed.detail`),
+      },
+    );
   }
 
   /** Verify an OTP code and start a server session, then redirect. */
@@ -126,7 +144,10 @@ export class AuthFacadeService {
         this.authMethod = 'server';
         return true;
       },
-      'The code is invalid or expired. Please request a new one.',
+      {
+        summary: this.translate.instant(`${this.translationKey}.otpInvalid.summary`),
+        detail: this.translate.instant(`${this.translationKey}.otpInvalid.detail`),
+      },
       !registration,
     );
   }
@@ -138,10 +159,16 @@ export class AuthFacadeService {
    * @param redirectUri optional post-login redirect
    */
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
-    return this.runAuthAction(async () => {
-      await this.keycloakAuthenticationService.loginWithProvider(provider, redirectUri);
-      this.authMethod = 'keycloak';
-    }, 'Provider sign-in failed. Please try again.');
+    return this.runAuthAction(
+      async () => {
+        await this.keycloakAuthenticationService.loginWithProvider(provider, redirectUri);
+        this.authMethod = 'keycloak';
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.providerLoginFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.providerLoginFailed.detail`),
+      },
+    );
   }
 
   // --------------- Logout ---------------
@@ -160,31 +187,52 @@ export class AuthFacadeService {
       return;
     }
     this.documentCache.clear();
-    return this.runAuthAction(async () => {
-      const user = this.accountService.user();
-      const isProfessorOrEmployee =
-        (user?.authorities?.includes('PROFESSOR') ?? false) || (user?.authorities?.includes('EMPLOYEE') ?? false);
-      const redirectUrl = isProfessorOrEmployee ? window.location.origin + '/professor' : window.location.origin + '/';
-      if (this.authMethod === 'server') {
-        this.authMethod = 'none';
-        await this.serverAuthenticationService.logout();
-        void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
-      } else if (this.authMethod === 'keycloak') {
-        this.authMethod = 'none';
-        await this.keycloakAuthenticationService.logout(redirectUrl);
-      } else {
-        void this.router.navigate([isProfessorOrEmployee ? '/professor' : '/']);
-      }
-      // Reset states
-      this.accountService.user.set(undefined);
-      this.accountService.loaded.set(true);
+    return this.runAuthAction(
+      async () => {
+        const { targetRoute, redirectUrl } = this.getLogoutRedirectRoutes();
 
-      if (sessionExpired) {
-        this.toastService.showWarnKey('auth.common.toast.logout.sessionExpired');
-      } else {
-        this.toastService.showSuccessKey('auth.common.toast.logout.successfullyLoggedOut');
-      }
-    }, 'Logout failed.');
+        await this.performDomainLogout(targetRoute, redirectUrl);
+        this.handlePostLogoutState(sessionExpired);
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.logoutFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.logoutFailed.detail`),
+      },
+    );
+  }
+
+  private getLogoutRedirectRoutes(): { targetRoute: string; redirectUrl: string } {
+    const user = this.accountService.user();
+    const isProfessorOrEmployee = (user?.authorities?.includes('PROFESSOR') ?? false) || (user?.authorities?.includes('EMPLOYEE') ?? false);
+
+    const targetRoute = isProfessorOrEmployee ? '/professor' : '/';
+    const redirectUrl = window.location.origin + targetRoute;
+
+    return { targetRoute, redirectUrl };
+  }
+
+  private async performDomainLogout(targetRoute: string, redirectUrl: string): Promise<void> {
+    if (this.authMethod === 'server') {
+      this.authMethod = 'none';
+      await this.serverAuthenticationService.logout();
+      void this.router.navigate([targetRoute]);
+    } else if (this.authMethod === 'keycloak') {
+      this.authMethod = 'none';
+      await this.keycloakAuthenticationService.logout(redirectUrl);
+    } else {
+      void this.router.navigate([targetRoute]);
+    }
+  }
+
+  private handlePostLogoutState(sessionExpired: boolean): void {
+    this.accountService.user.set(undefined);
+    this.accountService.loaded.set(true);
+
+    if (sessionExpired) {
+      this.toastService.showWarnKey('auth.common.toast.logout.sessionExpired');
+    } else {
+      this.toastService.showSuccessKey('auth.common.toast.logout.successfullyLoggedOut');
+    }
   }
 
   // --------------- Helpers ---------------
@@ -195,7 +243,10 @@ export class AuthFacadeService {
    */
   private async runAuthAction<T>(
     action: () => Promise<T>,
-    errorMessage = 'Authentication failed. Please try again.',
+    errorMessage: ToastMessageInput = {
+      summary: this.translate.instant(`${this.translationKey}.authenticationFailed.summary`),
+      detail: this.translate.instant(`${this.translationKey}.authenticationFailed.detail`),
+    },
     lastAction = false,
   ): Promise<T> {
     if (this.authOrchestrator.isBusy()) {
