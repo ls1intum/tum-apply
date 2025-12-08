@@ -5,6 +5,7 @@ import { ProfessorBenefitsSectionComponent } from './professor-benefits-section/
 import { ProfessorWorkflowSectionComponent } from './professor-workflow-section/professor-workflow-section.component';
 import { ProfessorInformationSectionComponent } from './professor-information-section/professor-information-section.component';
 import { ProfessorFaqSectionComponent } from './professor-faq-section/professor-faq-section.component';
+import { ProfessorBannerSectionComponent } from './professor-banner-section/professor-banner-section.component';
 
 @Component({
   selector: 'jhi-professor-landing-page',
@@ -14,6 +15,7 @@ import { ProfessorFaqSectionComponent } from './professor-faq-section/professor-
     ProfessorWorkflowSectionComponent,
     ProfessorInformationSectionComponent,
     ProfessorFaqSectionComponent,
+    ProfessorBannerSectionComponent,
   ],
   templateUrl: './professor-landing-page.component.html',
   styleUrl: './professor-landing-page.component.scss',
