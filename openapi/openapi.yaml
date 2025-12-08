@@ -2102,7 +2102,6 @@ components:
     IntervieweeUserDTO:
       type: object
       properties:
-        avatar: {type: string}
         email: {type: string}
         firstName: {type: string}
         lastName: {type: string}
