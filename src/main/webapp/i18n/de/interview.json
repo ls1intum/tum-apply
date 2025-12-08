@@ -108,8 +108,8 @@
           "endBeforeStart": "Endzeit muss nach Startzeit liegen",
           "conflict": "Zeitkonflikt mit einem anderen Termin",
           "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
-          "durationPositive": "Dauer muss mindestens 1 Minute betragen",
-          "breakPositive": "Pausendauer darf nicht negativ sein"
+          "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
+          "breakPositive": "Die Pause muss mindestens 0 Minuten betragen"
         },
         "interviewLength": "Interviewdauer",
         "interviewBreaks": "Pausen",
@@ -136,9 +136,7 @@
         "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
-        "useForAll": "Gleicher Ort für alle Termine",
-        "locationDetectedVirtual": "Virtueller Ort erkannt",
-        "locationDetectedInPerson": "Ort vor Ort erkannt"
+        "useForAll": "Gleicher Ort für alle Termine"
       }
     }
   }

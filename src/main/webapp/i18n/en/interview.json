@@ -136,9 +136,7 @@
         "addStartAndEndTime": "Add a start and end time to see slots in this range",
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
-        "useForAll": "Use same location for all slots",
-        "locationDetectedVirtual": "Virtual location detected",
-        "locationDetectedInPerson": "In-person location detected"
+        "useForAll": "Use same location for all slots"
       }
     }
   }

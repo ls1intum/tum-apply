@@ -280,7 +280,7 @@ export class SlotCreationFormComponent {
     const allSlots = Array.from(this.slotsByDate().values()).flat();
 
     if (allSlots.length === 0) {
-      this.toastService.showErrorKey('interview.slots.create.noSlots');
+      this.toastService.showErrorKey('interview.slots.create.error.noSlots');
       return;
     }
 
@@ -304,9 +304,13 @@ export class SlotCreationFormComponent {
       this.toastService.showSuccessKey('interview.slots.create.success');
       this.success.emit(createdSlots);
       this.close();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      this.toastService.showErrorKey('interview.slots.create.error.generic');
+      if (error.status === 409) {
+        this.toastService.showErrorKey('interview.slots.create.error.conflict');
+      } else {
+        this.toastService.showErrorKey('interview.slots.create.error.generic');
+      }
     } finally {
       this.isSubmitting.set(false);
     }
