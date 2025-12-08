@@ -2,10 +2,6 @@
   display: flex;
   flex-direction: column;
 
-  .custom-label {
-    color: var(--p-text-color);
-  }
-
   .external-link {
     color: var(--p-primary-color);
     text-decoration: underline;
@@ -13,7 +9,6 @@
   }
 
   .helper-text {
-    color: var(--p-text-primary);
     font-size: 0.8rem;
   }
 
@@ -38,11 +33,6 @@
       }
     }
 
-    // Override primeng styling of placeholder text color in select field
-    .p-select-label.ng-star-inserted.p-placeholder {
-      color: var(--p-text-primary);
-    }
-
     // Override primeng unnecessary padding on top and bottom of select list
     .p-select-list {
       padding: 0;
@@ -55,7 +45,7 @@
     // Override primeng styling of unselected items in select component
     .p-select-items,
     .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
-      background: var(--p-background-surface);
+      background: var(--p-background-default);
 
       // Override primeng styling of hover on select items
       &:hover {
@@ -65,13 +55,8 @@
     }
   }
 
-  // Override primeng styling of wrong color on select icon
-  .ng-fa-icon {
-    color: var(--p-text-primary);
-  }
-
   .p-select {
-    background: transparent;
+    background: var(--p-background-default);
   }
 
   // Override primeng styling of selected item in select menu

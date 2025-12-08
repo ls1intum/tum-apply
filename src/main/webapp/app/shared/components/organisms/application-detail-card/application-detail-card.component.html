@@ -68,13 +68,6 @@
     <div class="card-body">
       <ng-container
         [ngTemplateOutlet]="infoRow"
-        [ngTemplateOutletContext]="{
-          $implicit: 'entity.detail_card.preferred_language',
-          val: application().applicant?.user?.preferredLanguage,
-        }"
-      />
-      <ng-container
-        [ngTemplateOutlet]="infoRow"
         [ngTemplateOutletContext]="{ $implicit: 'entity.detail_card.desired_start_date', val: application().desiredDate }"
       />
       <ng-container

@@ -135,7 +135,7 @@ describe('Comment', () => {
     fixture.detectChanges();
 
     const buttons = fixture.nativeElement.querySelectorAll('jhi-button');
-    const deleteButton = Array.from(buttons).find((btn: any) => btn.getAttribute('icon') === 'trash-alt');
+    const deleteButton = Array.from(buttons).find((btn: any) => btn.getAttribute('icon') === 'trash');
 
     expect(deleteButton).toBeTruthy();
     (deleteButton as HTMLElement).click();

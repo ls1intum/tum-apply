@@ -40,7 +40,6 @@ describe('ApplicationPage1Component', () => {
       phoneNumber: '',
       gender: undefined,
       nationality: undefined,
-      language: undefined,
       dateOfBirth: '',
       website: '',
       linkedIn: '',
@@ -73,7 +72,6 @@ describe('ApplicationPage1Component', () => {
       postcode: '',
       gender: undefined,
       nationality: undefined,
-      language: undefined,
       dateOfBirth: '',
       website: '',
       linkedIn: '',
@@ -124,7 +122,6 @@ describe('ApplicationPage1Component', () => {
           phoneNumber: '9999',
           gender: 'male',
           nationality: 'US',
-          selectedLanguage: 'en',
           birthday: '1990-01-01',
           website: 'https://site.com',
           linkedinUrl: 'https://li.com',
@@ -146,7 +143,6 @@ describe('ApplicationPage1Component', () => {
     const page1 = getPage1FromApplication(fakeApp);
     expect(page1.firstName).toBe('John');
     expect(page1.gender).toEqual(selectGender.find(g => g.value === 'male'));
-    expect(page1.language).toEqual(selectLanguage.find(l => l.value === 'en'));
     expect(page1.country?.value).toBe('US');
   });
 
@@ -230,7 +226,6 @@ describe('ApplicationPage1Component', () => {
       country: { value: 'DE', name: 'Germany' },
       gender: { value: 'male', name: 'Male' },
       nationality: { value: 'FR', name: 'France' },
-      language: { value: 'en', name: 'English' },
       dateOfBirth: '1990-01-01',
       website: 'https://example.com',
       linkedIn: 'https://linkedin.com/in/example',
@@ -254,6 +249,5 @@ describe('ApplicationPage1Component', () => {
     const page1 = getPage1FromApplication(app);
     expect(page1.firstName).toBe('');
     expect(page1.gender).toBeUndefined();
-    expect(page1.language).toBeUndefined();
   });
 });
