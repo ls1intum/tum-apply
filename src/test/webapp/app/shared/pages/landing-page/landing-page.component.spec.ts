@@ -8,10 +8,17 @@ import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideFontAwesomeTesting } from 'src/test/webapp/util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { provideJobResourceApiServiceMock } from 'src/test/webapp/util/job-resource-api.service.mock';
+import { provideToastServiceMock } from 'util/toast-service.mock';
 import { createRouterMock, provideRouterMock } from 'util/router.mock';
 
 @Component({ selector: 'jhi-hero-section', standalone: true, template: '' })
 class StubHeroSection {
+  private readonly _dummy = true;
+}
+
+@Component({ selector: 'jhi-jobs-preview-section', standalone: true, template: '' })
+class StubJobsPreviewSection {
   private readonly _dummy = true;
 }
 
@@ -50,6 +57,7 @@ describe('LandingPageComponent', () => {
       imports: [
         LandingPageComponent,
         StubHeroSection,
+        StubJobsPreviewSection,
         StubDoctoralJourneySection,
         StubApplicationStepsSection,
         StubInformationSection,
@@ -60,6 +68,8 @@ describe('LandingPageComponent', () => {
         provideFontAwesomeTesting(),
         provideNoopAnimations(),
         provideHttpClientTesting(),
+        provideJobResourceApiServiceMock(),
+        provideToastServiceMock(),
         provideRouterMock(routerMock),
         provideAccountServiceMock(accountServiceMock),
       ],
@@ -81,6 +91,7 @@ describe('LandingPageComponent', () => {
 
   it('should render all main section components', () => {
     expect(nativeElement.querySelector('jhi-hero-section')).not.toBeNull();
+    expect(nativeElement.querySelector('jhi-jobs-preview-section')).not.toBeNull();
     expect(nativeElement.querySelector('jhi-doctoral-journey-section')).not.toBeNull();
     expect(nativeElement.querySelector('jhi-application-steps-section')).not.toBeNull();
     expect(nativeElement.querySelector('jhi-information-section')).not.toBeNull();
