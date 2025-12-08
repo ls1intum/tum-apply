@@ -1,6 +1,6 @@
 <header class="app-header border-b border-border-default dark:border-none">
   <div (click)="navigateToHome()" class="logo-section cursor-pointer">
-    <img alt="TUMApply Logo" class="h-8 hover:opacity-80" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+    <img alt="TUMApply Logo" class="h-8" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
     @if (isProfessorPage()) {
       <span class="professor" jhiTranslate="header.professorTitle"></span>
     }
@@ -66,20 +66,20 @@
 >
   <div class="flex items-center gap-3">
     <div class="flex flex-col gap-0.5 text-primary-default">
-      <span (click)="navigateToHome()" class="text-xs font-normal cursor-pointer hover:opacity-80">TUMApply</span>
-      <a href="https://www.cit.tum.de/" target="_blank" rel="noopener noreferrer" class="text-xs font-normal hover:opacity-80">
+      <span (click)="navigateToHome()" class="text-xs font-normal cursor-pointer hover:underline">TUMApply</span>
+      <a href="https://www.cit.tum.de/" target="_blank" rel="noopener noreferrer" class="text-xs font-normal hover:underline">
         TUM School of Computation, Information and Technology
       </a>
       <a
         href="https://www.tum.de/"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-xs font-normal hover:opacity-80"
+        class="text-xs font-normal hover:underline"
         jhiTranslate="header.universityName"
       ></a>
     </div>
   </div>
   <a href="https://www.tum.de/" target="_blank" rel="noopener noreferrer">
-    <img alt="TUM Logo" class="h-10 shrink-0 hover:opacity-80" src="content/images/tum-logo/tum-logo-blue.svg" />
+    <img alt="TUM Logo" class="h-10 shrink-0" src="content/images/tum-logo/tum-logo-blue.svg" />
   </a>
 </div>
