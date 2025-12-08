@@ -69,8 +69,8 @@ export class Registration {
         this.authOrchestrator.nextStep();
       },
       {
-        summary: this.translate.instant(`${this.translationKey}.updateProfileFailed.summary`),
-        detail: this.translate.instant(`${this.translationKey}.updateProfileFailed.detail`),
+        summary: this.translate.instant(`${this.translationKey}.updateNameFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.updateNameFailed.detail`),
       },
     );
   };

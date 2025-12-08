@@ -106,8 +106,8 @@ describe('Registration Component', () => {
       await component.setProfile('John', 'Doe');
 
       expect(setErrorSpy).toHaveBeenCalledWith({
-        summary: 'auth.common.toast.updateProfileFailed.summary',
-        detail: 'auth.common.toast.updateProfileFailed.detail',
+        summary: 'auth.common.toast.updateNameFailed.summary',
+        detail: 'auth.common.toast.updateNameFailed.detail',
       });
       expect(nextStepSpy).not.toHaveBeenCalled();
     });
