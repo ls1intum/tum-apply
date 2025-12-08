@@ -76,14 +76,11 @@ export class DateSlotCardComponent {
     );
 
     // 2. Compare every slot with every other slot to find overlaps.
-    for (let i = 0; i < allSlotsWithIds.length; i++) {
-      for (let j = i + 1; j < allSlotsWithIds.length; j++) {
-        const slot1 = allSlotsWithIds[i];
-        const slot2 = allSlotsWithIds[j];
-
+    allSlotsWithIds.forEach((slot1, i) => {
+      allSlotsWithIds.slice(i + 1).forEach(slot2 => {
         // 3. Skip comparison if they belong to the same range configuration.
         if (slot1.rangeId === slot2.rangeId) {
-          continue;
+          return;
         }
 
         // 4. Check for time overlap: (StartA < EndB) and (StartB < EndA)
@@ -98,8 +95,8 @@ export class DateSlotCardComponent {
             conflicts.set(slot2.key, slot1.display);
           }
         }
-      }
-    }
+      });
+    });
     return conflicts;
   });
 
@@ -143,7 +140,7 @@ export class DateSlotCardComponent {
     const trimmed = location.trim().toLowerCase();
 
     // Regex to detect URLs (http, https, www, or common domains)
-    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)?\/?$/;
+    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})(\/.*)?$/;
 
     // Specific check for common video conferencing tools even if the URL pattern might miss some edge cases
     const isVideoTool =

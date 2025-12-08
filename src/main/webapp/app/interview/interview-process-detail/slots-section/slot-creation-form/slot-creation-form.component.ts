@@ -17,6 +17,7 @@ import { SlotInput } from 'app/generated/model/slotInput';
 import { firstValueFrom } from 'rxjs';
 import { DateSlotCardComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/date-slot-card.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'jhi-slot-creation-form',
@@ -257,10 +258,9 @@ export class SlotCreationFormComponent {
     }
 
     // 2. Apply ranges to other cards
-    for (let i = 1; i < cards.length; i++) {
-      const targetCard = cards[i];
+    cards.slice(1).forEach(targetCard => {
       targetCard.setRanges(sourceRanges);
-    }
+    });
 
     this.toastService.showSuccessKey('interview.slots.create.copySuccess');
   }
@@ -297,8 +297,8 @@ export class SlotCreationFormComponent {
 
     try {
       const slotsToCreate: SlotInput[] = allSlots.map(slot => {
-        const start = new Date(slot.startDateTime!);
-        const end = new Date(slot.endDateTime!);
+        const start = new Date(slot.startDateTime ?? '');
+        const end = new Date(slot.endDateTime ?? '');
         return {
           date: start.toISOString().split('T')[0],
           startTime: start.toTimeString().slice(0, 5),
@@ -313,9 +313,9 @@ export class SlotCreationFormComponent {
       this.toastService.showSuccessKey('interview.slots.create.success');
       this.success.emit(createdSlots);
       this.close();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      if (error.status === 409) {
+      if (error instanceof HttpErrorResponse && error.status === 409) {
         this.toastService.showErrorKey('interview.slots.create.error.conflict');
       } else {
         this.toastService.showErrorKey('interview.slots.create.error.generic');

@@ -179,7 +179,7 @@ export class SlotsSectionComponent {
   }
 
   onSlotsCreated(): void {
-    this.refreshSlots();
+    void this.refreshSlots();
   }
 
   previousMonth(): void {
