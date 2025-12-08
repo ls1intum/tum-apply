@@ -39,8 +39,6 @@ export class JobCardComponent {
 
   applicationState = input<ApplicationStatusExtended>(ApplicationStatusExtended.NotYetApplied);
 
-  // TO-DO: Replace value of headerColor with a color corresponding to the field of study
-  headerColor = input<string>('var(--p-secondary-color)');
   // Optional header background image
   headerImageUrl = input<string | undefined>(undefined);
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
