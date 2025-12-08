@@ -19,6 +19,7 @@ p-step[data-p-active='true'] .p-step-title {
 .registration-header-button .p-button-text {
   color: white !important;
   transition: all 0.3s ease;
+
 }
 
 .login-header-button .p-button-text.p-button-info:hover,
@@ -26,3 +27,24 @@ p-step[data-p-active='true'] .p-step-title {
   filter: drop-shadow(0 0 0.075rem white);
   background: rgba(255, 255, 255, 0.05);
 }
+
+/* -------------------------------
+   Registration Page: Orange Buttons
+---------------------------------- */
+.registration-content {
+
+  --p-button-primary-background: var(--p-accent-color);
+  --p-button-primary-border-color: var(--p-accent-color);
+  --p-button-primary-color: white;
+
+  jhi-auth-idp-buttons .p-button-outlined {
+    background: transparent !important;
+    border-color: var(--p-accent-color) !important;
+    color: var(--p-accent-color) !important;
+
+    &:hover {
+      background: var(--p-accent-pastel) !important;
+    }
+  }
+}
+

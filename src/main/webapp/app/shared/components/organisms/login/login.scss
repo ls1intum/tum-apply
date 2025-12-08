@@ -12,8 +12,14 @@
 
   .login-panel {
     @include layout.panel-col;
+    max-width: 24rem;
+    width: 100%;
 
     .login-credentials {
+      width: 100%;
+    }
+
+    jhi-otp-input {
       width: 100%;
     }
   }
