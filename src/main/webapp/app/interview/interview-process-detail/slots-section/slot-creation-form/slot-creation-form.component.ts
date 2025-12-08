@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, output, signal, ViewChildren, QueryList } from '@angular/core';
+import { Component, QueryList, ViewChildren, computed, inject, input, model, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';

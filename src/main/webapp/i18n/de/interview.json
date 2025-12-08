@@ -140,27 +140,28 @@
         "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
-        "useForAll": "Gleicher Ort für alle Termine"
-      "delete": {
-        "confirm": {
-          "header": "Löschvorgang bestätigen",
-          "message": "Möchtest du diesen Termin wirklich löschen?"
-        },
-        "success": {
-          "summary": "Termin gelöscht",
-          "detail": "Der Termin wurde erfolgreich gelöscht"
-        },
-        "error": {
-          "summary": "Löschen fehlgeschlagen",
-          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
-        },
-        "errorBooked": {
-          "summary": "Löschen fehlgeschlagen",
-          "detail": "Gebuchte Termine können nicht gelöscht werden."
-        },
-        "errorForbidden": {
-          "summary": "Zugriff verweigert",
-          "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
+        "useForAll": "Gleicher Ort für alle Termine",
+        "delete": {
+          "confirm": {
+            "header": "Löschvorgang bestätigen",
+            "message": "Möchtest du diesen Termin wirklich löschen?"
+          },
+          "success": {
+            "summary": "Termin gelöscht",
+            "detail": "Der Termin wurde erfolgreich gelöscht"
+          },
+          "error": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+          },
+          "errorBooked": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Gebuchte Termine können nicht gelöscht werden."
+          },
+          "errorForbidden": {
+            "summary": "Zugriff verweigert",
+            "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
+          }
         }
       }
     }

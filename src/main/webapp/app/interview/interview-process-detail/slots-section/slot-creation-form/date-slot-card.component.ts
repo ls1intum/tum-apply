@@ -139,7 +139,7 @@ export class DateSlotCardComponent {
   }
 
   isVirtualLocation(location: string | undefined | null): boolean {
-    if (!location) return false;
+    if (location === undefined || location === null || location === '') return false;
     const trimmed = location.trim().toLowerCase();
 
     // Regex to detect URLs (http, https, www, or common domains)
@@ -325,13 +325,72 @@ export class DateSlotCardComponent {
       const isVirtual = this.isVirtualLocation(location);
       range.slots = range.slots.map(slot => ({
         ...slot,
-        location: location,
+        location,
         streamLink: isVirtual ? location : undefined,
       }));
       // 4. Update the array
       newRanges[index] = range;
       return newRanges;
     });
+  }
+
+  /**
+   * Returns the current slot ranges configuration.
+   */
+  getRanges(): SlotRange[] {
+    return this.slotRanges();
+  }
+
+  /**
+   * Sets the slot ranges for this date, adjusting the time to match this date.
+   * Used for "Copy to all" functionality to preserve range structure.
+   * @param sourceRanges The ranges to copy from.
+   */
+  setRanges(sourceRanges: SlotRange[]): void {
+    const targetDate = new Date(this.date());
+    const newRanges: SlotRange[] = sourceRanges.map(range => {
+      // 1. Calculate new start/end times based on the target date
+      const newStart = new Date(targetDate);
+      if (range.startTime) {
+        newStart.setHours(range.startTime.getHours(), range.startTime.getMinutes(), 0, 0);
+      }
+
+      const newEnd = new Date(targetDate);
+      if (range.endTime) {
+        newEnd.setHours(range.endTime.getHours(), range.endTime.getMinutes(), 0, 0);
+      }
+
+      // 2. Create the new range object
+      const newRange: SlotRange = {
+        ...range,
+        id: this.generateId(), // New ID for the new range
+        startTime: range.startTime ? newStart : null,
+        endTime: range.endTime ? newEnd : null,
+        slots: [], // Will be regenerated
+      };
+
+      // 3. Copy slots from the source range, adjusting the date
+      newRange.slots = range.slots.map(slot => {
+        const slotStart = new Date(slot.startDateTime!);
+        const slotEnd = new Date(slot.endDateTime!);
+
+        const newSlotStart = new Date(targetDate);
+        newSlotStart.setHours(slotStart.getHours(), slotStart.getMinutes(), 0, 0);
+
+        const newSlotEnd = new Date(targetDate);
+        newSlotEnd.setHours(slotEnd.getHours(), slotEnd.getMinutes(), 0, 0);
+
+        return {
+          ...slot,
+          startDateTime: newSlotStart.toISOString(),
+          endDateTime: newSlotEnd.toISOString(),
+        };
+      });
+
+      return newRange;
+    });
+
+    this.slotRanges.set(newRanges);
   }
 
   /**
@@ -346,7 +405,7 @@ export class DateSlotCardComponent {
     return {
       startDateTime: start.toISOString(),
       endDateTime: end.toISOString(),
-      location: location,
+      location,
       streamLink: locationType === 'virtual' ? location : undefined,
     } as InterviewSlotDTO;
   }
@@ -364,10 +423,10 @@ export class DateSlotCardComponent {
 
       // If the slot has an ID, it's already saved in the server ('scheduled').
       // Otherwise, it's a newly created 'single' slot.
-      const type = slot.id ? 'scheduled' : 'single';
+      const type = slot.id !== undefined ? 'scheduled' : 'single';
 
       // Extract location
-      const location = slot.location || '';
+      const location = slot.location ?? '';
 
       return {
         id: this.generateId(),
@@ -540,66 +599,7 @@ export class DateSlotCardComponent {
    * @returns A random string ID.
    */
   private generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
-  }
-
-  /**
-   * Returns the current slot ranges configuration.
-   */
-  getRanges(): SlotRange[] {
-    return this.slotRanges();
-  }
-
-  /**
-   * Sets the slot ranges for this date, adjusting the time to match this date.
-   * Used for "Copy to all" functionality to preserve range structure.
-   * @param sourceRanges The ranges to copy from.
-   */
-  setRanges(sourceRanges: SlotRange[]): void {
-    const targetDate = new Date(this.date());
-    const newRanges: SlotRange[] = sourceRanges.map(range => {
-      // 1. Calculate new start/end times based on the target date
-      const newStart = new Date(targetDate);
-      if (range.startTime) {
-        newStart.setHours(range.startTime.getHours(), range.startTime.getMinutes(), 0, 0);
-      }
-
-      const newEnd = new Date(targetDate);
-      if (range.endTime) {
-        newEnd.setHours(range.endTime.getHours(), range.endTime.getMinutes(), 0, 0);
-      }
-
-      // 2. Create the new range object
-      const newRange: SlotRange = {
-        ...range,
-        id: this.generateId(), // New ID for the new range
-        startTime: range.startTime ? newStart : null,
-        endTime: range.endTime ? newEnd : null,
-        slots: [], // Will be regenerated
-      };
-
-      // 3. Copy slots from the source range, adjusting the date
-      newRange.slots = range.slots.map(slot => {
-        const slotStart = new Date(slot.startDateTime!);
-        const slotEnd = new Date(slot.endDateTime!);
-
-        const newSlotStart = new Date(targetDate);
-        newSlotStart.setHours(slotStart.getHours(), slotStart.getMinutes(), 0, 0);
-
-        const newSlotEnd = new Date(targetDate);
-        newSlotEnd.setHours(slotEnd.getHours(), slotEnd.getMinutes(), 0, 0);
-
-        return {
-          ...slot,
-          startDateTime: newSlotStart.toISOString(),
-          endDateTime: newSlotEnd.toISOString(),
-        };
-      });
-
-      return newRange;
-    });
-
-    this.slotRanges.set(newRanges);
+    return Math.random().toString(36).slice(2, 11);
   }
 
   /**

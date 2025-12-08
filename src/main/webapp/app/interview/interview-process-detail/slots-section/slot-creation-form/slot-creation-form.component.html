@@ -1,82 +1,137 @@
-<p-dialog [visible]="visible()" (visibleChange)="close()" [modal]="true" [draggable]="false" [resizable]="false"
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="close()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
   [style]="{ width: '95vw', maxWidth: '80rem', height: '90vh' }"
   [contentStyle]="{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }"
-  [header]="'interview.slots.create.title' | translate">
+  [header]="'interview.slots.create.title' | translate"
+>
   <div
-    class="flex h-full flex-col gap-6 overflow-y-auto lg:grid lg:overflow-hidden lg:grid-cols-[26rem_auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4 lg:gap-y-6">
+    class="flex h-full flex-col gap-6 overflow-y-auto lg:grid lg:overflow-hidden lg:grid-cols-[26rem_auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4 lg:gap-y-6"
+  >
     <!-- Duration-->
     <div class="flex flex-col gap-1 lg:col-start-1 lg:row-start-1">
       <div class="flex items-center gap-2">
-        <span class="text-sm font-semibold text-[var(--p-text-secondary)]">{{ 'interview.slots.create.interviewLength' |
-          translate }}</span>
-        <fa-icon [icon]="['fas', 'circle-info']" class="text-[var(--p-text-tertiary)]"
-          [pTooltip]="'interview.slots.create.durationTooltip' | translate" tooltipPosition="top" />
+        <span class="text-sm font-semibold text-[var(--p-text-secondary)]">{{ 'interview.slots.create.interviewLength' | translate }}</span>
+        <fa-icon
+          [icon]="['fas', 'circle-info']"
+          class="text-[var(--p-text-tertiary)]"
+          [pTooltip]="'interview.slots.create.durationTooltip' | translate"
+          tooltipPosition="top"
+        />
       </div>
       <div class="flex w-full items-center rounded-lg bg-[var(--p-surface-100)] p-1 gap-1">
         @for (option of durationOptions; track option.value) {
-        <jhi-button [label]="option.label" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
+          <jhi-button
+            [label]="option.label"
+            class="flex-1"
+            variant="text"
+            severity="secondary"
+            size="xs"
+            styleClass="w-full rounded-md border-none shadow-none transition-all {{
               !isCustomDurationMode() && duration() === option.value
                 ? 'bg-[var(--p-primary-color)] text-white font-semibold'
                 : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
-            }}" (click)="selectDuration(option.value)" />
+            }}"
+            (click)="selectDuration(option.value)"
+          />
         }
-        <jhi-button [label]="'Custom'" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
+        <jhi-button
+          [label]="'Custom'"
+          class="flex-1"
+          variant="text"
+          severity="secondary"
+          size="xs"
+          styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomDurationMode()
               ? 'bg-[var(--p-primary-color)] text-white font-semibold'
               : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
-          }}" (click)="selectDuration(-1)" />
+          }}"
+          (click)="selectDuration(-1)"
+        />
       </div>
       @if (isCustomDurationMode()) {
-      <div class="flex flex-col mt-1">
-        <div class="flex items-center gap-1">
-          <input type="number" [min]="1" [ngModel]="customDuration()" (ngModelChange)="onCustomDurationInput($event)"
-            class="w-20 rounded border px-2 py-1 text-sm outline-none focus:border-[var(--p-primary-500)]"
-            [class.border-[var(--p-danger-500)]]="durationError()"
-            [class.border-[var(--p-border-default)]]="!durationError()" />
-          <span class="text-sm text-[var(--p-text-secondary)]">min</span>
+        <div class="flex flex-col mt-1">
+          <div class="flex items-center gap-1">
+            <input
+              type="number"
+              [min]="1"
+              [ngModel]="customDuration()"
+              (ngModelChange)="onCustomDurationInput($event)"
+              class="w-20 rounded border px-2 py-1 text-sm outline-none focus:border-[var(--p-primary-500)]"
+              [class.border-[var(--p-danger-500)]]="durationError()"
+              [class.border-[var(--p-border-default)]]="!durationError()"
+            />
+            <span class="text-sm text-[var(--p-text-secondary)]">min</span>
+          </div>
+          @if (durationError()) {
+            <span class="text-xs text-[var(--p-danger-500)] mt-1">{{ durationError() | translate }}</span>
+          }
         </div>
-        @if (durationError()) {
-        <span class="text-xs text-[var(--p-danger-500)] mt-1">{{ durationError() | translate }}</span>
-        }
-      </div>
       }
     </div>
 
     <!-- Break-->
     <div class="flex flex-col gap-1 w-full lg:w-[26rem] lg:col-start-3 lg:row-start-1">
       <div class="flex items-center gap-2">
-        <span class="text-sm font-semibold text-[var(--p-text-secondary)]">{{ 'interview.slots.create.interviewBreaks' |
-          translate }}</span>
-        <fa-icon [icon]="['fas', 'circle-info']" class="text-[var(--p-text-tertiary)]"
-          [pTooltip]="'interview.slots.create.breakTooltip' | translate" tooltipPosition="top" />
+        <span class="text-sm font-semibold text-[var(--p-text-secondary)]">{{ 'interview.slots.create.interviewBreaks' | translate }}</span>
+        <fa-icon
+          [icon]="['fas', 'circle-info']"
+          class="text-[var(--p-text-tertiary)]"
+          [pTooltip]="'interview.slots.create.breakTooltip' | translate"
+          tooltipPosition="top"
+        />
       </div>
       <div class="flex w-full items-center rounded-lg bg-[var(--p-surface-100)] p-1 gap-1">
         @for (option of breakOptions; track option.value) {
-        <jhi-button [label]="option.label" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
+          <jhi-button
+            [label]="option.label"
+            class="flex-1"
+            variant="text"
+            severity="secondary"
+            size="xs"
+            styleClass="w-full rounded-md border-none shadow-none transition-all {{
               !isCustomBreakMode() && breakDuration() === option.value
                 ? 'bg-[var(--p-primary-color)] text-white font-semibold'
                 : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
-            }}" (click)="selectBreak(option.value)" />
+            }}"
+            (click)="selectBreak(option.value)"
+          />
         }
-        <jhi-button [label]="'Custom'" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
+        <jhi-button
+          [label]="'Custom'"
+          class="flex-1"
+          variant="text"
+          severity="secondary"
+          size="xs"
+          styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomBreakMode()
               ? 'bg-[var(--p-primary-color)] text-white font-semibold'
               : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
-          }}" (click)="selectBreak(-1)" />
+          }}"
+          (click)="selectBreak(-1)"
+        />
       </div>
       @if (isCustomBreakMode()) {
-      <div class="flex flex-col mt-1">
-        <div class="flex items-center gap-1">
-          <input type="number" [min]="0" [ngModel]="customBreak()" (ngModelChange)="onCustomBreakInput($event)"
-            class="w-20 rounded border px-2 py-1 text-sm outline-none focus:border-[var(--p-primary-500)]"
-            [class.border-[var(--p-danger-500)]]="breakError()"
-            [class.border-[var(--p-border-default)]]="!breakError()" />
-          <span class="text-sm text-[var(--p-text-secondary)]">min</span>
+        <div class="flex flex-col mt-1">
+          <div class="flex items-center gap-1">
+            <input
+              type="number"
+              [min]="0"
+              [ngModel]="customBreak()"
+              (ngModelChange)="onCustomBreakInput($event)"
+              class="w-20 rounded border px-2 py-1 text-sm outline-none focus:border-[var(--p-primary-500)]"
+              [class.border-[var(--p-danger-500)]]="breakError()"
+              [class.border-[var(--p-border-default)]]="!breakError()"
+            />
+            <span class="text-sm text-[var(--p-text-secondary)]">min</span>
+          </div>
+          @if (breakError()) {
+            <span class="text-xs text-[var(--p-danger-500)] mt-1">{{ breakError() | translate }}</span>
+          }
         </div>
-        @if (breakError()) {
-        <span class="text-xs text-[var(--p-danger-500)] mt-1">{{ breakError() | translate }}</span>
-        }
-      </div>
       }
     </div>
 
@@ -84,8 +139,14 @@
     <div class="flex flex-col gap-2 lg:col-start-1 lg:row-start-2">
       <h3 class="text-lg font-semibold">{{ 'interview.slots.create.selectDates' | translate }}</h3>
       <div class="flex justify-center">
-        <p-datepicker [inline]="true" [selectionMode]="'multiple'" [minDate]="minDate" [ngModel]="selectedDatesSignal()"
-          (ngModelChange)="onDateSelect($event)" styleClass="w-full border-0" />
+        <p-datepicker
+          [inline]="true"
+          [selectionMode]="'multiple'"
+          [minDate]="minDate"
+          [ngModel]="selectedDatesSignal()"
+          (ngModelChange)="onDateSelect($event)"
+          styleClass="w-full border-0"
+        />
       </div>
     </div>
 
@@ -99,28 +160,39 @@
       <h3 class="text-lg font-semibold">{{ 'interview.slots.create.create' | translate }}</h3>
 
       @if (sortedDates().length === 0) {
-      <div class="flex h-full flex-col items-center justify-center text-[var(--p-text-secondary)]">
-        <i class="fa-regular fa-calendar text-4xl mb-4"></i>
-        <h4 class="text-lg font-medium">{{ 'interview.slots.create.noDateSelected' | translate }}</h4>
-        <p>{{ 'interview.slots.create.noDateSelectedDesc' | translate }}</p>
-      </div>
-      } @else {
-      <div class="flex-1 lg:overflow-y-auto pr-2">
-        <div class="flex flex-col gap-4 pb-4">
-          @for (date of sortedDates(); track date.getTime(); let i = $index) {
-          <jhi-date-slot-card [date]="date" [duration]="duration()" [breakDuration]="breakDuration()"
-            [existingSlots]="slotsByDate().get(date.toISOString().split('T')[0]) || []"
-            [showApplyAll]="i === 0 && sortedDates().length > 1" [showValidationErrors]="showValidationErrors()"
-            (slotsChange)="updateSlotsForDate(date, $event)" (applyAll)="copySlotsToAllDays()"
-            (remove)="removeDate(date)" />
-          }
+        <div class="flex h-full flex-col items-center justify-center text-[var(--p-text-secondary)]">
+          <i class="fa-regular fa-calendar text-4xl mb-4"></i>
+          <h4 class="text-lg font-medium">{{ 'interview.slots.create.noDateSelected' | translate }}</h4>
+          <p>{{ 'interview.slots.create.noDateSelectedDesc' | translate }}</p>
         </div>
-      </div>
+      } @else {
+        <div class="flex-1 lg:overflow-y-auto pr-2">
+          <div class="flex flex-col gap-4 pb-4">
+            @for (date of sortedDates(); track date.getTime(); let i = $index) {
+              <jhi-date-slot-card
+                [date]="date"
+                [duration]="duration()"
+                [breakDuration]="breakDuration()"
+                [existingSlots]="slotsByDate().get(date.toISOString().split('T')[0]) || []"
+                [showApplyAll]="i === 0 && sortedDates().length > 1"
+                [showValidationErrors]="showValidationErrors()"
+                (slotsChange)="updateSlotsForDate(date, $event)"
+                (applyAll)="copySlotsToAllDays()"
+                (remove)="removeDate(date)"
+              />
+            }
+          </div>
+        </div>
 
-      <div class="mt-2 flex justify-end">
-        <jhi-button [label]="'interview.slots.create.saveSlots' | translate" size="md" (click)="submit()"
-          [loading]="isSubmitting()" [disabled]="isSubmitting()" />
-      </div>
+        <div class="mt-2 flex justify-end">
+          <jhi-button
+            [label]="'interview.slots.create.saveSlots' | translate"
+            size="md"
+            (click)="submit()"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting()"
+          />
+        </div>
       }
     </div>
   </div>

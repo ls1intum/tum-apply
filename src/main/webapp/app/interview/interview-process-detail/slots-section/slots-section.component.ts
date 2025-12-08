@@ -51,7 +51,7 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
   showSlotCreationForm = signal(false);
-  // Computed properties 
+  // Computed properties
   /**
    * Groups slots by date and sorts them chronologically
    */
