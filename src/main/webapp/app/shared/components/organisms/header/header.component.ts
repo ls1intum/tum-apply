@@ -16,10 +16,7 @@ import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
-import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
-import { AuthDialogService } from '../../../../core/auth/auth-dialog.service';
 import TranslateDirective from '../../../language/translate.directive';
-import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
 import { TUMApplyPreset } from '../../../../../content/theming/tumapplypreset';
 import { BlossomTheme } from '../../../../../content/theming/custompreset';
 
@@ -37,12 +34,9 @@ export class HeaderComponent {
   bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
     const observer = new MutationObserver(handler as MutationCallback);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return () => observer.disconnect();
   }).pipe(map(() => document.documentElement.classList.contains('tum-apply-dark-mode')));
-  }).pipe(map(() => document.documentElement.classList.contains('tum-apply-dark-mode')));
   isDarkMode = toSignal(this.bodyClassChanges$, {
-    initialValue: document.documentElement.classList.contains('tum-apply-dark-mode'),
     initialValue: document.documentElement.classList.contains('tum-apply-dark-mode'),
   });
   translateService = inject(TranslateService);
