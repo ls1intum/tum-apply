@@ -110,8 +110,9 @@
           @for (date of sortedDates(); track date.getTime(); let i = $index) {
           <jhi-date-slot-card [date]="date" [duration]="duration()" [breakDuration]="breakDuration()"
             [existingSlots]="slotsByDate().get(date.toISOString().split('T')[0]) || []"
-            [showApplyAll]="i === 0 && sortedDates().length > 1" (applyAll)="copySlotsToAllDays()"
-            (remove)="removeDate(date)" (slotsChange)="updateSlotsForDate(date, $event)" />
+            [showApplyAll]="i === 0 && sortedDates().length > 1" [showValidationErrors]="showValidationErrors()"
+            (slotsChange)="updateSlotsForDate(date, $event)" (applyAll)="copySlotsToAllDays()"
+            (remove)="removeDate(date)" />
           }
         </div>
       </div>

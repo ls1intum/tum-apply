@@ -109,7 +109,11 @@
           "conflict": "Zeitkonflikt mit einem anderen Termin",
           "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
           "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
-          "breakPositive": "Die Pause muss mindestens 0 Minuten betragen"
+          "breakPositive": "Pausendauer darf nicht negativ sein",
+          "locationRequired": {
+            "summary": "Ort fehlt",
+            "detail": "Ort ist für alle Termine erforderlich"
+          }
         },
         "interviewLength": "Interviewdauer",
         "interviewBreaks": "Pausen",

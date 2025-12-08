@@ -115,7 +115,8 @@
                 {{ 'interview.slots.create.location' | translate }}
               </label>
               <div
-                class="flex items-center gap-2 rounded border border-[var(--p-border-default)] px-3 py-1 focus-within:border-[var(--p-primary-500)] focus-within:ring-1 focus-within:ring-[var(--p-primary-500)] bg-white">
+                class="flex items-center gap-2 rounded border border-[var(--p-border-default)] px-3 py-1 focus-within:border-[var(--p-primary-500)] focus-within:ring-1 focus-within:ring-[var(--p-primary-500)] bg-white"
+                [class.border-[var(--p-danger-500)]]="showValidationErrors() && !range.location">
                 <span class="text-[var(--p-text-secondary)]">
                   @if (isVirtualLocation(range.location)) {
                   <i class="fa-solid fa-video"></i>

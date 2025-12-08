@@ -110,7 +110,11 @@
           "conflict": "Time conflict with another slot",
           "streamLinkRequired": "Meeting link is required for virtual slots",
           "durationPositive": "Duration must be at least 1 minute",
-          "breakPositive": "Break duration cannot be negative"
+          "breakPositive": "Break duration cannot be negative",
+          "locationRequired": {
+            "summary": "Missing Location",
+            "detail": "Location is required for all slots"
+          }
         },
         "interviewLength": "Interview Length",
         "interviewBreaks": "Interview Breaks",

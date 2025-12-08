@@ -74,6 +74,7 @@ export class SlotCreationFormComponent {
 
   readonly durationError = signal<string | null>(null);
   readonly breakError = signal<string | null>(null);
+  readonly showValidationErrors = signal(false);
 
   // Map date string to slots
   readonly slotsByDate = signal<Map<string, InterviewSlotDTO[]>>(new Map());
@@ -284,6 +285,14 @@ export class SlotCreationFormComponent {
       return;
     }
 
+    // Validate that all slots have a location
+    const hasMissingLocation = allSlots.some(slot => !slot.location || slot.location.trim() === '');
+    if (hasMissingLocation) {
+      this.showValidationErrors.set(true);
+      this.toastService.showErrorKey('interview.slots.create.validation.locationRequired');
+      return;
+    }
+
     this.isSubmitting.set(true);
 
     try {
@@ -294,7 +303,7 @@ export class SlotCreationFormComponent {
           date: start.toISOString().split('T')[0],
           startTime: start.toTimeString().slice(0, 5),
           endTime: end.toTimeString().slice(0, 5),
-          location: slot.location as 'in-person' | 'virtual',
+          location: slot.location ?? '',
           streamLink: slot.streamLink,
         };
       });
@@ -325,5 +334,6 @@ export class SlotCreationFormComponent {
     this.selectedDates = [];
     this.slotsByDate.set(new Map());
     this.isSubmitting.set(false);
+    this.showValidationErrors.set(false);
   }
 }

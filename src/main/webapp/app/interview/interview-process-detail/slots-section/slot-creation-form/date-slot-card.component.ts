@@ -50,6 +50,7 @@ export class DateSlotCardComponent {
   readonly breakDuration = input<number>(0);
   readonly existingSlots = input<InterviewSlotDTO[]>([]);
   readonly showApplyAll = input<boolean>(false);
+  readonly showValidationErrors = input<boolean>(false);
   readonly slotsChange = output<InterviewSlotDTO[]>();
   readonly applyAll = output<boolean>();
   readonly remove = output();
