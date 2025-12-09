@@ -336,6 +336,8 @@ export const TUMApplyPreset = definePreset(Lara, {
         borderRadius: '0.5rem',
         badgeSize: '1rem',
         transitionDuration: '{form.field.transition.duration}',
+        paddingX: '0.875rem',
+        paddingY: '0.375rem',
       },
       colorScheme: {
         light: {
