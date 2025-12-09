@@ -173,6 +173,31 @@ describe('AuthFacadeService', () => {
       expect(account.user.set).toHaveBeenCalledWith(undefined);
       expect(account.user.set).toHaveBeenCalledTimes(2);
     });
+
+    it('does nothing when authMethod is none and sessionExpired is false', async () => {
+      const { facade, server, keycloak, docCache, router } = setup();
+
+      await facade.logout(false);
+
+      expect(docCache.clear).not.toHaveBeenCalled();
+      expect(server.logout).not.toHaveBeenCalled();
+      expect(keycloak.logout).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    it('does nothing when authMethod is none and sessionExpired is true', async () => {
+      const { facade, account, router, docCache } = setup();
+      account.user.set({
+        id: 'id-3',
+        name: 'User',
+        email: 'user@test.com',
+        authorities: ['ROLE_USER'],
+      });
+      await facade.logout(true);
+
+      expect(docCache.clear).toHaveBeenCalledTimes(1);
+      expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
   });
 
   describe('runAuthAction', () => {

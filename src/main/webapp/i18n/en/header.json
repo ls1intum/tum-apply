@@ -5,6 +5,7 @@
     "professor": "Are you a professor?",
     "applicant": "Are you an applicant?",
     "logout": "Logout",
-    "theme": "Toggle Theme"
+    "theme": "Toggle Theme",
+    "universityName": "Technical University of Munich"
   }
 }

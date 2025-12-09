@@ -69,15 +69,26 @@ describe('KeycloakAuthenticationService', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('should start token refresh scheduler after successful authenticated init', async () => {
+    it('should start token refresh scheduler after successful authenticated init and schedule refresh', async () => {
       keycloakInstance.authenticated = true;
       keycloakInstance.init.mockResolvedValue(true);
-      const setIntervalSpy = vi.spyOn(global, 'setInterval');
+      const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
+
+      const setIntervalSpy = vi.spyOn(global, 'setInterval').mockImplementation((handler: TimerHandler): ReturnType<typeof setInterval> => {
+        if (typeof handler === 'function') {
+          handler(); // invoke immediately to cover the callback body
+        }
+        // return a dummy interval id
+        return 123 as unknown as ReturnType<typeof setInterval>;
+      });
 
       await service.init();
 
       expect(setIntervalSpy).toHaveBeenCalledTimes(1);
+      expect(ensureFreshTokenSpy).toHaveBeenCalledTimes(1);
+
       setIntervalSpy.mockRestore();
+      ensureFreshTokenSpy.mockRestore();
     });
   });
 
@@ -149,6 +160,40 @@ describe('KeycloakAuthenticationService', () => {
       await Promise.all([firstRefresh, secondRefresh]);
 
       expect(keycloakInstance.updateToken).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('window listeners', () => {
+    it('should call ensureFreshToken when document becomes visible', () => {
+      const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
+
+      const originalHidden = (document as any).hidden;
+      Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+
+      (service as any).bindWindowListeners();
+
+      document.dispatchEvent(new Event('visibilitychange'));
+
+      expect(ensureFreshTokenSpy).toHaveBeenCalledTimes(1);
+
+      if (originalHidden !== undefined) {
+        Object.defineProperty(document, 'hidden', { value: originalHidden, configurable: true });
+      }
+
+      ensureFreshTokenSpy.mockRestore();
+    });
+
+    it('should call ensureFreshToken on window focus and online events', () => {
+      const ensureFreshTokenSpy = vi.spyOn(service, 'ensureFreshToken').mockResolvedValue();
+
+      (service as any).bindWindowListeners();
+
+      window.dispatchEvent(new Event('focus'));
+      window.dispatchEvent(new Event('online'));
+
+      expect(ensureFreshTokenSpy).toHaveBeenCalledTimes(2);
+
+      ensureFreshTokenSpy.mockRestore();
     });
   });
 
