@@ -81,8 +81,8 @@ export const AquaBloomTheme = definePreset(Lara, {
     },
     background: {
       50: '#f4f7f7',
-      100: '#edf3f3',
-      200: '#e1eaea',
+      100: '#e1eaea',
+      200: '#bed1d1',
     },
     base: {
       white: '#ffffff',
