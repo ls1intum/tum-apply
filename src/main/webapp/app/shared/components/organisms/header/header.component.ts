@@ -13,13 +13,13 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
-import { AquaBloomTheme } from 'content/theming/aquabloom';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
 import { TUMApplyPreset } from '../../../../../content/theming/tumapplypreset';
 import { BlossomTheme } from '../../../../../content/theming/custompreset';
+import { AquaBloomTheme } from '../../../../../content/theming/aquabloom';
 
 type ThemeOption = 'light' | 'dark' | 'blossom' | 'aquabloom';
 
