@@ -57,9 +57,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 new de.tum.cit.aet.job.dto.JobCardDTO(
                     j.jobId,
                     j.title,
-                    j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
@@ -78,8 +78,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.applicant ap
             LEFT JOIN a.job j
+            LEFT JOIN j.researchGroup rg
+            LEFT JOIN rg.department d
             LEFT JOIN j.image i
-
         WHERE a.applicationId = :id
         """
     )
@@ -123,9 +124,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 new de.tum.cit.aet.job.dto.JobCardDTO(
                     j.jobId,
                     j.title,
-                    j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
@@ -144,6 +145,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.job j
             LEFT JOIN a.applicant ap
+            LEFT JOIN j.researchGroup rg
+            LEFT JOIN rg.department d
             LEFT JOIN j.image i
             WHERE ap.user.userId = :userId AND j.jobId = :jobId
         """

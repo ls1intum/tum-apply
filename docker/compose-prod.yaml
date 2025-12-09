@@ -28,6 +28,7 @@ services:
       - '8080'
     volumes:
       - ./docs_data:/data/docs
+      - ./images_data:/data/images
     healthcheck:
       test: wget -nv -t1 --spider http://localhost:8080/actuator/health || exit 1
       start_period: 100s

@@ -37,7 +37,7 @@
         <jhi-job-card
           [jobId]="job.jobId"
           [jobTitle]="job.title"
-          [fieldOfStudies]="job.fieldOfStudies"
+          [departmentName]="job.departmentName ?? 'No Department'"
           [location]="job.location.toString()"
           [professor]="job.professorName"
           [workload]="job.workload || undefined"
@@ -46,7 +46,7 @@
           [applicationId]="job.applicationId"
           [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
           [contractDuration]="job.contractDuration"
-          [headerImageUrl]="getExampleImageUrl(i)"
+          [headerImageUrl]="job.imageUrl"
         />
       </div>
     }

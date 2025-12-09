@@ -12,21 +12,29 @@ import {
   provideAuthenticationResourceApiServiceMock,
   provideEmailVerificationResourceApiServiceMock,
 } from 'util/authentication-resource-api.service.mock';
+import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from '../../../util/toast-service.mock';
+import { createTranslateServiceMock, provideTranslateMock, TranslateServiceMock } from '../../../util/translate.mock';
 
 describe('ServerAuthenticationService', () => {
   let service: ServerAuthenticationService;
   let authApi: AuthenticationResourceApiServiceMock;
   let emailApi: EmailVerificationResourceApiServiceMock;
+  let toastService: ToastServiceMock;
+  let translateService: TranslateServiceMock;
 
   beforeEach(() => {
     authApi = createAuthenticationResourceApiServiceMock();
     emailApi = createEmailVerificationResourceApiServiceMock();
+    toastService = createToastServiceMock();
+    translateService = createTranslateServiceMock();
 
     TestBed.configureTestingModule({
       providers: [
         ServerAuthenticationService,
         provideAuthenticationResourceApiServiceMock(authApi),
         provideEmailVerificationResourceApiServiceMock(emailApi),
+        provideToastServiceMock(toastService),
+        provideTranslateMock(translateService),
       ],
     });
     service = TestBed.inject(ServerAuthenticationService);
