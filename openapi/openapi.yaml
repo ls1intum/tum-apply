@@ -2209,6 +2209,7 @@ components:
         firstName: {type: string}
         id: {type: string, format: uuid}
         lastName: {type: string}
+        universityId: {type: string}
         username: {type: string}
     LoginRequestDTO:
       type: object

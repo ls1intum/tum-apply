@@ -14,6 +14,7 @@ export interface KeycloakUserDTO {
     firstName?: string;
     id?: string;
     lastName?: string;
+    universityId?: string;
     username?: string;
 }
 
