@@ -13,6 +13,7 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { AquaBloomTheme } from 'content/theming/aquabloom';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
@@ -20,7 +21,7 @@ import TranslateDirective from '../../../language/translate.directive';
 import { TUMApplyPreset } from '../../../../../content/theming/tumapplypreset';
 import { BlossomTheme } from '../../../../../content/theming/custompreset';
 
-type ThemeOption = 'light' | 'dark' | 'blossom';
+type ThemeOption = 'light' | 'dark' | 'blossom' | 'aquabloom';
 
 @Component({
   selector: 'jhi-header',
@@ -53,6 +54,7 @@ export class HeaderComponent {
     { name: 'Light', value: 'light' },
     { name: 'Dark', value: 'dark' },
     { name: 'Blossom', value: 'blossom' },
+    { name: 'AquaBloom', value: 'aquabloom' },
   ];
 
   selectedTheme = computed(() => this.themeOptions.find(opt => opt.value === this.theme()));
@@ -97,7 +99,7 @@ export class HeaderComponent {
   getInitialTheme(): ThemeOption {
     const stored = localStorage.getItem('tumApplyTheme') as ThemeOption | null;
 
-    if (stored === 'dark' || stored === 'blossom' || stored === 'light') {
+    if (stored === 'dark' || stored === 'blossom' || stored === 'light' || stored === 'aquabloom') {
       return stored;
     }
     const classList = document.documentElement.classList;
@@ -106,6 +108,9 @@ export class HeaderComponent {
     }
     if (classList.contains('tum-apply-dark-mode')) {
       return 'dark';
+    }
+    if (classList.contains('tum-apply-aquabloom')) {
+      return 'aquabloom';
     }
     return 'light';
   }
@@ -156,7 +161,7 @@ export class HeaderComponent {
     // Disable transitions/animations before changing theme
     root.classList.add('theme-switching');
 
-    root.classList.remove('tum-apply-dark-mode', 'tum-apply-blossom');
+    root.classList.remove('tum-apply-dark-mode', 'tum-apply-blossom', 'tum-apply-aquabloom');
 
     const themeOptions = {
       darkModeSelector: '.tum-apply-dark-mode',
@@ -166,6 +171,9 @@ export class HeaderComponent {
     if (theme === 'blossom') {
       this.primeNG.theme.set({ preset: BlossomTheme, options: themeOptions });
       root.classList.add('tum-apply-blossom');
+    } else if (theme === 'aquabloom') {
+      this.primeNG.theme.set({ preset: AquaBloomTheme, options: themeOptions });
+      root.classList.add('tum-apply-aquabloom');
     } else {
       this.primeNG.theme.set({ preset: TUMApplyPreset, options: themeOptions });
       if (theme === 'dark') {

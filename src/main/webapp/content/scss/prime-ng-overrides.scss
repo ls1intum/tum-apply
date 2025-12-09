@@ -4,6 +4,10 @@
   --p-stepper-step-number-font-size: 1rem;
   --p-stepper-step-title-font-weight: 500;
   --p-accordion-header-background: var(--p-background-default);
+  --p-accordion-header-color: var(--p-text-primary);
+  --p-accordion-header-hover-background: var(--p-primary-hover-color-outlined);
+  --p-accordion-header-active-hover-background: var(--p-primary-hover-color-outlined);
+  --p-accordion-content-background: var(--p-background-default);
 }
 
 p-step[data-p-active='true'] .p-step-title {
@@ -58,6 +62,13 @@ p-step[data-p-active='true'] .p-step-title {
 
 .p-tag-contrast {
   border-color: var(--p-accent-500) !important;
+}
+
+/* -------------------------------
+   Custom Global Styles for Accordion
+---------------------------------- */
+.p-accordionpanel:not(.p-disabled).p-accordionpanel-active > .p-accordionheader {
+  background: var(--p-background-surface-alt) !important;
 }
 
 /* Disable all transitions and animations while switching theme */
