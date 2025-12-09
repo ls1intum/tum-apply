@@ -86,7 +86,7 @@ export class DatePickerComponent {
    */
   dateFormat = computed(() => {
     const currentLang = this.currentLanguage();
-    return currentLang === 'en' ? 'mm/dd/yy' : 'dd.mm.yy';
+    return currentLang === 'en' ? 'dd/mm/yy' : 'dd.mm.yy';
   });
 
   private scrollListener?: (event: Event) => void;

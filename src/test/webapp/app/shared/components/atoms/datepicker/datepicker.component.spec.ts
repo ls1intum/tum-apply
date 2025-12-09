@@ -24,7 +24,7 @@ describe('DatePickerComponent', () => {
   };
 
   const LANGUAGE_FORMATS = {
-    en: 'mm/dd/yy',
+    en: 'dd/mm/yy',
     de: 'dd.mm.yy',
     fr: 'dd.mm.yy', // defaults to German format
   };

@@ -21,7 +21,7 @@ export default class LocalizedDatePipe implements PipeTransform {
     if (value === null || value === undefined || typeof value !== 'string') return '';
 
     const lang = this.translate.getCurrentLang() || 'en';
-    const fmt = lang === 'de' ? 'DD.MM.YYYY' : 'MM/DD/YYYY';
+    const fmt = lang === 'de' ? 'DD.MM.YYYY' : 'DD/MM/YYYY';
 
     const loose = dayjs(value);
     if (!loose.isValid()) return '';
