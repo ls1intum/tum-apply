@@ -152,6 +152,10 @@ export class HeaderComponent {
     this.theme.set(theme);
 
     const root = this.rootElement;
+
+    // Disable transitions/animations before changing theme
+    root.classList.add('theme-switching');
+
     root.classList.remove('tum-apply-dark-mode', 'tum-apply-blossom');
 
     const themeOptions = {

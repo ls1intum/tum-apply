@@ -478,10 +478,3 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   font-weight: bold;
   color: var(--p-primary-color);
 }
-
-/* Disable all transitions while switching theme */
-.theme-switching *,
-.theme-switching *::before,
-.theme-switching *::after {
-  transition: none !important;
-}

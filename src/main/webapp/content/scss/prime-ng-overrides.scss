@@ -59,3 +59,11 @@ p-step[data-p-active='true'] .p-step-title {
 .p-tag-contrast {
   border-color: var(--p-accent-500) !important;
 }
+
+/* Disable all transitions and animations while switching theme */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+  animation: none !important;
+}
