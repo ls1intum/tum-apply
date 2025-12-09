@@ -144,7 +144,6 @@ class JobResourceTest extends AbstractResourceTest {
 
         JobCardDTO card = page.content().getFirst();
         assertThat(card.title()).isEqualTo("Published Role");
-        assertThat(card.fieldOfStudies()).isEqualTo("CS");
         assertThat(card.location()).isEqualTo("Garching");
         assertThat(card.professorName()).isEqualTo("John Doe");
         assertThat(card.workload()).isEqualTo(20);

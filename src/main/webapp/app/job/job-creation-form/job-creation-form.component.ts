@@ -138,9 +138,7 @@ export class JobCreationFormComponent {
   // Maximum image dimensions (width and height in pixels)
   private readonly MAX_IMAGE_DIMENSION_PX = 4096;
 
-  get acceptedImageTypes(): string {
-    return this.ALLOWED_IMAGE_TYPES.join(',');
-  }
+  readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
 
   hasCustomImage = computed(() => {
     const image = this.selectedImage();

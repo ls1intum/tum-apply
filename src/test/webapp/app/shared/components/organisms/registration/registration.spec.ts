@@ -105,7 +105,10 @@ describe('Registration Component', () => {
       const nextStepSpy = vi.spyOn(authOrchestrator, 'nextStep');
       await component.setProfile('John', 'Doe');
 
-      expect(setErrorSpy).toHaveBeenCalledWith('Could not update your profile name. Please try again.');
+      expect(setErrorSpy).toHaveBeenCalledWith({
+        summary: 'auth.common.toast.updateNameFailed.summary',
+        detail: 'auth.common.toast.updateNameFailed.detail',
+      });
       expect(nextStepSpy).not.toHaveBeenCalled();
     });
   });
@@ -130,7 +133,10 @@ describe('Registration Component', () => {
 
       await component.setPassword();
 
-      expect(setErrorSpy).toHaveBeenCalledWith('Could not update your password. Please try again.');
+      expect(setErrorSpy).toHaveBeenCalledWith({
+        summary: 'auth.common.toast.updatePasswordFailed.summary',
+        detail: 'auth.common.toast.updatePasswordFailed.detail',
+      });
       expect(nextStepSpy).not.toHaveBeenCalled();
     });
   });
