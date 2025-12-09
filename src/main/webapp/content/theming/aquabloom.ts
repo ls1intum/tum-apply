@@ -213,9 +213,11 @@ export const AquaBloomTheme = definePreset(Lara, {
   components: {
     button: {
       root: {
-        borderRadius: '0.75rem',
+        borderRadius: '0.5rem',
         badgeSize: '1rem',
         transitionDuration: '{form.field.transition.duration}',
+        paddingX: '0.875rem',
+        paddingY: '0.375rem',
       },
       colorScheme: {
         light: {
