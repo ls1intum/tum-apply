@@ -1,6 +1,5 @@
 <p-dialog
   [visible]="visible()"
-  [header]="'genderDecoder.resultTitle' | translate"
   [modal]="true"
   [draggable]="false"
   (visibleChange)="onVisibleChange($event)"
@@ -9,6 +8,22 @@
     'border-radius': 'var(--p-button-border-radius)',
   }"
 >
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-2">
+      <span class="text-lg font-semibold">
+        {{ 'genderDecoder.resultTitle' | translate }}
+      </span>
+      <fa-icon
+        class="text-primary"
+        [icon]="['fas', 'circle-info']"
+        [pTooltip]="'genderDecoder.originalDecoder' | translate"
+        [escape]="false"
+        tooltipPosition="top"
+        [autoHide]="false"
+      />
+    </div>
+  </ng-template>
+
   @if (result(); as analysisResult) {
     <div class="space-y-6">
       <!-- Coding Summary -->
