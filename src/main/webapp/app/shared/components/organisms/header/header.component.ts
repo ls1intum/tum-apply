@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, WritableSignal, computed, inject } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -8,29 +8,25 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, fromEventPattern, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { PrimeNG } from 'primeng/config';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 
-import TranslateDirective from '../../../language/translate.directive';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
+import TranslateDirective from '../../../language/translate.directive';
+import { TUMApplyPreset } from '../../../../../content/theming/tumapplypreset';
+import { BlossomTheme } from '../../../../../content/theming/custompreset';
+import { AquaBloomTheme } from '../../../../../content/theming/aquabloom';
+
+type ThemeOption = 'light' | 'dark' | 'blossom' | 'aquabloom';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
-    DynamicDialogModule,
-    TranslateDirective,
-  ],
+  imports: [CommonModule, ButtonComponent, SelectComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -52,6 +48,16 @@ export class HeaderComponent {
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
   router = inject(Router);
+  theme = signal<ThemeOption>(this.getInitialTheme());
+
+  themeOptions: SelectOption[] = [
+    { name: 'Light', value: 'light' },
+    { name: 'Dark', value: 'dark' },
+    { name: 'Blossom', value: 'blossom' },
+    { name: 'AquaBloom', value: 'aquabloom' },
+  ];
+
+  selectedTheme = computed(() => this.themeOptions.find(opt => opt.value === this.theme()));
 
   routeAuthorities = toSignal(
     this.router.events.pipe(
@@ -83,6 +89,31 @@ export class HeaderComponent {
 
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
+  private primeNG = inject(PrimeNG);
+  private readonly rootElement = document.documentElement;
+
+  constructor() {
+    this.setTheme(this.theme());
+  }
+
+  getInitialTheme(): ThemeOption {
+    const stored = localStorage.getItem('tumApplyTheme') as ThemeOption | null;
+
+    if (stored === 'dark' || stored === 'blossom' || stored === 'light' || stored === 'aquabloom') {
+      return stored;
+    }
+    const classList = document.documentElement.classList;
+    if (classList.contains('tum-apply-blossom')) {
+      return 'blossom';
+    }
+    if (classList.contains('tum-apply-dark-mode')) {
+      return 'dark';
+    }
+    if (classList.contains('tum-apply-aquabloom')) {
+      return 'aquabloom';
+    }
+    return 'light';
+  }
 
   navigateToHome(): void {
     if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
@@ -122,26 +153,44 @@ export class HeaderComponent {
     void this.authFacadeService.logout();
   }
 
-  toggleColorScheme(): void {
-    const root = document.documentElement;
+  setTheme(theme: ThemeOption): void {
+    this.theme.set(theme);
 
-    // turn off transitions
+    const root = this.rootElement;
+
+    // Disable transitions/animations before changing theme
     root.classList.add('theme-switching');
 
-    const isDark = !root.classList.contains('tum-apply-dark-mode');
+    root.classList.remove('tum-apply-dark-mode', 'tum-apply-blossom', 'tum-apply-aquabloom');
 
-    if (isDark) {
-      root.classList.add('tum-apply-dark-mode');
+    const themeOptions = {
+      darkModeSelector: '.tum-apply-dark-mode',
+      cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
+    };
+
+    if (theme === 'blossom') {
+      this.primeNG.theme.set({ preset: BlossomTheme, options: themeOptions });
+      root.classList.add('tum-apply-blossom');
+    } else if (theme === 'aquabloom') {
+      this.primeNG.theme.set({ preset: AquaBloomTheme, options: themeOptions });
+      root.classList.add('tum-apply-aquabloom');
     } else {
-      root.classList.remove('tum-apply-dark-mode');
+      this.primeNG.theme.set({ preset: TUMApplyPreset, options: themeOptions });
+      if (theme === 'dark') {
+        root.classList.add('tum-apply-dark-mode');
+      }
     }
 
-    localStorage.setItem('tumApplyTheme', isDark ? 'dark' : 'light');
+    localStorage.setItem('tumApplyTheme', theme);
 
     // allow one frame for styles to apply, then restore transitions
     window.requestAnimationFrame(() => {
       root.classList.remove('theme-switching');
     });
+  }
+
+  onThemeChange(option: SelectOption): void {
+    this.setTheme(option.value as ThemeOption);
   }
 
   toggleLanguage(language: string): void {
