@@ -38,3 +38,4 @@ export * from './schoolResourceApi.service';
 import { SchoolResourceApiService } from './schoolResourceApi.service';
 export * from './userResourceApi.service';
 import { UserResourceApiService } from './userResourceApi.service';
+export const APIS = [ApplicationEvaluationResourceApiService, ApplicationResourceApiService, AuthenticationResourceApiService, DepartmentResourceApiService, DocumentResourceApiService, EmailSettingResourceApiService, EmailTemplateResourceApiService, EmailVerificationResourceApiService, GenderBiasAnalysisResourceApiService, ImageResourceApiService, InternalCommentResourceApiService, InterviewResourceApiService, JobResourceApiService, PdfExportResourceApiService, ProfOnboardingResourceApiService, PublicConfigResourceApiService, RatingResourceApiService, ResearchGroupResourceApiService, SchoolResourceApiService, UserResourceApiService];
