@@ -1,5 +1,5 @@
 <div
-  class="rounded-lg border border-gray-200 hover:scale-[1.02] hover:bg-blue-50 transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  class="rounded-lg border border-border-default hover:scale-[1.02] hover:bg-background-surface transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
   (click)="onViewDetails()"
 >
   <div
@@ -7,10 +7,15 @@
     [style.background-image]="
       headerImageUrl() ? 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(' + headerImageUrl() + ')' : 'none'
     "
-    [style.background-color]="!headerImageUrl() ? headerColor() : 'transparent'"
   >
+    @if (!headerImageUrl()) {
+      <div class="absolute inset-0 flex flex-col items-center justify-center bg-background-surface-alt">
+        <fa-icon [icon]="['fas', 'image']" [size]="'2x'" class="text-text-secondary" />
+        <span class="text-sm text-text-secondary" jhiTranslate="jobCreationForm.imageSection.noImage"></span>
+      </div>
+    }
     <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
-      {{ fieldOfStudies() }}
+      {{ departmentName() }}
     </span>
   </div>
 
@@ -23,7 +28,7 @@
 
     <!-- Deadline -->
     @if (relativeTime()) {
-      <p class="text-sm italic text-gray-500 mb-4">
+      <p class="text-sm italic text-text-tertiary mb-4">
         {{ relativeTime() }}
       </p>
     }
@@ -46,7 +51,7 @@
           [pTooltip]="'jobOverviewPage.tooltips.location' | translate"
           tooltipPosition="top"
         />
-        <span class="truncate">{{ location() }}</span>
+        <span class="truncate">{{ (dropDownOptions.getLocationTranslationKey(location()) | translate) || '-' }}</span>
       </div>
       @if (formattedStartDate()) {
         <div class="flex items-center gap-2 text-sm">
@@ -64,12 +69,12 @@
     <!-- Tags/Badges section -->
     <div class="flex flex-wrap gap-2 mt-auto">
       @if (formattedContractDuration()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary">
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary">
           {{ formattedContractDuration() }} <span jhiTranslate="jobDetailPage.units.years"></span>
         </span>
       }
       @if (formattedWorkload()) {
-        <span class="px-3 py-1 text-primary text-xs font-medium rounded-full border border-primary"> {{ formattedWorkload() }} </span>
+        <span class="px-3 py-1 text-primary text-xs font-medium rounded-xl border border-primary"> {{ formattedWorkload() }} </span>
       }
     </div>
   </div>

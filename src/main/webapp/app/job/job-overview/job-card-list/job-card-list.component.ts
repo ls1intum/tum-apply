@@ -42,7 +42,7 @@ export class JobCardListComponent {
   readonly selectedLocationFilters = signal<JobFormDTO.LocationEnum[]>([]);
   readonly selectedSupervisorFilters = signal<string[]>([]);
 
-  readonly allFieldOfStudies = signal<string[]>([]);
+  readonly allFieldOfStudies = this.DropdownOptions.fieldsOfStudies.map(option => option.name);
   readonly availableLocationLabels = this.DropdownOptions.locations.map(option => option.name);
   readonly allSupervisorNames = signal<string[]>([]);
 
@@ -90,7 +90,10 @@ export class JobCardListComponent {
   onFilterEmit(filterChange: FilterChange): void {
     if (filterChange.filterId === 'fieldOfStudies') {
       this.page.set(0);
-      this.selectedFieldOfStudiesFilters.set(filterChange.selectedValues);
+      const fieldOfStudyValue = filterChange.selectedValues.map(
+        key => DropdownOptions.fieldsOfStudies.find(fs => fs.name === key)?.value ?? key,
+      );
+      this.selectedFieldOfStudiesFilters.set(fieldOfStudyValue);
       void this.loadJobs();
     } else if (filterChange.filterId === 'location') {
       this.page.set(0);
@@ -114,10 +117,8 @@ export class JobCardListComponent {
   async loadAllFilter(): Promise<void> {
     try {
       const filterOptions = await firstValueFrom(this.jobService.getAllFilters());
-      this.allFieldOfStudies.set(filterOptions.fieldsOfStudy ?? []);
       this.allSupervisorNames.set(filterOptions.supervisorNames ?? []);
     } catch {
-      this.allFieldOfStudies.set([]);
       this.allSupervisorNames.set([]);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadFilter');
     }
@@ -143,19 +144,5 @@ export class JobCardListComponent {
       console.error('Failed to load jobs from API:', error);
       this.toastService.showErrorKey('jobOverviewPage.errors.loadJobs');
     }
-  }
-
-  /**
-   * Returns a randomly selected header image URL from a pool of 4 images
-   */
-  getExampleImageUrl(index: number): string {
-    const headerImages = [
-      'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
-      'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&q=80',
-      'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80',
-    ];
-
-    return headerImages[index % headerImages.length];
   }
 }

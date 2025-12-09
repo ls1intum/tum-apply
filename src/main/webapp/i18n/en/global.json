@@ -171,7 +171,6 @@
       "master_info": "Master Degree Information",
       "gender": "Gender",
       "desired_start_date": "Desired Start Date",
-      "preferred_language": "Preferred Language",
       "applicant_info": "Applicant Information",
       "nationality": "Nationality",
       "website": "Website",
@@ -292,7 +291,6 @@
         "phoneNumber": "Phone Number",
         "gender": "Gender",
         "nationality": "Nationality",
-        "language": "Preferred Language",
         "dateOfBirth": "Date of Birth",
         "website": "Website",
         "linkedIn": "LinkedIn",
@@ -305,9 +303,6 @@
         "contactInformation": "Contact Information",
         "voluntaryInformation": "Voluntary Information",
         "address": "Address Information"
-      },
-      "tooltip": {
-        "language": "Choose your preferred communication language."
       },
       "validation": {
         "postalCode": "Please enter a valid postal code for the selected country."
@@ -395,7 +390,8 @@
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
-        "closed": "Closed"
+        "closed": "Closed",
+        "inReview": "In Review"
       },
       "columns": {
         "positionTitle": "Position Title",

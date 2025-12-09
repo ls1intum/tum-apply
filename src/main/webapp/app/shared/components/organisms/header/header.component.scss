@@ -3,13 +3,11 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1.5rem;
-  background-color: var(--p-background-default);
   position: sticky;
   top: 0;
   z-index: 1000;
   overflow-x: auto;
-  white-space: nowrap;
-  height: 3.5rem;
+  height: 3rem;
 
   .logo-section {
     display: flex;
@@ -39,8 +37,9 @@
 
     .theme-toggle-button {
       .p-button {
-        height: 2.5rem;
-        width: 2.5rem;
+        height: 2rem;
+        width: 2rem;
+        border-radius: 0.5rem;
       }
 
       padding: 0 0.5rem;
@@ -74,7 +73,6 @@
       padding: 0.25rem 0.25rem;
       align-items: center;
       gap: 1rem;
-      color: var(--p-text-primary);
 
       .profile-icon {
         display: flex;
@@ -97,6 +95,7 @@
         justify-content: center;
         padding: 0.4rem 0.75rem;
         font-size: 0.9rem;
+        border-radius: 0.5rem;
       }
     }
   }

@@ -104,9 +104,7 @@ export class JobCreationFormComponent {
   // Maximum image dimensions (width and height in pixels)
   private readonly MAX_IMAGE_DIMENSION_PX = 4096;
 
-  get acceptedImageTypes(): string {
-    return this.ALLOWED_IMAGE_TYPES.join(',');
-  }
+  readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
 
   hasCustomImage = computed(() => {
     const image = this.selectedImage();
@@ -122,8 +120,8 @@ export class JobCreationFormComponent {
 
   uploadInnerClasses = computed(() => {
     const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
-    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-blue-50' : '';
-    return `${base} border-gray-300 ${hover}`.trim();
+    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
+    return `${base} border-border-default ${hover}`.trim();
   });
 
   // Forms

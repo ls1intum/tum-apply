@@ -43,15 +43,15 @@ export class RatingComponent {
     if (sectionValue === currentRating) {
       switch (sectionValue) {
         case -2:
-          return 'var(--p-danger-active-color)';
+          return 'var(--color-negative-active)';
         case -1:
-          return 'var(--p-danger-hover-color)';
+          return 'var(--color-negative-hover)';
         case 0:
-          return 'var(--p-warn-color)';
+          return 'var(--color-warning-default)';
         case 1:
-          return 'var(--p-success-hover-color)';
+          return 'var(--color-positive-hover)';
         case 2:
-          return 'var(--p-success-active-color)';
+          return 'var(--color-positive-active)';
       }
     }
     return 'var(--p-background-surface-alt)';

@@ -18,11 +18,12 @@ export interface UserResearchGroupRole {
     userResearchGroupRoleId?: string;
 }
 export namespace UserResearchGroupRole {
-    export type RoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN';
+    export type RoleEnum = 'APPLICANT' | 'PROFESSOR' | 'ADMIN' | 'EMPLOYEE';
     export const RoleEnum = {
         Applicant: 'APPLICANT' as RoleEnum,
         Professor: 'PROFESSOR' as RoleEnum,
-        Admin: 'ADMIN' as RoleEnum
+        Admin: 'ADMIN' as RoleEnum,
+        Employee: 'EMPLOYEE' as RoleEnum
     };
 }
 

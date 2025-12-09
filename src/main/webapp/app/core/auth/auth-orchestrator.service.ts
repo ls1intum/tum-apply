@@ -2,6 +2,7 @@ import { Injectable, Injector, computed, effect, inject, signal } from '@angular
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { ToastMessageInput, ToastService } from 'app/service/toast-service';
 
 import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep } from './models/auth.model';
 
@@ -28,6 +29,7 @@ import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep 
  */
 export class AuthOrchestratorService {
   readonly config = inject(ApplicationConfigService);
+  readonly toastService = inject(ToastService);
   // high level dialog state
   readonly isOpen = signal(false);
   readonly mode = signal<AuthFlowMode>('login');
@@ -40,7 +42,7 @@ export class AuthOrchestratorService {
   readonly lastName = signal<string>('');
   // UX state
   readonly isBusy = signal(false);
-  readonly error = signal<string | null>(null);
+  readonly error = signal<ToastMessageInput | null>(null);
   // progress for registration dialog
   readonly  firstProgressStep= signal(false);
   readonly registerProgress = computed(() => {
@@ -154,8 +156,11 @@ export class AuthOrchestratorService {
     this.error.set(null);
   }
 
-  setError(msg: string | null): void {
+  setError(msg: ToastMessageInput | null): void {
     this.error.set(msg);
+    if (msg) {
+      this.toastService.showError(msg);
+    }
   }
 
   nextStep(loginStep?: LoginStep): void {

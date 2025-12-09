@@ -948,6 +948,17 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/slots/{slotId}:
+    delete:
+      tags: [interview-resource]
+      operationId: deleteSlot
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -2077,7 +2088,7 @@ components:
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
         contractDuration: {type: integer, format: int32}
-        fieldOfStudies: {type: string}
+        departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
         location: {type: string}
@@ -2087,7 +2098,7 @@ components:
         startDate: {type: string, format: date}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [fieldOfStudies, jobId, location, professorName, title]
+      required: [jobId, location, professorName, title]
     JobDTO:
       type: object
       properties:
@@ -2556,7 +2567,6 @@ components:
         name: {type: string}
         nationality: {type: string}
         phoneNumber: {type: string}
-        preferredLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
       required: [userId]
@@ -2571,7 +2581,7 @@ components:
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         role:
           type: string
-          enum: [APPLICANT, PROFESSOR, ADMIN]
+          enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         user: {$ref: '#/components/schemas/User'}
         userResearchGroupRoleId: {type: string, format: uuid}
     UserShortDTO:
@@ -2585,5 +2595,5 @@ components:
           type: array
           items:
             type: string
-            enum: [APPLICANT, PROFESSOR, ADMIN]
+            enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         userId: {type: string, format: uuid}

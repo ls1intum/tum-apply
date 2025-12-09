@@ -6,7 +6,7 @@ This document highlights the main features of the TUMApply platform and their in
 
 ## 🔐 Secure Authentication
 
-- Login via TUM SSO, Google, Microsoft, or email/password
+- Login via TUM SSO, Google, Apple, or email/password
 - Keycloak integration with server-side role mapping
 - Token validation on both client and server
 

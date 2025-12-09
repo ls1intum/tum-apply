@@ -4,6 +4,8 @@
     "professorTitle": "Professor:in",
     "professor": "Bist du Professor:in?",
     "applicant": "Bist du Bewerber:in?",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "theme": "Theme wechseln",
+    "universityName": "Technische Universität München"
   }
 }
