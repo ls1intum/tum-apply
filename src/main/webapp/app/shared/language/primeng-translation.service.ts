@@ -5,6 +5,9 @@ import { PrimeNG } from 'primeng/config';
 /**
  * Wires PrimeNG's internal i18n (month/weekday names, Today/Clear labels) to the app language.
  * PrimeNG v20 reads these from a global translation map, configured via PrimeNG.setTranslation().
+ *
+ * This service is primarily used by PrimeNG Calendar components (DatePicker) to display
+ * localized month names, day names, and UI labels based on the current application language.
  */
 @Injectable({ providedIn: 'root' })
 export class PrimengTranslationService {

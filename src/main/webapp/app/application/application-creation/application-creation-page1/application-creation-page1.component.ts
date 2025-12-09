@@ -120,7 +120,7 @@ export default class ApplicationCreationPage1Component {
 
     return selectCountries
       .map(option => ({
-        ...option,
+        value: option.value,
         name: this.translate.instant(option.name),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -132,7 +132,7 @@ export default class ApplicationCreationPage1Component {
 
     return selectNationality
       .map(option => ({
-        ...option,
+        value: option.value,
         name: this.translate.instant(option.name),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));

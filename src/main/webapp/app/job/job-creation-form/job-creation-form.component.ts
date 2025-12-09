@@ -84,7 +84,7 @@ export class JobCreationFormComponent {
     void this.currentLang();
     return DropdownOptions.fieldsOfStudies
       .map(option => ({
-        ...option,
+        value: option.value,
         name: this.translate.instant(option.name),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -94,7 +94,7 @@ export class JobCreationFormComponent {
     void this.currentLang();
     return DropdownOptions.locations
       .map(option => ({
-        ...option,
+        value: option.value,
         name: this.translate.instant(option.name),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -104,7 +104,7 @@ export class JobCreationFormComponent {
     void this.currentLang();
     return DropdownOptions.fundingTypes
       .map(option => ({
-        ...option,
+        value: option.value,
         name: this.translate.instant(option.name),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));

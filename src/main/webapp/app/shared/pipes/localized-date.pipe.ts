@@ -5,7 +5,7 @@ import dayjs from 'dayjs/esm';
 /**
  * LocalizedDatePipe
  * Transforms an ISO date string (YYYY-MM-DD) or (YYYY-MM-DDTHH:mm:ss.sssZ) into a localized display string.
- * - en: mm/dd/yyyy
+ * - en: dd/mm/yyyy
  * - de: dd.mm.yyyy
  * Returns the input if parsing fails.
  */
