@@ -11,6 +11,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TooltipModule } from 'primeng/tooltip';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 export interface SlotRange {
@@ -40,6 +41,7 @@ export interface SlotRange {
     CheckboxModule,
     TooltipModule,
     ButtonComponent,
+    StringInputComponent,
     FontAwesomeModule,
   ],
   templateUrl: './date-slot-card.component.html',
@@ -163,7 +165,7 @@ export class DateSlotCardComponent {
       ...ranges,
       {
         id: this.generateId(),
-        startTimeString: '00:00',
+        startTimeString: '',
         endTimeString: '',
         startTime: null,
         endTime: null,
@@ -185,8 +187,8 @@ export class DateSlotCardComponent {
       ...ranges,
       {
         id: this.generateId(),
-        startTimeString: '00:00',
-        endTimeString: '00:01',
+        startTimeString: '',
+        endTimeString: '',
         startTime: null,
         endTime: null,
         type: 'range',
@@ -228,7 +230,8 @@ export class DateSlotCardComponent {
    * @param index The index of the range.
    * @param timeString The new start time string (HH:mm).
    */
-  onStartInput(index: number, timeString: string): void {
+  onStartInput(index: number, timeString: string | undefined): void {
+    const safeTimeString = timeString ?? '';
     this.slotRanges.update(ranges =>
       ranges.map((r, i) => {
         if (i !== index) return r;
@@ -237,8 +240,8 @@ export class DateSlotCardComponent {
         const range = { ...r };
 
         // 2. Update the start time string and parse it into a Date object
-        range.startTimeString = timeString;
-        range.startTime = this.parseTime(timeString);
+        range.startTimeString = safeTimeString;
+        range.startTime = this.parseTime(safeTimeString);
 
         const location = range.location;
 
@@ -282,7 +285,8 @@ export class DateSlotCardComponent {
    * @param index The index of the range.
    * @param timeString The new end time string (HH:mm).
    */
-  onEndInput(index: number, timeString: string): void {
+  onEndInput(index: number, timeString: string | undefined): void {
+    const safeTimeString = timeString ?? '';
     this.slotRanges.update(ranges =>
       ranges.map((r, i) => {
         if (i !== index) return r;
@@ -290,8 +294,8 @@ export class DateSlotCardComponent {
         const range = { ...r };
 
         // 2. Update the end time string and parse it
-        range.endTimeString = timeString;
-        range.endTime = this.parseTime(timeString);
+        range.endTimeString = safeTimeString;
+        range.endTime = this.parseTime(safeTimeString);
 
         // 3. If it's a range type, regenerate the slots.
         // Single slots don't have an editable end time (it's derived from duration)
@@ -311,7 +315,8 @@ export class DateSlotCardComponent {
    * @param index The index of the range.
    * @param location The new location string.
    */
-  onLocationInput(index: number, location: string): void {
+  onLocationInput(index: number, location: string | undefined): void {
+    const safeLocation = location ?? '';
     this.slotRanges.update(ranges =>
       ranges.map((r, i) => {
         if (i !== index) return r;
@@ -319,14 +324,14 @@ export class DateSlotCardComponent {
         const range = { ...r };
 
         // 2. Update the location string
-        range.location = location;
+        range.location = safeLocation;
 
         // 3. Update the location in the generated slots
-        const isVirtual = this.isVirtualLocation(location);
+        const isVirtual = this.isVirtualLocation(safeLocation);
         range.slots = range.slots.map(slot => ({
           ...slot,
-          location,
-          streamLink: isVirtual ? location : undefined,
+          location: safeLocation,
+          streamLink: isVirtual ? safeLocation : undefined,
         }));
 
         return range;

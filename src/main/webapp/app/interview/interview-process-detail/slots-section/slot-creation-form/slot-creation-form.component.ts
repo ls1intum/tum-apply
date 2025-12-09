@@ -17,6 +17,7 @@ import { SlotInput } from 'app/generated/model/slotInput';
 import { firstValueFrom } from 'rxjs';
 import { DateSlotCardComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/date-slot-card.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -36,6 +37,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     SharedModule,
     DateSlotCardComponent,
     ButtonComponent,
+    NumberInputComponent,
     TooltipModule,
   ],
   templateUrl: './slot-creation-form.component.html',
@@ -124,17 +126,18 @@ export class SlotCreationFormComponent {
    * Updates the duration from the custom input field.
    * @param value The new duration in minutes.
    */
-  onCustomDurationInput(value: number): void {
-    this.customDuration.set(value);
+  onCustomDurationInput(value: number | undefined): void {
+    const safeValue = value ?? 0;
+    this.customDuration.set(safeValue);
 
-    if (value <= 0) {
+    if (safeValue <= 0) {
       this.durationError.set('interview.slots.create.validation.durationPositive');
       // Prevent invalid updates to preserve child component stability
       return;
     }
 
     this.durationError.set(null);
-    this.duration.set(value);
+    this.duration.set(safeValue);
   }
 
   /**
@@ -159,14 +162,15 @@ export class SlotCreationFormComponent {
    * Updates the break duration from the custom input field.
    * @param value The new break duration in minutes.
    */
-  onCustomBreakInput(value: number): void {
-    this.customBreak.set(value);
+  onCustomBreakInput(value: number | undefined): void {
+    const safeValue = value ?? 0;
+    this.customBreak.set(safeValue);
 
-    if (value < 0) {
+    if (safeValue < 0) {
       this.breakError.set('interview.slots.create.validation.breakPositive');
     } else {
       this.breakError.set(null);
-      this.breakDuration.set(value);
+      this.breakDuration.set(safeValue);
     }
   }
 
