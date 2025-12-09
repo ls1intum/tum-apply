@@ -108,7 +108,6 @@ export class KeycloakAuthenticationService {
    * @param redirectUri Optional URI to redirect to after login. Defaults to the app root.
    */
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
-    await this.init();
     try {
       await this.keycloak?.login({
         redirectUri: this.buildRedirectUri(redirectUri),
