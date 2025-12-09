@@ -623,6 +623,14 @@ export class DateSlotCardComponent {
     if (a.length !== b.length) {
       return false;
     }
-    return JSON.stringify(a) === JSON.stringify(b);
+    return a.every((slotA, index) => {
+      const slotB = b[index];
+      return (
+        slotA.id === slotB.id &&
+        slotA.startDateTime === slotB.startDateTime &&
+        slotA.endDateTime === slotB.endDateTime &&
+        slotA.location === slotB.location
+      );
+    });
   }
 }
