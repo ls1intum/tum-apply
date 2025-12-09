@@ -55,6 +55,7 @@
 
   .registration-panel {
     @include layout.panel-col;
+
     max-width: 24rem;
     width: 100%;
 
@@ -63,6 +64,7 @@
     .password {
       width: 100%;
     }
+
     jhi-otp-input {
       width: 100%;
     }
