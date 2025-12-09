@@ -170,6 +170,11 @@ export class HeaderComponent {
     }
 
     localStorage.setItem('tumApplyTheme', theme);
+
+    // allow one frame for styles to apply, then restore transitions
+    window.requestAnimationFrame(() => {
+      root.classList.remove('theme-switching');
+    });
   }
 
   onThemeChange(option: SelectOption): void {
