@@ -4,7 +4,7 @@ import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 
 type ToastSeverity = 'success' | 'info' | 'warn' | 'error';
-type ToastMessageInput = {
+export type ToastMessageInput = {
   summary?: string;
   detail?: string;
   life?: number;
