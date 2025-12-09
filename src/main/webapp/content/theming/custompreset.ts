@@ -47,7 +47,7 @@ export const BlossomTheme = definePreset(Lara, {
       700: '#843030',
     },
     warn: {
-      50: '#faf5f0',
+      50: '#fff7e6',
       100: '#f1e1d4',
       200: '#e1c1a6',
       300: '#d29e77',

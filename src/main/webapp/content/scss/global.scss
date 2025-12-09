@@ -307,6 +307,7 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
  Style for file upload component
 ------------------------------- */
 .p-fileupload-content {
+  background: var(--p-background-default);
   color: var(--p-text-color);
 }
 
