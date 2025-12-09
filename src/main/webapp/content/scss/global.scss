@@ -479,14 +479,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   color: var(--p-primary-color);
 }
 
-/* -------------------------------
-   Theme-based Logo Color Filters
-------------------------------- */
-.tumapply-logo,
-.tum-logo {
-  transition: filter 0.2s ease-in-out;
-}
-
 // Blossom theme - pink logo (transforms blue #3070B3 to pink #df87b4)
 .tum-apply-blossom .tumapply-logo,
 .tum-apply-blossom .tum-logo {
