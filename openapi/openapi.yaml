@@ -3,21 +3,6 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/admin/research-groups/provision:
-    post:
-      tags: [admin-resource]
-      operationId: provisionResearchGroup
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ResearchGroupProvisionDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroup'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -1558,7 +1543,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
+              schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1602,12 +1587,12 @@ components:
     AddMembersToResearchGroupDTO:
       type: object
       properties:
-        researchGroupId: {type: string, format: uuid}
-        userIds:
+        keycloakUsers:
           type: array
-          items: {type: string, format: uuid}
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
           minItems: 1
-      required: [userIds]
+        researchGroupId: {type: string, format: uuid}
+      required: [keycloakUsers]
     Applicant:
       type: object
       properties:
@@ -2202,6 +2187,15 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+    KeycloakUserDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        id: {type: string, format: uuid}
+        lastName: {type: string}
+        universityId: {type: string}
+        username: {type: string}
     LoginRequestDTO:
       type: object
       properties:
@@ -2276,6 +2270,13 @@ components:
         content:
           type: array
           items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOKeycloakUserDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOResearchGroupAdminDTO:
       type: object
@@ -2404,12 +2405,6 @@ components:
         postalCode: {type: string}
         street: {type: string}
         website: {type: string}
-    ResearchGroupProvisionDTO:
-      type: object
-      properties:
-        researchGroupId: {type: string, format: uuid}
-        universityId: {type: string, maxLength: 7, minLength: 3}
-      required: [universityId]
     ResearchGroupRequestDTO:
       type: object
       properties:
