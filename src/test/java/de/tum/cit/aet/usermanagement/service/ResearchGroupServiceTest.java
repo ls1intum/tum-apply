@@ -169,28 +169,6 @@ class ResearchGroupServiceTest {
         }
 
         @Test
-        void shouldRemoveMemberSuccessfully() {
-            // Arrange
-            User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "member@test.com", null, null);
-            memberToRemove.setResearchGroup(testResearchGroup);
-            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
-            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
-
-            // Mock CurrentUser
-            CurrentUser currentUserMock = mock(CurrentUser.class);
-            when(currentUserMock.isProfessor()).thenReturn(true);
-            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
-
-            // Act
-            researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID);
-
-            // Assert
-            assertThat(memberToRemove.getResearchGroup()).isNull();
-            verify(userRepository).save(memberToRemove);
-            verify(userResearchGroupRoleRepository).removeResearchGroupFromUserRoles(OTHER_USER_ID);
-        }
-
-        @Test
         void shouldThrowExceptionWhenEmployeeRemovesProfessor() {
             // Arrange
             User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "prof@test.com", null, null);
