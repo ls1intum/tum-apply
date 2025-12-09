@@ -44,7 +44,7 @@ export class AuthOrchestratorService {
   readonly isBusy = signal(false);
   readonly error = signal<ToastMessageInput | null>(null);
   // progress for registration dialog
-  readonly  firstProgressStep= signal(false);
+  readonly firstProgressStep = signal(false);
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
     return idx + 1;
@@ -113,7 +113,7 @@ export class AuthOrchestratorService {
     }
 
     // choose sensible starting substates
-    if(this.mode() === 'register') {
+    if (this.mode() === 'register') {
       this.registerStep.set('email');
       this.firstProgressStep.set(true);
     }
