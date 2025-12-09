@@ -12,11 +12,6 @@
     font-size: 0.8rem;
   }
 
-  // Add styling for labels on the top of the select component
-  &.label-top .custom-label {
-    margin-bottom: 0.25rem;
-  }
-
   // Add styling for border and corners of select fields
   .custom-select {
     border: 0.1rem solid var(--p-border-default);
