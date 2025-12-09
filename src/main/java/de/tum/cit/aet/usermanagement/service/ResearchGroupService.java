@@ -131,7 +131,13 @@ public class ResearchGroupService {
         userRepository.save(userToRemove);
 
         // Remove research group associations from user's roles
-        userResearchGroupRoleRepository.removeResearchGroupFromUserRoles(userId);
+        userResearchGroupRoleRepository
+            .findByUserAndResearchGroup(userToRemove, userToRemove.getResearchGroup())
+            .ifPresent(role -> {
+                role.setRole(UserRole.APPLICANT);
+                role.setResearchGroup(null);
+                userResearchGroupRoleRepository.save(role);
+            });
     }
 
     /**
