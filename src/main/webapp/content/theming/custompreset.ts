@@ -479,6 +479,7 @@ export const BlossomTheme = definePreset(Lara, {
       root: {
         fontSize: '0.75rem',
         gap: '0',
+        borderRadius: '1rem',
       },
       colorScheme: {
         light: {
