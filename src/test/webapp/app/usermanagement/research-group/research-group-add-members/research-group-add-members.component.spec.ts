@@ -210,7 +210,7 @@ describe('ResearchGroupAddMembersComponent', () => {
     it('should clear existing loader timeout when starting a new load', async () => {
       vi.spyOn(window, 'clearTimeout');
       // simulate an existing pending timeout
-      (component as any).loaderTimeout = 123;
+      component['loaderTimeout'] = 123;
 
       vi.clearAllMocks();
       mockUserService.getAvailableUsersForResearchGroup.mockReturnValue(of(mockPageResponse));
@@ -225,13 +225,13 @@ describe('ResearchGroupAddMembersComponent', () => {
     it('should ignore stale requests and only apply the latest result', async () => {
       vi.clearAllMocks();
 
-      let firstSubscriber: any;
-      const first$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+      let firstSubscriber: { next: (value: PageResponseDTOUserShortDTO) => void; complete: () => void } | undefined;
+      const first$ = new Observable<PageResponseDTOUserShortDTO>(sub => {
         firstSubscriber = sub;
       });
 
-      let secondSubscriber: any;
-      const second$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+      let secondSubscriber: { next: (value: PageResponseDTOUserShortDTO) => void; complete: () => void } | undefined;
+      const second$ = new Observable<PageResponseDTOUserShortDTO>(sub => {
         secondSubscriber = sub;
       });
 
@@ -243,15 +243,19 @@ describe('ResearchGroupAddMembersComponent', () => {
       const p2 = component.loadAvailableUsers('wagne');
 
       // complete second request first (newer arrives earlier)
-      secondSubscriber.next({ content: [mockUser2], totalElements: 1 });
-      secondSubscriber.complete();
+      if (secondSubscriber) {
+        secondSubscriber.next({ content: [mockUser2], totalElements: 1 });
+        secondSubscriber.complete();
+      }
       await p2; // wait for the newer request to be applied
 
       expect(component.users()).toEqual([mockUser2]);
 
       // now complete the first request (older arrives later) - should be ignored
-      firstSubscriber.next({ content: [mockUser1], totalElements: 1 });
-      firstSubscriber.complete();
+      if (firstSubscriber) {
+        firstSubscriber.next({ content: [mockUser1], totalElements: 1 });
+        firstSubscriber.complete();
+      }
       await p1; // wait for the older request to finish (it should have no effect)
 
       expect(component.users()).toEqual([mockUser2]);
@@ -261,13 +265,13 @@ describe('ResearchGroupAddMembersComponent', () => {
     it('should not display error toast when stale request errors and a newer response succeeds', async () => {
       vi.clearAllMocks();
 
-      let firstSubscriber: any;
-      const first$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+      let firstSubscriber: { error: (err: Error) => void } | undefined;
+      const first$ = new Observable<PageResponseDTOUserShortDTO>(sub => {
         firstSubscriber = sub;
       });
 
-      let secondSubscriber: any;
-      const second$ = new Observable<PageResponseDTOUserShortDTO>((sub: any) => {
+      let secondSubscriber: { next: (value: PageResponseDTOUserShortDTO) => void; complete: () => void } | undefined;
+      const second$ = new Observable<PageResponseDTOUserShortDTO>(sub => {
         secondSubscriber = sub;
       });
 
@@ -279,14 +283,18 @@ describe('ResearchGroupAddMembersComponent', () => {
       const p2 = component.loadAvailableUsers('wagne');
 
       // complete second request first (newer arrives earlier)
-      secondSubscriber.next({ content: [mockUser2], totalElements: 1 });
-      secondSubscriber.complete();
+      if (secondSubscriber) {
+        secondSubscriber.next({ content: [mockUser2], totalElements: 1 });
+        secondSubscriber.complete();
+      }
       await p2; // wait for the newer request to be applied
 
       expect(component.users()).toEqual([mockUser2]);
 
       // now complete the first request (older arrives later and errors) - should be ignored
-      firstSubscriber.error(new Error('Api error older')); // older request fails
+      if (firstSubscriber) {
+        firstSubscriber.error(new Error('Api error older')); // older request fails
+      }
       try {
         await p1;
       } catch (e) {
@@ -477,7 +485,7 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
     });
 
-    it('should show specific already-member error toast when backend returns AlreadyMemberOfResearchGroup', async () => {
+    it('should show specific already-member error toast when server returns AlreadyMemberOfResearchGroup', async () => {
       component.toggleUserSelection(mockUser1);
       const apiError = {
         errorCode: 'OPERATION_NOT_ALLOWED',
@@ -494,6 +502,25 @@ describe('ResearchGroupAddMembersComponent', () => {
         researchGroupId: 'research-group-1',
       });
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailedAlreadyMember');
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+
+    it('should show specific invalid-university-id error toast when server returns invalid universityId error', async () => {
+      component.toggleUserSelection(mockUser1);
+      const apiError = {
+        message: 'User does not have a valid universityId',
+      };
+      mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(
+        throwError(() => new HttpErrorResponse({ error: apiError, status: 400 })),
+      );
+
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
+        keycloakUsers: [mockUser1],
+        researchGroupId: 'research-group-1',
+      });
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailedInvalidUniversityId');
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
     });
 
