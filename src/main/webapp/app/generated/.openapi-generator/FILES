@@ -2,7 +2,6 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/adminResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
@@ -99,7 +98,6 @@ model/researchGroup.ts
 model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
-model/researchGroupProvisionDTO.ts
 model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
 model/school.ts
