@@ -11,11 +11,9 @@
   </div>
 
   <!-- User List -->
-  <div class="flex flex-col max-h-96 overflow-y-auto border border-border-default rounded-lg">
+  <div class="flex flex-col overflow-y-auto border border-border-default rounded-lg" [class.h-96]="loading()" [class.max-h-96]="!loading()">
     @if (loading()) {
-      <div
-        class="flex items-center justify-center bg-[var(--p-background-default)] border border-[var(--p-border-default)] rounded-lg p-12"
-      >
+      <div class="flex items-center justify-center h-full bg-background-default rounded-lg">
         <i class="pi pi-spin pi-spinner text-4xl text-[var(--p-primary-400)]"></i>
       </div>
     }
