@@ -47,14 +47,14 @@ export const BlossomTheme = definePreset(Lara, {
       700: '#843030',
     },
     warn: {
-      50: '#fff7e6',
-      100: '#f1e1d4',
-      200: '#e1c1a6',
-      300: '#d29e77',
-      400: '#c47b4f',
-      500: '#bc6644',
-      600: '#a64d39',
-      700: '#8b3a32',
+      50: '#fbf8eb',
+      100: '#f8f0d4',
+      200: '#efd999',
+      300: '#e6bd5e',
+      400: '#dda232',
+      500: '#cd8d25',
+      600: '#b16d1d',
+      700: '#8d4e1b',
     },
     info: {
       50: '#f3f7fb',
@@ -89,14 +89,14 @@ export const BlossomTheme = definePreset(Lara, {
       black: '#000000',
     },
     accent: {
-      50: '#fbf9f1',
-      100: '#f6f1de',
-      200: '#ecdfbc',
-      300: '#e0c891',
-      400: '#d8b67a',
-      500: '#c89447',
-      600: '#ba7f3c',
-      700: '#9b6533',
+      50: '#fdf7ed',
+      100: '#f7e8ce',
+      200: '#efce98',
+      300: '#e6b263',
+      400: '#e29d48',
+      500: '#d87928',
+      600: '#bf5a20',
+      700: '#9f401e',
     },
     colorScheme: {
       light: {
@@ -115,7 +115,7 @@ export const BlossomTheme = definePreset(Lara, {
           onNeutral: '{neutral.950}',
         },
         primary: {
-          color: '{primary.400}',
+          color: '{primary.500}',
           inverseColor: '{text.onPrimary}',
           hoverColor: '{primary.600}',
           activeColor: '{primary.700}',
@@ -563,6 +563,16 @@ export const BlossomTheme = definePreset(Lara, {
       root: {
         background: '{background.default}',
         color: '{text.primary}',
+      },
+    },
+    message: {
+      colorScheme: {
+        light: {
+          warn: {
+            background: '{warn.100}',
+            color: '{warn.500}',
+          },
+        },
       },
     },
   },
