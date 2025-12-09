@@ -31,7 +31,7 @@
         icon="plus"
         [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate"
         tooltipPosition="top"
-        styleClass="rounded-md text-[var(--p-secondary-400)] hover:bg-background-surface-alt"
+        styleClass="rounded-md text-[var(--p-secondary-400)] border-[var(--p-accent-500)] hover:bg-background-surface-alt"
         (click)="addSingleSlot()"
       />
 
@@ -97,7 +97,6 @@
                   >
                     <!-- Time Inputs-->
                     <div class="flex gap-4 mb-3">
-                      <!-- START TIME -->
                       <!-- START TIME -->
                       <div class="flex flex-col gap-1">
                         <label [for]="'start-' + range.id" class="text-xs font-medium text-text-secondary">
