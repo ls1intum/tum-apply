@@ -25,9 +25,6 @@ export const BlossomTheme = definePreset(Lara, {
       500: '#c96ba0',
       600: '#b54d83',
       700: '#9b3b6a',
-      800: '#803459',
-      900: '#6c2f4c',
-      950: '#40172a',
     },
     success: {
       50: '#f0f9f2',
@@ -38,9 +35,6 @@ export const BlossomTheme = definePreset(Lara, {
       500: '#399053',
       600: '#297241',
       700: '#205c35',
-      800: '#1c492b',
-      900: '#183c26',
-      950: '#0c2215',
     },
     danger: {
       50: '#fcf5f4',
@@ -51,9 +45,6 @@ export const BlossomTheme = definePreset(Lara, {
       500: '#d1636c',
       600: '#bb4352',
       700: '#9d3344',
-      800: '#842d3d',
-      900: '#712a3a',
-      950: '#3e131b',
     },
     warn: {
       50: '#faf5f0',
@@ -64,9 +55,6 @@ export const BlossomTheme = definePreset(Lara, {
       500: '#bc6644',
       600: '#a64d39',
       700: '#8b3a32',
-      800: '#72312e',
-      900: '#5f2928',
-      950: '#351313',
     },
     info: {
       50: '#f3f7fb',
@@ -77,9 +65,6 @@ export const BlossomTheme = definePreset(Lara, {
       500: '#5f8fc9',
       600: '#527cbe',
       700: '#4869ad',
-      800: '#3f588e',
-      900: '#374a71',
-      950: '#252f46',
     },
     neutral: {
       50: '#f8f7f8',
@@ -112,9 +97,6 @@ export const BlossomTheme = definePreset(Lara, {
       500: '#c89447',
       600: '#ba7f3c',
       700: '#9b6533',
-      800: '#7d522f',
-      900: '#654329',
-      950: '#362114',
     },
     colorScheme: {
       light: {
