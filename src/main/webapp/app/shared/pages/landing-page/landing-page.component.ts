@@ -8,6 +8,7 @@ import { DoctoralJourneySectionComponent } from './doctoral-journey-section/doct
 import { InformationSectionComponent } from './information-section/information-section.component';
 import { FaqSectionComponent } from './faq-section/faq-section.component';
 import { JobsPreviewSectionComponent } from './jobs-preview-section/jobs-preview-section.component';
+import { BannerSectionComponent } from './banner-section/banner-section.component';
 
 @Component({
   selector: 'jhi-landing-page',
@@ -18,6 +19,7 @@ import { JobsPreviewSectionComponent } from './jobs-preview-section/jobs-preview
     DoctoralJourneySectionComponent,
     InformationSectionComponent,
     FaqSectionComponent,
+    BannerSectionComponent,
   ],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
