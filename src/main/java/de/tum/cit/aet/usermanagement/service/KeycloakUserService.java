@@ -6,10 +6,8 @@ import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -25,7 +23,6 @@ public class KeycloakUserService {
     private final Keycloak keycloak;
     private final String realm;
     private static final int SAFETY_MAX = 1000;
-    private static final Pattern TUM_DOMAIN_PATTERN = Pattern.compile("@[^@]*tum[^@]*$", Pattern.CASE_INSENSITIVE);
 
     public KeycloakUserService(
         @Value("${keycloak.url}") String url,
@@ -64,27 +61,17 @@ public class KeycloakUserService {
 
         List<KeycloakUserDTO> filtered = users
             .stream()
-            .filter(u -> isTumDomain(u.getEmail()))
-            .map(user -> {
-                Map<String, List<String>> attributes = user.getAttributes();
-
-                String universityId = null;
-                if (attributes != null && attributes.containsKey("LDAP_ID")) {
-                    List<String> values = attributes.get("LDAP_ID");
-                    if (values != null && !values.isEmpty()) {
-                        universityId = values.get(0);
-                    }
-                }
-
-                return new KeycloakUserDTO(
+            .filter(u -> isLDAPUser(u))
+            .map(user ->
+                new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
                     user.getUsername(),
                     user.getFirstName(),
                     user.getLastName(),
                     user.getEmail(),
-                    universityId
-                );
-            })
+                    user.getAttributes().get("LDAP_ID").get(0)
+                )
+            )
             .toList();
 
         // apply pagination locally
@@ -111,15 +98,13 @@ public class KeycloakUserService {
         }
         return users
             .stream()
-            .filter(u -> isTumDomain(u.getEmail()))
+            .filter(u -> isLDAPUser(u))
             .count();
     }
 
-    private static boolean isTumDomain(String email) {
-        if (email == null) {
-            return false;
-        }
-        return TUM_DOMAIN_PATTERN.matcher(email).find();
+    private static boolean isLDAPUser(UserRepresentation user) {
+        List<String> values = user.getAttributes().get("LDAP_ID");
+        return values != null && !values.isEmpty();
     }
 
     /**
