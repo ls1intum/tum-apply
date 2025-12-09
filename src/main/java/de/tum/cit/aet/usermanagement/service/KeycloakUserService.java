@@ -6,6 +6,7 @@ import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.keycloak.OAuth2Constants;
@@ -103,7 +104,11 @@ public class KeycloakUserService {
     }
 
     private static boolean isLDAPUser(UserRepresentation user) {
-        List<String> values = user.getAttributes().get("LDAP_ID");
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) {
+            return false;
+        }
+        List<String> values = attributes.get("LDAP_ID");
         return values != null && !values.isEmpty();
     }
 
