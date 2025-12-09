@@ -3,8 +3,14 @@
   <div class="flex w-full items-center justify-between p-3 border-b border-border-default">
     <!-- Left: Toggle + Date -->
     <div class="flex items-center gap-3">
-      <jhi-button [icon]="isCollapsed() ? 'chevron-down' : 'chevron-up'" variant="text" severity="secondary" size="xs"
-        styleClass="text-text-secondary" (click)="toggleCollapse()" />
+      <jhi-button
+        [icon]="isCollapsed() ? 'chevron-down' : 'chevron-up'"
+        variant="text"
+        severity="secondary"
+        size="xs"
+        styleClass="text-text-secondary"
+        (click)="toggleCollapse()"
+      />
 
       <div class="flex flex-col">
         <span class="text-xs font-semibold text-text-secondary">
@@ -18,14 +24,27 @@
 
     <!-- Right: Slot type Buttons + Delete Date -->
     <div class="flex gap-2 items-center">
-      <jhi-button [label]="'interview.slots.create.addSlot' | translate" variant="outlined" size="xs" icon="plus"
-        [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate" tooltipPosition="top"
+      <jhi-button
+        [label]="'interview.slots.create.addSlot' | translate"
+        variant="outlined"
+        size="xs"
+        icon="plus"
+        [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate"
+        tooltipPosition="top"
         styleClass="rounded-md text-[var(--p-secondary-400)] hover:bg-background-surface-alt"
-        (click)="addSingleSlot()" />
+        (click)="addSingleSlot()"
+      />
 
-      <jhi-button [label]="'interview.slots.create.addRange' | translate" variant="outlined" size="xs" icon="plus"
-        [pTooltip]="'interview.slots.create.addRangeTooltip' | translate" tooltipPosition="top"
-        styleClass="rounded-md text-[var(--p-secondary-600)] hover:bg-background-surface-alt" (click)="addRange()" />
+      <jhi-button
+        [label]="'interview.slots.create.addRange' | translate"
+        variant="outlined"
+        size="xs"
+        icon="plus"
+        [pTooltip]="'interview.slots.create.addRangeTooltip' | translate"
+        tooltipPosition="top"
+        styleClass="rounded-md text-[var(--p-secondary-600)] hover:bg-background-surface-alt"
+        (click)="addRange()"
+      />
 
       <div class="w-px h-6 bg-border-default mx-1"></div>
 
@@ -35,160 +54,190 @@
 
   <!-- Card Content -->
   @if (!isCollapsed()) {
-  <div class="p-3">
-    <div class="flex flex-col gap-2">
-      @if (slotRanges().length === 0) {
-      <div class="flex flex-col items-center justify-center py-8 text-secondary">
-        <i class="fa-regular fa-calendar-plus mb-2 text-2xl"></i>
-        <span class="text-s font-medium">{{ 'interview.slots.create.noSlotsYet' | translate }}</span>
-        <span class="text-xs">{{ 'interview.slots.create.noSlotsYetDesc' | translate }}</span>
-      </div>
-      } @else {
-      @for (range of slotRanges(); track range.id; let rangeIndex = $index) {
-      <div class="flex gap-2">
-        <!-- Colored Bar Left -->
-        <div class="w-1 flex-shrink-0 self-stretch rounded-full"
-          [class.bg-[var(--p-secondary-400)]]="range.type === 'single'"
-          [class.bg-[var(--p-secondary-600)]]="range.type === 'range'"></div>
-
-        <div class="flex flex-1 flex-col gap-2">
-          <!-- Slot Row Header -->
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-text-secondary">
-              @switch (range.type) {
-              @case ('single') {
-              {{ 'interview.slots.create.singleSlot' | translate }}
-              }
-              @case ('range') {
-              {{ 'interview.slots.create.rangeSlot' | translate }}
-              }
-              }
-            </span>
-
-            <jhi-button severity="danger" variant="text" icon="trash" size="xs" (click)="removeRange(rangeIndex)" />
+    <div class="p-3">
+      <div class="flex flex-col gap-2">
+        @if (slotRanges().length === 0) {
+          <div class="flex flex-col items-center justify-center py-8 text-secondary">
+            <i class="fa-regular fa-calendar-plus mb-2 text-2xl"></i>
+            <span class="text-s font-medium">{{ 'interview.slots.create.noSlotsYet' | translate }}</span>
+            <span class="text-xs">{{ 'interview.slots.create.noSlotsYetDesc' | translate }}</span>
           </div>
+        } @else {
+          @for (range of slotRanges(); track range.id; let rangeIndex = $index) {
+            <div class="flex gap-2">
+              <!-- Colored Bar Left -->
+              <div
+                class="w-1 flex-shrink-0 self-stretch rounded-full"
+                [class.bg-[var(--p-secondary-400)]]="range.type === 'single'"
+                [class.bg-[var(--p-secondary-600)]]="range.type === 'range'"
+              ></div>
 
-          @if (range.type !== 'scheduled') {
-          <div class="flex flex-col gap-2 rounded p-1"
-            [class.border]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
-            [class.border-negative-default]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')">
-            <!-- Time Inputs-->
-            <div class="flex gap-4 mb-3">
-              <!-- START TIME -->
-              <!-- START TIME -->
-              <div class="flex flex-col gap-1">
-                <label [for]="'start-' + range.id" class="text-xs font-medium text-text-secondary">
-                  {{ 'interview.slots.create.startTime' | translate }}
-                </label>
-                <p-inputMask [id]="'start-' + range.id" mask="99:99" slotChar="--:--"
-                  [ngModel]="range.startTimeString || ''" (ngModelChange)="onStartInput(rangeIndex, $event)"
-                  placeholder="--:--" styleClass="w-15 h-8 text-sm text-center font-normal" />
-              </div>
+              <div class="flex flex-1 flex-col gap-2">
+                <!-- Slot Row Header -->
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-text-secondary">
+                    @switch (range.type) {
+                      @case ('single') {
+                        {{ 'interview.slots.create.singleSlot' | translate }}
+                      }
+                      @case ('range') {
+                        {{ 'interview.slots.create.rangeSlot' | translate }}
+                      }
+                    }
+                  </span>
 
-              <!-- END TIME -->
-              @if (range.type === 'range' || (range.type === 'single' && range.startTimeString)) {
-              <div class="flex flex-col gap-1">
-                <label [for]="'end-' + range.id" class="text-xs font-medium text-text-secondary">
-                  {{ 'interview.slots.create.endTime' | translate }}
-                </label>
-                <p-inputMask [id]="'end-' + range.id" mask="99:99" slotChar="--:--"
-                  [ngModel]="range.endTimeString || ''" (ngModelChange)="onEndInput(rangeIndex, $event)"
-                  placeholder="--:--" [disabled]="range.type === 'single'"
-                  styleClass="w-15 h-8 text-sm text-center font-normal" />
-              </div>
-              } @else {
-              <div class="flex-1"></div>
-              }
-            </div>
+                  <jhi-button severity="danger" variant="text" icon="trash" size="xs" (click)="removeRange(rangeIndex)" />
+                </div>
 
-            @if (range.type === 'single' && !range.startTimeString) {
-            <span class="text-xs font-medium text-text-secondary -mt-1 mb-2 block">
-              {{ 'interview.slots.create.addStartTime' | translate }}
-            </span>
-            }
+                @if (range.type !== 'scheduled') {
+                  <div
+                    class="flex flex-col gap-2 rounded p-1"
+                    [class.border]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
+                    [class.border-negative-default]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
+                  >
+                    <!-- Time Inputs-->
+                    <div class="flex gap-4 mb-3">
+                      <!-- START TIME -->
+                      <!-- START TIME -->
+                      <div class="flex flex-col gap-1">
+                        <label [for]="'start-' + range.id" class="text-xs font-medium text-text-secondary">
+                          {{ 'interview.slots.create.startTime' | translate }}
+                        </label>
+                        <p-inputMask
+                          [id]="'start-' + range.id"
+                          mask="99:99"
+                          slotChar="--:--"
+                          [ngModel]="range.startTimeString || ''"
+                          (ngModelChange)="onStartInput(rangeIndex, $event)"
+                          placeholder="--:--"
+                          styleClass="w-15 h-8 text-sm text-center font-normal"
+                        />
+                      </div>
 
-            <!-- Location Input -->
-            <div class="flex items-end">
-              <div class="text-text-tertiary text-xs">
-                @if (isVirtualLocation(range.location)) {
-                <i class="fa-solid fa-video"></i>
-                } @else {
-                <i class="fa-solid fa-building"></i>
+                      <!-- END TIME -->
+                      @if (range.type === 'range' || (range.type === 'single' && range.startTimeString)) {
+                        <div class="flex flex-col gap-1">
+                          <label [for]="'end-' + range.id" class="text-xs font-medium text-text-secondary">
+                            {{ 'interview.slots.create.endTime' | translate }}
+                          </label>
+                          <p-inputMask
+                            [id]="'end-' + range.id"
+                            mask="99:99"
+                            slotChar="--:--"
+                            [ngModel]="range.endTimeString || ''"
+                            (ngModelChange)="onEndInput(rangeIndex, $event)"
+                            placeholder="--:--"
+                            [disabled]="range.type === 'single'"
+                            styleClass="w-15 h-8 text-sm text-center font-normal"
+                          />
+                        </div>
+                      } @else {
+                        <div class="flex-1"></div>
+                      }
+                    </div>
+
+                    @if (range.type === 'single' && !range.startTimeString) {
+                      <span class="text-xs font-medium text-text-secondary -mt-1 mb-2 block">
+                        {{ 'interview.slots.create.addStartTime' | translate }}
+                      </span>
+                    }
+
+                    <!-- Location Input -->
+                    <div class="flex items-end">
+                      <div class="text-text-tertiary text-xs">
+                        @if (isVirtualLocation(range.location)) {
+                          <i class="fa-solid fa-video"></i>
+                        } @else {
+                          <i class="fa-solid fa-building"></i>
+                        }
+                      </div>
+                      <jhi-string-input
+                        class="flex-1 [&_.custom-input]:h-8 [&_.custom-input]:w-full [&_.custom-input]:text-sm [&_.custom-input]:font-normal [&_.label-with-tooltip]:mb-2 text-xs text-text-tertiary -mt-2 mb-2 block"
+                        [id]="'location-' + range.id"
+                        [label]="'interview.slots.create.location' | translate"
+                        [model]="range.location"
+                        (modelChange)="onLocationInput(rangeIndex, $event)"
+                        [placeholder]="'interview.slots.create.locationPlaceholder' | translate"
+                        [errorEnabled]="false"
+                      />
+                    </div>
+                    @if (showValidationErrors() && !range.location) {
+                      <span class="text-xs text-negative-default -mt-1">
+                        {{ 'interview.slots.create.validation.locationRequired' | translate }}
+                      </span>
+                    }
+                  </div>
+                }
+
+                <!-- Generated Slots List -->
+                @if (range.slots.length > 0 && range.type === 'range') {
+                  <div class="flex flex-col gap-2 pt-2">
+                    @for (slot of range.slots; track $index; let slotIndex = $index) {
+                      <div
+                        class="flex flex-col gap-1 rounded-md border border-border-default bg-background-default px-3 py-2"
+                        [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)"
+                      >
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2 text-xs font-medium text-text-primary font-bold">
+                            <span>{{ slot.startDateTime | date: 'HH:mm' }} - {{ slot.endDateTime | date: 'HH:mm' }}</span>
+                            @if (isVirtualLocation(slot.location)) {
+                              <i class="fa-solid fa-video"></i>
+                            } @else {
+                              <i class="fa-solid fa-building"></i>
+                            }
+                          </div>
+                          <jhi-button
+                            severity="secondary"
+                            variant="text"
+                            icon="xmark"
+                            size="xs"
+                            (click)="removeSlot(rangeIndex, slotIndex)"
+                          />
+                        </div>
+                        @if (conflictingSlotKeys().get(range.id + '_' + slotIndex)) {
+                          <span class="text-xs font-medium text-negative-default">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                            {{ 'interview.slots.create.validation.conflict' | translate }} ({{
+                              conflictingSlotKeys().get(range.id + '_' + slotIndex)
+                            }})
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+                } @else if (range.startTime && range.endTime && range.startTime.getTime() >= range.endTime.getTime()) {
+                  <span class="mt-1 text-xs text-negative-default">
+                    {{ 'interview.slots.create.validation.endBeforeStart' | translate }}
+                  </span>
+                } @else if (range.type === 'range' && (!range.startTime || !range.endTime)) {
+                  <span class="mt-1 text-xs font-medium text-text-secondary">
+                    {{ 'interview.slots.create.addStartAndEndTime' | translate }}
+                  </span>
+                }
+
+                <!-- Conflict Error (Single Slot) -->
+                @if (range.type === 'single' && conflictingSlotKeys().get(range.id + '_0')) {
+                  <span class="mt-1 text-xs font-medium text-negative-default">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                    {{ 'interview.slots.create.validation.conflict' | translate }} ({{ conflictingSlotKeys().get(range.id + '_0') }})
+                  </span>
                 }
               </div>
-              <jhi-string-input
-                class="flex-1 [&_.custom-input]:h-8 [&_.custom-input]:w-full [&_.custom-input]:text-sm [&_.custom-input]:font-normal [&_.label-with-tooltip]:mb-2 text-xs text-text-tertiary -mt-2 mb-2 block"
-                [id]="'location-' + range.id" [label]="'interview.slots.create.location' | translate"
-                [model]="range.location" (modelChange)="onLocationInput(rangeIndex, $event)"
-                [placeholder]="'interview.slots.create.locationPlaceholder' | translate" [errorEnabled]="false" />
             </div>
-            @if (showValidationErrors() && !range.location) {
-            <span class="text-xs text-negative-default -mt-1">
-              {{ 'interview.slots.create.validation.locationRequired' | translate }}
-            </span>
-            }
-          </div>
           }
-
-          <!-- Generated Slots List -->
-          @if (range.slots.length > 0 && range.type === 'range') {
-          <div class="flex flex-col gap-2 pt-2">
-            @for (slot of range.slots; track $index; let slotIndex = $index) {
-            <div class="flex flex-col gap-1 rounded-md border border-border-default bg-background-default px-3 py-2"
-              [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 text-xs font-medium text-text-primary font-bold">
-                  <span>{{ slot.startDateTime | date: 'HH:mm' }} - {{ slot.endDateTime | date: 'HH:mm' }}</span>
-                  @if (isVirtualLocation(slot.location)) {
-                  <i class="fa-solid fa-video"></i>
-                  } @else {
-                  <i class="fa-solid fa-building"></i>
-                  }
-                </div>
-                <jhi-button severity="secondary" variant="text" icon="xmark" size="xs"
-                  (click)="removeSlot(rangeIndex, slotIndex)" />
-              </div>
-              @if (conflictingSlotKeys().get(range.id + '_' + slotIndex)) {
-              <span class="text-xs font-medium text-negative-default">
-                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                {{ 'interview.slots.create.validation.conflict' | translate }} ({{
-                conflictingSlotKeys().get(range.id + '_' + slotIndex)
-                }})
-              </span>
-              }
-            </div>
-            }
-          </div>
-          } @else if (range.startTime && range.endTime && range.startTime.getTime() >= range.endTime.getTime()) {
-          <span class="mt-1 text-xs text-negative-default">
-            {{ 'interview.slots.create.validation.endBeforeStart' | translate }}
-          </span>
-          } @else if (range.type === 'range' && (!range.startTime || !range.endTime)) {
-          <span class="mt-1 text-xs font-medium text-text-secondary">
-            {{ 'interview.slots.create.addStartAndEndTime' | translate }}
-          </span>
-          }
-
-          <!-- Conflict Error (Single Slot) -->
-          @if (range.type === 'single' && conflictingSlotKeys().get(range.id + '_0')) {
-          <span class="mt-1 text-xs font-medium text-negative-default">
-            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-            {{ 'interview.slots.create.validation.conflict' | translate }} ({{ conflictingSlotKeys().get(range.id +
-            '_0') }})
-          </span>
-          }
-        </div>
+        }
       </div>
-      }
-      }
-    </div>
 
-    @if (showApplyAll()) {
-    <div class="mt-4 pt-3 border-t border-border-default flex items-center">
-      <jhi-button [label]="'interview.slots.create.sameSlotsForAllDays' | translate" variant="outlined" size="xs"
-        (click)="applyAll.emit(true)" />
+      @if (showApplyAll()) {
+        <div class="mt-4 pt-3 border-t border-border-default flex items-center">
+          <jhi-button
+            [label]="'interview.slots.create.sameSlotsForAllDays' | translate"
+            variant="outlined"
+            size="xs"
+            (click)="applyAll.emit(true)"
+          />
+        </div>
+      }
     </div>
-    }
-  </div>
   }
 </div>
