@@ -141,6 +141,10 @@
           "summary": "Fehler beim Hinzufügen",
           "detail": "Mindestens ein ausgewählter Benutzer konnte nicht hinzugefügt werden, da er bereits Teil einer Forschungsgruppe ist."
         },
+        "addMembersFailedInvalidUniversityId": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mindestens ein ausgewählter Benutzer konnte nicht hinzugefügt werden, da er keine gültige Universitäts-ID hat."
+        },
         "removeSuccess": {
           "summary": "Mitglied entfernt",
           "detail": "{{memberName}} wurde aus der Forschungsgruppe entfernt."

@@ -141,6 +141,10 @@
           "summary": "Add Failed",
           "detail": "At least one selected user could not be added because they are already part of a research group."
         },
+        "addMembersFailedInvalidUniversityId": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they do not have a valid university ID."
+        },
         "removeSuccess": {
           "summary": "Member Removed",
           "detail": "{{memberName}} has been removed from the research group."

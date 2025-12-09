@@ -55,7 +55,7 @@ export class ResearchGroupAddMembersComponent {
   private loaderTimeout: number | null = null;
 
   private latestRequestId = 0;
-  private selectedUsers = signal<Set<KeycloakUserDTO>>(new Set());
+  private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
 
   constructor() {
     void this.loadAvailableUsers();
@@ -153,15 +153,14 @@ export class ResearchGroupAddMembersComponent {
       this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.invalidUser`);
       return;
     }
-    const currentSet = new Set(this.selectedUsers());
-
-    if (currentSet.has(user)) {
-      currentSet.delete(user);
+    const currentMap = new Map(this.selectedUsers());
+    const id = user.id;
+    if (currentMap.has(id)) {
+      currentMap.delete(id);
     } else {
-      currentSet.add(user);
+      currentMap.set(id, user);
     }
-
-    this.selectedUsers.set(currentSet);
+    this.selectedUsers.set(currentMap);
   }
 
   onCancel(): void {
@@ -176,7 +175,7 @@ export class ResearchGroupAddMembersComponent {
     try {
       const researchGroupId = this.researchGroupId();
 
-      const data = { keycloakUsers: Array.from(this.selectedUsers()), researchGroupId };
+      const data = { keycloakUsers: Array.from(this.selectedUsers().values()), researchGroupId };
       await lastValueFrom(this.researchGroupService.addMembersToResearchGroup(data));
       this.toastService.showSuccessKey(`${I18N_BASE}.toastMessages.addMembersSuccess`);
       this.dialogRef.close(true);
@@ -185,6 +184,8 @@ export class ResearchGroupAddMembersComponent {
         const errorMessage = err.error?.message ?? '';
         if (err.status === 400 && errorMessage.toLowerCase().includes('already a member')) {
           this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailedAlreadyMember`);
+        } else if (err.status === 400 && errorMessage.toLowerCase().includes('not have a valid universityid')) {
+          this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailedInvalidUniversityId`);
         } else {
           this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailed`);
         }
@@ -200,6 +201,6 @@ export class ResearchGroupAddMembersComponent {
       return false;
     }
 
-    return this.selectedUsers().has(user);
+    return this.selectedUsers().has(user.id);
   }
 }

@@ -511,6 +511,9 @@ public class ResearchGroupService {
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 
         for (KeycloakUserDTO keycloakUser : keycloakUsers) {
+            if (keycloakUser.universityId() == null || keycloakUser.universityId().isBlank()) {
+                throw new BadRequestException("User with ID '%s' does not have a valid universityId.".formatted(keycloakUser.id()));
+            }
             Optional<User> result = userRepository.findByUniversityIdIgnoreCase(keycloakUser.universityId());
             User user;
 
