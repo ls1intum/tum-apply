@@ -13,6 +13,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { InputMaskModule } from 'primeng/inputmask';
 
 export interface SlotRange {
   id: string;
@@ -43,6 +44,7 @@ export interface SlotRange {
     ButtonComponent,
     StringInputComponent,
     FontAwesomeModule,
+    InputMaskModule,
   ],
   templateUrl: './date-slot-card.component.html',
 })
