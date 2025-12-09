@@ -534,6 +534,9 @@ public class ResearchGroupService {
             }
             // Assign research group and save user
             user.setResearchGroup(researchGroup);
+            if (user.getSelectedLanguage() == null) {
+                user.setSelectedLanguage("en");
+            }
             userRepository.save(user);
 
             // Ensure the user has a role in the research group
@@ -562,11 +565,25 @@ public class ResearchGroupService {
                 userResearchGroupRoleRepository.save(existingRole.get());
             }
         } else {
-            UserResearchGroupRole newRole = new UserResearchGroupRole();
-            newRole.setUser(user);
-            newRole.setResearchGroup(researchGroup);
-            newRole.setRole(targetRole);
-            userResearchGroupRoleRepository.save(newRole);
+            // Check if the user has a role without a research group (e.g. Applicant) and update it
+            Optional<UserResearchGroupRole> roleWithoutGroup = userResearchGroupRoleRepository
+                .findAllByUser(user)
+                .stream()
+                .filter(role -> role.getResearchGroup() == null)
+                .findFirst();
+
+            if (roleWithoutGroup.isPresent()) {
+                UserResearchGroupRole role = roleWithoutGroup.get();
+                role.setResearchGroup(researchGroup);
+                role.setRole(targetRole);
+                userResearchGroupRoleRepository.save(role);
+            } else {
+                UserResearchGroupRole newRole = new UserResearchGroupRole();
+                newRole.setUser(user);
+                newRole.setResearchGroup(researchGroup);
+                newRole.setRole(targetRole);
+                userResearchGroupRoleRepository.save(newRole);
+            }
         }
     }
 
