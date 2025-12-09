@@ -360,56 +360,6 @@ class ResearchGroupServiceTest {
     }
 
     @Nested
-    class ProvisionResearchGroup {
-
-        @Test
-        void shouldProvisionResearchGroupSuccessfully() {
-            // Arrange
-            String universityId = "ab12cde";
-            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO(universityId, TEST_RESEARCH_GROUP_ID);
-
-            User user = UserTestData.newUserAll(TEST_USER_ID, "user@test.com", null, null);
-            when(userRepository.findByUniversityIdIgnoreCase(universityId)).thenReturn(Optional.of(user));
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
-            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(user, testResearchGroup)).thenReturn(Optional.empty());
-
-            // Act
-            ResearchGroup result = researchGroupService.provisionResearchGroup(dto);
-
-            // Assert
-            assertThat(result).isEqualTo(testResearchGroup);
-            assertThat(user.getResearchGroup()).isEqualTo(testResearchGroup);
-            verify(userRepository).save(user);
-            verify(userResearchGroupRoleRepository).save(any(UserResearchGroupRole.class));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenUserNotFound() {
-            // Arrange
-            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO("nonexistent", UUID.randomUUID());
-            when(userRepository.findByUniversityIdIgnoreCase("nonexistent")).thenReturn(Optional.empty());
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.provisionResearchGroup(dto))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("universityId");
-        }
-
-        @Test
-        void shouldThrowExceptionWhenResearchGroupNotFound() {
-            // Arrange
-            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO("ab12cde", TEST_RESEARCH_GROUP_ID);
-            when(userRepository.findByUniversityIdIgnoreCase("ab12cde")).thenReturn(Optional.of(testUser));
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.empty());
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.provisionResearchGroup(dto))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("ResearchGroup");
-        }
-    }
-
-    @Nested
     class ActivateResearchGroup {
 
         @Test

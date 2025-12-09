@@ -250,38 +250,6 @@ public class ResearchGroupService {
     }
 
     /**
-     * Provisions a target user (professor) into an existing research group.
-     * - Caller must be ADMIN (enforced in controller).
-     * - Group must already exist (manual creation).
-     * - Uses dto.universityId as the user's TUM id (e.g., "ab12cde").
-     * - Idempotent: if mapping exists with PROFESSOR, no-op.
-     *
-     * @param dto the research group + user information to provision
-     * @return the research group after provisioning
-     * @throws EntityNotFoundException if the user or the group does not exist
-     */
-    @Transactional
-    public ResearchGroup provisionResearchGroup(ResearchGroupProvisionDTO dto) {
-        User user = userRepository
-            .findByUniversityIdIgnoreCase(dto.universityId())
-            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(dto.universityId())));
-
-        ResearchGroup group = researchGroupRepository
-            .findById(dto.researchGroupId())
-            .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
-
-        if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
-            user.setResearchGroup(group);
-            userRepository.save(user);
-        }
-
-        // Ensure the user has the PROFESSOR role in the group
-        ensureUserRoleInGroup(user, group, UserRole.PROFESSOR);
-
-        return group;
-    }
-
-    /**
      * Activates a DRAFT research group (admin only).
      * Changes the state from DRAFT to ACTIVE, allowing the research group to be used.
      * This operation can only be performed on research groups in DRAFT state.
@@ -312,7 +280,6 @@ public class ResearchGroupService {
             .forEach(role -> {
                 role.setRole(UserRole.PROFESSOR);
                 userResearchGroupRoleRepository.save(role);
-                log.info("Upgraded user {} to PROFESSOR for research group {}", role.getUser().getUserId(), group.getResearchGroupId());
             });
 
         return saved;
@@ -524,8 +491,6 @@ public class ResearchGroupService {
         );
 
         sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
-
-        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
 
     /**
@@ -546,26 +511,24 @@ public class ResearchGroupService {
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 
         for (KeycloakUserDTO keycloakUser : keycloakUsers) {
-            User user = userRepository
-                .findByUniversityIdIgnoreCase(keycloakUser.universityId())
-                .orElseGet(() -> {
-                    // User does not exist, create a new one
-                    log.info("User with ID {} does not exist in local database. Creating new user.", keycloakUser.id());
-                    User newUser = new User();
-                    newUser.setUserId(keycloakUser.id());
-                    newUser.setEmail(keycloakUser.email());
-                    newUser.setFirstName(keycloakUser.firstName());
-                    newUser.setLastName(keycloakUser.lastName());
-                    return newUser;
-                });
+            Optional<User> result = userRepository.findByUniversityIdIgnoreCase(keycloakUser.universityId());
+            User user;
 
-            boolean researchGroupChanged = user.getResearchGroup() == null || !user.getResearchGroup().equals(researchGroup);
-
-            if (!researchGroupChanged) {
-                log.info("User {} is already a member of research group {}. Skipping.", user.getUserId(), researchGroup.getName());
-                continue;
+            if (result.isPresent()) {
+                user = result.get();
+                if (user.getResearchGroup() != null) {
+                    throw new AlreadyMemberOfResearchGroupException(
+                        "User with universityId '%s' is already a member of a research group.".formatted(keycloakUser.universityId())
+                    );
+                }
+            } else {
+                user = new User();
+                user.setUserId(keycloakUser.id());
+                user.setEmail(keycloakUser.email());
+                user.setFirstName(keycloakUser.firstName());
+                user.setLastName(keycloakUser.lastName());
+                user.setUniversityId(keycloakUser.universityId());
             }
-
             // Assign research group and save user
             user.setResearchGroup(researchGroup);
             userRepository.save(user);
@@ -592,18 +555,10 @@ public class ResearchGroupService {
 
         if (existingRole.isPresent()) {
             if (existingRole.get().getRole() != targetRole) {
-                log.info(
-                    "Updating role for user {} in research group {} from {} to {}",
-                    user.getUserId(),
-                    researchGroup.getName(),
-                    existingRole.get().getRole(),
-                    targetRole
-                );
                 existingRole.get().setRole(targetRole);
                 userResearchGroupRoleRepository.save(existingRole.get());
             }
         } else {
-            log.info("Assigning new role {} to user {} in research group {}", targetRole, user.getUserId(), researchGroup.getName());
             UserResearchGroupRole newRole = new UserResearchGroupRole();
             newRole.setUser(user);
             newRole.setResearchGroup(researchGroup);

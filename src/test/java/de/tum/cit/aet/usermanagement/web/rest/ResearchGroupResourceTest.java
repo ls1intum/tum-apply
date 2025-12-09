@@ -999,25 +999,6 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void addMembersToResearchGroupWithAlreadyMemberIsNoOp() {
-            // create a user and assign to the same research group already
-            User alreadyMember = UserTestData.createUserWithoutResearchGroup(userRepository, "already@tum.de", "Al", "Ready", "ab12abc");
-            alreadyMember.setResearchGroup(researchGroup);
-            userRepository.save(alreadyMember);
-
-            KeycloakUserDTO kcUser = UserTestData.kcUserFrom(alreadyMember);
-            AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
-
-            api
-                .with(JwtPostProcessors.jwtUser(researchGroupUser.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(API_BASE_PATH + "/members", dto, Void.class, 204);
-
-            User u = userRepository.findById(alreadyMember.getUserId()).orElseThrow();
-            assertThat(u.getResearchGroup()).isNotNull();
-            assertThat(u.getResearchGroup().getResearchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
-        }
-
-        @Test
         void addMembersToResearchGroupAsAdminAddsMultipleMembers() {
             User userA = UserTestData.createUserWithoutResearchGroup(userRepository, "multi1@tum.de", "Multi", "One", "multi01");
             User userB = UserTestData.createUserWithoutResearchGroup(userRepository, "multi2@tum.de", "Multi", "Two", "multi02");

@@ -137,6 +137,10 @@
           "summary": "Add Failed",
           "detail": "Failed to add members. Please try again."
         },
+        "selectedUserHasResearchGroup": {
+          "summary": "Member in Research Group",
+          "detail": "Selected user {{name}} is already a member of a research group."
+        },
         "removeSuccess": {
           "summary": "Member Removed",
           "detail": "{{memberName}} has been removed from the research group."

@@ -70,15 +70,11 @@ public class KeycloakUserService {
 
                 String universityId = null;
                 if (attributes != null && attributes.containsKey("LDAP_ID")) {
-                    System.out.println(">>> User attributes: " + attributes);
-
                     List<String> values = attributes.get("LDAP_ID");
                     if (values != null && !values.isEmpty()) {
                         universityId = values.get(0);
                     }
                 }
-
-                System.out.println(">>> User: " + user.getUsername() + ", LDAP_ID: " + universityId);
 
                 return new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
