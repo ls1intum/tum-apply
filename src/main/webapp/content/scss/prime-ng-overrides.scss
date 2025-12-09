@@ -3,12 +3,10 @@
   --p-stepper-step-number-size: 1.75rem;
   --p-stepper-step-number-font-size: 1rem;
   --p-stepper-step-title-font-weight: 500;
-  --p-accordion-header-background: var(--p-background-default);
 }
 
 p-step[data-p-active='true'] .p-step-title {
   font-weight: 700 !important;
-  color: var(--p-text-primary) !important;
 }
 /* -------------------------------
    Custom Global Styles for Login
@@ -68,4 +66,23 @@ jhi-progress-stepper .sticky-footer .p-button {
   padding: 0.4rem 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.9rem;
+}
+
+/* -------------------------------
+   Registration Page: Orange Buttons
+---------------------------------- */
+.registration-content {
+  --p-button-primary-background: var(--p-accent-color);
+  --p-button-primary-border-color: var(--p-accent-color);
+  --p-button-primary-color: white;
+
+  jhi-auth-idp-buttons .p-button-outlined {
+    background: transparent !important;
+    border-color: var(--p-accent-color) !important;
+    color: var(--p-accent-color) !important;
+
+    &:hover {
+      background: rgba(255, 140, 0, 0.15) !important;
+    }
+  }
 }

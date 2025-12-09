@@ -27,7 +27,7 @@ export class ApplicationConfigService {
   get otp(): OtpConfig {
     const otp = this.getAppConfig().otp;
     return {
-      length: otp?.length ?? 6,
+      length: otp?.length ?? 4,
       ttlSeconds: otp?.ttlSeconds ?? 300,
       resendCooldownSeconds: otp?.resendCooldownSeconds ?? 60,
     };

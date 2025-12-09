@@ -56,14 +56,25 @@
   .registration-panel {
     @include layout.panel-col;
 
+    max-width: 24rem;
+    width: 100%;
+
     .registration-credentials,
     .profile,
     .password {
+      width: 100%;
+    }
+
+    jhi-otp-input {
       width: 100%;
     }
   }
 
   .registration-footer {
     @include layout.auth-footer;
+
+    a {
+      color: var(--p-accent-color);
+    }
   }
 }
