@@ -49,7 +49,6 @@ to the full Keycloak instance or other realms.
 - However, certain Identity Providers (IdPs) and integrations are **production-only**:
   - Google
   - Apple
-  - Microsoft
   - LDAP
 - All Identity Providers (IdPs) are configured and managed exclusively by the AET Admins to ensure proper integration
   and compliance with institutional policies.
