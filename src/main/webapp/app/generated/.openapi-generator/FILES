@@ -77,7 +77,6 @@ model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/jobPreviewRequest.ts
 model/keycloakUserDTO.ts
-model/link.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
