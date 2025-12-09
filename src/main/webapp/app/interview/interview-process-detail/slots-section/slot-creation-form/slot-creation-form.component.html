@@ -17,13 +17,13 @@
         <jhi-button [label]="option.label" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
               !isCustomDurationMode() && duration() === option.value
                 ? 'bg-[var(--p-primary-color)] text-white font-semibold'
-                : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
+                : 'bg-transparent text-[var(--p-text-secondary)]  hover:bg-background-surface-alt'
             }}" (click)="selectDuration(option.value)" />
         }
         <jhi-button [label]="'Custom'" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomDurationMode()
               ? 'bg-[var(--p-primary-color)] text-white font-semibold'
-              : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
+              : 'bg-transparent text-[var(--p-text-secondary)]  hover:bg-background-surface-alt'
           }}" (click)="selectDuration(-1)" />
       </div>
       @if (isCustomDurationMode()) {
@@ -55,13 +55,13 @@
         <jhi-button [label]="option.label" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
               !isCustomBreakMode() && breakDuration() === option.value
                 ? 'bg-[var(--p-primary-color)] text-white font-semibold'
-                : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
+        : 'bg-transparent text-[var(--p-text-secondary)]  hover:bg-background-surface-alt'
             }}" (click)="selectBreak(option.value)" />
         }
         <jhi-button [label]="'Custom'" class="flex-1" variant="text" severity="secondary" size="xs" styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomBreakMode()
               ? 'bg-[var(--p-primary-color)] text-white font-semibold'
-              : 'bg-transparent text-[var(--p-text-secondary)] hover:bg-[var(--p-surface-200)]'
+             : 'bg-transparent text-[var(--p-text-secondary)]  hover:bg-background-surface-alt'
           }}" (click)="selectBreak(-1)" />
       </div>
       @if (isCustomBreakMode()) {

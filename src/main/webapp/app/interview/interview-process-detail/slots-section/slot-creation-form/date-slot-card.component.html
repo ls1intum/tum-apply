@@ -18,14 +18,13 @@
 
     <!-- Right: Slot type Buttons + Delete Date -->
     <div class="flex gap-2 items-center">
-      <jhi-button [label]="'interview.slots.create.addSlot' | translate" variant="outlined" severity="contrast"
+      <jhi-button [label]="'interview.slots.create.addSlot' | translate" variant="outlined"
         size="xs" icon="plus" [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate" tooltipPosition="top"
-        styleClass="rounded-md text-[var(--p-secondary-400)] border-[var(--p-accent-500)] hover:bg-[var(--p-surface-100)]"
-        (click)="addSingleSlot()" />
+        styleClass="rounded-md text-[var(--p-secondary-400)]"(click)="addSingleSlot()" />
 
-      <jhi-button [label]="'interview.slots.create.addRange' | translate" variant="outlined" severity="warn" size="xs"
+      <jhi-button [label]="'interview.slots.create.addRange' | translate" variant="outlined"  size="xs"
         icon="plus" [pTooltip]="'interview.slots.create.addRangeTooltip' | translate" tooltipPosition="top"
-        styleClass="rounded-md text-[var(--p-secondary-600)] hover:bg-[var(--p-surface-100)]" (click)="addRange()" />
+        styleClass="rounded-md text-[var(--p-secondary-600)]" (click)="addRange()" />
 
       <div class="w-px h-6 bg-[var(--p-border-default)] mx-1"></div>
 
@@ -93,7 +92,7 @@
                   {{ 'interview.slots.create.endTime' | translate }}
                 </label>
                 <input type="time" [id]="'end-' + range.id"
-                  class="w-full rounded border border-[var(--p-border-default)] px-3 py-2 text-sm" autocomplete="off"
+                  class="w-full rounded border border-[var(--p-border-default)] px-3 py-1 text-sm" autocomplete="off"
                   [attr.name]="'end-' + range.id" [class.bg-[var(--p-surface-100)]]="range.type === 'single'"
                   [class.dark:bg-transparent]="range.type === 'single'"
                   [class.text-[var(--p-text-tertiary)]]="range.type === 'single'" [disabled]="range.type === 'single'"
