@@ -43,7 +43,7 @@ p-step[data-p-active='true'] .p-step-title {
     color: var(--p-accent-color) !important;
 
     &:hover {
-      background: var(--p-accent-pastel) !important;
+      background: rgba(255, 140, 0, 0.15) !important;
     }
   }
 }

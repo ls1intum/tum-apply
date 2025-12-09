@@ -42,9 +42,10 @@ export class AuthOrchestratorService {
   readonly isBusy = signal(false);
   readonly error = signal<string | null>(null);
   // progress for registration dialog
+  readonly  firstProgressStep= signal(false);
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
-    return Math.max(idx + 1, 1);
+    return idx + 1;
   });
   readonly totalRegisterSteps = REGISTER_STEPS.length;
   // cooldown for OTP resend
@@ -110,6 +111,10 @@ export class AuthOrchestratorService {
     }
 
     // choose sensible starting substates
+    if(this.mode() === 'register') {
+      this.registerStep.set('email');
+      this.firstProgressStep.set(true);
+    }
     if (this.mode() === 'login') {
       this.loginStep.set('email');
     }
@@ -197,5 +202,6 @@ export class AuthOrchestratorService {
     this.isBusy.set(false);
     this.error.set(null);
     this.cooldownUntil.set(null);
+    this.firstProgressStep.set(false);
   }
 }
