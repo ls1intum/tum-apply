@@ -112,12 +112,10 @@ export default class ApplicationCreationPage1Component {
   translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
 
-  // Signal that reacts to language changes
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signal that adds translated labels to country options for filtering
   selectCountriesLocal = computed(() => {
-    // Trigger recomputation on language change
     void this.currentLang();
 
     return selectCountries
@@ -130,7 +128,6 @@ export default class ApplicationCreationPage1Component {
 
   // Computed signal that adds translated labels to nationality options for filtering
   selectNationalityComputed = computed(() => {
-    // Trigger recomputation on language change
     void this.currentLang();
 
     return selectNationality
