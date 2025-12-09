@@ -6,6 +6,7 @@ import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -64,15 +65,30 @@ public class KeycloakUserService {
         List<KeycloakUserDTO> filtered = users
             .stream()
             .filter(u -> isTumDomain(u.getEmail()))
-            .map(user ->
-                new KeycloakUserDTO(
+            .map(user -> {
+                Map<String, List<String>> attributes = user.getAttributes();
+
+                String universityId = null;
+                if (attributes != null && attributes.containsKey("LDAP_ID")) {
+                    System.out.println(">>> User attributes: " + attributes);
+
+                    List<String> values = attributes.get("LDAP_ID");
+                    if (values != null && !values.isEmpty()) {
+                        universityId = values.get(0);
+                    }
+                }
+
+                System.out.println(">>> User: " + user.getUsername() + ", LDAP_ID: " + universityId);
+
+                return new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
                     user.getUsername(),
                     user.getFirstName(),
                     user.getLastName(),
-                    user.getEmail()
-                )
-            )
+                    user.getEmail(),
+                    universityId
+                );
+            })
             .toList();
 
         // apply pagination locally

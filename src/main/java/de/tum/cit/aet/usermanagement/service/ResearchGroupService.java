@@ -547,7 +547,7 @@ public class ResearchGroupService {
 
         for (KeycloakUserDTO keycloakUser : keycloakUsers) {
             User user = userRepository
-                .findById(keycloakUser.id())
+                .findByUniversityIdIgnoreCase(keycloakUser.universityId())
                 .orElseGet(() -> {
                     // User does not exist, create a new one
                     log.info("User with ID {} does not exist in local database. Creating new user.", keycloakUser.id());

@@ -974,7 +974,7 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
         @Test
         void addMembersToResearchGroupWithNonExistentUserCreatesUser() {
             UUID randomId = UUID.randomUUID();
-            KeycloakUserDTO kcUser = UserTestData.newKeycloakUser(randomId, null, "New", "User", "new.user@tum.de");
+            KeycloakUserDTO kcUser = UserTestData.newKeycloakUser(randomId, null, "New", "User", "new.user@tum.de", "ab12abc");
             AddMembersToResearchGroupDTO dto = new AddMembersToResearchGroupDTO(List.of(kcUser), researchGroup.getResearchGroupId());
 
             api

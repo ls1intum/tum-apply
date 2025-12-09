@@ -137,14 +137,28 @@ public final class UserTestData {
      * Create a KeycloakUserDTO from a domain User for tests.
      */
     public static KeycloakUserDTO kcUserFrom(User user) {
-        return new KeycloakUserDTO(user.getUserId(), user.getUniversityId(), user.getFirstName(), user.getLastName(), user.getEmail());
+        return new KeycloakUserDTO(
+            user.getUserId(),
+            user.getUniversityId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getUniversityId()
+        );
     }
 
     /**
      * Build a KeycloakUserDTO with custom data.
      */
-    public static KeycloakUserDTO newKeycloakUser(UUID id, String username, String firstName, String lastName, String email) {
-        return new KeycloakUserDTO(id, username, firstName, lastName, email);
+    public static KeycloakUserDTO newKeycloakUser(
+        UUID id,
+        String username,
+        String firstName,
+        String lastName,
+        String email,
+        String universityId
+    ) {
+        return new KeycloakUserDTO(id, username, firstName, lastName, email, universityId);
     }
 
     /**

@@ -7,4 +7,4 @@ import java.util.UUID;
  * DTO representing a Keycloak user.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record KeycloakUserDTO(UUID id, String username, String firstName, String lastName, String email) {}
+public record KeycloakUserDTO(UUID id, String username, String firstName, String lastName, String email, String universityId) {}
