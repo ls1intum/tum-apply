@@ -68,7 +68,6 @@ export * from './researchGroup';
 export * from './researchGroupAdminDTO';
 export * from './researchGroupDTO';
 export * from './researchGroupLargeDTO';
-export * from './researchGroupProvisionDTO';
 export * from './researchGroupRequestDTO';
 export * from './researchGroupShortDTO';
 export * from './school';

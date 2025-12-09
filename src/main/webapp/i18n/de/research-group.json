@@ -137,9 +137,9 @@
           "summary": "Fehler beim Hinzufügen",
           "detail": "Mitglieder konnten nicht hinzugefügt werden. Bitte versuche es erneut."
         },
-        "selectedUserHasResearchGroup": {
-          "summary": "Mitglied einer Forschungsgruppe",
-          "detail": "Der ausgewählte Benutzer {{name}} ist bereits Mitglied einer Forschungsgruppe."
+        "addMembersFailedAlreadyMember": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mindestens ein ausgewählter Benutzer konnte nicht hinzugefügt werden, da er bereits Teil einer Forschungsgruppe ist."
         },
         "removeSuccess": {
           "summary": "Mitglied entfernt",

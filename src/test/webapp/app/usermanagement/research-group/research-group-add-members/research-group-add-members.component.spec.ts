@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError, Observable } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { ResearchGroupAddMembersComponent } from 'app/usermanagement/research-group/research-group-add-members/research-group-add-members.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -459,6 +460,41 @@ describe('ResearchGroupAddMembersComponent', () => {
       expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
       expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle HttpErrorResponse with no error.message and show generic error toast', async () => {
+      component.toggleUserSelection(mockUser1);
+      const httpErr = new HttpErrorResponse({ error: {}, status: 400 });
+      mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(throwError(() => httpErr));
+
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
+        keycloakUsers: [mockUser1],
+        researchGroupId: 'research-group-1',
+      });
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailed');
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+
+    it('should show specific already-member error toast when backend returns AlreadyMemberOfResearchGroup', async () => {
+      component.toggleUserSelection(mockUser1);
+      const apiError = {
+        errorCode: 'OPERATION_NOT_ALLOWED',
+        message: "User with universityId 'ab12abc' is already a member of research group.",
+      };
+      mockResearchGroupService.addMembersToResearchGroup.mockReturnValue(
+        throwError(() => new HttpErrorResponse({ error: apiError, status: 400 })),
+      );
+
+      await component.onAddMembers();
+
+      expect(mockResearchGroupService.addMembersToResearchGroup).toHaveBeenCalledWith({
+        keycloakUsers: [mockUser1],
+        researchGroupId: 'research-group-1',
+      });
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.addMembersFailedAlreadyMember');
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
     });
 
     it('should add members with undefined researchGroupId', async () => {

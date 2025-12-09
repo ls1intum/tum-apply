@@ -137,9 +137,9 @@
           "summary": "Add Failed",
           "detail": "Failed to add members. Please try again."
         },
-        "selectedUserHasResearchGroup": {
-          "summary": "Member in Research Group",
-          "detail": "Selected user {{name}} is already a member of a research group."
+        "addMembersFailedAlreadyMember": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they are already part of a research group."
         },
         "removeSuccess": {
           "summary": "Member Removed",

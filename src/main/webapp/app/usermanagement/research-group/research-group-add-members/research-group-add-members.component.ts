@@ -11,6 +11,7 @@ import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiServic
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const I18N_BASE = 'researchGroup.members';
 
@@ -179,8 +180,17 @@ export class ResearchGroupAddMembersComponent {
       await lastValueFrom(this.researchGroupService.addMembersToResearchGroup(data));
       this.toastService.showSuccessKey(`${I18N_BASE}.toastMessages.addMembersSuccess`);
       this.dialogRef.close(true);
-    } catch {
-      this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailed`);
+    } catch (err) {
+      if (err instanceof HttpErrorResponse) {
+        const errorMessage = err.error?.message ?? '';
+        if (err.status === 400 && errorMessage.toLowerCase().includes('already a member')) {
+          this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailedAlreadyMember`);
+        } else {
+          this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailed`);
+        }
+      } else {
+        this.toastService.showErrorKey(`${I18N_BASE}.toastMessages.addMembersFailed`);
+      }
       this.dialogRef.close(false);
     }
   }
