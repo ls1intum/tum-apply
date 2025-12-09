@@ -44,6 +44,12 @@
         color: var(--p-text-primary);
       }
 
+      .p-select:focus,
+      .p-select:hover {
+        box-shadow: none;
+        border: 0.1rem solid var(--p-primary-color);
+      }
+
       .p-select-label {
         padding: 0.2rem 0.75rem;
       }
