@@ -44,6 +44,17 @@
         />
       </div>
 
+      <!-- Templates for localized date rendering -->
+      <ng-template #startDateTemplate let-job>
+        {{ (job.startDate?.toString() | localizedDate) || '-' }}
+      </ng-template>
+      <ng-template #createdAtTemplate let-job>
+        {{ (job.createdAt?.toString() | localizedDate) || '-' }}
+      </ng-template>
+      <ng-template #lastModifiedAtTemplate let-job>
+        {{ (job.lastModifiedAt?.toString() | localizedDate) || '-' }}
+      </ng-template>
+
       <ng-template #actionTemplate let-job>
         <div class="flex space-x-2">
           <jhi-button

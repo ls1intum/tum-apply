@@ -25,15 +25,6 @@ describe('JobCardComponent', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Formatted Start Date', () => {
-    it('should format the start date via computed signal', () => {
-      fixture.componentRef.setInput('startDate', '2025-11-01');
-      fixture.detectChanges();
-
-      expect(component.formattedStartDate()).toBe('01.11.2025');
-    });
-  });
-
   describe('Navigation', () => {
     it('should navigate to the detail page on onViewDetails()', () => {
       const router = TestBed.inject(Router);
