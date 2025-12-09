@@ -156,8 +156,6 @@ export class DateSlotCardComponent {
     this.slotsChange.emit(slots);
   }
 
-
-
   /**
    * Toggles the collapsed state of the card.
    */

@@ -53,20 +53,20 @@
         />
       </div>
       @if (isCustomDurationMode()) {
-        <div class="flex flex-col mt-1">
-          <div class="flex items-center gap-1">
+        <div class="flex flex-col mt-0.5 -mb-2">
+          <div class="flex items-start gap-1">
             <jhi-number-input
               [model]="customDuration() ?? undefined"
               (modelChange)="onCustomDurationInput($event)"
               [min]="1"
               [max]="480"
-              width="3.5rem"
+              inputStyleClass="h-8 w-[4.25rem] text-center text-xs"
               [errorEnabled]="false"
             />
-            <span class="text-s text-text-secondary">min</span>
+            <span class="text-text-secondary text-xs mt-2">min</span>
           </div>
           @if (durationError()) {
-            <span class="text-s text-negative-default mt-1 block">{{ durationError() | translate }}</span>
+            <span class="text-s text-negative-default mt-0.5 block">{{ durationError() | translate }}</span>
           }
         </div>
       }
@@ -114,20 +114,20 @@
         />
       </div>
       @if (isCustomBreakMode()) {
-        <div class="flex flex-col mt-1">
-          <div class="flex items-center gap-1">
+        <div class="flex flex-col mt-0.5 -mb-2">
+          <div class="flex items-start gap-1">
             <jhi-number-input
               [model]="customBreak() ?? undefined"
               (modelChange)="onCustomBreakInput($event)"
               [min]="0"
               [max]="120"
-              width="3.5rem"
+              inputStyleClass="h-8 w-[4.25rem] text-center text-xs"
               [errorEnabled]="false"
             />
-            <span class="text-s text-text-secondary">min</span>
+            <span class="text-xs text-text-secondary mt-2">min</span>
           </div>
           @if (breakError()) {
-            <span class="text-xs text-negative-default mt-1 block">{{ breakError() | translate }}</span>
+            <span class="text-xs text-negative-default mt-0.5 block">{{ breakError() | translate }}</span>
           }
         </div>
       }

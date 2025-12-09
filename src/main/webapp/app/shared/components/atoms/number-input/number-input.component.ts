@@ -19,6 +19,7 @@ export class NumberInputComponent extends BaseInputDirective<number | undefined>
   max = input<number>(100);
   minFractionDigits = input<number>(0);
   maxFractionDigits = input<number>(3);
+  inputStyleClass = input<string>('');
 
   smallerThanMin = computed<boolean>(() => {
     const model = this.model();
