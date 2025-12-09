@@ -201,7 +201,7 @@ const codes = [
   'zw',
 ];
 
-export const selectNationality: SelectOption[] = codes.map(code => ({
-  name: `nationalities.${code}`,
+export const selectCountries: SelectOption[] = codes.map(code => ({
+  name: `countries.${code}`,
   value: code,
 }));

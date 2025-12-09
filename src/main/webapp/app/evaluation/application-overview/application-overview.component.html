@@ -39,6 +39,9 @@
       (lazyLoad)="loadOnTableEmit($event)"
     />
 
+    <ng-template #appliedAtTemplate let-application>
+      {{ (application.appliedAt?.toString() | localizedDate) || '-' }}
+    </ng-template>
     <ng-template #actionTemplate let-application>
       <jhi-button
         icon="eye"

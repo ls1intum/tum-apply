@@ -2,7 +2,6 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/adminResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
@@ -77,6 +76,7 @@ model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/jobPreviewRequest.ts
+model/keycloakUserDTO.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
@@ -84,6 +84,7 @@ model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
+model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
 model/pageResponseDTOUserShortDTO.ts
@@ -97,7 +98,6 @@ model/researchGroup.ts
 model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
-model/researchGroupProvisionDTO.ts
 model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
 model/school.ts

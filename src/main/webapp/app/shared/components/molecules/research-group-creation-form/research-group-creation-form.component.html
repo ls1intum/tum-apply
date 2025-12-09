@@ -36,7 +36,7 @@
   @if (mode() === 'professor') {
     <div class="flex flex-col gap-4">
       <h3
-        class="m-0 mb-2 text-xl font-semibold text-gray-700 border-b-2 border-gray-200 pb-2"
+        class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
         jhiTranslate="onboarding.professorRequest.sections.personalInfo"
       ></h3>
 
@@ -93,7 +93,7 @@
   <!-- Research Group Information -->
   <div class="flex flex-col gap-4">
     <h3
-      class="m-0 mb-2 text-xl font-semibold text-gray-700 border-b-2 border-gray-200 pb-2"
+      class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
       jhiTranslate="onboarding.professorRequest.sections.researchGroupInfo"
     ></h3>
 
@@ -160,7 +160,7 @@
   <!-- Optional Information -->
   <div class="flex flex-col gap-4">
     <h3
-      class="m-0 mb-2 text-xl font-semibold text-gray-700 border-b-2 border-gray-200 pb-2"
+      class="m-0 mb-2 text-xl font-semibold text-text-primary border-b-2 border-border-default pb-2"
       jhiTranslate="onboarding.professorRequest.sections.optionalInfo"
     ></h3>
     <p class="text-sm text-gray-500 m-0 italic" jhiTranslate="onboarding.professorRequest.optionalHint"></p>
@@ -220,7 +220,7 @@
 
     <!-- Address Section -->
     <div class="flex flex-col gap-4">
-      <h4 class="m-0 text-lg font-medium text-gray-700" jhiTranslate="onboarding.professorRequest.sections.address"></h4>
+      <h4 class="m-0 text-lg font-medium text-text-primary" jhiTranslate="onboarding.professorRequest.sections.address"></h4>
 
       <div>
         <jhi-string-input
@@ -269,7 +269,7 @@
   </div>
 
   <!-- Form Actions -->
-  <div class="flex justify-end gap-4 mt-8 pt-4 border-t border-gray-200">
+  <div class="flex justify-end gap-4 mt-8 pt-4 border-t border-border-default">
     <jhi-button
       type="button"
       (click)="onCancel()"

@@ -8,12 +8,12 @@
           const stored = localStorage.getItem('tumApplyTheme');
           if (stored === 'dark') {
             root.classList.add('tum-apply-dark-mode');
-          } else {
-            root.classList.remove('tum-apply-dark-mode');
+          } else if (stored === 'blossom') {
+            root.classList.add('tum-apply-blossom');
+          } else if (stored === 'aquabloom') {
+            root.classList.add('tum-apply-aquabloom');
           }
-        } catch (e) {
-          // ignore if localStorage not available
-        }
+        } catch (e) {}
       })();
     </script>
     <meta charset="utf-8" />

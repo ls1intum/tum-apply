@@ -2,20 +2,21 @@
   "genderDecoder": {
     "resultTitle": "Gender-Bias-Analyse",
     "buttonLabel": "Prüfen",
-    "masculineWords": "Männlich kodierte Wörter",
-    "feminineWords": "Weiblich kodierte Wörter",
+    "masculineWords": "Gender-exklusive Wörter",
+    "feminineWords": "Gender-inklusive Wörter",
     "noWordsFound": "Keine Wörter gefunden",
     "openAnaylsis": "Klicke hier für weitere Informationen",
+    "originalDecoder": "Basierend auf dem <a href=\"https://gender-decoder.katmatfield.com/\" target=\"_blank\"  class='external-link' rel=\"noopener noreferrer\">originalen Gender Decoder</a> von Kat Matfield",
     "formulationTexts": {
-      "manly": "Überwiegend männlich formuliert",
-      "feminine": "Überwiegend weiblich formuliert",
+      "manly": "Gender-exklusiv formuliert",
+      "feminine": "Gender-inklusiv formuliert",
       "neutral": "Neutral formuliert"
     },
     "explanations": {
-      "masculine-coded": "Deine Stellenanzeige enthält mehr stereotypisch männlich kodierte als stereotypisch weiblich kodierte Wörter. Dies spricht laut Studien eher Männer an und kann Frauen von einer Bewerbung abhalten.",
-      "feminine-coded": "Deine Stellenanzeige enthält mehr stereotypisch weiblich kodierte als stereotypisch männlich kodierte Wörter. Dies bestärkt Frauen in einer Bewerbung. Stereotypisch weiblich kodierte Formulierungen beeinflussen Männer kaum und halten sie nicht von einer Bewerbung ab.",
-      "empty": "Deine Stellenanzeige enthält keine geschlechtskodierten Wörter. Die Formulierung ist gender-fair.",
-      "neutral": "Deine Stellenanzeige enthält stereotypisch männlich und stereotypisch weiblich kodierte Wörter in gleichem Maße. Die Formulierung ist gender-fair."
+      "masculine-coded": "Deine Stellenanzeige enthält überwiegend gender-exklusive Formulierungen. Solche Formulierungen können beeinflussen, wie attraktiv die Rolle für unterschiedliche Kandidat:innen wirkt. Erwäge, gender-inklusive Formulierungen zu verwenden, um die Anzeige für alle Bewerber:innen ansprechender zu machen.",
+      "feminine-coded": "Deine Stellenanzeige verwendet gender-inklusive Formulierungen. Diese Art von Sprache kann die Attraktivität der Rolle erhöhen und hält andere Bewerber:innen in der Regel nicht von einer Bewerbung ab.",
+      "empty": "Deine Stellenanzeige enthält keine Hinweise auf gender-inklusive oder gender-exklusive Formulierungen. Die Sprache ist neutral und inklusiv.",
+      "neutral": "Deine Stellenanzeige enthält eine ausgewogene Mischung aus gender-inklusive und gender-exklusive Formulierungen. Die Sprache ist neutral und inklusiv."
     },
     "error": {
       "summary": "Fehler",

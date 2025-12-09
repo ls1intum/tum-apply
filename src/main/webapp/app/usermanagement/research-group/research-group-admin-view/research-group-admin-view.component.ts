@@ -148,7 +148,7 @@ export class ResearchGroupAdminView {
       header: this.translate.instant('researchGroup.detailView.title'),
       data: { researchGroupId },
       styleClass: 'research-group-detail-dialog',
-      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      style: { background: 'var(--color-background-default)', maxWidth: '50rem' },
       closable: true,
       modal: true,
     });
@@ -159,7 +159,7 @@ export class ResearchGroupAdminView {
       header: this.translate.instant('researchGroup.adminView.createDialog.title'),
       data: { mode: 'admin' },
       styleClass: 'research-group-create-dialog',
-      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      style: { background: 'var(--color-background-default)', maxWidth: '50rem' },
       closable: true,
       modal: true,
     });
@@ -176,7 +176,8 @@ export class ResearchGroupAdminView {
       header: this.translate.instant('researchGroup.members.addMembers'),
       data: { researchGroupId },
       styleClass: 'research-group-add-members-dialog',
-      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      style: { background: 'var(--color-background-default)', width: '60rem', maxWidth: '60rem' },
+      draggable: false,
       closable: true,
       modal: true,
     });

@@ -307,6 +307,7 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
  Style for file upload component
 ------------------------------- */
 .p-fileupload-content {
+  background: var(--p-background-default);
   color: var(--p-text-color);
 }
 
@@ -479,9 +480,14 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   color: var(--p-primary-color);
 }
 
-/* Disable all transitions while switching theme */
-.theme-switching *,
-.theme-switching *::before,
-.theme-switching *::after {
-  transition: none !important;
+// Blossom theme - pink logo (transforms blue #3070B3 to pink #df87b4)
+.tum-apply-blossom .tumapply-logo,
+.tum-apply-blossom .tum-logo {
+  filter: brightness(0) saturate(100%) invert(58%) sepia(50%) saturate(450%) hue-rotate(295deg) brightness(92%) contrast(90%);
+}
+
+// AquaBloom theme - teal logo (transforms blue #3070B3 to teal #55abac)
+.tum-apply-aquabloom .tumapply-logo,
+.tum-apply-aquabloom .tum-logo {
+  filter: brightness(0) saturate(100%) invert(58%) sepia(25%) saturate(550%) hue-rotate(135deg) brightness(92%) contrast(90%);
 }

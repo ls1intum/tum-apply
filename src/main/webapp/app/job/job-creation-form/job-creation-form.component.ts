@@ -5,7 +5,7 @@ import { CommonModule, Location } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -14,6 +14,7 @@ import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/share
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { CheckboxModule } from 'primeng/checkbox';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -56,6 +57,7 @@ type JobFormMode = 'create' | 'edit';
     DividerModule,
     ButtonComponent,
     ProgressSpinnerModule,
+    CheckboxModule,
   ],
   providers: [JobResourceApiService],
 })
@@ -69,12 +71,46 @@ export class JobCreationFormComponent {
   private jobResourceService = inject(JobResourceApiService);
   private imageResourceService = inject(ImageResourceApiService);
   private accountService = inject(AccountService);
+  private translate = inject(TranslateService);
   private autoSaveTimer: number | undefined;
   private router = inject(Router);
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private autoSaveInitialized = false;
+
+  currentLang = toSignal(this.translate.onLangChange);
+
+  // Computed signals for translated dropdown options
+  translatedFieldsOfStudies = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.fieldsOfStudies
+      .map(option => ({
+        value: option.value,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  translatedLocations = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.locations
+      .map(option => ({
+        value: option.value,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  translatedFundingTypes = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.fundingTypes
+      .map(option => ({
+        value: option.value,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
 
   constructor() {
     this.init();

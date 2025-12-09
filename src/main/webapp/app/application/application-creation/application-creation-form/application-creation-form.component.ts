@@ -17,6 +17,7 @@ import { OtpInput } from 'app/shared/components/atoms/otp-input/otp-input';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DividerModule } from 'primeng/divider';
+import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { MessageModule } from 'primeng/message';
@@ -50,6 +51,7 @@ const applyflow = 'entity.toast.applyFlow';
     CommonModule,
     ReactiveFormsModule,
     DividerModule,
+    CheckboxModule,
     ProgressStepperComponent,
     ApplicationCreationPage1Component,
     ApplicationCreationPage2Component,
