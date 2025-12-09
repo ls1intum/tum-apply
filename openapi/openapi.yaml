@@ -2088,7 +2088,7 @@ components:
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
         contractDuration: {type: integer, format: int32}
-        fieldOfStudies: {type: string}
+        departmentName: {type: string}
         imageUrl: {type: string}
         jobId: {type: string, format: uuid}
         location: {type: string}
@@ -2098,7 +2098,7 @@ components:
         startDate: {type: string, format: date}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [fieldOfStudies, jobId, location, professorName, title]
+      required: [jobId, location, professorName, title]
     JobDTO:
       type: object
       properties:
@@ -2209,6 +2209,7 @@ components:
         firstName: {type: string}
         id: {type: string, format: uuid}
         lastName: {type: string}
+        universityId: {type: string}
         username: {type: string}
     LoginRequestDTO:
       type: object
