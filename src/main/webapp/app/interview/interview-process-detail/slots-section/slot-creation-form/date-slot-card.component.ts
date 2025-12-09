@@ -68,20 +68,34 @@ export class DateSlotCardComponent {
     const conflicts = new Map<string, string | null>();
 
     // 1. Flatten all slots from all ranges into a single array with metadata.
-    // rangeId needed to avoid comparing slots within the same range
-    const allSlotsWithIds = ranges.flatMap(range =>
-      range.slots.map((slot, index) => ({
-        key: `${range.id}_${index}`,
-        rangeId: range.id,
-        start: new Date(slot.startDateTime ?? '').getTime(),
-        end: new Date(slot.endDateTime ?? '').getTime(),
-        display: `${this.formatTime(new Date(slot.startDateTime ?? ''))} - ${this.formatTime(new Date(slot.endDateTime ?? ''))}`,
-      })),
+    // Filter out slots that don't have valid start/end times to avoid Invalid Date issues.
+    const validSlotsWithIds = ranges.flatMap(range =>
+      range.slots
+        .map((slot, index) => {
+          if (!slot.startDateTime || !slot.endDateTime) {
+            return null;
+          }
+          const start = new Date(slot.startDateTime);
+          const end = new Date(slot.endDateTime);
+
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return null;
+          }
+
+          return {
+            key: `${range.id}_${index}`,
+            rangeId: range.id,
+            start: start.getTime(),
+            end: end.getTime(),
+            display: `${this.formatTime(start)} - ${this.formatTime(end)}`,
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null),
     );
 
     // 2. Compare every slot with every other slot to find overlaps.
-    allSlotsWithIds.forEach((slot1, i) => {
-      allSlotsWithIds.slice(i + 1).forEach(slot2 => {
+    validSlotsWithIds.forEach((slot1, i) => {
+      validSlotsWithIds.slice(i + 1).forEach(slot2 => {
         // 3. Skip comparison if they belong to the same range configuration.
         if (slot1.rangeId === slot2.rangeId) {
           return;
