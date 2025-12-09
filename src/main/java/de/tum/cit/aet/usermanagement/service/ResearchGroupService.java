@@ -126,18 +126,23 @@ public class ResearchGroupService {
             throw new AccessDeniedException("You do not have permission to remove a Professor.");
         }
 
+        // Store the research group temporarily before removing it from the user
+        ResearchGroup oldGroup = userToRemove.getResearchGroup();
+
         // Remove the direct research group membership
         userToRemove.setResearchGroup(null);
         userRepository.save(userToRemove);
 
         // Remove research group associations from user's roles
-        userResearchGroupRoleRepository
-            .findByUserAndResearchGroup(userToRemove, userToRemove.getResearchGroup())
-            .ifPresent(role -> {
-                role.setRole(UserRole.APPLICANT);
-                role.setResearchGroup(null);
-                userResearchGroupRoleRepository.save(role);
-            });
+        if (oldGroup != null) {
+            userResearchGroupRoleRepository
+                .findByUserAndResearchGroup(userToRemove, oldGroup)
+                .ifPresent(role -> {
+                    role.setRole(UserRole.APPLICANT);
+                    role.setResearchGroup(null);
+                    userResearchGroupRoleRepository.save(role);
+                });
+        }
     }
 
     /**
