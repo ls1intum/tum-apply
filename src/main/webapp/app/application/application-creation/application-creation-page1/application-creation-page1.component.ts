@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, model, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import * as postalCodes from 'postal-codes-js';
@@ -12,7 +13,8 @@ import { DatePickerComponent } from '../../../shared/components/atoms/datepicker
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 
-import { selectCountries, selectNationality } from './nationalities';
+import { selectCountries } from './countries';
+import { selectNationality } from './nationalities';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -65,7 +67,7 @@ export function postalCodeValidator(getCountryFn: () => string | undefined): Val
   return (control: AbstractControl): ValidationErrors => {
     const country = getCountryFn()?.toUpperCase();
     const value: string = control.value as string;
-    if (!country || !value) return {};
+    if (country === undefined || country.length === 0 || value.length === 0) return {};
     const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
     const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
     return isPostalCodeValid === true ? {} : validationError;
@@ -107,9 +109,38 @@ export default class ApplicationCreationPage1Component {
   selectLanguageLocal = selectLanguage;
   selectNationalityLocal = selectNationality;
   accountService = inject(AccountService);
-  selectCountriesLocal = selectCountries;
-
+  translate = inject(TranslateService);
   formbuilder = inject(FormBuilder);
+
+  // Signal that reacts to language changes
+  currentLang = toSignal(this.translate.onLangChange);
+
+  // Computed signal that adds translated labels to country options for filtering
+  selectCountriesLocal = computed(() => {
+    // Trigger recomputation on language change
+    void this.currentLang();
+
+    return selectCountries
+      .map(option => ({
+        ...option,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  // Computed signal that adds translated labels to nationality options for filtering
+  selectNationalityComputed = computed(() => {
+    // Trigger recomputation on language change
+    void this.currentLang();
+
+    return selectNationality
+      .map(option => ({
+        ...option,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
   page1Form = computed(() => {
     const currentData = this.data();
     return this.formbuilder.group({

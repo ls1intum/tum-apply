@@ -65,14 +65,13 @@
       <jhi-select
         width="100%"
         [label]="'entity.applicationPage1.label.nationality' | translate"
-        [items]="selectNationalityLocal"
+        [items]="selectNationalityComputed()"
         [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
         id="nationality"
         [(selected)]="data().nationality"
         (selectedChange)="emitChanged()"
         [filter]="true"
         [showClear]="true"
-        [translateItems]="true"
       />
     </div>
   </div>
@@ -150,10 +149,9 @@
         [required]="true"
         [(selected)]="data().country"
         width="100%"
-        [items]="selectCountriesLocal"
+        [items]="selectCountriesLocal()"
         (selectedChange)="updateSelect('country', $event)"
         [filter]="true"
-        [translateItems]="true"
       />
     </div>
     <div class="form-field">
