@@ -56,7 +56,6 @@ export class SlotCreationFormComponent {
   // State
   readonly isSubmitting = signal(false);
 
-  // Regular property for PrimeNG two-way binding compatibility
   selectedDates: Date[] = [];
 
   // Signal to track template changes
@@ -203,7 +202,6 @@ export class SlotCreationFormComponent {
           newSelection = [];
         }
       } else {
-        // Add if new
         newSelection = [...previousSelection, clickedDate];
       }
 

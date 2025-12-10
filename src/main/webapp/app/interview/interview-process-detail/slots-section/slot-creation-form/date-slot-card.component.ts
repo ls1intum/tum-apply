@@ -72,11 +72,11 @@ export class DateSlotCardComponent {
     const validSlotsWithIds = ranges.flatMap(range =>
       range.slots
         .map((slot, index) => {
-          if (!slot.startDateTime || !slot.endDateTime) {
+          if ((slot.startDateTime ?? '') === '' || (slot.endDateTime ?? '') === '') {
             return null;
           }
-          const start = new Date(slot.startDateTime);
-          const end = new Date(slot.endDateTime);
+          const start = new Date(slot.startDateTime ?? '');
+          const end = new Date(slot.endDateTime ?? '');
 
           if (isNaN(start.getTime()) || isNaN(end.getTime())) {
             return null;
@@ -137,24 +137,6 @@ export class DateSlotCardComponent {
       this.initializeRangesFromSlots(slots);
     });
   });
-
-  /**
-   * Helper to update ranges and emit changes.
-   * Replaces the implicit emitEffect.
-   */
-  private updateRanges(updater: (ranges: SlotRange[]) => SlotRange[]): void {
-    this.slotRanges.update(updater);
-    this.emitSlots();
-  }
-
-  /**
-   * Emits the current slots to the parent.
-   */
-  private emitSlots(): void {
-    const slots = this.allSlots();
-    this.lastEmittedSlots = slots;
-    this.slotsChange.emit(slots);
-  }
 
   /**
    * Toggles the collapsed state of the card.
@@ -423,6 +405,24 @@ export class DateSlotCardComponent {
 
     this.slotRanges.set(newRanges);
     this.emitSlots();
+  }
+
+  /**
+   * Helper to update ranges and emit changes.
+   * Replaces the implicit emitEffect.
+   */
+  private updateRanges(updater: (ranges: SlotRange[]) => SlotRange[]): void {
+    this.slotRanges.update(updater);
+    this.emitSlots();
+  }
+
+  /**
+   * Emits the current slots to the parent.
+   */
+  private emitSlots(): void {
+    const slots = this.allSlots();
+    this.lastEmittedSlots = slots;
+    this.slotsChange.emit(slots);
   }
 
   /**
