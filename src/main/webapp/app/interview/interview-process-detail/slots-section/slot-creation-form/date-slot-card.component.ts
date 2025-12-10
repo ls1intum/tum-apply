@@ -71,25 +71,7 @@ export class DateSlotCardComponent {
     // Filter out slots that don't have valid start/end times to avoid Invalid Date issues.
     const validSlotsWithIds = ranges.flatMap(range =>
       range.slots
-        .map((slot, index) => {
-          if ((slot.startDateTime ?? '') === '' || (slot.endDateTime ?? '') === '') {
-            return null;
-          }
-          const start = new Date(slot.startDateTime ?? '');
-          const end = new Date(slot.endDateTime ?? '');
-
-          if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-            return null;
-          }
-
-          return {
-            key: `${range.id}_${index}`,
-            rangeId: range.id,
-            start: start.getTime(),
-            end: end.getTime(),
-            display: `${this.formatTime(start)} - ${this.formatTime(end)}`,
-          };
-        })
+        .map((slot, index) => this.mapSlotToMetadata(slot, range.id, index))
         .filter((item): item is NonNullable<typeof item> => item !== null),
     );
 
@@ -411,7 +393,7 @@ export class DateSlotCardComponent {
    * Helper to update ranges and emit changes.
    * Replaces the implicit emitEffect.
    */
-  private updateRanges(updater: (ranges: SlotRange[]) => SlotRange[]): void {
+  private updateRanges(updater: (currentRanges: SlotRange[]) => SlotRange[]): void {
     this.slotRanges.update(updater);
     this.emitSlots();
   }
@@ -648,14 +630,52 @@ export class DateSlotCardComponent {
     if (a.length !== b.length) {
       return false;
     }
-    return a.every((slotA, index) => {
-      const slotB = b[index];
-      return (
+
+    for (let i = 0; i < a.length; i++) {
+      const slotA = a[i];
+      const slotB = b[i];
+      const areEqual =
         slotA.id === slotB.id &&
         slotA.startDateTime === slotB.startDateTime &&
         slotA.endDateTime === slotB.endDateTime &&
-        slotA.location === slotB.location
-      );
-    });
+        slotA.location === slotB.location;
+
+      if (!areEqual) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Helper method to map a slot to its metadata for conflict detection.
+   * Extracts start/end times and formats display string, returning null if invalid.
+   * @param slot The slot to map.
+   * @param rangeId The ID of the range the slot belongs to.
+   * @param index The index of the slot within the range.
+   * @returns Metadata object or null if slot is invalid.
+   */
+  private mapSlotToMetadata(
+    slot: InterviewSlotDTO,
+    rangeId: string,
+    index: number,
+  ): { key: string; rangeId: string; start: number; end: number; display: string } | null {
+    if ((slot.startDateTime ?? '') === '' || (slot.endDateTime ?? '') === '') {
+      return null;
+    }
+    const start = new Date(slot.startDateTime ?? '');
+    const end = new Date(slot.endDateTime ?? '');
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return null;
+    }
+
+    return {
+      key: `${rangeId}_${index}`,
+      rangeId,
+      start: start.getTime(),
+      end: end.getTime(),
+      display: `${this.formatTime(start)} - ${this.formatTime(end)}`,
+    };
   }
 }
