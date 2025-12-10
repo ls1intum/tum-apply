@@ -59,8 +59,12 @@
         @if (slotRanges().length === 0) {
           <div class="flex flex-col items-center justify-center py-8 text-secondary">
             <i class="fa-regular fa-calendar-plus mb-2 text-2xl"></i>
-            <span class="text-s font-medium">{{ 'interview.slots.create.noSlotsYet' | translate }}</span>
-            <span class="text-xs">{{ 'interview.slots.create.noSlotsYetDesc' | translate }}</span>
+            <span class="text-s font-medium">
+              {{ 'interview.slots.create.noSlotsYet' | translate }}
+            </span>
+            <span class="text-xs">
+              {{ 'interview.slots.create.noSlotsYetDesc' | translate }}
+            </span>
           </div>
         } @else {
           @for (range of slotRanges(); track range.id; let rangeIndex = $index) {
@@ -68,10 +72,11 @@
               <!-- Colored Bar Left -->
               <div
                 class="w-1 flex-shrink-0 self-stretch rounded-full"
-                [class.bg-[var(--p-secondary-400)]]="range.type === 'single'"
-                [class.bg-[var(--p-secondary-600)]]="range.type === 'range'"
+                [ngClass]="{
+                  'bg-[var(--p-secondary-400)]': range.type === 'single',
+                  'bg-[var(--p-secondary-600)]': range.type === 'range',
+                }"
               ></div>
-
               <div class="flex flex-1 flex-col gap-2">
                 <!-- Slot Row Header -->
                 <div class="flex items-center justify-between">
@@ -151,63 +156,66 @@
                         (modelChange)="onLocationInput(rangeIndex, $event)"
                         [placeholder]="'interview.slots.create.locationPlaceholder' | translate"
                         [errorEnabled]="false"
+                        [ngClass]="{
+                          '[&_.custom-input]:!border-negative-default [&_.custom-input]:!border': showValidationErrors() && !range.location,
+                        }"
                       />
+                      @if (showValidationErrors() && !range.location) {
+                        <span class="text-xs text-negative-default mt-1 ml-5 block">
+                          {{ 'interview.slots.create.validation.locationRequired.detail' | translate }}
+                        </span>
+                      }
                     </div>
-                    @if (showValidationErrors() && !range.location) {
-                      <span class="text-xs text-negative-default -mt-1">
-                        {{ 'interview.slots.create.validation.locationRequired' | translate }}
+
+                    <!-- Generated Slots List -->
+                    @if (range.slots.length > 0 && range.type === 'range') {
+                      <div class="flex flex-col gap-2 pt-2">
+                        @for (slot of range.slots; track $index; let slotIndex = $index) {
+                          <div
+                            class="flex flex-col gap-1 rounded-md border border-border-default bg-background-default px-3 py-2"
+                            [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)"
+                          >
+                            <div class="flex items-center justify-between">
+                              <div class="flex items-center gap-2 text-xs font-medium text-text-primary font-bold">
+                                <span> {{ slot.startDateTime | date: 'HH:mm' }} - {{ slot.endDateTime | date: 'HH:mm' }} </span>
+                              </div>
+                              <jhi-button
+                                severity="secondary"
+                                variant="text"
+                                icon="xmark"
+                                size="xs"
+                                (click)="removeSlot(rangeIndex, slotIndex)"
+                              />
+                            </div>
+                            @if (conflictingSlotKeys().get(range.id + '_' + slotIndex)) {
+                              <span class="text-xs font-medium text-negative-default">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                                {{ 'interview.slots.create.validation.conflict' | translate }}
+                                ({{ conflictingSlotKeys().get(range.id + '_' + slotIndex) }})
+                              </span>
+                            }
+                          </div>
+                        }
+                      </div>
+                    } @else if (range.startTime && range.endTime && range.startTime.getTime() >= range.endTime.getTime()) {
+                      <span class="mt-1 text-xs text-negative-default">
+                        {{ 'interview.slots.create.validation.endBeforeStart' | translate }}
+                      </span>
+                    } @else if (range.type === 'range' && (!range.startTime || !range.endTime)) {
+                      <span class="mt-1 text-xs font-medium text-text-secondary">
+                        {{ 'interview.slots.create.addStartAndEndTime' | translate }}
+                      </span>
+                    }
+
+                    <!-- Conflict Error (Single Slot) -->
+                    @if (range.type === 'single' && conflictingSlotKeys().get(range.id + '_0')) {
+                      <span class="mt-1 text-xs font-medium text-negative-default">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                        {{ 'interview.slots.create.validation.conflict' | translate }}
+                        ({{ conflictingSlotKeys().get(range.id + '_0') }})
                       </span>
                     }
                   </div>
-                }
-
-                <!-- Generated Slots List -->
-                @if (range.slots.length > 0 && range.type === 'range') {
-                  <div class="flex flex-col gap-2 pt-2">
-                    @for (slot of range.slots; track $index; let slotIndex = $index) {
-                      <div
-                        class="flex flex-col gap-1 rounded-md border border-border-default bg-background-default px-3 py-2"
-                        [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)"
-                      >
-                        <div class="flex items-center justify-between">
-                          <div class="flex items-center gap-2 text-xs font-medium text-text-primary font-bold">
-                            <span>{{ slot.startDateTime | date: 'HH:mm' }} - {{ slot.endDateTime | date: 'HH:mm' }}</span>
-                          </div>
-                          <jhi-button
-                            severity="secondary"
-                            variant="text"
-                            icon="xmark"
-                            size="xs"
-                            (click)="removeSlot(rangeIndex, slotIndex)"
-                          />
-                        </div>
-                        @if (conflictingSlotKeys().get(range.id + '_' + slotIndex)) {
-                          <span class="text-xs font-medium text-negative-default">
-                            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                            {{ 'interview.slots.create.validation.conflict' | translate }} ({{
-                              conflictingSlotKeys().get(range.id + '_' + slotIndex)
-                            }})
-                          </span>
-                        }
-                      </div>
-                    }
-                  </div>
-                } @else if (range.startTime && range.endTime && range.startTime.getTime() >= range.endTime.getTime()) {
-                  <span class="mt-1 text-xs text-negative-default">
-                    {{ 'interview.slots.create.validation.endBeforeStart' | translate }}
-                  </span>
-                } @else if (range.type === 'range' && (!range.startTime || !range.endTime)) {
-                  <span class="mt-1 text-xs font-medium text-text-secondary">
-                    {{ 'interview.slots.create.addStartAndEndTime' | translate }}
-                  </span>
-                }
-
-                <!-- Conflict Error (Single Slot) -->
-                @if (range.type === 'single' && conflictingSlotKeys().get(range.id + '_0')) {
-                  <span class="mt-1 text-xs font-medium text-negative-default">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                    {{ 'interview.slots.create.validation.conflict' | translate }} ({{ conflictingSlotKeys().get(range.id + '_0') }})
-                  </span>
                 }
               </div>
             </div>
