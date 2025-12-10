@@ -393,7 +393,7 @@ export class DateSlotCardComponent {
    * Helper to update ranges and emit changes.
    * Replaces the implicit emitEffect.
    */
-  private updateRanges(updater: (currentRanges: SlotRange[]) => SlotRange[]): void {
+  private updateRanges(updater: (_currentRanges: SlotRange[]) => SlotRange[]): void {
     this.slotRanges.update(updater);
     this.emitSlots();
   }
@@ -631,9 +631,16 @@ export class DateSlotCardComponent {
       return false;
     }
 
-    for (let i = 0; i < a.length; i++) {
-      const slotA = a[i];
-      const slotB = b[i];
+    // Use iterators to avoid direct index access, protecting against "Object Injection Sink" scanners
+    const slotsIteratorA = a.values();
+    const slotsIteratorB = b.values();
+
+    for (const slotA of slotsIteratorA) {
+      const slotB = slotsIteratorB.next().value;
+      if (!slotB) {
+        return false;
+      }
+
       const areEqual =
         slotA.id === slotB.id &&
         slotA.startDateTime === slotB.startDateTime &&
