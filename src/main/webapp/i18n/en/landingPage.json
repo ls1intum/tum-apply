@@ -107,7 +107,7 @@
     "jobsPreview": {
       "headline": "Latest Positions",
       "subline": "A short selection of open positions",
-      "seeMore": "See more",
+      "seeMore": "View all positions",
       "noJobs": "No jobs available at the moment",
       "loadFailed": "Failed to load jobs"
     }
