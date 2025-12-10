@@ -130,17 +130,18 @@
         "noDateSelected": "No Date selected",
         "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
         "sameSlotsForAllDays": "Same Slots for all days",
-        "addRange": "Time range",
+        "addRange": "Add Time Range",
         "noSlotsYet": "No Slots yet",
-        "noSlotsYetDesc": "Add a range or a single slot to get started",
+        "noSlotsYetDesc": "Add a time range or a single slot to get started",
         "singleSlot": "Single Slot",
-        "rangeSlot": "Range Slot",
+        "rangeSlot": "Time Range",
         "bookedSlot": "Booked Slot",
         "addStartTime": "Add a start time to create this slot",
         "addStartAndEndTime": "Add a start and end time to see slots in this range",
         "saveSlots": "Save Slots",
         "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
-        "useForAll": "Use same location for all slots"
+        "useForAll": "Use same location for all slots",
+        "custom": "Custom"
       },
       "delete": {
         "confirm": {

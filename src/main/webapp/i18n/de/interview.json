@@ -140,7 +140,8 @@
         "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
-        "useForAll": "Gleicher Ort für alle Termine"
+        "useForAll": "Gleicher Ort für alle Termine",
+        "custom": "Eigenes"
       },
       "delete": {
         "confirm": {
