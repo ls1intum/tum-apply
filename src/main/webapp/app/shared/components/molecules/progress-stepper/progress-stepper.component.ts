@@ -79,7 +79,9 @@ export class ProgressStepperComponent {
           { threshold: 0 },
         );
         observer.observe(sentinel);
-        this.destroyRef.onDestroy(() => observer.disconnect());
+        this.destroyRef.onDestroy(() => {
+          observer.disconnect();
+        });
       }
     });
   }
