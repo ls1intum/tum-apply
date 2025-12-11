@@ -116,18 +116,16 @@ public class ResearchGroupService {
      */
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
-        // Get the current user's research group ID for validation
-        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfMember();
-
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
             .findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
-        // Ensure user belongs to the same research group
+        // Ensure user belongs to the same research group or current user is admin
         if (
-            userToRemove.getResearchGroup() == null ||
-            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)
+            !currentUserService.isAdmin() &&
+            (userToRemove.getResearchGroup() == null ||
+                !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserService.getResearchGroupIdIfMember()))
         ) {
             throw new AccessDeniedException("User is not a member of your research group");
         }
@@ -138,14 +136,14 @@ public class ResearchGroupService {
             throw new BadRequestException("Cannot remove yourself from the research group");
         }
 
-        boolean currentUserIsProfessor = currentUserService.getCurrentUser().isProfessor();
+        boolean currentUserIsProfessorOrAdmin = currentUserService.isProfessor() || currentUserService.isAdmin();
 
         boolean userToRemoveIsProfessor = userToRemove
             .getResearchGroupRoles()
             .stream()
             .anyMatch(r -> UserRole.PROFESSOR.equals(r.getRole()));
 
-        if (!currentUserIsProfessor && userToRemoveIsProfessor) {
+        if (!currentUserIsProfessorOrAdmin && userToRemoveIsProfessor) {
             throw new AccessDeniedException("You do not have permission to remove a Professor.");
         }
 
