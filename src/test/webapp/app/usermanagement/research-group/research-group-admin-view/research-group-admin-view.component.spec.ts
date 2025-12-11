@@ -429,7 +429,7 @@ describe('ResearchGroupAdminView', () => {
       } as unknown as DynamicDialogRef;
 
       mockDialogService.open.mockReturnValue(mockDialogRef);
-      component.onAddMembers('rg-1');
+      component.onManageMembers('rg-1');
       await Promise.resolve();
 
       expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
@@ -563,13 +563,13 @@ describe('ResearchGroupAdminView', () => {
       mockDialogService.open.mockReturnValue(mockDialogRef);
       mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
 
-      component.onAddMembers('rg-1');
+      component.onManageMembers('rg-1');
       await Promise.resolve();
 
       expect(mockDialogService.open).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
-          header: 'researchGroup.members.addMembers',
+          header: 'researchGroup.members.manageMembers',
           data: { researchGroupId: 'rg-1' },
         }),
       );

@@ -47,12 +47,12 @@
           (click)="onViewResearchGroup(researchGroup.id)"
         />
         <jhi-button
-          icon="user-plus"
-          [ariaLabel]="'researchGroup.members.addMembers' | translate"
-          [tooltip]="'researchGroup.members.addMembers' | translate"
+          icon="users-gear"
+          [ariaLabel]="'researchGroup.members.manageMembers' | translate"
+          [tooltip]="'researchGroup.members.manageMembers' | translate"
           severity="primary"
           variant="text"
-          (click)="onAddMembers(researchGroup.id)"
+          (click)="onManageMembers(researchGroup.id)"
         />
         @if (researchGroup.status === 'ACTIVE') {
           <jhi-confirm-dialog
