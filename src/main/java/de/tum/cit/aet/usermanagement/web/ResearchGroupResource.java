@@ -67,6 +67,7 @@ public class ResearchGroupResource {
     /**
      * Returns paginated members of the research group by the id.
      *
+     * @param researchGroupId the ID of the research group
      * @param pageDTO the pagination parameters
      * @return paginated list of members
      */
