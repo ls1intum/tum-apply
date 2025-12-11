@@ -103,7 +103,7 @@ public class ResearchGroupResource {
     /**
      * Get a specific research group by ID.
      *
-     * @param id the ID of the research group to ret rieve
+     * @param id the ID of the research group to retrieve
      * @return the research group
      */
     @GetMapping("/{id}")

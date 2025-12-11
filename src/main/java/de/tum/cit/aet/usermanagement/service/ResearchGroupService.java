@@ -103,7 +103,8 @@ public class ResearchGroupService {
         }
 
         // Second query: Fetch full user data with collections for the paginated IDs
-        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent());
+        // We pass null for currentUserId to request alphabetical ordering without pinning any user first
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), null);
 
         return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
     }
