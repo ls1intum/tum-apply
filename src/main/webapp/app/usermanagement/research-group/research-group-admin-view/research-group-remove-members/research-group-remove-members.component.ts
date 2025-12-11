@@ -1,8 +1,117 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AccountService } from 'app/core/auth/account.service';
+import { ResearchGroupResourceApiService } from 'app/generated/api/api';
+import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { ToastService } from 'app/service/toast-service';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-research-group-remove-members.component',
-  imports: [],
+  imports: [DynamicTableComponent, ConfirmDialog, FontAwesomeModule, TranslateModule],
   templateUrl: './research-group-remove-members.component.html',
 })
-export class ResearchGroupRemoveMembersComponent {}
+export class ResearchGroupRemoveMembersComponent {
+  researchGroupId = computed(() => this.config.data?.researchGroupId as string | undefined);
+
+  members = signal<UserShortDTO[]>([]);
+  pageNumber = signal<number>(0);
+  pageSize = signal<number>(10);
+  total = signal<number>(0);
+
+  readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
+  readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
+
+  readonly columns = computed<DynamicTableColumn[]>(() => {
+    const nameTemplate = this.nameTemplate();
+    const deleteTemplate = this.deleteTemplate();
+
+    return [
+      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem', template: nameTemplate },
+      { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
+      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
+      { field: 'actions', header: '', width: '5rem', template: deleteTemplate },
+    ];
+  });
+
+  // Transform members data for display
+  readonly tableData = computed(() => {
+    return this.members().map(member => {
+      const isCurrentUser = this.isCurrentUser(member);
+      return {
+        ...member,
+        name: `${member.firstName} ${member.lastName}`,
+        role: this.formatRoles(member.roles),
+        isCurrentUser,
+      };
+    });
+  });
+
+  private researchGroupService = inject(ResearchGroupResourceApiService);
+  private toastService = inject(ToastService);
+  private accountService = inject(AccountService);
+  private translate = inject(TranslateService);
+
+  private readonly config = inject(DynamicDialogConfig);
+  private readonly translationKey: string = 'researchGroup.members';
+
+  loadOnTableEmit(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    this.pageNumber.set(first / rows);
+    this.pageSize.set(rows);
+
+    void this.loadMembers();
+  }
+
+  async loadMembers(): Promise<void> {
+    try {
+      const researchGroupId = this.researchGroupId();
+      if (!researchGroupId) {
+        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
+        return;
+      }
+      const members = await firstValueFrom(
+        this.researchGroupService.getResearchGroupMembersById(researchGroupId, this.pageSize(), this.pageNumber()),
+      );
+
+      this.members.set(members.content ?? []);
+      this.total.set(members.totalElements ?? 0);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
+    }
+  }
+
+  async removeMember(member: UserShortDTO): Promise<void> {
+    try {
+      await firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(member.userId ?? ''));
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
+        memberName: `${member.firstName} ${member.lastName}`,
+      });
+
+      // Refresh the members list
+      await this.loadMembers();
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`, {
+        memberName: `${member.firstName} ${member.lastName}`,
+      });
+    }
+  }
+
+  private formatRoles(roles?: string[]): string {
+    if (!roles || roles.length === 0) {
+      return this.translate.instant(`${this.translationKey}.noRole`);
+    }
+
+    return roles[0].charAt(0).toUpperCase() + roles[0].slice(1).toLowerCase();
+  }
+
+  private isCurrentUser(member: UserShortDTO): boolean {
+    return member.userId === this.accountService.userId;
+  }
+}

@@ -1,1 +1,35 @@
-<p>research-group-remove-members.component works!</p>
+<div>
+  <!-- Members Table -->
+  <div class="table-wrapper">
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      [rows]="pageSize()"
+      [selectable]="false"
+      (lazyLoad)="loadOnTableEmit($event)"
+    />
+  </div>
+
+  <!-- Templates for dynamic table -->
+  <ng-template #nameTemplate let-member>
+    {{ member.name }}
+    @if (member.isCurrentUser) {
+      <fa-icon icon="circle-user" class="current-user-icon" [title]="'researchGroup.members.me' | translate" />
+    }
+  </ng-template>
+
+  <ng-template #deleteTemplate let-member>
+    <jhi-confirm-dialog
+      [label]="'button.remove' | translate"
+      [header]="'researchGroup.members.removeMemberModal.title' | translate"
+      [message]="'researchGroup.members.removeMemberModal.message' | translate"
+      confirmIcon="circle-minus"
+      (confirmed)="removeMember(member)"
+      severity="danger"
+      [tooltip]="'button.remove' | translate"
+      [iconOnly]="true"
+    />
+  </ng-template>
+</div>

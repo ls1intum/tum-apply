@@ -66,6 +66,28 @@ public class ResearchGroupResource {
     }
 
     /**
+     * Returns paginated members of the research group by the id.
+     *
+     * @param pageDTO the pagination parameters
+     * @return paginated list of members
+     */
+    @Admin
+    @GetMapping("/{researchGroupId}/members")
+    public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembersById(
+        @PathVariable UUID researchGroupId,
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+    ) {
+        log.info(
+            "GET /api/research-groups/{}/members?pageNumber={}&pageSize={}",
+            researchGroupId,
+            pageDTO.pageNumber(),
+            pageDTO.pageSize()
+        );
+        PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembersById(researchGroupId, pageDTO);
+        return ResponseEntity.ok(members);
+    }
+
+    /**
      * Removes a member from the current user's research group.
      *
      * @param userId the ID of the user to remove from the research group
@@ -82,7 +104,7 @@ public class ResearchGroupResource {
     /**
      * Get a specific research group by ID.
      *
-     * @param id the ID of the research group to retrieve
+     * @param id the ID of the research group to ret rieve
      * @return the research group
      */
     @GetMapping("/{id}")

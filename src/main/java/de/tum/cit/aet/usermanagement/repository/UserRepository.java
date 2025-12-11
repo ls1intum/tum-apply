@@ -81,6 +81,25 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     List<User> findUsersWithRolesByIdsForResearchGroup(@Param("userIds") List<UUID> userIds, @Param("currentUserId") UUID currentUserId);
 
     /**
+     * Finds users by their IDs with eagerly loaded research group roles and research group.
+     * Orders results alphabetically.
+     *
+     * @param userIds       the list of user IDs
+     * @return list of users with eagerly loaded collections
+     */
+    @Query(
+        """
+            SELECT u FROM User u
+            LEFT JOIN FETCH u.researchGroupRoles
+            LEFT JOIN FETCH u.researchGroup
+            WHERE u.userId IN :userIds
+            ORDER BY
+            u.firstName, u.lastName
+        """
+    )
+    List<User> findUsersWithRolesByIdsForResearchGroup(@Param("userIds") List<UUID> userIds);
+
+    /**
      * Finds a user by their university ID in a case-insensitive manner.
      *
      * @param universityId normalized university ID (e.g., "ab12cde")

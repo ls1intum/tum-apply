@@ -86,6 +86,29 @@ public class ResearchGroupService {
     }
 
     /**
+     * Get all members of the research group by id.
+     *
+     * @param researchGroupId the ID of the research group
+     * @param pageDTO pagination information
+     * @return paginated list of research group members
+     */
+    public PageResponseDTO<UserShortDTO> getResearchGroupMembersById(UUID researchGroupId, PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+
+        // First query: Get paginated user IDs to avoid N+1 query problem
+        Page<UUID> userIdsPage = userRepository.findUserIdsByResearchGroupId(researchGroupId, pageable);
+
+        if (userIdsPage.isEmpty()) {
+            return new PageResponseDTO<>(List.of(), 0L);
+        }
+
+        // Second query: Fetch full user data with collections for the paginated IDs
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent());
+
+        return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
+    }
+
+    /**
      * Removes a member from the current user's research group.
      * This operation removes both associated roles and direct research group membership.
      * @param userId the ID of the user to remove from the research group
