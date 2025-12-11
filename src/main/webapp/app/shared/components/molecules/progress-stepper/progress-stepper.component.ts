@@ -1,4 +1,16 @@
-import { Component, Signal, TemplateRef, computed, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  Signal,
+  TemplateRef,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 import { TranslateModule } from '@ngx-translate/core';
@@ -38,6 +50,11 @@ export class ProgressStepperComponent {
 
   shouldTranslate = input<boolean | undefined>(undefined);
 
+  /** Tracks whether the sticky footer is at the actual bottom of the page */
+  isAtBottom = signal<boolean>(false);
+
+  bottomSentinel = viewChild<ElementRef<HTMLDivElement>>('bottomSentinel');
+
   buttonGroupPrev: Signal<ButtonGroupData> = computed(() =>
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupPrev, 'prev', this.currentStep()),
   );
@@ -47,6 +64,25 @@ export class ProgressStepperComponent {
   buttonGroupNext: Signal<ButtonGroupData> = computed(() =>
     this.buildButtonGroupData(this.steps()[this.currentStep() - 1].buttonGroupNext, 'next', this.currentStep()),
   );
+
+  private destroyRef = inject(DestroyRef);
+
+  constructor() {
+    afterNextRender(() => {
+      const sentinel = this.bottomSentinel()?.nativeElement;
+      if (sentinel) {
+        const observer = new IntersectionObserver(
+          entries => {
+            // When sentinel is visible, sticky bottom is at actual bottom
+            this.isAtBottom.set(entries[0].isIntersecting);
+          },
+          { threshold: 0 },
+        );
+        observer.observe(sentinel);
+        this.destroyRef.onDestroy(() => observer.disconnect());
+      }
+    });
+  }
 
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {

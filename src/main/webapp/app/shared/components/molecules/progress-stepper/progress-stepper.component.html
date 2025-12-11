@@ -18,7 +18,9 @@
 </div>
 
 <div
-  class="sticky-footer sticky bottom-0 mt-auto py-2 bg-background-default transition-all duration-300 z-[1000] ease-in-out border-t border-border-default -mx-4 px-4 w-[calc(100%+2rem)] md:-mx-16 md:px-16 md:w-[calc(100%+8rem)]"
+  class="sticky-footer sticky bottom-0 mt-auto py-2 bg-background-default transition-all duration-300 z-[1000] ease-in-out -mx-4 px-4 w-[calc(100%+2rem)] md:-mx-16 md:px-16 md:w-[calc(100%+8rem)] border-t"
+  [class.border-border-default]="!isAtBottom()"
+  [class.border-transparent]="isAtBottom()"
 >
   <div class="flex justify-between transition-opacity duration-200 ease-in-out">
     <div>
@@ -32,3 +34,4 @@
     </div>
   </div>
 </div>
+<div #bottomSentinel class="h-px"></div>
