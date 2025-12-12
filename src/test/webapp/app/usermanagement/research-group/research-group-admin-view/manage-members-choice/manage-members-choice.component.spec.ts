@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
+import { vi } from 'vitest';
 import { provideDialogServiceMock, createDialogServiceMock } from 'src/test/webapp/util/dialog.service.mock';
 import {
   createResearchGroupResourceApiServiceMock,
@@ -10,6 +11,7 @@ import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { ManageMembersChoiceComponent } from 'app/usermanagement/research-group/research-group-admin-view/manage-members-choice/manage-members-choice.component';
 import { ResearchGroupRemoveMembersComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-remove-members/research-group-remove-members.component';
 import { ResearchGroupAddMembersComponent } from 'app/usermanagement/research-group/research-group-add-members/research-group-add-members.component';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 describe('ManageMembersChoiceComponent', () => {
   let component: ManageMembersChoiceComponent;
@@ -95,6 +97,33 @@ describe('ManageMembersChoiceComponent', () => {
       component.canAddMembers.set(false);
       fixture.detectChanges();
       expect(component.canAddMembers()).toBe(false);
+    });
+
+    it('should set hasMembers false when no researchGroupId provided', async () => {
+      const dynConfig = TestBed.inject(DynamicDialogConfig) as DynamicDialogConfig;
+      dynConfig.data = undefined;
+      fixture = TestBed.createComponent(ManageMembersChoiceComponent);
+      component = fixture.componentInstance;
+      await Promise.resolve();
+      expect(component.hasMembers()).toBe(false);
+      dynConfig.data = createDynamicDialogConfigMock({ researchGroupId: 'rg-123' }).data;
+    });
+
+    it('should set hasMembers false when totalElements is undefined', async () => {
+      mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of({ content: [{ userId: 'u-1' }] } as any));
+      // re-create component to trigger constructor and loadHasMembers
+      fixture = TestBed.createComponent(ManageMembersChoiceComponent);
+      component = fixture.componentInstance;
+      await Promise.resolve();
+      expect(component.hasMembers()).toBe(false);
+    });
+
+    it('should set hasMembers false when API throws during loadHasMembers', async () => {
+      mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(throwError(() => new Error('API Error')));
+      fixture = TestBed.createComponent(ManageMembersChoiceComponent);
+      component = fixture.componentInstance;
+      await Promise.resolve();
+      expect(component.hasMembers()).toBe(false);
     });
   });
 });

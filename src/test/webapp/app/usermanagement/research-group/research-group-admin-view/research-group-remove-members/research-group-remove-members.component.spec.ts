@@ -14,7 +14,7 @@ import {
   provideDynamicDialogRefMock,
   createDynamicDialogRefMock,
 } from 'src/test/webapp/util/dynamicdialogref.mock';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ResearchGroupRemoveMembersComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-remove-members/research-group-remove-members.component';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
@@ -70,6 +70,11 @@ describe('ResearchGroupRemoveMembersComponent (full coverage)', () => {
   describe('Component', () => {
     it('should create', () => {
       expect(component).toBeTruthy();
+    });
+    it('onCancel should close the dialog', () => {
+      const dynRef = TestBed.inject(DynamicDialogRef) as DynamicDialogRef;
+      component.onCancel();
+      expect(dynRef.close).toHaveBeenCalled();
     });
   });
 
@@ -185,6 +190,13 @@ describe('ResearchGroupRemoveMembersComponent (full coverage)', () => {
       expect(component.selectedCount()).toBe(0);
     });
 
+    it('toggleMemberSelection returns early on missing id', () => {
+      expect(component.selectedCount()).toBe(0);
+      const memberWithoutId: UserShortDTO = { ...member, userId: undefined } as unknown as UserShortDTO;
+      component.toggleMemberSelection(memberWithoutId);
+      expect(component.selectedCount()).toBe(0);
+    });
+
     it('removeSelectedMembers does nothing when no selection', async () => {
       component.selectedMembers.set(new Map());
       await component.removeSelectedMembers();
@@ -201,6 +213,72 @@ describe('ResearchGroupRemoveMembersComponent (full coverage)', () => {
       await component.removeSelectedMembers();
       expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith(member.userId);
       expect(component.selectedCount()).toBe(0);
+      // combined success message includes both names
+      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.removeSuccess', {
+        memberName: expect.stringContaining('John Doe'),
+      });
+    });
+
+    it('removeSelectedMembers handles members with undefined userId', async () => {
+      const member2: UserShortDTO = {
+        userId: undefined as unknown as string,
+        firstName: 'Janet',
+        lastName: 'Roe',
+        email: 'janet.roe@test.com',
+        roles: ['APPLICANT'],
+      };
+
+      mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(
+        of({ content: [member, member2], totalElements: 2 } as PageResponseDTOUserShortDTO),
+      );
+
+      // set selectedMembers map directly, since toggleMemberSelection ignores undefined ids
+      const selected = new Map<string, UserShortDTO>();
+      selected.set(member.userId ?? '', member);
+      selected.set('', member2);
+      component.selectedMembers.set(selected);
+      expect(component.selectedCount()).toBe(2);
+
+      // ensure each call returns success
+      mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
+      await component.removeSelectedMembers();
+
+      // both should have been called: one with id and one with empty string for undefined id
+      expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith(member.userId);
+      expect(mockResearchGroupService.removeMemberFromResearchGroup).toHaveBeenCalledWith('');
+      expect(mockResearchGroupService.removeMemberFromResearchGroup.mock.calls.length).toBe(2);
+      // selection cleared
+      expect(component.selectedCount()).toBe(0);
+    });
+
+    it('removeSelectedMembers retains selection when one removal fails', async () => {
+      const member2: UserShortDTO = {
+        userId: 'u-2',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane.smith@test.com',
+        roles: ['APPLICANT'],
+      };
+
+      mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(
+        of({ content: [member, member2], totalElements: 2 } as PageResponseDTOUserShortDTO),
+      );
+
+      component.toggleMemberSelection(member);
+      component.toggleMemberSelection(member2);
+      expect(component.selectedCount()).toBe(2);
+
+      // first call succeeds, second call fails
+      mockResearchGroupService.removeMemberFromResearchGroup = vi
+        .fn()
+        .mockReturnValueOnce(of(void 0))
+        .mockReturnValueOnce(throwError(() => new Error('API Error')));
+
+      await component.removeSelectedMembers();
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalled();
+      // selection should remain unchanged because of failure
+      expect(component.selectedCount()).toBe(2);
     });
 
     it('removeSelectedMembers shows error and retains selection on failure', async () => {
