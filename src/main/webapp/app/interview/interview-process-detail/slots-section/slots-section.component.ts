@@ -10,6 +10,7 @@ import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -33,6 +34,7 @@ interface GroupedSlots {
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
+    SlotCreationFormComponent,
     FontAwesomeModule,
   ],
   templateUrl: './slots-section.component.html',
@@ -48,7 +50,7 @@ export class SlotsSectionComponent {
   currentMonthOffset = signal(0); // 0 = current month, -1 = previous month, +1 = next month
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
-
+  showSlotCreationForm = signal(false);
   // Computed properties
   /**
    * Groups slots by date and sorts them chronologically
@@ -166,7 +168,7 @@ export class SlotsSectionComponent {
   });
 
   openCreateSlotsModal(): void {
-    // TODO: Open Create Slots Modal
+    this.showSlotCreationForm.set(true);
   }
 
   async refreshSlots(): Promise<void> {
@@ -174,6 +176,10 @@ export class SlotsSectionComponent {
     if (id) {
       await this.loadSlots(id);
     }
+  }
+
+  onSlotsCreated(): void {
+    void this.refreshSlots();
   }
 
   previousMonth(): void {
