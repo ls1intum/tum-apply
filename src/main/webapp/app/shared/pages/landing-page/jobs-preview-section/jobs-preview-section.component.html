@@ -36,7 +36,6 @@
           [shouldTranslate]="true"
           severity="primary"
           variant="outlined"
-          [styleClass]="'text-sm font-medium'"
           (click)="goToJobOverview()"
         />
       </div>
@@ -45,6 +44,16 @@
     @if (!hasJobs()) {
       <div class="text-center py-8 text-[var(--p-text-secondary)]">
         <p jhiTranslate="landingPage.jobsPreview.noJobs">No jobs available at the moment</p>
+      </div>
+
+      <div class="flex justify-center pt-4">
+        <jhi-button
+          [label]="'landingPage.jobsPreview.goToJobOverview'"
+          [shouldTranslate]="true"
+          severity="primary"
+          variant="outlined"
+          (click)="goToJobOverview()"
+        />
       </div>
     }
   </div>

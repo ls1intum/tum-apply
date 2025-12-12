@@ -109,6 +109,7 @@
       "subline": "A short selection of open positions",
       "seeMore": "View all positions",
       "noJobs": "No jobs available at the moment",
+      "goToJobOverview": "Go to job overview",
       "loadFailed": "Failed to load jobs"
     }
   }
