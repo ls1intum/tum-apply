@@ -116,7 +116,7 @@
                           [ngModel]="range.startTimeString || ''"
                           (ngModelChange)="onStartInput(rangeIndex, $event)"
                           placeholder="--:--"
-                          styleClass="w-17 h-8 text-sm text-center font-normal"
+                          styleClass="w-17 h-8 text-sm text-center font-normal border border-border-default focus:border-primary-default outline-none shadow-none"
                         />
                       </div>
 
@@ -134,7 +134,7 @@
                             (ngModelChange)="onEndInput(rangeIndex, $event)"
                             placeholder="--:--"
                             [disabled]="range.type === 'single'"
-                            styleClass="w-17 h-8 text-sm text-center font-normal"
+                            styleClass="w-17 h-8 text-sm text-center font-normal border border-border-default focus:border-primary-default outline-none shadow-none"
                           />
                         </div>
                       } @else {
