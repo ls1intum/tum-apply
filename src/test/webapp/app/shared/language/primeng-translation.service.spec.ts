@@ -35,6 +35,7 @@ describe('PrimengTranslationService', () => {
 
   afterEach(() => {
     langChangeSubject.complete();
+    vi.clearAllMocks();
   });
 
   describe('Initialization', () => {
@@ -206,7 +207,6 @@ describe('PrimengTranslationService', () => {
     beforeEach(() => {
       mockTranslate.getCurrentLang = vi.fn().mockReturnValue('en');
       service = TestBed.inject(PrimengTranslationService);
-      vi.clearAllMocks();
     });
 
     it('should switch to German when language changes from en to de', () => {
@@ -223,11 +223,7 @@ describe('PrimengTranslationService', () => {
     });
 
     it('should switch to English when language changes from de to en', () => {
-      // First switch to German
       langChangeSubject.next({ lang: 'de' });
-      vi.clearAllMocks();
-
-      // Then switch back to English
       langChangeSubject.next({ lang: 'en' });
 
       expect(primeNG.setTranslation).toHaveBeenCalledWith(
@@ -244,7 +240,6 @@ describe('PrimengTranslationService', () => {
       langChangeSubject.next({ lang: 'DE' });
       expect(primeNG.setTranslation).toHaveBeenCalledWith(expect.objectContaining({ today: 'Heute' }));
 
-      vi.clearAllMocks();
       langChangeSubject.next({ lang: 'dE' });
       expect(primeNG.setTranslation).toHaveBeenCalledWith(expect.objectContaining({ today: 'Heute' }));
     });
@@ -253,11 +248,9 @@ describe('PrimengTranslationService', () => {
       langChangeSubject.next({ lang: 'fr' });
       expect(primeNG.setTranslation).toHaveBeenCalledWith(expect.objectContaining({ today: 'Today' }));
 
-      vi.clearAllMocks();
       langChangeSubject.next({ lang: 'es' });
       expect(primeNG.setTranslation).toHaveBeenCalledWith(expect.objectContaining({ today: 'Today' }));
 
-      vi.clearAllMocks();
       langChangeSubject.next({ lang: 'zh' });
       expect(primeNG.setTranslation).toHaveBeenCalledWith(expect.objectContaining({ today: 'Today' }));
     });
