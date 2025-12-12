@@ -287,7 +287,7 @@ export class SlotCreationFormComponent {
       return;
     }
 
-    // Validate that all slots have a location
+    // Validate that all slots have a location to display red border if missing
     const hasMissingLocation = allSlots.some(slot => !slot.location || slot.location.trim() === '');
     if (hasMissingLocation) {
       this.showValidationErrors.set(true);
