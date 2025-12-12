@@ -23,21 +23,15 @@
             -->
             <!-- Label container -->
             <div
-              class="grow cursor-pointer px-3 py-2 hover:rounded-lg"
+              class="grow cursor-pointer px-3 py-2 rounded hover:text-text-on-primary hover:bg-primary-default"
+              [class.bg-background-surface-alt]="isSelected(item.document.id)()"
               (click)="selectDoc(item.document.id)"
-              [class.bg-[var(--p-background-surface-alt)]]="isSelected(item.document.id)()"
-              [class.hover:bg-[var(--p-primary-color)]]="!isSelected(item.document.id)()"
-              [class.rounded-lg]="isSelected(item.document.id)()"
               role="button"
               tabindex="0"
               (keydown.enter)="selectDoc(item.document.id)"
               (keydown.space)="selectDoc(item.document.id); $event.preventDefault()"
             >
-              <span
-                class="block truncate"
-                [class.text-[var(--p-text-on-primary)]]="isSelected(item.document.id)()"
-                [jhiTranslate]="item.label"
-              ></span>
+              <span class="block truncate" [jhiTranslate]="item.label"></span>
             </div>
           </li>
         }
