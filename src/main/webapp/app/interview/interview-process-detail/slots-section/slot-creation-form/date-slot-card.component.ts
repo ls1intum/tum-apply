@@ -27,8 +27,6 @@ export interface SlotRange {
   slots: InterviewSlotDTO[];
 }
 
-export type RangeUpdater = (ranges: SlotRange[]) => SlotRange[];
-
 @Component({
   selector: 'jhi-date-slot-card',
   standalone: true,
@@ -395,7 +393,7 @@ export class DateSlotCardComponent {
    * Helper to update ranges and emit changes.
    * Replaces the implicit emitEffect.
    */
-  private updateRanges(updater: RangeUpdater): void {
+  private updateRanges(updater: (ranges: SlotRange[]) => SlotRange[]): void {
     this.slotRanges.update(updater);
     this.emitSlots();
   }
