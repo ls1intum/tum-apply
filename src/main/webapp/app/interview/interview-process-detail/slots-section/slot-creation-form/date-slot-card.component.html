@@ -25,7 +25,8 @@
     <!-- Right: Slot type Buttons + Delete Date -->
     <div class="flex gap-2 items-center">
       <jhi-button
-        [label]="'interview.slots.create.addSlot' | translate"
+        [label]="'interview.slots.create.addSlot'"
+        [shouldTranslate]="true"
         variant="outlined"
         size="xs"
         icon="plus"
@@ -36,7 +37,8 @@
       />
 
       <jhi-button
-        [label]="'interview.slots.create.addRange' | translate"
+        [label]="'interview.slots.create.addRange'"
+        [shouldTranslate]="true"
         variant="outlined"
         size="xs"
         icon="plus"
@@ -226,7 +228,8 @@
       @if (showApplyAll()) {
         <div class="mt-4 pt-3 border-t border-border-default flex items-center">
           <jhi-button
-            [label]="'interview.slots.create.sameSlotsForAllDays' | translate"
+            [label]="'interview.slots.create.sameSlotsForAllDays'"
+            [shouldTranslate]="true"
             variant="outlined"
             size="xs"
             (click)="applyAll.emit(true)"

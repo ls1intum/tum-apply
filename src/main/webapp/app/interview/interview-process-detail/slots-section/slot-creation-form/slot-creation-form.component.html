@@ -46,7 +46,7 @@
           size="xs"
           styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomDurationMode()
-              ? 'bg-primary-default text-white font-semibold'
+              ? 'bg-primary-default text-text-on-primary font-semibold'
               : 'bg-transparent text-text-secondary hover:bg-background-surface-alt'
           }}"
           (click)="selectDuration(-1)"
@@ -93,7 +93,7 @@
             size="xs"
             styleClass="w-full rounded-md border-none shadow-none transition-all {{
               !isCustomBreakMode() && breakDuration() === option.value
-                ? 'bg-primary-default text-white font-semibold'
+                ? 'bg-primary-default text-text-on-primary font-semibold'
                 : 'bg-transparent text-text-secondary  hover:bg-background-surface-alt'
             }}"
             (click)="selectBreak(option.value)"
@@ -108,7 +108,7 @@
           size="xs"
           styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomBreakMode()
-              ? 'bg-primary-default text-white font-semibold'
+              ? 'bg-primary-default text-text-on-primary font-semibold'
               : 'bg-transparent text-text-secondary hover:bg-background-surface-alt'
           }}"
           (click)="selectBreak(-1)"
@@ -185,7 +185,8 @@
 
         <div class="mt-2 flex justify-end">
           <jhi-button
-            [label]="'interview.slots.create.saveSlots' | translate"
+            [label]="'interview.slots.create.saveSlots'"
+            [shouldTranslate]="true"
             size="md"
             (click)="submit()"
             [loading]="isSubmitting()"

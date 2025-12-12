@@ -27,6 +27,8 @@ export interface SlotRange {
   slots: InterviewSlotDTO[];
 }
 
+export type RangeUpdater = (ranges: SlotRange[]) => SlotRange[];
+
 @Component({
   selector: 'jhi-date-slot-card',
   standalone: true,
@@ -194,7 +196,7 @@ export class DateSlotCardComponent {
    * @param index The index of the range to remove.
    */
   removeRange(index: number): void {
-    this.updateRanges(ranges => ranges.filter((_, i) => i !== index));
+    this.updateRanges(ranges => ranges.filter((range, i) => i !== index));
   }
 
   /**
@@ -208,7 +210,7 @@ export class DateSlotCardComponent {
         if (i !== rangeIndex) return range;
         return {
           ...range,
-          slots: range.slots.filter((_, j) => j !== slotIndex),
+          slots: range.slots.filter((slot, j) => j !== slotIndex),
         };
       }),
     );
@@ -393,7 +395,7 @@ export class DateSlotCardComponent {
    * Helper to update ranges and emit changes.
    * Replaces the implicit emitEffect.
    */
-  private updateRanges(updater: (_currentRanges: SlotRange[]) => SlotRange[]): void {
+  private updateRanges(updater: RangeUpdater): void {
     this.slotRanges.update(updater);
     this.emitSlots();
   }
