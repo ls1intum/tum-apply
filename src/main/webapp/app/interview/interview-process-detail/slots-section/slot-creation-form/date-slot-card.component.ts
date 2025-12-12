@@ -633,7 +633,6 @@ export class DateSlotCardComponent {
       return false;
     }
 
-
     const slotsIteratorA = a.values();
     const slotsIteratorB = b.values();
 
