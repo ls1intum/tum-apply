@@ -207,6 +207,10 @@
                       <span class="mt-1 text-xs font-medium text-text-secondary">
                         {{ 'interview.slots.create.addStartAndEndTime' | translate }}
                       </span>
+                    } @else if (range.type === 'range' && range.startTime && range.endTime && range.slots.length === 0) {
+                      <span class="mt-1 text-xs font-medium text-negative-default">
+                        {{ 'interview.slots.create.validation.rangeTooShort' | translate: { duration: range.duration } }}
+                      </span>
                     }
 
                     <!-- Conflict Error (Single Slot) -->

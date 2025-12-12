@@ -114,7 +114,8 @@
           "locationRequired": {
             "summary": "Missing Location",
             "detail": "Location is required for all slots"
-          }
+          },
+          "rangeTooShort": "Time range is too short for a {{duration}} min interview"
         },
         "interviewLength": "Interview Length",
         "interviewBreaks": "Interview Breaks",

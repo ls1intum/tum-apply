@@ -113,7 +113,8 @@
           "locationRequired": {
             "summary": "Ort fehlt",
             "detail": "Ort ist für alle Termine erforderlich"
-          }
+          },
+          "rangeTooShort": "Der Zeitraum ist zu kurz für ein {{duration}}-minütiges Interview"
         },
         "interviewLength": "Interviewdauer",
         "interviewBreaks": "Pausen",
