@@ -429,7 +429,7 @@ describe('ResearchGroupAdminView', () => {
       } as unknown as DynamicDialogRef;
 
       mockDialogService.open.mockReturnValue(mockDialogRef);
-      component.onAddMembers('rg-1');
+      component.onManageMembers('rg-1');
       await Promise.resolve();
 
       expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
@@ -563,17 +563,35 @@ describe('ResearchGroupAdminView', () => {
       mockDialogService.open.mockReturnValue(mockDialogRef);
       mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
 
-      component.onAddMembers('rg-1');
+      component.onManageMembers('rg-1');
       await Promise.resolve();
 
       expect(mockDialogService.open).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
-          header: 'researchGroup.members.addMembers',
+          header: 'researchGroup.members.manageMembers',
           data: { researchGroupId: 'rg-1' },
         }),
       );
       expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+    });
+
+    it('should not render manage members button for denied groups', async () => {
+      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
+      component.loadOnTableEmit({ first: 0, rows: 10 });
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+      // find the row that contains the denied group's researchGroup name
+      const deniedRow = Array.from(rows).find((r: any) => {
+        const text = (r && (r.innerText || r.textContent)) ?? '';
+        return text.includes('Data Science Lab');
+      }) as Element | undefined;
+      expect(deniedRow).toBeDefined();
+      const deniedEl = deniedRow as Element;
+      const manageButton = deniedEl.querySelector('[aria-label="researchGroup.members.manageMembers"]');
+      expect(manageButton).toBeNull();
     });
   });
 });

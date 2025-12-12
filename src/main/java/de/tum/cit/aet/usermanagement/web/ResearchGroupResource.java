@@ -5,7 +5,6 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
-import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -66,12 +65,35 @@ public class ResearchGroupResource {
     }
 
     /**
+     * Returns paginated members of the research group by the id.
+     *
+     * @param researchGroupId the ID of the research group
+     * @param pageDTO the pagination parameters
+     * @return paginated list of members
+     */
+    @Admin
+    @GetMapping("/{researchGroupId}/members")
+    public ResponseEntity<PageResponseDTO<UserShortDTO>> getResearchGroupMembersById(
+        @PathVariable UUID researchGroupId,
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+    ) {
+        log.info(
+            "GET /api/research-groups/{}/members?pageNumber={}&pageSize={}",
+            researchGroupId,
+            pageDTO.pageNumber(),
+            pageDTO.pageSize()
+        );
+        PageResponseDTO<UserShortDTO> members = researchGroupService.getResearchGroupMembersById(researchGroupId, pageDTO);
+        return ResponseEntity.ok(members);
+    }
+
+    /**
      * Removes a member from the current user's research group.
      *
      * @param userId the ID of the user to remove from the research group
      * @return no content response
      */
-    @Professor
+    @ProfessorOrAdmin
     @DeleteMapping("/members/{userId}")
     public ResponseEntity<Void> removeMemberFromResearchGroup(@PathVariable UUID userId) {
         log.info("DELETE /api/research-groups/members/{}", userId);

@@ -4,7 +4,6 @@ import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
-import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.ImageService;

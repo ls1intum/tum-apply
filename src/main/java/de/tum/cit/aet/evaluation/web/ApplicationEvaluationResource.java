@@ -2,7 +2,6 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;

@@ -61,10 +61,12 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
 
     /**
      * Finds users by their IDs with eagerly loaded research group roles and research group.
-     * Orders results with the current user first, then alphabetically.
+     * If a currentUserId is provided (non-null), the result will order that user first
+     * and then the rest alphabetically by first and last name. If currentUserId is null,
+     * the list will be ordered alphabetically.
      *
      * @param userIds       the list of user IDs
-     * @param currentUserId the current user's ID to display first
+     * @param currentUserId (nullable) the current user's ID to display first. Pass null to fallback to pure alphabetical order.
      * @return list of users with eagerly loaded collections
      */
     @Query(
@@ -74,7 +76,7 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
             LEFT JOIN FETCH u.researchGroup
             WHERE u.userId IN :userIds
             ORDER BY
-            CASE WHEN u.userId = :currentUserId THEN 0 ELSE 1 END,
+            CASE WHEN :currentUserId IS NOT NULL AND u.userId = :currentUserId THEN 0 ELSE 1 END,
             u.firstName, u.lastName
         """
     )

@@ -3,11 +3,9 @@ package de.tum.cit.aet.usermanagement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import de.tum.cit.aet.core.domain.CurrentUser;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -160,6 +158,17 @@ class ResearchGroupServiceTest {
         }
     }
 
+    @Test
+    void shouldThrowExceptionWhenUserNotFound() {
+        // Arrange
+        when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
+            .isInstanceOf(EntityNotFoundException.class)
+            .hasMessageContaining("User");
+    }
+
     @Nested
     class RemoveMemberFromResearchGroup {
 
@@ -180,27 +189,10 @@ class ResearchGroupServiceTest {
 
             when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
             when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
-
-            // Mock CurrentUser as Employee
-            CurrentUser currentUserMock = mock(CurrentUser.class);
-            when(currentUserMock.isProfessor()).thenReturn(false);
-            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
-
             // Act & Assert
             assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("You do not have permission to remove a Professor");
-        }
-
-        @Test
-        void shouldThrowExceptionWhenUserNotFound() {
-            // Arrange
-            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.empty());
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("User");
         }
 
         @Test
