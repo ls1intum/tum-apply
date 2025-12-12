@@ -162,7 +162,7 @@
 
       @if (sortedDates().length === 0) {
         <div class="flex h-full flex-col items-center justify-center text-text-secondary">
-          <i class="fa-regular fa-calendar text-4xl mb-4"></i>
+          <fa-icon [icon]="['fas', 'calendar-plus']" class="text-4xl mb-4 text-text-secondary" />
           <h4 class="text-lg font-medium">{{ 'interview.slots.create.noDateSelected' | translate }}</h4>
           <p>{{ 'interview.slots.create.noDateSelectedDesc' | translate }}</p>
         </div>
