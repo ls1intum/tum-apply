@@ -633,7 +633,7 @@ export class DateSlotCardComponent {
       return false;
     }
 
-    // Use iterators to avoid direct index access, protecting against "Object Injection Sink" scanners
+
     const slotsIteratorA = a.values();
     const slotsIteratorB = b.values();
 
