@@ -12,12 +12,37 @@
     />
   </div>
 
+  <div class="flex justify-end gap-2 mt-2">
+    <jhi-button [label]="'button.cancel' | translate" severity="secondary" variant="outlined" (click)="onCancel()" />
+
+    <jhi-confirm-dialog
+      [label]="'researchGroup.members.removeSelectedButton' | translate"
+      [header]="'researchGroup.members.removeMembers' | translate"
+      [message]="'researchGroup.members.removeSelectedConfirm' | translate"
+      confirmIcon="circle-minus"
+      (confirmed)="removeSelectedMembers()"
+      severity="danger"
+      [disabled]="selectedCount() === 0"
+      [tooltip]="'researchGroup.members.removeSelectedButton' | translate"
+    />
+  </div>
+
   <!-- Templates for dynamic table -->
   <ng-template #nameTemplate let-member>
-    {{ member.name }}
-    @if (member.isCurrentUser) {
-      <fa-icon icon="circle-user" class="current-user-icon" [title]="'researchGroup.members.me' | translate" />
-    }
+    <div class="flex gap-4 items-center">
+      <p-checkbox
+        [ngModel]="selectedMembers().has(member.userId)"
+        (ngModelChange)="toggleMemberSelection(member)"
+        (click)="$event.stopPropagation()"
+        [binary]="true"
+      />
+      <div class="flex items-center gap-2">
+        {{ member.name }}
+        @if (member.isCurrentUser) {
+          <fa-icon icon="circle-user" class="current-user-icon" [title]="'researchGroup.members.me' | translate" />
+        }
+      </div>
+    </div>
   </ng-template>
 
   <ng-template #deleteTemplate let-member>

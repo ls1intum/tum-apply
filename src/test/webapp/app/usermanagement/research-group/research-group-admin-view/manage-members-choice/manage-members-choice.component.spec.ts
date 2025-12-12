@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { provideDialogServiceMock, createDialogServiceMock } from 'src/test/webapp/util/dialog.service.mock';
+import {
+  createResearchGroupResourceApiServiceMock,
+  provideResearchGroupResourceApiServiceMock,
+} from 'src/test/webapp/util/research-group-resource-api.service.mock';
 import { provideDynamicDialogConfigMock, createDynamicDialogConfigMock } from 'src/test/webapp/util/dynamicdialogref.mock';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { ManageMembersChoiceComponent } from 'app/usermanagement/research-group/research-group-admin-view/manage-members-choice/manage-members-choice.component';
@@ -10,9 +15,12 @@ describe('ManageMembersChoiceComponent', () => {
   let component: ManageMembersChoiceComponent;
   let fixture: ComponentFixture<ManageMembersChoiceComponent>;
   let mockDialogService: ReturnType<typeof createDialogServiceMock>;
+  let mockResearchGroupService: ReturnType<typeof createResearchGroupResourceApiServiceMock>;
 
   beforeEach(async () => {
     mockDialogService = createDialogServiceMock();
+    mockResearchGroupService = createResearchGroupResourceApiServiceMock();
+    mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of({ content: [], totalElements: 0 }));
 
     await TestBed.configureTestingModule({
       imports: [ManageMembersChoiceComponent],
@@ -20,6 +28,7 @@ describe('ManageMembersChoiceComponent', () => {
         provideDialogServiceMock(mockDialogService),
         provideDynamicDialogConfigMock(createDynamicDialogConfigMock({ researchGroupId: 'rg-123' })),
         provideTranslateMock(),
+        provideResearchGroupResourceApiServiceMock(mockResearchGroupService),
       ],
     }).compileComponents();
 
@@ -62,10 +71,24 @@ describe('ManageMembersChoiceComponent', () => {
   });
 
   describe('Button States', () => {
-    it('should disable remove button when hasMembers is false', () => {
-      component.hasMembers.set(false);
-      fixture.detectChanges();
+    it('should disable remove button when research group has no members', async () => {
+      mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of({ content: [], totalElements: 0 }));
+      // re-create component to trigger constructor and loadHasMembers
+      fixture = TestBed.createComponent(ManageMembersChoiceComponent);
+      component = fixture.componentInstance;
+      // allow async load
+      await Promise.resolve();
       expect(component.hasMembers()).toBe(false);
+    });
+
+    it('should enable remove button when research group has members', async () => {
+      mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of({ content: [{ userId: 'u-1' }], totalElements: 1 }));
+      // re-create component to trigger constructor and loadHasMembers
+      fixture = TestBed.createComponent(ManageMembersChoiceComponent);
+      component = fixture.componentInstance;
+      // allow async load
+      await Promise.resolve();
+      expect(component.hasMembers()).toBe(true);
     });
 
     it('should disable add button when canAddMembers is false', () => {

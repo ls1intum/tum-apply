@@ -119,6 +119,8 @@
         "title": "Mitglied entfernen",
         "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
       },
+      "removeSelectedButton": "Ausgewählte entfernen",
+      "removeSelectedConfirm": "Möchtest du die ausgewählten Mitglieder wirklich entfernen?",
 
       "toastMessages": {
         "loadFailed": {

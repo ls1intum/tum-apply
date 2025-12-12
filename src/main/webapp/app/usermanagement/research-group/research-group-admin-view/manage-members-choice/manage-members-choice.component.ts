@@ -1,4 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { ResearchGroupResourceApiService } from 'app/generated';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -20,12 +22,17 @@ export class ManageMembersChoiceComponent {
   private readonly config = inject(DynamicDialogConfig);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
+  private readonly researchGroupService = inject(ResearchGroupResourceApiService);
+
+  constructor() {
+    void this.loadHasMembers();
+  }
 
   openRemoveMembersDialog(): void {
     this.dialogService.open(ResearchGroupRemoveMembersComponent, {
       header: this.translate.instant('researchGroup.members.removeMembers'),
       data: { researchGroupId: this.researchGroupId() },
-      style: { background: 'var(--color-background-default)', width: '60rem', maxWidth: '60rem' },
+      style: { background: 'var(--color-background-default)', width: '60rem' },
       draggable: false,
       closable: true,
       modal: true,
@@ -36,10 +43,24 @@ export class ManageMembersChoiceComponent {
     this.dialogService.open(ResearchGroupAddMembersComponent, {
       header: this.translate.instant('researchGroup.members.addMembers'),
       data: { researchGroupId: this.researchGroupId() },
-      style: { background: 'var(--color-background-default)', width: '60rem', maxWidth: '60rem' },
+      style: { background: 'var(--color-background-default)', width: '60rem' },
       draggable: false,
       closable: true,
       modal: true,
     });
+  }
+
+  private async loadHasMembers(): Promise<void> {
+    const rgId = this.researchGroupId();
+    if (!rgId) {
+      this.hasMembers.set(false);
+      return;
+    }
+    try {
+      const resp = await firstValueFrom(this.researchGroupService.getResearchGroupMembersById(rgId, 1, 0));
+      this.hasMembers.set((resp.totalElements ?? 0) > 0);
+    } catch {
+      this.hasMembers.set(false);
+    }
   }
 }

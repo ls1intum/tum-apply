@@ -5,15 +5,18 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/api';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ToastService } from 'app/service/toast-service';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FormsModule } from '@angular/forms';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-research-group-remove-members.component',
-  imports: [DynamicTableComponent, ConfirmDialog, FontAwesomeModule, TranslateModule],
+  imports: [DynamicTableComponent, ConfirmDialog, FontAwesomeModule, TranslateModule, ButtonComponent, CheckboxModule, FormsModule],
   templateUrl: './research-group-remove-members.component.html',
 })
 export class ResearchGroupRemoveMembersComponent {
@@ -23,6 +26,8 @@ export class ResearchGroupRemoveMembersComponent {
   pageNumber = signal<number>(0);
   pageSize = signal<number>(10);
   total = signal<number>(0);
+  selectedMembers = signal<Map<string, UserShortDTO>>(new Map());
+  selectedCount = computed(() => this.selectedMembers().size);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -32,9 +37,9 @@ export class ResearchGroupRemoveMembersComponent {
     const deleteTemplate = this.deleteTemplate();
 
     return [
-      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem', template: nameTemplate },
+      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '30rem', template: nameTemplate },
       { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
-      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
+      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '22rem' },
       { field: 'actions', header: '', width: '5rem', template: deleteTemplate },
     ];
   });
@@ -56,9 +61,14 @@ export class ResearchGroupRemoveMembersComponent {
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
+  private readonly dialogRef = inject(DynamicDialogRef);
 
   private readonly config = inject(DynamicDialogConfig);
   private readonly translationKey: string = 'researchGroup.members';
+
+  constructor() {
+    void this.loadMembers();
+  }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
@@ -67,6 +77,10 @@ export class ResearchGroupRemoveMembersComponent {
     this.pageSize.set(rows);
 
     void this.loadMembers();
+  }
+
+  onCancel(): void {
+    this.dialogRef.close();
   }
 
   async loadMembers(): Promise<void> {
@@ -100,6 +114,38 @@ export class ResearchGroupRemoveMembersComponent {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`, {
         memberName: `${member.firstName} ${member.lastName}`,
       });
+    }
+  }
+
+  toggleMemberSelection(member: UserShortDTO): void {
+    const id = member.userId ?? '';
+    const current = new Map(this.selectedMembers());
+    if (!id) {
+      return;
+    }
+    if (current.has(id)) {
+      current.delete(id);
+    } else {
+      current.set(id, member);
+    }
+    this.selectedMembers.set(current);
+  }
+
+  async removeSelectedMembers(): Promise<void> {
+    const members = Array.from(this.selectedMembers().values());
+    if (members.length === 0) {
+      return;
+    }
+    try {
+      // call deletion for each member and wait for all
+      await Promise.all(members.map(m => firstValueFrom(this.researchGroupService.removeMemberFromResearchGroup(m.userId ?? ''))));
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.removeSuccess`, {
+        memberName: members.map(m => `${m.firstName} ${m.lastName}`).join(', '),
+      });
+      this.selectedMembers.set(new Map());
+      await this.loadMembers();
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.toastMessages.removeFailed`);
     }
   }
 

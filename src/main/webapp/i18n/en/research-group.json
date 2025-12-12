@@ -119,6 +119,8 @@
         "title": "Remove Member",
         "message": "Are you sure you want to remove this member from the research group?"
       },
+      "removeSelectedButton": "Remove selected",
+      "removeSelectedConfirm": "Are you sure you want to remove the selected members?",
 
       "toastMessages": {
         "loadFailed": {
