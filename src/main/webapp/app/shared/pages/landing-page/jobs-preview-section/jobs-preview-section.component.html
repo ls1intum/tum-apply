@@ -1,39 +1,59 @@
-<div class="py-8 px-4 lg:px-8">
+<div class="pt-6 px-6 lg:px-8">
   <div class="max-w-[75rem] mx-auto">
     <div class="header flex items-center justify-between mb-6">
       <div>
         <h2 class="text-2xl font-bold text-text-primary" jhiTranslate="landingPage.jobsPreview.headline">Jobs</h2>
         <p class="text-sm text-text-secondary" jhiTranslate="landingPage.jobsPreview.subline">Latest jobs in your area</p>
       </div>
-      <div>
-        <jhi-button [label]="'landingPage.jobsPreview.seeMore'" [shouldTranslate]="true" severity="primary" (click)="goToJobOverview()" />
-      </div>
     </div>
 
     @if (hasJobs()) {
-      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <!-- Use flex with wrapping and center alignment so rows with few cards are centered -->
+      <div class="flex flex-wrap gap-6 justify-center">
         @for (job of jobs(); track job.jobId; let i = $index) {
-          <div class="w-full min-w-[16.5rem] max-w-[20rem] flex-[1_1_16.5rem] mx-auto">
-            <jhi-job-card
-              [jobId]="job.jobId"
-              [jobTitle]="job.title"
-              [departmentName]="job.departmentName ?? 'No Department'"
-              [location]="job.location"
-              [professor]="job.professorName"
-              [workload]="job.workload"
-              [startDate]="job.startDate"
-              [applicationId]="job.applicationId"
-              [contractDuration]="job.contractDuration"
-              [headerImageUrl]="job.imageUrl"
-            />
+          <!-- Use shrink/grow basis with min/max to ensure cards fit on a single row if possible -->
+          <div class="flex-[1_1_16.5rem] min-w-[16.5rem] max-w-[20rem] px-2 flex justify-center">
+            <div class="w-full">
+              <jhi-job-card
+                [jobId]="job.jobId"
+                [jobTitle]="job.title"
+                [departmentName]="job.departmentName ?? 'No Department'"
+                [location]="job.location"
+                [professor]="job.professorName"
+                [workload]="job.workload"
+                [startDate]="job.startDate"
+                [applicationId]="job.applicationId"
+                [contractDuration]="job.contractDuration"
+                [headerImageUrl]="job.imageUrl"
+              />
+            </div>
           </div>
         }
+      </div>
+      <div class="flex justify-center pt-4">
+        <jhi-button
+          [label]="'landingPage.jobsPreview.seeMore'"
+          [shouldTranslate]="true"
+          severity="primary"
+          variant="outlined"
+          (click)="goToJobOverview()"
+        />
       </div>
     }
 
     @if (!hasJobs()) {
       <div class="text-center py-8 text-[var(--p-text-secondary)]">
         <p jhiTranslate="landingPage.jobsPreview.noJobs">No jobs available at the moment</p>
+      </div>
+
+      <div class="flex justify-center pt-4">
+        <jhi-button
+          [label]="'landingPage.jobsPreview.goToJobOverview'"
+          [shouldTranslate]="true"
+          severity="primary"
+          variant="outlined"
+          (click)="goToJobOverview()"
+        />
       </div>
     }
   </div>
