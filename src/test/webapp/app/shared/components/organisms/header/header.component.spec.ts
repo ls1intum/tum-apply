@@ -300,7 +300,7 @@ describe('HeaderComponent', () => {
           return 0;
         });
 
-      component.toggleColorScheme();
+      component.setTheme('dark');
 
       expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(true);
       expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
@@ -317,7 +317,7 @@ describe('HeaderComponent', () => {
           return 0;
         });
 
-      component.toggleColorScheme();
+      component.setTheme('light');
 
       expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(false);
       expect(localStorage.getItem('tumApplyTheme')).toBe('light');

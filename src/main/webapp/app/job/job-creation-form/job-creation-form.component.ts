@@ -14,6 +14,7 @@ import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/share
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { CheckboxModule } from 'primeng/checkbox';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -56,6 +57,7 @@ type JobFormMode = 'create' | 'edit';
     DividerModule,
     ButtonComponent,
     ProgressSpinnerModule,
+    CheckboxModule,
   ],
   providers: [JobResourceApiService],
 })
