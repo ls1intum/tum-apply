@@ -120,6 +120,10 @@ export class DateSlotCardComponent {
     });
   });
 
+  private readonly emitSlotsEffect = effect(() => {
+    this.emitSlots();
+  });
+
   /**
    * Toggles the collapsed state of the card.
    */
@@ -151,7 +155,7 @@ export class DateSlotCardComponent {
    */
   addSingleSlot(): void {
     const location = '';
-    this.updateRanges(ranges => [
+    this.slotRanges.update(ranges => [
       ...ranges,
       {
         id: this.generateId(),
@@ -173,7 +177,7 @@ export class DateSlotCardComponent {
    */
   addRange(): void {
     const location = '';
-    this.updateRanges(ranges => [
+    this.slotRanges.update(ranges => [
       ...ranges,
       {
         id: this.generateId(),
@@ -194,7 +198,7 @@ export class DateSlotCardComponent {
    * @param index The index of the range to remove.
    */
   removeRange(index: number): void {
-    this.updateRanges(ranges => ranges.filter((range, i) => i !== index));
+    this.slotRanges.update(ranges => ranges.filter((range, i) => i !== index));
   }
 
   /**
@@ -203,7 +207,7 @@ export class DateSlotCardComponent {
    * @param slotIndex The index of the slot within the range.
    */
   removeSlot(rangeIndex: number, slotIndex: number): void {
-    this.updateRanges(ranges =>
+    this.slotRanges.update(ranges =>
       ranges.map((range, i) => {
         if (i !== rangeIndex) return range;
         return {
@@ -222,7 +226,7 @@ export class DateSlotCardComponent {
    */
   onStartInput(index: number, timeString: string | undefined): void {
     const safeTimeString = timeString ?? '';
-    this.updateRanges(ranges =>
+    this.slotRanges.update(ranges =>
       ranges.map((r, i) => {
         if (i !== index) return r;
 
@@ -277,7 +281,7 @@ export class DateSlotCardComponent {
    */
   onEndInput(index: number, timeString: string | undefined): void {
     const safeTimeString = timeString ?? '';
-    this.updateRanges(ranges =>
+    this.slotRanges.update(ranges =>
       ranges.map((r, i) => {
         if (i !== index) return r;
 
@@ -307,7 +311,7 @@ export class DateSlotCardComponent {
    */
   onLocationInput(index: number, location: string | undefined): void {
     const safeLocation = location ?? '';
-    this.updateRanges(ranges =>
+    this.slotRanges.update(ranges =>
       ranges.map((r, i) => {
         if (i !== index) return r;
 
@@ -386,16 +390,6 @@ export class DateSlotCardComponent {
     });
 
     this.slotRanges.set(newRanges);
-    this.emitSlots();
-  }
-
-  /**
-   * Helper to update ranges and emit changes.
-   * Replaces the implicit emitEffect.
-   */
-  private updateRanges(updater: (ranges: SlotRange[]) => SlotRange[]): void {
-    this.slotRanges.update(updater);
-    this.emitSlots();
   }
 
   /**
@@ -490,7 +484,7 @@ export class DateSlotCardComponent {
    * @param breakDuration The new break duration in minutes.
    */
   private recalculateAllRanges(duration: number, breakDuration: number): void {
-    this.updateRanges(ranges => {
+    this.slotRanges.update(ranges => {
       return ranges.map(range => {
         // 1. Skip scheduled slots
         // Scheduled slots are immutable regarding global duration changes
