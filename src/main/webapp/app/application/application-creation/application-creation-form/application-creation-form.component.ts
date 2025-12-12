@@ -604,6 +604,7 @@ export default class ApplicationCreationFormComponent {
       data: { registration: true },
       style: { background: 'var(--p-background-default)', maxWidth: '40rem' },
       closable: true,
+      draggable: false,
       modal: true,
     });
 
