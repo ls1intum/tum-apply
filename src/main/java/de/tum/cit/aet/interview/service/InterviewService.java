@@ -144,24 +144,16 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
-        // 2. Security: Verify current user is the job owner
-        UUID currentUserId = currentUserService.getUserId();
-
-        // Extract job and professor to avoid long get-chain
+        // 2. Security: Verify current user is the job owner or employee
         Job job = interviewProcess.getJob();
-        User supervisingProfessor = job.getSupervisingProfessor();
-        UUID professorUserId = supervisingProfessor.getUserId();
-
-        // Security check: Only job owner can view their interview processes
-        if (!professorUserId.equals(currentUserId)) {
-            throw new AccessDeniedException("You can only view your own interview processes");
-        }
+        verifyUserHasJobAccess(job, "view interview processes");
 
         // 3. Fetch aggregated data for this specific job
         UUID jobId = interviewProcess.getJob().getJobId();
+        UUID currentUserId = currentUserService.getUserId();
         List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(currentUserId);
 
-        // Filter for this specific job (optimization: could add a specific repository method, but this reuses existing logic)
+        // Filter for this specific job
         Map<ApplicationState, Long> stateCounts = new EnumMap<>(ApplicationState.class);
         for (Object[] result : countResults) {
             job = (Job) result[0];
@@ -249,14 +241,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user is the job owner
+        // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        User supervisingProfessor = job.getSupervisingProfessor();
-        UUID currentUserId = currentUserService.getUserId();
-
-        if (!supervisingProfessor.getUserId().equals(currentUserId)) {
-            throw new AccessDeniedException("You can only create slots for your own jobs");
-        }
+        verifyUserHasJobAccess(job, "create slots");
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -374,14 +361,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user is the job owner
+        // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        User supervisingProfessor = job.getSupervisingProfessor();
-        UUID currentUserId = currentUserService.getUserId();
-
-        if (!supervisingProfessor.getUserId().equals(currentUserId)) {
-            throw new AccessDeniedException("You can only create slots for your own jobs");
-        }
+        verifyUserHasJobAccess(job, "view slots");
 
         // 3. Load and return slots
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
@@ -394,7 +376,7 @@ public class InterviewService {
      * Skips duplicates - if an applicant is already added, they are not added
      * again.
      *
-     * - Only the job owner (supervising professor) can add applicants
+     * - Only the job owner (supervising professor and employees) can add applicants
      * - All applications must belong to the same job as the interview process
      * - Duplicate entries are silently skipped (idempotent operation)
      *
@@ -410,16 +392,11 @@ public class InterviewService {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
-            .orElseThrow(() -> new EntityNotFoundException("Interview process " + processId + " not found"));
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user is the job owner
-        UUID currentUserId = currentUserService.getUserId();
+        // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        UUID jobOwnerId = job.getSupervisingProfessor().getUserId();
-
-        if (!currentUserId.equals(jobOwnerId)) {
-            throw new AccessDeniedException("Only the job owner can add applicants to the interview");
-        }
+        verifyUserHasJobAccess(job, "add applicants to interview");
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
@@ -461,16 +438,11 @@ public class InterviewService {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
-            .orElseThrow(() -> new EntityNotFoundException("Interview process " + processId + " not found"));
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user is the job owner
+        // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        User supervisingProfessor = job.getSupervisingProfessor();
-        UUID currentUserId = currentUserService.getUserId();
-
-        if (!supervisingProfessor.getUserId().equals(currentUserId)) {
-            throw new AccessDeniedException("You can only view interviewees for your own jobs");
-        }
+        verifyUserHasJobAccess(job, "view interviewees");
 
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
@@ -495,11 +467,9 @@ public class InterviewService {
                 return new EntityNotFoundException("Slot " + slotId + " not found");
             });
 
-        // 2. Security: Verify current user is the job owner
-        UUID currentUserId = currentUserService.getUserId();
-        if (!interviewSlotRepository.existsByIdAndSupervisingProfessorId(slotId, currentUserId)) {
-            throw new AccessDeniedException("You don't have permission to delete this slot");
-        }
+        // 2. Security: Verify current user is the job owner or employee
+        Job job = slot.getInterviewProcess().getJob();
+        verifyUserHasJobAccess(job, "delete slots");
 
         // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
@@ -573,5 +543,39 @@ public class InterviewService {
             return null;
         }
         return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
+    }
+
+    /**
+     * Verifies that the current user has access to the given job.
+     * Access is granted if the user is:
+     * - The supervising professor of the job, OR
+     * - An employee of the job's research group
+     *
+     * @param job               the job to check access for
+     * @param actionDescription description of the action for error message (e.g.,
+     *                          "view interview processes")
+     * @throws AccessDeniedException if the user has no access
+     */
+    private void verifyUserHasJobAccess(Job job, String actionDescription) {
+        UUID currentUserId = currentUserService.getUserId();
+
+        // Check 1 if the user is the professor
+        if (job.getSupervisingProfessor().getUserId().equals(currentUserId)) {
+            return; // Access granted
+        }
+
+        // Check 2 if the user is an employee of the professors research group?
+        boolean isEmployee = job
+            .getResearchGroup()
+            .getUserRoles()
+            .stream()
+            .anyMatch(role -> role.getUser().getUserId().equals(currentUserId));
+
+        if (isEmployee) {
+            return; // Access granted
+        }
+
+        // No access
+        throw new AccessDeniedException("You can only " + actionDescription + " for your own jobs");
     }
 }
