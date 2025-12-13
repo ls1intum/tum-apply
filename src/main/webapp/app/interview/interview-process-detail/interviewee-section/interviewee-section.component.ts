@@ -1,11 +1,10 @@
-import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { firstValueFrom } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
@@ -92,12 +91,11 @@ export class IntervieweeSectionComponent {
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
   private readonly toastService = inject(ToastService);
-  private readonly destroyRef = inject(DestroyRef);
 
   // Effects
   private readonly loadEffect = effect(() => {
     if (this.processId()) {
-      this.loadInterviewees();
+      void this.loadInterviewees();
     }
   });
 
@@ -107,27 +105,22 @@ export class IntervieweeSectionComponent {
     }
   });
 
-  loadInterviewees(): void {
+  async loadInterviewees(): Promise<void> {
     // Loads the list of interviewees for the current process.
     const processId = this.processId();
     if (!processId) {
       return;
     }
 
-    this.loadingInterviewees.set(true);
-    this.interviewService
-      .getIntervieweesByProcessId(processId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: data => {
-          this.interviewees.set(data);
-          this.loadingInterviewees.set(false);
-        },
-        error: () => {
-          this.toastService.showErrorKey('interview.interviewees.error.loadFailed');
-          this.loadingInterviewees.set(false);
-        },
-      });
+    try {
+      this.loadingInterviewees.set(true);
+      const data = await firstValueFrom(this.interviewService.getIntervieweesByProcessId(processId));
+      this.interviewees.set(data);
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.error.loadFailed');
+    } finally {
+      this.loadingInterviewees.set(false);
+    }
   }
 
   async loadApplicants(): Promise<void> {
@@ -179,32 +172,26 @@ export class IntervieweeSectionComponent {
   /**
    * Adds the selected applicants to the interview process.
    */
-  addInterviewees(): void {
+  async addInterviewees(): Promise<void> {
     const processId = this.processId();
     if (!processId) {
       return;
     }
 
-    this.processingAdd.set(true);
-
     const dto: AddIntervieweesDTO = {
       applicationIds: Array.from(this.selectedIds()),
     };
 
-    this.interviewService
-      .addApplicantsToInterview(processId, dto)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
-          this.closeAddModal();
-          this.loadInterviewees();
-          this.processingAdd.set(false);
-        },
-        error: () => {
-          this.toastService.showErrorKey('interview.interviewees.error.addFailed');
-          this.processingAdd.set(false);
-        },
-      });
+    try {
+      this.processingAdd.set(true);
+      await firstValueFrom(this.interviewService.addApplicantsToInterview(processId, dto));
+      this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
+      this.closeAddModal();
+      void this.loadInterviewees();
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.error.addFailed');
+    } finally {
+      this.processingAdd.set(false);
+    }
   }
 }
