@@ -40,6 +40,7 @@ export class SelectComponent {
   filter = input<boolean>(false);
   showClear = input<boolean>(false);
   appendTo = input<string | undefined>(undefined);
+  dataKey = input<string | undefined>(undefined);
 
   selectedChange = output<SelectOption>();
 
