@@ -29,14 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @AllArgsConstructor
 @Service
-@Transactional
 public class InterviewService {
 
     private final InterviewProcessRepository interviewProcessRepository;
@@ -109,16 +105,12 @@ public class InterviewService {
                 long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
 
                 // TODO: Replace with InterviewInvitation entity lookup
-                // Calculate "uncontacted" applications that haven't been invited to interview
-                // yet
+                // Calculate "uncontacted" - applications that haven't been invited to interview yet
                 // Currently: uncontacted = applications not yet moved to interview process
-                // These states represent applications that are still in the review process (or
-                // submitted applications) but have not yet transitioned to the interview phase
-                // Future: uncontacted = applications explicitly added to interview but not
-                // invited
+                // These states represent applications that are still in the review process (or submitted applications) but have not yet transitioned to the interview phase
+                // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
-                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is
-                    // being reviewed
+                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
                     stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
                 // Calculate total number of all applications in this interview process
@@ -431,26 +423,6 @@ public class InterviewService {
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
-        if (applications.size() != dto.applicationIds().size()) {
-            Set<UUID> foundIds = new HashSet<>();
-            for (Application app : applications) {
-                foundIds.add(app.getApplicationId());
-            }
-            List<UUID> missingIds = dto
-                .applicationIds()
-                .stream()
-                .filter(id -> !foundIds.contains(id))
-                .toList();
-            throw new EntityNotFoundException("Applications not found: " + missingIds);
-        }
-
-        // 4. Validate: All applications belong to this job
-        UUID jobId = job.getJobId();
-        for (Application app : applications) {
-            if (!app.getJob().getJobId().equals(jobId)) {
-                throw new BadRequestException("Application " + app.getApplicationId() + " belongs to a different job");
-            }
-        }
 
         // 5. Create Interviewees (skip if already exists)
         List<Interviewee> createdInterviewees = new ArrayList<>();

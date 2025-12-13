@@ -46,7 +46,7 @@ export function createTranslateServiceMock(): TranslateServiceMock {
     onDefaultLangChange: onFallbackLangChangeSubject.asObservable(), // Deprecated, aliased to onFallbackLangChange
     onFallbackLangChange: onFallbackLangChangeSubject.asObservable(),
     currentLang: 'en',
-    getCurrentLang: () => mock.currentLang,
+    getCurrentLang: vi.fn(() => mock.currentLang),
     use: vi.fn((_lang: string) => {
       mock.currentLang = _lang;
       onLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });

@@ -54,9 +54,26 @@
     }
 
     .p-ripple.p-datepicker-select-month,
-    .p-ripple.p-datepicker-select-year,
-    .p-datepicker-decade {
+    .p-ripple.p-datepicker-select-year {
       color: var(--p-primary-color);
+
+      &:hover {
+        background: var(--p-primary-hover-color-outlined);
+      }
+    }
+
+    .p-datepicker-today > .p-datepicker-day {
+      background: var(--p-primary-hover-color-outlined);
+      color: var(--p-text-primary);
+    }
+
+    .p-datepicker-day,
+    .p-datepicker-month,
+    .p-datepicker-year {
+      &:hover {
+        background: var(--p-primary-color);
+        color: var(--p-text-on-primary);
+      }
     }
   }
 }

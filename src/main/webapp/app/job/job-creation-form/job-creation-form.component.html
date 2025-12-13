@@ -51,13 +51,12 @@
           <jhi-select
             [selected]="basicInfoForm.get('fieldOfStudies')?.value"
             (selectedChange)="basicInfoForm.get('fieldOfStudies')?.setValue($event)"
-            [items]="DropdownOptions.fieldsOfStudies"
+            [items]="translatedFieldsOfStudies()"
             [label]="'jobCreationForm.basicInformationSection.fieldOfStudies.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
             [required]="true"
             [width]="'100%'"
             [filter]="true"
-            [translateItems]="true"
           />
         </div>
       </div>
@@ -77,13 +76,12 @@
           <jhi-select
             [selected]="basicInfoForm.get('location')?.value"
             (selectedChange)="basicInfoForm.get('location')?.setValue($event)"
-            [items]="DropdownOptions.locations"
+            [items]="translatedLocations()"
             [label]="'jobCreationForm.basicInformationSection.location.label' | translate"
             [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
             [required]="true"
             [width]="'100%'"
             [filter]="true"
-            [translateItems]="true"
           />
         </div>
       </div>
@@ -150,13 +148,12 @@
         <jhi-select
           [selected]="basicInfoForm.get('fundingType')?.value"
           (selectedChange)="basicInfoForm.get('fundingType')?.setValue($event)"
-          [items]="DropdownOptions.fundingTypes"
+          [items]="translatedFundingTypes()"
           [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
           [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
           [width]="'100%'"
           [filter]="true"
           [showClear]="true"
-          [translateItems]="true"
         />
       </div>
     </form>
@@ -348,11 +345,13 @@
       <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
     </div>
     <div [formGroup]="additionalInfoForm">
-      <label>
-        <input type="checkbox" formControlName="privacyAccepted" />
-        <span class="required mr-1">*</span
-        ><span jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></span>
-      </label>
+      <div class="flex align-items-start">
+        <div class="relative mr-2">
+          <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
+          <span class="required">*</span>
+        </div>
+        <label jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></label>
+      </div>
 
       @if (privacyAcceptedSignal() === false && publishAttempted()) {
         <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>

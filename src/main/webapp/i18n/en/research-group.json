@@ -97,6 +97,7 @@
       "retry": "Retry",
       "noMembers": "No members found in this research group.",
       "noUsers": "No available users found.",
+      "emptySearch": "Please enter at least {{minLength}} characters to search.",
       "me": "Me",
       "addMembers": "Add Members",
       "addMembersButton": "Add members",
@@ -135,6 +136,14 @@
         "addMembersFailed": {
           "summary": "Add Failed",
           "detail": "Failed to add members. Please try again."
+        },
+        "addMembersFailedAlreadyMember": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they are already part of a research group."
+        },
+        "addMembersFailedInvalidUniversityId": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they do not have a valid university ID."
         },
         "removeSuccess": {
           "summary": "Member Removed",

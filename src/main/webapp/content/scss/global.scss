@@ -307,6 +307,7 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
  Style for file upload component
 ------------------------------- */
 .p-fileupload-content {
+  background: var(--p-background-default);
   color: var(--p-text-color);
 }
 
@@ -477,11 +478,4 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--p-primary-color);
-}
-
-/* Disable all transitions while switching theme */
-.theme-switching *,
-.theme-switching *::before,
-.theme-switching *::after {
-  transition: none !important;
 }
