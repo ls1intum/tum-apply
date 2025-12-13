@@ -9,6 +9,7 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { ToastService } from 'app/service/toast-service';
 
+import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { Sort } from '../../shared/components/atoms/sorting/sorting';
@@ -24,6 +25,7 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
   imports: [
     CommonModule,
     RouterModule,
+    LocalizedDatePipe,
     ButtonComponent,
     DynamicTableComponent,
     TagComponent,
@@ -45,15 +47,16 @@ export class ApplicationOverviewComponent {
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
+  readonly appliedAtTemplate = viewChild.required<TemplateRef<unknown>>('appliedAtTemplate');
 
   readonly selectedJobFilters = signal<string[]>([]);
   readonly selectedStatusFilters = signal<string[]>([]);
-
   readonly allAvailableJobNames = signal<string[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
+    const appliedAtTpl = this.appliedAtTemplate();
     return [
       { field: 'name', header: 'evaluation.tableHeaders.name', width: '12rem' },
       {
@@ -65,7 +68,7 @@ export class ApplicationOverviewComponent {
       },
       { field: 'jobName', header: 'evaluation.tableHeaders.job', width: '26rem' },
       // { field: 'rating', header: 'Rating', width: '10rem' },
-      { field: 'appliedAt', header: 'evaluation.tableHeaders.appliedAt', type: 'date', width: '10rem' },
+      { field: 'appliedAt', header: 'evaluation.tableHeaders.appliedAt', template: appliedAtTpl, width: '10rem' },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });

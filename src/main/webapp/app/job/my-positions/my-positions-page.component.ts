@@ -14,6 +14,7 @@ import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/fil
 import { emptyToUndef } from 'app/core/util/array-util.service';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
+import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { CreatedJobDTO } from '../../generated/model/createdJobDTO';
@@ -30,6 +31,7 @@ import { JobResourceApiService } from '../../generated/api/jobResourceApi.servic
     TranslateModule,
     ConfirmDialog,
     SearchFilterSortBar,
+    LocalizedDatePipe,
   ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
@@ -68,6 +70,9 @@ export class MyPositionsPageComponent {
   );
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+  readonly startDateTemplate = viewChild.required<TemplateRef<unknown>>('startDateTemplate');
+  readonly createdAtTemplate = viewChild.required<TemplateRef<unknown>>('createdAtTemplate');
+  readonly lastModifiedAtTemplate = viewChild.required<TemplateRef<unknown>>('lastModifiedAtTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
   readonly selectedStatusFilters = signal<string[]>([]);
@@ -75,6 +80,9 @@ export class MyPositionsPageComponent {
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
+    const startDateTpl = this.startDateTemplate();
+    const createdAtTpl = this.createdAtTemplate();
+    const lastModifiedAtTpl = this.lastModifiedAtTemplate();
 
     return [
       { field: 'avatar', header: '', width: '5rem' },
@@ -87,9 +95,9 @@ export class MyPositionsPageComponent {
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'startDate', header: 'myPositionsPage.tableColumn.startDate', type: 'date', width: '10rem' },
-      { field: 'createdAt', header: 'myPositionsPage.tableColumn.created', type: 'date', width: '10rem' },
-      { field: 'lastModifiedAt', header: 'myPositionsPage.tableColumn.lastModified', type: 'date', width: '10rem' },
+      { field: 'startDate', header: 'myPositionsPage.tableColumn.startDate', width: '10rem', template: startDateTpl },
+      { field: 'createdAt', header: 'myPositionsPage.tableColumn.created', width: '10rem', template: createdAtTpl },
+      { field: 'lastModifiedAt', header: 'myPositionsPage.tableColumn.lastModified', width: '10rem', template: lastModifiedAtTpl },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });

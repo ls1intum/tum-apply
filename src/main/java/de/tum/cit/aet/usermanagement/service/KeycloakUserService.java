@@ -1,10 +1,14 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.util.StringUtil;
+import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -19,6 +23,7 @@ public class KeycloakUserService {
 
     private final Keycloak keycloak;
     private final String realm;
+    private static final int SAFETY_MAX = 1000;
 
     public KeycloakUserService(
         @Value("${keycloak.url}") String url,
@@ -34,6 +39,77 @@ public class KeycloakUserService {
             .clientId(clientId)
             .clientSecret(clientSecret)
             .build();
+    }
+
+    /**
+     * Retrieves all Keycloak users matching the given search key.
+     * The search is performed against username, first name, last name, and email.
+     *
+     * @param searchKey the search key to filter users; must not be {@code null}
+     * @param pageDTO   pagination information
+     * @return a list of {@link KeycloakUserDTO} matching the search criteria
+     */
+    public List<KeycloakUserDTO> getAllUsers(String searchKey, PageDTO pageDTO) {
+        // Keycloak search does not allow domain-specific filtering, so we fetch a reasonably sized
+        // chunk and filter locally by users whose email domain contains "tum". We then apply
+        // pagination locally to return exactly the requested page of filtered results.
+        int firstResult = 0; // always fetch from beginning and filter
+        int maxResults = SAFETY_MAX;
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, firstResult, maxResults);
+        if (users == null || users.isEmpty()) {
+            return List.of();
+        }
+
+        List<KeycloakUserDTO> filtered = users
+            .stream()
+            .filter(u -> isLDAPUser(u))
+            .map(user ->
+                new KeycloakUserDTO(
+                    UUID.fromString(user.getId()),
+                    user.getUsername(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail(),
+                    user.getAttributes().get("LDAP_ID").get(0)
+                )
+            )
+            .toList();
+
+        // apply pagination locally
+        int start = pageDTO.pageNumber() * pageDTO.pageSize();
+        if (start >= filtered.size()) {
+            return List.of();
+        }
+        int end = Math.min(start + pageDTO.pageSize(), filtered.size());
+        return filtered.subList(start, end);
+    }
+
+    /**
+     * Returns the number of Keycloak users matching the given search key.
+     * Note: Querying all users for a count may be expensive. Use reasonable limits or adjust as needed.
+     *
+     * @param searchKey filter for username, first name, last name or email
+     * @return total number of matching users
+     */
+    public long countUsers(String searchKey) {
+        // Count only the users matching the searchKey which also have a TUM domain.
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(searchKey, 0, SAFETY_MAX);
+        if (users == null || users.isEmpty()) {
+            return 0L;
+        }
+        return users
+            .stream()
+            .filter(u -> isLDAPUser(u))
+            .count();
+    }
+
+    private static boolean isLDAPUser(UserRepresentation user) {
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) {
+            return false;
+        }
+        List<String> values = attributes.get("LDAP_ID");
+        return values != null && !values.isEmpty();
     }
 
     /**

@@ -114,12 +114,12 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
-                <span class="value">{{ job.startDate || '-' }}</span>
+                <span class="value">{{ (job.startDate | localizedDate) || '-' }}</span>
               </div>
               @if (job.endDate) {
                 <div class="info-row">
                   <span jhiTranslate="jobDetailPage.labels.applicationEndDate"></span>
-                  <span class="value text-negative-default">{{ job.endDate }}</span>
+                  <span class="value text-negative-default">{{ job.endDate | localizedDate }}</span>
                 </div>
               }
             </div>
