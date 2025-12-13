@@ -60,7 +60,7 @@ public class InterviewService {
         // 1. Get the ID of the currently logged-in professor
         UUID professorId = currentUserService.getUserId();
 
-        // 2. Load all active interview processes for this professor
+        //2. Load all active interview processes for this professor
         List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
 
         // 2. If no interview processes exist, return an empty list
@@ -105,16 +105,12 @@ public class InterviewService {
                 long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
 
                 // TODO: Replace with InterviewInvitation entity lookup
-                // Calculate "uncontacted" applications that haven't been invited to interview
-                // yet
+                // Calculate "uncontacted" - applications that haven't been invited to interview yet
                 // Currently: uncontacted = applications not yet moved to interview process
-                // These states represent applications that are still in the review process (or
-                // submitted applications) but have not yet transitioned to the interview phase
-                // Future: uncontacted = applications explicitly added to interview but not
-                // invited
+                // These states represent applications that are still in the review process (or submitted applications) but have not yet transitioned to the interview phase
+                // Future: uncontacted = applications explicitly added to interview but not invited
                 long uncontactedCount =
-                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is
-                    // being reviewed
+                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
                     stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
                 // Calculate total number of all applications in this interview process
@@ -165,8 +161,7 @@ public class InterviewService {
         UUID jobId = interviewProcess.getJob().getJobId();
         List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(currentUserId);
 
-        // Filter for this specific job (optimization: could add a specific repository
-        // method, but this reuses existing logic)
+        // Filter for this specific job (optimization: could add a specific repository method, but this reuses existing logic)
         Map<ApplicationState, Long> stateCounts = new EnumMap<>(ApplicationState.class);
         for (Object[] result : countResults) {
             job = (Job) result[0];
@@ -198,8 +193,7 @@ public class InterviewService {
     }
 
     /**
-     * Creates an interview process for a job (called automatically when job is
-     * published).
+     * Creates an interview process for a job (called automatically when job is published).
      * This is called from JobService, so security checks are already done.
      *
      * @param jobId the ID of the job for which to create the interview process
@@ -225,8 +219,7 @@ public class InterviewService {
     }
 
     /**
-     * Maps an {@link InterviewProcess} entity to its corresponding DTO
-     * representation.
+     * Maps an {@link InterviewProcess} entity to its corresponding DTO representation.
      *
      * @param interviewProcess the interview process entity to map
      * @return {@link InterviewProcessDTO} containing the interview process data
@@ -244,11 +237,11 @@ public class InterviewService {
      * Creates and persists new interview slots for a given interview process.
      *
      * @param processId the ID of the interview process
-     * @param dto       the data transfer object containing slot definitions
+     * @param dto the data transfer object containing slot definitions
      * @return a list of created interview slots
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException   if the user is not authorized
-     * @throws TimeConflictException   if any time conflicts are detected
+     * @throws AccessDeniedException if the user is not authorized
+     * @throws TimeConflictException if any time conflicts are detected
      */
     public List<InterviewSlotDTO> createSlots(UUID processId, CreateSlotsDTO dto) {
         // 1. Load interview process
@@ -282,14 +275,12 @@ public class InterviewService {
     }
 
     /**
-     * Converts a single {@link CreateSlotsDTO.SlotInput} entry into an
-     * {@link InterviewSlot} entity.
+     * Converts a single {@link CreateSlotsDTO.SlotInput} entry into an {@link InterviewSlot} entity.
      * <p>
-     * Combines the provided date and time values into {@link Instant}s using the
-     * Munich time zone.
+     * Combines the provided date and time values into {@link Instant}s using the Munich time zone.
      *
      * @param process the interview process the slot belongs to
-     * @param input   the slot definition from the frontend
+     * @param input the slot definition from the frontend
      * @return a populated {@link InterviewSlot} entity ready for persistence
      */
     private InterviewSlot createSlotFromInput(InterviewProcess process, CreateSlotsDTO.SlotInput input) {
@@ -375,8 +366,7 @@ public class InterviewService {
      * @param processId the ID of the interview process
      * @return a list of interview slots ordered by start time
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException   if the user is not authorized to view these
-     *                                 slots
+     * @throws AccessDeniedException if the user is not authorized to view these slots
      */
     public List<InterviewSlotDTO> getSlotsByProcessId(UUID processId) {
         // 1.Load Interview Process
@@ -494,9 +484,8 @@ public class InterviewService {
      *
      * @param slotId the ID of the slot to delete
      * @throws EntityNotFoundException if the slot is not found
-     * @throws AccessDeniedException   if the user is not authorized to delete this
-     *                                 slot
-     * @throws BadRequestException     if the slot is booked
+     * @throws AccessDeniedException if the user is not authorized to delete this slot
+     * @throws BadRequestException if the slot is booked
      */
     public void deleteSlot(UUID slotId) {
         // 1. Load the slot
