@@ -1,4 +1,5 @@
 export * from './acceptDTO';
+export * from './addIntervieweesDTO';
 export * from './addMembersToResearchGroupDTO';
 export * from './applicant';
 export * from './applicantDTO';
@@ -40,6 +41,8 @@ export * from './internalCommentDTO';
 export * from './internalCommentUpdateDTO';
 export * from './interviewOverviewDTO';
 export * from './interviewSlotDTO';
+export * from './intervieweeDTO';
+export * from './intervieweeUserDTO';
 export * from './job';
 export * from './jobCardDTO';
 export * from './jobDTO';

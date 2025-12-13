@@ -10,7 +10,7 @@ import lombok.Setter;
 
 /**
  * Entity representing a time slot for an interview.
- * Each slot can be booked by exactly one application.
+ * Each slot can be booked by exactly one interviewee.
  */
 @Entity
 @Table(name = "interview_slots")
@@ -26,6 +26,10 @@ public class InterviewSlot extends AbstractAuditingEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "interview_process_id", nullable = false)
     private InterviewProcess interviewProcess;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "interviewee_id")
+    private Interviewee interviewee;
 
     @NotNull
     @Column(name = "start_date_time", nullable = false)

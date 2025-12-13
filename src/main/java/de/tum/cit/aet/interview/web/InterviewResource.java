@@ -3,10 +3,13 @@ package de.tum.cit.aet.interview.web;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
+import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
+import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -104,7 +107,55 @@ public class InterviewResource {
     }
 
     /**
-     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
+     * {@code POST /api/interviews/processes/{processId}/interviewees} : Add applicants to interview process.
+     *
+     * Creates Interviewee entities for the given application IDs.
+     * Duplicates are silently skipped (idempotent operation).
+     *
+     * @param processId the ID of the interview process
+     * @param dto containing the list of application IDs to add
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and list of created {@link IntervieweeDTO}s
+     * @throws EntityNotFoundException if the process or any application is not found
+     * @throws AccessDeniedException if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @PostMapping("/processes/{processId}/interviewees")
+    public ResponseEntity<List<IntervieweeDTO>> addApplicantsToInterview(
+        @PathVariable UUID processId,
+        @Valid @RequestBody AddIntervieweesDTO dto
+    ) {
+        log.info("REST request to add {} applicants to interview process: {}", dto.applicationIds().size(), processId);
+
+        List<IntervieweeDTO> result = interviewService.addApplicantsToInterview(processId, dto);
+
+        log.info("Successfully added {} interviewees to interview process: {}", result.size(), processId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    /**
+     * {@code GET /api/interviews/processes/{processId}/interviewees} : Get all interviewees for an interview process.
+     *
+     * Retrieves all interviewees for the specified interview process with their details.
+     *
+     * @param processId the ID of the interview process
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link IntervieweeDTO}
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/processes/{processId}/interviewees")
+    public ResponseEntity<List<IntervieweeDTO>> getIntervieweesByProcessId(@PathVariable UUID processId) {
+        log.info("REST request to get all interviewees for interview process: {}", processId);
+
+        List<IntervieweeDTO> interviewees = interviewService.getIntervieweesByProcessId(processId);
+
+        log.info("Returning {} interviewees for interview process: {}", interviewees.size(), processId);
+
+        return ResponseEntity.ok(interviewees);
+    }
+
+    /* {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
      * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
      *
      * @param slotId the ID of the slot to delete
