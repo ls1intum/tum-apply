@@ -118,7 +118,7 @@ public class InterviewResource {
      * @throws EntityNotFoundException if the process or any application is not found
      * @throws AccessDeniedException if the user is not authorized
      */
-    @Professor
+    @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/interviewees")
     public ResponseEntity<List<IntervieweeDTO>> addApplicantsToInterview(
         @PathVariable UUID processId,
@@ -143,7 +143,7 @@ public class InterviewResource {
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException if the user is not authorized
      */
-    @Professor
+    @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/interviewees")
     public ResponseEntity<List<IntervieweeDTO>> getIntervieweesByProcessId(@PathVariable UUID processId) {
         log.info("REST request to get all interviewees for interview process: {}", processId);
