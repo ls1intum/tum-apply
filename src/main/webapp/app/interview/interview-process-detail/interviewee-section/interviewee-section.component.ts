@@ -196,7 +196,7 @@ export class IntervieweeSectionComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.toastService.showSuccessKey('interview.interviewees.success.added', { count: `${this.selectedCount()}` });
+          this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
           this.closeAddModal();
           this.loadInterviewees();
           this.processingAdd.set(false);
