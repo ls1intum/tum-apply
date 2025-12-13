@@ -7,9 +7,9 @@ import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';
 
 import { SlotsSectionComponent } from './slots-section/slots-section.component';
-import { IntervieweeSectionComponent } from 'app/interview/interview-process-detail/interviewee-section/interviewee-section.component';
 
 @Component({
   selector: 'jhi-interview-process-detail',

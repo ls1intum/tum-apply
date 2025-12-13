@@ -1,21 +1,21 @@
-import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
-import { ApplicationEvaluationResourceApiService } from 'app/generated';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { Section } from 'app/shared/components/atoms/section/section';
+import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 
 type FilterTab = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
 
@@ -29,7 +29,6 @@ type FilterTab = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
     TranslateDirective,
     DialogModule,
     CheckboxModule,
-    ProgressSpinnerModule,
     ButtonComponent,
     Section,
     IntervieweeCardComponent,
@@ -55,11 +54,6 @@ export class IntervieweeSectionComponent {
   submitting = signal(false);
   processingAdd = signal(false);
 
-  // Services
-  private readonly http = inject(HttpClient);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
-  private readonly toastService = inject(ToastService);
-
   // Filter tabs with counts
   filterTabs = computed(() => {
     const all = this.interviewees();
@@ -79,18 +73,31 @@ export class IntervieweeSectionComponent {
     return this.interviewees().filter(i => i.state === filter);
   });
 
-  // Applicants not yet added as interviewees
+  // Applicants not yet added as interviewees (with selection state)
   availableApplicants = computed(() => {
     const existingIds = new Set(this.interviewees().map(i => i.applicationId));
-    return this.applicants().filter(app => !existingIds.has(app.applicationDetailDTO.applicationId));
+    const selected = this.selectedIds();
+
+    return this.applicants()
+      .filter(app => !existingIds.has(app.applicationDetailDTO.applicationId))
+      .map(app => ({
+        ...app,
+        selected: selected.has(app.applicationDetailDTO.applicationId),
+      }));
   });
 
   selectedCount = computed(() => this.selectedIds().size);
 
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  private readonly toastService = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
+
   // Effects
   private readonly loadEffect = effect(() => {
     if (this.processId()) {
-      void this.loadInterviewees();
+      this.loadInterviewees();
     }
   });
 
@@ -100,17 +107,17 @@ export class IntervieweeSectionComponent {
     }
   });
 
-  // === Data Loading ===
-
   loadInterviewees(): void {
+    // Loads the list of interviewees for the current process.
     const processId = this.processId();
     if (!processId) {
       return;
     }
 
     this.loadingInterviewees.set(true);
-    this.http
-      .get<IntervieweeDTO[]>(`/api/interviews/processes/${processId}/interviewees`)
+    this.interviewService
+      .getIntervieweesByProcessId(processId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: data => {
           this.interviewees.set(data);
@@ -124,6 +131,7 @@ export class IntervieweeSectionComponent {
   }
 
   async loadApplicants(): Promise<void> {
+    // Loads available applicants that can be added to the interview process.
     try {
       this.loadingApplicants.set(true);
       const result = await firstValueFrom(
@@ -137,13 +145,13 @@ export class IntervieweeSectionComponent {
     }
   }
 
-  // === Filter ===
-
+  /**
+   * Updates the active filter tab to show specific interviewee states.
+   * @param filter The filter state to apply (e.g., 'ALL', 'UNCONTACTED').
+   */
   setFilter(filter: FilterTab): void {
     this.activeFilter.set(filter);
   }
-
-  // === Modal ===
 
   openAddModal(): void {
     this.showAddModal.set(true);
@@ -168,6 +176,9 @@ export class IntervieweeSectionComponent {
     return this.selectedIds().has(applicationId);
   }
 
+  /**
+   * Adds the selected applicants to the interview process.
+   */
   addInterviewees(): void {
     const processId = this.processId();
     if (!processId) {
@@ -176,10 +187,13 @@ export class IntervieweeSectionComponent {
 
     this.processingAdd.set(true);
 
-    this.http
-      .post(`/api/interviews/processes/${processId}/interviewees`, {
-        applicationIds: Array.from(this.selectedIds()),
-      })
+    const dto: AddIntervieweesDTO = {
+      applicationIds: Array.from(this.selectedIds()),
+    };
+
+    this.interviewService
+      .addApplicantsToInterview(processId, dto)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.toastService.showSuccessKey('interview.interviewees.success.added', { count: `${this.selectedCount()}` });

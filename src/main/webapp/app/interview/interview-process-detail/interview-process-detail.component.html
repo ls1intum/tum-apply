@@ -15,13 +15,8 @@
 
   <!-- Interviewee Section -->
   @if (processId() && jobId() && jobTitle()) {
-    <jhi-interviewee-section
-      [processId]="safeProcessId()"
-      [jobId]="jobId()!"
-      [jobTitle]="jobTitle()!"
-    />
+    <jhi-interviewee-section [processId]="safeProcessId()" [jobId]="jobId()!" [jobTitle]="jobTitle()!" />
   }
 
   <!-- Divider -->
-  <hr class="my-6 border-[var(--p-neutral-200)]" />
 </div>

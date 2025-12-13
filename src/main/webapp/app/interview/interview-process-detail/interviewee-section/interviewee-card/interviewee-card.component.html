@@ -1,30 +1,36 @@
-<div class="flex items-center justify-between p-4 bg-background-default border rounded-lg border-border-default h-20">
-    <div class="flex items-center gap-12">
-        <!-- Name -->
-        <span class="text-md font-bold text-text-primary w-30 truncate">
-            {{ interviewee().user?.firstName }} {{ interviewee().user?.lastName }}
-        </span>
+<div class="flex items-center justify-between p-3 bg-background-default border rounded-lg border-border-default h-16">
+  <div class="flex items-center">
+    <!-- Name -->
+    <span class="text-sm font-bold text-text-primary w-24 md:w-48 lg:w-64 truncate">
+      {{ interviewee().user?.firstName }} {{ interviewee().user?.lastName }}
+    </span>
 
-        <!-- Status Group -->
-        <div class="flex items-center gap-3">
-            <!-- Status Bar -->
-            <div class="w-1 h-6 rounded-full"
-                [class.bg-primary-200]="interviewee().state === IntervieweeState.UNCONTACTED"
-                [class.bg-primary-300]="interviewee().state === IntervieweeState.INVITED"
-                [class.bg-primary-400]="interviewee().state === IntervieweeState.SCHEDULED"
-                [class.bg-primary-default]="interviewee().state === IntervieweeState.COMPLETED"></div>
+    <!-- Status Group -->
+    <div class="flex items-center gap-3">
+      <!-- Status Bar -->
+      <div
+        class="w-1 h-6 mb-2 rounded-full"
+        [class.bg-primary-200]="interviewee().state === IntervieweeState.UNCONTACTED"
+        [class.bg-primary-300]="interviewee().state === IntervieweeState.INVITED"
+        [class.bg-primary-400]="interviewee().state === IntervieweeState.SCHEDULED"
+        [class.bg-primary-default]="interviewee().state === IntervieweeState.COMPLETED"
+      ></div>
 
-            <!-- Status Text -->
-            <span class="text-text-secondary text-sm whitespace-nowrap">
-                {{ 'interview.interviewees.state.' + interviewee().state | translate }}
-            </span>
-        </div>
+      <!-- Status Text -->
+      <span class="text-text-secondary text-sm whitespace-nowrap" [jhiTranslate]="'interview.interviewees.state.' + interviewee().state">
+      </span>
     </div>
+  </div>
 
-    <!-- Actions for UNCONTACTED state
-    @if (interviewee().state === IntervieweeState.UNCONTACTED) {
-    <jhi-button [label]="'interview.interviewees.sendInvitations'" [shouldTranslate]="true" [icon]="'paper-plane'"
-        [variant]="'outlined'" [severity]="'primary'" (click)="$event.stopPropagation()" />
-    }
-     -->
+  <!-- Actions for UNCONTACTED state  -->
+  @if (interviewee().state === IntervieweeState.UNCONTACTED) {
+    <jhi-button
+      [label]="'interview.interviewees.sendInvitations'"
+      [shouldTranslate]="true"
+      [icon]="'paper-plane'"
+      [variant]="'outlined'"
+      [severity]="'primary'"
+      (click)="$event.stopPropagation()"
+    />
+  }
 </div>
