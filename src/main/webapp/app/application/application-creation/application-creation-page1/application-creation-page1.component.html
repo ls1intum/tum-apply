@@ -69,9 +69,10 @@
         [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
         id="nationality"
         [(selected)]="data().nationality"
-        (selectedChange)="emitChanged()"
+        (selectedChange)="updateSelect('nationality', $event)"
         [filter]="true"
         [showClear]="true"
+        [dataKey]="'value'"
       />
     </div>
   </div>
@@ -152,6 +153,7 @@
         [items]="selectCountriesLocal()"
         (selectedChange)="updateSelect('country', $event)"
         [filter]="true"
+        [dataKey]="'value'"
       />
     </div>
     <div class="form-field">
