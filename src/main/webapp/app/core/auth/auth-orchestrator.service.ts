@@ -35,7 +35,7 @@ export class AuthOrchestratorService {
   readonly mode = signal<AuthFlowMode>('login');
   // substates per flow
   loginStep = signal<LoginStep>('email');
-  registerStep = signal<RegisterStep>('email');
+  registerStep = signal<RegisterStep>(null);
   // form state (shared across flows)
   readonly email = signal<string>('');
   readonly firstName = signal<string>('');
@@ -44,12 +44,11 @@ export class AuthOrchestratorService {
   readonly isBusy = signal(false);
   readonly error = signal<ToastMessageInput | null>(null);
   // progress for registration dialog
-  readonly firstProgressStep = signal(false);
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
-    return idx + 1;
+    return idx;
   });
-  readonly totalRegisterSteps = REGISTER_STEPS.length;
+  readonly totalRegisterSteps = REGISTER_STEPS.length - 1;
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
   readonly injector = inject(Injector);
@@ -113,10 +112,6 @@ export class AuthOrchestratorService {
     }
 
     // choose sensible starting substates
-    if (this.mode() === 'register') {
-      this.registerStep.set('email');
-      this.firstProgressStep.set(true);
-    }
     if (this.mode() === 'login') {
       this.loginStep.set('email');
     }
@@ -149,7 +144,8 @@ export class AuthOrchestratorService {
 
   switchToRegister(): void {
     this.mode.set('register');
-    this.registerStep.set('email');
+    this.registerStep.set(null);
+    requestAnimationFrame(() => {this.registerStep.set('email')});
   }
 
   clearError(): void {
@@ -207,6 +203,5 @@ export class AuthOrchestratorService {
     this.isBusy.set(false);
     this.error.set(null);
     this.cooldownUntil.set(null);
-    this.firstProgressStep.set(false);
   }
 }
