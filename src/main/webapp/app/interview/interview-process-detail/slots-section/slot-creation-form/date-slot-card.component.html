@@ -32,7 +32,8 @@
         icon="plus"
         [pTooltip]="'interview.slots.create.addSlotsTooltip' | translate"
         tooltipPosition="top"
-        styleClass="rounded-md text-[var(--p-secondary-400)] border-[var(--p-accent-500)] hover:bg-background-surface-alt"
+        severity="primary"
+        styleClass="text-[var(--p-secondary-400)] border-[var(--p-accent-500)]"
         (click)="addSingleSlot()"
       />
 
@@ -44,7 +45,8 @@
         icon="plus"
         [pTooltip]="'interview.slots.create.addRangeTooltip' | translate"
         tooltipPosition="top"
-        styleClass="rounded-md text-[var(--p-secondary-600)] hover:bg-background-surface-alt"
+        severity="primary"
+        styleClass="text-[var(--p-secondary-600)]"
         (click)="addRange()"
       />
 
@@ -235,6 +237,7 @@
             [shouldTranslate]="true"
             variant="outlined"
             size="xs"
+            severity="primary"
             (click)="applyAll.emit(true)"
           />
         </div>

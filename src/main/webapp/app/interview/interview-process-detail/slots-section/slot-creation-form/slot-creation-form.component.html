@@ -22,7 +22,7 @@
           tooltipPosition="top"
         />
       </div>
-      <div class="flex w-full items-center rounded-lg bg-background-surface p-1 gap-1">
+      <div class="flex w-full items-center rounded-lg bg-background-surface dark:bg-background-surface-alt p-1 gap-1">
         @for (option of durationOptions; track option.value) {
           <jhi-button
             [label]="option.label"
@@ -33,7 +33,7 @@
             styleClass="w-full rounded-md border-none shadow-none transition-all {{
               !isCustomDurationMode() && duration() === option.value
                 ? 'bg-primary-default text-white font-semibold'
-                : 'bg-transparent text-text-secondary hover:bg-background-surface-alt'
+                : 'bg-transparent text-text-secondary hover:bg-primary-default hover:text-text-on-primary'
             }}"
             (click)="selectDuration(option.value)"
           />
@@ -47,7 +47,7 @@
           styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomDurationMode()
               ? 'bg-primary-default text-text-on-primary font-semibold'
-              : 'bg-transparent text-text-secondary hover:bg-background-surface-alt'
+              : 'bg-transparent text-text-secondary hover:bg-primary-default hover:text-text-on-primary'
           }}"
           (click)="selectDuration(-1)"
         />
@@ -83,7 +83,7 @@
           tooltipPosition="top"
         />
       </div>
-      <div class="flex w-full items-center rounded-lg bg-background-surface p-1 gap-1">
+      <div class="flex w-full items-center rounded-lg bg-background-surface dark:bg-background-surface-alt p-1 gap-1">
         @for (option of breakOptions; track option.value) {
           <jhi-button
             [label]="option.label"
@@ -94,7 +94,7 @@
             styleClass="w-full rounded-md border-none shadow-none transition-all {{
               !isCustomBreakMode() && breakDuration() === option.value
                 ? 'bg-primary-default text-text-on-primary font-semibold'
-                : 'bg-transparent text-text-secondary  hover:bg-background-surface-alt'
+                : 'bg-transparent text-text-secondary hover:bg-primary-default hover:text-text-on-primary'
             }}"
             (click)="selectBreak(option.value)"
           />
@@ -109,7 +109,7 @@
           styleClass="w-full rounded-md border-none shadow-none transition-all {{
             isCustomBreakMode()
               ? 'bg-primary-default text-text-on-primary font-semibold'
-              : 'bg-transparent text-text-secondary hover:bg-background-surface-alt'
+              : 'bg-transparent text-text-secondary hover:bg-primary-default hover:text-text-on-primary'
           }}"
           (click)="selectBreak(-1)"
         />
