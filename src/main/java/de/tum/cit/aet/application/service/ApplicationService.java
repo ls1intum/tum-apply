@@ -447,7 +447,7 @@ public class ApplicationService {
         Application application = applicationRepository
             .findById(applicationId)
             .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
-        if (currentUserService.isProfessor()) {
+        if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
             return application;
         }
         currentUserService.isCurrentUserOrAdmin(application.getApplicant().getUserId());
@@ -474,8 +474,8 @@ public class ApplicationService {
             throw EntityNotFoundException.forId("Application", applicationId);
         }
 
-        // Allow any professor to view applications
-        if (currentUserService.isProfessor()) {
+        // Allow any professor or employee to view applications
+        if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
             return application;
         }
 

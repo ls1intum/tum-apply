@@ -1,5 +1,6 @@
 {
   "time": {
+    "today": "Heute",
     "justNow": "Gerade eben",
     "ago": "vor {{count}} {{unit}}",
     "units": {

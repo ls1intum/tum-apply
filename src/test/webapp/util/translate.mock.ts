@@ -1,13 +1,14 @@
 // src/test/webapp/util/translate.mock.ts
 import {
-  TranslateService,
-  LangChangeEvent,
-  TranslationChangeEvent,
   FallbackLangChangeEvent,
   InterpolatableTranslationObject,
+  LangChangeEvent,
+  TranslateService,
+  TranslationChangeEvent,
 } from '@ngx-translate/core';
 import { type Provider } from '@angular/core';
 import { of, Subject } from 'rxjs';
+import { vi } from 'vitest';
 
 export type TranslateServiceMock = Pick<
   TranslateService,
@@ -20,6 +21,7 @@ export type TranslateServiceMock = Pick<
   | 'onDefaultLangChange'
   | 'onFallbackLangChange'
   | 'currentLang'
+  | 'getCurrentLang'
   | 'use'
   | 'setDefaultLang'
   | 'setFallbackLang'
@@ -30,40 +32,34 @@ export function createTranslateServiceMock(): TranslateServiceMock {
   const onLangChangeSubject = new Subject<LangChangeEvent>();
   const onFallbackLangChangeSubject = new Subject<FallbackLangChangeEvent>();
 
-  const instant: TranslateService['instant'] = key => (Array.isArray(key) ? key.map(k => String(k)) : String(key));
-
-  const get: TranslateService['get'] = key => of(Array.isArray(key) ? key.map(k => String(k)) : String(key));
-
-  const getParsedResult: TranslateService['getParsedResult'] = (key, interpolateParams) =>
-    Array.isArray(key) ? key.map(k => String(k)) : String(key);
-
-  const stream: TranslateService['stream'] = key => of(Array.isArray(key) ? key.map(k => String(k)) : String(key));
-
   const emptyTranslations: InterpolatableTranslationObject = {};
 
   const mock = {
-    instant,
-    get,
-    getParsedResult,
-    stream,
+    instant: vi.fn((key: string | string[]) => (Array.isArray(key) ? key.map(k => String(k)) : String(key))),
+    get: vi.fn((key: string | string[]) => of(Array.isArray(key) ? key.map(k => String(k)) : String(key))),
+    getParsedResult: vi.fn((key: string | string[], interpolateParams?: object) =>
+      Array.isArray(key) ? key.map(k => String(k)) : String(key),
+    ),
+    stream: vi.fn((key: string | string[]) => of(Array.isArray(key) ? key.map(k => String(k)) : String(key))),
     onTranslationChange: onTranslationChangeSubject.asObservable(),
     onLangChange: onLangChangeSubject.asObservable(),
     onDefaultLangChange: onFallbackLangChangeSubject.asObservable(), // Deprecated, aliased to onFallbackLangChange
     onFallbackLangChange: onFallbackLangChangeSubject.asObservable(),
     currentLang: 'en',
-    use: (_lang: string) => {
+    getCurrentLang: vi.fn(() => mock.currentLang),
+    use: vi.fn((_lang: string) => {
       mock.currentLang = _lang;
       onLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });
       return of(emptyTranslations);
-    },
-    setDefaultLang: (_lang: string) => {
+    }),
+    setDefaultLang: vi.fn((_lang: string) => {
       onFallbackLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });
       return of(emptyTranslations);
-    },
-    setFallbackLang: (_lang: string) => {
+    }),
+    setFallbackLang: vi.fn((_lang: string) => {
       onFallbackLangChangeSubject.next({ lang: _lang, translations: emptyTranslations });
       return of(emptyTranslations);
-    },
+    }),
   };
 
   return mock;

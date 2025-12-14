@@ -70,10 +70,10 @@
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <label>
-      <input type="checkbox" formControlName="privacyAccepted" />
-      <span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span>
-    </label>
+    <div class="flex align-items-center gap-2">
+      <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
+      <label><span class="required mr-1">*</span><span jhiTranslate="privacy.privacyConsent.confirmationText"></span></label>
+    </div>
 
     @if (!privacyAcceptedSignal() && submitAttempted()) {
       <div class="error-text mt-1" jhiTranslate="privacy.privacyConsent.errorText"></div>
@@ -89,10 +89,13 @@
   </div>
 
   <div [formGroup]="additionalInfoForm">
-    <label>
-      <input type="checkbox" formControlName="doctoralRequirementsAccepted" />
-      <span class="required mr-1">*</span><span jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></span>
-    </label>
+    <div class="flex align-items-center">
+      <div class="relative mr-2">
+        <p-checkbox formControlName="doctoralRequirementsAccepted" [binary]="true" size="small" />
+        <span class="required">*</span>
+      </div>
+      <label jhiTranslate="entity.applicationPage4.doctoralRequirements.confirmationText"></label>
+    </div>
 
     @if (!doctoralRequirementsAcceptedSignal() && submitAttempted()) {
       <div class="error-text mt-1" jhiTranslate="entity.applicationPage4.doctoralRequirements.missingConfirmation"></div>

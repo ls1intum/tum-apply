@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ public class ApplicationOverviewDTO {
     private String jobTitle;
     private String researchGroup;
     private ApplicationState applicationState;
-    private String timeSinceCreation;
+    private LocalDateTime createdAt;
 
     public ApplicationOverviewDTO(
         UUID applicationId,
@@ -31,6 +32,6 @@ public class ApplicationOverviewDTO {
         this.jobTitle = jobTitle;
         this.researchGroup = researchGroup;
         this.applicationState = applicationState;
-        this.timeSinceCreation = UiTextFormatter.getRelativeTimeLabel(createdAt);
+        this.createdAt = createdAt;
     }
 }

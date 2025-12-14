@@ -78,6 +78,10 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
       : this.translateService.instant('auth.common.otp.resend');
   }
 
+  public getRegistrationFlag(): boolean {
+    return this.isRegistration();
+  }
+
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       event.preventDefault();

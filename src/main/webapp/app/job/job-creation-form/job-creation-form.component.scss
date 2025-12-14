@@ -7,7 +7,7 @@
 // Base styles
 body {
   background-color: var(--p-background-surface);
-  color: var(--p-text-primary);
+
   line-height: 1.6;
 }
 
@@ -47,7 +47,6 @@ body {
       }
 
       .step-label {
-        color: var(--p-text-primary);
         font-weight: bold;
       }
     }
@@ -122,7 +121,6 @@ body {
     }
 
     .char-counter {
-      color: var(--p-text-primary);
     }
   }
 }
@@ -150,7 +148,6 @@ body {
 .data-privacy-notice {
   margin-top: 1.25rem;
   padding: 0.9375rem;
-  background-color: var(--p-background-default);
   border-radius: 0.25rem;
   font-size: 1rem;
 
@@ -166,10 +163,6 @@ body {
   justify-content: space-between;
   margin-top: 1rem;
   padding-top: 1rem;
-}
-
-.ng-fa-icon {
-  color: var(--p-primary-color);
 }
 
 input:disabled {
@@ -195,5 +188,22 @@ input:disabled {
   color: var(--p-danger-color);
   .ng-fa-icon {
     color: inherit;
+  }
+}
+
+// Info banner using primary color
+.info-banner {
+  background-color: var(--p-primary-50, #eff6ff);
+  color: var(--p-primary-800, #1e40af);
+}
+
+.upload-area {
+  &:hover {
+    border-color: var(--p-primary-color);
+    background-color: var(--p-primary-50, #eff6ff);
+  }
+
+  .upload-arrow {
+    color: var(--p-primary-color);
   }
 }

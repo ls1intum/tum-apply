@@ -7,6 +7,7 @@ import ApplicationCreationPage3Component, {
 } from '../../../../../main/webapp/app/application/application-creation/application-creation-page3/application-creation-page3.component';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
+import { provideHttpClientMock } from 'util/http-client.mock';
 
 describe('ApplicationPage3Component', () => {
   let fixture: ComponentFixture<ApplicationCreationPage3Component>;
@@ -14,7 +15,7 @@ describe('ApplicationPage3Component', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ApplicationCreationPage3Component],
-      providers: [provideRouter([]), provideTranslateMock(), provideFontAwesomeTesting()],
+      providers: [provideRouter([]), provideTranslateMock(), provideFontAwesomeTesting(), provideHttpClientMock()],
     }).compileComponents();
     fixture = TestBed.createComponent(ApplicationCreationPage3Component);
     comp = fixture.componentInstance;
@@ -187,7 +188,6 @@ describe('ApplicationPage3Component', () => {
       projects: 'Built multiple apps',
       applicationState: 'SAVED',
       job: {
-        fieldOfStudies: 'field',
         jobId: 'id-123',
         location: 'location',
         professorName: 'profName',

@@ -1,6 +1,6 @@
-<header class="app-header shadow">
+<header class="app-header border-b border-border-default">
   <div (click)="navigateToHome()" class="logo-section">
-    <img alt="TUM Logo" class="tum-logo scale-150" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+    <img alt="TUMApply Logo" class="tumapply-logo h-8" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
     <span class="app-name">TUMApply</span>
     @if (isProfessorPage()) {
       <span class="professor" jhiTranslate="header.professorTitle"></span>
@@ -18,13 +18,16 @@
         }
       }
     </div>
-    <!--<jhi-button
-			  class="theme-toggle-button"
-			  (click)="toggleColorScheme()"
-			  [icon]="isDarkMode() ? 'moon' : 'sun'"
-			  severity="primary"
-			  variant="text"
-			/>-->
+
+    <div class="theme-switch">
+      <jhi-select
+        [items]="themeOptions"
+        [selected]="selectedTheme()"
+        (selectedChange)="onThemeChange($event)"
+        [placeholder]="'Theme'"
+        [appendTo]="'body'"
+      />
+    </div>
 
     @if (user() === undefined) {
       @if (isProfessorPage()) {

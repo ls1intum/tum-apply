@@ -28,6 +28,62 @@
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
       }
+    },
+    "detail": {
+      "error": {
+        "title": "Termine konnten nicht geladen werden",
+        "description": "Beim Laden der Interview Termine ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+        "retry": "Erneut versuchen",
+        "loadFailed": "Interview Prozess Informationen konnten nicht geladen werden"
+      },
+      "empty": {
+        "title": "Noch keine Termine",
+        "description": "Erstelle deine ersten Interview Termine."
+      },
+      "noSlotsInMonth": "Keine Termine in {{month}}",
+      "showLess": "Weniger anzeigen"
+    },
+    "slots": {
+      "addSlots": "Termine hinzufügen",
+      "slotsCountSingular": "Termin",
+      "slotsCountPlural": "Termine",
+      "showMoreSingular": "weiteren Termin",
+      "showMorePlural": "weitere Termine",
+      "error": {
+        "loadFailed": {
+          "summary": "Interview Termine konnten nicht geladen werden",
+          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
+      },
+      "status": {
+        "booked": "Gebucht"
+      },
+      "location": {
+        "virtual": "virtuell",
+        "inPerson": "vor Ort"
+      },
+      "delete": {
+        "confirm": {
+          "header": "Löschvorgang bestätigen",
+          "message": "Möchtest du diesen Termin wirklich löschen?"
+        },
+        "success": {
+          "summary": "Termin gelöscht",
+          "detail": "Der Termin wurde erfolgreich gelöscht"
+        },
+        "error": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "errorBooked": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Gebuchte Termine können nicht gelöscht werden."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
+        }
+      }
     }
   }
 }

@@ -13,7 +13,7 @@ import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { signal } from '@angular/core';
 import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForApplicantDTO';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
@@ -62,6 +62,7 @@ describe('JobDetailComponent', () => {
         provideAccountServiceMock(mockAccountService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideHttpClient(),
       ],
     }).compileComponents();
 
@@ -269,7 +270,7 @@ describe('JobDetailComponent', () => {
     const confirmSpy = vi.fn();
     (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
     // mock professor ownership
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.closeButtonLabel);
@@ -278,7 +279,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should return null for PUBLISHED job when user is professor but not owner', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
 
     const job = {
       belongsToResearchGroup: false,
@@ -304,6 +305,7 @@ describe('JobDetailComponent', () => {
           provideRouterMock(mockRouter),
           provideAccountServiceMock(mockAccountService),
           provideTranslateMock(),
+          provideHttpClient(),
         ],
       })
       .compileComponents();
@@ -322,13 +324,13 @@ describe('JobDetailComponent', () => {
   });
 
   it('isOwnerOfJob should return false when not professor', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(false);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(false);
     const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: true } as JobDetails);
     expect(result).toBe(false);
   });
 
   it('isOwnerOfJob should return false when job does not belong to research group', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: false } as JobDetails);
     expect(result).toBe(false);
   });
@@ -389,7 +391,9 @@ describe('JobDetailComponent', () => {
   it('should return null from rightActionButtons when previewData exists', () => {
     const previewSignal = signal({ title: 'Preview job' });
     (component as unknown as { previewData: () => typeof previewSignal }).previewData = () => previewSignal;
-    expect(component.rightActionButtons()).toBeNull();
+    const buttons = component.rightActionButtons();
+    expect(buttons).not.toBeNull();
+    expect(buttons?.buttons[0].label).toBe('button.downloadPDF');
   });
 
   it('should trigger onApply from computed button', () => {
@@ -552,6 +556,7 @@ describe('JobDetailComponent', () => {
           provideRouterMock(mockRouter),
           provideAccountServiceMock(accountServiceNoId),
           provideTranslateMock(),
+          provideHttpClient(),
         ],
       })
       .compileComponents();

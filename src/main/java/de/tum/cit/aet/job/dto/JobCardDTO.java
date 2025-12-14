@@ -12,43 +12,46 @@ import java.util.UUID;
 public record JobCardDTO(
     @NotNull UUID jobId,
     @NotNull String title,
-    @NotNull String fieldOfStudies,
     @NotNull String location,
     @NotNull String professorName,
+    String departmentName,
     UUID applicationId,
     ApplicationState applicationState,
     Integer workload,
     LocalDate startDate,
     String relativeTimeEnglish,
     String relativeTimeGerman,
-    Integer contractDuration
+    Integer contractDuration,
+    String imageUrl // Job banner image URL (e.g., "/images/jobs/abc.jpg")
 ) {
     public JobCardDTO(
         @NotNull UUID jobId,
         @NotNull String title,
-        @NotNull String fieldOfStudies,
         @NotNull Campus location,
         @NotNull String professorName,
+        String departmentName,
         UUID applicationId,
         ApplicationState applicationState,
         Integer workload,
         LocalDate startDate,
         LocalDate endDate,
-        Integer contractDuration
+        Integer contractDuration,
+        String imageUrl
     ) {
         this(
             jobId,
             title,
-            fieldOfStudies,
             UiTextFormatter.formatEnumValue(location),
             professorName,
+            departmentName,
             applicationId,
             applicationState,
             workload,
             startDate,
             UiTextFormatter.getTimeLeftLabelEnglish(endDate),
             UiTextFormatter.getTimeLeftLabelGerman(endDate),
-            contractDuration
+            contractDuration,
+            imageUrl
         );
     }
 }

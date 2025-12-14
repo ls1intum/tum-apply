@@ -63,7 +63,16 @@ export class DatePickerComponent {
   /**
    * Effective minimum date - defaults to today if no minDate provided
    */
-  effectiveMinDate = computed(() => this.minDate() ?? new Date());
+  effectiveMinDate = computed(() => {
+    const min = this.minDate();
+    if (min && min.getHours() === 0 && min.getMinutes() === 0 && min.getSeconds() === 0 && min.getMilliseconds() === 0) {
+      return min;
+    }
+    const base = min ?? new Date();
+    const d = new Date(base);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
 
   /**
    * Current language signal - updated when language changes
@@ -109,7 +118,7 @@ export class DatePickerComponent {
     }
 
     // Set initial language and listen for changes
-    this.currentLanguage.set(this.translateService.currentLang || 'en');
+    this.currentLanguage.set(this.translateService.getCurrentLang() || 'en');
 
     const subscription = this.translateService.onLangChange.subscribe(event => {
       this.currentLanguage.set(event.lang);

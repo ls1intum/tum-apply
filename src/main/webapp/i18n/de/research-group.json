@@ -7,11 +7,15 @@
     "groupInfoHeader": "Meine Gruppe",
     "groupInfo": {
       "description": "Bearbeite die grundlegenden Informationen über deine Forschungsgruppe.",
+      "organizationInfo": "Um das Department und die School zu ändern, wende dich bitte an eine:n Administrator:in.",
+      "noDepartment": "Kein Department",
+      "noSchool": "Keine School",
       "fields": {
         "name": "Name",
         "abbreviation": "Abkürzung",
         "head": "Leitung",
         "school": "School",
+        "department": "Department",
         "defaultFieldOfStudies": "Studienrichtung",
         "website": "Webseite",
         "email": "E-Mail",
@@ -20,7 +24,8 @@
         "city": "Stadt",
         "description": "Beschreibung",
         "section1": "Grundlegende Informationen",
-        "section2": "Schule und Website",
+        "sectionOrganization": "Organisation",
+        "section2": "Kontakt und Webseite",
         "section3": "Adresse"
       },
       "placeholders": {
@@ -91,7 +96,14 @@
       "loading": "Mitglieder werden geladen...",
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
+      "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
+      "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
       "me": "Ich",
+      "addMembers": "Mitglieder hinzufügen",
+      "addMembersButton": "Mitglieder hinzufügen",
+      "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
+      "singleEntity": "Benutzer:in",
+      "multipleEntities": "Benutzer:innen",
 
       "tableColumns": {
         "name": "Name",
@@ -109,9 +121,29 @@
           "summary": "Fehler beim Laden",
           "detail": "Fehler beim Laden. Bitte versuche es erneut oder kontaktiere einen Admin."
         },
-        "addSuccess": {
-          "summary": "Mitglied hinzugefügt",
-          "detail": "{{memberName}} wurde zur Forschungsgruppe hinzugefügt."
+        "loadUsersFailed": {
+          "summary": "Fehler beim Laden",
+          "detail": "Verfügbare Benutzer:innen konnten nicht geladen werden. Bitte versuche es erneut."
+        },
+        "invalidUser": {
+          "summary": "Ungültige:r Benutzer:in",
+          "detail": "Der:die ausgewählte Benutzer:in ist ungültig. Bitte aktualisiere die Seite und versuche es erneut."
+        },
+        "addMembersSuccess": {
+          "summary": "Mitglieder hinzugefügt",
+          "detail": "Die ausgewählten Mitglieder wurden erfolgreich zur Forschungsgruppe hinzugefügt."
+        },
+        "addMembersFailed": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mitglieder konnten nicht hinzugefügt werden. Bitte versuche es erneut."
+        },
+        "addMembersFailedAlreadyMember": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mindestens ein ausgewählter Benutzer konnte nicht hinzugefügt werden, da er bereits Teil einer Forschungsgruppe ist."
+        },
+        "addMembersFailedInvalidUniversityId": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mindestens ein ausgewählter Benutzer konnte nicht hinzugefügt werden, da er keine gültige Universitäts-ID hat."
         },
         "removeSuccess": {
           "summary": "Mitglied entfernt",
@@ -121,6 +153,11 @@
           "summary": "Fehler beim Entfernen",
           "detail": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
         }
+      },
+
+      "confirmDialog": {
+        "header": "Mitglieder hinzufügen",
+        "message": "Möchtest du die ausgewählten Mitglieder wirklich zur Forschungsgruppe hinzufügen? Sie werden per E-Mail benachrichtigt."
       },
 
       "noRole": "Keine Rolle"
@@ -156,8 +193,8 @@
           "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
         },
         "userNotFound": {
-          "summary": "Benutzer nicht gefunden",
-          "detail": "Es wurde kein Benutzer mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+          "summary": "Benutzer:in nicht gefunden",
+          "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
         }
       },
       "success": {
@@ -246,6 +283,10 @@
         "save": {
           "summary": "Fehler",
           "detail": "Fehler beim Speichern der Forschungsgruppeninformationen. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "loadDepartments": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Laden der Departments. Bitte aktualisiere die Seite."
         }
       },
       "success": {
@@ -260,6 +301,7 @@
       "abbreviation": "Abkürzung",
       "name": "Name",
       "school": "School",
+      "department": "Department",
       "defaultFieldOfStudies": "Studienrichtung",
       "head": "Leitung",
       "email": "E-Mail",
@@ -272,6 +314,7 @@
         "abbreviation": "z.B. KI",
         "name": "z.B. Forschungsgruppe für Künstliche Intelligenz",
         "school": "z.B. Informatik",
+        "department": "Wählen...",
         "defaultFieldOfStudies": "z.B. Computer Science",
         "head": "z.B. Prof. Dr. Max Mustermann",
         "email": "z.B. kontakt@forschung.de",

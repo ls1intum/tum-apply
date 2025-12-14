@@ -11,13 +11,15 @@
       filterId: 'fieldOfStudies',
       filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudies',
       filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.fieldOfStudiesPlaceholder',
-      filterOptions: allFieldOfStudies(),
+      filterOptions: allFieldOfStudies,
+      shouldTranslateOptions: true,
     },
     {
       filterId: 'location',
       filterLabel: 'jobOverviewPage.searchFilterSortBar.filterOptions.location',
       filterSearchPlaceholder: 'jobOverviewPage.searchFilterSortBar.filterOptions.LocationSearchPlaceholder',
       filterOptions: availableLocationLabels,
+      shouldTranslateOptions: true,
     },
     {
       filterId: 'supervisor',
@@ -35,7 +37,7 @@
         <jhi-job-card
           [jobId]="job.jobId"
           [jobTitle]="job.title"
-          [fieldOfStudies]="job.fieldOfStudies"
+          [departmentName]="job.departmentName ?? 'No Department'"
           [location]="job.location.toString()"
           [professor]="job.professorName"
           [workload]="job.workload || undefined"
@@ -44,7 +46,7 @@
           [applicationId]="job.applicationId"
           [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
           [contractDuration]="job.contractDuration"
-          [headerImageUrl]="getExampleImageUrl(i)"
+          [headerImageUrl]="job.imageUrl"
         />
       </div>
     }

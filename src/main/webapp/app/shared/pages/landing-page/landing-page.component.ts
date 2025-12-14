@@ -7,15 +7,19 @@ import { ApplicationStepsSectionComponent } from './application-steps-section/ap
 import { DoctoralJourneySectionComponent } from './doctoral-journey-section/doctoral-journey-section.component';
 import { InformationSectionComponent } from './information-section/information-section.component';
 import { FaqSectionComponent } from './faq-section/faq-section.component';
+import { JobsPreviewSectionComponent } from './jobs-preview-section/jobs-preview-section.component';
+import { BannerSectionComponent } from './banner-section/banner-section.component';
 
 @Component({
   selector: 'jhi-landing-page',
   imports: [
     HeroSectionComponent,
+    JobsPreviewSectionComponent,
     ApplicationStepsSectionComponent,
     DoctoralJourneySectionComponent,
     InformationSectionComponent,
     FaqSectionComponent,
+    BannerSectionComponent,
   ],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
@@ -26,7 +30,7 @@ export class LandingPageComponent {
 
   private redirectEffect = effect(() => {
     const user = this.accountService.user();
-    if (user && this.accountService.hasAnyAuthority(['PROFESSOR'])) {
+    if (user && this.accountService.hasAnyAuthority(['PROFESSOR', 'EMPLOYEE'])) {
       void this.router.navigate(['/professor']);
     }
   });

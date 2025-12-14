@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { environment } from 'app/environments/environment';
+import { ToastService } from 'app/service/toast-service';
+import { TranslateService } from '@ngx-translate/core';
 
 export enum IdpProvider {
   Google = 'google',
@@ -31,6 +33,9 @@ export enum IdpProvider {
 @Injectable({ providedIn: 'root' })
 export class KeycloakAuthenticationService {
   readonly config = inject(ApplicationConfigService);
+  private readonly toastService = inject(ToastService);
+  private readonly translate = inject(TranslateService);
+  private readonly translationKey = 'auth.common.toast';
 
   private keycloak: Keycloak | undefined;
   private refreshIntervalId: ReturnType<typeof setInterval> | undefined;
@@ -66,6 +71,10 @@ export class KeycloakAuthenticationService {
       this.startTokenRefreshScheduler();
       return authenticated;
     } catch (err) {
+      this.toastService.showError({
+        summary: this.translate.instant(`${this.translationKey}.error.summary`),
+        detail: this.translate.instant(`${this.translationKey}.error.detail`),
+      });
       console.error('🔁 Keycloak init failed:', err);
       return false;
     }
@@ -99,7 +108,6 @@ export class KeycloakAuthenticationService {
    * @param redirectUri Optional URI to redirect to after login. Defaults to the app root.
    */
   async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
-    await this.init();
     try {
       await this.keycloak?.login({
         redirectUri: this.buildRedirectUri(redirectUri),
@@ -107,6 +115,10 @@ export class KeycloakAuthenticationService {
       });
       this.startTokenRefreshScheduler();
     } catch (err) {
+      this.toastService.showError({
+        summary: this.translate.instant(`${this.translationKey}.providerLoginFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.providerLoginFailed.detail`),
+      });
       console.error(`Login with provider ${provider} failed:`, err);
     }
   }
@@ -141,10 +153,15 @@ export class KeycloakAuthenticationService {
     if (this.refreshInFlight) {
       return this.refreshInFlight;
     }
-    this.refreshInFlight = this.keycloak
-      .updateToken(20)
+
+    const refreshPromise = Promise.resolve(this.keycloak.updateToken(20));
+    this.refreshInFlight = refreshPromise
       .then(() => {})
       .catch(async (e: unknown) => {
+        this.toastService.showError({
+          summary: this.translate.instant(`${this.translationKey}.refreshTokenFailed.summary`),
+          detail: this.translate.instant(`${this.translationKey}.refreshTokenFailed.detail`),
+        });
         console.warn('Failed to refresh token, logging out...', e);
         await this.logout();
         throw e;

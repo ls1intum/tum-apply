@@ -4,7 +4,18 @@ import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { HttpClient } from '@angular/common/http';
 
-export function createHttpClientMock(): Pick<HttpClient, 'get' | 'post' | 'put' | 'patch' | 'delete' | 'head' | 'options' | 'request'> {
+export interface HttpClientMock {
+  get: ReturnType<typeof vi.fn>;
+  post: ReturnType<typeof vi.fn>;
+  put: ReturnType<typeof vi.fn>;
+  patch: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+  head: ReturnType<typeof vi.fn>;
+  options: ReturnType<typeof vi.fn>;
+  request: ReturnType<typeof vi.fn>;
+}
+
+export function createHttpClientMock(): HttpClientMock {
   return {
     get: vi.fn().mockReturnValue(of({})),
     post: vi.fn().mockReturnValue(of({})),

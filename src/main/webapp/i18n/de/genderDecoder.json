@@ -1,0 +1,26 @@
+{
+  "genderDecoder": {
+    "resultTitle": "Gender-Bias-Analyse",
+    "buttonLabel": "Prüfen",
+    "masculineWords": "Gender-exklusive Wörter",
+    "feminineWords": "Gender-inklusive Wörter",
+    "noWordsFound": "Keine Wörter gefunden",
+    "openAnaylsis": "Klicke hier für weitere Informationen",
+    "originalDecoder": "Basierend auf dem <a href=\"https://gender-decoder.katmatfield.com/\" target=\"_blank\"  class='external-link' rel=\"noopener noreferrer\">originalen Gender Decoder</a> von Kat Matfield",
+    "formulationTexts": {
+      "manly": "Gender-exklusiv formuliert",
+      "feminine": "Gender-inklusiv formuliert",
+      "neutral": "Neutral formuliert"
+    },
+    "explanations": {
+      "masculine-coded": "Deine Stellenanzeige enthält überwiegend gender-exklusive Formulierungen. Solche Formulierungen können beeinflussen, wie attraktiv die Rolle für unterschiedliche Kandidat:innen wirkt. Erwäge, gender-inklusive Formulierungen zu verwenden, um die Anzeige für alle Bewerber:innen ansprechender zu machen.",
+      "feminine-coded": "Deine Stellenanzeige verwendet gender-inklusive Formulierungen. Diese Art von Sprache kann die Attraktivität der Rolle erhöhen und hält andere Bewerber:innen in der Regel nicht von einer Bewerbung ab.",
+      "empty": "Deine Stellenanzeige enthält keine Hinweise auf gender-inklusive oder gender-exklusive Formulierungen. Die Sprache ist neutral und inklusiv.",
+      "neutral": "Deine Stellenanzeige enthält eine ausgewogene Mischung aus gender-inklusive und gender-exklusive Formulierungen. Die Sprache ist neutral und inklusiv."
+    },
+    "error": {
+      "summary": "Fehler",
+      "detail": "Analysieren des Textes ist fehlgeschlagen. Bitte versuche, die Seite neu zu laden, oder kontaktiere uns, wenn das Problem weiterhin besteht."
+    }
+  }
+}

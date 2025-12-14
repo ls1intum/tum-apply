@@ -42,16 +42,22 @@ scalable, secure, and transparent recruitment processes.
 
 1. Visit the portal: [TUMApply](https://tumapply.aet.cit.tum.de/)
 2. Browse available doctoral positions
-3. Log in with your preferred account
+3. Register/Log in with your preferred account
 4. Start applying or managing applications
+
+## Registration
+
+New users can register directly on the TUMApply portal using their email address or social login
+options. ([Video](https://live.rbg.tum.de/w/artemisintro/67995))
 
 ## 🔐 Login
 
 TUMApply supports **secure login** via:
 
-- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/61951))
-- Apple, Google and Microsoft ([Video](https://live.rbg.tum.de/w/artemisintro/61949))
-- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/61950))
+- TUM Single Sign-On (SSO) ([Video](https://live.rbg.tum.de/w/artemisintro/67993))
+- Apple and Google
+- Email and code ([Video](https://live.rbg.tum.de/w/artemisintro/67994))
+- Email and password ([Video](https://live.rbg.tum.de/w/artemisintro/67996))
 
 ## 🧱 Architecture Overview
 
@@ -60,14 +66,14 @@ architecture for now, clear service boundaries allow for potential migration to 
 
 ### Technology Stack
 
-| Component      | Technology                                     |
-| -------------- | ---------------------------------------------- |
-| Client         | Angular                                        |
-| Server         | Spring Boot (Java)                             |
-| Proxy          | Nginx                                          |
-| Database       | MySQL with Hibernate                           |
-| Authentication | Keycloak (with Google / Microsoft / Apple SSO) |
-| Deployment     | GitHub + GitHub Actions (CI/CD)                |
+| Component      | Technology                         |
+| -------------- | ---------------------------------- |
+| Client         | Angular                            |
+| Server         | Spring Boot (Java)                 |
+| Proxy          | Nginx                              |
+| Database       | MySQL with Hibernate               |
+| Authentication | Keycloak (with Google / Apple SSO) |
+| Deployment     | GitHub + GitHub Actions (CI/CD)    |
 
 ### Core Modules & Responsibilities
 
@@ -100,12 +106,12 @@ architecture for now, clear service boundaries allow for potential migration to 
 If you're a developer or contributor, head over to the full documentation:
 
 - 📚 [Development Setup](docs-github/setup/dev-environment.md)
-- 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
 - 💡 [General Documentation](docs-github/general/general-documentation.md)
-- 💼 [Job Documentation](docs-github/job/job-module-documentation.md)
 - 🧪 [Testing Guide](docs-github/testing/testing-guide.md)
-- 🐳 [Docker Setup](docs-github/deployment/docker.md)
-- 🚀 [Build for Production](docs-github/deployment/build-production.md)
+- 🎨 [Theming & Color Tokens](docs-github/theming/color-theming.md)
+- 💼 [Job Documentation](docs-github/job/job-module-documentation.md)
+- 📝 [Application Documentation](docs-github/application/application-module-documentation.md)
+- 📊 [Evaluation Documentation](docs-github/evaluation/evaluation-module-documentation.md)
 
 Full documentation is available in the [`/docs`](docs-github) folder.
 

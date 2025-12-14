@@ -37,7 +37,8 @@
       },
       "about-us": "TumApply - About Us",
       "interview": {
-        "overview": "TUMApply - Interview Overview"
+        "overview": "TUMApply - Interview Overview",
+        "detail": "Interview - {{jobTitle}}"
       }
     },
     "menu": {
@@ -151,8 +152,7 @@
       "open": "Open",
       "save": "Save",
       "view": "View",
-      "show": "Show {{otherEntity}}",
-      "pdf": "Export PDF"
+      "show": "Show {{otherEntity}}"
     },
     "detail": {
       "field": "Field",
@@ -171,7 +171,6 @@
       "master_info": "Master Degree Information",
       "gender": "Gender",
       "desired_start_date": "Desired Start Date",
-      "preferred_language": "Preferred Language",
       "applicant_info": "Applicant Information",
       "nationality": "Nationality",
       "website": "Website",
@@ -231,6 +230,18 @@
         "already_uploaded": "Already uploaded",
         "remove": "Remove this file from the upload list",
         "delete": "Delete this file from the server"
+      },
+      "duplicate": {
+        "title": "Document already exists",
+        "message": "A document with the name \"{{filename}}\" already exists. Do you want to replace it?",
+        "replace": "Replace"
+      },
+      "error": {
+        "replace_failed": "Failed to replace document",
+        "too_large": "Files are too large",
+        "upload_failed": "Upload failed",
+        "delete_failed": "Failed to delete document",
+        "rename_failed": "Failed to rename document"
       }
     },
     "application_overview": {
@@ -280,7 +291,6 @@
         "phoneNumber": "Phone Number",
         "gender": "Gender",
         "nationality": "Nationality",
-        "language": "Preferred Language",
         "dateOfBirth": "Date of Birth",
         "website": "Website",
         "linkedIn": "LinkedIn",
@@ -289,13 +299,14 @@
         "country": "Country",
         "postcode": "Postcode"
       },
+      "placeholder": {
+        "selectNationality": "Select your nationality...",
+        "selectGender": "Select your gender..."
+      },
       "section": {
         "contactInformation": "Contact Information",
         "voluntaryInformation": "Voluntary Information",
         "address": "Address Information"
-      },
-      "tooltip": {
-        "language": "Choose your preferred communication language."
       },
       "validation": {
         "postalCode": "Please enter a valid postal code for the selected country."
@@ -383,7 +394,8 @@
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn",
-        "closed": "Closed"
+        "closed": "Closed",
+        "inReview": "In Review"
       },
       "columns": {
         "positionTitle": "Position Title",

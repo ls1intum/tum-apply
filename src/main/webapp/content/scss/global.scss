@@ -1,4 +1,5 @@
 @use 'tailwindcss' as *;
+@use './tokens' as *;
 @use './_header.scss';
 @use './_layout.scss';
 @use './breakpoints' as bp;
@@ -14,10 +15,6 @@
 .label-input-wrapper {
   display: flex;
   flex-direction: column;
-
-  .custom-label {
-    color: var(--p-text-color);
-  }
 
   // Add styling for labels on the top of the field
   &.label-top .custom-label {
@@ -46,13 +43,11 @@
   }
 
   .p-inputtext {
-    color: var(--p-text-primary);
     border: 0.1rem solid var(--p-border-default);
-    background: transparent;
   }
 
   .p-inputtext::placeholder {
-    color: var(--p-background-disabled);
+    color: var(--p-text-tertiary);
   }
 
   .p-inputtext:disabled {
@@ -70,6 +65,10 @@
   }
 }
 
+.custom-label {
+  color: var(--p-text-primary);
+}
+
 .required {
   color: var(--p-danger-color);
 }
@@ -83,6 +82,7 @@
 .p-datatable .p-datatable-tbody > tr > td,
 .p-datatable .p-datatable-thead > tr > th {
   background: var(--p-background-default);
+  color: var(--p-datatable-row-color);
 }
 
 .selection-col {
@@ -94,97 +94,8 @@
   position: relative;
 }
 
-/* -------------------------------
-   Custom Global Styles for Job Card
----------------------------------- */
-.job-card {
-  overflow: hidden;
-  border: 0.1rem solid var(--p-primary-color);
-  // max-width: 20rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: var(--p-background-default);
-  color: var(--p-text-color);
-
-  .card-header {
-    position: relative;
-    background: linear-gradient(to right, var(--header-color, var(--p-secondary-color)), var(--p-secondary-color));
-    height: 6rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--p-text-on-primary);
-    padding: 0 1rem;
-
-    .card-icon {
-      font-size: 1.5rem;
-      color: var(--p-text-on-primary);
-    }
-
-    .timestamp {
-      position: absolute;
-      bottom: 0.5rem;
-      left: 1rem;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 1rem;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.75rem;
-    }
-  }
-
-  // Make the card title have consistent height
-  .p-card-title {
-    min-height: 3rem;
-    display: flex;
-    align-items: center;
-
-    .card-title {
-      line-height: 1.2;
-      overflow: hidden;
-    }
-  }
-
-  .p-card-body {
-    padding: 0.7rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-
-    .card-info {
-      margin: 0 0 1rem 0;
-      flex: 1;
-
-      .info-item {
-        display: flex;
-        font-size: 0.95rem;
-        margin-bottom: 0.25rem;
-
-        fa-icon {
-          color: var(--p-primary-color);
-          margin-right: 0.5rem;
-
-          .svg-inline--fa {
-            width: 1.2rem;
-          }
-        }
-      }
-    }
-
-    .card-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: auto; // Push buttons to bottom
-      flex-shrink: 0; // Prevent buttons from shrinking
-    }
-  }
+.icon {
+  color: var(--p-primary-color);
 }
 
 /* --------------------------------------------------
@@ -195,13 +106,13 @@
 --------------------------------------------------- */
 
 .ql-editor {
-  background: transparent;
+  background: var(--p-background-default);
   color: var(--p-text-primary);
   overflow-wrap: anywhere;
 }
 
 .ql-editor.ql-blank {
-  color: var(--p-background-disabled);
+  color: var(--p-text-tertiary);
 }
 
 .ql-editor.ql-blank::before {
@@ -221,63 +132,71 @@
    Primeng Editor Toolbar Styling
 ---------------------------------- */
 
+/* Toolbar background */
+.ql-toolbar,
+.custom-quill-editor .ql-toolbar {
+  background: var(--p-background-default) !important;
+  border-color: var(--p-border-default) !important;
+  border: 1px solid var(--p-border-default) !important;
+}
+
 /* Default text color for toolbar buttons and pickers */
 .ql-picker-label,
 .ql-picker-item,
-.p-editor .ql-snow.ql-toolbar button {
-  color: var(--p-text-primary);
+.custom-quill-editor .ql-toolbar button {
+  color: var(--p-text-secondary) !important;
 }
 
 /* Default icon styling */
-.p-editor .ql-snow.ql-toolbar .ql-fill {
-  fill: var(--p-text-primary);
+.p-editor .ql-toolbar .ql-fill,
+.custom-quill-editor .ql-fill {
+  fill: var(--p-text-secondary) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar .ql-stroke {
-  stroke: var(--p-text-primary);
+.p-editor .ql-toolbar .ql-stroke,
+.custom-quill-editor .ql-stroke {
+  stroke: var(--p-text-secondary) !important;
 }
 
 /* Picker select component background */
 .ql-picker-options {
-  background: var(--p-background-default);
+  color: var(--p-text-secondary) !important;
+  background: var(--p-background-default) !important;
 }
 
 /* -------------------------------
    Active State
 ---------------------------------- */
-.p-editor .ql-snow.ql-toolbar button.ql-active,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected {
-  color: var(--p-primary-color);
+.p-editor button.ql-active,
+.custom-quill-editor .ql-toolbar button.ql-active {
+  color: var(--p-primary-color) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar button.ql-active .ql-fill {
-  fill: var(--p-primary-color);
+.custom-quill-editor .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--p-primary-color) !important;
 }
 
 .p-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke {
-  stroke: var(--p-primary-color);
+.custom-quill-editor .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--p-primary-color) !important;
 }
 
 /* -------------------------------
    Hover State
 ---------------------------------- */
-.p-editor .ql-snow.ql-toolbar button:hover,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label:hover,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover {
-  color: var(--p-primary-color);
+.p-editor button:hover,
+.custom-quill-editor .ql-toolbar button:hover {
+  color: var(--p-primary-color) !important;
 }
 
-.p-editor .ql-snow.ql-toolbar button:hover .ql-fill {
-  fill: var(--p-primary-color);
+.p-editor button:hover .ql-fill,
+.custom-quill-editor .ql-toolbar button:hover .ql-fill {
+  fill: var(--p-primary-color) !important;
 }
 
 .p-editor .ql-snow.ql-toolbar button:hover .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
-.p-editor .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke {
-  stroke: var(--p-primary-color);
+.custom-quill-editor .ql-toolbar button:hover .ql-stroke {
+  stroke: var(--p-primary-color) !important;
 }
 
 /* -------------------------------
@@ -294,21 +213,21 @@
 /* -------------------------------
    Primeng Editor Border Styling
 ---------------------------------- */
-.p-editor-toolbar.ql-toolbar.ql-snow {
-  border-top: 0.1rem solid var(--p-border-default);
-  border-left: 0.1rem solid var(--p-border-default);
-  border-right: 0.1rem solid var(--p-border-default);
-  border-bottom: none;
+.p-editor-toolbar.ql-toolbar,
+.custom-quill-editor .ql-toolbar {
+  border-bottom: none !important;
+  border-color: var(--p-border-default) !important;
+  background: var(--p-background-default) !important;
 }
 
-.p-editor-content.ql-container.ql-snow {
-  border-top: 0.1rem solid var(--p-border-default);
-  border-left: 0.1rem solid var(--p-border-default);
-  border-right: 0.1rem solid var(--p-border-default);
-  border-bottom: 0.1rem solid var(--p-border-default);
+.p-editor-content.ql-container.ql-snow,
+.custom-quill-editor .ql-container {
+  background: var(--p-background-default) !important;
+  border-color: var(--p-border-default) !important;
+  border: 1px solid var(--p-border-default) !important;
 
   &:focus-within {
-    border-color: var(--p-primary-color);
+    border-color: var(--p-primary-color) !important;
   }
 }
 
@@ -330,6 +249,10 @@
   .fa-circle-info {
     color: var(--p-primary-color);
   }
+}
+
+.p-dialog-header {
+  color: var(--p-text-primary);
 }
 
 /* Styles for the tooltip icon in the Upload component */
@@ -384,12 +307,13 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
  Style for file upload component
 ------------------------------- */
 .p-fileupload-content {
-  color: var(--p-text-color);
   background: var(--p-background-default);
+  color: var(--p-text-color);
 }
 
 .p-fileupload-header {
   background: var(--p-background-default);
+  color: var(--p-text-color);
 }
 
 /* ---------------------------
@@ -412,7 +336,7 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
 ------------------------------- */
 // Base card styles - shared between all card types
 .section-card {
-  border: 0.05rem solid var(--p-border-default);
+  border: 0.1rem solid var(--p-border-default);
   border-radius: 0.5rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -434,7 +358,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   .section-card-title {
     font-weight: 600;
     margin: 0;
-    color: var(--p-text-primary);
   }
 
   .section-card-body {
@@ -498,10 +421,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   }
 }
 
-.icon {
-  color: var(--p-primary-color);
-}
-
 /* ---------------------------
    PrimeNG Carousel Indicators (Hero)
 ------------------------------- */
@@ -531,14 +450,6 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   padding: 1rem;
   z-index: 2;
   pointer-events: none; // Disable pointer events for the carousel indicators
-}
-
-/* -------------------------------
- Style primeNg select component.
-------------------------------- */
-.p-select-option.p-select-option-selected {
-  background: var(--p-background-surface-alt);
-  color: var(--p-text-primary);
 }
 
 /* -------------------------------

@@ -57,15 +57,16 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 new de.tum.cit.aet.job.dto.JobCardDTO(
                     j.jobId,
                     j.title,
-                    j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
                     j.startDate,
                     j.endDate,
-                    j.contractDuration
+                    j.contractDuration,
+                    i.url
                 ),
                 a.state,
                 a.desiredStartDate,
@@ -77,7 +78,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.applicant ap
             LEFT JOIN a.job j
-
+            LEFT JOIN j.researchGroup rg
+            LEFT JOIN rg.department d
+            LEFT JOIN j.image i
         WHERE a.applicationId = :id
         """
     )
@@ -121,15 +124,16 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 new de.tum.cit.aet.job.dto.JobCardDTO(
                     j.jobId,
                     j.title,
-                    j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
                     j.startDate,
                     j.endDate,
-                    j.contractDuration
+                    j.contractDuration,
+                    i.url
                 ),
                 a.state,
                 a.desiredStartDate,
@@ -141,6 +145,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.job j
             LEFT JOIN a.applicant ap
+            LEFT JOIN j.researchGroup rg
+            LEFT JOIN rg.department d
+            LEFT JOIN j.image i
             WHERE ap.user.userId = :userId AND j.jobId = :jobId
         """
     )
@@ -194,12 +201,15 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     long countByApplicantId(@Param("applicantId") UUID applicantId);
 
     /**
-     * Counts applications grouped by job and state for jobs with interview processes
+     * Counts applications grouped by job and state for jobs with interview
+     * processes
      * belonging to a specific professor.
-     * This is optimized to fetch all counts in a single query instead of N×M queries.
+     * This is optimized to fetch all counts in a single query instead of N×M
+     * queries.
      * Used by the interview overview to efficiently get statistics across all jobs.
      *
-     * @param professorId the ID of the professor whose jobs to count applications for
+     * @param professorId the ID of the professor whose jobs to count applications
+     *                    for
      * @return List of Object arrays containing [Job, ApplicationState, Count]
      */
     @Query(

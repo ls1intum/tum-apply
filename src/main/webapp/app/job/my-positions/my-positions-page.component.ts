@@ -6,7 +6,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
 import { ToastService } from 'app/service/toast-service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
@@ -14,6 +14,7 @@ import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/fil
 import { emptyToUndef } from 'app/core/util/array-util.service';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
+import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
 import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { CreatedJobDTO } from '../../generated/model/createdJobDTO';
@@ -30,6 +31,7 @@ import { JobResourceApiService } from '../../generated/api/jobResourceApi.servic
     TranslateModule,
     ConfirmDialog,
     SearchFilterSortBar,
+    LocalizedDatePipe,
   ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
@@ -68,6 +70,9 @@ export class MyPositionsPageComponent {
   );
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+  readonly startDateTemplate = viewChild.required<TemplateRef<unknown>>('startDateTemplate');
+  readonly createdAtTemplate = viewChild.required<TemplateRef<unknown>>('createdAtTemplate');
+  readonly lastModifiedAtTemplate = viewChild.required<TemplateRef<unknown>>('lastModifiedAtTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
   readonly selectedStatusFilters = signal<string[]>([]);
@@ -75,6 +80,9 @@ export class MyPositionsPageComponent {
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
+    const startDateTpl = this.startDateTemplate();
+    const createdAtTpl = this.createdAtTemplate();
+    const lastModifiedAtTpl = this.lastModifiedAtTemplate();
 
     return [
       { field: 'avatar', header: '', width: '5rem' },
@@ -87,26 +95,29 @@ export class MyPositionsPageComponent {
         alignCenter: true,
         template: stateTpl,
       },
-      { field: 'startDate', header: 'myPositionsPage.tableColumn.startDate', type: 'date', width: '10rem' },
-      { field: 'createdAt', header: 'myPositionsPage.tableColumn.created', type: 'date', width: '10rem' },
-      { field: 'lastModifiedAt', header: 'myPositionsPage.tableColumn.lastModified', type: 'date', width: '10rem' },
+      { field: 'startDate', header: 'myPositionsPage.tableColumn.startDate', width: '10rem', template: startDateTpl },
+      { field: 'createdAt', header: 'myPositionsPage.tableColumn.created', width: '10rem', template: createdAtTpl },
+      { field: 'lastModifiedAt', header: 'myPositionsPage.tableColumn.lastModified', width: '10rem', template: lastModifiedAtTpl },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
   });
 
   readonly availableStatusLabels = this.availableStatusOptions.map(option => option.label);
 
-  readonly stateSeverityMap = signal<Record<string, 'success' | 'warn' | 'danger' | 'info'>>({
+  readonly stateSeverityMap = signal<Record<string, 'info' | 'success' | 'contrast' | 'secondary'>>({
     DRAFT: 'info',
-    PUBLISHED: 'success',
-    CLOSED: 'danger',
-    APPLICANT_FOUND: 'warn',
+    PUBLISHED: 'secondary',
+    CLOSED: 'contrast',
+    APPLICANT_FOUND: 'success',
   });
 
   private jobService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
   private toastService = inject(ToastService);
+  private translate = inject(TranslateService);
+
+  private readonly translationKey: string = 'myPositionsPage';
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -165,11 +176,11 @@ export class MyPositionsPageComponent {
   async onDeleteJob(jobId: string): Promise<void> {
     try {
       await firstValueFrom(this.jobService.deleteJob(jobId));
-      this.toastService.showSuccess({ detail: 'Job successfully deleted' });
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.deleteJobSuccess`);
       await this.loadJobs();
     } catch (error) {
       if (error instanceof Error) {
-        this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
+        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.deleteJobFailed`, { detail: error.message });
       }
     }
   }
@@ -177,11 +188,11 @@ export class MyPositionsPageComponent {
   async onCloseJob(jobId: string): Promise<void> {
     try {
       await firstValueFrom(this.jobService.changeJobState(jobId, 'CLOSED'));
-      this.toastService.showSuccess({ detail: 'Job successfully closed' });
+      this.toastService.showSuccessKey(`${this.translationKey}.toastMessages.closeJobSuccess`);
       await this.loadJobs();
     } catch (error) {
       if (error instanceof Error) {
-        this.toastService.showError({ detail: `Error closing job: ${error.message}` });
+        this.toastService.showErrorKey(`${this.translationKey}.toastMessages.closeJobFailed`, { detail: error.message });
       }
     }
   }

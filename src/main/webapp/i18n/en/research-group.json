@@ -7,11 +7,15 @@
     "groupInfoHeader": "My Group",
     "groupInfo": {
       "description": "Edit the basic information about your research group.",
+      "organizationInfo": "To change the department and school, please contact an administrator.",
+      "noDepartment": "No department",
+      "noSchool": "No school",
       "fields": {
         "name": "Name",
         "abbreviation": "Abbreviation",
         "head": "Head",
         "school": "School",
+        "department": "Department",
         "defaultFieldOfStudies": "Field of Studies",
         "website": "Website",
         "email": "Email",
@@ -20,7 +24,8 @@
         "city": "City",
         "description": "Description",
         "section1": "Basic Information",
-        "section2": "School and Website",
+        "sectionOrganization": "Organization",
+        "section2": "Contact and Website",
         "section3": "Address"
       },
       "placeholders": {
@@ -91,7 +96,14 @@
       "loading": "Loading members...",
       "retry": "Retry",
       "noMembers": "No members found in this research group.",
+      "noUsers": "No available users found.",
+      "emptySearch": "Please enter at least {{minLength}} characters to search.",
       "me": "Me",
+      "addMembers": "Add Members",
+      "addMembersButton": "Add members",
+      "searchPlaceholder": "Search for a member using their name or email...",
+      "singleEntity": "User",
+      "multipleEntities": "Users",
 
       "tableColumns": {
         "name": "Name",
@@ -109,9 +121,29 @@
           "summary": "Load Failed",
           "detail": "Failed to load. Please try again or contact an admin."
         },
-        "addSuccess": {
-          "summary": "Member Added",
-          "detail": "{{memberName}} has been added to the research group."
+        "loadUsersFailed": {
+          "summary": "Load Failed",
+          "detail": "Failed to load available users. Please try again."
+        },
+        "invalidUser": {
+          "summary": "Invalid User",
+          "detail": "The selected user is invalid. Please refresh the page and try again."
+        },
+        "addMembersSuccess": {
+          "summary": "Members Added",
+          "detail": "The selected members have been successfully added to the research group."
+        },
+        "addMembersFailed": {
+          "summary": "Add Failed",
+          "detail": "Failed to add members. Please try again."
+        },
+        "addMembersFailedAlreadyMember": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they are already part of a research group."
+        },
+        "addMembersFailedInvalidUniversityId": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they do not have a valid university ID."
         },
         "removeSuccess": {
           "summary": "Member Removed",
@@ -121,6 +153,11 @@
           "summary": "Remove Failed",
           "detail": "Failed to remove. Please try again or contact an admin."
         }
+      },
+
+      "confirmDialog": {
+        "header": "Add Members",
+        "message": "Are you sure you want to add the selected members to the research group? They will be notified via email."
       },
 
       "noRole": "No Role"
@@ -246,6 +283,10 @@
         "save": {
           "summary": "Error",
           "detail": "Error saving research group information. Please try again or contact an admin."
+        },
+        "loadDepartments": {
+          "summary": "Error",
+          "detail": "Failed to load departments. Please refresh the page."
         }
       },
       "success": {
@@ -260,6 +301,7 @@
       "abbreviation": "Abbreviation",
       "name": "Name",
       "school": "School",
+      "department": "Department",
       "defaultFieldOfStudies": "Field of Studies",
       "head": "Head",
       "email": "Email",
@@ -272,6 +314,7 @@
         "abbreviation": "e.g. AI",
         "name": "e.g. Research Group for Artificial Intelligence",
         "school": "e.g. Informatics",
+        "department": "Select...",
         "defaultFieldOfStudies": "e.g. Computer Science",
         "head": "e.g. Prof. Dr. Max Mustermann",
         "email": "e.g. contact@researchgroup.com",
