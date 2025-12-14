@@ -27,8 +27,6 @@
   <include file="changelog/00000000000015_create_schools_and_departments.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000016_create_interviewees.xml" relativeToChangelogFile="true"/>
 
-
-
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints
   changelogs here -->
