@@ -54,11 +54,11 @@
   --p-button-primary-background: var(--p-accent-color);
   --p-button-primary-border-color: var(--p-accent-color);
   --p-button-primary-color: var(--p-text-on-accent);
-  --p-button-primary-hover-background: var(--p-accent-500);
-  --p-button-primary-hover-border-color: var(--p-accent-500);
+  --p-button-primary-hover-background: var(--p-accent-hover-color);
+  --p-button-primary-hover-border-color: var(--p-accent-hover-color);
   --p-button-primary-hover-color: var(--p-text-on-accent);
-  --p-button-primary-active-background: var(--p-accent-600);
-  --p-button-primary-active-border-color: var(--p-accent-600);
+  --p-button-primary-active-background: var(--p-accent-active-color);
+  --p-button-primary-active-border-color: var(--p-accent-active-color);
 
   @include layout.section-col;
 
