@@ -72,17 +72,13 @@ jhi-progress-stepper .sticky-footer .p-button {
    Registration Page: Orange Buttons
 ---------------------------------- */
 .registration-content {
-  --p-button-primary-background: var(--p-accent-color);
-  --p-button-primary-border-color: var(--p-accent-color);
-  --p-button-primary-color: white;
-
   jhi-auth-idp-buttons .p-button-outlined {
     background: transparent !important;
     border-color: var(--p-accent-color) !important;
     color: var(--p-accent-color) !important;
 
     &:hover {
-      background: rgba(255, 140, 0, 0.15) !important;
+      background: var(--p-accent-100) !important;
     }
   }
 }
