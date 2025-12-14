@@ -130,7 +130,7 @@
         "selectDates": "Select Dates",
         "noDateSelected": "No Date selected",
         "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
-        "sameSlotsForAllDays": "Same Slots for all days",
+        "sameSlotsForAllDays": "Same slots for all days",
         "addRange": "Add Time Range",
         "noSlotsYet": "No Slots yet",
         "noSlotsYetDesc": "Add a time range or a single slot to get started",
