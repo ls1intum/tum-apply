@@ -45,6 +45,7 @@ export class AuthFacadeService {
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly translationKey = 'auth.common.toast';
+  private readonly REGISTRATION_KEY = 'pendingIdpRegistration';
 
   private authMethod: AuthMethod = 'none';
 
@@ -71,6 +72,9 @@ export class AuthFacadeService {
         if (keycloakInitialized) {
           await this.accountService.loadUser();
           this.authMethod = 'keycloak';
+
+          // Prüfen ob IdP-Registrierung ansteht
+          await this.handlePendingIdpRegistration();
           return true;
         }
 
@@ -166,18 +170,13 @@ export class AuthFacadeService {
    * @param isRegistration if true, sends a registration email after login
    */
   async loginWithProvider(provider: IdpProvider, redirectUri?: string, isRegistration = false): Promise<void> {
+    if (isRegistration) {
+      localStorage.setItem(this.REGISTRATION_KEY, 'true');
+    }
     return this.runAuthAction(
       async () => {
         await this.keycloakAuthenticationService.loginWithProvider(provider, redirectUri);
         this.authMethod = 'keycloak';
-
-        if (isRegistration) {
-          await this.accountService.loadUser();
-          const user = this.accountService.user();
-          if (user?.email) {
-            await this.serverAuthenticationService.sendRegistrationEmail(user.email);
-          }
-        }
       },
       {
         summary: this.translate.instant(`${this.translationKey}.providerLoginFailed.summary`),
@@ -214,6 +213,17 @@ export class AuthFacadeService {
         detail: this.translate.instant(`${this.translationKey}.logoutFailed.detail`),
       },
     );
+  }
+
+  private async handlePendingIdpRegistration(): Promise<void> {
+    const pending = localStorage.getItem(this.REGISTRATION_KEY);
+    if (pending === 'true') {
+      localStorage.removeItem(this.REGISTRATION_KEY);
+      const user = this.accountService.user();
+      if (user?.email) {
+        await this.serverAuthenticationService.sendRegistrationEmail(user.email);
+      }
+    }
   }
 
   private getLogoutRedirectRoutes(): { targetRoute: string; redirectUrl: string } {

@@ -10,12 +10,10 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
 import de.tum.cit.aet.usermanagement.repository.EmailVerificationOtpRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,14 +82,14 @@ public class EmailVerificationService {
      */
     private String generateRegistrationConfirmationHTML() {
         return """
-              <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Welcome to TUMApply!</h2>
-              <p style="margin:0 0 16px 0;">Thank you for registering with TUMApply.</p>
-              <p style="margin:0 0 16px 0;">Your account has been successfully created. You can now explore available positions and submit your applications.</p>
-              <div style="text-align:center;margin:24px 0;">
-                <a href="https://tumapply.aet.cit.tum.de/" style="display:inline-block;padding:12px 24px;background:#0A66C2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">Get Started</a>
-              </div>
-              <p style="margin:16px 0 0 0;color:#555;font-size:12px;">If you did not create this account, please contact our support team.</p>
-            """;
+          <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Welcome to TUMApply!</h2>
+          <p style="margin:0 0 16px 0;">Thank you for registering with TUMApply.</p>
+          <p style="margin:0 0 16px 0;">Your account has been successfully created. You can now explore available positions and submit your applications.</p>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="https://tumapply.aet.cit.tum.de/" style="display:inline-block;padding:12px 24px;background:#0A66C2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">Get Started</a>
+          </div>
+          <p style="margin:16px 0 0 0;color:#555;font-size:12px;">If you did not create this account, please contact our support team.</p>
+        """;
     }
 
     /**
@@ -203,14 +201,14 @@ public class EmailVerificationService {
         long ttlMinutes = Math.max(1, ttl.toMinutes());
 
         return """
-              <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Verify your email</h2>
-              <p style="margin:0 0 16px 0;">Use this code to verify your email address:</p>
-              <div style="text-align:center;margin:24px 0;">
-                <div style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:3px;padding:12px 16px;border:1px dashed #0A66C2;border-radius:6px;background:#F0F7FF;">%s</div>
-              </div>
-              <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
-              <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
-            """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
+          <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Verify your email</h2>
+          <p style="margin:0 0 16px 0;">Use this code to verify your email address:</p>
+          <div style="text-align:center;margin:24px 0;">
+            <div style="display:inline-block;font-size:24px;font-weight:700;letter-spacing:3px;padding:12px 16px;border:1px dashed #0A66C2;border-radius:6px;background:#F0F7FF;">%s</div>
+          </div>
+          <p style="margin:0 0 8px 0;">The code expires in <strong>%d minute%s</strong>.</p>
+          <p style="margin:8px 0 0 0;color:#555;font-size:12px;">If you didn’t request this, you can ignore this email.</p>
+        """.formatted(code, ttlMinutes, ttlMinutes == 1 ? "" : "s");
     }
 
     /**
