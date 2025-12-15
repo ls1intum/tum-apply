@@ -383,6 +383,11 @@ export const sharedComponentConfig = {
       size: '0.6rem',
     },
   },
+  popover: {
+    root: {
+      background: '{background.default}',
+    },
+  },
 };
 
 /**
