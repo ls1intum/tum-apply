@@ -1,6 +1,8 @@
 import { definePreset } from '@primeuix/themes';
 import Lara from '@primeuix/themes/lara';
 
+import { sharedComponentConfig, sharedLightColorScheme } from './shared-theme-config';
+
 export const TUMApplyPreset = definePreset(Lara, {
   semantic: {
     primary: {
@@ -120,14 +122,9 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
     colorScheme: {
       light: {
+        ...sharedLightColorScheme,
         text: {
-          primary: '{neutral.950}',
-          secondary: '{neutral.600}',
-          tertiary: '{neutral.500}',
-          disabled: '{neutral.600}',
-          onPrimary: '{base.white}',
-          onSecondary: '{base.white}',
-          onAccent: '{base.white}',
+          ...sharedLightColorScheme.text,
           onSuccess: '{base.black}',
           onDanger: '{base.black}',
           onWarn: '{base.black}',
@@ -142,21 +139,9 @@ export const TUMApplyPreset = definePreset(Lara, {
           disabledColor: '{primary.200}',
           hoverColorOutlined: '{primary.100}',
         },
-        secondary: {
-          color: '{secondary.500}',
-          inverseColor: '{text.onSecondary}',
-          hoverColor: '{secondary.600}',
-          activeColor: '{secondary.700}',
-          disabledColor: '{secondary.200}',
-          hoverColorOutlined: '{secondary.100}',
-        },
         accent: {
+          ...sharedLightColorScheme.accent,
           color: '{accent.400}',
-          inverseColor: '{text.onAccent}',
-          hoverColor: '{accent.500}',
-          activeColor: '{accent.600}',
-          disabledColor: '{accent.200}',
-          hoverColorOutlined: '{accent.100}',
         },
         highlight: {
           background: '{primary.950}',
@@ -164,58 +149,12 @@ export const TUMApplyPreset = definePreset(Lara, {
           color: '{base.white}',
           focusColor: '{base.white}',
         },
-        success: {
-          color: '{success.500}',
-          inverseColor: '{text.onSuccess}',
-          hoverColor: '{success.600}',
-          activeColor: '{success.700}',
-          disabledColor: '{success.200}',
-          hoverColorOutlined: '{success.100}',
-        },
-        warn: {
-          color: '{warn.500}',
-          inverseColor: '{text.onWarn}',
-          hoverColor: '{warn.600}',
-          activeColor: '{warn.700}',
-          disabledColor: '{warn.200}',
-          hoverColorOutlined: '{warn.100}',
-        },
-        danger: {
-          color: '{danger.500}',
-          inverseColor: '{text.onDanger}',
-          hoverColor: '{danger.600}',
-          activeColor: '{danger.700}',
-          disabledColor: '{danger.200}',
-          hoverColorOutlined: '{danger.100}',
-        },
-        info: {
-          color: '{info.500}',
-          inverseColor: '{text.onInfo}',
-          hoverColor: '{info.600}',
-          activeColor: '{info.700}',
-          disabledColor: '{info.200}',
-          hoverColorOutlined: '{info.100}',
-        },
-        neutral: {
-          color: '{neutral.500}',
-          inverseColor: '{text.onNeutral}',
-          hoverColor: '{neutral.600}',
-          activeColor: '{neutral.700}',
-          disabledColor: '{neutral.200}',
-          hoverColorOutlined: '{neutral.200}',
-        },
         background: {
           default: '{base.white}', // canvas
           surface: '{background.50}', // cards, panels
           surfaceAlt: '{background.100}', // sidebars etc.
           disabled: '{neutral.200}',
           footer: '{base.white}',
-        },
-        border: {
-          default: '{neutral.200}',
-        },
-        divider: {
-          default: '{neutral.200}',
         },
         card: {
           background: '{base.white}',
@@ -331,174 +270,11 @@ export const TUMApplyPreset = definePreset(Lara, {
     },
   },
   components: {
+    ...sharedComponentConfig,
     button: {
-      root: {
-        borderRadius: '0.5rem',
-        badgeSize: '1rem',
-        transitionDuration: '{form.field.transition.duration}',
-        paddingX: '0.875rem',
-        paddingY: '0.375rem',
-      },
+      ...sharedComponentConfig.button,
       colorScheme: {
-        light: {
-          root: {
-            primary: {
-              background: '{primary.color}',
-              color: '{primary.inverseColor}',
-              hoverBackground: '{primary.hoverColor}',
-              activeBackground: '{primary.activeColor}',
-            },
-            secondary: {
-              background: '{secondary.color}',
-              color: '{secondary.inverseColor}',
-              hoverBackground: '{secondary.hoverColor}',
-              hoverColor: '{secondary.inverseColor}',
-              activeBackground: '{secondary.activeColor}',
-            },
-            contrast: {
-              background: '{accent.color}',
-              color: '{accent.inverseColor}',
-              hoverBackground: '{accent.hoverColor}',
-              hoverColor: '{accent.inverseColor}',
-              borderColor: '{accent.color}',
-              hoverBorderColor: '{accent.hoverColor}',
-              activeBackground: '{accent.activeColor}',
-            },
-            success: {
-              background: '{success.color}',
-              color: '{success.inverseColor}',
-              hoverBackground: '{success.hoverColor}',
-              activeBackground: '{success.activeColor}',
-            },
-            danger: {
-              background: '{danger.color}',
-              color: '{danger.inverseColor}',
-              hoverColor: '{base.white}',
-              hoverBackground: '{danger.hoverColor}',
-              activeBackground: '{danger.activeColor}',
-            },
-            warn: {
-              background: '{warn.color}',
-              color: '{warn.inverseColor}',
-              hoverBackground: '{warn.hoverColor}',
-              activeBackground: '{warn.activeColor}',
-              borderColor: '{warn.color}',
-              hoverBorderColor: '{warn.hoverColor}',
-            },
-            info: {
-              background: '{neutral.color}',
-              color: '{neutral.inverseColor}',
-              hoverBackground: '{neutral.hoverColor}',
-              hoverColor: '{neutral.inverseColor}',
-              hoverBorderColor: '{neutral.hoverColor}',
-              activeBackground: '{neutral.activeColor}',
-              borderColor: '{neutral.color}',
-            },
-          },
-          outlined: {
-            primary: {
-              activeBackground: '{primary.activeColor}',
-              borderColor: '{primary.color}',
-              color: '{primary.color}',
-              hoverBackground: '{primary.hoverColorOutlined}',
-            },
-            secondary: {
-              activeBackground: '{secondary.activeColor}',
-              borderColor: '{secondary.color}',
-              color: '{secondary.color}',
-              hoverBackground: '{secondary.hoverColorOutlined}',
-            },
-            success: {
-              activeBackground: '{success.activeColor}',
-              borderColor: '{success.color}',
-              color: '{success.color}',
-              hoverBackground: '{success.hoverColorOutlined}',
-            },
-            info: {
-              activeBackground: '{neutral.activeColor}',
-              borderColor: '{neutral.color}',
-              color: '{neutral.color}',
-              hoverBackground: '{neutral.hoverColorOutlined}',
-            },
-            warn: {
-              activeBackground: '{warn.activeColor}',
-              borderColor: '{warn.color}',
-              color: '{warn.color}',
-              hoverBackground: '{warn.hoverColorOutlined}',
-            },
-            help: {
-              hoverBackground: '{purple.50}',
-              activeBackground: '{purple.100}',
-              borderColor: '{purple.200}',
-              color: '{purple.500}',
-            },
-            danger: {
-              activeBackground: '{danger.activeColor}',
-              borderColor: '{danger.color}',
-              color: '{danger.color}',
-              hoverBackground: '{danger.hoverColorOutlined}',
-            },
-            contrast: {
-              hoverBackground: '{surface.50}',
-              activeBackground: '{surface.100}',
-              borderColor: '{surface.700}',
-              color: '{surface.950}',
-            },
-            plain: {
-              hoverBackground: '{surface.50}',
-              activeBackground: '{surface.100}',
-              borderColor: '{surface.200}',
-              color: '{surface.700}',
-            },
-          },
-          text: {
-            primary: {
-              activeBackground: '{primary.activeColor}',
-              color: '{primary.color}',
-              hoverBackground: '{primary.hoverColorOutlined}',
-            },
-            secondary: {
-              activeBackground: '{secondary.activeColor}',
-              color: '{secondary.color}',
-              hoverBackground: '{secondary.hoverColorOutlined}',
-            },
-            success: {
-              activeBackground: '{success.activeColor}',
-              color: '{success.color}',
-              hoverBackground: '{success.hoverColorOutlined}',
-            },
-            info: {
-              activeBackground: '{neutral.activeColor}',
-              color: '{neutral.color}',
-              hoverBackground: '{neutral.hoverColorOutlined}',
-            },
-            warn: {
-              activeBackground: '{warn.activeColor}',
-              color: '{warn.color}',
-              hoverBackground: '{warn.hoverColorOutlined}',
-            },
-            danger: {
-              hoverBackground: '{danger.50}',
-              activeBackground: '{danger.100}',
-              color: '{danger.500}',
-            },
-            contrast: {
-              hoverBackground: '{surface.50}',
-              activeBackground: '{surface.100}',
-              color: '{surface.950}',
-            },
-            plain: {
-              hoverBackground: '{surface.50}',
-              activeBackground: '{surface.100}',
-              color: '{surface.700}',
-            },
-          },
-          link: {
-            color: '{primary.color}',
-            hoverColor: '{primary.color}',
-            activeColor: '{primary.color}',
-          },
-        },
+        ...sharedComponentConfig.button.colorScheme,
         dark: {
           root: {
             primary: {
@@ -666,34 +442,7 @@ export const TUMApplyPreset = definePreset(Lara, {
       },
     },
     stepper: {
-      step: {
-        padding: '0.5rem',
-        gap: '1rem',
-      },
-      stepHeader: {
-        padding: '0',
-        gap: '0.5rem',
-      },
-      separator: {
-        size: '0.1rem',
-        margin: '0 0 0 1.625rem',
-      },
-      stepTitle: {
-        fontWeight: '700',
-      },
-      stepNumber: {
-        size: '2.25rem',
-        fontSize: '1.125rem',
-        fontWeight: '700',
-        borderRadius: '50%',
-        shadow: 'none',
-      },
-      steppanels: {
-        padding: '0.875rem 0.5rem 1.125rem 0.5rem',
-      },
-      root: {
-        transitionDuration: '{transition.duration}',
-      },
+      ...sharedComponentConfig.stepper,
       colorScheme: {
         light: {
           separator: {
@@ -734,14 +483,10 @@ export const TUMApplyPreset = definePreset(Lara, {
       },
     },
     tabs: {
+      ...sharedComponentConfig.tabs,
       colorScheme: {
         light: {
-          tab: {
-            background: '{background.default}',
-            activeBackground: '{background.surface}',
-            color: '{text.tertiary}',
-            activeColor: '{primary.color}',
-          },
+          ...sharedComponentConfig.tabs.colorScheme.light,
           tabpanel: {
             background: '{background.surface}',
           },
@@ -759,52 +504,10 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
-    floatlabel: {
-      root: {
-        color: '{text.tertiary}',
-        focusColor: '{text.primary}',
-        activeColor: '{text.primary}',
-        transitionDuration: '0.2s',
-        fontWeight: '200',
-        active: {
-          fontSize: '0.5rem',
-          fontWeight: '200',
-        },
-      },
-    },
     tag: {
-      root: {
-        fontSize: '0.75rem',
-        gap: '0',
-        borderRadius: '1rem',
-      },
+      ...sharedComponentConfig.tag,
       colorScheme: {
-        light: {
-          secondary: {
-            background: '{secondary.100}',
-            color: '{base.black}',
-          },
-          info: {
-            background: '{neutral.100}',
-            color: '{info.inverseColor}',
-          },
-          success: {
-            background: '{success.100}',
-            color: '{success.inverseColor}',
-          },
-          warn: {
-            background: '{warn.100}',
-            color: '{warn.inverseColor}',
-          },
-          danger: {
-            background: '{danger.100}',
-            color: '{danger.inverseColor}',
-          },
-          contrast: {
-            background: '{accent.100}',
-            color: '{base.black}',
-          },
-        },
+        ...sharedComponentConfig.tag.colorScheme,
         dark: {
           secondary: {
             background: '{secondary.900}',
@@ -833,59 +536,11 @@ export const TUMApplyPreset = definePreset(Lara, {
         },
       },
     },
-    checkbox: {
-      root: {
-        background: 'background.surface',
-        checkedBackground: '{primary.color}',
-        checkedHoverBackground: '{primary.hoverColor}',
-      },
-    },
-    paginator: {
-      root: {
-        background: '{background.default}',
-      },
-      navButton: {
-        selectedBackground: '{primary.color}',
-      },
-    },
     multiselect: {
-      root: {
-        background: '{background.surface}',
-        color: '{text.primary}',
-      },
-      overlay: {
-        background: '{background.surface}',
-      },
+      ...sharedComponentConfig.multiselect,
       option: {
-        color: '{text.primary}',
-        selectedColor: '{text.primary}',
-        selectedBackground: '{background.surface}',
-        focusBackground: '{primary.color}',
+        ...sharedComponentConfig.multiselect.option,
         focusColor: '{base.white}',
-      },
-    },
-    inputtext: {
-      root: {
-        color: '{text.primary}',
-        background: '{background.default}',
-        borderRadius: '0.5rem',
-      },
-    },
-    divider: {
-      content: {
-        background: '{background.default}',
-        color: '{text.primary}',
-      },
-    },
-    textarea: {
-      root: {
-        background: '{background.default}',
-      },
-    },
-    dialog: {
-      root: {
-        background: '{background.default}',
-        color: '{text.primary}',
       },
     },
   },

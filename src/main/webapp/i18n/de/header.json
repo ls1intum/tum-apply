@@ -6,6 +6,9 @@
     "applicant": "Bist du Bewerber:in?",
     "logout": "Abmelden",
     "theme": "Theme wechseln",
-    "universityName": "Technische Universität München"
+    "universityName": "Technische Universität München",
+    "lightMode": "Heller Modus",
+    "darkMode": "Dunkler Modus",
+    "syncWithSystem": "Mit Betriebssystem synchronisieren"
   }
 }
