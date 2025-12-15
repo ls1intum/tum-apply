@@ -11,6 +11,7 @@ import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -152,7 +154,8 @@ public class PDFExportService {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         // Overview Section
         addJobOverview(
@@ -288,11 +291,19 @@ public class PDFExportService {
         String address = formatAddress(group.getStreet(), group.getPostalCode(), group.getCity());
         Map<String, String> items = new LinkedHashMap<>();
 
-        if (hasValue(address)) items.put(labels.get("address"), address);
-        if (hasValue(group.getEmail())) items.put(labels.get("email"), group.getEmail());
-        if (hasValue(group.getWebsite())) items.put(labels.get("website"), group.getWebsite());
+        if (hasValue(address)) {
+            items.put(labels.get("address"), address);
+        }
+        if (hasValue(group.getEmail())) {
+            items.put(labels.get("email"), group.getEmail());
+        }
+        if (hasValue(group.getWebsite())) {
+            items.put(labels.get("website"), group.getWebsite());
+        }
 
-        if (items.isEmpty()) return;
+        if (items.isEmpty()) {
+            return;
+        }
 
         builder.startInfoSection(labels.get("contactDetails"));
         items.forEach(builder::addSectionData);
