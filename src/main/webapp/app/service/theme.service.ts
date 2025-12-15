@@ -1,9 +1,9 @@
 import { Injectable, WritableSignal, inject, signal } from '@angular/core';
 import { PrimeNG } from 'primeng/config';
 
-import { AquaBloomTheme } from '../../../content/theming/aquabloom';
-import { BlossomTheme } from '../../../content/theming/custompreset';
-import { TUMApplyPreset } from '../../../content/theming/tumapplypreset';
+import { AquaBloomTheme } from '../../content/theming/aquabloom';
+import { BlossomTheme } from '../../content/theming/custompreset';
+import { TUMApplyPreset } from '../../content/theming/tumapplypreset';
 
 export type ThemeOption = 'light' | 'dark' | 'blossom' | 'aquabloom';
 

@@ -3,10 +3,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { ThemeOption, ThemeService } from 'app/service/theme.service';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
-import { ThemeOption, ThemeService } from '../services/theme.service';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 

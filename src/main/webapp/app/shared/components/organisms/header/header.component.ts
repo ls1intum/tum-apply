@@ -15,11 +15,11 @@ import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
 import { Popover } from 'primeng/popover';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
+import { ThemeService } from 'app/service/theme.service';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'jhi-header',
