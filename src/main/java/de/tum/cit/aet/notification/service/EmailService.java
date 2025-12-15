@@ -10,10 +10,12 @@ import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -46,6 +48,9 @@ public class EmailService {
 
     @Value("${aet.email.from:test}")
     private String from;
+
+    @Value("${aet.email.from-name:test}")
+    private String fromName;
 
     public EmailService(
         TemplateProcessingService templateProcessingService,
@@ -138,13 +143,13 @@ public class EmailService {
     private void simulateEmail(Email email, String subject, String body) {
         log.info(
             """
-            >>>> Sending Simulated Email <<<<
-              To: {}
-              CC: {}
-              BCC: {}
-              Subject: {}
-              Parsed Body: {}
-            """,
+                >>>> Sending Simulated Email <<<<
+                  To: {}
+                  CC: {}
+                  BCC: {}
+                  Subject: {}
+                  Parsed Body: {}
+                """,
             getRecipientsToNotify(email.getTo(), email),
             getRecipientsToNotify(email.getCc(), email),
             getRecipientsToNotify(email.getBcc(), email),
@@ -181,7 +186,7 @@ public class EmailService {
             helper.setCc(getRecipientsToNotify(email.getCc(), email).toArray(new String[0]));
             helper.setBcc(getRecipientsToNotify(email.getBcc(), email).toArray(new String[0]));
 
-            helper.setFrom(from);
+            helper.setFrom(from, fromName);
             helper.setSubject(subject);
             helper.setText(body, true);
 
