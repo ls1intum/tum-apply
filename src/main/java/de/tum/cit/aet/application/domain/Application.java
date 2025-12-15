@@ -6,6 +6,7 @@ import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,9 +60,122 @@ public class Application extends AbstractAuditingEntity {
     @Column(name = "motivation")
     private String motivation;
 
+    // Snapshot of applicant's User data at time of application creation/submission
+    @Column(name = "applicant_first_name")
+    private String applicantFirstName;
+
+    @Column(name = "applicant_last_name")
+    private String applicantLastName;
+
+    @Column(name = "applicant_email")
+    private String applicantEmail;
+
+    @Column(name = "applicant_gender")
+    private String applicantGender;
+
+    @Column(name = "applicant_nationality")
+    private String applicantNationality;
+
+    @Column(name = "applicant_birthday")
+    private LocalDate applicantBirthday;
+
+    @Column(name = "applicant_phone_number")
+    private String applicantPhoneNumber;
+
+    @Column(name = "applicant_website")
+    private String applicantWebsite;
+
+    @Column(name = "applicant_linkedin_url")
+    private String applicantLinkedinUrl;
+
+    // Snapshot of applicant's address data
+    @Column(name = "applicant_street")
+    private String applicantStreet;
+
+    @Column(name = "applicant_postal_code")
+    private String applicantPostalCode;
+
+    @Column(name = "applicant_city")
+    private String applicantCity;
+
+    @Column(name = "applicant_country")
+    private String applicantCountry;
+
+    // Snapshot of applicant's bachelor degree data
+    @Column(name = "applicant_bachelor_degree_name")
+    private String applicantBachelorDegreeName;
+
+    @Column(name = "applicant_bachelor_grade_upper_limit")
+    private String applicantBachelorGradeUpperLimit;
+
+    @Column(name = "applicant_bachelor_grade_lower_limit")
+    private String applicantBachelorGradeLowerLimit;
+
+    @Column(name = "applicant_bachelor_grade")
+    private String applicantBachelorGrade;
+
+    @Column(name = "applicant_bachelor_university")
+    private String applicantBachelorUniversity;
+
+    // Snapshot of applicant's master degree data
+    @Column(name = "applicant_master_degree_name")
+    private String applicantMasterDegreeName;
+
+    @Column(name = "applicant_master_grade_upper_limit")
+    private String applicantMasterGradeUpperLimit;
+
+    @Column(name = "applicant_master_grade_lower_limit")
+    private String applicantMasterGradeLowerLimit;
+
+    @Column(name = "applicant_master_grade")
+    private String applicantMasterGrade;
+
+    @Column(name = "applicant_master_university")
+    private String applicantMasterUniversity;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<CustomFieldAnswer> customFieldAnswers;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
+
+    /**
+     * Pre-persist hook to initialize snapshot fields from the applicant's current profile data
+     * if they haven't been set yet. This ensures applications created via repository.save()
+     * also get snapshot data populated.
+     */
+    @PrePersist
+    public void initializeSnapshotFields() {
+        if (applicant != null && applicantFirstName == null) {
+            User user = applicant.getUser();
+            if (user != null) {
+                this.applicantFirstName = user.getFirstName();
+                this.applicantLastName = user.getLastName();
+                this.applicantEmail = user.getEmail();
+                this.applicantGender = user.getGender();
+                this.applicantNationality = user.getNationality();
+                this.applicantBirthday = user.getBirthday();
+                this.applicantPhoneNumber = user.getPhoneNumber();
+                this.applicantWebsite = user.getWebsite();
+                this.applicantLinkedinUrl = user.getLinkedinUrl();
+            }
+
+            this.applicantStreet = applicant.getStreet();
+            this.applicantPostalCode = applicant.getPostalCode();
+            this.applicantCity = applicant.getCity();
+            this.applicantCountry = applicant.getCountry();
+
+            this.applicantBachelorDegreeName = applicant.getBachelorDegreeName();
+            this.applicantBachelorGradeUpperLimit = applicant.getBachelorGradeUpperLimit();
+            this.applicantBachelorGradeLowerLimit = applicant.getBachelorGradeLowerLimit();
+            this.applicantBachelorGrade = applicant.getBachelorGrade();
+            this.applicantBachelorUniversity = applicant.getBachelorUniversity();
+
+            this.applicantMasterDegreeName = applicant.getMasterDegreeName();
+            this.applicantMasterGradeUpperLimit = applicant.getMasterGradeUpperLimit();
+            this.applicantMasterGradeLowerLimit = applicant.getMasterGradeLowerLimit();
+            this.applicantMasterGrade = applicant.getMasterGrade();
+            this.applicantMasterUniversity = applicant.getMasterUniversity();
+        }
+    }
 }
