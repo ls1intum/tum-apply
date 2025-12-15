@@ -61,7 +61,7 @@ public record ApplicantDTO(
         if (application == null) {
             return null;
         }
-        
+
         // Build UserDTO from snapshot fields
         UserDTO userDTO = new UserDTO(
             application.getApplicant().getUserId(),
