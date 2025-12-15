@@ -41,13 +41,13 @@ export class SettingsComponent {
   }
 
   onThemeChange(option: SelectOption): void {
-    const value = option.value as ThemeOption | 'system';
+    const value = option.value;
 
     if (value === 'system') {
       this.themeService.setSyncWithSystem(true);
     } else {
       this.themeService.setSyncWithSystem(false);
-      this.themeService.setTheme(value);
+      this.themeService.setTheme(value as ThemeOption);
     }
   }
 }
