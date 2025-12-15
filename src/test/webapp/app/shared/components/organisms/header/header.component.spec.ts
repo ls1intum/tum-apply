@@ -18,6 +18,7 @@ import {
   createAuthDialogServiceMock,
   provideAuthDialogServiceMock,
 } from '../../../../../util/auth-dialog.service.mock';
+import { setupWindowMatchMediaMock } from 'util/theme.service.mock';
 
 type HeaderComponentTestInstance = Omit<HeaderComponent, 'routeAuthorities' | 'isProfessorPage'> & {
   routeAuthorities: () => UserShortDTO.RolesEnum[] | string[];
@@ -40,20 +41,7 @@ describe('HeaderComponent', () => {
   let translate: TranslateService;
 
   beforeEach(async () => {
-    // Mock window.matchMedia for ThemeService
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: vi.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    });
+    setupWindowMatchMediaMock();
 
     router = createRouterMock();
     accountService = createAccountServiceMock();
