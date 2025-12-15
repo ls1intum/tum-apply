@@ -11,7 +11,6 @@ import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -154,8 +152,7 @@ public class PDFExportService {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         // Overview Section
         addJobOverview(

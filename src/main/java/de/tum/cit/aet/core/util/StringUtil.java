@@ -9,8 +9,7 @@ public class StringUtil {
 
     private static final String ALLOWED_UMLAUTS = "ßäöüÄÖÜ";
 
-    private StringUtil() {
-    }
+    private StringUtil() {}
 
     /**
      * Normalizes a string input for consistent storage and comparison.

@@ -57,6 +57,5 @@ public class EmailVerificationResource {
         return ResponseEntity.accepted().build();
     }
 
-    public record SendCodeRequest(@NotBlank @Email String email, boolean registration) {
-    }
+    public record SendCodeRequest(@NotBlank @Email String email, boolean registration) {}
 }
