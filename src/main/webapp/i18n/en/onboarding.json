@@ -31,6 +31,14 @@
         "summary": "Submission Failed",
         "detail": "Failed to submit your request. Please try again or contact support."
       },
+      "errorDuplicateName": {
+        "summary": "Name Already Exists",
+        "detail": "A research group with this name already exists. Please choose a different name."
+      },
+      "errorUserNotFound": {
+        "summary": "User Not Found",
+        "detail": "No user was found with the provided TUM-ID. Please check the TUM-ID."
+      },
       "submit": "Send Request",
       "submitting": "Sending Request"
     },
