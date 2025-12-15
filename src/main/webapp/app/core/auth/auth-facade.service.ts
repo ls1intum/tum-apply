@@ -73,7 +73,7 @@ export class AuthFacadeService {
           await this.accountService.loadUser();
           this.authMethod = 'keycloak';
 
-          // Prüfen ob IdP-Registrierung ansteht
+          // Check if IdP registration to be done
           await this.handlePendingIdpRegistration();
           return true;
         }
@@ -114,7 +114,15 @@ export class AuthFacadeService {
   /** Sends registration confirmation email after successful registration. */
   async sendRegistrationEmail(): Promise<void> {
     const email = this.authOrchestrator.email();
-    await this.serverAuthenticationService.sendRegistrationEmail(email);
+    return this.runAuthAction(
+      async () => {
+        await this.serverAuthenticationService.sendRegistrationEmail(email);
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.registrationEmailSendFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.registrationEmailSendFailed.detail`),
+      },
+    );
   }
 
   /** Request an OTP to be sent to the user's email. */
@@ -220,9 +228,12 @@ export class AuthFacadeService {
     if (pending === 'true') {
       localStorage.removeItem(this.REGISTRATION_KEY);
       const user = this.accountService.user();
-      if (user?.email) {
-        await this.serverAuthenticationService.sendRegistrationEmail(user.email);
-      }
+      if (user == null) return;
+
+      const email = user.email;
+      if (email.trim() === '') return;
+
+      await this.serverAuthenticationService.sendRegistrationEmail(email);
     }
   }
 
