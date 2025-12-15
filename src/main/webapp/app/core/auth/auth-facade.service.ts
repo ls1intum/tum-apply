@@ -107,6 +107,12 @@ export class AuthFacadeService {
   }
 
   // --------------- Email/OTP ---------------
+  /** Sends registration confirmation email after successful registration. */
+  async sendRegistrationEmail(): Promise<void> {
+    const email = this.authOrchestrator.email();
+    await this.serverAuthenticationService.sendRegistrationEmail(email);
+  }
+
   /** Request an OTP to be sent to the user's email. */
   async requestOtp(registration = false): Promise<void> {
     const email = this.authOrchestrator.email();
@@ -157,12 +163,21 @@ export class AuthFacadeService {
    * Logs in via a Keycloak identity provider.
    * @param provider Google, Apple, Microsoft, etc.
    * @param redirectUri optional post-login redirect
+   * @param isRegistration if true, sends a registration email after login
    */
-  async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
+  async loginWithProvider(provider: IdpProvider, redirectUri?: string, isRegistration = false): Promise<void> {
     return this.runAuthAction(
       async () => {
         await this.keycloakAuthenticationService.loginWithProvider(provider, redirectUri);
         this.authMethod = 'keycloak';
+
+        if (isRegistration) {
+          await this.accountService.loadUser();
+          const user = this.accountService.user();
+          if (user?.email) {
+            await this.serverAuthenticationService.sendRegistrationEmail(user.email);
+          }
+        }
       },
       {
         summary: this.translate.instant(`${this.translationKey}.providerLoginFailed.summary`),

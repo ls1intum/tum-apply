@@ -13,26 +13,29 @@
 </div>
 <div class="registration-steps">
   <div class="steps">
-    <span [translateValues]="{ number: registerProgress(), total: totalRegisterSteps }" jhiTranslate="auth.register.texts.steps"></span>
+    <span [translateValues]="{ number: registerProgress(), total: totalRegisterSteps }"
+          jhiTranslate="auth.register.texts.steps"></span>
     @if (showSkipButton()) {
-      <jhi-button (click)="onSkip()" variant="text" icon="chevron-right" />
+      <jhi-button (click)="onSkip()" variant="text" icon="chevron-right"/>
     }
   </div>
   <div class="progressbar">
-    <p-progressbar [showValue]="false" [value]="registerProgressInPercent()" class="progressbar" color="var(--p-accent-color)" />
+    <p-progressbar [showValue]="false" [value]="registerProgressInPercent()" class="progressbar"
+                   color="var(--p-accent-color)"/>
   </div>
 </div>
 <div class="registration-content">
   <div class="registration-panel">
     @switch (authOrchestrator.registerStep()) {
       @case ('email') {
-        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials" [isLogin]="false" />
+        <jhi-credentials-group [showPassword]="false" [submitHandler]="sendOtp" class="registration-credentials"
+                               [isLogin]="false"/>
       }
       @case ('otp') {
-        <jhi-otp-input [registration]="true" />
+        <jhi-otp-input [registration]="true"/>
       }
       @case ('profile') {
-        <jhi-profile class="profile" [submitHandler]="setProfile" />
+        <jhi-profile class="profile" [submitHandler]="setProfile"/>
       }
       @case ('password') {
         <form class="password" [formGroup]="passwordForm" (ngSubmit)="setPassword()">
@@ -42,7 +45,8 @@
             [showStrength]="true"
             [control]="passwordForm.controls.password"
           />
-          <jhi-button type="submit" [shouldTranslate]="true" label="auth.register.buttons.continue" [fullWidth]="true" />
+          <jhi-button type="submit" [shouldTranslate]="true" label="auth.register.buttons.continue" [fullWidth]="true"
+                      (click)="sendRegistrationEmail()"/>
         </form>
       }
     }

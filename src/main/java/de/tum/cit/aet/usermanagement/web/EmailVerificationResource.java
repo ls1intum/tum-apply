@@ -28,6 +28,19 @@ public class EmailVerificationResource {
     }
 
     /**
+     * Sends a welcome/confirmation email after successful registration.
+     *
+     * @param request the HTTP servlet request
+     * @return HTTP 202 Accepted if the email was queued for sending
+     */
+    @PostMapping("/send-registration-email")
+    public ResponseEntity<Void> sendRegistrationEmail(@Valid @RequestBody SendCodeRequest body, HttpServletRequest request) {
+        String email = body.email();
+        service.sendRegistrationConfirmationEmail(email);
+        return ResponseEntity.accepted().build();
+    }
+
+    /**
      * Handles the request to send a verification code to the specified email.
      * Extracts the email and client IP address from the request, then delegates
      * the sending of the code to the email verification service.
@@ -44,5 +57,6 @@ public class EmailVerificationResource {
         return ResponseEntity.accepted().build();
     }
 
-    public record SendCodeRequest(@NotBlank @Email String email, boolean registration) {}
+    public record SendCodeRequest(@NotBlank @Email String email, boolean registration) {
+    }
 }
