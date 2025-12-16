@@ -21,7 +21,9 @@
     "types": [],
     "paths": {
       "app/*": ["app/*"],
-      "@app/*": ["app/*"]
+      "app/generated/*": ["app/generated/*"],
+      "@app/*": ["app/*"],
+      "@app/generated/*": ["app/generated/*"]
     },
     "lib": ["es2024", "dom"],
     "skipLibCheck": true
