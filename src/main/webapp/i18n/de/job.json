@@ -212,7 +212,7 @@
     },
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
-      "message": "Bist du sicher, dass du diese Doktorandenstelle veröffentlichen möchtest? Eine nachträgliche Bearbeitung ist dann NICHT mehr möglich."
+      "message": "Bist du sicher, dass du diese Doktorandenstelle veröffentlichen möchtest?"
     },
     "reviewPageSection": {
       "title": "Übersicht",
@@ -281,7 +281,9 @@
       "closeHeader": "Schließung der Position bestätigen",
       "closeMessage": "Bist du sicher, dass du diese Position schließen möchtest? Nach dem Schließen können sich Bewerber nicht mehr auf diese Position bewerben. Diese Aktion kann NICHT rückgängig gemacht werden.",
       "deleteHeader": "Löschvorgang bestätigen",
-      "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!"
+      "deleteMessage": "Bist du sicher, dass du diesen Entwurf dauerhaft löschen möchtest? Diese Aktion kann NICHT rückgängig gemacht werden!",
+      "editJobHeader": "Stellenbearbeitung bestätigen",
+      "editJobMessage": "Bist du sicher, dass du diese Stelle bearbeiten möchtest? Nach der Bearbeitung muss die Stelle erneut veröffentlicht werden, bevor Bewerber sich darauf bewerben können."
     },
     "errors": {
       "loadJobs": {

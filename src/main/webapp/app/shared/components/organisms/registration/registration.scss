@@ -51,19 +51,40 @@
 }
 
 .registration-content {
+  --p-button-primary-background: var(--p-accent-color);
+  --p-button-primary-border-color: var(--p-accent-color);
+  --p-button-primary-color: var(--p-text-on-accent);
+  --p-button-primary-hover-background: var(--p-accent-hover-color);
+  --p-button-primary-hover-border-color: var(--p-accent-hover-color);
+  --p-button-primary-hover-color: var(--p-text-on-accent);
+  --p-button-primary-active-background: var(--p-accent-active-color);
+  --p-button-primary-active-border-color: var(--p-accent-active-color);
+  --p-button-primary-active-color: var(--p-text-on-accent);
+
   @include layout.section-col;
 
   .registration-panel {
     @include layout.panel-col;
+
+    max-width: 25rem;
+    width: 100%;
 
     .registration-credentials,
     .profile,
     .password {
       width: 100%;
     }
+
+    jhi-otp-input {
+      width: 100%;
+    }
   }
 
   .registration-footer {
     @include layout.auth-footer;
+
+    a {
+      color: var(--p-accent-color);
+    }
   }
 }
