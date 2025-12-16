@@ -133,6 +133,14 @@
         "summary": "Fehler beim Laden",
         "detail": "Fehler beim Laden von Schools und Departments. Bitte aktualisiere die Seite oder versuche es später erneut."
       },
+      "errorDuplicateName": {
+        "summary": "Name bereits vergeben",
+        "detail": "Eine Forschungsgruppe mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
+      },
+      "errorUserNotFound": {
+        "summary": "Benutzer:in nicht gefunden",
+        "detail": "Es wurde kein:e Benutzer:in mit der angegebenen TUM-ID gefunden. Bitte überprüfe die TUM-ID."
+      },
       "cancel": "Abbrechen",
       "submit": "Anfrage senden",
       "submitting": "Anfrage wird gesendet"
