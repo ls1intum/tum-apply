@@ -4,6 +4,7 @@
 export const ONBOARDING_FORM_DIALOG_CONFIG = {
   modal: true,
   closable: true,
+  draggable: false,
   dismissableMask: false,
   width: '56.25rem',
   style: {
