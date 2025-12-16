@@ -4,6 +4,7 @@
   [styleClass]="'review-dialog ' + (mode() === 'REJECT' ? 'mode-reject' : 'mode-accept')"
   [contentStyleClass]="mode() === 'REJECT' ? 'no-overflow' : undefined"
   [closable]="false"
+  [draggable]="false"
 >
   <!-- ───────── Header (applicant + job title) ───────── -->
   <ng-template #header class="custom-header">
