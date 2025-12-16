@@ -36,22 +36,14 @@
     flex-shrink: 0;
 
     .theme-switch {
-      .p-select {
-        height: 2rem;
-        font-size: 0.9rem;
-        border-radius: 0.5rem;
-        background: var(--p-background-default);
-        color: var(--p-text-primary);
-      }
+      position: relative;
 
-      .p-select:focus,
-      .p-select:hover {
-        box-shadow: none;
-        border: 0.1rem solid var(--p-primary-color);
-      }
-
-      .p-select-label {
-        padding: 0.2rem 0.75rem;
+      .theme-toggle-button {
+        .p-button {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 0.5rem;
+        }
       }
     }
 
