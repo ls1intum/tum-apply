@@ -472,7 +472,7 @@ public class InterviewService {
     public void deleteSlot(UUID slotId) {
         // 1. Load the slot
         InterviewSlot slot = interviewSlotRepository
-            .findById(slotId)
+            .findByIdWithJob(slotId)
             .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
         // 2. Security: Verify current user has job access
