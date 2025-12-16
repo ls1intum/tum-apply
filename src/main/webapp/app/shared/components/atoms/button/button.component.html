@@ -9,7 +9,7 @@
 </div>
 <ng-template #button>
   <p-button
-    [ariaLabel]="label() === undefined ? icon() : undefined"
+    [ariaLabel]="label() === undefined ? tooltip() : undefined"
     [disabled]="disabled()"
     [loading]="loading()"
     [severity]="severity()"
