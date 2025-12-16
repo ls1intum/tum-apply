@@ -19,6 +19,7 @@ import { DateSlotCardComponent } from 'app/interview/interview-process-detail/sl
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { SegmentButtonComponent } from 'app/shared/components/atoms/segment-button/segment-button.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -40,6 +41,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     ButtonComponent,
     NumberInputComponent,
     DialogComponent,
+    SegmentButtonComponent,
     TooltipModule,
   ],
   templateUrl: './slot-creation-form.component.html',
