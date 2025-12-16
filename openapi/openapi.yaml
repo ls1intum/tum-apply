@@ -1469,6 +1469,29 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/{researchGroupId}/members:
+    get:
+      tags: [research-group-resource]
+      operationId: getResearchGroupMembersById
+      parameters:
+      - name: researchGroupId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
   /api/research-groups/{researchGroupId}/withdraw:
     post:
       tags: [research-group-resource]
