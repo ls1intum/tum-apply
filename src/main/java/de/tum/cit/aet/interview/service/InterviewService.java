@@ -150,7 +150,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = interviewProcess.getJob();
-        verifyUserHasJobAccess(job, "view interview processes");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Fetch aggregated data for this specific job
         UUID jobId = interviewProcess.getJob().getJobId();
@@ -249,7 +251,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "create slots");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -372,7 +376,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "view slots");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Load and return slots
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
@@ -405,7 +411,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "add applicants to interview");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
@@ -451,7 +459,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "view interviewees");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
@@ -479,7 +489,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = slot.getInterviewProcess().getJob();
-        verifyUserHasJobAccess(job, "delete slots");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
@@ -553,39 +565,5 @@ public class InterviewService {
             return null;
         }
         return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
-    }
-
-    /**
-     * Verifies that the current user has access to the given job.
-     * Access is granted if the user is:
-     * - The supervising professor of the job, OR
-     * - An employee of the job's research group
-     *
-     * @param job               the job to check access for
-     * @param actionDescription description of the action for error message (e.g.,
-     *                          "view interview processes")
-     * @throws AccessDeniedException if the user has no access
-     */
-    private void verifyUserHasJobAccess(Job job, String actionDescription) {
-        UUID currentUserId = currentUserService.getUserId();
-
-        // Check 1 if the user is the professor
-        if (job.getSupervisingProfessor().getUserId().equals(currentUserId)) {
-            return; // Access granted
-        }
-
-        // Check 2 if the user is an employee of the professors research group?
-        boolean isEmployee = job
-            .getResearchGroup()
-            .getUserRoles()
-            .stream()
-            .anyMatch(role -> role.getUser().getUserId().equals(currentUserId));
-
-        if (isEmployee) {
-            return; // Access granted
-        }
-
-        // No access
-        throw new AccessDeniedException("You can only " + actionDescription + " for your own jobs");
     }
 }
