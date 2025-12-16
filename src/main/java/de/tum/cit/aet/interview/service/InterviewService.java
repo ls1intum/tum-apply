@@ -151,6 +151,9 @@ public class InterviewService {
         // 2. Security: Verify current user is the job owner or employee
         Job job = interviewProcess.getJob();
         if (!currentUserService.isSupervisingProfessorOf(job)) {
+            if (job.getResearchGroup() == null) {
+                throw new AccessDeniedException("User has no access to this interview process");
+            }
             currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         }
 
@@ -252,6 +255,9 @@ public class InterviewService {
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
         if (!currentUserService.isSupervisingProfessorOf(job)) {
+            if (job.getResearchGroup() == null) {
+                throw new AccessDeniedException("User has no access to create slots");
+            }
             currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         }
 
@@ -377,6 +383,9 @@ public class InterviewService {
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
         if (!currentUserService.isSupervisingProfessorOf(job)) {
+            if (job.getResearchGroup() == null) {
+                throw new AccessDeniedException("User has no access to view these slots");
+            }
             currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         }
 
@@ -412,6 +421,9 @@ public class InterviewService {
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
         if (!currentUserService.isSupervisingProfessorOf(job)) {
+            if (job.getResearchGroup() == null) {
+                throw new AccessDeniedException("User has no access to add applicants");
+            }
             currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         }
 
@@ -460,6 +472,9 @@ public class InterviewService {
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
         if (!currentUserService.isSupervisingProfessorOf(job)) {
+            if (job.getResearchGroup() == null) {
+                throw new AccessDeniedException("User has no access to view interviewees");
+            }
             currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         }
 
@@ -480,9 +495,9 @@ public class InterviewService {
      * @throws BadRequestException     if the slot is booked
      */
     public void deleteSlot(UUID slotId) {
-        // 1. Load the slot
+        // 1. Load the slot with all relationships for security check
         InterviewSlot slot = interviewSlotRepository
-            .findById(slotId)
+            .findByIdWithJobAndProfessor(slotId)
             .orElseThrow(() -> {
                 return new EntityNotFoundException("Slot " + slotId + " not found");
             });
@@ -490,6 +505,9 @@ public class InterviewService {
         // 2. Security: Verify current user is the job owner or employee
         Job job = slot.getInterviewProcess().getJob();
         if (!currentUserService.isSupervisingProfessorOf(job)) {
+            if (job.getResearchGroup() == null) {
+                throw new AccessDeniedException("User has no access to delete this slot");
+            }
             currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         }
 

@@ -86,7 +86,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     /**
      * Checks if a slot exists and belongs to a specific professor.
      *
-     * @param slotId the ID of the slot
+     * @param slotId      the ID of the slot
      * @param professorId the ID of the supervising professor
      * @return true if the slot exists and belongs to the professor
      */
@@ -99,4 +99,24 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         """
     )
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
+
+    /**
+     * Finds a slot by ID with all relationships needed for security checks.
+     * Eagerly fetches interviewProcess, job, supervisingProfessor, and
+     * researchGroup.
+     *
+     * @param slotId the ID of the slot
+     * @return Optional containing the slot with all relationships loaded
+     */
+    @Query(
+        """
+            SELECT s FROM InterviewSlot s
+            JOIN FETCH s.interviewProcess ip
+            JOIN FETCH ip.job j
+            LEFT JOIN FETCH j.supervisingProfessor
+            LEFT JOIN FETCH j.researchGroup
+            WHERE s.id = :slotId
+        """
+    )
+    Optional<InterviewSlot> findByIdWithJobAndProfessor(@Param("slotId") UUID slotId);
 }
