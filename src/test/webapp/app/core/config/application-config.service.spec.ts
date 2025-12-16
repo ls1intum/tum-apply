@@ -59,7 +59,7 @@ describe('ApplicationConfigService', () => {
       service.setAppConfig({});
 
       expect(service.keycloak).toEqual({ url: '', realm: '', clientId: '' });
-      expect(service.otp).toEqual({ length: 4, ttlSeconds: 300, resendCooldownSeconds: 60 });
+      expect(service.otp).toEqual({ length: 6, ttlSeconds: 300, resendCooldownSeconds: 60 });
     });
 
     it('should return provided values when present', () => {
