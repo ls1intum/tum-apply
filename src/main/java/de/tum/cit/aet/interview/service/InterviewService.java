@@ -470,16 +470,16 @@ public class InterviewService {
      * @throws BadRequestException     if the slot is booked
      */
     public void deleteSlot(UUID slotId) {
-        // 1. Load the slot with all relationships for security check
+        // 1. Load the slot
         InterviewSlot slot = interviewSlotRepository
-            .findByIdWithJobAndProfessor(slotId)
+            .findById(slotId)
             .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
         // 2. Security: Verify current user has job access
         Job job = slot.getInterviewProcess().getJob();
         currentUserService.verifyJobAccess(job);
 
-        // 3. Cannot delete booked slots
+        // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
         if (slot.getIsBooked()) {
             throw new BadRequestException("Cannot delete booked slot.");
