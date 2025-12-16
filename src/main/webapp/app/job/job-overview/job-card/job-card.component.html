@@ -8,12 +8,6 @@
       headerImageUrl() ? 'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(' + headerImageUrl() + ')' : 'none'
     "
   >
-    @if (!headerImageUrl()) {
-      <div class="absolute inset-0 flex flex-col items-center justify-center bg-background-surface-alt">
-        <fa-icon [icon]="['fas', 'image']" [size]="'2x'" class="text-text-secondary" />
-        <span class="text-sm text-text-secondary" jhiTranslate="jobCreationForm.imageSection.noImage"></span>
-      </div>
-    }
     <span class="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
       {{ departmentName() }}
     </span>
