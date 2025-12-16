@@ -90,20 +90,42 @@ public class ApplicationService {
             applicant = applicantOptional.get();
         }
 
-        Application newApplication = new Application(
-            null,
-            null, // no applicationReview yet
-            applicant,
-            job,
-            ApplicationState.SAVED,
-            null,
-            null,
-            null,
-            null,
-            null,
-            new HashSet<>(), // TODO get CustomAnswers from CustomAnswerDto,
-            new HashSet<>()
-        );
+        Application newApplication = new Application();
+        newApplication.setApplicant(applicant);
+        newApplication.setJob(job);
+        newApplication.setState(ApplicationState.SAVED);
+        newApplication.setCustomFieldAnswers(new HashSet<>());
+        newApplication.setInternalComments(new HashSet<>());
+
+        // Initialize snapshot fields from applicant's current profile data
+        User user = applicant.getUser();
+        newApplication.setApplicantFirstName(user.getFirstName());
+        newApplication.setApplicantLastName(user.getLastName());
+        newApplication.setApplicantEmail(user.getEmail());
+        newApplication.setApplicantGender(user.getGender());
+        newApplication.setApplicantNationality(user.getNationality());
+        newApplication.setApplicantBirthday(user.getBirthday());
+        newApplication.setApplicantPhoneNumber(user.getPhoneNumber());
+        newApplication.setApplicantWebsite(user.getWebsite());
+        newApplication.setApplicantLinkedinUrl(user.getLinkedinUrl());
+
+        newApplication.setApplicantStreet(applicant.getStreet());
+        newApplication.setApplicantPostalCode(applicant.getPostalCode());
+        newApplication.setApplicantCity(applicant.getCity());
+        newApplication.setApplicantCountry(applicant.getCountry());
+
+        newApplication.setApplicantBachelorDegreeName(applicant.getBachelorDegreeName());
+        newApplication.setApplicantBachelorGradeUpperLimit(applicant.getBachelorGradeUpperLimit());
+        newApplication.setApplicantBachelorGradeLowerLimit(applicant.getBachelorGradeLowerLimit());
+        newApplication.setApplicantBachelorGrade(applicant.getBachelorGrade());
+        newApplication.setApplicantBachelorUniversity(applicant.getBachelorUniversity());
+
+        newApplication.setApplicantMasterDegreeName(applicant.getMasterDegreeName());
+        newApplication.setApplicantMasterGradeUpperLimit(applicant.getMasterGradeUpperLimit());
+        newApplication.setApplicantMasterGradeLowerLimit(applicant.getMasterGradeLowerLimit());
+        newApplication.setApplicantMasterGrade(applicant.getMasterGrade());
+        newApplication.setApplicantMasterUniversity(applicant.getMasterUniversity());
+
         Application savedApplication = applicationRepository.save(newApplication);
         return getFromEntity(savedApplication);
     }
@@ -120,6 +142,8 @@ public class ApplicationService {
 
     /**
      * Updates an existing application with new information.
+     * Updates are stored in the application's snapshot fields, not in the applicant entity.
+     * When the application is sent, the snapshot data is synced back to the applicant profile.
      *
      * @param updateApplicationDTO DTO containing updated application data
      * @return the updated ApplicationForApplicantDTO
@@ -135,44 +159,82 @@ public class ApplicationService {
         if (updateApplicationDTO.applicationState().equals(ApplicationState.SENT)) {
             application.setAppliedAt(LocalDateTime.now());
         }
+
+        // Update snapshot fields in the application entity instead of the applicant entity
+        ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
+        application.setApplicantFirstName(applicantDTO.user().firstName());
+        application.setApplicantLastName(applicantDTO.user().lastName());
+        application.setApplicantEmail(applicantDTO.user().email());
+        application.setApplicantGender(applicantDTO.user().gender());
+        application.setApplicantNationality(applicantDTO.user().nationality());
+        application.setApplicantBirthday(applicantDTO.user().birthday());
+        application.setApplicantPhoneNumber(applicantDTO.user().phoneNumber());
+        application.setApplicantWebsite(applicantDTO.user().website());
+        application.setApplicantLinkedinUrl(applicantDTO.user().linkedinUrl());
+
+        application.setApplicantStreet(applicantDTO.street());
+        application.setApplicantPostalCode(applicantDTO.postalCode());
+        application.setApplicantCity(applicantDTO.city());
+        application.setApplicantCountry(applicantDTO.country());
+        application.setApplicantBachelorDegreeName(applicantDTO.bachelorDegreeName());
+        application.setApplicantBachelorGradeUpperLimit(applicantDTO.bachelorGradeUpperLimit());
+        application.setApplicantBachelorGradeLowerLimit(applicantDTO.bachelorGradeLowerLimit());
+        application.setApplicantBachelorGrade(applicantDTO.bachelorGrade());
+        application.setApplicantBachelorUniversity(applicantDTO.bachelorUniversity());
+        application.setApplicantMasterDegreeName(applicantDTO.masterDegreeName());
+        application.setApplicantMasterGradeUpperLimit(applicantDTO.masterGradeUpperLimit());
+        application.setApplicantMasterGradeLowerLimit(applicantDTO.masterGradeLowerLimit());
+        application.setApplicantMasterGrade(applicantDTO.masterGrade());
+        application.setApplicantMasterUniversity(applicantDTO.masterUniversity());
+
         application = applicationRepository.save(application);
 
-        ApplicantDTO applicantDTO = updateApplicationDTO.applicant();
-        Applicant applicant = assertCanManageApplicant(application.getApplicant().getUserId());
-        User user = applicant.getUser();
-        user.setFirstName(applicantDTO.user().firstName());
-        user.setLastName(applicantDTO.user().lastName());
-        user.setGender(applicantDTO.user().gender());
-        user.setNationality(applicantDTO.user().nationality());
-        user.setBirthday(applicantDTO.user().birthday());
-        user.setPhoneNumber(applicantDTO.user().phoneNumber());
-        user.setWebsite(applicantDTO.user().website());
-        user.setLinkedinUrl(applicantDTO.user().linkedinUrl());
-        if (applicantDTO.user().selectedLanguage() != null) {
-            applicant.getUser().setSelectedLanguage(applicantDTO.user().selectedLanguage());
-        }
-
-        applicant.setStreet(applicantDTO.street());
-        applicant.setPostalCode(applicantDTO.postalCode());
-        applicant.setCity(applicantDTO.city());
-        applicant.setCountry(applicantDTO.country());
-        applicant.setBachelorDegreeName(applicantDTO.bachelorDegreeName());
-        applicant.setBachelorGradeUpperLimit(applicantDTO.bachelorGradeUpperLimit());
-        applicant.setBachelorGradeLowerLimit(applicantDTO.bachelorGradeLowerLimit());
-        applicant.setBachelorGrade(applicantDTO.bachelorGrade());
-        applicant.setBachelorUniversity(applicantDTO.bachelorUniversity());
-        applicant.setMasterDegreeName(applicantDTO.masterDegreeName());
-        applicant.setMasterGradeUpperLimit(applicantDTO.masterGradeUpperLimit());
-        applicant.setMasterGradeLowerLimit(applicantDTO.masterGradeLowerLimit());
-        applicant.setMasterGrade(applicantDTO.masterGrade());
-        applicant.setMasterUniversity(applicantDTO.masterUniversity());
-        applicantRepository.save(applicant);
-
+        // When application is sent, sync snapshot data back to applicant profile
         if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
+            syncSnapshotDataToApplicant(application);
             confirmApplicationToApplicant(application);
             confirmApplicationToProfessor(application);
         }
         return ApplicationForApplicantDTO.getFromEntity(application);
+    }
+
+    /**
+     * Syncs snapshot data from application back to the applicant profile.
+     * This ensures the applicant's profile is updated with the latest data when an application is sent.
+     *
+     * @param application the application containing the snapshot data to sync
+     */
+    private void syncSnapshotDataToApplicant(Application application) {
+        Applicant applicant = application.getApplicant();
+        User user = applicant.getUser();
+
+        // Update user data
+        user.setFirstName(application.getApplicantFirstName());
+        user.setLastName(application.getApplicantLastName());
+        user.setGender(application.getApplicantGender());
+        user.setNationality(application.getApplicantNationality());
+        user.setBirthday(application.getApplicantBirthday());
+        user.setPhoneNumber(application.getApplicantPhoneNumber());
+        user.setWebsite(application.getApplicantWebsite());
+        user.setLinkedinUrl(application.getApplicantLinkedinUrl());
+        userRepository.save(user);
+
+        // Update applicant data
+        applicant.setStreet(application.getApplicantStreet());
+        applicant.setPostalCode(application.getApplicantPostalCode());
+        applicant.setCity(application.getApplicantCity());
+        applicant.setCountry(application.getApplicantCountry());
+        applicant.setBachelorDegreeName(application.getApplicantBachelorDegreeName());
+        applicant.setBachelorGradeUpperLimit(application.getApplicantBachelorGradeUpperLimit());
+        applicant.setBachelorGradeLowerLimit(application.getApplicantBachelorGradeLowerLimit());
+        applicant.setBachelorGrade(application.getApplicantBachelorGrade());
+        applicant.setBachelorUniversity(application.getApplicantBachelorUniversity());
+        applicant.setMasterDegreeName(application.getApplicantMasterDegreeName());
+        applicant.setMasterGradeUpperLimit(application.getApplicantMasterGradeUpperLimit());
+        applicant.setMasterGradeLowerLimit(application.getApplicantMasterGradeLowerLimit());
+        applicant.setMasterGrade(application.getApplicantMasterGrade());
+        applicant.setMasterUniversity(application.getApplicantMasterUniversity());
+        applicantRepository.save(applicant);
     }
 
     private void confirmApplicationToApplicant(Application application) {
@@ -481,20 +543,5 @@ public class ApplicationService {
 
         currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
         return application;
-    }
-
-    /**
-     * Asserts that the current user can manage the applicant with the given ID.
-     *
-     * @param applicantId the id of the applicant to check
-     * @return the application entity if the user can manage it
-     */
-    private Applicant assertCanManageApplicant(UUID applicantId) {
-        if (applicantId == null) {
-            throw new InvalidParameterException("The applicantId may not be null.");
-        }
-        Applicant applicant = applicantRepository.getReferenceById(applicantId);
-        currentUserService.isCurrentUserOrAdmin(applicant.getUserId());
-        return applicant;
     }
 }

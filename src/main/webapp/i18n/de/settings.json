@@ -25,6 +25,20 @@
           "description": "Erhalte eine Kopie per E-Mail, wenn eine Bewerbung für eine deiner Stellen angenommen wird."
         }
       }
+    },
+
+    "appearance": {
+      "header": "Aussehen",
+      "theme": {
+        "label": "Design"
+      },
+      "options": {
+        "light": "Hell",
+        "dark": "Dunkel",
+        "blossom": "Hell Blossom",
+        "aquabloom": "Hell AquaBloom",
+        "system": "System"
+      }
     }
   }
 }
