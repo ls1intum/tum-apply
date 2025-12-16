@@ -217,6 +217,7 @@ public class ApplicationService {
         user.setPhoneNumber(application.getApplicantPhoneNumber());
         user.setWebsite(application.getApplicantWebsite());
         user.setLinkedinUrl(application.getApplicantLinkedinUrl());
+        userRepository.save(user);
 
         // Update applicant data
         applicant.setStreet(application.getApplicantStreet());
@@ -233,7 +234,6 @@ public class ApplicationService {
         applicant.setMasterGradeLowerLimit(application.getApplicantMasterGradeLowerLimit());
         applicant.setMasterGrade(application.getApplicantMasterGrade());
         applicant.setMasterUniversity(application.getApplicantMasterUniversity());
-
         applicantRepository.save(applicant);
     }
 
@@ -543,20 +543,5 @@ public class ApplicationService {
 
         currentUserService.isCurrentUserOrAdmin(application.applicant().user().userId());
         return application;
-    }
-
-    /**
-     * Asserts that the current user can manage the applicant with the given ID.
-     *
-     * @param applicantId the id of the applicant to check
-     * @return the application entity if the user can manage it
-     */
-    private Applicant assertCanManageApplicant(UUID applicantId) {
-        if (applicantId == null) {
-            throw new InvalidParameterException("The applicantId may not be null.");
-        }
-        Applicant applicant = applicantRepository.getReferenceById(applicantId);
-        currentUserService.isCurrentUserOrAdmin(applicant.getUserId());
-        return applicant;
     }
 }
