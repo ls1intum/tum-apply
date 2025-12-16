@@ -153,7 +153,8 @@ public class CurrentUserService {
      * Returns the research group ID if the current user is a professor or employee.
      *
      * @return the research group ID if user is a professor or employee
-     * @throws AccessDeniedException if the user is not a member of any research group
+     * @throws AccessDeniedException if the user is not a member of any research
+     *                               group
      */
     public UUID getResearchGroupIdIfMember() {
         return getCurrentUser()
@@ -222,6 +223,22 @@ public class CurrentUserService {
             return false;
         }
         return job.getSupervisingProfessor().getUserId().equals(getUserId());
+    }
+
+    /**
+     * Verifies that the current user has access to the given job.
+     * Access is granted if the user is:
+     * - The supervising professor of the job, OR
+     * - A member (professor/employee) of the job's research group
+     *
+     * @param job the job to check access for
+     * @throws AccessDeniedException if the user has no access
+     */
+    public void verifyJobAccess(Job job) {
+        if (isSupervisingProfessorOf(job)) {
+            return;
+        }
+        isAdminOrMemberOf(job.getResearchGroup());
     }
 
     /**

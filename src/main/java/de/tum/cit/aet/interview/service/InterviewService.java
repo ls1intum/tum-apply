@@ -148,14 +148,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = interviewProcess.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            if (job.getResearchGroup() == null) {
-                throw new AccessDeniedException("User has no access to this interview process");
-            }
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Fetch aggregated data for this specific job
         UUID jobId = interviewProcess.getJob().getJobId();
@@ -252,14 +247,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            if (job.getResearchGroup() == null) {
-                throw new AccessDeniedException("User has no access to create slots");
-            }
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -380,14 +370,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            if (job.getResearchGroup() == null) {
-                throw new AccessDeniedException("User has no access to view these slots");
-            }
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Load and return slots
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
@@ -418,14 +403,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            if (job.getResearchGroup() == null) {
-                throw new AccessDeniedException("User has no access to add applicants");
-            }
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
@@ -469,14 +449,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            if (job.getResearchGroup() == null) {
-                throw new AccessDeniedException("User has no access to view interviewees");
-            }
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
@@ -500,10 +475,9 @@ public class InterviewService {
             .findByIdWithJobAndProfessor(slotId)
             .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
-        // 2. Security: Verify current user has access to the job (supervising prof or
-        // employee of research group)
+        // 2. Security: Verify current user has job access
         Job job = slot.getInterviewProcess().getJob();
-        currentUserService.assertAccessTo(job);
+        currentUserService.verifyJobAccess(job);
 
         // 3. Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
