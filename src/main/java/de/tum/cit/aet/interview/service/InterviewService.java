@@ -498,20 +498,14 @@ public class InterviewService {
         // 1. Load the slot with all relationships for security check
         InterviewSlot slot = interviewSlotRepository
             .findByIdWithJobAndProfessor(slotId)
-            .orElseThrow(() -> {
-                return new EntityNotFoundException("Slot " + slotId + " not found");
-            });
+            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has access to the job (supervising prof or
+        // employee of research group)
         Job job = slot.getInterviewProcess().getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            if (job.getResearchGroup() == null) {
-                throw new AccessDeniedException("User has no access to delete this slot");
-            }
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.assertAccessTo(job);
 
-        // 3.Cannot delete booked slots
+        // 3. Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
         if (slot.getIsBooked()) {
             throw new BadRequestException("Cannot delete booked slot.");
