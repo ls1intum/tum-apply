@@ -1628,7 +1628,6 @@ components:
         applicationIds:
           type: array
           items: {type: string, format: uuid}
-          minItems: 1
       required: [applicationIds]
     AddMembersToResearchGroupDTO:
       type: object
