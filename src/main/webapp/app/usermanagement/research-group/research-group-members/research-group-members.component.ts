@@ -73,12 +73,17 @@ export class ResearchGroupMembersComponent {
       }
 
       return {
-        ...member,
+        email: member.email,
+        firstName: member.firstName,
+        lastName: member.lastName,
+        researchGroup: member.researchGroup,
+        roles: member.roles,
+        userId: member.userId,
         name: `${member.firstName} ${member.lastName}`,
         role: this.formatRoles(member.roles),
         isCurrentUser,
         canRemove,
-      };
+      } as UserShortDTO & { name: string; role: string; isCurrentUser: boolean; canRemove: boolean };
     });
   });
 

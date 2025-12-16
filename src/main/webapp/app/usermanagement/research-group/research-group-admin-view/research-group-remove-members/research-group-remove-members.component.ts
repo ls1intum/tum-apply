@@ -49,11 +49,16 @@ export class ResearchGroupRemoveMembersComponent {
     return this.members().map(member => {
       const isCurrentUser = this.isCurrentUser(member);
       return {
-        ...member,
+        email: member.email,
+        firstName: member.firstName,
+        lastName: member.lastName,
+        researchGroup: member.researchGroup,
+        roles: member.roles,
+        userId: member.userId,
         name: `${member.firstName} ${member.lastName}`,
         role: this.formatRoles(member.roles),
         isCurrentUser,
-      };
+      } as UserShortDTO & { name: string; role: string; isCurrentUser: boolean };
     });
   });
 

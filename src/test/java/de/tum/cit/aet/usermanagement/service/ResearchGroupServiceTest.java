@@ -178,24 +178,6 @@ class ResearchGroupServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenEmployeeRemovesProfessor() {
-            // Arrange
-            User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "prof@test.com", null, null);
-            memberToRemove.setResearchGroup(testResearchGroup);
-
-            UserResearchGroupRole role = new UserResearchGroupRole();
-            role.setRole(UserRole.PROFESSOR);
-            memberToRemove.setResearchGroupRoles(Set.of(role));
-
-            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
-            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("You do not have permission to remove a Professor");
-        }
-
-        @Test
         void shouldThrowExceptionWhenUserNotInSameResearchGroup() {
             // Arrange
             ResearchGroup otherGroup = ResearchGroupTestData.newRgAll(

@@ -13,7 +13,7 @@
   </div>
 
   <div class="flex justify-end gap-2 mt-2">
-    <jhi-button [label]="'button.cancel' | translate" severity="secondary" variant="outlined" (click)="onCancel()" />
+    <jhi-button [label]="'button.cancel'" severity="secondary" variant="outlined" (click)="onCancel()" [shouldTranslate]="true" />
 
     <jhi-confirm-dialog
       [label]="'researchGroup.members.removeSelectedButton' | translate"

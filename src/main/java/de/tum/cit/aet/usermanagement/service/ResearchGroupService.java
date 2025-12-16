@@ -137,17 +137,6 @@ public class ResearchGroupService {
             throw new BadRequestException("Cannot remove yourself from the research group");
         }
 
-        boolean currentUserIsProfessorOrAdmin = currentUserService.isProfessor() || currentUserService.isAdmin();
-
-        boolean userToRemoveIsProfessor = userToRemove
-            .getResearchGroupRoles()
-            .stream()
-            .anyMatch(r -> UserRole.PROFESSOR.equals(r.getRole()));
-
-        if (!currentUserIsProfessorOrAdmin && userToRemoveIsProfessor) {
-            throw new AccessDeniedException("You do not have permission to remove a Professor.");
-        }
-
         // Store the research group temporarily before removing it from the user
         ResearchGroup oldGroup = userToRemove.getResearchGroup();
 

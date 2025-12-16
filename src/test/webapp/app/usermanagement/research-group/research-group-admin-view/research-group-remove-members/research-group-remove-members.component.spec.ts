@@ -170,7 +170,14 @@ describe('ResearchGroupRemoveMembersComponent (full coverage)', () => {
     });
 
     it('should call removeMemberFromResearchGroup with empty string when userId undefined', async () => {
-      const memberWithoutId: UserShortDTO = { ...member, userId: undefined } as unknown as UserShortDTO;
+      const memberWithoutId: UserShortDTO = {
+        userId: undefined as unknown as string,
+        firstName: member.firstName,
+        lastName: member.lastName,
+        email: member.email,
+        roles: member.roles,
+        researchGroup: member.researchGroup,
+      } as UserShortDTO;
       mockResearchGroupService.removeMemberFromResearchGroup.mockReturnValue(of(void 0));
       mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(
         of({ content: [member], totalElements: 1 } as PageResponseDTOUserShortDTO),
@@ -303,7 +310,16 @@ describe('ResearchGroupRemoveMembersComponent (full coverage)', () => {
     it('isCurrentUser returns true/false correctly', () => {
       mockAccountService.user.set({ id: 'u-1', name: 'John', email: 'john.doe@test.com', authorities: [] });
       expect(component['isCurrentUser'](member)).toBe(true);
-      expect(component['isCurrentUser']({ ...member, userId: 'u-2' })).toBe(false);
+      expect(
+        component['isCurrentUser']({
+          userId: 'u-2',
+          firstName: member.firstName,
+          lastName: member.lastName,
+          email: member.email,
+          roles: member.roles,
+          researchGroup: member.researchGroup,
+        } as UserShortDTO),
+      ).toBe(false);
     });
   });
 });
