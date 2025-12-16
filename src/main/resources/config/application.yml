@@ -281,6 +281,7 @@ aet:
   email:
     enabled: ${AET_EMAIL_ENABLED:false}
     from: ${AET_EMAIL_FROM:tum-apply.aet@xcit.tum.de}
+    from-name: ${AET_EMAIL_FROM_NAME:TUMApply}
   storage:
     root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400

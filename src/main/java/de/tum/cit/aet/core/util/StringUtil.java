@@ -58,10 +58,12 @@ public class StringUtil {
      *
      * @param input the original string
      * @return a string containing only ASCII and German umlaut characters, other
-     *         characters replaced with space
+     * characters replaced with space
      */
     public static String keepAsciiAndUmlauts(String input) {
-        if (input == null) return "";
+        if (input == null) {
+            return "";
+        }
         return input
             .chars()
             .mapToObj(c -> (c < 128 || ALLOWED_UMLAUTS.indexOf(c) >= 0) ? String.valueOf((char) c) : " ")
@@ -76,7 +78,9 @@ public class StringUtil {
      * @return a string with punctuation replaced by spaces
      */
     public static String removePunctuation(String input) {
-        if (input == null) return "";
+        if (input == null) {
+            return "";
+        }
         return input.replaceAll("[.\\t,\"'<>*?!\\[\\]@:;()./&]", " ");
     }
 
@@ -89,7 +93,9 @@ public class StringUtil {
      * @return a string with normalized whitespace
      */
     public static String normalizeWhitespace(String input) {
-        if (input == null) return "";
+        if (input == null) {
+            return "";
+        }
         return input.replaceAll("\\s+", " ").trim();
     }
 }
