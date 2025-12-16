@@ -59,6 +59,7 @@ export class AuthDialogService {
       modal: true,
       dismissableMask: true,
       closeOnEscape: true,
+      draggable: false,
       showHeader: false,
     }) as DynamicDialogRef;
 
