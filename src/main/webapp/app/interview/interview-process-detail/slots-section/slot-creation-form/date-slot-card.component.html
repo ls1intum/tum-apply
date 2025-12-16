@@ -109,14 +109,10 @@
                         <label [for]="'start-' + range.id" class="text-xs text-text-primary">
                           {{ 'interview.slots.create.startTime' | translate }}
                         </label>
-                        <p-inputMask
+                        <jhi-time-input
                           [id]="'start-' + range.id"
-                          mask="99:99"
-                          slotChar="--:--"
-                          [ngModel]="range.startTimeString || ''"
-                          (ngModelChange)="onStartInput(rangeIndex, $event)"
-                          placeholder="--:--"
-                          styleClass="w-17 h-8 text-sm text-center font-normal border border-border-default focus:border-primary-default outline-none shadow-none"
+                          [value]="range.startTimeString || ''"
+                          (valueChange)="onStartInput(rangeIndex, $event)"
                         />
                       </div>
 
@@ -126,15 +122,11 @@
                           <label [for]="'end-' + range.id" class="text-xs text-text-primary">
                             {{ 'interview.slots.create.endTime' | translate }}
                           </label>
-                          <p-inputMask
+                          <jhi-time-input
                             [id]="'end-' + range.id"
-                            mask="99:99"
-                            slotChar="--:--"
-                            [ngModel]="range.endTimeString || ''"
-                            (ngModelChange)="onEndInput(rangeIndex, $event)"
-                            placeholder="--:--"
+                            [value]="range.endTimeString || ''"
+                            (valueChange)="onEndInput(rangeIndex, $event)"
                             [disabled]="range.type === 'single'"
-                            styleClass="w-17 h-8 text-sm text-center font-normal border border-border-default focus:border-primary-default outline-none shadow-none"
                           />
                         </div>
                       } @else {
