@@ -80,7 +80,7 @@ public class EmailVerificationService {
         emailVerificationOtpRepository.invalidateAllForEmail(emailAddress);
 
         // Generate OTP
-        String code = OtpUtil.generateAlphanumeric(otpLength);
+        String code = OtpUtil.generateNumeric(otpLength);
         String salt = OtpUtil.randomBase64(16);
         String hash = OtpUtil.hmacSha256Base64(otpHmacSecret, code + "|" + salt + "|" + emailAddress);
 
