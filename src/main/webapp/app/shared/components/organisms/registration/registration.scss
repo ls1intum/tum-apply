@@ -59,6 +59,7 @@
   --p-button-primary-hover-color: var(--p-text-on-accent);
   --p-button-primary-active-background: var(--p-accent-active-color);
   --p-button-primary-active-border-color: var(--p-accent-active-color);
+  --p-button-primary-active-color: var(--p-text-on-accent);
 
   @include layout.section-col;
 

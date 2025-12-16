@@ -23,6 +23,7 @@ export interface AuthOpenOptions {
 export type LoginStep = 'email' | 'password' | 'otp';
 
 // Steps within the registration flow:
+// - 'null'       : initial pre-step to allow progress bar animation on flow start
 // - 'email'    : user enters their email
 // - 'otp'   : user verifies their email with a code
 // - 'profile'   : user enters first name, last name, and consents

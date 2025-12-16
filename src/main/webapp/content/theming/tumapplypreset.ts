@@ -263,8 +263,8 @@ export const TUMApplyPreset = definePreset(Lara, {
         accent: {
           color: '{accent.400}',
           inverseColor: '{text.onAccent}',
-          hoverColor: '{accent.200}',
-          activeColor: '{accent.100}',
+          hoverColor: '{accent.500}',
+          activeColor: '{accent.600}',
           disabledColor: '{accent.800}',
           hoverColorOutlined: '{accent.800}',
         },
