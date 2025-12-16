@@ -74,11 +74,10 @@
             <div class="flex gap-2">
               <!-- Colored Bar Left -->
               <div
-                class="w-1 flex-shrink-0 self-stretch rounded-full"
-                [ngClass]="{
-                  'bg-[var(--p-secondary-400)]': range.type === 'single',
-                  'bg-[var(--p-secondary-600)]': range.type === 'range',
-                }"
+                [class]="
+                  'w-1 flex-shrink-0 self-stretch rounded-full ' +
+                  (range.type === 'single' ? 'bg-[var(--p-secondary-400)]' : 'bg-[var(--p-secondary-600)]')
+                "
               ></div>
               <div class="flex flex-1 flex-col gap-2">
                 <!-- Slot Row Header -->
@@ -152,16 +151,18 @@
                     <!-- Location Input -->
                     <div class="flex items-end">
                       <jhi-string-input
-                        class="flex-1 [&_.custom-input]:h-8 [&_.custom-input]:w-full [&_.custom-input]:text-xs [&_.custom-input]:font-normal [&_.label-with-tooltip]:mb-2 text-xs text-text-primary -mt-2 -mb-2 block"
+                        [class]="
+                          'flex-1 [&_.custom-input]:h-8 [&_.custom-input]:w-full [&_.custom-input]:text-xs [&_.custom-input]:font-normal [&_.label-with-tooltip]:mb-2 text-xs text-text-primary -mt-2 -mb-2 block' +
+                          (showValidationErrors() && !range.location
+                            ? ' [&_.custom-input]:!border-negative-default [&_.custom-input]:!border'
+                            : '')
+                        "
                         [id]="'location-' + range.id"
                         [label]="'interview.slots.create.location' | translate"
                         [model]="range.location"
                         (modelChange)="onLocationInput(rangeIndex, $event)"
                         [placeholder]="'interview.slots.create.locationPlaceholder' | translate"
                         [errorEnabled]="false"
-                        [ngClass]="{
-                          '[&_.custom-input]:!border-negative-default [&_.custom-input]:!border': showValidationErrors() && !range.location,
-                        }"
                       />
                       @if (showValidationErrors() && !range.location) {
                         <span class="text-xs text-negative-default mt-1 ml-5 block">
