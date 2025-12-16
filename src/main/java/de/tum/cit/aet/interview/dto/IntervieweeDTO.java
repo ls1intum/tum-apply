@@ -10,29 +10,15 @@ import java.util.UUID;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record IntervieweeDTO(
-    UUID id,
-    UUID applicationId,
-    IntervieweeUserDTO user,
-    Instant lastInvited,
-    InterviewSlotDTO scheduledSlot,
-    IntervieweeState state
-) {
-    /**
-     * Enumeration of possible interviewee states.
-     */
-    public enum IntervieweeState {
-        /** Applicant added to interview but not yet contacted */
-        UNCONTACTED,
-        /** Invitation email has been sent */
-        INVITED,
-        /** Interview slot has been scheduled */
-        SCHEDULED,
-        /** Interview has been completed */
-        COMPLETED,
-    }
-
+        UUID id,
+        UUID applicationId,
+        IntervieweeUserDTO user,
+        Instant lastInvited,
+        InterviewSlotDTO scheduledSlot,
+        IntervieweeState state) {
     /**
      * Lightweight user DTO for interviewee display.
      */
-    public record IntervieweeUserDTO(UUID userId, String email, String firstName, String lastName) {}
+    public record IntervieweeUserDTO(UUID userId, String email, String firstName, String lastName) {
+    }
 }
