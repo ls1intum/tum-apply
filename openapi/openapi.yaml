@@ -894,6 +894,44 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/InterviewOverviewDTO'}
+  /api/interviews/processes/{processId}/interviewees:
+    get:
+      tags: [interview-resource]
+      operationId: getIntervieweesByProcessId
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/IntervieweeDTO'}
+    post:
+      tags: [interview-resource]
+      operationId: addApplicantsToInterview
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AddIntervieweesDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/IntervieweeDTO'}
   /api/interviews/processes/{processId}/slots:
     get:
       tags: [interview-resource]
@@ -1584,6 +1622,13 @@ components:
         closeJob: {type: boolean}
         message: {type: string, maxLength: 3000, minLength: 0}
         notifyApplicant: {type: boolean}
+    AddIntervieweesDTO:
+      type: object
+      properties:
+        applicationIds:
+          type: array
+          items: {type: string, format: uuid}
+      required: [applicationIds]
     AddMembersToResearchGroupDTO:
       type: object
       properties:
@@ -2050,6 +2095,24 @@ components:
         location: {type: string}
         startDateTime: {type: string, format: date-time}
         streamLink: {type: string}
+    IntervieweeDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+        id: {type: string, format: uuid}
+        lastInvited: {type: string, format: date-time}
+        scheduledSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
+        user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
+    IntervieweeUserDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        userId: {type: string, format: uuid}
     Job:
       type: object
       properties:

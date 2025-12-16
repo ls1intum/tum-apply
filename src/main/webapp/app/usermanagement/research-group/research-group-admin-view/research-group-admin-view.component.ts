@@ -150,6 +150,7 @@ export class ResearchGroupAdminView {
       styleClass: 'research-group-detail-dialog',
       style: { background: 'var(--color-background-default)', maxWidth: '50rem' },
       closable: true,
+      draggable: false,
       modal: true,
     });
   }
@@ -161,6 +162,7 @@ export class ResearchGroupAdminView {
       styleClass: 'research-group-create-dialog',
       style: { background: 'var(--color-background-default)', maxWidth: '50rem' },
       closable: true,
+      draggable: false,
       modal: true,
     });
 
@@ -177,8 +179,8 @@ export class ResearchGroupAdminView {
       data: { researchGroupId },
       styleClass: 'research-group-add-members-dialog',
       style: { background: 'var(--color-background-default)', width: '60rem', maxWidth: '60rem' },
-      draggable: false,
       closable: true,
+      draggable: false,
       modal: true,
     });
 
