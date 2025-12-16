@@ -120,10 +120,27 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void getInterviewProcessDetailsForbiddenForOtherUser() {
-        // Create another professor
+        // Create a separate research group for the other professor
+        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
+            researchGroupRepository,
+            "Other Group",
+            "Prof. Smith",
+            "other@example.com",
+            "OTH",
+            "CS",
+            "Other research",
+            "other@example.com",
+            "80333",
+            "CIT",
+            "Other Street",
+            "https://other.tum.de",
+            "ACTIVE"
+        );
+
+        // Create another professor in a DIFFERENT research group
         User otherProfessor = UserTestData.savedProfessorAll(
             userRepository,
-            researchGroup,
+            otherResearchGroup,
             null,
             "other.prof@tum.de",
             "Jane",
@@ -278,9 +295,27 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void createSlotsForOtherProfessorJobReturnsForbidden() {
+        // Create a separate research group for the other professor
+        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
+            researchGroupRepository,
+            "Other Group",
+            "Prof. Smith",
+            "other@example.com",
+            "OTH",
+            "CS",
+            "Other research",
+            "other@example.com",
+            "80333",
+            "CIT",
+            "Other Street",
+            "https://other.tum.de",
+            "ACTIVE"
+        );
+
+        // Create another professor in a DIFFERENT research group
         User otherProfessor = UserTestData.savedProfessorAll(
             userRepository,
-            researchGroup,
+            otherResearchGroup,
             null,
             "other.prof@tum.de",
             "Jane",
@@ -392,9 +427,27 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void getSlotsByProcessIdForOtherProfessorReturnsForbidden() {
+        // Create a separate research group for the other professor
+        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
+            researchGroupRepository,
+            "Other Group",
+            "Prof. Smith",
+            "other@example.com",
+            "OTH",
+            "CS",
+            "Other research",
+            "other@example.com",
+            "80333",
+            "CIT",
+            "Other Street",
+            "https://other.tum.de",
+            "ACTIVE"
+        );
+
+        // Create another professor in a DIFFERENT research group
         User otherProfessor = UserTestData.savedProfessorAll(
             userRepository,
-            researchGroup,
+            otherResearchGroup,
             null,
             "other.prof@tum.de",
             "Jane",

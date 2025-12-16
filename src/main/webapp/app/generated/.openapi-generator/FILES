@@ -28,6 +28,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/acceptDTO.ts
+model/addIntervieweesDTO.ts
 model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
@@ -69,6 +70,8 @@ model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
 model/interviewOverviewDTO.ts
 model/interviewSlotDTO.ts
+model/intervieweeDTO.ts
+model/intervieweeUserDTO.ts
 model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
