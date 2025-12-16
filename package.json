@@ -77,7 +77,7 @@
     "@ngx-translate/http-loader": "17.0.0",
     "@popperjs/core": "2.11.8",
     "@primeuix/styled": "0.7.4",
-    "@primeuix/themes": "1.2.5",
+    "@primeuix/themes": "2.0.1",
     "@primeuix/utils": "0.6.3",
     "bootstrap": "5.3.8",
     "dayjs": "1.11.19",
