@@ -97,7 +97,12 @@
       "retry": "Erneut versuchen",
       "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
       "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
+      "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
       "me": "Ich",
+      "manageMembers": "Mitglieder verwalten",
+      "manageSubtitle": "Wähle, ob du Mitglieder zur Forschungsgruppe hinzufügen oder entfernen möchtest.",
+      "removeMembers": "Mitglieder entfernen",
+      "removeMembersButton": "Mitglieder entfernen",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
@@ -114,6 +119,8 @@
         "title": "Mitglied entfernen",
         "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
       },
+      "removeSelectedButton": "Ausgewählte entfernen",
+      "removeSelectedConfirm": "Möchtest du die ausgewählten Mitglieder wirklich entfernen?",
 
       "toastMessages": {
         "loadFailed": {
@@ -135,6 +142,14 @@
         "addMembersFailed": {
           "summary": "Fehler beim Hinzufügen",
           "detail": "Mitglieder konnten nicht hinzugefügt werden. Bitte versuche es erneut."
+        },
+        "addMembersFailedAlreadyMember": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mindestens ein ausgewählter Benutzer konnte nicht hinzugefügt werden, da er bereits Teil einer Forschungsgruppe ist."
+        },
+        "addMembersFailedInvalidUniversityId": {
+          "summary": "Fehler beim Hinzufügen",
+          "detail": "Mindestens ein ausgewählter Benutzer konnte nicht hinzugefügt werden, da er keine gültige Universitäts-ID hat."
         },
         "removeSuccess": {
           "summary": "Mitglied entfernt",

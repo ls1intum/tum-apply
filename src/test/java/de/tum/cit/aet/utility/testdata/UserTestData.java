@@ -4,6 +4,7 @@ import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import java.util.UUID;
 
@@ -130,6 +131,34 @@ public final class UserTestData {
                 universityId
             )
         );
+    }
+
+    /**
+     * Create a KeycloakUserDTO from a domain User for tests.
+     */
+    public static KeycloakUserDTO kcUserFrom(User user) {
+        return new KeycloakUserDTO(
+            user.getUserId(),
+            user.getUniversityId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getUniversityId()
+        );
+    }
+
+    /**
+     * Build a KeycloakUserDTO with custom data.
+     */
+    public static KeycloakUserDTO newKeycloakUser(
+        UUID id,
+        String username,
+        String firstName,
+        String lastName,
+        String email,
+        String universityId
+    ) {
+        return new KeycloakUserDTO(id, username, firstName, lastName, email, universityId);
     }
 
     /**

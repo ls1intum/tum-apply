@@ -1,0 +1,13 @@
+<p-inputMask
+  [id]="id()"
+  mask="99:99"
+  slotChar="--:--"
+  [ngModel]="value() || ''"
+  (ngModelChange)="onValueChange($event)"
+  placeholder="--:--"
+  [disabled]="disabled()"
+  [styleClass]="
+    'w-17 h-8 text-sm text-center font-normal border border-border-default focus:border-primary-default outline-none shadow-none ' +
+    styleClass()
+  "
+/>

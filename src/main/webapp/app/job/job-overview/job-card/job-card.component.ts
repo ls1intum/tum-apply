@@ -5,7 +5,6 @@ import { CardModule } from 'primeng/card';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
-import dayjs from 'dayjs/esm';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import SharedModule from 'app/shared/shared.module';
@@ -44,9 +43,7 @@ export class JobCardComponent {
   // TO-DO: Replace value of icon with an icon corresponding to the field of study
   icon = input<string>('flask-vial');
   ref: DynamicDialogRef | undefined;
-
   readonly dropDownOptions = DropDownOptions;
-  readonly formattedStartDate = computed(() => (this.startDate() !== undefined ? dayjs(this.startDate()).format('DD.MM.YYYY') : undefined));
   translate = inject(TranslateService);
 
   currentLang = toSignal(this.translate.onLangChange);

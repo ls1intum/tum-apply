@@ -11,13 +11,27 @@
   </div>
 
   <!-- User List -->
-  <div class="flex flex-col max-h-96 overflow-y-auto border border-border-default rounded-lg">
-    @if (users().length === 0) {
+  <div class="flex flex-col overflow-y-auto border border-border-default rounded-lg" [class.h-96]="loading()" [class.max-h-96]="!loading()">
+    @if (loading()) {
+      <div class="flex items-center justify-center h-full bg-background-default rounded-lg">
+        <i class="pi pi-spin pi-spinner text-4xl text-[var(--p-primary-400)]"></i>
+      </div>
+    }
+
+    @if (!loading() && users().length === 0 && searchQuery() === '') {
+      <div class="p-8 text-center text-gray-500">
+        {{ 'researchGroup.members.emptySearch' | translate: { minLength: MIN_SEARCH_LENGTH } }}
+      </div>
+    }
+
+    @if (!loading() && users().length === 0 && searchQuery() !== '') {
       <div class="p-8 text-center text-text-secondary">
         {{ 'researchGroup.members.noUsers' | translate }}
       </div>
-    } @else {
-      @for (user of users(); track user.userId) {
+    }
+
+    @if (!loading() && users().length !== 0) {
+      @for (user of users(); track user.id) {
         <div
           class="flex items-center gap-3 p-3 cursor-pointer transition-colors"
           [class.bg-background-surface-alt]="isUserSelected(user)"
@@ -55,7 +69,7 @@
   }
 
   <!-- Action Buttons -->
-  <div class="flex justify-end gap-2">
+  <div class="flex justify-end gap-2 mt-4">
     <jhi-button [label]="'button.cancel' | translate" severity="secondary" variant="outlined" (click)="onCancel()" />
 
     <jhi-confirm-dialog

@@ -39,6 +39,8 @@ export class SelectComponent {
   translateItems = input<boolean>(false);
   filter = input<boolean>(false);
   showClear = input<boolean>(false);
+  appendTo = input<string | undefined>(undefined);
+  dataKey = input<string | undefined>(undefined);
 
   selectedChange = output<SelectOption>();
 

@@ -7,6 +7,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
+import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
@@ -66,6 +67,7 @@ export interface JobDetails {
   imports: [
     ButtonComponent,
     FontAwesomeModule,
+    SharedModule,
     TranslateModule,
     TranslateDirective,
     ButtonGroupComponent,
@@ -473,7 +475,7 @@ export class JobDetailComponent {
     },
     isForm = false,
   ): JobDetails {
-    const now = dayjs().format('DD.MM.YYYY');
+    const now = dayjs().toISOString();
 
     const jobDetailDTO = data as JobDetailDTO;
 
@@ -490,12 +492,12 @@ export class JobDetailComponent {
     } else {
       supervisingProfessor = jobDetailDTO.supervisingProfessorName;
       researchGroup = jobDetailDTO.researchGroup.name ?? '';
-      createdAt = dayjs(jobDetailDTO.createdAt).format('DD.MM.YYYY');
-      lastModifiedAt = dayjs(jobDetailDTO.lastModifiedAt).format('DD.MM.YYYY');
+      createdAt = jobDetailDTO.createdAt;
+      lastModifiedAt = jobDetailDTO.lastModifiedAt;
     }
 
-    const startDate = data.startDate ? dayjs(data.startDate).format('DD.MM.YYYY') : '';
-    const endDate = data.endDate ? dayjs(data.endDate).format('DD.MM.YYYY') : '';
+    const startDate = data.startDate as string;
+    const endDate = data.endDate as string;
 
     const researchGroupDescription = researchGroupDetails?.description ?? (!isForm ? (jobDetailDTO.researchGroup.description ?? '') : '');
     const researchGroupEmail = researchGroupDetails?.email ?? (!isForm ? (jobDetailDTO.researchGroup.email ?? '') : '');

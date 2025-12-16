@@ -47,6 +47,9 @@ public class EmailService {
     @Value("${aet.email.from:test}")
     private String from;
 
+    @Value("${aet.email.from-name:test}")
+    private String fromName;
+
     public EmailService(
         TemplateProcessingService templateProcessingService,
         ObjectProvider<JavaMailSender> mailSenderProvider,
@@ -181,7 +184,7 @@ public class EmailService {
             helper.setCc(getRecipientsToNotify(email.getCc(), email).toArray(new String[0]));
             helper.setBcc(getRecipientsToNotify(email.getBcc(), email).toArray(new String[0]));
 
-            helper.setFrom(from);
+            helper.setFrom(from, fromName);
             helper.setSubject(subject);
             helper.setText(body, true);
 

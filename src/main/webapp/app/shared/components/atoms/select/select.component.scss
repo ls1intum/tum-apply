@@ -27,42 +27,10 @@
         color: var(--p-text-disabled) !important;
       }
     }
-
-    // Override primeng unnecessary padding on top and bottom of select list
-    .p-select-list {
-      padding: 0;
-    }
-
-    .p-select-list-container {
-      border-radius: 0.3rem;
-    }
-
-    // Override primeng styling of unselected items in select component
-    .p-select-items,
-    .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
-      background: var(--p-background-default);
-
-      // Override primeng styling of hover on select items
-      &:hover {
-        background-color: var(--p-primary-color);
-        color: var(--p-text-on-primary);
-      }
-    }
   }
 
   .p-select {
     background: var(--p-background-default);
-  }
-
-  // Override primeng styling of selected item in select menu
-  .p-select-option.p-select-option-selected {
-    background: var(--p-background-surface-alt);
-    color: var(--p-text-primary);
-
-    &:hover {
-      background-color: var(--p-primary-color);
-      color: var(--p-text-on-primary);
-    }
   }
 
   // Override primeng styling of border color when clicking on select field
@@ -92,5 +60,48 @@
 
   .p-select-clear-icon svg path {
     fill: var(--p-text-secondary);
+  }
+}
+
+// Global styles for dropdown options (works even when appended to body)
+.p-select-overlay {
+  .p-select-list {
+    padding: 0;
+  }
+
+  .p-select-list-container {
+    border-radius: 0.3rem;
+  }
+
+  .p-select-items {
+    background: var(--p-background-default);
+  }
+
+  .p-select-option {
+    background: var(--p-background-default);
+
+    &:hover {
+      background-color: var(--p-primary-color);
+      color: var(--p-text-on-primary);
+    }
+
+    &.p-focus:not(.p-select-option-selected) {
+      background: var(--p-background-default);
+
+      &:hover {
+        background-color: var(--p-primary-color);
+        color: var(--p-text-on-primary);
+      }
+    }
+
+    &.p-select-option-selected {
+      background: var(--p-background-surface-alt);
+      color: var(--p-text-primary);
+
+      &:hover {
+        background-color: var(--p-primary-color);
+        color: var(--p-text-on-primary);
+      }
+    }
   }
 }

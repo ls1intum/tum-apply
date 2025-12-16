@@ -97,7 +97,12 @@
       "retry": "Retry",
       "noMembers": "No members found in this research group.",
       "noUsers": "No available users found.",
+      "emptySearch": "Please enter at least {{minLength}} characters to search.",
       "me": "Me",
+      "manageMembers": "Manage Members",
+      "manageSubtitle": "Choose whether to add or remove members from this research group.",
+      "removeMembers": "Remove Members",
+      "removeMembersButton": "Remove members",
       "addMembers": "Add Members",
       "addMembersButton": "Add members",
       "searchPlaceholder": "Search for a member using their name or email...",
@@ -114,6 +119,8 @@
         "title": "Remove Member",
         "message": "Are you sure you want to remove this member from the research group?"
       },
+      "removeSelectedButton": "Remove selected",
+      "removeSelectedConfirm": "Are you sure you want to remove the selected members?",
 
       "toastMessages": {
         "loadFailed": {
@@ -135,6 +142,14 @@
         "addMembersFailed": {
           "summary": "Add Failed",
           "detail": "Failed to add members. Please try again."
+        },
+        "addMembersFailedAlreadyMember": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they are already part of a research group."
+        },
+        "addMembersFailedInvalidUniversityId": {
+          "summary": "Add Failed",
+          "detail": "At least one selected user could not be added because they do not have a valid university ID."
         },
         "removeSuccess": {
           "summary": "Member Removed",

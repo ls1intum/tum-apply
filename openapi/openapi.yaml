@@ -3,21 +3,6 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/admin/research-groups/provision:
-    post:
-      tags: [admin-resource]
-      operationId: provisionResearchGroup
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ResearchGroupProvisionDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroup'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -325,6 +310,17 @@ paths:
     post:
       tags: [email-verification-resource]
       operationId: send
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SendCodeRequest'}
+        required: true
+      responses:
+        '200': {description: OK}
+  /api/auth/send-registration-email:
+    post:
+      tags: [email-verification-resource]
+      operationId: sendRegistrationEmail
       requestBody:
         content:
           application/json:
@@ -909,6 +905,44 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/InterviewOverviewDTO'}
+  /api/interviews/processes/{processId}/interviewees:
+    get:
+      tags: [interview-resource]
+      operationId: getIntervieweesByProcessId
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/IntervieweeDTO'}
+    post:
+      tags: [interview-resource]
+      operationId: addApplicantsToInterview
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AddIntervieweesDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/IntervieweeDTO'}
   /api/interviews/processes/{processId}/slots:
     get:
       tags: [interview-resource]
@@ -1435,6 +1469,29 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/{researchGroupId}/members:
+    get:
+      tags: [research-group-resource]
+      operationId: getResearchGroupMembersById
+      parameters:
+      - name: researchGroupId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
   /api/research-groups/{researchGroupId}/withdraw:
     post:
       tags: [research-group-resource]
@@ -1558,7 +1615,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
+              schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1599,15 +1656,22 @@ components:
         closeJob: {type: boolean}
         message: {type: string, maxLength: 3000, minLength: 0}
         notifyApplicant: {type: boolean}
+    AddIntervieweesDTO:
+      type: object
+      properties:
+        applicationIds:
+          type: array
+          items: {type: string, format: uuid}
+      required: [applicationIds]
     AddMembersToResearchGroupDTO:
       type: object
       properties:
-        researchGroupId: {type: string, format: uuid}
-        userIds:
+        keycloakUsers:
           type: array
-          items: {type: string, format: uuid}
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
           minItems: 1
-      required: [userIds]
+        researchGroupId: {type: string, format: uuid}
+      required: [keycloakUsers]
     Applicant:
       type: object
       properties:
@@ -1789,10 +1853,10 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
+        createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         researchGroup: {type: string}
-        timeSinceCreation: {type: string}
     ApplicationReview:
       type: object
       properties:
@@ -2042,6 +2106,24 @@ components:
         location: {type: string}
         startDateTime: {type: string, format: date-time}
         streamLink: {type: string}
+    IntervieweeDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+        id: {type: string, format: uuid}
+        lastInvited: {type: string, format: date-time}
+        scheduledSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
+        user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
+    IntervieweeUserDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        userId: {type: string, format: uuid}
     Job:
       type: object
       properties:
@@ -2202,6 +2284,15 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+    KeycloakUserDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        id: {type: string, format: uuid}
+        lastName: {type: string}
+        universityId: {type: string}
+        username: {type: string}
     LoginRequestDTO:
       type: object
       properties:
@@ -2276,6 +2367,13 @@ components:
         content:
           type: array
           items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOKeycloakUserDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOResearchGroupAdminDTO:
       type: object
@@ -2404,12 +2502,6 @@ components:
         postalCode: {type: string}
         street: {type: string}
         website: {type: string}
-    ResearchGroupProvisionDTO:
-      type: object
-      properties:
-        researchGroupId: {type: string, format: uuid}
-        universityId: {type: string, maxLength: 7, minLength: 3}
-      required: [universityId]
     ResearchGroupRequestDTO:
       type: object
       properties:

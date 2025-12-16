@@ -89,6 +89,10 @@ export class Registration {
     );
   };
 
+  sendRegistrationEmail = async (): Promise<void> => {
+    await this.authFacade.sendRegistrationEmail();
+  };
+
   onBack = (): void => {
     this.authOrchestrator.previousStep();
   };

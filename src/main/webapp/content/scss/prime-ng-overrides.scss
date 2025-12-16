@@ -3,10 +3,16 @@
   --p-stepper-step-number-size: 1.75rem;
   --p-stepper-step-number-font-size: 1rem;
   --p-stepper-step-title-font-weight: 500;
+  --p-accordion-header-background: var(--p-background-default);
+  --p-accordion-header-color: var(--p-text-primary);
+  --p-accordion-header-hover-background: var(--p-background-surface);
+  --p-accordion-header-active-hover-background: var(--p-background-surface);
+  --p-accordion-content-background: var(--p-background-default);
 }
 
 p-step[data-p-active='true'] .p-step-title {
   font-weight: 700 !important;
+  color: var(--p-text-primary) !important;
 }
 /* -------------------------------
    Custom Global Styles for Login
@@ -59,13 +65,18 @@ p-step[data-p-active='true'] .p-step-title {
 }
 
 /* -------------------------------
-   Progress Stepper Sticky Footer Buttons
-------------------------------- */
-jhi-progress-stepper .sticky-footer .p-button {
-  height: 2.25rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
+   Custom Global Styles for Accordion
+---------------------------------- */
+.p-accordionpanel:not(.p-disabled).p-accordionpanel-active > .p-accordionheader {
+  background: var(--p-background-surface) !important;
+}
+
+/* Disable all transitions and animations while switching theme */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+  animation: none !important;
 }
 
 /* -------------------------------

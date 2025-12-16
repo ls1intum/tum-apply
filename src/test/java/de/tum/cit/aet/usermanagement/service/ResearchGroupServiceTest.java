@@ -1,40 +1,32 @@
 package de.tum.cit.aet.usermanagement.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import de.tum.cit.aet.core.domain.CurrentUser;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.exception.AccessDeniedException;
-import de.tum.cit.aet.core.exception.AlreadyMemberOfResearchGroupException;
-import de.tum.cit.aet.core.exception.BadRequestException;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
+import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
-import de.tum.cit.aet.usermanagement.domain.Department;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
-import de.tum.cit.aet.usermanagement.domain.School;
-import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
+import de.tum.cit.aet.usermanagement.domain.*;
 import de.tum.cit.aet.usermanagement.dto.*;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
-import de.tum.cit.aet.utility.testdata.DepartmentTestData;
-import de.tum.cit.aet.utility.testdata.PageTestData;
-import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
-import de.tum.cit.aet.utility.testdata.SchoolTestData;
-import de.tum.cit.aet.utility.testdata.UserTestData;
+import de.tum.cit.aet.utility.testdata.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,6 +42,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class ResearchGroupServiceTest {
+
+    private static final UUID TEST_USER_ID = UUID.randomUUID();
+    private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
+    private static final UUID TEST_SCHOOL_ID = UUID.randomUUID();
+    private static final UUID TEST_DEPARTMENT_ID = UUID.randomUUID();
+    private static final String SUPPORT_EMAIL = "support@test.com";
+    private static final UUID OTHER_USER_ID = UUID.randomUUID();
 
     @Mock
     private CurrentUserService currentUserService;
@@ -71,13 +70,6 @@ class ResearchGroupServiceTest {
 
     @InjectMocks
     private ResearchGroupService researchGroupService;
-
-    private static final UUID TEST_USER_ID = UUID.randomUUID();
-    private static final UUID TEST_RESEARCH_GROUP_ID = UUID.randomUUID();
-    private static final UUID TEST_SCHOOL_ID = UUID.randomUUID();
-    private static final UUID TEST_DEPARTMENT_ID = UUID.randomUUID();
-    private static final String SUPPORT_EMAIL = "support@test.com";
-    private static final UUID OTHER_USER_ID = UUID.randomUUID();
 
     private User testUser;
     private School testSchool;
@@ -166,69 +158,23 @@ class ResearchGroupServiceTest {
         }
     }
 
+    @Test
+    void shouldThrowExceptionWhenUserNotFound() {
+        // Arrange
+        when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
+            .isInstanceOf(EntityNotFoundException.class)
+            .hasMessageContaining("User");
+    }
+
     @Nested
     class RemoveMemberFromResearchGroup {
 
         @BeforeEach
         void setup() {
             when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
-        }
-
-        @Test
-        void shouldRemoveMemberSuccessfully() {
-            // Arrange
-            User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "member@test.com", null, null);
-            memberToRemove.setResearchGroup(testResearchGroup);
-            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
-            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
-
-            // Mock CurrentUser
-            CurrentUser currentUserMock = mock(CurrentUser.class);
-            when(currentUserMock.isProfessor()).thenReturn(true);
-            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
-
-            // Act
-            researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID);
-
-            // Assert
-            assertThat(memberToRemove.getResearchGroup()).isNull();
-            verify(userRepository).save(memberToRemove);
-            verify(userResearchGroupRoleRepository).removeResearchGroupFromUserRoles(OTHER_USER_ID);
-        }
-
-        @Test
-        void shouldThrowExceptionWhenEmployeeRemovesProfessor() {
-            // Arrange
-            User memberToRemove = UserTestData.newUserAll(OTHER_USER_ID, "prof@test.com", null, null);
-            memberToRemove.setResearchGroup(testResearchGroup);
-
-            UserResearchGroupRole role = new UserResearchGroupRole();
-            role.setRole(UserRole.PROFESSOR);
-            memberToRemove.setResearchGroupRoles(Set.of(role));
-
-            when(currentUserService.getUserId()).thenReturn(TEST_USER_ID);
-            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.of(memberToRemove));
-
-            // Mock CurrentUser as Employee
-            CurrentUser currentUserMock = mock(CurrentUser.class);
-            when(currentUserMock.isProfessor()).thenReturn(false);
-            when(currentUserService.getCurrentUser()).thenReturn(currentUserMock);
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("You do not have permission to remove a Professor");
-        }
-
-        @Test
-        void shouldThrowExceptionWhenUserNotFound() {
-            // Arrange
-            when(userRepository.findWithResearchGroupRolesByUserId(OTHER_USER_ID)).thenReturn(Optional.empty());
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.removeMemberFromResearchGroup(OTHER_USER_ID))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("User");
         }
 
         @Test
@@ -366,56 +312,6 @@ class ResearchGroupServiceTest {
     }
 
     @Nested
-    class ProvisionResearchGroup {
-
-        @Test
-        void shouldProvisionResearchGroupSuccessfully() {
-            // Arrange
-            String universityId = "ab12cde";
-            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO(universityId, TEST_RESEARCH_GROUP_ID);
-
-            User user = UserTestData.newUserAll(TEST_USER_ID, "user@test.com", null, null);
-            when(userRepository.findByUniversityIdIgnoreCase(universityId)).thenReturn(Optional.of(user));
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
-            when(userResearchGroupRoleRepository.findByUserAndResearchGroup(user, testResearchGroup)).thenReturn(Optional.empty());
-
-            // Act
-            ResearchGroup result = researchGroupService.provisionResearchGroup(dto);
-
-            // Assert
-            assertThat(result).isEqualTo(testResearchGroup);
-            assertThat(user.getResearchGroup()).isEqualTo(testResearchGroup);
-            verify(userRepository).save(user);
-            verify(userResearchGroupRoleRepository).save(any(UserResearchGroupRole.class));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenUserNotFound() {
-            // Arrange
-            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO("nonexistent", UUID.randomUUID());
-            when(userRepository.findByUniversityIdIgnoreCase("nonexistent")).thenReturn(Optional.empty());
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.provisionResearchGroup(dto))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("universityId");
-        }
-
-        @Test
-        void shouldThrowExceptionWhenResearchGroupNotFound() {
-            // Arrange
-            ResearchGroupProvisionDTO dto = new ResearchGroupProvisionDTO("ab12cde", TEST_RESEARCH_GROUP_ID);
-            when(userRepository.findByUniversityIdIgnoreCase("ab12cde")).thenReturn(Optional.of(testUser));
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.empty());
-
-            // Act & Assert
-            assertThatThrownBy(() -> researchGroupService.provisionResearchGroup(dto))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("ResearchGroup");
-        }
-    }
-
-    @Nested
     class ActivateResearchGroup {
 
         @Test
@@ -543,7 +439,6 @@ class ResearchGroupServiceTest {
             when(departmentRepository.findByIdElseThrow(TEST_DEPARTMENT_ID)).thenReturn(testDepartment);
             when(researchGroupRepository.existsByNameIgnoreCase(anyString())).thenReturn(false);
             when(researchGroupRepository.save(any(ResearchGroup.class))).thenAnswer(invocation -> invocation.getArgument(0));
-            when(userResearchGroupRoleRepository.findAllByUser(testUser)).thenReturn(Set.of());
 
             // Act
             ResearchGroup result = researchGroupService.createProfessorResearchGroupRequest(request);

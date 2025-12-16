@@ -121,14 +121,14 @@ describe('ApplicationPage1Component', () => {
           email: 'john@example.com',
           phoneNumber: '9999',
           gender: 'male',
-          nationality: 'US',
+          nationality: 'us',
           birthday: '1990-01-01',
           website: 'https://site.com',
           linkedinUrl: 'https://li.com',
         },
         street: 'Street 1',
         city: 'CityX',
-        country: 'US',
+        country: 'us',
         postalCode: '12345',
       },
       applicationState: 'SAVED',
@@ -143,7 +143,7 @@ describe('ApplicationPage1Component', () => {
     const page1 = getPage1FromApplication(fakeApp);
     expect(page1.firstName).toBe('John');
     expect(page1.gender).toEqual(selectGender.find(g => g.value === 'male'));
-    expect(page1.country?.value).toBe('US');
+    expect(page1.country?.value).toBe('us');
   });
 
   it('should emit changed and valid when form changes', () => {
