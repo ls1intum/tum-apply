@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Exposes side-effect-free OTP operations such as sending verification codes and optionally verifying them.
+ * REST controller for handling email verification-related endpoints.
  * The verify-code endpoint is optional in production environments because the /otp-complete endpoint orchestrates verification.
  */
 @RestController
@@ -41,6 +41,7 @@ public class EmailVerificationResource {
     }
 
     /**
+     * Exposes side-effect-free OTP operations such as sending verification codes and optionally verifying them.
      * Handles the request to send a verification code to the specified email.
      * Extracts the email and client IP address from the request, then delegates
      * the sending of the code to the email verification service.

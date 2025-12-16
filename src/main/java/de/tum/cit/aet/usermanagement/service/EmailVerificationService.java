@@ -21,8 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This service is responsible for generating, sending, and verifying OTP codes
- * sent to users' email addresses.
+ * This service is responsible for generating, sending, and verifying OTP codes sent to users' email addresses as well as sending registration confirmation emails.
  */
 @Service
 public class EmailVerificationService {
