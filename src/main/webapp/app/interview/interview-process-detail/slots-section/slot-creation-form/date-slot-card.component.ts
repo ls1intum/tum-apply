@@ -155,20 +155,18 @@ export class DateSlotCardComponent {
    */
   addSingleSlot(): void {
     const location = '';
-    this.slotRanges.update(ranges => [
-      ...ranges,
-      {
-        id: this.generateId(),
-        startTimeString: '',
-        endTimeString: '',
-        startTime: null,
-        endTime: null,
-        type: 'single',
-        duration: this.duration() || 30,
-        location,
-        slots: [],
-      },
-    ]);
+    const newSlot: SlotRange = {
+      id: this.generateId(),
+      startTimeString: '',
+      endTimeString: '',
+      startTime: null,
+      endTime: null,
+      type: 'single',
+      duration: this.duration() || 30,
+      location,
+      slots: [],
+    };
+    this.slotRanges.update(ranges => ranges.concat(newSlot));
   }
 
   /**
@@ -177,20 +175,18 @@ export class DateSlotCardComponent {
    */
   addRange(): void {
     const location = '';
-    this.slotRanges.update(ranges => [
-      ...ranges,
-      {
-        id: this.generateId(),
-        startTimeString: '',
-        endTimeString: '',
-        startTime: null,
-        endTime: null,
-        type: 'range',
-        duration: this.duration() || 30,
-        location,
-        slots: [],
-      },
-    ]);
+    const newRange: SlotRange = {
+      id: this.generateId(),
+      startTimeString: '',
+      endTimeString: '',
+      startTime: null,
+      endTime: null,
+      type: 'range',
+      duration: this.duration() || 30,
+      location,
+      slots: [],
+    };
+    this.slotRanges.update(ranges => ranges.concat(newRange));
   }
 
   /**
@@ -211,7 +207,14 @@ export class DateSlotCardComponent {
       ranges.map((range, i) => {
         if (i !== rangeIndex) return range;
         return {
-          ...range,
+          id: range.id,
+          startTimeString: range.startTimeString,
+          endTimeString: range.endTimeString,
+          startTime: range.startTime,
+          endTime: range.endTime,
+          type: range.type,
+          duration: range.duration,
+          location: range.location,
           slots: range.slots.filter((slot, j) => j !== slotIndex),
         };
       }),
@@ -230,8 +233,18 @@ export class DateSlotCardComponent {
       ranges.map((r, i) => {
         if (i !== index) return r;
 
-        // 1. Create a shallow copy
-        const range = { ...r };
+        // 1. Create a copy
+        const range: SlotRange = {
+          id: r.id,
+          startTimeString: r.startTimeString,
+          endTimeString: r.endTimeString,
+          startTime: r.startTime,
+          endTime: r.endTime,
+          type: r.type,
+          duration: r.duration,
+          location: r.location,
+          slots: r.slots,
+        };
 
         // 2. Update the start time string and parse it into a Date object
         range.startTimeString = safeTimeString;
@@ -285,7 +298,17 @@ export class DateSlotCardComponent {
       ranges.map((r, i) => {
         if (i !== index) return r;
 
-        const range = { ...r };
+        const range: SlotRange = {
+          id: r.id,
+          startTimeString: r.startTimeString,
+          endTimeString: r.endTimeString,
+          startTime: r.startTime,
+          endTime: r.endTime,
+          type: r.type,
+          duration: r.duration,
+          location: r.location,
+          slots: r.slots,
+        };
 
         // 2. Update the end time string and parse it
         range.endTimeString = safeTimeString;
@@ -315,7 +338,17 @@ export class DateSlotCardComponent {
       ranges.map((r, i) => {
         if (i !== index) return r;
 
-        const range = { ...r };
+        const range: SlotRange = {
+          id: r.id,
+          startTimeString: r.startTimeString,
+          endTimeString: r.endTimeString,
+          startTime: r.startTime,
+          endTime: r.endTime,
+          type: r.type,
+          duration: r.duration,
+          location: r.location,
+          slots: r.slots,
+        };
 
         // 2. Update the location string
         range.location = safeLocation;
@@ -323,7 +356,9 @@ export class DateSlotCardComponent {
         // 3. Update the location in the generated slots
         const isVirtual = this.isVirtualLocation(safeLocation);
         range.slots = range.slots.map(slot => ({
-          ...slot,
+          id: slot.id,
+          startDateTime: slot.startDateTime,
+          endDateTime: slot.endDateTime,
           location: safeLocation,
           streamLink: isVirtual ? safeLocation : undefined,
         }));
@@ -361,11 +396,15 @@ export class DateSlotCardComponent {
 
       // 2. Create the new range object
       const newRange: SlotRange = {
-        ...range,
-        id: this.generateId(), // New ID for the new range
+        id: this.generateId(),
+        startTimeString: range.startTimeString,
+        endTimeString: range.endTimeString,
         startTime: range.startTime ? newStart : null,
         endTime: range.endTime ? newEnd : null,
-        slots: [], // Will be regenerated
+        type: range.type,
+        duration: range.duration,
+        location: range.location,
+        slots: [],
       };
 
       // 3. Copy slots from the source range, adjusting the date
@@ -380,9 +419,11 @@ export class DateSlotCardComponent {
         newSlotEnd.setHours(slotEnd.getHours(), slotEnd.getMinutes(), 0, 0);
 
         return {
-          ...slot,
+          id: slot.id,
           startDateTime: newSlotStart.toISOString(),
           endDateTime: newSlotEnd.toISOString(),
+          location: slot.location,
+          streamLink: slot.streamLink,
         };
       });
 
@@ -492,7 +533,17 @@ export class DateSlotCardComponent {
           return range;
         }
 
-        const newRange = { ...range, duration };
+        const newRange: SlotRange = {
+          id: range.id,
+          startTimeString: range.startTimeString,
+          endTimeString: range.endTimeString,
+          startTime: range.startTime,
+          endTime: range.endTime,
+          type: range.type,
+          duration,
+          location: range.location,
+          slots: range.slots,
+        };
         const location = newRange.location;
 
         // 2. Update Single Slots
