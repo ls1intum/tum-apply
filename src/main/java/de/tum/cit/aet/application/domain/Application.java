@@ -138,44 +138,4 @@ public class Application extends AbstractAuditingEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "application")
     private Set<InternalComment> internalComments;
-
-    /**
-     * Pre-persist hook to initialize snapshot fields from the applicant's current profile data
-     * if they haven't been set yet. This ensures applications created via repository.save()
-     * also get snapshot data populated.
-     */
-    @PrePersist
-    public void initializeSnapshotFields() {
-        if (applicant != null && applicantFirstName == null) {
-            User user = applicant.getUser();
-            if (user != null) {
-                this.applicantFirstName = user.getFirstName();
-                this.applicantLastName = user.getLastName();
-                this.applicantEmail = user.getEmail();
-                this.applicantGender = user.getGender();
-                this.applicantNationality = user.getNationality();
-                this.applicantBirthday = user.getBirthday();
-                this.applicantPhoneNumber = user.getPhoneNumber();
-                this.applicantWebsite = user.getWebsite();
-                this.applicantLinkedinUrl = user.getLinkedinUrl();
-            }
-
-            this.applicantStreet = applicant.getStreet();
-            this.applicantPostalCode = applicant.getPostalCode();
-            this.applicantCity = applicant.getCity();
-            this.applicantCountry = applicant.getCountry();
-
-            this.applicantBachelorDegreeName = applicant.getBachelorDegreeName();
-            this.applicantBachelorGradeUpperLimit = applicant.getBachelorGradeUpperLimit();
-            this.applicantBachelorGradeLowerLimit = applicant.getBachelorGradeLowerLimit();
-            this.applicantBachelorGrade = applicant.getBachelorGrade();
-            this.applicantBachelorUniversity = applicant.getBachelorUniversity();
-
-            this.applicantMasterDegreeName = applicant.getMasterDegreeName();
-            this.applicantMasterGradeUpperLimit = applicant.getMasterGradeUpperLimit();
-            this.applicantMasterGradeLowerLimit = applicant.getMasterGradeLowerLimit();
-            this.applicantMasterGrade = applicant.getMasterGrade();
-            this.applicantMasterUniversity = applicant.getMasterUniversity();
-        }
-    }
 }
