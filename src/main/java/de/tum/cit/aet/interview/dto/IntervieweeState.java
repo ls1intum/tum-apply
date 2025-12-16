@@ -11,5 +11,5 @@ public enum IntervieweeState {
     /** Interview slot has been scheduled */
     SCHEDULED,
     /** Interview has been completed */
-    COMPLETED
+    COMPLETED,
 }

@@ -10,6 +10,4 @@ import java.util.UUID;
  * Contains a list of application IDs to be added as interviewees.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record AddIntervieweesDTO(
-        @NotNull(message = "Application IDs cannot be null") List<UUID> applicationIds) {
-}
+public record AddIntervieweesDTO(@NotNull(message = "Application IDs cannot be null") List<UUID> applicationIds) {}

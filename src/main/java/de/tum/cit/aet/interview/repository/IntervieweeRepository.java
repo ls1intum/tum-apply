@@ -28,15 +28,17 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      * @param processId the ID of the interview process
      * @return list of interviewees ordered by creation date
      */
-    @Query("""
-            SELECT i FROM Interviewee i
-            LEFT JOIN FETCH i.application a
-            LEFT JOIN FETCH a.applicant ap
-            LEFT JOIN FETCH ap.user
-            LEFT JOIN FETCH i.slots
-            WHERE i.interviewProcess.id = :processId
-            ORDER BY i.createdAt DESC
-            """)
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        LEFT JOIN FETCH i.application a
+        LEFT JOIN FETCH a.applicant ap
+        LEFT JOIN FETCH ap.user
+        LEFT JOIN FETCH i.slots
+        WHERE i.interviewProcess.id = :processId
+        ORDER BY i.createdAt DESC
+        """
+    )
     List<Interviewee> findByInterviewProcessIdWithDetails(@Param("processId") UUID processId);
 
     /**

@@ -10,15 +10,15 @@ import java.util.UUID;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record IntervieweeDTO(
-        UUID id,
-        UUID applicationId,
-        IntervieweeUserDTO user,
-        Instant lastInvited,
-        InterviewSlotDTO scheduledSlot,
-        IntervieweeState state) {
+    UUID id,
+    UUID applicationId,
+    IntervieweeUserDTO user,
+    Instant lastInvited,
+    InterviewSlotDTO scheduledSlot,
+    IntervieweeState state
+) {
     /**
      * Lightweight user DTO for interviewee display.
      */
-    public record IntervieweeUserDTO(UUID userId, String email, String firstName, String lastName) {
-    }
+    public record IntervieweeUserDTO(UUID userId, String email, String firstName, String lastName) {}
 }
