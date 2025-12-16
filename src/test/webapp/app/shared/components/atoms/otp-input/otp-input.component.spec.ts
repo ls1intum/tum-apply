@@ -166,13 +166,14 @@ describe('OtpInput', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    const otpEvent = createInputOtpChangeEvent('a1$');
+    // Test with mixed input but consists only digits
+    const otpEvent = createInputOtpChangeEvent('12$3');
     component.onChange(otpEvent);
     fixture.detectChanges();
 
     const ctrl = getFormControl(component);
-    expect(component.otpValue()).toBe('A1');
-    expect(ctrl.value).toBe('A1');
+    expect(component.otpValue()).toBe('123');
+    expect(ctrl.value).toBe('123');
     expect(ctrl.dirty).toBe(true);
     expect(ctrl.pristine).toBe(false);
   });
