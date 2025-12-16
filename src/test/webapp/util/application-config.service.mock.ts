@@ -24,7 +24,7 @@ export function createApplicationConfigServiceMock(overrides: Partial<Applicatio
       ...overrides.keycloak,
     },
     otp: {
-      length: 4,
+      length: 6,
       ttlSeconds: 300,
       resendCooldownSeconds: 60,
       ...overrides.otp,

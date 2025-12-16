@@ -12,8 +12,7 @@
 
   .login-panel {
     @include layout.panel-col;
-
-    max-width: 24rem;
+    max-width: 25rem;
     width: 100%;
 
     .login-credentials {

@@ -60,7 +60,7 @@ describe('OtpInput', () => {
   beforeEach(async () => {
     applicationConfigMock = createApplicationConfigServiceMock({
       otp: {
-        length: 4,
+        length: 6,
         ttlSeconds: 90,
         resendCooldownSeconds: 60,
       },
@@ -209,7 +209,7 @@ describe('OtpInput', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    const otp = 'ABCD';
+    const otp = '123456';
     component.onChange(createInputOtpChangeEvent(otp));
     fixture.detectChanges();
 
@@ -326,7 +326,7 @@ describe('OtpInput', () => {
     const component = fixture.componentInstance;
 
     // Error does not keep submit disabled when length is valid
-    component.onChange(createInputOtpChangeEvent('ABCD'));
+    component.onChange(createInputOtpChangeEvent('123456'));
     fixture.detectChanges();
 
     expect(component.disabledSubmit()).toBe(false);
@@ -359,9 +359,9 @@ describe('OtpInput', () => {
     const otpHost = fixture.debugElement.query(de => de.name === 'p-inputotp');
     expect(otpHost).toBeTruthy();
 
-    otpHost.triggerEventHandler('onChange', createInputOtpChangeEvent('abcd'));
+    otpHost.triggerEventHandler('onChange', createInputOtpChangeEvent('123456'));
     fixture.detectChanges();
-    expect(component.otpValue()).toBe('ABCD');
+    expect(component.otpValue()).toBe('123456');
 
     const submitSpy = vi.spyOn(component, 'onSubmit');
     const preventDefault = vi.fn();
