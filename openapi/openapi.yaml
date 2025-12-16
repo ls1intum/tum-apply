@@ -317,6 +317,17 @@ paths:
         required: true
       responses:
         '200': {description: OK}
+  /api/auth/send-registration-email:
+    post:
+      tags: [email-verification-resource]
+      operationId: sendRegistrationEmail
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SendCodeRequest'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/comments/{commentId}:
     put:
       tags: [internal-comment-resource]
