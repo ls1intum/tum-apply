@@ -10,17 +10,28 @@ import { InputIconModule } from 'primeng/inputicon';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
+import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
-import { UserShortDTO } from '../../../generated/model/userShortDTO';
 import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { AccountService } from '../../../core/auth/account.service';
 import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
-type MembersRow = UserShortDTO & { name: string; role: string; isCurrentUser: boolean; canRemove: boolean };
+interface MembersRow {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  researchGroup?: ResearchGroupShortDTO;
+  roles?: UserShortDTO.RolesEnum[];
+  userId?: string;
+  name: string;
+  role: string;
+  isCurrentUser: boolean;
+  canRemove: boolean;
+}
 
 @Component({
   selector: 'jhi-research-group-members',

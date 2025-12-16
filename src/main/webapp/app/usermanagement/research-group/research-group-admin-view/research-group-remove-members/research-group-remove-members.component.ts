@@ -3,7 +3,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/api';
-import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -14,7 +14,17 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 
-type MemberRow = UserShortDTO & { name: string; role: string; isCurrentUser: boolean };
+interface MemberRow {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  researchGroup?: ResearchGroupShortDTO;
+  roles?: UserShortDTO.RolesEnum[];
+  userId?: string;
+  name: string;
+  role: string;
+  isCurrentUser: boolean;
+}
 
 @Component({
   selector: 'jhi-research-group-remove-members.component',
