@@ -2,6 +2,7 @@ import { Component, QueryList, ViewChildren, computed, inject, input, model, out
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -28,7 +29,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     FormsModule,
     ReactiveFormsModule,
     TranslateModule,
-    DialogComponent,
+    DialogModule,
     ButtonModule,
     DatePickerModule,
     SelectButtonModule,
@@ -38,6 +39,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     DateSlotCardComponent,
     ButtonComponent,
     NumberInputComponent,
+    DialogComponent,
     TooltipModule,
   ],
   templateUrl: './slot-creation-form.component.html',
