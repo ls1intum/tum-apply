@@ -60,7 +60,7 @@ public class InterviewService {
         // 1. Get the ID of the currently logged-in professor
         UUID professorId = currentUserService.getUserId();
 
-        //2. Load all active interview processes for this professor
+        // 2. Load all active interview processes for this professor
         List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
 
         // 2. If no interview processes exist, return an empty list
@@ -105,12 +105,16 @@ public class InterviewService {
                 long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
 
                 // TODO: Replace with InterviewInvitation entity lookup
-                // Calculate "uncontacted" - applications that haven't been invited to interview yet
+                // Calculate "uncontacted" - applications that haven't been invited to interview
+                // yet
                 // Currently: uncontacted = applications not yet moved to interview process
-                // These states represent applications that are still in the review process (or submitted applications) but have not yet transitioned to the interview phase
-                // Future: uncontacted = applications explicitly added to interview but not invited
+                // These states represent applications that are still in the review process (or
+                // submitted applications) but have not yet transitioned to the interview phase
+                // Future: uncontacted = applications explicitly added to interview but not
+                // invited
                 long uncontactedCount =
-                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is being reviewed
+                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is
+                    // being reviewed
                     stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
 
                 // Calculate total number of all applications in this interview process
@@ -146,7 +150,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = interviewProcess.getJob();
-        verifyUserHasJobAccess(job, "view interview processes");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Fetch aggregated data for this specific job
         UUID jobId = interviewProcess.getJob().getJobId();
@@ -185,7 +191,8 @@ public class InterviewService {
     }
 
     /**
-     * Creates an interview process for a job (called automatically when job is published).
+     * Creates an interview process for a job (called automatically when job is
+     * published).
      * This is called from JobService, so security checks are already done.
      *
      * @param jobId the ID of the job for which to create the interview process
@@ -211,7 +218,8 @@ public class InterviewService {
     }
 
     /**
-     * Maps an {@link InterviewProcess} entity to its corresponding DTO representation.
+     * Maps an {@link InterviewProcess} entity to its corresponding DTO
+     * representation.
      *
      * @param interviewProcess the interview process entity to map
      * @return {@link InterviewProcessDTO} containing the interview process data
@@ -229,11 +237,11 @@ public class InterviewService {
      * Creates and persists new interview slots for a given interview process.
      *
      * @param processId the ID of the interview process
-     * @param dto the data transfer object containing slot definitions
+     * @param dto       the data transfer object containing slot definitions
      * @return a list of created interview slots
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException if the user is not authorized
-     * @throws TimeConflictException if any time conflicts are detected
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws TimeConflictException   if any time conflicts are detected
      */
     public List<InterviewSlotDTO> createSlots(UUID processId, CreateSlotsDTO dto) {
         // 1. Load interview process
@@ -243,7 +251,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "create slots");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -262,12 +272,14 @@ public class InterviewService {
     }
 
     /**
-     * Converts a single {@link CreateSlotsDTO.SlotInput} entry into an {@link InterviewSlot} entity.
+     * Converts a single {@link CreateSlotsDTO.SlotInput} entry into an
+     * {@link InterviewSlot} entity.
      * <p>
-     * Combines the provided date and time values into {@link Instant}s using the Munich time zone.
+     * Combines the provided date and time values into {@link Instant}s using the
+     * Munich time zone.
      *
      * @param process the interview process the slot belongs to
-     * @param input the slot definition from the frontend
+     * @param input   the slot definition from the frontend
      * @return a populated {@link InterviewSlot} entity ready for persistence
      */
     private InterviewSlot createSlotFromInput(InterviewProcess process, CreateSlotsDTO.SlotInput input) {
@@ -353,7 +365,8 @@ public class InterviewService {
      * @param processId the ID of the interview process
      * @return a list of interview slots ordered by start time
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException if the user is not authorized to view these slots
+     * @throws AccessDeniedException   if the user is not authorized to view these
+     *                                 slots
      */
     public List<InterviewSlotDTO> getSlotsByProcessId(UUID processId) {
         // 1.Load Interview Process
@@ -363,7 +376,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "view slots");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Load and return slots
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
@@ -396,7 +411,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "add applicants to interview");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
@@ -442,7 +459,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = process.getJob();
-        verifyUserHasJobAccess(job, "view interviewees");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
@@ -456,8 +475,9 @@ public class InterviewService {
      *
      * @param slotId the ID of the slot to delete
      * @throws EntityNotFoundException if the slot is not found
-     * @throws AccessDeniedException if the user is not authorized to delete this slot
-     * @throws BadRequestException if the slot is booked
+     * @throws AccessDeniedException   if the user is not authorized to delete this
+     *                                 slot
+     * @throws BadRequestException     if the slot is booked
      */
     public void deleteSlot(UUID slotId) {
         // 1. Load the slot
@@ -469,7 +489,9 @@ public class InterviewService {
 
         // 2. Security: Verify current user is the job owner or employee
         Job job = slot.getInterviewProcess().getJob();
-        verifyUserHasJobAccess(job, "delete slots");
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
 
         // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
@@ -491,7 +513,7 @@ public class InterviewService {
     private IntervieweeDTO mapIntervieweeToDTO(Interviewee interviewee) {
         User user = interviewee.getApplication().getApplicant().getUser();
         InterviewSlot scheduledSlot = interviewee.getScheduledSlot();
-        IntervieweeDTO.IntervieweeState state = calculateIntervieweeState(interviewee);
+        IntervieweeState state = calculateIntervieweeState(interviewee);
 
         return new IntervieweeDTO(
             interviewee.getId(),
@@ -515,24 +537,24 @@ public class InterviewService {
      * @param interviewee the interviewee to calculate state for
      * @return the calculated state
      */
-    private IntervieweeDTO.IntervieweeState calculateIntervieweeState(Interviewee interviewee) {
+    private IntervieweeState calculateIntervieweeState(Interviewee interviewee) {
         InterviewSlot slot = interviewee.getScheduledSlot();
 
         // Has a scheduled slot
         if (slot != null) {
             // Check if interview is completed (end time in the past)
             if (slot.getEndDateTime().isBefore(Instant.now())) {
-                return IntervieweeDTO.IntervieweeState.COMPLETED;
+                return IntervieweeState.COMPLETED;
             }
-            return IntervieweeDTO.IntervieweeState.SCHEDULED;
+            return IntervieweeState.SCHEDULED;
         }
 
         // No slot - check if invited
         if (interviewee.getLastInvited() != null) {
-            return IntervieweeDTO.IntervieweeState.INVITED;
+            return IntervieweeState.INVITED;
         }
 
-        return IntervieweeDTO.IntervieweeState.UNCONTACTED;
+        return IntervieweeState.UNCONTACTED;
     }
 
     /**
@@ -543,39 +565,5 @@ public class InterviewService {
             return null;
         }
         return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
-    }
-
-    /**
-     * Verifies that the current user has access to the given job.
-     * Access is granted if the user is:
-     * - The supervising professor of the job, OR
-     * - An employee of the job's research group
-     *
-     * @param job               the job to check access for
-     * @param actionDescription description of the action for error message (e.g.,
-     *                          "view interview processes")
-     * @throws AccessDeniedException if the user has no access
-     */
-    private void verifyUserHasJobAccess(Job job, String actionDescription) {
-        UUID currentUserId = currentUserService.getUserId();
-
-        // Check 1 if the user is the professor
-        if (job.getSupervisingProfessor().getUserId().equals(currentUserId)) {
-            return; // Access granted
-        }
-
-        // Check 2 if the user is an employee of the professors research group?
-        boolean isEmployee = job
-            .getResearchGroup()
-            .getUserRoles()
-            .stream()
-            .anyMatch(role -> role.getUser().getUserId().equals(currentUserId));
-
-        if (isEmployee) {
-            return; // Access granted
-        }
-
-        // No access
-        throw new AccessDeniedException("You can only " + actionDescription + " for your own jobs");
     }
 }

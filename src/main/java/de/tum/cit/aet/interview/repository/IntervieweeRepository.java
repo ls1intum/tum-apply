@@ -1,21 +1,22 @@
 package de.tum.cit.aet.interview.repository;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.Interviewee;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IntervieweeRepository extends JpaRepository<Interviewee, UUID> {
+public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee, UUID> {
     /**
-     * Checks if an interviewee already exists for the given application and interview process.
+     * Checks if an interviewee already exists for the given application and
+     * interview process.
      *
-     * @param application the application to check
+     * @param application      the application to check
      * @param interviewProcess the interview process to check
      * @return true if an interviewee already exists
      */
