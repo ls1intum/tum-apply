@@ -62,7 +62,7 @@ export class SlotCreationFormComponent {
   readonly selectedDatesSignal = signal<Date[]>([]);
 
   // Sorted dates for display
-  readonly sortedDates = computed(() => [...this.selectedDatesSignal()].sort((a, b) => a.getTime() - b.getTime()));
+  readonly sortedDates = computed(() => Array.from(this.selectedDatesSignal()).sort((a, b) => a.getTime() - b.getTime()));
 
   readonly duration = signal<number>(30);
   readonly breakDuration = signal<number>(0);
@@ -202,7 +202,7 @@ export class SlotCreationFormComponent {
           newSelection = [];
         }
       } else {
-        newSelection = [...previousSelection, clickedDate];
+        newSelection = previousSelection.concat(clickedDate);
       }
 
       // Sort dates chronologically
