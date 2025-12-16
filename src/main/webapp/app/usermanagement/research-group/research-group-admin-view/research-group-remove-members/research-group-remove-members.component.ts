@@ -14,6 +14,8 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 
+type MemberRow = UserShortDTO & { name: string; role: string; isCurrentUser: boolean };
+
 @Component({
   selector: 'jhi-research-group-remove-members.component',
   imports: [DynamicTableComponent, ConfirmDialog, FontAwesomeModule, TranslateModule, ButtonComponent, CheckboxModule, FormsModule],
@@ -45,8 +47,8 @@ export class ResearchGroupRemoveMembersComponent {
   });
 
   // Transform members data for display
-  readonly tableData = computed(() => {
-    return this.members().map(member => {
+  readonly tableData = computed<MemberRow[]>(() => {
+    return this.members().map((member): MemberRow => {
       const isCurrentUser = this.isCurrentUser(member);
       return {
         email: member.email,
@@ -58,7 +60,7 @@ export class ResearchGroupRemoveMembersComponent {
         name: `${member.firstName} ${member.lastName}`,
         role: this.formatRoles(member.roles),
         isCurrentUser,
-      } as UserShortDTO & { name: string; role: string; isCurrentUser: boolean };
+      };
     });
   });
 

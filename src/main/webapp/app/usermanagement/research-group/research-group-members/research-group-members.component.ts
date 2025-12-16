@@ -20,6 +20,8 @@ import { AccountService } from '../../../core/auth/account.service';
 import { ResearchGroupResourceApiService } from '../../../generated/api/researchGroupResourceApi.service';
 import { ResearchGroupAddMembersComponent } from '../research-group-add-members/research-group-add-members.component';
 
+type MembersRow = UserShortDTO & { name: string; role: string; isCurrentUser: boolean; canRemove: boolean };
+
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
@@ -60,11 +62,11 @@ export class ResearchGroupMembersComponent {
   });
 
   // Transform members data for display
-  readonly tableData = computed(() => {
+  readonly tableData = computed<MembersRow[]>(() => {
     const currentUserAuthorities = this.accountService.userAuthorities;
     const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
 
-    return this.members().map(member => {
+    return this.members().map((member): MembersRow => {
       const isCurrentUser = this.isCurrentUser(member);
       let canRemove = !isCurrentUser;
 
@@ -83,7 +85,7 @@ export class ResearchGroupMembersComponent {
         role: this.formatRoles(member.roles),
         isCurrentUser,
         canRemove,
-      } as UserShortDTO & { name: string; role: string; isCurrentUser: boolean; canRemove: boolean };
+      };
     });
   });
 
