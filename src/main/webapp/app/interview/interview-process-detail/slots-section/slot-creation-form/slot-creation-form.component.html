@@ -1,12 +1,11 @@
-<p-dialog
+<jhi-dialog
   [visible]="visible()"
   (visibleChange)="close()"
-  [modal]="true"
-  [draggable]="false"
-  [resizable]="false"
-  [style]="{ width: '95vw', maxWidth: '80rem', height: '90vh' }"
+  [header]="'interview.slots.create.title'"
+  width="95vw"
+  maxWidth="80rem"
+  height="90vh"
   [contentStyle]="{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }"
-  [header]="'interview.slots.create.title' | translate"
 >
   <div
     class="flex h-full flex-col gap-6 overflow-y-auto lg:grid lg:overflow-hidden lg:grid-cols-[26rem_auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4 lg:gap-y-6"
@@ -198,4 +197,4 @@
       }
     </div>
   </div>
-</p-dialog>
+</jhi-dialog>
