@@ -133,6 +133,14 @@
         "summary": "Error",
         "detail": "Failed to load schools and departments. Please refresh the page or try again later."
       },
+      "errorDuplicateName": {
+        "summary": "Name Already Exists",
+        "detail": "A research group with this name already exists. Please choose a different name."
+      },
+      "errorUserNotFound": {
+        "summary": "User Not Found",
+        "detail": "No user was found with the provided TUM-ID. Please check the TUM-ID."
+      },
       "cancel": "Cancel",
       "submit": "Send Request",
       "submitting": "Sending Request"

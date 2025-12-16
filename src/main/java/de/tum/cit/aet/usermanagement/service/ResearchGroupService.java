@@ -86,6 +86,30 @@ public class ResearchGroupService {
     }
 
     /**
+     * Get all members of the research group by id.
+     *
+     * @param researchGroupId the ID of the research group
+     * @param pageDTO pagination information
+     * @return paginated list of research group members
+     */
+    public PageResponseDTO<UserShortDTO> getResearchGroupMembersById(UUID researchGroupId, PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+
+        // First query: Get paginated user IDs to avoid N+1 query problem
+        Page<UUID> userIdsPage = userRepository.findUserIdsByResearchGroupId(researchGroupId, pageable);
+
+        if (userIdsPage.isEmpty()) {
+            return new PageResponseDTO<>(List.of(), 0L);
+        }
+
+        // Second query: Fetch full user data with collections for the paginated IDs
+        // We pass null for currentUserId to request alphabetical ordering without pinning any user first
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), null);
+
+        return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
+    }
+
+    /**
      * Removes a member from the current user's research group.
      * This operation removes both associated roles and direct research group membership.
      * @param userId the ID of the user to remove from the research group
@@ -93,18 +117,16 @@ public class ResearchGroupService {
      */
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
-        // Get the current user's research group ID for validation
-        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfMember();
-
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
             .findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
-        // Ensure user belongs to the same research group
+        // Ensure user belongs to the same research group or current user is admin
         if (
-            userToRemove.getResearchGroup() == null ||
-            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)
+            !currentUserService.isAdmin() &&
+            (userToRemove.getResearchGroup() == null ||
+                !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserService.getResearchGroupIdIfMember()))
         ) {
             throw new AccessDeniedException("User is not a member of your research group");
         }
@@ -113,17 +135,6 @@ public class ResearchGroupService {
         UUID currentUserId = currentUserService.getUserId();
         if (userId.equals(currentUserId)) {
             throw new BadRequestException("Cannot remove yourself from the research group");
-        }
-
-        boolean currentUserIsProfessor = currentUserService.getCurrentUser().isProfessor();
-
-        boolean userToRemoveIsProfessor = userToRemove
-            .getResearchGroupRoles()
-            .stream()
-            .anyMatch(r -> UserRole.PROFESSOR.equals(r.getRole()));
-
-        if (!currentUserIsProfessor && userToRemoveIsProfessor) {
-            throw new AccessDeniedException("You do not have permission to remove a Professor.");
         }
 
         // Store the research group temporarily before removing it from the user
