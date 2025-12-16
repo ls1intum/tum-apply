@@ -31,7 +31,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     List<InterviewSlot> findByInterviewProcessIdOrderByStartDateTime(@Param("processId") UUID processId);
 
     /**
-     * Finds a slot by ID with job and research group eagerly loaded.
+     * Finds a slot by ID with job and research group.
      *
      * @param slotId the ID of the slot to find
      * @return Optional containing the slot with job loaded, or empty if not found
