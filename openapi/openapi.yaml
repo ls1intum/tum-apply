@@ -819,6 +819,18 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/defaults/job-banners/for-me:
+    get:
+      tags: [image-resource]
+      operationId: getMyDefaultJobBanners
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
   /api/images/my-uploads:
     get:
       tags: [image-resource]
