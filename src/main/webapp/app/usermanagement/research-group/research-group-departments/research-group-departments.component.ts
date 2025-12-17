@@ -148,11 +148,11 @@ export class ResearchGroupDepartmentsComponent {
   }
 
   onEditDepartment(departmentId: string | undefined): void {
-    if (!departmentId) {
+    if (departmentId == null) {
       return;
     }
     const department = this.departments().find(d => d.departmentId === departmentId);
-    if (!department) {
+    if (department == null) {
       return;
     }
 
@@ -176,7 +176,7 @@ export class ResearchGroupDepartmentsComponent {
   }
 
   onDeleteDepartment(departmentId: string | undefined): void {
-    if (!departmentId) {
+    if (departmentId == null) {
       return;
     }
     this.departmentResourceApiService.deleteDepartment(departmentId).subscribe({
