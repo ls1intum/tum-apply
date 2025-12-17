@@ -16,17 +16,17 @@ public final class OtpUtil {
     private OtpUtil() {}
 
     /**
-     * Generates an alphanumeric OTP consisting of uppercase letters and digits.
+     * Generates a numeric OTP consisting only of digits (0-9).
      *
      * @param length the desired length of the OTP; must be greater than 0
-     * @return a randomly generated alphanumeric OTP string of the specified length
+     * @return a randomly generated numeric OTP string of the specified length
      * @throws IllegalArgumentException if {@code length} is less than or equal to 0
      */
-    public static String generateAlphanumeric(int length) {
+    public static String generateNumeric(int length) {
         if (length <= 0) {
             throw new IllegalArgumentException("length must be > 0");
         }
-        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        final String chars = "0123456789";
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             sb.append(chars.charAt(SECURE_RANDOM.nextInt(chars.length())));

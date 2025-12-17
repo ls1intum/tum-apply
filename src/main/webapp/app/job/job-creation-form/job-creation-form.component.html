@@ -8,6 +8,7 @@
   [confirmIcon]="publishButtonIcon"
   [showOpenButton]="false"
   (confirmed)="publishJob()"
+  [dialogStyleClass]="'confirm-dialog-lg'"
 />
 @if (!isLoading()) {
   <div class="page-container">

@@ -46,7 +46,7 @@
           [applicationId]="job.applicationId"
           [applicationState]="job.applicationState ?? ApplicationStatusExtendedLocal.NotYetApplied"
           [contractDuration]="job.contractDuration"
-          [headerImageUrl]="job.imageUrl"
+          [headerImageUrl]="job.imageUrl || getExampleImageUrl(i)"
         />
       </div>
     }

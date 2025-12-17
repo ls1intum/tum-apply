@@ -28,6 +28,9 @@ export class ConfirmDialog {
 
   data = input<string | undefined>(undefined);
 
+  // Input for sizing
+  dialogStyleClass = input<string | undefined>(undefined);
+
   confirmed = output<unknown>();
 
   private confirmationService = inject(ConfirmationService);

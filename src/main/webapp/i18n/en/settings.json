@@ -25,6 +25,20 @@
           "description": "Receive a copy by email when an applicant for your job is accepted."
         }
       }
+    },
+
+    "appearance": {
+      "header": "Appearance",
+      "theme": {
+        "label": "Theme"
+      },
+      "options": {
+        "light": "Light Mode",
+        "dark": "Dark Mode",
+        "blossom": "Light Blossom",
+        "aquabloom": "Light AquaBloom",
+        "system": "System"
+      }
     }
   }
 }

@@ -1762,6 +1762,29 @@ components:
       type: object
       properties:
         applicant: {$ref: '#/components/schemas/Applicant'}
+        applicantBachelorDegreeName: {type: string}
+        applicantBachelorGrade: {type: string}
+        applicantBachelorGradeLowerLimit: {type: string}
+        applicantBachelorGradeUpperLimit: {type: string}
+        applicantBachelorUniversity: {type: string}
+        applicantBirthday: {type: string, format: date}
+        applicantCity: {type: string}
+        applicantCountry: {type: string}
+        applicantEmail: {type: string}
+        applicantFirstName: {type: string}
+        applicantGender: {type: string}
+        applicantLastName: {type: string}
+        applicantLinkedinUrl: {type: string}
+        applicantMasterDegreeName: {type: string}
+        applicantMasterGrade: {type: string}
+        applicantMasterGradeLowerLimit: {type: string}
+        applicantMasterGradeUpperLimit: {type: string}
+        applicantMasterUniversity: {type: string}
+        applicantNationality: {type: string}
+        applicantPhoneNumber: {type: string}
+        applicantPostalCode: {type: string}
+        applicantStreet: {type: string}
+        applicantWebsite: {type: string}
         applicationId: {type: string, format: uuid}
         applicationReview: {$ref: '#/components/schemas/ApplicationReview'}
         appliedAt: {type: string, format: date-time}
