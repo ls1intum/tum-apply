@@ -3,13 +3,7 @@
     <div class="page-header">
       <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
     </div>
-    <jhi-button
-      [label]="'researchGroup.adminView.createButton' | translate"
-      icon="plus"
-      severity="primary"
-      (click)="onCreateResearchGroup()"
-      [shouldTranslate]="false"
-    />
+    <jhi-button [label]="'researchGroup.adminView.createButton'" icon="plus" severity="primary" (click)="onCreateResearchGroup()" />
   </div>
   <div class="body">
     <jhi-search-filter-sort-bar

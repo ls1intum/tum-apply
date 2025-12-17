@@ -72,4 +72,33 @@ public class DepartmentResource {
         DepartmentDTO department = departmentService.getDepartmentById(id);
         return ResponseEntity.ok(department);
     }
+
+    /**
+     * Update an existing department.
+     *
+     * @param id the department ID
+     * @param dto the department creation DTO
+     * @return HTTP 200 OK with the updated department
+     */
+    @Admin
+    @PutMapping("/{id}")
+    public ResponseEntity<DepartmentDTO> updateDepartment(@PathVariable UUID id, @Valid @RequestBody DepartmentCreationDTO dto) {
+        log.info("PUT /api/departments/{} - Updating department: {}", id, dto.name());
+        DepartmentDTO updated = departmentService.updateDepartment(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * Delete a department.
+     *
+     * @param id the department ID
+     * @return HTTP 204 No Content
+     */
+    @Admin
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDepartment(@PathVariable UUID id) {
+        log.info("DELETE /api/departments/{} - Deleting department", id);
+        departmentService.deleteDepartment(id);
+        return ResponseEntity.noContent().build();
+    }
 }

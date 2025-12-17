@@ -91,4 +91,52 @@ public class DepartmentService {
             .orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
         return DepartmentDTO.fromEntity(department);
     }
+
+    /**
+     * Update an existing department.
+     *
+     * @param departmentId the ID of the department to update
+     * @param dto the department update DTO
+     * @return the updated department as DTO
+     * @throws EntityNotFoundException if the department or school does not exist
+     * @throws ResourceAlreadyExistsException if a department with the same name already exists in the school
+     */
+    public DepartmentDTO updateDepartment(UUID departmentId, DepartmentCreationDTO dto) {
+        Department department = departmentRepository
+            .findById(departmentId)
+            .orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
+
+        School school = schoolRepository
+            .findById(dto.schoolId())
+            .orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + dto.schoolId()));
+
+        if (
+            !department.getName().equalsIgnoreCase(dto.name()) &&
+            departmentRepository.existsByNameIgnoreCaseAndSchoolSchoolId(dto.name(), dto.schoolId())
+        ) {
+            throw new ResourceAlreadyExistsException(
+                "Department with name '" + dto.name() + "' already exists in school '" + school.getName() + "'"
+            );
+        }
+
+        department.setName(dto.name());
+        department.setSchool(school);
+
+        department = departmentRepository.save(department);
+
+        return DepartmentDTO.fromEntity(department);
+    }
+
+    /**
+     * Delete a department.
+     *
+     * @param departmentId the ID of the department to delete
+     * @throws EntityNotFoundException if the department does not exist
+     */
+    public void deleteDepartment(UUID departmentId) {
+        if (!departmentRepository.existsById(departmentId)) {
+            throw new EntityNotFoundException("Department not found with ID: " + departmentId);
+        }
+        departmentRepository.deleteById(departmentId);
+    }
 }

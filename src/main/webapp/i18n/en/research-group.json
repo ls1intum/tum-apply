@@ -333,13 +333,69 @@
     },
     "departments": {
       "header": "Departments",
+      "createButton": "Create Department",
       "tableColumns": {
         "name": "Name",
         "school": "School",
         "schoolAbbreviation": "School Abbreviation"
       },
       "toastMessages": {
-        "loadFailed": "Error loading departments."
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Error loading departments."
+        },
+        "deleteSuccess": {
+          "summary": "Success",
+          "detail": "Department deleted successfully."
+        },
+        "deleteFailed": {
+          "summary": "Error",
+          "detail": "Error deleting department."
+        },
+        "updateSuccess": {
+          "summary": "Success",
+          "detail": "Department updated successfully."
+        },
+        "updateFailed": {
+          "summary": "Error",
+          "detail": "Error updating department."
+        }
+      },
+      "createDialog": {
+        "title": "Create Department",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Department of Computer Science",
+        "schoolLabel": "School",
+        "schoolPlaceholder": "Select...",
+        "createButton": "Create Department",
+        "creating": "Creating...",
+        "errors": {
+          "createFailed": {
+            "summary": "Error",
+            "detail": "Failed to create department. Please try again."
+          },
+          "duplicateName": {
+            "summary": "Name Already Exists",
+            "detail": "A department with this name already exists. Please choose a different name."
+          }
+        },
+        "success": {
+          "created": {
+            "summary": "Success",
+            "detail": "Department created successfully."
+          },
+          "updated": {
+            "summary": "Success",
+            "detail": "Department updated successfully."
+          }
+        }
+      },
+      "editDialog": {
+        "title": "Edit Department"
+      },
+      "deleteDialog": {
+        "header": "Delete Department",
+        "message": "Are you sure you want to delete this department?"
       }
     }
   }
