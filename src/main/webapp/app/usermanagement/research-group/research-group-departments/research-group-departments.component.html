@@ -29,7 +29,7 @@
         icon="pencil"
         [label]="'button.edit'"
         [ariaLabel]="'button.edit'"
-        [tooltip]="'button.edit'"
+        [tooltip]="'button.edit' | translate"
         severity="primary"
         variant="text"
         [shouldTranslate]="true"
@@ -43,7 +43,7 @@
         (confirmed)="onDeleteDepartment(department.departmentId)"
         severity="danger"
         variant="text"
-        [tooltip]="'button.delete'"
+        [tooltip]="'button.delete' | translate"
       />
     </div>
   </ng-template>
