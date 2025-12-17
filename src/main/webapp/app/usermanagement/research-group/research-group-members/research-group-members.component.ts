@@ -65,9 +65,9 @@ export class ResearchGroupMembersComponent {
     const deleteTemplate = this.deleteTemplate();
 
     return [
-      { field: 'name', header: 'researchGroup.members.tableColumns.name', width: '26rem', template: nameTemplate },
-      { field: 'email', header: 'researchGroup.members.tableColumns.email', width: '26rem' },
-      { field: 'role', header: 'researchGroup.members.tableColumns.role', width: '26rem' },
+      { field: 'name', header: `${this.translationKey}.tableColumns.name`, width: '26rem', template: nameTemplate },
+      { field: 'email', header: `${this.translationKey}.tableColumns.email`, width: '26rem' },
+      { field: 'role', header: `${this.translationKey}.tableColumns.role`, width: '26rem' },
       { field: 'actions', header: '', width: '5rem', template: deleteTemplate },
     ];
   });

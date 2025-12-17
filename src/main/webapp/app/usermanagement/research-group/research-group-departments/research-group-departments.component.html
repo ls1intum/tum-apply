@@ -1,1 +1,29 @@
-<p>research-group-departments.component works!</p>
+<div class="page-container">
+  <div class="header-container">
+    <div class="page-header">
+      <h1 jhiTranslate="researchGroup.departments.header">Departments</h1>
+    </div>
+  </div>
+  <div class="table-wrapper">
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      [rows]="pageSize()"
+      [selectable]="false"
+      (lazyLoad)="loadOnTableEmit($event)"
+    />
+  </div>
+
+  <ng-template #actionTemplate let-department>
+    <jhi-button
+      icon="eye"
+      [ariaLabel]="'button.view' | translate"
+      [tooltip]="'button.view' | translate"
+      severity="primary"
+      variant="text"
+      (click)="onViewDepartment(department.id)"
+    />
+  </ng-template>
+</div>

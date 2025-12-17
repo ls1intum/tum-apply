@@ -330,6 +330,17 @@
         "postalCode": "e.g. 12345",
         "street": "e.g. Musterstraße 123"
       }
+    },
+    "departments": {
+      "header": "Departments",
+      "tableColumns": {
+        "name": "Name",
+        "school": "School",
+        "schoolAbbreviation": "School Abbreviation"
+      },
+      "toastMessages": {
+        "loadFailed": "Error loading departments."
+      }
     }
   }
 }
