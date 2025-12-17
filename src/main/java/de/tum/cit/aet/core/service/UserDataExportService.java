@@ -201,7 +201,13 @@ public class UserDataExportService {
         return userResearchGroupRoleRepository
             .findAllByUser(user)
             .stream()
-            .map(role -> new ResearchGroupRoleExportDTO(role.getResearchGroup().getName(), role.getRole()))
+            .filter(role -> role.getResearchGroup() != null)
+            .map(role ->
+                new ResearchGroupRoleExportDTO(
+                    role.getResearchGroup().getName() != null ? role.getResearchGroup().getName() : "",
+                    role.getRole()
+                )
+            )
             .toList();
     }
 
