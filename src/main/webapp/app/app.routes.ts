@@ -267,6 +267,16 @@ const routes: Routes = [
     title: 'global.routes.researchGroup.templateEdit',
   },
   {
+    path: 'research-group/:id/members',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Employee] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
+        m => m.ResearchGroupMembersComponent,
+      ),
+    title: 'researchGroup.memberPage',
+  },
+  {
     path: 'research-group/members',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Employee] },

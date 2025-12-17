@@ -11,6 +11,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
+import { ActivatedRoute } from '@angular/router';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -56,6 +57,8 @@ export class ResearchGroupMembersComponent {
   pageNumber = signal<number>(0);
   pageSize = signal<number>(10);
   total = signal<number>(0);
+
+  researchGroupId = signal<string | undefined>(undefined);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -105,8 +108,17 @@ export class ResearchGroupMembersComponent {
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
   private readonly dialogService = inject(DialogService);
+  private route = inject(ActivatedRoute);
 
   private readonly translationKey: string = 'researchGroup.members';
+
+  constructor() {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id') ?? this.route.snapshot.queryParamMap.get('researchGroupId') ?? undefined;
+      this.researchGroupId.set(id);
+      void this.loadMembers();
+    });
+  }
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
@@ -135,7 +147,10 @@ export class ResearchGroupMembersComponent {
 
   async loadMembers(): Promise<void> {
     try {
-      const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
+      const id = this.researchGroupId();
+      const members = id
+        ? await firstValueFrom(this.researchGroupService.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
+        : await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
 
       this.members.set(members.content ?? []);
       this.total.set(members.totalElements ?? 0);

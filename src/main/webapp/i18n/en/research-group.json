@@ -3,6 +3,7 @@
     "header": "My Email Templates",
     "memberPage": "My Members",
     "memberHeader": "My Members",
+    "memberHeaderAdmin": "Research Group Members",
     "emailTemplatesHeader": "My Email Templates",
     "groupInfoHeader": "My Group",
     "groupInfo": {
@@ -100,28 +101,15 @@
       "emptySearch": "Please enter at least {{minLength}} characters to search.",
       "me": "Me",
       "manageMembers": "Manage Members",
-      "manageSubtitle": "Choose whether to add or remove members from this research group.",
-      "removeMembers": "Remove Members",
-      "removeMembersButton": "Remove members",
       "addMembers": "Add Members",
-      "addMembersButton": "Add members",
       "searchPlaceholder": "Search for a member using their name or email...",
       "singleEntity": "User",
       "multipleEntities": "Users",
-
       "tableColumns": {
         "name": "Name",
         "email": "Email",
         "role": "Role"
       },
-
-      "removeMemberModal": {
-        "title": "Remove Member",
-        "message": "Are you sure you want to remove this member from the research group?"
-      },
-      "removeSelectedButton": "Remove selected",
-      "removeSelectedConfirm": "Are you sure you want to remove the selected members?",
-
       "toastMessages": {
         "loadFailed": {
           "summary": "Load Failed",
