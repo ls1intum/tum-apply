@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.core.constants.ImageType;
+import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
@@ -14,6 +16,7 @@ import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ImageTestData;
@@ -45,6 +48,9 @@ class ImageServiceTest {
     private ResearchGroupRepository researchGroupRepository;
 
     @Mock
+    private DepartmentRepository departmentRepository;
+
+    @Mock
     private CurrentUserService currentUserService;
 
     private ImageService imageService;
@@ -69,6 +75,7 @@ class ImageServiceTest {
         imageService = new ImageService(
             imageRepository,
             researchGroupRepository,
+            departmentRepository,
             currentUserService,
             IMAGE_ROOT,
             MAX_FILE_SIZE,
@@ -193,7 +200,7 @@ class ImageServiceTest {
             // Arrange
             when(currentUserService.isAdmin()).thenReturn(true);
             when(currentUserService.getUser()).thenReturn(testUser);
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
+            when(departmentRepository.findById(TEST_DEPARTMENT_ID)).thenReturn(Optional.of(testDepartment));
             when(imageRepository.save(any(Image.class))).thenAnswer(invocation -> {
                 Image savedImage = invocation.getArgument(0);
                 savedImage.setImageId(TEST_IMAGE_ID);
@@ -201,12 +208,13 @@ class ImageServiceTest {
             });
 
             // Act
-            Image result = imageService.uploadDefaultImage(validFile, ImageType.DEFAULT_JOB_BANNER, TEST_RESEARCH_GROUP_ID);
+            Image result = imageService.uploadDefaultImage(validFile, TEST_DEPARTMENT_ID);
 
             // Assert
             assertThat(result).isNotNull();
-            assertThat(result.getImageType()).isEqualTo(ImageType.DEFAULT_JOB_BANNER);
-            assertThat(result.getResearchGroup()).isEqualTo(testResearchGroup);
+            assertThat(result).isInstanceOf(de.tum.cit.aet.core.domain.DepartmentImage.class);
+            de.tum.cit.aet.core.domain.DepartmentImage departmentImage = (de.tum.cit.aet.core.domain.DepartmentImage) result;
+            assertThat(departmentImage.getDepartment()).isEqualTo(testDepartment);
             verify(imageRepository).save(any(Image.class));
         }
 
@@ -216,22 +224,22 @@ class ImageServiceTest {
             when(currentUserService.isAdmin()).thenReturn(false);
 
             // Act & Assert
-            assertThatThrownBy(() -> imageService.uploadDefaultImage(validFile, ImageType.DEFAULT_JOB_BANNER, TEST_RESEARCH_GROUP_ID))
+            assertThatThrownBy(() -> imageService.uploadDefaultImage(validFile, TEST_DEPARTMENT_ID))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessageContaining("Only admins can upload default images");
         }
 
         @Test
-        void shouldThrowExceptionWhenResearchGroupNotFound() {
+        void shouldThrowExceptionWhenDepartmentNotFound() {
             // Arrange
             when(currentUserService.isAdmin()).thenReturn(true);
             when(currentUserService.getUser()).thenReturn(testUser);
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.empty());
+            when(departmentRepository.findById(TEST_DEPARTMENT_ID)).thenReturn(Optional.empty());
 
             // Act & Assert
-            assertThatThrownBy(() -> imageService.uploadDefaultImage(validFile, ImageType.DEFAULT_JOB_BANNER, TEST_RESEARCH_GROUP_ID))
+            assertThatThrownBy(() -> imageService.uploadDefaultImage(validFile, TEST_DEPARTMENT_ID))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("ResearchGroup");
+                .hasMessageContaining("Department");
         }
     }
 
@@ -239,41 +247,39 @@ class ImageServiceTest {
     class GetDefaultJobBanners {
 
         @Test
-        void shouldReturnAllDefaultJobBannersWhenResearchGroupIdIsNull() {
+        void shouldReturnAllDefaultJobBannersWhenDepartmentIdIsNull() {
             // Arrange
-            Image defaultImage1 = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
-            Image defaultImage2 = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
-            List<Image> defaultImages = List.of(defaultImage1, defaultImage2);
+            DepartmentImage defaultImage1 = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
+            DepartmentImage defaultImage2 = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
+            List<DepartmentImage> defaultImages = List.of(defaultImage1, defaultImage2);
 
             when(imageRepository.findDefaultJobBanners()).thenReturn(defaultImages);
 
             // Act
-            List<Image> result = imageService.getDefaultJobBanners(null);
+            List<DepartmentImage> result = imageService.getDefaultJobBanners(null);
 
             // Assert
             assertThat(result).hasSize(2);
             assertThat(result).containsExactlyInAnyOrder(defaultImage1, defaultImage2);
             verify(imageRepository).findDefaultJobBanners();
-            verify(imageRepository, never()).findDefaultJobBannersBySchool(any(UUID.class));
+            verify(imageRepository, never()).findDepartmentImagesByDepartmentId(any(UUID.class));
         }
 
         @Test
-        void shouldReturnDefaultJobBannersForResearchGroupWhenIdProvided() {
+        void shouldReturnDefaultJobBannersForDepartmentWhenIdProvided() {
             // Arrange
-            Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
-            List<Image> defaultImages = List.of(defaultImage);
+            DepartmentImage defaultImage = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
+            List<DepartmentImage> defaultImages = List.of(defaultImage);
 
-            when(researchGroupRepository.findById(TEST_RESEARCH_GROUP_ID)).thenReturn(Optional.of(testResearchGroup));
-            when(imageRepository.findDefaultJobBannersBySchool(TEST_SCHOOL_ID)).thenReturn(defaultImages);
+            when(imageRepository.findDepartmentImagesByDepartmentId(TEST_DEPARTMENT_ID)).thenReturn(defaultImages);
 
             // Act
-            List<Image> result = imageService.getDefaultJobBanners(TEST_RESEARCH_GROUP_ID);
+            List<DepartmentImage> result = imageService.getDefaultJobBanners(TEST_DEPARTMENT_ID);
 
             // Assert
             assertThat(result).hasSize(1);
             assertThat(result).contains(defaultImage);
-            verify(researchGroupRepository).findById(TEST_RESEARCH_GROUP_ID);
-            verify(imageRepository).findDefaultJobBannersBySchool(TEST_SCHOOL_ID);
+            verify(imageRepository).findDepartmentImagesByDepartmentId(TEST_DEPARTMENT_ID);
             verify(imageRepository, never()).findDefaultJobBanners();
         }
 
@@ -283,7 +289,7 @@ class ImageServiceTest {
             when(imageRepository.findDefaultJobBanners()).thenReturn(List.of());
 
             // Act
-            List<Image> result = imageService.getDefaultJobBanners(null);
+            List<DepartmentImage> result = imageService.getDefaultJobBanners(null);
 
             // Assert
             assertThat(result).isEmpty();
@@ -332,30 +338,30 @@ class ImageServiceTest {
         @Test
         void shouldReturnJobBannersForResearchGroup() {
             // Arrange
-            Image banner1 = ImageTestData.newJobBanner(testUser, testResearchGroup);
-            Image banner2 = ImageTestData.newJobBanner(testUser, testResearchGroup);
-            List<Image> banners = List.of(banner1, banner2);
+            ResearchGroupImage banner1 = ImageTestData.newJobBanner(testUser, testResearchGroup);
+            ResearchGroupImage banner2 = ImageTestData.newJobBanner(testUser, testResearchGroup);
+            List<ResearchGroupImage> banners = List.of(banner1, banner2);
 
             when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
-            when(imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, TEST_RESEARCH_GROUP_ID)).thenReturn(banners);
+            when(imageRepository.findResearchGroupImagesByResearchGroupId(TEST_RESEARCH_GROUP_ID)).thenReturn(banners);
 
             // Act
-            List<Image> result = imageService.getResearchGroupJobBanners();
+            List<ResearchGroupImage> result = imageService.getResearchGroupJobBanners();
 
             // Assert
             assertThat(result).hasSize(2);
             assertThat(result).containsExactlyInAnyOrder(banner1, banner2);
-            verify(imageRepository).findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, TEST_RESEARCH_GROUP_ID);
+            verify(imageRepository).findResearchGroupImagesByResearchGroupId(TEST_RESEARCH_GROUP_ID);
         }
 
         @Test
         void shouldReturnEmptyListWhenNoJobBannersExist() {
             // Arrange
             when(currentUserService.getResearchGroupIdIfMember()).thenReturn(TEST_RESEARCH_GROUP_ID);
-            when(imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, TEST_RESEARCH_GROUP_ID)).thenReturn(List.of());
+            when(imageRepository.findResearchGroupImagesByResearchGroupId(TEST_RESEARCH_GROUP_ID)).thenReturn(List.of());
 
             // Act
-            List<Image> result = imageService.getResearchGroupJobBanners();
+            List<ResearchGroupImage> result = imageService.getResearchGroupJobBanners();
 
             // Assert
             assertThat(result).isEmpty();
@@ -385,7 +391,7 @@ class ImageServiceTest {
         @Test
         void shouldDeleteImageSuccessfullyWhenUserIsAdmin() {
             // Arrange
-            Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
+            Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
             defaultImage.setImageId(TEST_IMAGE_ID);
 
             when(currentUserService.getUser()).thenReturn(testUser);
@@ -415,7 +421,7 @@ class ImageServiceTest {
         @Test
         void shouldThrowExceptionWhenNonAdminTriesToDeleteDefaultImage() {
             // Arrange
-            Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
+            Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
             defaultImage.setImageId(TEST_IMAGE_ID);
 
             when(currentUserService.getUser()).thenReturn(testUser);
@@ -516,7 +522,7 @@ class ImageServiceTest {
         @Test
         void shouldNotDeleteDefaultImageEvenWithoutChecks() {
             // Arrange
-            Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
+            Image defaultImage = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
             defaultImage.setImageId(TEST_IMAGE_ID);
 
             when(imageRepository.findById(TEST_IMAGE_ID)).thenReturn(Optional.of(defaultImage));
@@ -565,7 +571,7 @@ class ImageServiceTest {
         @Test
         void shouldNotDeleteOldImageIfItIsDefaultJobBanner() {
             // Arrange
-            Image oldDefaultImage = ImageTestData.newDefaultJobBanner(testUser, testResearchGroup);
+            Image oldDefaultImage = ImageTestData.newDefaultJobBanner(testUser, testDepartment);
             oldDefaultImage.setImageId(UUID.randomUUID());
 
             Image newImage = ImageTestData.newJobBanner(testUser, testResearchGroup);

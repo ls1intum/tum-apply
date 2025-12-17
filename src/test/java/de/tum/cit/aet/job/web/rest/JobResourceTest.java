@@ -625,13 +625,13 @@ class JobResourceTest extends AbstractResourceTest {
         User adminUser = UserTestData.newUserAll(UUID.randomUUID(), "admin@tum.de", "Admin", "User");
         adminUser = userRepository.save(adminUser);
 
-        Image defaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
+        Image defaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup.getDepartment()));
         Job job = jobRepository.findAll().getFirst();
         job.setImage(defaultBanner);
         jobRepository.save(job);
 
         // Create a new default banner
-        Image newDefaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
+        Image newDefaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup.getDepartment()));
 
         JobFormDTO updatedPayload = createJobFormDTO(job, newDefaultBanner.getImageId());
 

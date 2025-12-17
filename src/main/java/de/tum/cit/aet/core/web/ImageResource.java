@@ -25,18 +25,34 @@ public class ImageResource {
     private final ImageService imageService;
 
     /**
-     * Get all default job banner images
-     * Optionally filter by school. If a researchGroupId is provided, returns all default images
-     * for the school that the research group belongs to.
+     * Get all default job banner images.
+     * Optionally filter by department. If a departmentId is provided, returns all default images
+     * for that specific department. If null, returns all default images from all departments.
      *
-     * @param researchGroupId optional research group ID (used to determine the school to filter by)
-     * @return a list of default job banner images (all schools if null, or all images for one school)
+     * @param departmentId optional department ID to filter by
+     * @return a list of default job banner images (all departments if null, or one department if specified)
      */
     @ProfessorOrEmployeeOrAdmin
     @GetMapping("/defaults/job-banners")
-    public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID researchGroupId) {
-        log.info("GET /api/images/defaults/job-banners?researchGroupId={}", researchGroupId);
-        List<Image> images = imageService.getDefaultJobBanners(researchGroupId);
+    public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID departmentId) {
+        log.info("GET /api/images/defaults/job-banners?departmentId={}", departmentId);
+        List<? extends Image> images = imageService.getDefaultJobBanners(departmentId);
+        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
+     * Get all default job banner images for a specific school.
+     * Returns all default images from all departments within the school.
+     *
+     * @param schoolId the school ID to filter by
+     * @return a list of default job banner images for the school
+     */
+    @ProfessorOrEmployeeOrAdmin
+    @GetMapping("/defaults/job-banners/by-school")
+    public ResponseEntity<List<ImageDTO>> getDefaultJobBannersBySchool(@RequestParam UUID schoolId) {
+        log.info("GET /api/images/defaults/job-banners/by-school?schoolId={}", schoolId);
+        List<? extends Image> images = imageService.getDefaultJobBannersBySchool(schoolId);
         List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
         return ResponseEntity.ok(dtos);
     }
@@ -65,7 +81,7 @@ public class ImageResource {
     @GetMapping("/research-group/job-banners")
     public ResponseEntity<List<ImageDTO>> getResearchGroupJobBanners() {
         log.info("GET /api/images/research-group/job-banners");
-        List<Image> images = imageService.getResearchGroupJobBanners();
+        List<? extends Image> images = imageService.getResearchGroupJobBanners();
         List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
         return ResponseEntity.ok(dtos);
     }
@@ -85,21 +101,21 @@ public class ImageResource {
     }
 
     /**
-     * Upload a default job banner image for a school (admin only)
-     * The image will be associated with the school that the specified research group belongs to.
+     * Upload a default job banner image for a department (admin only).
+     * The image will be available to all research groups within the specified department.
      *
-     * @param file            the image file
-     * @param researchGroupId the ID of a research group belonging to the target school
+     * @param file         the image file
+     * @param departmentId the ID of the department this default image belongs to
      * @return the uploaded default image DTO
      */
     @Admin
     @PostMapping(value = "/upload/default-job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadDefaultJobBanner(
         @RequestParam("file") MultipartFile file,
-        @RequestParam("researchGroupId") UUID researchGroupId
+        @RequestParam("departmentId") UUID departmentId
     ) {
-        log.info("POST /api/images/upload/default-job-banner filename={} researchGroupId={}", file.getOriginalFilename(), researchGroupId);
-        Image image = imageService.uploadDefaultImage(file, ImageType.DEFAULT_JOB_BANNER, researchGroupId);
+        log.info("POST /api/images/upload/default-job-banner filename={} departmentId={}", file.getOriginalFilename(), departmentId);
+        Image image = imageService.uploadDefaultImage(file, departmentId);
         return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 

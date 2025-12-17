@@ -1,13 +1,18 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.core.constants.ImageType;
+import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ProfileImage;
+import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -35,6 +40,7 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final ResearchGroupRepository researchGroupRepository;
+    private final DepartmentRepository departmentRepository;
     private final CurrentUserService currentUserService;
     private final Path imageRoot;
     private final long maxFileSize;
@@ -44,6 +50,7 @@ public class ImageService {
     public ImageService(
         ImageRepository imageRepository,
         ResearchGroupRepository researchGroupRepository,
+        DepartmentRepository departmentRepository,
         CurrentUserService currentUserService,
         @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
         @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
@@ -52,6 +59,7 @@ public class ImageService {
     ) {
         this.imageRepository = imageRepository;
         this.researchGroupRepository = researchGroupRepository;
+        this.departmentRepository = departmentRepository;
         this.currentUserService = currentUserService;
         this.imageRoot = Paths.get(imageRootDir).toAbsolutePath().normalize();
         this.maxFileSize = maxFileSize;
@@ -75,64 +83,139 @@ public class ImageService {
 
     /**
      * Uploads an image file and stores it as a non-default image.
-     * The image will be automatically associated with the current user's research group if they belong to one,
-     * otherwise the research group will be null (e.g., for applicants uploading profile pictures).
+     * For JOB_BANNER: associated with the current user's research group
+     * For PROFILE_PICTURE: not associated with any group/department
      *
      * The file is validated for type (JPEG/PNG), size, and dimensions before being stored.
      * A unique filename is generated and the image is saved to the appropriate subdirectory.
      *
      * @param file      the multipart file to be uploaded
-     * @param imageType the type of image (e.g., JOB_BANNER, PROFILE_PICTURE)
+     * @param imageType the type of image (JOB_BANNER or PROFILE_PICTURE)
      * @return the persisted Image entity with metadata
      * @throws UploadException if the file is invalid or cannot be stored
+     * @throws IllegalArgumentException if imageType is DEFAULT_JOB_BANNER (use uploadDefaultImage instead)
      */
     @Transactional
     public Image upload(MultipartFile file, ImageType imageType) {
+        if (imageType == ImageType.DEFAULT_JOB_BANNER) {
+            throw new IllegalArgumentException("Use uploadDefaultImage() for DEFAULT_JOB_BANNER images");
+        }
+
         User uploader = currentUserService.getUser();
-        return uploadImage(file, uploader, imageType, uploader.getResearchGroup());
+
+        return switch (imageType) {
+            case JOB_BANNER -> uploadResearchGroupImage(file, uploader);
+            case PROFILE_PICTURE -> uploadProfileImage(file, uploader);
+            default -> throw new IllegalArgumentException("Unsupported image type: " + imageType);
+        };
     }
 
     /**
-     * Uploads a default system image for a specific school (admin only).
-     * A research group ID is provided to determine which school the default image belongs to.
+     * Uploads a default job banner image for a specific department (admin only).
+     * The image will be available to all research groups within the department.
      *
      * The file is validated for type (JPEG/PNG), size, and dimensions before being stored.
      *
-     * @param file            the multipart file to be uploaded
-     * @param imageType       the type of default image (typically DEFAULT_JOB_BANNER)
-     * @param researchGroupId the ID of a research group belonging to the target school
-     * @return the persisted default Image entity
+     * @param file         the multipart file to be uploaded
+     * @param departmentId the ID of the department this default image belongs to
+     * @return the persisted DepartmentImage entity
      * @throws AccessDeniedException if the current user is not an admin
-     * @throws EntityNotFoundException if the research group is not found
+     * @throws EntityNotFoundException if the department is not found
      * @throws UploadException if the file is invalid or cannot be stored
      */
     @Transactional
-    public Image uploadDefaultImage(MultipartFile file, ImageType imageType, UUID researchGroupId) {
+    public DepartmentImage uploadDefaultImage(MultipartFile file, UUID departmentId) {
         if (!currentUserService.isAdmin()) {
             throw new AccessDeniedException("Only admins can upload default images");
         }
 
         User uploader = currentUserService.getUser();
 
-        ResearchGroup researchGroup = researchGroupRepository
-            .findById(researchGroupId)
-            .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
+        Department department = departmentRepository
+            .findById(departmentId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Department", departmentId));
 
-        return uploadImage(file, uploader, imageType, researchGroup);
+        return uploadDepartmentImage(file, uploader, department);
     }
 
     /**
-     * Core upload logic shared by both regular and default image uploads.
-     * Validates the file, stores it to disk, and persists the metadata to the database.
+     * Upload a research group job banner image.
      *
-     * @param file          the multipart file to be uploaded
-     * @param uploader      the user uploading the image
-     * @param imageType     the type of image
-     * @param researchGroup the research group to associate with the image (can be null for non-default images)
-     * @return the persisted Image entity
+     * @param file     the multipart file to be uploaded
+     * @param uploader the user uploading the image
+     * @return the persisted ResearchGroupImage entity
      * @throws UploadException if the file is invalid or cannot be stored
      */
-    private Image uploadImage(MultipartFile file, User uploader, ImageType imageType, ResearchGroup researchGroup) {
+    private ResearchGroupImage uploadResearchGroupImage(MultipartFile file, User uploader) {
+        ResearchGroup researchGroup = uploader.getResearchGroup();
+        if (researchGroup == null) {
+            throw new IllegalStateException("User must belong to a research group to upload job banners");
+        }
+
+        String relativePath = storeImageFile(file, ImageType.JOB_BANNER);
+
+        ResearchGroupImage image = new ResearchGroupImage();
+        image.setUrl("/images/" + relativePath);
+        image.setMimeType(file.getContentType());
+        image.setSizeBytes(file.getSize());
+        image.setUploadedBy(uploader);
+        image.setResearchGroup(researchGroup);
+
+        return imageRepository.save(image);
+    }
+
+    /**
+     * Upload a department default job banner image.
+     *
+     * @param file       the multipart file to be uploaded
+     * @param uploader   the user uploading the image (admin)
+     * @param department the department this default image belongs to
+     * @return the persisted DepartmentImage entity
+     * @throws UploadException if the file is invalid or cannot be stored
+     */
+    private DepartmentImage uploadDepartmentImage(MultipartFile file, User uploader, Department department) {
+        String relativePath = storeImageFile(file, ImageType.DEFAULT_JOB_BANNER);
+
+        DepartmentImage image = new DepartmentImage();
+        image.setUrl("/images/" + relativePath);
+        image.setMimeType(file.getContentType());
+        image.setSizeBytes(file.getSize());
+        image.setUploadedBy(uploader);
+        image.setDepartment(department);
+
+        return imageRepository.save(image);
+    }
+
+    /**
+     * Upload a profile picture image.
+     *
+     * @param file     the multipart file to be uploaded
+     * @param uploader the user uploading the image
+     * @return the persisted ProfileImage entity
+     * @throws UploadException if the file is invalid or cannot be stored
+     */
+    private ProfileImage uploadProfileImage(MultipartFile file, User uploader) {
+        String relativePath = storeImageFile(file, ImageType.PROFILE_PICTURE);
+
+        ProfileImage image = new ProfileImage();
+        image.setUrl("/images/" + relativePath);
+        image.setMimeType(file.getContentType());
+        image.setSizeBytes(file.getSize());
+        image.setUploadedBy(uploader);
+
+        return imageRepository.save(image);
+    }
+
+    /**
+     * Core file storage logic shared by all upload methods.
+     * Validates the file, stores it to disk, and returns the relative path.
+     *
+     * @param file      the multipart file to be stored
+     * @param imageType the type of image (determines subdirectory)
+     * @return the relative path to the stored file
+     * @throws UploadException if the file is invalid or cannot be stored
+     */
+    private String storeImageFile(MultipartFile file, ImageType imageType) {
         validateImage(file);
 
         try {
@@ -158,46 +241,42 @@ public class ImageService {
                 Files.copy(inputStream, fullPath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            Image image = new Image();
-            image.setUrl("/images/" + relativePath);
-            image.setMimeType(file.getContentType());
-            image.setSizeBytes(file.getSize());
-            image.setImageType(imageType);
-            image.setUploadedBy(uploader);
-            image.setResearchGroup(researchGroup);
-
-            return imageRepository.save(image);
+            return relativePath;
         } catch (IOException e) {
             throw new UploadException("Failed to store image", e);
         }
     }
 
     /**
-     * Retrieves default job banner images, optionally filtered by school.
-     * This method fetches images with type DEFAULT_JOB_BANNER. If a researchGroupId is provided,
-     * it filters by the school that the research group belongs to (all default images for that school).
-     * If null, it returns all default job banners across all schools.
+     * Retrieves default job banner images, optionally filtered by department or school.
+     * If departmentId is provided, returns images for that specific department.
+     * If null, returns all default job banners across all departments.
      *
-     * @param researchGroupId the ID of a research group (used to determine the school), or null to retrieve all default job banners
-     * @return list of default job banner images for the school or all schools
+     * @param departmentId the ID of a department to filter by, or null to retrieve all default job banners
+     * @return list of default job banner images for the department or all departments
      */
-    public List<Image> getDefaultJobBanners(UUID researchGroupId) {
-        if (researchGroupId == null) {
+    public List<DepartmentImage> getDefaultJobBanners(UUID departmentId) {
+        if (departmentId == null) {
             return imageRepository.findDefaultJobBanners();
         }
 
-        // Fetch the school ID from the research group
-        ResearchGroup researchGroup = researchGroupRepository
-            .findById(researchGroupId)
-            .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
-        UUID schoolId = researchGroup.getDepartment().getSchool().getSchoolId();
+        return imageRepository.findDepartmentImagesByDepartmentId(departmentId);
+    }
 
+    /**
+     * Retrieves default job banner images for a specific school.
+     * Returns all default images from all departments within the school.
+     *
+     * @param schoolId the school ID to find banners for
+     * @return list of default job banner images for the school
+     */
+    public List<DepartmentImage> getDefaultJobBannersBySchool(UUID schoolId) {
         return imageRepository.findDefaultJobBannersBySchool(schoolId);
     }
 
     /**
      * Retrieves all non-default images uploaded by the current user.
-     * This excludes DEFAULT_JOB_BANNER images and returns results ordered by creation date (newest first).
+     * This excludes DEFAULT_JOB_BANNER (DepartmentImage) and returns results ordered by creation date (newest first).
      *
      * @return list of images uploaded by the current user, excluding default images
      */
@@ -208,14 +287,13 @@ public class ImageService {
 
     /**
      * Retrieves all job banner images (non-default) for the current user's research group.
-     * This returns only JOB_BANNER type images, excluding DEFAULT_JOB_BANNER.
+     * This returns only ResearchGroupImage type images, excluding DepartmentImage.
      *
      * @return list of job banner images belonging to the current user's research group
      */
-    public List<Image> getResearchGroupJobBanners() {
+    public List<ResearchGroupImage> getResearchGroupJobBanners() {
         UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
-        List<Image> images = imageRepository.findByImageTypeAndResearchGroup(ImageType.JOB_BANNER, researchGroupId);
-        return images;
+        return imageRepository.findResearchGroupImagesByResearchGroupId(researchGroupId);
     }
 
     /**
@@ -256,25 +334,25 @@ public class ImageService {
             return; // Admins can delete any image
         }
 
-        if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER) {
+        if (image instanceof DepartmentImage) {
             throw new AccessDeniedException("Only admins can delete default images");
         }
 
-        if (image.getImageType() == ImageType.JOB_BANNER) {
-            validateJobBannerDeletePermission(image, currentUser);
+        if (image instanceof ResearchGroupImage) {
+            validateResearchGroupImageDeletePermission((ResearchGroupImage) image, currentUser);
         } else {
             validateOwnershipDeletePermission(image, currentUser);
         }
     }
 
     /**
-     * Validates whether the user can delete a job banner from their research group.
+     * Validates whether the user can delete a research group job banner.
      *
-     * @param image the job banner image
+     * @param image the research group job banner image
      * @param currentUser the user attempting to delete the image
      * @throws AccessDeniedException if the user's research group doesn't match the image's research group
      */
-    private void validateJobBannerDeletePermission(Image image, User currentUser) {
+    private void validateResearchGroupImageDeletePermission(ResearchGroupImage image, User currentUser) {
         if (image.getResearchGroup() == null || currentUser.getResearchGroup() == null) {
             throw new AccessDeniedException("You do not have permission to delete this image");
         }
@@ -299,7 +377,7 @@ public class ImageService {
 
     /**
      * Deletes an image without ownership checks (for internal use only).
-     * This method is intended for system cleanup operations and will NOT delete default school images.
+     * This method is intended for system cleanup operations and will NOT delete default department images.
      * If a default image ID is provided, the deletion is skipped and a warning is logged.
      *
      * @param imageId the ID of the image to delete
@@ -309,8 +387,8 @@ public class ImageService {
     public void deleteWithoutChecks(UUID imageId) {
         Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
 
-        if (image.getImageType() == ImageType.DEFAULT_JOB_BANNER) {
-            log.warn("Attempted to delete default image: {}", imageId);
+        if (image instanceof DepartmentImage) {
+            log.warn("Attempted to delete default department image: {}", imageId);
             return;
         }
 
@@ -319,14 +397,30 @@ public class ImageService {
     }
 
     /**
+     * Cleans up orphaned default images (DepartmentImages with no department).
+     * This can happen if departments are deleted without proper cleanup.
+     * Should be called periodically or after department deletions.
+     */
+    @Transactional
+    public void cleanupOrphanedDefaultImages() {
+        List<DepartmentImage> orphanedImages = imageRepository.findOrphanedDepartmentImages();
+        for (DepartmentImage image : orphanedImages) {
+            log.info("Deleting orphaned default image: {}", image.getImageId());
+            deleteImageFile(image);
+            imageRepository.delete(image);
+        }
+        log.info("Cleaned up {} orphaned default images", orphanedImages.size());
+    }
+
+    /**
      * Replaces an old image with a new one, safely deleting the old image if appropriate.
      * This is typically used when updating a job's banner image. The old image will only be deleted if:
      * - It exists and is not null
-     * - It is not a default school image (DEFAULT_JOB_BANNER)
-     * - It is not a research group job banner (JOB_BANNER) - these are kept in the research group's image library
+     * - It is not a DepartmentImage (default images)
+     * - It is not a ResearchGroupImage (job banners) - these are kept in the research group's image library
      * - It is different from the new image
      *
-     * Default school images and research group job banners are never automatically deleted during replacement
+     * Default department images and research group job banners are never automatically deleted during replacement
      * to preserve the image library for reuse.
      *
      * @param oldImage the current image to be replaced (can be null)
@@ -337,8 +431,8 @@ public class ImageService {
         // Don't auto-delete default images or research group job banners (they're part of the reusable library)
         if (
             oldImage != null &&
-            oldImage.getImageType() != ImageType.DEFAULT_JOB_BANNER &&
-            oldImage.getImageType() != ImageType.JOB_BANNER &&
+            !(oldImage instanceof DepartmentImage) &&
+            !(oldImage instanceof ResearchGroupImage) &&
             (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))
         ) {
             try {
