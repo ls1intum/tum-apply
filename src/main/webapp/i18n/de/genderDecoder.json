@@ -15,8 +15,8 @@
     "explanations": {
       "non-inclusive-coded": "Deine Stellenanzeige enthält überwiegend nicht gender-inklusive Formulierungen. Solche Formulierungen können beeinflussen, wie attraktiv die Rolle für unterschiedliche Kandidat:innen wirkt. Erwäge, gender-inklusive Formulierungen zu verwenden, um die Anzeige für alle Bewerber:innen ansprechender zu machen.",
       "inclusive-coded": "Deine Stellenanzeige verwendet gender-inklusive Formulierungen. Diese Art von Sprache kann die Attraktivität der Rolle erhöhen und hält andere Bewerber:innen in der Regel nicht von einer Bewerbung ab.",
-      "empty": "Deine Stellenanzeige enthält keine Hinweise auf gender-inklusive oder nicht gender-inklusive Formulierungen. Die Sprache ist neutral und inklusiv.",
-      "neutral": "Deine Stellenanzeige enthält eine ausgewogene Mischung aus gender-inklusive und nicht gender-inklusive Formulierungen. Die Sprache ist neutral und inklusiv."
+      "empty": "Deine Stellenanzeige enthält keine Hinweise auf gender-inklusive oder nicht gender-inklusive Formulierungen. Die Sprache ist allgemein ansprechend.",
+      "neutral": "Deine Stellenanzeige enthält eine ausgewogene Mischung aus gender-inklusive und nicht gender-inklusive Formulierungen. Die Sprache ist allgemein ansprechend und inklusiv."
     },
     "error": {
       "summary": "Fehler",
