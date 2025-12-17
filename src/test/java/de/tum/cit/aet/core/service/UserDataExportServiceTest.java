@@ -16,8 +16,10 @@ import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
@@ -169,6 +171,22 @@ class UserDataExportServiceTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         // should not throw
+        sut.exportUserData(userId, response);
+
+        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any());
+    }
+
+    @Test
+    void exportHandlesNullResearchGroupInRoles() throws Exception {
+        when(applicantRepository.existsById(userId)).thenReturn(false);
+
+        UserResearchGroupRole role = new UserResearchGroupRole();
+        role.setRole(UserRole.APPLICANT);
+        when(userResearchGroupRoleRepository.findAllByUser(any())).thenReturn(Set.of(role));
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        // should not throw despite null research group
         sut.exportUserData(userId, response);
 
         verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any());
