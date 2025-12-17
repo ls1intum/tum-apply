@@ -22,4 +22,39 @@
       </div>
     </div>
   </div>
+
+  <div class="mb-4">
+    <div class="text-primary-default text-lg font-semibold mb-2 ml-4">
+      <h2 jhiTranslate="settings.privacy.header"></h2>
+    </div>
+
+    <div class="px-4 pb-4 export-section">
+      <div class="flex items-center justify-between">
+        <div class="export-info">
+          <div class="text-base font-medium text-text-secondary" jhiTranslate="settings.privacy.export.header"></div>
+          <div class="text-sm text-text-secondary mt-1" jhiTranslate="settings.privacy.export.description"></div>
+        </div>
+
+        <div class="export-actions">
+          <jhi-button
+            (click)="exportUserData()"
+            [label]="'settings.privacy.export.button'"
+            severity="primary"
+            [shouldTranslate]="true"
+            [disabled]="exportButtonDisabled()"
+          />
+
+          @if (exportInProgress()) {
+            <div class="text-sm text-text-secondary" jhiTranslate="settings.privacy.export.inProgress"></div>
+          }
+
+          @if (exportCooldownRemaining() > 0) {
+            <div class="text-sm text-text-secondary">
+              <span [translateValues]="{ seconds: exportCooldownRemaining() }" jhiTranslate="settings.privacy.export.cooldown"></span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

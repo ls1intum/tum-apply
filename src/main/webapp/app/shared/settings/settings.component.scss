@@ -15,4 +15,15 @@
   .notifications {
     margin-bottom: 2rem;
   }
+
+  .export-section {
+    .export-info {
+      max-width: 48rem;
+    }
+    .export-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+  }
 }

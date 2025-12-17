@@ -8,6 +8,9 @@ import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingRe
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
 import { setupWindowMatchMediaMock } from '../../../util/theme.service.mock';
+import { UserDataExportResourceApiService } from 'app/generated';
+import { HttpHeaders } from '@angular/common/http';
+import { of, throwError } from 'rxjs';
 
 describe('SettingsComponent', () => {
   let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
@@ -19,6 +22,10 @@ describe('SettingsComponent', () => {
   };
 
   const toastServiceMock = createToastServiceMock();
+
+  const userDataExportServiceMock = {
+    exportUserData: vi.fn(),
+  };
 
   beforeEach(() => {
     setupWindowMatchMediaMock();
@@ -33,6 +40,7 @@ describe('SettingsComponent', () => {
         provideTranslateMock(translateMock),
         provideToastServiceMock(toastServiceMock),
         { provide: EmailSettingResourceApiService, useValue: emailSettingServiceMock },
+        { provide: UserDataExportResourceApiService, useValue: userDataExportServiceMock },
       ],
     });
   });
@@ -70,5 +78,39 @@ describe('SettingsComponent', () => {
 
     const component = TestBed.createComponent(SettingsComponent).componentInstance;
     expect(component.role()).toBeUndefined();
+  });
+
+  it('should download export and start cooldown on success', async () => {
+    const blob = new Blob(['zip'], { type: 'application/zip' });
+    const headers = new HttpHeaders({ 'X-Export-Cooldown': '60', 'Content-Disposition': 'attachment; filename="user-data.zip"' });
+    const response = new (await import('@angular/common/http')).HttpResponse({ body: blob, headers });
+
+    userDataExportServiceMock.exportUserData.mockReturnValue(of(response));
+
+    const fixture = TestBed.createComponent(SettingsComponent);
+    const component = fixture.componentInstance;
+
+    const startSpy = vi.spyOn(component, 'startExportCooldown');
+
+    const createSpy = vi.spyOn(document, 'createElement');
+    createSpy.mockImplementation(() => ({ href: '', download: '', style: { display: '' }, click: vi.fn(), remove: vi.fn() }) as any);
+
+    await component.exportUserData();
+
+    expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.privacy.export.started');
+    expect(startSpy).toHaveBeenCalledWith(60);
+
+    createSpy.mockRestore();
+  });
+
+  it('should show error toast on export failure', async () => {
+    userDataExportServiceMock.exportUserData.mockReturnValue(throwError(() => new Error('error')));
+
+    const fixture = TestBed.createComponent(SettingsComponent);
+    const component = fixture.componentInstance;
+
+    await component.exportUserData();
+
+    expect(toastServiceMock.showErrorKey).toHaveBeenCalledWith('settings.privacy.export.failed');
   });
 });
