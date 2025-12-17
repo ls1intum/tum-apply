@@ -171,13 +171,28 @@ public class UserDataExportService {
     private StaffDataDTO getStaffData(User user) {
         List<String> supervisedJobs = user.getPostedJobs().stream().map(Job::getTitle).toList();
 
-        List<ResearchGroupRoleExportDTO> researchGroupRoles = userResearchGroupRoleRepository
+        List<ResearchGroupRoleExportDTO> researchGroupRoles = getResearchGroupRoles(user);
+        List<ApplicationReviewExportDTO> reviews = getReviews(user);
+        List<InternalCommentExportDTO> comments = getComments(user);
+        List<RatingExportDTO> ratings = getRatings(user);
+
+        if (supervisedJobs.isEmpty() && researchGroupRoles.isEmpty() && reviews.isEmpty() && comments.isEmpty() && ratings.isEmpty()) {
+            return null;
+        }
+
+        return new StaffDataDTO(supervisedJobs, researchGroupRoles, reviews, comments, ratings);
+    }
+
+    private List<ResearchGroupRoleExportDTO> getResearchGroupRoles(User user) {
+        return userResearchGroupRoleRepository
             .findAllByUser(user)
             .stream()
             .map(role -> new ResearchGroupRoleExportDTO(role.getResearchGroup().getName(), role.getRole()))
             .toList();
+    }
 
-        List<ApplicationReviewExportDTO> reviews = applicationReviewRepository
+    private List<ApplicationReviewExportDTO> getReviews(User user) {
+        return applicationReviewRepository
             .findAllByReviewedBy(user)
             .stream()
             .map(review ->
@@ -191,8 +206,10 @@ public class UserDataExportService {
                 )
             )
             .toList();
+    }
 
-        List<InternalCommentExportDTO> comments = internalCommentRepository
+    private List<InternalCommentExportDTO> getComments(User user) {
+        return internalCommentRepository
             .findAllByCreatedBy(user)
             .stream()
             .map(comment ->
@@ -206,8 +223,10 @@ public class UserDataExportService {
                 )
             )
             .toList();
+    }
 
-        List<RatingExportDTO> ratings = ratingRepository
+    private List<RatingExportDTO> getRatings(User user) {
+        return ratingRepository
             .findAllByFrom(user)
             .stream()
             .map(rating ->
@@ -221,12 +240,6 @@ public class UserDataExportService {
                 )
             )
             .toList();
-
-        if (supervisedJobs.isEmpty() && researchGroupRoles.isEmpty() && reviews.isEmpty() && comments.isEmpty() && ratings.isEmpty()) {
-            return null;
-        }
-
-        return new StaffDataDTO(supervisedJobs, researchGroupRoles, reviews, comments, ratings);
     }
 
     private void addDocumentToZip(ZipOutputStream zipOut, UUID documentId, String entryPath) {
