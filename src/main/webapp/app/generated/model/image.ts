@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ResearchGroup } from './researchGroup';
 import { User } from './user';
 
 
@@ -16,7 +17,7 @@ export interface Image {
     imageType?: Image.ImageTypeEnum;
     lastModifiedAt?: string;
     mimeType?: string;
-    researchGroup?: any | null;
+    researchGroup?: ResearchGroup;
     sizeBytes?: number;
     uploadedBy?: User;
     url?: string;
