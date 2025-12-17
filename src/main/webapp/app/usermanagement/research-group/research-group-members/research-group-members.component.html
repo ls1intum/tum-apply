@@ -2,7 +2,6 @@
   <div class="header-container">
     <div class="page-header">
       @if (researchGroupId()) {
-        <jhi-button icon="arrow-left" severity="secondary" variant="text" (click)="goBack()" [tooltip]="'button.back' | translate" />
         <h1 jhiTranslate="researchGroup.memberHeaderAdmin"></h1>
       } @else {
         <h1 jhiTranslate="researchGroup.memberHeader"></h1>
@@ -52,4 +51,9 @@
       />
     }
   </ng-template>
+
+  <!-- Back Button -->
+  @if (researchGroupId()) {
+    <jhi-button [label]="'button.back' | translate" icon="arrow-left" (click)="goBack()" />
+  }
 </div>
