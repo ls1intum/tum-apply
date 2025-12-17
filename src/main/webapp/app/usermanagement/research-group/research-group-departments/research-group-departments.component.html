@@ -35,12 +35,12 @@
       />
       <jhi-confirm-dialog
         [iconOnly]="true"
+        [label]="'entity.action.delete' | translate"
         [header]="'researchGroup.departments.deleteDialog.header' | translate"
         [message]="'researchGroup.departments.deleteDialog.message' | translate"
         confirmIcon="trash"
         (confirmed)="onDeleteDepartment(department.departmentId)"
         severity="danger"
-        variant="text"
         [tooltip]="'button.delete' | translate"
       />
     </div>
