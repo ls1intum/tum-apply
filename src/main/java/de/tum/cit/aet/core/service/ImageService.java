@@ -264,7 +264,7 @@ public class ImageService {
         User currentUser = currentUserService.getUser();
         ResearchGroup researchGroup = currentUser.getResearchGroup();
         Department department = researchGroup.getDepartment();
-        
+
         if (department == null || researchGroup == null) {
             return List.of();
         }
@@ -403,11 +403,9 @@ public class ImageService {
     public void cleanupOrphanedDefaultImages() {
         List<DepartmentImage> orphanedImages = imageRepository.findOrphanedDepartmentImages();
         for (DepartmentImage image : orphanedImages) {
-            log.info("Deleting orphaned default image: {}", image.getImageId());
             deleteImageFile(image);
             imageRepository.delete(image);
         }
-        log.info("Cleaned up {} orphaned default images", orphanedImages.size());
     }
 
     /**
