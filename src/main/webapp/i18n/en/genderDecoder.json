@@ -2,19 +2,19 @@
   "genderDecoder": {
     "resultTitle": "Gender Bias Analysis",
     "buttonLabel": "Check",
-    "masculineWords": "Non-Gender-Inclusive terms",
-    "feminineWords": "Gender-inclusive terms",
+    "nonInclusiveWords": "Non-Gender-Inclusive terms",
+    "inclusiveWords": "Gender-inclusive terms",
     "noWordsFound": "No words found",
     "openAnaylsis": "Click here for more information",
     "originalDecoder": "Based on the <a href=\"https://gender-decoder.katmatfield.com/\" target=\"_blank\"  class='external-link' rel=\"noopener noreferrer\">original gender decoder</a> by Kat Matfield",
     "formulationTexts": {
-      "manly": "Non-Gender-Inclusive wording",
-      "feminine": "Gender-inclusive wording",
+      "nonInclusive": "Non-Gender-Inclusive wording",
+      "inclusive": "Gender-inclusive wording",
       "neutral": "Neutral wording"
     },
     "explanations": {
-      "masculine-coded": "Your posting contains wording that leans toward non-gender-inclusive language. Such language can affect how appealing the role is to different candidates. To ensure the posting resonates with a broad and diverse audience, you may consider using more gender-inclusive phrasing.",
-      "feminine-coded": "Your posting uses wording that is gender-inclusive. Research suggests that such language can increase the appeal of a role to many candidates and generally does not discourage others.",
+      "non-inclusive-coded": "Your posting contains wording that leans toward non-gender-inclusive language. Such language can affect how appealing the role is to different candidates. To ensure the posting resonates with a broad and diverse audience, you may consider using more gender-inclusive phrasing.",
+      "inclusive-coded": "Your posting uses wording that is gender-inclusive. Research suggests that such language can increase the appeal of a role to many candidates and generally does not discourage others.",
       "empty": "Your posting contains no indicators of either gender-inclusive or non-gender-inclusive language. The language appears inclusive and broadly appealing.",
       "neutral": "Your posting contains a balanced mix of gender-inclusive and non-gender-inclusive wording. The language appears inclusive and broadly appealing."
     },
