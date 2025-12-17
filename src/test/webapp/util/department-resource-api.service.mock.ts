@@ -7,6 +7,7 @@ export interface DepartmentResourceApiServiceMock {
   deleteDepartment: Mock;
   getDepartmentById: Mock;
   getDepartments: Mock;
+  getDepartmentsForAdmin: Mock;
   updateDepartment: Mock;
 }
 
@@ -16,6 +17,7 @@ export function createDepartmentResourceApiServiceMock(): DepartmentResourceApiS
     deleteDepartment: vi.fn(),
     getDepartmentById: vi.fn(),
     getDepartments: vi.fn(),
+    getDepartmentsForAdmin: vi.fn(),
     updateDepartment: vi.fn(),
   };
 }
