@@ -7,6 +7,7 @@ import { createTranslateServiceMock, provideTranslateMock } from '../../../util/
 import { EmailSettingResourceApiService } from 'app/generated/api/emailSettingResourceApi.service';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
+import { setupWindowMatchMediaMock } from '../../../util/theme.service.mock';
 
 describe('SettingsComponent', () => {
   let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
@@ -20,6 +21,8 @@ describe('SettingsComponent', () => {
   const toastServiceMock = createToastServiceMock();
 
   beforeEach(() => {
+    setupWindowMatchMediaMock();
+
     accountServiceMock = createAccountServiceMock();
     translateMock = createTranslateServiceMock();
 

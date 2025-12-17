@@ -166,13 +166,14 @@ describe('OtpInput', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    const otpEvent = createInputOtpChangeEvent('a1$');
+    // Test with mixed input but consists only digits
+    const otpEvent = createInputOtpChangeEvent('12$3');
     component.onChange(otpEvent);
     fixture.detectChanges();
 
     const ctrl = getFormControl(component);
-    expect(component.otpValue()).toBe('A1');
-    expect(ctrl.value).toBe('A1');
+    expect(component.otpValue()).toBe('123');
+    expect(ctrl.value).toBe('123');
     expect(ctrl.dirty).toBe(true);
     expect(ctrl.pristine).toBe(false);
   });
@@ -209,7 +210,7 @@ describe('OtpInput', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    const otp = 'ABC123';
+    const otp = '123456';
     component.onChange(createInputOtpChangeEvent(otp));
     fixture.detectChanges();
 
@@ -283,7 +284,7 @@ describe('OtpInput', () => {
     const fixture = createComponent();
     const component = fixture.componentInstance;
 
-    component.onChange(createInputOtpChangeEvent('ABC123'));
+    component.onChange(createInputOtpChangeEvent('ABCD'));
     fixture.detectChanges();
 
     const registrationFlagBefore = getIsRegistration(component);
@@ -326,7 +327,7 @@ describe('OtpInput', () => {
     const component = fixture.componentInstance;
 
     // Error does not keep submit disabled when length is valid
-    component.onChange(createInputOtpChangeEvent('ABC123'));
+    component.onChange(createInputOtpChangeEvent('123456'));
     fixture.detectChanges();
 
     expect(component.disabledSubmit()).toBe(false);
@@ -359,9 +360,9 @@ describe('OtpInput', () => {
     const otpHost = fixture.debugElement.query(de => de.name === 'p-inputotp');
     expect(otpHost).toBeTruthy();
 
-    otpHost.triggerEventHandler('onChange', createInputOtpChangeEvent('abc123'));
+    otpHost.triggerEventHandler('onChange', createInputOtpChangeEvent('123456'));
     fixture.detectChanges();
-    expect(component.otpValue()).toBe('ABC123');
+    expect(component.otpValue()).toBe('123456');
 
     const submitSpy = vi.spyOn(component, 'onSubmit');
     const preventDefault = vi.fn();
