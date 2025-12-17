@@ -111,7 +111,7 @@ public class UserDataExportService {
 
     private List<UserSettingDTO> getUserSettings(UUID userId) {
         return userSettingRepository
-            .findAllByUserId(userId)
+            .findAllByIdUserId(userId)
             .stream()
             .map(setting -> new UserSettingDTO(setting.getId().getSettingKey(), setting.getValue()))
             .toList();

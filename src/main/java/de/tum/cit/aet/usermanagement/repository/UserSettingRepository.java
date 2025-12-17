@@ -24,7 +24,7 @@ public interface UserSettingRepository extends TumApplyJpaRepository<UserSetting
      * @param userId the UUID of the user to find settings for
      * @return a list of user settings
      */
-    List<UserSetting> findAllByUserId(UUID userId);
+    List<UserSetting> findAllByIdUserId(UUID userId);
 
     /**
      * Find a specific setting by user id and setting key.
