@@ -3,6 +3,7 @@ package de.tum.cit.aet.usermanagement.repository;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import de.tum.cit.aet.usermanagement.domain.key.UserSettingId;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,6 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 public interface UserSettingRepository extends TumApplyJpaRepository<UserSetting, UserSettingId> {
+    /**
+     * Finds all settings for a specific user.
+     *
+     * @param userId the UUID of the user to find settings for
+     * @return a list of user settings
+     */
+    List<UserSetting> findAllByUserId(UUID userId);
+
     /**
      * Find a specific setting by user id and setting key.
      *

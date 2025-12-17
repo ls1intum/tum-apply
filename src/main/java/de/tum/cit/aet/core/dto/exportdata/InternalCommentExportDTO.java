@@ -1,5 +1,5 @@
 package de.tum.cit.aet.core.dto.exportdata;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
-public record InternalCommentExportDTO(String jobTitle, String applicantName, String message, Instant createdAt) {}
+public record InternalCommentExportDTO(String jobTitle, String applicantName, String message, LocalDateTime createdAt) {}

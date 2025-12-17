@@ -1,17 +1,23 @@
 package de.tum.cit.aet.core.dto.exportdata;
 
-import de.tum.cit.aet.core.domain.DocumentDictionary;
 import java.util.List;
 import java.util.Set;
 
-public record ApplicantDataDTO(
-    String bachelorDegree,
+public record ApplicantDataExportDTO(
+    String street,
+    String postalCode,
+    String city,
+    String country,
     String bachelorDegreeName,
+    String bachelorGradeUpperLimit,
+    String bachelorGradeLowerLimit,
     String bachelorGrade,
     String bachelorUniversity,
     String masterDegreeName,
+    String masterGradeUpperLimit,
+    String masterGradeLowerLimit,
     String masterGrade,
     String masterUniversity,
-    Set<DocumentDictionary> documents,
+    Set<DocumentExportDTO> documents,
     List<ApplicationExportDTO> applications
 ) {}

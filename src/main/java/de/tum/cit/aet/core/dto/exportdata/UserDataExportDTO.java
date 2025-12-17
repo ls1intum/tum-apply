@@ -5,9 +5,9 @@ import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import java.util.List;
 
 public record UserDataExportDTO(
-    UserProfileDTO profile,
+    UserProfileExportDTO profile,
     List<UserSettingDTO> settings,
     List<EmailSettingDTO> emailSettings,
-    @Optional ApplicantDataDTO applicantData, // Null if not an applicant
+    @Optional ApplicantDataExportDTO applicantData, // Null if not an applicant
     @Optional StaffDataDTO staffData // Null if not staff
 ) {}

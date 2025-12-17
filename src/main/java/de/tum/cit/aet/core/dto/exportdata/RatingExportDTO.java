@@ -1,5 +1,5 @@
 package de.tum.cit.aet.core.dto.exportdata;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
-public record RatingExportDTO(String jobTitle, String applicantName, Integer rating, Instant createdAt) {}
+public record RatingExportDTO(String jobTitle, String applicantName, Integer rating, LocalDateTime createdAt) {}
