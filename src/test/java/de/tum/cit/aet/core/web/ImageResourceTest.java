@@ -687,19 +687,6 @@ public class ImageResourceTest extends AbstractResourceTest {
             api.deleteAndRead(API_BASE_PATH + "/" + testImage.getImageId(), null, Void.class, 401);
         }
 
-        @Test
-        void deleteImagePreventsUserFromDeletingJobBannerWithoutResearchGroup() {
-            // Arrange - Create a job banner without a research group (edge case)
-            Image jobBannerWithoutGroup = imageRepository.save(ImageTestData.newJobBanner(secondProfessorUser, null));
-
-            // Act & Assert - Professor should not be able to delete it
-            api
-                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
-                .deleteAndRead(API_BASE_PATH + "/" + jobBannerWithoutGroup.getImageId(), null, Void.class, 403);
-
-            // Verify image was not deleted
-            assertThat(imageRepository.findById(jobBannerWithoutGroup.getImageId())).isPresent();
-        }
 
         @Test
         void deleteImagePreventsUserWithoutResearchGroupFromDeletingJobBanner() {

@@ -211,8 +211,8 @@ class ImageServiceTest {
 
             // Assert
             assertThat(result).isNotNull();
-            assertThat(result).isInstanceOf(de.tum.cit.aet.core.domain.DepartmentImage.class);
-            de.tum.cit.aet.core.domain.DepartmentImage departmentImage = (de.tum.cit.aet.core.domain.DepartmentImage) result;
+            assertThat(result).isInstanceOf(DepartmentImage.class);
+            DepartmentImage departmentImage = (DepartmentImage) result;
             assertThat(departmentImage.getDepartment()).isEqualTo(testDepartment);
             verify(imageRepository).save(any(Image.class));
         }
