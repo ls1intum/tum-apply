@@ -71,7 +71,7 @@ export default [
       languageOptions: {
         parser: typescriptParser,
         parserOptions: {
-          project: ['./tsconfig.app.json', './tsconfig.spec.json', './tsconfig.json', 'src/test/playwright/tsconfig.json'],
+          project: ['./tsconfig.app.json', './tsconfig.spec.json', './tsconfig.json'],
         },
         globals: {
           ...globals.browser,

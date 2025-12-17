@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, computed, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -8,25 +8,33 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, fromEventPattern, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { PrimeNG } from 'primeng/config';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { Popover } from 'primeng/popover';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+import { FormsModule } from '@angular/forms';
+import { ThemeService } from 'app/service/theme.service';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { SelectComponent, SelectOption } from '../../atoms/select/select.component';
+import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { TUMApplyPreset } from '../../../../../content/theming/tumapplypreset';
-import { BlossomTheme } from '../../../../../content/theming/custompreset';
-import { AquaBloomTheme } from '../../../../../content/theming/aquabloom';
-
-type ThemeOption = 'light' | 'dark' | 'blossom' | 'aquabloom';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, SelectComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    FontAwesomeModule,
+    TranslateModule,
+    DynamicDialogModule,
+    TranslateDirective,
+    Popover,
+    ToggleSwitch,
+    FormsModule,
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -48,7 +56,12 @@ export class HeaderComponent {
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
   router = inject(Router);
-  theme = signal<ThemeOption>(this.getInitialTheme());
+  themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+  syncWithSystem = this.themeService.syncWithSystem;
+  themePopover = viewChild<Popover>('popover');
+  isOverButton = signal<boolean>(false);
+  isOverPopover = signal<boolean>(false);
 
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
@@ -89,31 +102,7 @@ export class HeaderComponent {
 
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
-  private primeNG = inject(PrimeNG);
-  private readonly rootElement = document.documentElement;
-
-  constructor() {
-    this.setTheme(this.theme());
-  }
-
-  getInitialTheme(): ThemeOption {
-    const stored = localStorage.getItem('tumApplyTheme') as ThemeOption | null;
-
-    if (stored === 'dark' || stored === 'blossom' || stored === 'light' || stored === 'aquabloom') {
-      return stored;
-    }
-    const classList = document.documentElement.classList;
-    if (classList.contains('tum-apply-blossom')) {
-      return 'blossom';
-    }
-    if (classList.contains('tum-apply-dark-mode')) {
-      return 'dark';
-    }
-    if (classList.contains('tum-apply-aquabloom')) {
-      return 'aquabloom';
-    }
-    return 'light';
-  }
+  private popoverTimeout?: number;
 
   navigateToHome(): void {
     if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
@@ -153,44 +142,49 @@ export class HeaderComponent {
     void this.authFacadeService.logout();
   }
 
-  setTheme(theme: ThemeOption): void {
-    this.theme.set(theme);
-
-    const root = this.rootElement;
-
-    // Disable transitions/animations before changing theme
-    root.classList.add('theme-switching');
-
-    root.classList.remove('tum-apply-dark-mode', 'tum-apply-blossom', 'tum-apply-aquabloom');
-
-    const themeOptions = {
-      darkModeSelector: '.tum-apply-dark-mode',
-      cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
-    };
-
-    if (theme === 'blossom') {
-      this.primeNG.theme.set({ preset: BlossomTheme, options: themeOptions });
-      root.classList.add('tum-apply-blossom');
-    } else if (theme === 'aquabloom') {
-      this.primeNG.theme.set({ preset: AquaBloomTheme, options: themeOptions });
-      root.classList.add('tum-apply-aquabloom');
-    } else {
-      this.primeNG.theme.set({ preset: TUMApplyPreset, options: themeOptions });
-      if (theme === 'dark') {
-        root.classList.add('tum-apply-dark-mode');
-      }
-    }
-
-    localStorage.setItem('tumApplyTheme', theme);
-
-    // allow one frame for styles to apply, then restore transitions
-    window.requestAnimationFrame(() => {
-      root.classList.remove('theme-switching');
-    });
+  onThemeChange(option: SelectOption): void {
+    this.themeService.setTheme(option.value as 'light' | 'dark' | 'blossom' | 'aquabloom');
   }
 
-  onThemeChange(option: SelectOption): void {
-    this.setTheme(option.value as ThemeOption);
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  onSyncWithSystemChange(value: boolean): void {
+    this.themeService.setSyncWithSystem(value);
+  }
+
+  onThemeAreaEnter(): void {
+    this.isOverButton.set(true);
+    this.clearPopoverTimeout();
+  }
+
+  onThemeAreaLeave(): void {
+    this.isOverButton.set(false);
+    this.checkAndHidePopover();
+  }
+
+  onThemeButtonEnter(event: Event): void {
+    const popover = this.themePopover();
+    popover?.show(event);
+
+    // Attach event listeners to popover container after it's shown
+    if (popover) {
+      setTimeout(() => {
+        const container = popover.container;
+        if (container) {
+          // Remove old listeners if they exist
+          container.onmouseenter = () => {
+            this.isOverPopover.set(true);
+            this.clearPopoverTimeout();
+          };
+          container.onmouseleave = () => {
+            this.isOverPopover.set(false);
+            this.checkAndHidePopover();
+          };
+        }
+      }, 0);
+    }
   }
 
   toggleLanguage(language: string): void {
@@ -199,5 +193,21 @@ export class HeaderComponent {
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
+  }
+
+  private clearPopoverTimeout(): void {
+    if (this.popoverTimeout !== undefined) {
+      clearTimeout(this.popoverTimeout);
+      this.popoverTimeout = undefined;
+    }
+  }
+
+  private checkAndHidePopover(): void {
+    this.clearPopoverTimeout();
+    this.popoverTimeout = window.setTimeout(() => {
+      if (!this.isOverButton() && !this.isOverPopover()) {
+        this.themePopover()?.hide();
+      }
+    }, 200);
   }
 }

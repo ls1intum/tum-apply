@@ -78,3 +78,18 @@ p-step[data-p-active='true'] .p-step-title {
   transition: none !important;
   animation: none !important;
 }
+
+/* -------------------------------
+   Registration Page: Orange Buttons
+---------------------------------- */
+.registration-content {
+  jhi-auth-idp-buttons .p-button-outlined {
+    background: transparent !important;
+    border-color: var(--p-accent-color) !important;
+    color: var(--p-accent-color) !important;
+
+    &:hover {
+      background: var(--p-accent-hover-color-outlined) !important;
+    }
+  }
+}
