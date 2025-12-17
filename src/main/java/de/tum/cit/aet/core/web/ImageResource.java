@@ -1,6 +1,5 @@
 package de.tum.cit.aet.core.web;
 
-import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
@@ -96,7 +95,7 @@ public class ImageResource {
     @PostMapping(value = "/upload/job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadJobBanner(@RequestParam("file") MultipartFile file) {
         log.info("POST /api/images/upload/job-banner filename={}", file.getOriginalFilename());
-        Image image = imageService.upload(file, ImageType.JOB_BANNER);
+        Image image = imageService.uploadJobBanner(file);
         return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }
 

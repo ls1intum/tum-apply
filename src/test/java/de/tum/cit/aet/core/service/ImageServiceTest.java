@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
@@ -17,7 +16,7 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ImageTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
@@ -45,10 +44,10 @@ class ImageServiceTest {
     private ImageRepository imageRepository;
 
     @Mock
-    private ResearchGroupRepository researchGroupRepository;
+    private DepartmentRepository departmentRepository;
 
     @Mock
-    private DepartmentRepository departmentRepository;
+    private SchoolRepository schoolRepository;
 
     @Mock
     private CurrentUserService currentUserService;
@@ -74,8 +73,8 @@ class ImageServiceTest {
     void setUp() {
         imageService = new ImageService(
             imageRepository,
-            researchGroupRepository,
             departmentRepository,
+            schoolRepository,
             currentUserService,
             IMAGE_ROOT,
             MAX_FILE_SIZE,
@@ -114,7 +113,7 @@ class ImageServiceTest {
     }
 
     @Nested
-    class Upload {
+    class UploadJobBanner {
 
         @Test
         void shouldThrowExceptionWhenFileIsEmpty() {
@@ -123,7 +122,7 @@ class ImageServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
 
             // Act & Assert
-            assertThatThrownBy(() -> imageService.upload(emptyFile, ImageType.JOB_BANNER))
+            assertThatThrownBy(() -> imageService.uploadJobBanner(emptyFile))
                 .isInstanceOf(UploadException.class)
                 .hasMessageContaining("Empty file");
         }
@@ -136,7 +135,7 @@ class ImageServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
 
             // Act & Assert
-            assertThatThrownBy(() -> imageService.upload(largeFile, ImageType.JOB_BANNER))
+            assertThatThrownBy(() -> imageService.uploadJobBanner(largeFile))
                 .isInstanceOf(UploadException.class)
                 .hasMessageContaining("exceeds maximum size");
         }
@@ -149,7 +148,7 @@ class ImageServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
 
             // Act & Assert
-            assertThatThrownBy(() -> imageService.upload(invalidFile, ImageType.JOB_BANNER))
+            assertThatThrownBy(() -> imageService.uploadJobBanner(invalidFile))
                 .isInstanceOf(UploadException.class)
                 .hasMessageContaining("Invalid image type");
         }
@@ -162,7 +161,7 @@ class ImageServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
 
             // Act & Assert
-            assertThatThrownBy(() -> imageService.upload(notImageFile, ImageType.JOB_BANNER))
+            assertThatThrownBy(() -> imageService.uploadJobBanner(notImageFile))
                 .isInstanceOf(UploadException.class)
                 .hasMessageContaining("Invalid image file");
         }
@@ -176,7 +175,7 @@ class ImageServiceTest {
             when(currentUserService.getUser()).thenReturn(testUser);
 
             // Act & Assert
-            assertThatThrownBy(() -> imageService.upload(largeImageFile, ImageType.JOB_BANNER))
+            assertThatThrownBy(() -> imageService.uploadJobBanner(largeImageFile))
                 .isInstanceOf(UploadException.class)
                 .hasMessageContaining("dimensions")
                 .hasMessageContaining("exceed maximum");

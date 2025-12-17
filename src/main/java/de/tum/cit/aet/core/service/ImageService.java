@@ -13,7 +13,7 @@ import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,8 +39,8 @@ public class ImageService {
     private static final List<String> ALLOWED_MIME_TYPES = List.of("image/jpeg", "image/png", "image/jpg");
 
     private final ImageRepository imageRepository;
-    private final ResearchGroupRepository researchGroupRepository;
     private final DepartmentRepository departmentRepository;
+    private final SchoolRepository schoolRepository;
     private final CurrentUserService currentUserService;
     private final Path imageRoot;
     private final long maxFileSize;
@@ -49,8 +49,8 @@ public class ImageService {
 
     public ImageService(
         ImageRepository imageRepository,
-        ResearchGroupRepository researchGroupRepository,
         DepartmentRepository departmentRepository,
+        SchoolRepository schoolRepository,
         CurrentUserService currentUserService,
         @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
         @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
@@ -58,8 +58,8 @@ public class ImageService {
         @Value("${aet.storage.max-image-height:4096}") int maxHeight // 4096px height default
     ) {
         this.imageRepository = imageRepository;
-        this.researchGroupRepository = researchGroupRepository;
         this.departmentRepository = departmentRepository;
+        this.schoolRepository = schoolRepository;
         this.currentUserService = currentUserService;
         this.imageRoot = Paths.get(imageRootDir).toAbsolutePath().normalize();
         this.maxFileSize = maxFileSize;
@@ -82,35 +82,6 @@ public class ImageService {
     }
 
     /**
-     * Uploads an image file and stores it as a non-default image.
-     * For JOB_BANNER: associated with the current user's research group
-     * For PROFILE_PICTURE: not associated with any group/department
-     *
-     * The file is validated for type (JPEG/PNG), size, and dimensions before being stored.
-     * A unique filename is generated and the image is saved to the appropriate subdirectory.
-     *
-     * @param file      the multipart file to be uploaded
-     * @param imageType the type of image (JOB_BANNER or PROFILE_PICTURE)
-     * @return the persisted Image entity with metadata
-     * @throws UploadException if the file is invalid or cannot be stored
-     * @throws IllegalArgumentException if imageType is DEFAULT_JOB_BANNER (use uploadDefaultImage instead)
-     */
-    @Transactional
-    public Image upload(MultipartFile file, ImageType imageType) {
-        if (imageType == ImageType.DEFAULT_JOB_BANNER) {
-            throw new IllegalArgumentException("Use uploadDefaultImage() for DEFAULT_JOB_BANNER images");
-        }
-
-        User uploader = currentUserService.getUser();
-
-        return switch (imageType) {
-            case JOB_BANNER -> uploadResearchGroupImage(file, uploader);
-            case PROFILE_PICTURE -> uploadProfileImage(file, uploader);
-            default -> throw new IllegalArgumentException("Unsupported image type: " + imageType);
-        };
-    }
-
-    /**
      * Uploads a default job banner image for a specific department (admin only).
      * The image will be available to all research groups within the department.
      *
@@ -130,23 +101,33 @@ public class ImageService {
         }
 
         User uploader = currentUserService.getUser();
-
         Department department = departmentRepository
             .findById(departmentId)
             .orElseThrow(() -> EntityNotFoundException.forId("Department", departmentId));
 
-        return uploadDepartmentImage(file, uploader, department);
+        String relativePath = storeImageFile(file, ImageType.DEFAULT_JOB_BANNER);
+
+        DepartmentImage image = new DepartmentImage();
+        setBaseImageProperties(image, file, relativePath, uploader);
+        image.setDepartment(department);
+
+        return imageRepository.save(image);
     }
 
     /**
-     * Upload a research group job banner image.
+     * Uploads a job banner image associated with the current user's research group.
      *
-     * @param file     the multipart file to be uploaded
-     * @param uploader the user uploading the image
+     * The file is validated for type (JPEG/PNG), size, and dimensions before being stored.
+     * A unique filename is generated and the image is saved to the jobs subdirectory.
+     *
+     * @param file the multipart file to be uploaded
      * @return the persisted ResearchGroupImage entity
+     * @throws IllegalStateException if the user is not a member of a research group
      * @throws UploadException if the file is invalid or cannot be stored
      */
-    private ResearchGroupImage uploadResearchGroupImage(MultipartFile file, User uploader) {
+    @Transactional
+    public ResearchGroupImage uploadJobBanner(MultipartFile file) {
+        User uploader = currentUserService.getUser();
         ResearchGroup researchGroup = uploader.getResearchGroup();
         if (researchGroup == null) {
             throw new IllegalStateException("User must belong to a research group to upload job banners");
@@ -155,55 +136,47 @@ public class ImageService {
         String relativePath = storeImageFile(file, ImageType.JOB_BANNER);
 
         ResearchGroupImage image = new ResearchGroupImage();
-        image.setUrl("/images/" + relativePath);
-        image.setMimeType(file.getContentType());
-        image.setSizeBytes(file.getSize());
-        image.setUploadedBy(uploader);
+        setBaseImageProperties(image, file, relativePath, uploader);
         image.setResearchGroup(researchGroup);
 
         return imageRepository.save(image);
     }
 
     /**
-     * Upload a department default job banner image.
+     * Uploads a profile picture image for the current user.
      *
-     * @param file       the multipart file to be uploaded
-     * @param uploader   the user uploading the image (admin)
-     * @param department the department this default image belongs to
-     * @return the persisted DepartmentImage entity
+     * The file is validated for type (JPEG/PNG), size, and dimensions before being stored.
+     * A unique filename is generated and the image is saved to the profiles subdirectory.
+     *
+     * @param file the multipart file to be uploaded
+     * @return the persisted ProfileImage entity
      * @throws UploadException if the file is invalid or cannot be stored
      */
-    private DepartmentImage uploadDepartmentImage(MultipartFile file, User uploader, Department department) {
-        String relativePath = storeImageFile(file, ImageType.DEFAULT_JOB_BANNER);
+    @Transactional
+    public ProfileImage uploadProfilePicture(MultipartFile file) {
+        User uploader = currentUserService.getUser();
+        String relativePath = storeImageFile(file, ImageType.PROFILE_PICTURE);
 
-        DepartmentImage image = new DepartmentImage();
-        image.setUrl("/images/" + relativePath);
-        image.setMimeType(file.getContentType());
-        image.setSizeBytes(file.getSize());
-        image.setUploadedBy(uploader);
-        image.setDepartment(department);
+        ProfileImage image = new ProfileImage();
+        setBaseImageProperties(image, file, relativePath, uploader);
 
         return imageRepository.save(image);
     }
 
     /**
-     * Upload a profile picture image.
+     * Sets common properties for all image types.
+     * Extracted to avoid code duplication across upload methods.
      *
-     * @param file     the multipart file to be uploaded
+     * @param image the image entity to populate
+     * @param file the multipart file being uploaded
+     * @param relativePath the relative storage path
      * @param uploader the user uploading the image
-     * @return the persisted ProfileImage entity
-     * @throws UploadException if the file is invalid or cannot be stored
      */
-    private ProfileImage uploadProfileImage(MultipartFile file, User uploader) {
-        String relativePath = storeImageFile(file, ImageType.PROFILE_PICTURE);
-
-        ProfileImage image = new ProfileImage();
+    private void setBaseImageProperties(Image image, MultipartFile file, String relativePath, User uploader) {
         image.setUrl("/images/" + relativePath);
         image.setMimeType(file.getContentType());
         image.setSizeBytes(file.getSize());
         image.setUploadedBy(uploader);
-
-        return imageRepository.save(image);
     }
 
     /**
@@ -269,8 +242,14 @@ public class ImageService {
      *
      * @param schoolId the school ID to find banners for
      * @return list of default job banner images for the school
+     * @throws EntityNotFoundException if the school is not found
      */
     public List<DepartmentImage> getDefaultJobBannersBySchool(UUID schoolId) {
+        // Verify school exists
+        if (!schoolRepository.existsById(schoolId)) {
+            throw EntityNotFoundException.forId("School", schoolId);
+        }
+
         return imageRepository.findDefaultJobBannersBySchool(schoolId);
     }
 
