@@ -1616,6 +1616,16 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
+  /api/users/export:
+    get:
+      tags: [user-data-export-resource]
+      operationId: exportUserData
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportDTO'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1714,6 +1724,23 @@ components:
         street: {type: string}
         user: {$ref: '#/components/schemas/UserDTO'}
       required: [user]
+    ApplicantDataDTO:
+      type: object
+      properties:
+        applications:
+          type: array
+          items: {$ref: '#/components/schemas/ApplicationExportDTO'}
+        bachelorDegree: {type: string}
+        bachelorDegreeName: {type: string}
+        bachelorGrade: {type: string}
+        bachelorUniversity: {type: string}
+        documents:
+          type: array
+          items: {$ref: '#/components/schemas/DocumentDictionary'}
+          uniqueItems: true
+        masterDegreeName: {type: string}
+        masterGrade: {type: string}
+        masterUniversity: {type: string}
     ApplicantForApplicationDetailDTO:
       type: object
       properties:
@@ -1849,6 +1876,21 @@ components:
           type: array
           items: {$ref: '#/components/schemas/ApplicationEvaluationOverviewDTO'}
         totalRecords: {type: integer, format: int64}
+    ApplicationExportDTO:
+      type: object
+      properties:
+        customFieldAnswers:
+          type: array
+          items: {$ref: '#/components/schemas/CustomFieldAnswerExportDTO'}
+        desiredStartDate: {type: string, format: date}
+        interviewSlots:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotExportDTO'}
+        jobTitle: {type: string}
+        state:
+          type: string
+          enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
+            INVITED, SCHEDULED, COMPLETED]
     ApplicationForApplicantDTO:
       type: object
       properties:
@@ -1888,6 +1930,13 @@ components:
         reason: {type: string}
         reviewedAt: {type: string, format: date-time}
         reviewedBy: {$ref: '#/components/schemas/User'}
+    ApplicationReviewExportDTO:
+      type: object
+      properties:
+        applicantName: {type: string}
+        jobTitle: {type: string}
+        reason: {type: string}
+        reviewedAt: {type: string, format: date-time}
     AuthSessionInfoDTO:
       type: object
       properties:
@@ -1959,6 +2008,13 @@ components:
         documents:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
+    CustomFieldAnswerExportDTO:
+      type: object
+      properties:
+        answers:
+          type: array
+          items: {type: string}
+        question: {type: string}
     CustomFieldDTO: {}
     Department:
       type: object
@@ -1985,7 +2041,30 @@ components:
       properties:
         departmentId: {type: string, format: uuid}
         name: {type: string}
+    Document:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        documentId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        mimeType: {type: string}
+        path: {type: string}
+        sha256Id: {type: string}
+        sizeBytes: {type: integer, format: int64}
+        uploadedBy: {$ref: '#/components/schemas/User'}
     DocumentDTO: {}
+    DocumentDictionary:
+      type: object
+      properties:
+        applicant: {$ref: '#/components/schemas/Applicant'}
+        application: {$ref: '#/components/schemas/Application'}
+        customFieldAnswer: {$ref: '#/components/schemas/CustomFieldAnswer'}
+        document: {$ref: '#/components/schemas/Document'}
+        documentDictionaryId: {type: string, format: uuid}
+        documentType:
+          type: string
+          enum: [BACHELOR_TRANSCRIPT, MASTER_TRANSCRIPT, REFERENCE, CV, CUSTOM]
+        name: {type: string}
     DocumentInformationHolderDTO:
       type: object
       properties:
@@ -2069,7 +2148,7 @@ components:
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
         lastModifiedAt: {type: string, format: date-time}
         mimeType: {type: string}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
+        researchGroup: {}
         sizeBytes: {type: integer, format: int64}
         uploadedBy: {$ref: '#/components/schemas/User'}
         url: {type: string}
@@ -2101,6 +2180,13 @@ components:
         commentId: {type: string, format: uuid}
         createdAt: {type: string, format: date-time}
         message: {type: string}
+    InternalCommentExportDTO:
+      type: object
+      properties:
+        applicantName: {type: string}
+        createdAt: {type: string, format: date-time}
+        jobTitle: {type: string}
+        message: {type: string}
     InternalCommentUpdateDTO:
       type: object
       properties:
@@ -2129,6 +2215,11 @@ components:
         location: {type: string}
         startDateTime: {type: string, format: date-time}
         streamLink: {type: string}
+    InterviewSlotExportDTO:
+      type: object
+      properties:
+        end: {type: string, format: date-time}
+        start: {type: string, format: date-time}
     IntervieweeDTO:
       type: object
       properties:
@@ -2445,6 +2536,13 @@ components:
       properties:
         from: {type: string}
         rating: {type: integer, format: int32}
+    RatingExportDTO:
+      type: object
+      properties:
+        applicantName: {type: string}
+        createdAt: {type: string, format: date-time}
+        jobTitle: {type: string}
+        rating: {type: integer, format: int32}
     RatingOverviewDTO:
       type: object
       properties:
@@ -2599,6 +2697,21 @@ components:
         empty: {type: boolean}
         sorted: {type: boolean}
         unsorted: {type: boolean}
+    StaffDataDTO:
+      type: object
+      properties:
+        comments:
+          type: array
+          items: {$ref: '#/components/schemas/InternalCommentExportDTO'}
+        ratings:
+          type: array
+          items: {$ref: '#/components/schemas/RatingExportDTO'}
+        reviews:
+          type: array
+          items: {$ref: '#/components/schemas/ApplicationReviewExportDTO'}
+        supervisedJobs:
+          type: array
+          items: {type: string}
     UpdateApplicationDTO:
       type: object
       properties:
@@ -2671,6 +2784,18 @@ components:
         selectedLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserDataExportDTO:
+      type: object
+      properties:
+        applicantData: {$ref: '#/components/schemas/ApplicantDataDTO'}
+        emailSettings:
+          type: array
+          items: {$ref: '#/components/schemas/EmailSettingDTO'}
+        profile: {$ref: '#/components/schemas/UserProfileDTO'}
+        settings:
+          type: array
+          items: {$ref: '#/components/schemas/UserSettingDTO'}
+        staffData: {$ref: '#/components/schemas/StaffDataDTO'}
     UserForApplicationDetailDTO:
       type: object
       properties:
@@ -2693,12 +2818,17 @@ components:
     UserResearchGroupRole:
       type: object
       properties:
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
+        researchGroup: {}
         role:
           type: string
           enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         user: {$ref: '#/components/schemas/User'}
         userResearchGroupRoleId: {type: string, format: uuid}
+    UserSettingDTO:
+      type: object
+      properties:
+        key: {type: string}
+        value: {type: string}
     UserShortDTO:
       type: object
       properties:
