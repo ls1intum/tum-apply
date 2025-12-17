@@ -24,13 +24,15 @@
   </div>
 
   <ng-template #actionTemplate let-department>
-    <div class="flex gap-2">
+    <div class="flex gap-2 justify-end items-center">
       <jhi-button
         icon="pencil"
-        [ariaLabel]="'button.edit' | translate"
-        [tooltip]="'button.edit' | translate"
+        [label]="'button.edit'"
+        [ariaLabel]="'button.edit'"
+        [tooltip]="'button.edit'"
         severity="primary"
         variant="text"
+        [shouldTranslate]="true"
         (click)="onEditDepartment(department.departmentId)"
       />
       <jhi-confirm-dialog
@@ -41,7 +43,7 @@
         (confirmed)="onDeleteDepartment(department.departmentId)"
         severity="danger"
         variant="text"
-        [tooltip]="'button.delete' | translate"
+        [tooltip]="'button.delete'"
       />
     </div>
   </ng-template>

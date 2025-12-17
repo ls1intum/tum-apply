@@ -342,7 +342,7 @@
       "toastMessages": {
         "loadFailed": {
           "summary": "Error",
-          "detail": "Error loading departments."
+          "detail": "Error loading departments. Please try again."
         },
         "deleteSuccess": {
           "summary": "Success",
@@ -350,7 +350,7 @@
         },
         "deleteFailed": {
           "summary": "Error",
-          "detail": "Error deleting department."
+          "detail": "Error deleting department. Please try again."
         },
         "updateSuccess": {
           "summary": "Success",
@@ -358,13 +358,13 @@
         },
         "updateFailed": {
           "summary": "Error",
-          "detail": "Error updating department."
+          "detail": "Error updating department. Please try again."
         }
       },
       "createDialog": {
         "title": "Create Department",
         "nameLabel": "Name",
-        "namePlaceholder": "e.g. Department of Computer Science",
+        "namePlaceholder": "e.g. Computer Science",
         "schoolLabel": "School",
         "schoolPlaceholder": "Select...",
         "createButton": "Create Department",
