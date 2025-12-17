@@ -102,6 +102,7 @@
       "me": "Me",
       "manageMembers": "Manage Members",
       "addMembers": "Add Members",
+      "addMembersButton": "Add members",
       "searchPlaceholder": "Search for a member using their name or email...",
       "singleEntity": "User",
       "multipleEntities": "Users",
@@ -109,6 +110,10 @@
         "name": "Name",
         "email": "Email",
         "role": "Role"
+      },
+      "removeMemberModal": {
+        "title": "Remove Member",
+        "message": "Are you sure you want to remove this member from the research group?"
       },
       "toastMessages": {
         "loadFailed": {

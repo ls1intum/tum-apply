@@ -102,6 +102,7 @@
       "me": "Ich",
       "manageMembers": "Mitglieder verwalten",
       "addMembers": "Mitglieder hinzufügen",
+      "addMembersButton": "Mitglieder hinzufügen",
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
       "singleEntity": "Benutzer:in",
       "multipleEntities": "Benutzer:innen",
@@ -229,6 +230,10 @@
         "status": "Status",
         "researchGroup": "Forschungsgruppe",
         "requestedAt": "Angefordert am"
+      },
+      "removeMemberModal": {
+        "title": "Mitglied entfernen",
+        "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
       },
       "viewButton": "Anzeigen",
       "confirmDialog": {

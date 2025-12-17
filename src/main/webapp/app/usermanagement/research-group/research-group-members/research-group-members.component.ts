@@ -11,7 +11,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -109,6 +109,7 @@ export class ResearchGroupMembersComponent {
   private translate = inject(TranslateService);
   private readonly dialogService = inject(DialogService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   private readonly translationKey: string = 'researchGroup.members';
 
@@ -173,6 +174,10 @@ export class ResearchGroupMembersComponent {
         void this.loadMembers();
       }
     });
+  }
+
+  goBack(): void {
+    void this.router.navigate(['/research-group-admin']);
   }
 
   /** Internal methods */

@@ -3,6 +3,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { of, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
@@ -13,6 +14,7 @@ import { provideDialogServiceMock } from 'util/dialog.service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
 import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
 import {
   createResearchGroupResourceApiServiceMock,
   provideResearchGroupResourceApiServiceMock,
@@ -26,6 +28,7 @@ describe('ResearchGroupMembersComponent', () => {
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockActivatedRoute: ActivatedRouteMock;
+  let mockRouter: RouterMock;
 
   const mockUserData: UserShortDTO = {
     userId: 'user-1',
@@ -54,6 +57,7 @@ describe('ResearchGroupMembersComponent', () => {
     mockToastService = createToastServiceMock();
     mockAccountService = createAccountServiceMock();
     mockAccountService.user.set({ id: 'current-user', name: 'Current User', email: 'test@test.com', authorities: [] });
+    mockRouter = createRouterMock();
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent],
@@ -65,6 +69,7 @@ describe('ResearchGroupMembersComponent', () => {
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideActivatedRouteMock(mockActivatedRoute),
+        provideRouterMock(mockRouter),
       ],
     }).compileComponents();
 
@@ -331,5 +336,10 @@ describe('ResearchGroupMembersComponent', () => {
     const row = component.tableData()[0];
 
     expect(row.canRemove).toBe(false);
+  });
+
+  it('should navigate back to admin view', () => {
+    component.goBack();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group-admin']);
   });
 });
