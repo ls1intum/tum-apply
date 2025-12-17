@@ -94,6 +94,21 @@ describe('ResearchGroupDepartmentsComponent', () => {
 
       expect(failingComponent.availableSchools()).toEqual([]);
     });
+
+    it('should treat missing school names as empty strings in availableSchools', () => {
+      // set a school without a name
+      component.schools.set([{ schoolId: 's2', name: undefined, abbreviation: 'S2' } as any]);
+      expect(component.availableSchools()).toEqual(['']);
+    });
+
+    it('should default undefined page response fields to empty and zero', async () => {
+      mockDepartmentService.getDepartmentsForAdmin.mockReturnValue(of({}));
+
+      await component.loadDepartments();
+
+      expect(component.departments()).toEqual([]);
+      expect(component.total()).toBe(0);
+    });
   });
 
   describe('pagination', () => {
