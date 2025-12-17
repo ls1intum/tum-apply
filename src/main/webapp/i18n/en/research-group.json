@@ -334,6 +334,13 @@
     "departments": {
       "header": "Departments",
       "createButton": "Create Department",
+      "searchPlaceholder": "Search departments...",
+      "entity": "Department",
+      "entities": "Departments",
+      "filter": {
+        "school": "School",
+        "schoolSearch": "Search school..."
+      },
       "tableColumns": {
         "name": "Name",
         "school": "School",

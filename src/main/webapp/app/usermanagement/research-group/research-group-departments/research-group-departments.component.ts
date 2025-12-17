@@ -4,12 +4,17 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { DepartmentDTO } from 'app/generated/model/models';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { DepartmentResourceApiService } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
+import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
+import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
+import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 
 import { DepartmentEditDialogComponent } from './department-edit-dialog/department-edit-dialog.component';
 
@@ -22,16 +27,24 @@ interface DepartmentTableRow {
 
 @Component({
   selector: 'jhi-research-group-departments.component',
-  imports: [FontAwesomeModule, TranslateModule, DynamicTableComponent, ButtonComponent, ConfirmDialog],
+  imports: [FontAwesomeModule, TranslateModule, DynamicTableComponent, ButtonComponent, ConfirmDialog, SearchFilterSortBar],
   templateUrl: './research-group-departments.component.html',
 })
 export class ResearchGroupDepartmentsComponent {
-  allDepartments = signal<DepartmentDTO[]>([]);
   pageNumber = signal<number>(0);
   pageSize = signal<number>(10);
+
+  searchQuery = signal<string>('');
+  selectedSchoolFilters = signal<string[]>([]);
+  sortBy = signal<string>('name');
+  sortDirection = signal<'ASC' | 'DESC'>('ASC');
+
+  departments = signal<DepartmentDTO[]>([]);
   total = signal<number>(0);
+  schools = signal<SchoolShortDTO[]>([]);
 
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
+  readonly translationKey: string = 'researchGroup.departments';
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const buttonTpl = this.buttonTemplate();
@@ -44,26 +57,44 @@ export class ResearchGroupDepartmentsComponent {
     ];
   });
 
+  readonly availableSchools = computed(() =>
+    this.schools()
+      .map(s => s.name ?? '')
+      .sort(),
+  );
+
+  readonly filters = computed<Filter[]>(() => [
+    {
+      filterId: 'school',
+      filterLabel: `${this.translationKey}.filter.school`,
+      filterSearchPlaceholder: `${this.translationKey}.filter.schoolSearch`,
+      filterOptions: this.availableSchools(),
+      shouldTranslateOptions: false,
+    },
+  ]);
+
+  readonly sortableFields: SortOption[] = [
+    { displayName: `${this.translationKey}.tableColumns.name`, fieldName: 'name', type: 'TEXT' },
+    { displayName: `${this.translationKey}.tableColumns.school`, fieldName: 'school.name', type: 'TEXT' },
+  ];
+
   readonly tableData = computed<DepartmentTableRow[]>(() => {
-    const start = this.pageNumber() * this.pageSize();
-    const end = start + this.pageSize();
-    return this.allDepartments()
-      .slice(start, end)
-      .map(dept => ({
-        departmentId: dept.departmentId,
-        name: dept.name,
-        schoolName: dept.school?.name,
-        schoolAbbreviation: dept.school?.abbreviation,
-      }));
+    return this.departments().map(dept => ({
+      departmentId: dept.departmentId,
+      name: dept.name,
+      schoolName: dept.school?.name,
+      schoolAbbreviation: dept.school?.abbreviation,
+    }));
   });
 
   private toastService = inject(ToastService);
   private readonly departmentResourceApiService = inject(DepartmentResourceApiService);
+  private readonly schoolResourceApiService = inject(SchoolResourceApiService);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
-  private readonly translationKey: string = 'researchGroup.departments';
 
   constructor() {
+    void this.loadSchools();
     void this.loadDepartments();
   }
 
@@ -72,23 +103,55 @@ export class ResearchGroupDepartmentsComponent {
     const rows = event.rows ?? 10;
     this.pageNumber.set(first / rows);
     this.pageSize.set(rows);
+    void this.loadDepartments();
   }
 
   async loadDepartments(): Promise<void> {
     try {
-      const departments = await firstValueFrom(this.departmentResourceApiService.getDepartments());
-      this.allDepartments.set(departments);
-      this.total.set(departments.length);
+      const pageResponse = await firstValueFrom(
+        this.departmentResourceApiService.getDepartmentsForAdmin(
+          this.pageSize(),
+          this.pageNumber(),
+          this.selectedSchoolFilters(),
+          this.searchQuery(),
+          this.sortBy(),
+          this.sortDirection(),
+        ),
+      );
+
+      this.departments.set(pageResponse.content ?? []);
+      this.total.set(pageResponse.totalElements ?? 0);
     } catch {
       this.toastService.showErrorKey(`${this.translationKey}.toastMessages.loadFailed`);
     }
+  }
+
+  onSearchEmit(searchQuery: string): void {
+    this.searchQuery.set(searchQuery);
+    this.pageNumber.set(0);
+    void this.loadDepartments();
+  }
+
+  onFilterEmit(filterChange: FilterChange): void {
+    if (filterChange.filterId === 'school') {
+      this.selectedSchoolFilters.set(filterChange.selectedValues);
+      this.pageNumber.set(0);
+      void this.loadDepartments();
+    }
+  }
+
+  loadOnSortEmit(event: Sort): void {
+    this.sortBy.set(event.field);
+    this.sortDirection.set(event.direction);
+    this.pageNumber.set(0);
+    void this.loadDepartments();
   }
 
   onEditDepartment(departmentId: string | undefined): void {
     if (!departmentId) {
       return;
     }
-    const department = this.allDepartments().find(d => d.departmentId === departmentId);
+    const department = this.departments().find(d => d.departmentId === departmentId);
     if (!department) {
       return;
     }
@@ -142,5 +205,14 @@ export class ResearchGroupDepartmentsComponent {
         void this.loadDepartments();
       }
     });
+  }
+
+  private async loadSchools(): Promise<void> {
+    try {
+      const schools = await firstValueFrom(this.schoolResourceApiService.getAllSchools());
+      this.schools.set(schools);
+    } catch {
+      // non-fatal, availableSchools will be empty
+    }
   }
 }
