@@ -269,7 +269,7 @@ const routes: Routes = [
   {
     path: 'research-group/:id/members',
     canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Employee] },
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
     loadComponent: () =>
       import('./usermanagement/research-group/research-group-members/research-group-members.component').then(
         m => m.ResearchGroupMembersComponent,
