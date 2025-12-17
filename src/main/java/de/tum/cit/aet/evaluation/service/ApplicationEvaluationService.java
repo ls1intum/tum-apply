@@ -13,6 +13,8 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
+import de.tum.cit.aet.core.service.ZipExportService;
+import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.dto.*;
@@ -32,10 +34,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +49,7 @@ public class ApplicationEvaluationService {
     private final AsyncEmailSender sender;
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final CurrentUserService currentUserService;
-
-    @Value("${aet.download.deterministic-zip:false}")
-    private boolean DETERMINISTIC_ZIP;
+    private final ZipExportService zipExportService;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -292,11 +290,11 @@ public class ApplicationEvaluationService {
         Set<DocumentDictionary> documentDictionaries = documentDictionaryService.findAllByApplication(applicationId);
 
         User user = application.getApplicant().getUser();
-        String zipName = sanitizeFilename(user.getFirstName() + " " + user.getLastName() + " - " + application.getJob().getTitle());
+        String zipName = FileUtil.sanitizeFilename(
+            user.getFirstName() + " " + user.getLastName() + " - " + application.getJob().getTitle()
+        );
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s.zip\"", zipName));
+        zipExportService.initZipResponse(response, zipName);
 
         // Count per type to decide if numbering is needed
         Map<DocumentType, Long> typeCounts = documentDictionaries
@@ -326,36 +324,12 @@ public class ApplicationEvaluationService {
                 String ext = documentService.resolveFileExtension(doc).getExtension();
                 entryName += "." + ext;
 
-                ZipEntry entry = new ZipEntry(entryName);
-                zos.putNextEntry(entry);
-
-                // can be enabled for testing
-                if (DETERMINISTIC_ZIP) {
-                    entry.setTime(0L);
-                }
-
                 byte[] bytes = documentService.download(doc).getContentAsByteArray();
-                zos.write(bytes);
-
-                zos.closeEntry();
+                zipExportService.addFileToZip(zos, entryName, bytes);
             }
 
             zos.finish();
         }
-    }
-
-    private static String sanitizeFilename(String input) {
-        if (input == null || input.isBlank()) {
-            return "file";
-        }
-        String cleaned = input.replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]+", "_").trim();
-
-        // limit length (some file systems break >255 chars)
-        if (cleaned.length() > 120) {
-            cleaned = cleaned.substring(0, 120);
-        }
-
-        return cleaned;
     }
 
     /**

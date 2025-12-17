@@ -1,6 +1,8 @@
 package de.tum.cit.aet.core.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationReviewExportDTO;
@@ -13,6 +15,8 @@ import de.tum.cit.aet.core.dto.exportdata.UserDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserProfileExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserSettingDTO;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
+import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
@@ -25,14 +29,21 @@ import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.zip.Deflater;
+import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDataExportService {
@@ -47,22 +58,42 @@ public class UserDataExportService {
     private final ApplicationReviewRepository applicationReviewRepository;
     private final InternalCommentRepository internalCommentRepository;
     private final RatingRepository ratingRepository;
+    private final DocumentRepository documentRepository;
+    private final DocumentService documentService;
+    private final ZipExportService zipExportService;
+    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
-    public UserDataExportDTO exportUserData(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+    public void exportUserData(UUID userId, HttpServletResponse response) throws IOException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         UserProfileExportDTO profile = getUserProfile(user);
-
         List<UserSettingDTO> settings = getUserSettings(userId);
-
         List<EmailSettingDTO> emailSettings = getEmailSettings(user);
-
         ApplicantDataExportDTO applicantData = applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
-
         StaffDataDTO staffData = getStaffData(user);
 
-        return new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
+        UserDataExportDTO userData = new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
+
+        zipExportService.initZipResponse(response, "user-data-export-" + userId);
+
+        try (ZipOutputStream zipOut = new ZipOutputStream(new BufferedOutputStream(response.getOutputStream()))) {
+            zipOut.setLevel(Deflater.BEST_COMPRESSION);
+
+            // 1. Add JSON summary
+            String jsonSummary = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userData);
+            zipExportService.addFileToZip(zipOut, "user_data_summary.json", jsonSummary.getBytes());
+
+            // 2. Add Applicant Documents
+            if (userData.applicantData() != null) {
+                for (DocumentExportDTO doc : userData.applicantData().documents()) {
+                    String sanitizedFilename = FileUtil.sanitizeFilename(doc.name());
+                    addDocumentToZip(zipOut, doc.documentId(), "documents/" + sanitizedFilename);
+                }
+            }
+
+            zipOut.finish();
+        }
     }
 
     // Private helper methods
@@ -196,5 +227,17 @@ public class UserDataExportService {
         }
 
         return new StaffDataDTO(supervisedJobs, researchGroupRoles, reviews, comments, ratings);
+    }
+
+    private void addDocumentToZip(ZipOutputStream zipOut, UUID documentId, String entryPath) {
+        try {
+            Document document = documentRepository
+                .findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+            byte[] fileContent = documentService.download(document).getContentAsByteArray();
+            zipExportService.addFileToZip(zipOut, entryPath, fileContent);
+        } catch (Exception e) {
+            log.error("Failed to add document {} to ZIP export: {}", documentId, e.getMessage());
+        }
     }
 }
