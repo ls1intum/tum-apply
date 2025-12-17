@@ -254,6 +254,25 @@ public class ImageService {
     }
 
     /**
+     * Retrieves default job banner images for the current user's department.
+     * Automatically determines the department from the user's research group.
+     * If the user has no research group or the research group has no department, returns an empty list.
+     *
+     * @return list of default job banner images for the current user's department
+     */
+    public List<DepartmentImage> getMyDefaultJobBanners() {
+        User currentUser = currentUserService.getUser();
+        ResearchGroup researchGroup = currentUser.getResearchGroup();
+        Department department = researchGroup.getDepartment();
+        
+        if (department == null || researchGroup == null) {
+            return List.of();
+        }
+
+        return getDefaultJobBanners(department.getDepartmentId());
+    }
+
+    /**
      * Retrieves all non-default images uploaded by the current user.
      * This excludes DEFAULT_JOB_BANNER (DepartmentImage) and returns results ordered by creation date (newest first).
      *

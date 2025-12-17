@@ -41,6 +41,21 @@ public class ImageResource {
     }
 
     /**
+     * Get default job banner images for the current user's department.
+     * Automatically filters by the department of the user's research group.
+     *
+     * @return a list of default job banner images for the current user's department
+     */
+    @ProfessorOrEmployeeOrAdmin
+    @GetMapping("/defaults/job-banners/for-me")
+    public ResponseEntity<List<ImageDTO>> getMyDefaultJobBanners() {
+        log.info("GET /api/images/defaults/job-banners/for-me");
+        List<? extends Image> images = imageService.getMyDefaultJobBanners();
+        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
      * Get all default job banner images for a specific school.
      * Returns all default images from all departments within the school.
      *
