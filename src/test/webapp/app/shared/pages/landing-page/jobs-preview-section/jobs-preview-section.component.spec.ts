@@ -81,8 +81,8 @@ describe('JobsPreviewSectionComponent', () => {
     const jobCardEl = fixture.nativeElement.querySelector('jhi-job-card');
     expect(jobCardEl).toBeTruthy();
     const header = jobCardEl.querySelector('div.relative');
-    // When there's no job image, background-image should not be set (fallback images disabled)
-    expect(header.style.backgroundImage).toBe('none');
+    // When there's no job image, background-image should be set to the example image
+    expect(header.style.backgroundImage).toContain('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80');
   });
 
   it('should handle error on load and show toast', async () => {

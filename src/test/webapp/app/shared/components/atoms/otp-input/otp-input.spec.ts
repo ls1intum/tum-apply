@@ -82,7 +82,7 @@ describe('OtpInput', () => {
     const fixture = createFixture();
     const comp = fixture.componentInstance;
 
-    expect(comp.length).toBe(4);
+    expect(comp.length).toBe(6);
     expect(comp.ttlSeconds).toBe(300);
     expect(comp.ttlMinutes).toBe(5);
     expect(comp.otpValue()).toBe('');
@@ -137,7 +137,7 @@ describe('OtpInput', () => {
     comp.otpValue.set('123');
     expect(comp.disabledSubmit()).toBe(true);
 
-    comp.otpValue.set('1234');
+    comp.otpValue.set('123456');
     expect(comp.disabledSubmit()).toBe(false);
   });
 
@@ -177,14 +177,14 @@ describe('OtpInput', () => {
 
     mockAuthOrchestratorService.isBusy.set(false);
     mockAuthOrchestratorService.error.set(null);
-    comp.otpValue.set('1234');
+    comp.otpValue.set('123456');
     fixture.componentRef.setInput('registration', false);
     const clearErrorSpy = vi.spyOn(mockAuthOrchestratorService, 'clearError');
 
     comp.onSubmit();
 
     expect(clearErrorSpy).toHaveBeenCalledTimes(1);
-    expect(mockAuthFacadeService.verifyOtp).toHaveBeenCalledWith('1234', false);
+    expect(mockAuthFacadeService.verifyOtp).toHaveBeenCalledWith('123456', false);
   });
 
   it('should handle onResend when enabled', () => {
