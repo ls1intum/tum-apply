@@ -82,13 +82,12 @@ class UserDataExportServiceTest {
     @InjectMocks
     private UserDataExportService sut;
 
-    private User user;
     private UUID userId;
 
     @BeforeEach
     void setup() throws Exception {
         userId = UUID.randomUUID();
-        user = new User();
+        User user = new User();
         user.setFirstName("First");
         user.setLastName("Last");
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -99,7 +98,7 @@ class UserDataExportServiceTest {
     }
 
     @Test
-    void export_writesOnlySummaryIfNoApplicant() throws Exception {
+    void exportWritesOnlySummaryIfNoApplicant() throws Exception {
         when(applicantRepository.existsById(userId)).thenReturn(false);
 
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -111,7 +110,7 @@ class UserDataExportServiceTest {
     }
 
     @Test
-    void export_addsDocumentWhenPresent() throws Exception {
+    void exportAddsDocumentWhenPresent() throws Exception {
         when(applicantRepository.existsById(userId)).thenReturn(true);
 
         Applicant applicant = new Applicant();
@@ -145,7 +144,7 @@ class UserDataExportServiceTest {
     }
 
     @Test
-    void export_continuesWhenDocumentDownloadFails() throws Exception {
+    void exportContinuesWhenDocumentDownloadFails() throws Exception {
         when(applicantRepository.existsById(userId)).thenReturn(true);
 
         Applicant applicant = new Applicant();
