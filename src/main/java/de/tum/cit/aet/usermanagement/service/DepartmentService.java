@@ -1,9 +1,15 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
+import de.tum.cit.aet.core.util.PageUtil;
+import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.School;
+import de.tum.cit.aet.usermanagement.dto.AdminDepartmentFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
@@ -12,6 +18,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +84,23 @@ public class DepartmentService {
         }
 
         return departmentRepository.findBySchoolSchoolIdOrderByNameAsc(schoolId).stream().map(DepartmentDTO::fromEntity).toList();
+    }
+
+    /**
+     * Retrieves departments for admin with paging, filtering and sorting.
+     *
+     * @param pageDTO the paging parameters
+     * @param filterDTO the filter parameters (searchQuery, schoolNames)
+     * @param sortDTO the sorting parameters
+     * @return a paged response of DepartmentDTOs
+     */
+    public PageResponseDTO<DepartmentDTO> getDepartmentsForAdmin(PageDTO pageDTO, AdminDepartmentFilterDTO filterDTO, SortDTO sortDTO) {
+        PageRequest pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.DEPARTMENTS_ADMIN, true);
+        String normalizedSearch = StringUtil.normalizeSearchQuery(filterDTO.getSearchQuery());
+
+        Page<DepartmentDTO> page = departmentRepository.findAllForAdmin(normalizedSearch, filterDTO.getSchoolNames(), pageable);
+
+        return new PageResponseDTO<>(page.getContent(), page.getTotalElements());
     }
 
     /**

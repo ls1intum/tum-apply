@@ -1,7 +1,11 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Public;
+import de.tum.cit.aet.usermanagement.dto.AdminDepartmentFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
 import de.tum.cit.aet.usermanagement.service.DepartmentService;
@@ -10,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +62,25 @@ public class DepartmentResource {
             List<DepartmentDTO> departments = departmentService.getAllDepartments();
             return ResponseEntity.ok(departments);
         }
+    }
+
+    /**
+     * Get paginated departments for admin view with optional search and school filters.
+     *
+     * @param pageDTO paging params
+     * @param filterDTO filter params (searchQuery, schoolNames)
+     * @param sortDTO sorting params
+     * @return paginated departments
+     */
+    @Admin
+    @GetMapping("/admin")
+    public ResponseEntity<PageResponseDTO<DepartmentDTO>> getDepartmentsForAdmin(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @ParameterObject @Valid @ModelAttribute AdminDepartmentFilterDTO filterDTO,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+    ) {
+        PageResponseDTO<DepartmentDTO> response = departmentService.getDepartmentsForAdmin(pageDTO, filterDTO, sortDTO);
+        return ResponseEntity.ok(response);
     }
 
     /**

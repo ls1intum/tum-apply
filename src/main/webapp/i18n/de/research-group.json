@@ -334,6 +334,13 @@
     "departments": {
       "header": "Departments",
       "createButton": "Department erstellen",
+      "searchPlaceholder": "Departments suchen...",
+      "entity": "Department",
+      "entities": "Departments",
+      "filter": {
+        "school": "School",
+        "schoolSearch": "School suchen..."
+      },
       "tableColumns": {
         "name": "Name",
         "school": "School",
@@ -342,7 +349,7 @@
       "toastMessages": {
         "loadFailed": {
           "summary": "Fehler",
-          "detail": "Fehler beim Laden der Departments."
+          "detail": "Fehler beim Laden der Departments. Bitte versuche es erneut"
         },
         "deleteSuccess": {
           "summary": "Erfolg",
@@ -350,7 +357,7 @@
         },
         "deleteFailed": {
           "summary": "Fehler",
-          "detail": "Fehler beim Löschen des Departments."
+          "detail": "Fehler beim Löschen des Departments. Bitte versuche es erneut."
         },
         "updateSuccess": {
           "summary": "Erfolg",
@@ -358,13 +365,13 @@
         },
         "updateFailed": {
           "summary": "Fehler",
-          "detail": "Fehler beim Aktualisieren des Departments."
+          "detail": "Fehler beim Aktualisieren des Departments. Bitte versuche es erneut."
         }
       },
       "createDialog": {
         "title": "Neues Department erstellen",
         "nameLabel": "Name",
-        "namePlaceholder": "z.B. Department für Künstliche Intelligenz",
+        "namePlaceholder": "z.B. Künstliche Intelligenz",
         "schoolLabel": "School",
         "schoolPlaceholder": "Wählen...",
         "createButton": "Department erstellen",

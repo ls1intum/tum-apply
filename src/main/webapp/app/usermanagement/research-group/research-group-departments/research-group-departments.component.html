@@ -11,6 +11,17 @@
       [shouldTranslate]="true"
     />
   </div>
+  <jhi-search-filter-sort-bar
+    [searchText]="'researchGroup.departments.searchPlaceholder' | translate"
+    [totalRecords]="total()"
+    [singleEntity]="'researchGroup.departments.entity' | translate"
+    [multipleEntities]="'researchGroup.departments.entities' | translate"
+    [filters]="filters()"
+    (searchOutput)="onSearchEmit($event)"
+    (filterOutput)="onFilterEmit($event)"
+    (sortOutput)="loadOnSortEmit($event)"
+    [sortableFields]="sortableFields"
+  />
   <div class="table-wrapper">
     <jhi-dynamic-table
       [columns]="columns()"
@@ -24,13 +35,14 @@
   </div>
 
   <ng-template #actionTemplate let-department>
-    <div class="flex gap-2">
+    <div class="flex gap-2 justify-end items-center">
       <jhi-button
         icon="pencil"
-        [ariaLabel]="'button.edit' | translate"
+        [ariaLabel]="'button.edit'"
         [tooltip]="'button.edit' | translate"
         severity="primary"
         variant="text"
+        [shouldTranslate]="true"
         (click)="onEditDepartment(department.departmentId)"
       />
       <jhi-confirm-dialog
@@ -41,6 +53,7 @@
         confirmIcon="trash"
         (confirmed)="onDeleteDepartment(department.departmentId)"
         severity="danger"
+        [label]="'button.delete' | translate"
         [tooltip]="'button.delete' | translate"
       />
     </div>
