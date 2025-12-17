@@ -17,6 +17,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
   let mockDepartmentService: ReturnType<typeof createDepartmentResourceApiServiceMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockDialogService: ReturnType<typeof createDialogServiceMock>;
+  let mockSchoolService: ReturnType<typeof createSchoolResourceApiServiceMock>;
 
   const mockDepartments: DepartmentDTO[] = [
     {
@@ -36,7 +37,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
     mockDepartmentService.getDepartmentsForAdmin.mockReturnValue(of({ content: mockDepartments, totalElements: mockDepartments.length }));
     mockDepartmentService.deleteDepartment.mockReturnValue(of({}));
 
-    const mockSchoolService = createSchoolResourceApiServiceMock();
+    mockSchoolService = createSchoolResourceApiServiceMock();
     mockSchoolService.getAllSchools.mockReturnValue(of([{ schoolId: 's1', name: 'School 1', abbreviation: 'S1' }]));
 
     mockToastService = createToastServiceMock();
@@ -77,8 +78,21 @@ describe('ResearchGroupDepartmentsComponent', () => {
 
     it('should handle load departments error', async () => {
       mockDepartmentService.getDepartmentsForAdmin.mockReturnValue(throwError(() => new Error('Error')));
-      await component.loadDepartments();
+      await expect(component.loadDepartments()).resolves.toBeUndefined();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.departments.toastMessages.loadFailed');
+    });
+
+    it('should handle load schools error and leave availableSchools empty', async () => {
+      mockSchoolService.getAllSchools.mockReturnValue(throwError(() => new Error('Error')));
+
+      // Re-create component so constructor triggers failing loadSchools
+      const failingFixture = TestBed.createComponent(ResearchGroupDepartmentsComponent);
+      const failingComponent = failingFixture.componentInstance;
+
+      // allow pending microtasks to settle
+      await Promise.resolve();
+
+      expect(failingComponent.availableSchools()).toEqual([]);
     });
   });
 
