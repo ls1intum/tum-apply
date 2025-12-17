@@ -63,6 +63,20 @@ public class UserDataExportService {
     private final ZipExportService zipExportService;
     private final ObjectMapper objectMapper;
 
+    /**
+     * Export all user-related data as a ZIP archive written to the provided {@code HttpServletResponse}.
+     *
+     * <p>The generated ZIP contains a JSON summary file ("user_data_summary.json") with the user's profile,
+     * settings, email settings, optional applicant data and staff data. If applicant data exists, applicant
+     * documents are added to the archive under the {@code documents/} directory; filenames are sanitized with
+     * {@link FileUtil#sanitizeFilename(String)}. Individual document download failures are logged and do not stop
+     * the overall export.</p>
+     *
+     * @param userId   UUID of the user whose data should be exported
+     * @param response HTTP response to which the ZIP archive will be written; response headers will be modified
+     * @throws IOException              if an I/O error occurs while writing the ZIP to the response stream
+     * @throws IllegalArgumentException if the user with the given id does not exist
+     */
     @Transactional(readOnly = true)
     public void exportUserData(UUID userId, HttpServletResponse response) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
