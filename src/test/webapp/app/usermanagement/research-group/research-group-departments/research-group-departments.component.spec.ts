@@ -7,6 +7,7 @@ import { DepartmentDTO } from 'app/generated/model/models';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { createDialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
 
 describe('ResearchGroupDepartmentsComponent', () => {
   let component: ResearchGroupDepartmentsComponent;
@@ -15,6 +16,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
     getDepartments: ReturnType<typeof vi.fn>;
   };
   let mockToastService: ReturnType<typeof createToastServiceMock>;
+  let mockDialogService: ReturnType<typeof createDialogServiceMock>;
 
   const mockDepartments: DepartmentDTO[] = [
     {
@@ -34,12 +36,14 @@ describe('ResearchGroupDepartmentsComponent', () => {
       getDepartments: vi.fn(),
     };
     mockToastService = createToastServiceMock();
+    mockDialogService = createDialogServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupDepartmentsComponent],
       providers: [
         { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
         provideToastServiceMock(mockToastService),
+        provideDialogServiceMock(mockDialogService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -63,9 +67,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
     const tableData = component.tableData();
     expect(tableData.length).toBe(2);
     expect(tableData[0].name).toBe('Dept 1');
-    // @ts-ignore
     expect(tableData[0].schoolName).toBe('School 1');
-    // @ts-ignore
     expect(tableData[0].schoolAbbreviation).toBe('S1');
   });
 });
