@@ -111,6 +111,10 @@
         "email": "E-Mail",
         "role": "Rolle"
       },
+      "removeMemberModal": {
+        "title": "Mitglied entfernen",
+        "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
+      },
       "toastMessages": {
         "loadFailed": {
           "summary": "Fehler beim Laden",
@@ -230,10 +234,6 @@
         "status": "Status",
         "researchGroup": "Forschungsgruppe",
         "requestedAt": "Angefordert am"
-      },
-      "removeMemberModal": {
-        "title": "Mitglied entfernen",
-        "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
       },
       "viewButton": "Anzeigen",
       "confirmDialog": {
