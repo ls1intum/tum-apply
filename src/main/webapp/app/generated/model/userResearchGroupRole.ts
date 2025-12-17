@@ -7,11 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ResearchGroup } from './researchGroup';
 import { User } from './user';
 
 
 export interface UserResearchGroupRole { 
-    researchGroup?: any | null;
+    researchGroup?: ResearchGroup;
     role?: UserResearchGroupRole.RoleEnum;
     user?: User;
     userResearchGroupRoleId?: string;
