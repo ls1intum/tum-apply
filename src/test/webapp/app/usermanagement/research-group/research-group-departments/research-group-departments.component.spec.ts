@@ -42,6 +42,7 @@ describe('ResearchGroupDepartmentsComponent', () => {
         provideDepartmentResourceApiServiceMock(mockDepartmentService),
         provideDialogServiceMock(mockDialogService),
         provideToastServiceMock(mockToastService),
+        provideDialogServiceMock(mockDialogService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],

@@ -35,7 +35,7 @@ export class DepartmentEditDialogComponent {
 
   selectedSchoolId = signal<string | undefined>(undefined);
 
-  selectedSchoolOption = computed<SelectOption | undefined>(() => {
+  selectedSchoolOption = computed(() => {
     const schoolId = this.selectedSchoolId();
     if (!schoolId) return undefined;
     return this.schoolOptions().find(opt => opt.value === schoolId);
@@ -95,8 +95,9 @@ export class DepartmentEditDialogComponent {
     };
 
     try {
-      if (this.isEditMode()) {
-        await firstValueFrom(this.departmentService.updateDepartment(this.departmentId()!, dto));
+      const departmentId = this.departmentId();
+      if (this.isEditMode() && departmentId) {
+        await firstValueFrom(this.departmentService.updateDepartment(departmentId, dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.updated`);
       } else {
         await firstValueFrom(this.departmentService.createDepartment(dto));
