@@ -45,7 +45,7 @@ public interface DepartmentRepository extends TumApplyJpaRepository<Department, 
     )
     org.springframework.data.domain.Page<de.tum.cit.aet.usermanagement.dto.DepartmentDTO> findAllForAdmin(
         @org.springframework.data.repository.query.Param("searchQuery") String searchQuery,
-        @org.springframework.data.repository.query.Param("schoolNames") java.util.List<String> schoolNames,
+        @org.springframework.data.repository.query.Param("schoolNames") List<String> schoolNames,
         org.springframework.data.domain.Pageable pageable
     );
 
