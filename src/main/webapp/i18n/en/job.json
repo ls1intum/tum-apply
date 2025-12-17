@@ -212,7 +212,7 @@
     },
     "confirmDialog": {
       "header": "Publish Doctorate Position",
-      "message": "Are you sure you want to publish your doctorate position? Once published, further edits will NOT be possible."
+      "message": "Are you sure you want to publish your doctorate position?"
     },
     "reviewPageSection": {
       "title": "Overview",
@@ -281,7 +281,9 @@
       "closeHeader": "Confirm Position Closure",
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",
       "deleteHeader": "Confirm Delete Operation",
-      "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!"
+      "deleteMessage": "Are you sure you want to permanently delete this draft? This action can NOT be undone!",
+      "editJobHeader": "Confirm Editing of a Published Position",
+      "editJobMessage": "Are you sure you want to edit this published position? Editing it will change its status back to Draft, and applicants will no longer be able to apply until you republish it."
     },
     "errors": {
       "loadJobs": {
