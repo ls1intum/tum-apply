@@ -260,7 +260,7 @@
   "myPositionsPage": {
     "header": {
       "title": "Manage your Doctorate Positions",
-      "createButton": "Create New Position"
+      "createButton": "Create Position"
     },
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
