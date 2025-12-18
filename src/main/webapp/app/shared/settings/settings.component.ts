@@ -77,9 +77,11 @@ export class SettingsComponent implements OnDestroy {
     this.exportInProgress.set(true);
 
     try {
-      const response = await firstValueFrom(this.userDataExportService.exportUserData('response'));
+      const response = await firstValueFrom(
+        this.userDataExportService.exportUserData('response', false, { httpHeaderAccept: 'application/zip' }),
+      );
 
-      const blob = response.body as Blob | undefined;
+      const blob = response.body;
       if (blob && blob.size > 0) {
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = `user-data-export-${new Date().toISOString()}.zip`;
