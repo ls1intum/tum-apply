@@ -1,4 +1,4 @@
-import { Component, TemplateRef, ViewChild, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
@@ -82,9 +82,9 @@ export class MyPositionsPageComponent {
   readonly lastModifiedAtTemplate = viewChild.required<TemplateRef<unknown>>('lastModifiedAtTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
-  @ViewChild('editPublishedDialog') editPublishedDialog!: ConfirmDialog;
-  @ViewChild('deleteDialog') deleteDialog!: ConfirmDialog;
-  @ViewChild('closeDialog') closeDialog!: ConfirmDialog;
+  readonly editPublishedDialog = viewChild.required<ConfirmDialog>('editPublishedDialog');
+  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  readonly closeDialog = viewChild.required<ConfirmDialog>('closeDialog');
 
   currentJobId = signal<string | undefined>(undefined);
 
@@ -222,7 +222,7 @@ export class MyPositionsPageComponent {
         icon: 'pencil',
         command: () => {
           this.currentJobId.set(job.jobId);
-          this.editPublishedDialog.confirm();
+          this.editPublishedDialog().confirm();
         },
       });
     }
@@ -234,7 +234,7 @@ export class MyPositionsPageComponent {
         icon: 'trash',
         command: () => {
           this.currentJobId.set(job.jobId);
-          this.deleteDialog.confirm();
+          this.deleteDialog().confirm();
         },
         styleClass: 'text-negative-default',
       });
@@ -244,7 +244,7 @@ export class MyPositionsPageComponent {
         icon: 'xmark',
         command: () => {
           this.currentJobId.set(job.jobId);
-          this.closeDialog.confirm();
+          this.closeDialog().confirm();
         },
         styleClass: 'text-negative-default',
       });

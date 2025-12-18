@@ -98,7 +98,7 @@
 
       <ng-template #actionTemplate let-job>
         <div class="flex justify-end gap-1">
-          <jhi-button [tooltip]="'button.view' | translate" icon="magnifying-glass" variant="text" (click)="onViewJob(job.jobId)" />
+          <jhi-button [tooltip]="'button.view' | translate" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
           <jhi-button [tooltip]="'button.actions' | translate" icon="ellipsis-vertical" variant="text" (click)="menu.toggle($event)" />
           <p-menu #menu [model]="getMenuItems(job)" [popup]="true" appendTo="body">
             <ng-template pTemplate="item" let-item>
