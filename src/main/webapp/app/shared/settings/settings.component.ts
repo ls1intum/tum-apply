@@ -86,7 +86,7 @@ export class SettingsComponent implements OnDestroy {
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = `user-data-export-${new Date().toISOString()}.zip`;
         if (contentDisposition) {
-          const match = /filename="([^\"]+)"/.exec(contentDisposition);
+          const match = /filename="([^"]+)"/.exec(contentDisposition);
           if (match?.[1]) {
             filename = match[1];
           }
