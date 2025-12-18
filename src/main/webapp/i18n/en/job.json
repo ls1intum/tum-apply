@@ -145,7 +145,6 @@
       }
     },
     "imageSection": {
-      "title": "Choose a Banner Image",
       "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library. Uploaded images are shared across your research group and can be reused for multiple job postings.",
       "defaultImages": "Default Images",
       "orDivider": "or",
