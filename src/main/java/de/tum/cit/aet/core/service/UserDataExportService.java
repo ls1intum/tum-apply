@@ -159,7 +159,16 @@ public class UserDataExportService {
         List<ApplicationExportDTO> applications = applicationRepository
             .findAllByApplicantId(userId)
             .stream()
-            .map(app -> new ApplicationExportDTO(app.getJob().getTitle(), app.getState(), app.getDesiredStartDate()))
+            .map(app ->
+                new ApplicationExportDTO(
+                    app.getJob().getTitle(),
+                    app.getState(),
+                    app.getDesiredStartDate(),
+                    app.getMotivation(),
+                    app.getSpecialSkills(),
+                    app.getProjects()
+                )
+            )
             .toList();
 
         return new ApplicantDataExportDTO(

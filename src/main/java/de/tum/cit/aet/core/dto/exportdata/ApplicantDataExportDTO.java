@@ -1,8 +1,10 @@
 package de.tum.cit.aet.core.dto.exportdata;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import java.util.Set;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ApplicantDataExportDTO(
     String street,
     String postalCode,
