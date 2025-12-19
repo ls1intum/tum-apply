@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,7 +32,6 @@ import java.util.zip.ZipOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -191,8 +191,8 @@ class UserDataExportServiceTest {
         // ensure we did not try to add missing document
         verify(zipExportService, org.mockito.Mockito.never()).addDocumentToZip(
             any(ZipOutputStream.class),
-            ArgumentMatchers.anyString(),
-            ArgumentMatchers.any(Document.class)
+            anyString(),
+            any(Document.class)
         );
     }
 
