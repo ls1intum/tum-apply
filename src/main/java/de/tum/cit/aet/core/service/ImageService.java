@@ -96,10 +96,6 @@ public class ImageService {
      */
     @Transactional
     public DepartmentImage uploadDefaultImage(MultipartFile file, UUID departmentId) {
-        if (!currentUserService.isAdmin()) {
-            throw new AccessDeniedException("Only admins can upload default images");
-        }
-
         User uploader = currentUserService.getUser();
         Department department = departmentRepository
             .findById(departmentId)
@@ -193,7 +189,10 @@ public class ImageService {
 
         try {
             // Read the image to validate it's a real image
-            BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+            BufferedImage bufferedImage;
+            try (InputStream inputStream = file.getInputStream()) {
+                bufferedImage = ImageIO.read(inputStream);
+            }
             if (bufferedImage == null) {
                 throw new UploadException("Invalid image file");
             }
