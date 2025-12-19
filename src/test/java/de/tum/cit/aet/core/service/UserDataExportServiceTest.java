@@ -27,13 +27,13 @@ import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.zip.ZipOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,7 +81,6 @@ class UserDataExportServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
-    @InjectMocks
     private UserDataExportService sut;
 
     private UUID userId;
@@ -97,6 +96,25 @@ class UserDataExportServiceTest {
         ObjectWriter writer = org.mockito.Mockito.mock(ObjectWriter.class);
         when(objectMapper.writerWithDefaultPrettyPrinter()).thenReturn(writer);
         when(writer.writeValueAsString(any())).thenReturn("{}");
+
+        // Manual construction of sut using mocked dependencies
+        zipExportService = org.mockito.Mockito.mock(ZipExportService.class);
+
+        sut = new UserDataExportService(
+            userRepository,
+            applicantRepository,
+            userSettingRepository,
+            emailSettingRepository,
+            applicationRepository,
+            documentDictionaryRepository,
+            userResearchGroupRoleRepository,
+            applicationReviewRepository,
+            internalCommentRepository,
+            ratingRepository,
+            documentRepository,
+            zipExportService,
+            objectMapper
+        );
     }
 
     @Test
@@ -107,8 +125,8 @@ class UserDataExportServiceTest {
 
         sut.exportUserData(userId, response);
 
-        // summary must be added
-        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any());
+        // summary must be added (content is a byte[])
+        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any(byte[].class));
     }
 
     @Test
@@ -132,17 +150,13 @@ class UserDataExportServiceTest {
         when(documentDictionaryRepository.findAllByApplicant(applicant)).thenReturn(Set.of(dd));
         when(documentRepository.findById(docId)).thenReturn(Optional.of(doc));
 
-        Resource res = org.mockito.Mockito.mock(Resource.class);
-        when(documentService.download(doc)).thenReturn(res);
-        when(res.getContentAsByteArray()).thenReturn("pdf".getBytes());
-
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         sut.exportUserData(userId, response);
 
-        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any());
-        // document was added under documents/<sanitized>
-        verify(zipExportService).addFileToZip(any(), eq("documents/file.pdf"), any());
+        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any(byte[].class));
+        // document was added under documents/<sanitized> via addDocumentToZip
+        verify(zipExportService).addDocumentToZip(any(), eq("documents/file.pdf"), any(Document.class));
     }
 
     @Test
@@ -173,7 +187,13 @@ class UserDataExportServiceTest {
         // should not throw
         sut.exportUserData(userId, response);
 
-        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any());
+        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any(byte[].class));
+        // ensure we did not try to add missing document
+        verify(zipExportService, org.mockito.Mockito.never()).addDocumentToZip(
+            any(ZipOutputStream.class),
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.any(Document.class)
+        );
     }
 
     @Test
@@ -189,6 +209,6 @@ class UserDataExportServiceTest {
         // should not throw despite null research group
         sut.exportUserData(userId, response);
 
-        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any());
+        verify(zipExportService).addFileToZip(any(), eq("user_data_summary.json"), any(byte[].class));
     }
 }

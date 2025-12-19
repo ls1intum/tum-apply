@@ -324,8 +324,7 @@ public class ApplicationEvaluationService {
                 String ext = documentService.resolveFileExtension(doc).getExtension();
                 entryName += "." + ext;
 
-                byte[] bytes = documentService.download(doc).getContentAsByteArray();
-                zipExportService.addFileToZip(zos, entryName, bytes);
+                zipExportService.addDocumentToZip(zos, entryName, doc);
             }
 
             zos.finish();
