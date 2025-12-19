@@ -59,7 +59,6 @@ public class UserDataExportService {
     private final InternalCommentRepository internalCommentRepository;
     private final RatingRepository ratingRepository;
     private final DocumentRepository documentRepository;
-    private final DocumentService documentService;
     private final ZipExportService zipExportService;
     private final ObjectMapper objectMapper;
 
@@ -159,7 +158,16 @@ public class UserDataExportService {
         List<ApplicationExportDTO> applications = applicationRepository
             .findAllByApplicantId(userId)
             .stream()
-            .map(app -> new ApplicationExportDTO(app.getJob().getTitle(), app.getState(), app.getDesiredStartDate()))
+            .map(app ->
+                new ApplicationExportDTO(
+                    app.getJob().getTitle(),
+                    app.getState(),
+                    app.getDesiredStartDate(),
+                    app.getMotivation(),
+                    app.getSpecialSkills(),
+                    app.getProjects()
+                )
+            )
             .toList();
 
         return new ApplicantDataExportDTO(
@@ -267,8 +275,8 @@ public class UserDataExportService {
             Document document = documentRepository
                 .findById(documentId)
                 .orElseThrow(() -> new IllegalArgumentException("Document not found"));
-            byte[] fileContent = documentService.download(document).getContentAsByteArray();
-            zipExportService.addFileToZip(zipOut, entryPath, fileContent);
+
+            zipExportService.addDocumentToZip(zipOut, entryPath, document);
         } catch (Exception e) {
             log.error("Failed to add document {} to ZIP export: {}", documentId, e.getMessage());
         }
