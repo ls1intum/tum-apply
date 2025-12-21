@@ -81,20 +81,28 @@ export class SlotsSectionComponent {
   });
 
   /**
-   * Filters grouped slots to only show the current selected month
+   * Returns the current target year based on month offset
+   */
+  currentYear = computed(() => {
+    const targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
+    return targetDate.getFullYear();
+  });
+
+  /**
+   * Returns the current target month (1-12) based on month offset
+   */
+  currentMonthNumber = computed(() => {
+    const targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
+    return targetDate.getMonth() + 1; // Convert 0-11 to 1-12
+  });
+
+  /**
+   * Returns all grouped slots
    */
   currentMonthSlots = computed(() => {
-    const allDates = this.groupedSlots();
-    const offset = this.currentMonthOffset();
-
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + offset);
-    const targetMonth = targetDate.getMonth();
-    const targetYear = targetDate.getFullYear();
-
-    return allDates.filter(group => {
-      return group.localDate.getMonth() === targetMonth && group.localDate.getFullYear() === targetYear;
-    });
+    return this.groupedSlots();
   });
 
   /**
@@ -133,7 +141,25 @@ export class SlotsSectionComponent {
 
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
+  hasAnySlots = signal<boolean | undefined>(undefined);
+
   private readonly interviewService = inject(InterviewResourceApiService);
+
+  constructor() {
+    effect(() => {
+      this.checkGlobalSlots();
+    });
+  }
+
+  private async checkGlobalSlots() {
+    try {
+      const slots = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId()));
+      if (Array.isArray(slots)) {
+        this.hasAnySlots.set(slots.length > 0);
+      }
+    } catch (e) {
+    }
+  }
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
@@ -162,8 +188,10 @@ export class SlotsSectionComponent {
 
   private readonly loadSlotsEffect = effect(() => {
     const id = this.processId();
+    const year = this.currentYear();
+    const month = this.currentMonthNumber();
     if (id) {
-      void this.loadSlots(id);
+      void this.loadSlots(id, year, month);
     }
   });
 
@@ -174,11 +202,12 @@ export class SlotsSectionComponent {
   async refreshSlots(): Promise<void> {
     const id = this.processId();
     if (id) {
-      await this.loadSlots(id);
+      await this.loadSlots(id, this.currentYear(), this.currentMonthNumber());
     }
   }
 
   onSlotsCreated(): void {
+    this.hasAnySlots.set(true);
     void this.refreshSlots();
   }
 
@@ -254,7 +283,7 @@ export class SlotsSectionComponent {
       this.loading.set(true);
 
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
-      await this.loadSlots(this.processId());
+      await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
@@ -275,14 +304,20 @@ export class SlotsSectionComponent {
     // TODO: Open Assign Modal
   }
 
-  private async loadSlots(processId: string): Promise<void> {
+  private async loadSlots(processId: string, year: number, month: number): Promise<void> {
     try {
       this.loading.set(true);
       this.error.set(false);
 
-      const data = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId));
+      const response = (await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month))) as
+        | InterviewSlotDTO[]
+        | { content: InterviewSlotDTO[] };
 
-      this.slots.set(data);
+      if (Array.isArray(response)) {
+        this.slots.set(response);
+      } else {
+        this.slots.set(response.content);
+      }
     } catch {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);

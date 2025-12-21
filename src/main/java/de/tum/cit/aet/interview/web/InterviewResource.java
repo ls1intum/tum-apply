@@ -2,9 +2,7 @@ package de.tum.cit.aet.interview.web;
 
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
-import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
@@ -37,7 +35,6 @@ public class InterviewResource {
 
     /**
      * {@code GET /api/interviews/overview} : Get interview overview for all jobs with interview process.
-     * <p>
      * Returns statistics about applications in different interview states
      * (completed, scheduled, invited, uncontacted) for each job that has
      * an active interview process.
