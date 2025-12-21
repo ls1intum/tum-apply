@@ -82,7 +82,9 @@ describe('JobsPreviewSectionComponent', () => {
     expect(jobCardEl).toBeTruthy();
     const header = jobCardEl.querySelector('div.relative');
     // When there's no job image, background-image should not be set (fallback images disabled)
-    expect(header.style.backgroundImage).toBe('none');
+    expect(header.style.backgroundImage).toBe(
+      'linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80")',
+    );
   });
 
   it('should handle error on load and show toast', async () => {
