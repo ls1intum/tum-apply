@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,6 +29,16 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      */
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     List<InterviewSlot> findByInterviewProcessIdOrderByStartDateTime(@Param("processId") UUID processId);
+
+    /**
+     * Finds a slot by ID with job and research group.
+     *
+     * @param slotId the ID of the slot to find
+     * @return Optional containing the slot with job loaded, or empty if not found
+     */
+    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewProcess.job.researchGroup" })
+    @Query("SELECT s FROM InterviewSlot s WHERE s.id = :slotId")
+    Optional<InterviewSlot> findByIdWithJob(@Param("slotId") UUID slotId);
 
     /**
      * Counts all interview slots associated with a specific interview process.
