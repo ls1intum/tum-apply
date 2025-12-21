@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.web;
 
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -89,21 +90,36 @@ public class InterviewResource {
     /**
      * {@code GET /api/interviews/processes/{processId}/slots} : Get all slots for an interview process.
      *
-     * Retrieves all interview slots for the specified interview process,
-     * ordered by start time (ascending).
+     * If year and month are provided, returns only slots for that month.
+     * Otherwise, returns all slots for the process.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewSlotDTO}
+     * @param year      optional year to filter by (e.g., 2025)
+     * @param month     optional month to filter by (1-12)
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and slots
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException if the user is not authorized
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
-    public ResponseEntity<List<InterviewSlotDTO>> getSlotsByProcessId(@PathVariable UUID processId) {
-        log.info("REST request to get all slots for interview process: {}", processId);
-        List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
-        log.info("Returning {} slots for interview process: {}", slots.size(), processId);
-        return ResponseEntity.ok(slots);
+    public ResponseEntity<?> getSlotsByProcessId(
+        @PathVariable UUID processId,
+        @RequestParam(required = false) Integer year,
+        @RequestParam(required = false) Integer month
+    ) {
+        log.info("REST request to get slots for interview process: {}, year: {}, month: {}", processId, year, month);
+
+        if (year != null && month != null) {
+            // New behavior: return month-filtered slots with PageResponseDTO
+            PageResponseDTO<InterviewSlotDTO> response = interviewService.getSlotsByProcessIdAndMonth(processId, year, month);
+            log.info("Returning {} slots for interview process: {} (month: {}/{})", response.getTotalElements(), processId, month, year);
+            return ResponseEntity.ok(response);
+        } else {
+            // Legacy behavior: return all slots as List
+            List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
+            log.info("Returning {} slots for interview process: {}", slots.size(), processId);
+            return ResponseEntity.ok(slots);
+        }
     }
 
     /**
@@ -155,8 +171,11 @@ public class InterviewResource {
         return ResponseEntity.ok(interviewees);
     }
 
-    /* {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
-     * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
+    /*
+     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview
+     * slot.
+     * Deletes an unbooked interview slot. If the slot is booked, a
+     * BadRequestException is thrown.
      *
      * @param slotId the ID of the slot to delete
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}

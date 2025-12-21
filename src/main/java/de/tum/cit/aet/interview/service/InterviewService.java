@@ -3,6 +3,7 @@ package de.tum.cit.aet.interview.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -384,6 +387,49 @@ public class InterviewService {
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
 
         return slots.stream().map(InterviewSlotDTO::fromEntity).toList();
+    }
+
+    /**
+     * Retrieves interview slots for a given interview process filtered by month.
+     * Returns only slots within the specified year and month, stored in a
+     * PageResponseDTO.
+     *
+     * @param processId the ID of the interview process
+     * @param year      the year to filter by (e.g., 2025)
+     * @param month     the month to filter by (1-12)
+     * @return a PageResponseDTO containing interview slots for the specified month
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException   if the user is not authorized to view these
+     *                                 slots
+     */
+    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessIdAndMonth(UUID processId, int year, int month) {
+        // 1. Load Interview Process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
+
+        // 2. Security: Verify current user is the job owner or employee
+        Job job = process.getJob();
+        if (!currentUserService.isSupervisingProfessorOf(job)) {
+            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
+        }
+
+        // 3. Calculate month boundaries in CET timezone
+        ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
+        ZonedDateTime monthEnd = monthStart.plusMonths(1);
+
+        // 4. Query slots for this month (unpaginated - get all slots for the month)
+        Page<InterviewSlot> slotsPage = interviewSlotRepository.findByProcessIdAndMonth(
+            processId,
+            monthStart.toInstant(),
+            monthEnd.toInstant(),
+            Pageable.unpaged()
+        );
+
+        // 5. Convert to DTOs and return
+        List<InterviewSlotDTO> slotDTOs = slotsPage.getContent().stream().map(InterviewSlotDTO::fromEntity).toList();
+
+        return new PageResponseDTO<>(slotDTOs, slotsPage.getTotalElements());
     }
 
     /**

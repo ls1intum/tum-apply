@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -86,7 +88,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     /**
      * Checks if a slot exists and belongs to a specific professor.
      *
-     * @param slotId the ID of the slot
+     * @param slotId      the ID of the slot
      * @param professorId the ID of the supervising professor
      * @return true if the slot exists and belongs to the professor
      */
@@ -99,4 +101,31 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         """
     )
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
+
+    /**
+     * Finds all interview slots for a given interview process within a specific
+     * month.
+     * Results are paginated and ordered by start time.
+     *
+     * @param processId  the ID of the interview process
+     * @param monthStart the start of the month (inclusive)
+     * @param monthEnd   the end of the month (exclusive)
+     * @param pageable   pagination information
+     * @return a page of {@link InterviewSlot} entities for the specified month
+     */
+    @Query(
+        """
+            SELECT s FROM InterviewSlot s
+            WHERE s.interviewProcess.id = :processId
+            AND s.startDateTime >= :monthStart
+            AND s.startDateTime < :monthEnd
+            ORDER BY s.startDateTime
+        """
+    )
+    Page<InterviewSlot> findByProcessIdAndMonth(
+        @Param("processId") UUID processId,
+        @Param("monthStart") Instant monthStart,
+        @Param("monthEnd") Instant monthEnd,
+        Pageable pageable
+    );
 }
