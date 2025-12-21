@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
@@ -18,10 +18,9 @@ import { SlotsSectionComponent } from './slots-section/slots-section.component';
   templateUrl: './interview-process-detail.component.html',
 })
 export class InterviewProcessDetailComponent {
-  processId = signal<string | null>(null);
-  readonly safeProcessId = computed(() => this.processId() ?? '');
-  jobId = signal<string | null>(null);
-  jobTitle = signal<string | null>(null);
+  readonly processId = signal('');
+  readonly jobId = signal('');
+  readonly jobTitle = signal('');
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
