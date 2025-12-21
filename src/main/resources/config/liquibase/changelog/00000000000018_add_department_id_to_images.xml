@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="017_add_department_id_to_images" author="bofan">
+  <changeSet id="018_add_department_id_to_images" author="bofan">
     <!-- Add department_id column to images table for DEFAULT_JOB_BANNER images -->
     <addColumn tableName="images">
       <column name="department_id" type="CHAR(36)">
