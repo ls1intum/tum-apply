@@ -51,7 +51,9 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
   showSlotCreationForm = signal(false);
-  // Computed properties
+  hasAnySlots = signal<boolean | undefined>(undefined);
+
+  // Computed Properties (Public)
   /**
    * Groups slots by date and sorts them chronologically
    */
@@ -121,7 +123,7 @@ export class SlotsSectionComponent {
     return monthDates.slice(start, end);
   });
 
-  // Formats the current month and year for display * Returns the formatted month and year string for the currently selected month.
+  // Formats the current month and year for display
   currentMonth = computed(() => {
     const targetDate = new Date();
     targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
@@ -141,44 +143,25 @@ export class SlotsSectionComponent {
 
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
-  hasAnySlots = signal<boolean | undefined>(undefined);
-
-  private readonly interviewService = inject(InterviewResourceApiService);
-
-  constructor() {
-    effect(() => {
-      this.checkGlobalSlots();
-    });
-  }
-
-  private async checkGlobalSlots() {
-    try {
-      const slots = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId()));
-      if (Array.isArray(slots)) {
-        this.hasAnySlots.set(slots.length > 0);
-      }
-    } catch (e) {
-    }
-  }
-  private readonly translateService = inject(TranslateService);
-  private readonly toastService = inject(ToastService);
-
+  // Constants
   private readonly MAX_VISIBLE_SLOTS = 3;
   private readonly DATES_PER_PAGE = 5;
 
-  // Convert language change observable to signal
-  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly translateService = inject(TranslateService);
+  private readonly toastService = inject(ToastService);
 
-  // Writable signal for current language
+  // Internal Signals for Locale
+  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
-  // Locale computed from current language signal
-  private locale = computed(() => {
+  private readonly locale = computed(() => {
     const lang = this.currentLangSignal();
     return lang === 'de' ? 'de-DE' : 'en-US';
   });
 
-  // Effect to update current language when language changes
+  // Effects
   private readonly langChangeEffect = effect(() => {
     const langEvent = this.langChangeSignal();
     if (langEvent?.lang) {
@@ -195,6 +178,11 @@ export class SlotsSectionComponent {
     }
   });
 
+  private readonly checkGlobalSlotsEffect = effect(() => {
+    void this.checkGlobalSlots();
+  });
+
+  // Methods
   openCreateSlotsModal(): void {
     this.showSlotCreationForm.set(true);
   }
@@ -275,7 +263,7 @@ export class SlotsSectionComponent {
 
   async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
     const slotId = slot.id;
-    if (!slotId) {
+    if (slotId === undefined) {
       return;
     }
 
@@ -302,6 +290,15 @@ export class SlotsSectionComponent {
 
   onAssignApplicant(): void {
     // TODO: Open Assign Modal
+  }
+
+  private async checkGlobalSlots(): Promise<void> {
+    try {
+      const slots = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId()));
+      if (Array.isArray(slots)) {
+        this.hasAnySlots.set(slots.length > 0);
+      }
+    } catch {}
   }
 
   private async loadSlots(processId: string, year: number, month: number): Promise<void> {
