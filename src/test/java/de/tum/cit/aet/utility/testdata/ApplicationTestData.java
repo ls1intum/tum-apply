@@ -25,7 +25,7 @@ public final class ApplicationTestData {
         app.setProjects("Robotics Project; ML Pipeline");
         app.setSpecialSkills("Python, TensorFlow, ROS");
         app.setMotivation("Highly motivated to contribute to research.");
-        
+
         // Initialize snapshot fields from applicant's current profile data
         if (applicant != null) {
             User user = applicant.getUser();
@@ -58,7 +58,7 @@ public final class ApplicationTestData {
             app.setApplicantMasterGrade(applicant.getMasterGrade());
             app.setApplicantMasterUniversity(applicant.getMasterUniversity());
         }
-        
+
         return app;
     }
 
