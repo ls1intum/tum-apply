@@ -607,38 +607,7 @@ class InterviewResourceTest extends AbstractResourceTest {
             UUID slotId = createdSlots.get(0).id();
 
             // Create another professor in different research group
-            ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
-                researchGroupRepository,
-                "Other Group",
-                "Prof. Other",
-                "other@example.com",
-                "OTH",
-                "CS",
-                "Other research",
-                "other@example.com",
-                "80333",
-                "CIT",
-                "Other Street",
-                "https://other.tum.de",
-                "ACTIVE"
-            );
-
-            User otherProfessor = UserTestData.savedProfessorAll(
-                userRepository,
-                otherResearchGroup,
-                null,
-                "other.prof@tum.de",
-                "Jane",
-                "Smith",
-                "en",
-                "+49 89 5678",
-                "https://jane.tum.de",
-                "https://linkedin.com/in/jane",
-                "DE",
-                null,
-                "weiblich",
-                UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-            );
+            User otherProfessor = createOtherProfessor();
 
             // Act
             Void result = api
