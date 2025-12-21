@@ -195,9 +195,8 @@ class ImageServiceTest {
         }
 
         @Test
-        void shouldUploadDefaultImageSuccessfullyAsAdmin() throws IOException {
+        void shouldUploadDefaultImageSuccessfully() throws IOException {
             // Arrange
-            when(currentUserService.isAdmin()).thenReturn(true);
             when(currentUserService.getUser()).thenReturn(testUser);
             when(departmentRepository.findById(TEST_DEPARTMENT_ID)).thenReturn(Optional.of(testDepartment));
             when(imageRepository.save(any(Image.class))).thenAnswer(invocation -> {
@@ -217,21 +216,10 @@ class ImageServiceTest {
             verify(imageRepository).save(any(Image.class));
         }
 
-        @Test
-        void shouldThrowExceptionWhenNonAdminUploadsDefaultImage() {
-            // Arrange
-            when(currentUserService.isAdmin()).thenReturn(false);
-
-            // Act & Assert
-            assertThatThrownBy(() -> imageService.uploadDefaultImage(validFile, TEST_DEPARTMENT_ID))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("Only admins can upload default images");
-        }
 
         @Test
         void shouldThrowExceptionWhenDepartmentNotFound() {
             // Arrange
-            when(currentUserService.isAdmin()).thenReturn(true);
             when(currentUserService.getUser()).thenReturn(testUser);
             when(departmentRepository.findById(TEST_DEPARTMENT_ID)).thenReturn(Optional.empty());
 
