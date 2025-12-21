@@ -216,7 +216,6 @@ class ImageServiceTest {
             verify(imageRepository).save(any(Image.class));
         }
 
-
         @Test
         void shouldThrowExceptionWhenDepartmentNotFound() {
             // Arrange

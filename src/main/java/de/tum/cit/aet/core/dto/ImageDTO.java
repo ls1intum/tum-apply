@@ -47,6 +47,14 @@ public record ImageDTO(
             throw new IllegalArgumentException("Unknown image type: " + image.getClass().getName());
         }
 
-        return new ImageDTO(image.getImageId(), researchGroupId, departmentId, image.getUrl(), imageType, image.getSizeBytes(), uploadedById);
+        return new ImageDTO(
+            image.getImageId(),
+            researchGroupId,
+            departmentId,
+            image.getUrl(),
+            imageType,
+            image.getSizeBytes(),
+            uploadedById
+        );
     }
 }

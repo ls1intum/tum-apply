@@ -687,7 +687,6 @@ public class ImageResourceTest extends AbstractResourceTest {
             api.deleteAndRead(API_BASE_PATH + "/" + testImage.getImageId(), null, Void.class, 401);
         }
 
-
         @Test
         void deleteImagePreventsUserWithoutResearchGroupFromDeletingJobBanner() {
             // Arrange - Create a user without a research group
