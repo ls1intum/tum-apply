@@ -37,7 +37,8 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @return Optional containing the slot with job loaded, or empty if not found
      */
     @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewProcess.job.researchGroup" })
-    Optional<InterviewSlot> findByIdWithJob(UUID slotId);
+    @Query("SELECT s FROM InterviewSlot s WHERE s.id = :slotId")
+    Optional<InterviewSlot> findByIdWithJob(@Param("slotId") UUID slotId);
 
     /**
      * Counts all interview slots associated with a specific interview process.
@@ -59,39 +60,33 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param endDateTime   end of the time range
      * @return true if at least one conflicting slot exists, false otherwise
      */
-    @Query(
-        """
-        SELECT COUNT(s) > 0 FROM InterviewSlot s
-        JOIN s.interviewProcess ip
-        JOIN ip.job j
-        WHERE j.supervisingProfessor = :professor
-        AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
-        """
-    )
+    @Query("""
+            SELECT COUNT(s) > 0 FROM InterviewSlot s
+            JOIN s.interviewProcess ip
+            JOIN ip.job j
+            WHERE j.supervisingProfessor = :professor
+            AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
+            """)
     boolean hasConflictingSlots(
-        @Param("professor") User professor,
-        @Param("startDateTime") Instant startDateTime,
-        @Param("endDateTime") Instant endDateTime
-    );
+            @Param("professor") User professor,
+            @Param("startDateTime") Instant startDateTime,
+            @Param("endDateTime") Instant endDateTime);
 
-    @Query(
-        """
-            SELECT slot
-            FROM InterviewSlot slot
-            JOIN slot.interviewProcess process
-            JOIN process.job job
-            WHERE job.supervisingProfessor = :professor
-              AND slot.startDateTime < :endTime
-              AND slot.endDateTime > :startTime
-            ORDER BY slot.startDateTime ASC
-            LIMIT 1
-        """
-    )
+    @Query("""
+                SELECT slot
+                FROM InterviewSlot slot
+                JOIN slot.interviewProcess process
+                JOIN process.job job
+                WHERE job.supervisingProfessor = :professor
+                  AND slot.startDateTime < :endTime
+                  AND slot.endDateTime > :startTime
+                ORDER BY slot.startDateTime ASC
+                LIMIT 1
+            """)
     Optional<InterviewSlot> findFirstConflictingSlot(
-        @Param("professor") User professor,
-        @Param("startTime") Instant startTime,
-        @Param("endTime") Instant endTime
-    );
+            @Param("professor") User professor,
+            @Param("startTime") Instant startTime,
+            @Param("endTime") Instant endTime);
 
     /**
      * Checks if a slot exists and belongs to a specific professor.
@@ -100,13 +95,11 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param professorId the ID of the supervising professor
      * @return true if the slot exists and belongs to the professor
      */
-    @Query(
-        """
-            SELECT COUNT(s) > 0
-            FROM InterviewSlot s
-            WHERE s.id = :slotId
-              AND s.interviewProcess.job.supervisingProfessor.userId = :professorId
-        """
-    )
+    @Query("""
+                SELECT COUNT(s) > 0
+                FROM InterviewSlot s
+                WHERE s.id = :slotId
+                  AND s.interviewProcess.job.supervisingProfessor.userId = :professorId
+            """)
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
 }
