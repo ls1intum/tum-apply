@@ -6,6 +6,7 @@ import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
+import de.tum.cit.aet.core.exception.UnknownImageTypeException;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -44,7 +45,7 @@ public record ImageDTO(
         } else if (image instanceof ProfileImage) {
             imageType = ImageType.PROFILE_PICTURE;
         } else {
-            throw new IllegalArgumentException("Unknown image type: " + image.getClass().getName());
+            throw new UnknownImageTypeException("Unknown image type: " + image.getClass().getName());
         }
 
         return new ImageDTO(
