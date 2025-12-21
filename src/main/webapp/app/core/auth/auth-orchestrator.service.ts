@@ -145,7 +145,9 @@ export class AuthOrchestratorService {
   switchToRegister(): void {
     this.mode.set('register');
     this.registerStep.set(null);
-    requestAnimationFrame(() => {this.registerStep.set('email')});
+    requestAnimationFrame(() => {
+      this.registerStep.set('email');
+    });
   }
 
   clearError(): void {
