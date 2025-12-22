@@ -97,6 +97,7 @@ describe('ResearchGroupMembersComponent', () => {
     mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
 
     mockActivatedRoute.setParams({ id: groupId });
+    fixture.detectChanges();
 
     expect(mockResearchGroupService.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
   });
@@ -109,6 +110,7 @@ describe('ResearchGroupMembersComponent', () => {
 
     // Trigger the subscription to re-evaluate
     mockActivatedRoute.setParams({});
+    fixture.detectChanges();
 
     expect(mockResearchGroupService.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
   });
@@ -213,7 +215,8 @@ describe('ResearchGroupMembersComponent', () => {
       memberName: 'John Doe',
     });
     expect(mockToastService.showSuccessKey).toHaveBeenCalledTimes(1);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalled(); // Refresh call
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle error and show error toast when removing member fails', async () => {
