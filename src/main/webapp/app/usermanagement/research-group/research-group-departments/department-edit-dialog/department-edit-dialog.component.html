@@ -3,22 +3,22 @@
     <jhi-string-input
       [control]="form.controls.name"
       [model]="form.controls.name.value"
-      [label]="translationKey + '.nameLabel' | translate"
-      [placeholder]="translationKey + '.namePlaceholder' | translate"
+      [label]="translationKey + '.nameLabel'"
+      [placeholder]="translationKey + '.namePlaceholder'"
       [required]="true"
+      [shouldTranslate]="true"
     />
   </div>
 
   <div>
     <jhi-select
-      [label]="translationKey + '.schoolLabel'"
-      [placeholder]="translationKey + '.schoolPlaceholder'"
+      [label]="translationKey + '.schoolLabel' | translate"
+      [placeholder]="translationKey + '.schoolPlaceholder' | translate"
       [items]="schoolOptions()"
       [required]="true"
       [selected]="selectedSchoolOption()"
       (selectedChange)="onSchoolChange($event)"
       [appendTo]="'body'"
-      shouldTranslate="true"
     />
   </div>
 
