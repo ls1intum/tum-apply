@@ -222,4 +222,28 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     List<Object[]> countApplicationsByJobAndStateForInterviewProcesses(@Param("professorId") UUID professorId);
+
+    /**
+     * Counts applications grouped by job and state for jobs with interview
+     * processes
+     * that are accessible to the user (professor or research group member).
+     *
+     * @param userId the ID of the user
+     * @return List of Object arrays containing [Job, ApplicationState, Count]
+     */
+    @Query(
+        """
+            SELECT a.job, a.state, COUNT(a)
+            FROM Application a
+            WHERE a.job IN (
+                SELECT ip.job FROM InterviewProcess ip
+                JOIN ip.job j
+                JOIN j.researchGroup rg
+                JOIN rg.userRoles ur
+                WHERE ur.user.userId = :userId
+            )
+            GROUP BY a.job, a.state
+        """
+    )
+    List<Object[]> countApplicationsByJobAndStateForUserAccess(@Param("userId") UUID userId);
 }

@@ -57,11 +57,11 @@ public class InterviewService {
      */
 
     public List<InterviewOverviewDTO> getInterviewOverview() {
-        // 1. Get the ID of the currently logged-in professor
-        UUID professorId = currentUserService.getUserId();
+        // 1. Get the ID of the currently logged-in user
+        UUID currentUserId = currentUserService.getUserId();
 
-        // 2. Load all active interview processes for this professor
-        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
+        // 2. Load all active interview processes accessible to this user
+        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByUserAccess(currentUserId);
 
         // 2. If no interview processes exist, return an empty list
         if (interviewProcesses.isEmpty()) {
@@ -69,7 +69,7 @@ public class InterviewService {
         }
 
         // 4. Fetch aggregated data: count of applications per job and ApplicationState
-        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(professorId);
+        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForUserAccess(currentUserId);
 
         // 5.Build a map structure with jobId as key
         // The inner map contains the count of applications per ApplicationState
@@ -157,7 +157,7 @@ public class InterviewService {
         // 3. Fetch aggregated data for this specific job
         UUID jobId = interviewProcess.getJob().getJobId();
         UUID currentUserId = currentUserService.getUserId();
-        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(currentUserId);
+        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForUserAccess(currentUserId);
 
         // Filter for this specific job
         Map<ApplicationState, Long> stateCounts = new EnumMap<>(ApplicationState.class);
