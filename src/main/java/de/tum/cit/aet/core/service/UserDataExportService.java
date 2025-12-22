@@ -14,6 +14,7 @@ import de.tum.cit.aet.core.dto.exportdata.StaffDataDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserProfileExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserSettingDTO;
+import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.util.FileUtil;
@@ -41,7 +42,6 @@ import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -68,15 +68,13 @@ public class UserDataExportService {
      * <p>The generated ZIP contains a JSON summary file ("user_data_summary.json") with the user's profile,
      * settings, email settings, optional applicant data and staff data. If applicant data exists, applicant
      * documents are added to the archive under the {@code documents/} directory; filenames are sanitized with
-     * {@link FileUtil#sanitizeFilename(String)}. Individual document download failures are logged and do not stop
-     * the overall export.</p>
+     * {@link FileUtil#sanitizeFilename(String)}.</p>
      *
      * @param userId   UUID of the user whose data should be exported
      * @param response HTTP response to which the ZIP archive will be written; response headers will be modified
      * @throws IOException              if an I/O error occurs while writing the ZIP to the response stream
      * @throws IllegalArgumentException if the user with the given id does not exist
      */
-    @Transactional(readOnly = true)
     public void exportUserData(UUID userId, HttpServletResponse response) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -278,7 +276,8 @@ public class UserDataExportService {
 
             zipExportService.addDocumentToZip(zipOut, entryPath, document);
         } catch (Exception e) {
-            log.error("Failed to add document {} to ZIP export: {}", documentId, e.getMessage());
+            log.error("Failed to add document {} to ZIP export", documentId, e);
+            throw new UserDataExportException("Failed to add document to ZIP export", e);
         }
     }
 }

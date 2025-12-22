@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.web;
 
+import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.UserDataExportService;
@@ -8,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +34,16 @@ public class UserDataExportResource {
                 responseCode = "200",
                 content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary"))
             ),
+            @ApiResponse(responseCode = "500"),
         }
     )
-    public void exportUserData(HttpServletResponse response) throws IOException {
-        UUID currentUserId = currentUserService.getUserId();
-        userDataExportService.exportUserData(currentUserId, response);
+    public void exportUserData(HttpServletResponse response) {
+        try {
+            UUID currentUserId = currentUserService.getUserId();
+            userDataExportService.exportUserData(currentUserId, response);
+        } catch (Exception e) {
+            log.error("User data export failed", e);
+            throw new UserDataExportException("User data export failed", e);
+        }
     }
 }
