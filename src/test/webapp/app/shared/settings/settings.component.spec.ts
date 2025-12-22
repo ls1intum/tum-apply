@@ -251,31 +251,37 @@ describe('SettingsComponent', () => {
     vi.useRealTimers();
   });
 
-  it('should clear existing timer when starting new cooldown', () => {
+  it('should reset cooldown when starting new cooldown', () => {
     vi.useFakeTimers();
     const fixture = TestBed.createComponent(SettingsComponent);
     const component = fixture.componentInstance;
-    const clearIntervalSpy = vi.spyOn(window, 'clearInterval');
 
     component.startExportCooldown(10);
     component.startExportCooldown(5);
-
-    expect(clearIntervalSpy).toHaveBeenCalled();
     expect(component.exportCooldownRemaining()).toBe(5);
+
+    // Ensure the previous cooldown was cleared (otherwise it would tick twice per second)
+    vi.advanceTimersByTime(1000);
+    expect(component.exportCooldownRemaining()).toBe(4);
 
     vi.useRealTimers();
   });
 
-  it('should clear timer on destroy', () => {
+  it('should stop cooldown on destroy', () => {
     vi.useFakeTimers();
     const fixture = TestBed.createComponent(SettingsComponent);
     const component = fixture.componentInstance;
-    const clearIntervalSpy = vi.spyOn(window, 'clearInterval');
 
     component.startExportCooldown(10);
-    component.ngOnDestroy();
 
-    expect(clearIntervalSpy).toHaveBeenCalled();
+    vi.advanceTimersByTime(1000);
+    expect(component.exportCooldownRemaining()).toBe(9);
+
+    fixture.destroy();
+
+    // After destroy, the interval subscription should be cleaned up
+    vi.advanceTimersByTime(3000);
+    expect(component.exportCooldownRemaining()).toBe(9);
 
     vi.useRealTimers();
   });
