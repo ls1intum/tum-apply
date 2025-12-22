@@ -389,7 +389,7 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
-  /api/departments/admin:
+  /api/departments/admin/search:
     get:
       tags: [department-resource]
       operationId: getDepartmentsForAdmin
@@ -428,21 +428,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTODepartmentDTO'}
-  /api/departments/{id}:
-    get:
+  /api/departments/delete/{id}:
+    delete:
       tags: [department-resource]
-      operationId: getDepartmentById
+      operationId: deleteDepartment
       parameters:
       - name: id
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/DepartmentDTO'}
+        '200': {description: OK}
+  /api/departments/update/{id}:
     put:
       tags: [department-resource]
       operationId: updateDepartment
@@ -462,16 +459,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
-    delete:
+  /api/departments/{id}:
+    get:
       tags: [department-resource]
-      operationId: deleteDepartment
+      operationId: getDepartmentById
       parameters:
       - name: id
         in: path
         required: true
         schema: {type: string, format: uuid}
       responses:
-        '200': {description: OK}
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
   /api/documents/{documentDictionaryId}:
     get:
       tags: [document-resource]
