@@ -73,12 +73,18 @@ public class DepartmentResource {
      * @return paginated departments
      */
     @Admin
-    @GetMapping("/admin")
+    @GetMapping("/admin/search")
     public ResponseEntity<PageResponseDTO<DepartmentDTO>> getDepartmentsForAdmin(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @ParameterObject @Valid @ModelAttribute AdminDepartmentFilterDTO filterDTO,
         @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
     ) {
+        log.info(
+            "GET /api/departments/admin/search - Fetching departments for admin with page={}, filter={}, sort={}",
+            pageDTO,
+            filterDTO,
+            sortDTO
+        );
         PageResponseDTO<DepartmentDTO> response = departmentService.getDepartmentsForAdmin(pageDTO, filterDTO, sortDTO);
         return ResponseEntity.ok(response);
     }
@@ -105,7 +111,7 @@ public class DepartmentResource {
      * @return HTTP 200 OK with the updated department
      */
     @Admin
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<DepartmentDTO> updateDepartment(@PathVariable UUID id, @Valid @RequestBody DepartmentCreationDTO dto) {
         log.info("PUT /api/departments/{} - Updating department: {}", id, dto.name());
         DepartmentDTO updated = departmentService.updateDepartment(id, dto);
@@ -119,7 +125,7 @@ public class DepartmentResource {
      * @return HTTP 204 No Content
      */
     @Admin
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable UUID id) {
         log.info("DELETE /api/departments/{} - Deleting department", id);
         departmentService.deleteDepartment(id);

@@ -11,13 +11,14 @@
 
   <div>
     <jhi-select
-      [label]="translationKey + '.schoolLabel' | translate"
-      [placeholder]="translationKey + '.schoolPlaceholder' | translate"
+      [label]="translationKey + '.schoolLabel'"
+      [placeholder]="translationKey + '.schoolPlaceholder'"
       [items]="schoolOptions()"
       [required]="true"
       [selected]="selectedSchoolOption()"
       (selectedChange)="onSchoolChange($event)"
       [appendTo]="'body'"
+      shouldTranslate="true"
     />
   </div>
 
