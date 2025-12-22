@@ -25,6 +25,14 @@ public class UserDataExportResource {
     private final UserDataExportService userDataExportService;
     private final CurrentUserService currentUserService;
 
+    /**
+     * Exports the currently authenticated user's data as a ZIP archive.
+     *
+     * <p>The ZIP is written directly to the given {@link HttpServletResponse}. If the export fails,
+     * a {@link UserDataExportException} is thrown and mapped to a 500 response by the global exception handler.</p>
+     *
+     * @param response HTTP response to write the ZIP archive to
+     */
     @Authenticated
     @GetMapping(path = "/export", produces = "application/zip")
     @Operation(
