@@ -1,4 +1,4 @@
-import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
@@ -6,7 +6,7 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
 import { ToastService } from 'app/service/toast-service';
 import { UserDataExportResourceApiService } from 'app/generated';
-import { firstValueFrom } from 'rxjs';
+import { Subscription, firstValueFrom, interval } from 'rxjs';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
@@ -20,7 +20,7 @@ import { EmailSettingsComponent } from './email-settings/email-settings.componen
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
 })
-export class SettingsComponent implements OnDestroy {
+export class SettingsComponent {
   readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
 
   themeOptions: SelectOption[] = [
@@ -44,13 +44,19 @@ export class SettingsComponent implements OnDestroy {
   protected readonly accountService = inject(AccountService);
   protected readonly userDataExportService = inject(UserDataExportResourceApiService);
   private readonly toastService = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  // Internal timer handle used for the cooldown interval
-  private exportCooldownTimer: number | null = null;
+  // Internal subscription used for the cooldown interval
+  private exportCooldownSub: Subscription | null = null;
 
   constructor() {
     const authorities = this.accountService.loadedUser()?.authorities;
     this.role.set(authorities?.map(authority => authority as UserShortDTO.RolesEnum)[0]);
+
+    this.destroyRef.onDestroy(() => {
+      this.exportCooldownSub?.unsubscribe();
+      this.exportCooldownSub = null;
+    });
   }
 
   onThemeChange(option: SelectOption): void {
@@ -121,33 +127,21 @@ export class SettingsComponent implements OnDestroy {
    * @param seconds cooldown duration in seconds
    */
   startExportCooldown(seconds: number): void {
-    // Clear any existing timer
-    if (this.exportCooldownTimer !== null) {
-      clearInterval(this.exportCooldownTimer);
-      this.exportCooldownTimer = null;
-    }
+    // Clear any existing interval subscription
+    this.exportCooldownSub?.unsubscribe();
+    this.exportCooldownSub = null;
 
     this.exportCooldownRemaining.set(seconds);
 
-    // Use number type for window timer id
-    this.exportCooldownTimer = window.setInterval(() => {
+    this.exportCooldownSub = interval(1000).subscribe(() => {
       const remaining = this.exportCooldownRemaining();
       if (remaining <= 1) {
         this.exportCooldownRemaining.set(0);
-        if (this.exportCooldownTimer !== null) {
-          clearInterval(this.exportCooldownTimer);
-          this.exportCooldownTimer = null;
-        }
+        this.exportCooldownSub?.unsubscribe();
+        this.exportCooldownSub = null;
       } else {
         this.exportCooldownRemaining.set(remaining - 1);
       }
-    }, 1000) as unknown as number;
-  }
-
-  ngOnDestroy(): void {
-    if (this.exportCooldownTimer !== null) {
-      clearInterval(this.exportCooldownTimer);
-      this.exportCooldownTimer = null;
-    }
+    });
   }
 }
