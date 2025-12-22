@@ -54,7 +54,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I am passionate about educational technology and have experience designing engaging learning experiences. This position aligns perfectly with my skills and interests.</p>',
  '2025-02-01 14:30:00', '2025-02-01 14:30:00', '2025-02-01 14:30:00',
  'Amelie', 'Bauer', 'amelie.bauer@tumapply.local', 'female', 'de', '1993-03-14', '+49 89 99887766', 'https://ameliebauer.dev', 'https://linkedin.com/in/ameliebauer123',
- 'Leopoldstraße 44', '80588', 'Frankfurt', 'Germany',
+ 'Leopoldstraße 44', '80588', 'Frankfurt', 'de',
  'B.Sc. Electrical Engineering', '1.0', '4.0', '2.5', 'Uni Stuttgart',
  'M.Sc. Artificial Intelligence', '1.0', '4.0', '3.0', 'LMU'),
 
@@ -66,7 +66,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I am passionate about educational technology and have experience designing engaging learning experiences. This position aligns perfectly with my skills and interests.</p>',
  '2025-02-01 14:30:00', '2025-02-01 14:30:00', '2025-02-01 14:30:00',
  'Jay', 'Patel', 'jay.patel@tumapply.local', 'male', 'no', '1994-05-17', '+91 22 87654321', 'https://jaypatel.in', 'https://linkedin.com/in/jaypatel123',
- 'Theresienstraße 90', '80333', 'Munich', 'Germany',
+ 'Theresienstraße 90', '80333', 'Munich', 'de',
  'B.Sc. Electrical Engineering', '1.0', '4.0', '2.4', 'TU Dresden',
  'M.Sc. Smart Grids', '1.0', '4.0', '2.2', 'TUM'),
 
@@ -78,7 +78,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>My psychology background gives me unique insights into motivation systems for learning. I want to apply this knowledge to improve educational technology.</p>',
  '2025-02-05 10:15:00', NULL, '2025-02-05 10:15:00',
  'Max', 'Applicant', 'applicant1@tumapply.local', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max',
- 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'Germany',
+ 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'de',
  'B.Sc. Physics', '1.0', '4.0', '3.5', 'RWTH Aachen',
  'M.Sc. Bioinformatics', '1.0', '4.0', '2.8', 'TUM'),
 
@@ -90,7 +90,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I have worked on similar recommendation problems in education and would love to contribute to research that improves learning personalization.</p>',
  '2025-02-10 11:20:00', '2025-02-20 15:00:00', '2025-02-20 15:00:00',
  'Max', 'Applicant', 'applicant1@tumapply.local', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max',
- 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'Germany',
+ 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'de',
  'B.Sc. Physics', '1.0', '4.0', '3.5', 'RWTH Aachen',
  'M.Sc. Bioinformatics', '1.0', '4.0', '2.8', 'TUM'),
 
@@ -102,7 +102,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I am fascinated by theoretical computer science and want to gain research experience in algorithms before applying to PhD programs.</p>',
  '2025-02-12 09:45:00', NULL, '2025-02-12 09:45:00',
  'Max', 'Applicant', 'applicant1@tumapply.local', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max',
- 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'Germany',
+ 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'de',
  'B.Sc. Physics', '1.0', '4.0', '3.5', 'RWTH Aachen',
  'M.Sc. Bioinformatics', '1.0', '4.0', '2.8', 'TUM'),
 
@@ -114,7 +114,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>While my background is more in physics than CS, I have strong quantum mechanics knowledge and programming skills that would benefit this research.</p>',
  '2025-02-18 15:20:00', '2025-03-02 10:15:00', '2025-03-02 10:15:00',
  'Max', 'Applicant', 'applicant1@tumapply.local', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max',
- 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'Germany',
+ 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'de',
  'B.Sc. Physics', '1.0', '4.0', '3.5', 'RWTH Aachen',
  'M.Sc. Bioinformatics', '1.0', '4.0', '2.8', 'TUM'),
 
@@ -126,7 +126,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I have hands-on experience with analog design and want to apply these skills to research with practical applications.</p>',
  '2025-02-05 10:15:00', '2025-02-05 10:15:00', '2025-02-05 10:15:00',
  'Max', 'Applicant', 'applicant1@tumapply.local', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max',
- 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'Germany',
+ 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'de',
  'B.Sc. Physics', '1.0', '4.0', '3.5', 'RWTH Aachen',
  'M.Sc. Bioinformatics', '1.0', '4.0', '2.8', 'TUM'),
 
@@ -138,7 +138,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>My experience with material characterization aligns well with this position. I am excited about contributing to climate solutions.</p>',
  '2025-02-12 09:45:00', NULL, '2025-02-12 09:45:00',
  'Max', 'Applicant', 'applicant1@tumapply.local', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max',
- 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'Germany',
+ 'Gabelsbergerstraße 10', '88772', 'Hamburg', 'de',
  'B.Sc. Physics', '1.0', '4.0', '3.5', 'RWTH Aachen',
  'M.Sc. Bioinformatics', '1.0', '4.0', '2.8', 'TUM'),
 
@@ -150,7 +150,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I have worked on similar recommendation problems in education and would love to contribute to research that improves learning personalization.</p>',
  '2025-06-15 13:45:00', '2025-06-15 13:45:00', '2025-06-15 13:45:00',
  'Jay', 'Patel', 'jay.patel@tumapply.local', 'male', 'no', '1994-05-17', '+91 22 87654321', 'https://jaypatel.in', 'https://linkedin.com/in/jaypatel123',
- 'Theresienstraße 90', '80333', 'Munich', 'Germany',
+ 'Theresienstraße 90', '80333', 'Munich', 'de',
  'B.Sc. Electrical Engineering', '1.0', '4.0', '2.4', 'TU Dresden',
  'M.Sc. Smart Grids', '1.0', '4.0', '2.2', 'TUM'),
 
@@ -162,7 +162,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I am fascinated by theoretical computer science and want to gain research experience in algorithms before applying to PhD programs.</p>',
  '2025-02-12 09:45:00', NULL, '2025-02-12 09:45:00',
  'Khalid', 'Hassan', 'khalid.hassan@tumapply.local', 'male', 'es', '1988-02-17', '+20 2 12345678', 'https://khalidhassan.com', 'https://linkedin.com/in/khalidhassan123',
- 'Gabelsbergerstraße 10', '86736', 'Munich', 'Germany',
+ 'Gabelsbergerstraße 10', '86736', 'Munich', 'de',
  'B.Sc. Physics', '1.0', '4.0', '2.2', 'TUM',
  'M.Sc. Artificial Intelligence', '1.0', '4.0', '2.4', 'LMU'),
 
@@ -174,7 +174,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>My background in discrete mathematics and algorithm design makes me well-suited for this research position. I enjoy both theoretical and practical aspects of algorithms.</p>',
  '2025-02-18 15:20:00', '2025-02-18 15:20:00', '2025-02-18 15:20:00',
  'Ines', 'Fernández', 'ines.fernandez@tumapply.local', 'female', 'es', '1991-09-11', '+34 91 456 7890', 'https://inesfernandez.es', 'https://linkedin.com/in/inesfernandez123',
- 'Lothstraße 13d', '80335', 'Munich', 'Germany',
+ 'Lothstraße 13d', '80335', 'Munich', 'de',
  'B.Sc. Psychology', '1.0', '4.0', '2.0', 'Heidelberg University',
  'M.Sc. Data Science', '1.0', '4.0', '1.7', 'TUM'),
 
@@ -186,7 +186,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I have experience with quantum algorithms and want to contribute to research that pushes the boundaries of quantum computing applications.</p>',
  '2025-02-15 13:45:00', '2025-03-01 11:30:00', '2025-03-01 11:30:00',
  'Noor', 'Ahmed', 'noor.ahmed@tumapply.local', 'female', 'fr', '1995-02-02', '+92 42 1234567', 'https://noorahmed.pk', 'https://linkedin.com/in/noorahmed123',
- 'Reichenbachstraße 20', '80469', 'Munich', 'Germany',
+ 'Reichenbachstraße 20', '80469', 'Munich', 'de',
  'B.Sc. Informatics', '1.0', '4.0', '1.9', 'TUM',
  'M.Sc. Human-Computer Interaction', '1.0', '4.0', '2.0', 'TUM'),
 
@@ -198,7 +198,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>While my background is more in physics than CS, I have strong quantum mechanics knowledge and programming skills that would benefit this research.</p>',
  '2025-02-18 15:20:00', '2025-03-02 10:15:00', '2025-03-02 10:15:00',
  'Erik', 'Olsen', 'erik.olsen@tumapply.local', 'male', 'no', '1986-06-06', '+46 8 123456', 'https://erikolsen.se', 'https://linkedin.com/in/erikolsen123',
- 'Chemiestraße 21', '85748', 'Garching', 'Germany',
+ 'Chemiestraße 21', '85748', 'Garching', 'de',
  'B.Sc. Chemistry', '1.0', '4.0', '2.6', 'LMU',
  'M.Sc. Nano-Materials', '1.0', '4.0', '2.4', 'TUM'),
 
@@ -210,7 +210,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I have hands-on experience with analog design and want to apply these skills to research with practical applications.</p>',
  '2025-06-01 10:00:00', NULL, '2025-06-01 10:00:00',
  'George', 'Mensah', 'george.mensah@tumapply.local', 'male', 'pl', '1987-04-14', '+233 302 123456', 'https://georgemensah.gh', 'https://linkedin.com/in/georgemensah123',
- 'Max-Planck-Str. 1', '85748', 'Garching', 'Germany',
+ 'Max-Planck-Str. 1', '85748', 'Garching', 'de',
  'B.Sc. Physics', '1.0', '4.0', '2.0', 'LMU',
  'M.Sc. Quantum Computing', '1.0', '4.0', '1.8', 'TUM'),
 
@@ -222,7 +222,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I am excited about genetics research and want to gain more lab experience before applying to graduate programs.</p>',
  '2025-02-05 14:30:00', '2025-02-05 14:30:00', '2025-02-05 14:30:00',
  'Sophie', 'Lee', 'sophie.lee@tumapply.local', 'female', 'md', '1993-05-01', '+65 6123 4567', 'https://sophielee.sg', 'https://linkedin.com/in/sophielee123',
- 'Theresienstraße 10', '80333', 'Munich', 'Germany',
+ 'Theresienstraße 10', '80333', 'Munich', 'de',
  'B.Sc. Mechatronics', '1.0', '4.0', '2.1', 'Uni Stuttgart',
  'M.Sc. Robotics', '1.0', '4.0', '2.3', 'TUM'),
 
@@ -234,7 +234,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>My experience in genetics research makes me well-prepared for this position. I am particularly interested in applications to agriculture.</p>',
  '2025-02-10 10:15:00', '2025-02-10 10:15:00', '2025-02-10 10:15:00',
  'Hassan', 'Mohammed', 'hassan.mohammed@tumapply.local', 'male', 'tr', '1987-03-03', '+966 11 1234567', 'https://hassanmohammed.sa', 'https://linkedin.com/in/hassanmohammed123',
- 'Sprachstraße 10', '80331', 'Munich', 'Germany',
+ 'Sprachstraße 10', '80331', 'Munich', 'de',
  'B.A. English', '1.0', '4.0', '1.7', 'LMU',
  'M.A. Computational Linguistics', '1.0', '4.0', '1.8', 'TUM'),
 
@@ -246,7 +246,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>I am passionate about creating sustainable urban spaces and have both technical and social skills for this position.</p>',
  '2025-06-15 13:45:00', '2025-06-15 13:45:00', '2025-06-15 13:45:00',
  'Tatiana', 'Ivanova', 'tatiana.ivanova@tumapply.local', 'female', 'ua', '1989-04-04', '+7 495 1234567', 'https://tatianaivanova.ru', 'https://linkedin.com/in/tatianaivanova123',
- 'Lilienstraße 19', '80331', 'Munich', 'Germany',
+ 'Lilienstraße 19', '80331', 'Munich', 'de',
  'B.Sc. Educational Technology', '1.0', '4.0', '1.7', 'University of Passau',
  'M.Sc. Learning Sciences', '1.0', '4.0', '1.3', 'Technical University of Munich'),
 
@@ -258,7 +258,7 @@ VALUES ('00000000-0000-0000-0000-300000020001', '11111111-0000-0000-0000-0000000
  '<p>My experience with material characterization aligns well with this position. I am excited about contributing to climate solutions.</p>',
  '2025-02-12 09:45:00', '2025-02-12 09:45:00', '2025-02-12 09:45:00',
  'Jacob', 'Green', 'jacob.green@tumapply.local', 'male', 'tr', '1991-12-12', '+1 416 1234567', 'https://jacobgreen.ca', 'https://linkedin.com/in/jacobgreen123',
- 'Schellingstraße 4', '80799', 'Munich', 'Germany',
+ 'Schellingstraße 4', '80799', 'Munich', 'de',
  'B.Sc. Informatics', '1.0', '4.0', '1.9', 'Uni Augsburg',
  'M.Sc. Machine Learning', '1.0', '4.0', '2.0', 'TUM');
 
