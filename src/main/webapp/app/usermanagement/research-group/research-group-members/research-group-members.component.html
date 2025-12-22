@@ -53,6 +53,6 @@
   </ng-template>
 
   @if (researchGroupId()) {
-    <jhi-button [label]="'button.back' | translate" icon="arrow-left" (click)="goBack()" />
+    <jhi-button [label]="'button.back'" severity="info" variant="outlined" [shouldTranslate]="true" icon="arrow-left" (click)="goBack()" />
   }
 </div>

@@ -1,4 +1,5 @@
-import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -111,15 +112,23 @@ export class ResearchGroupMembersComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  private readonly translationKey: string = 'researchGroup.members';
+  // Convert route observables to signals so we can create a derived computed signal
+  private readonly routeParamMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
+  private readonly routeQueryParamMap = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
-  constructor() {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id') ?? this.route.snapshot.queryParamMap.get('researchGroupId') ?? undefined;
-      this.researchGroupId.set(id);
-      void this.loadMembers();
-    });
-  }
+  private readonly routeId = computed<string | undefined>(() => {
+    const params = this.routeParamMap();
+    const queryParams = this.routeQueryParamMap();
+    return params.get('id') ?? queryParams.get('researchGroupId') ?? undefined;
+  });
+
+  private readonly routeIdEffect = effect(() => {
+    const id = this.routeId();
+    this.researchGroupId.set(id);
+    void this.loadMembers();
+  });
+
+  private readonly translationKey: string = 'researchGroup.members';
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const first = event.first ?? 0;
