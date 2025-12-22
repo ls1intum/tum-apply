@@ -1627,6 +1627,7 @@ paths:
           content:
             application/zip:
               schema: {type: string, format: binary}
+        '500': {description: Internal Server Error}
   /api/users/me:
     get:
       tags: [user-resource]
