@@ -323,6 +323,80 @@
         "postalCode": "z.B. 12345",
         "street": "z.B. Musterstraße 123"
       }
+    },
+    "departments": {
+      "header": "Departments",
+      "createButton": "Department erstellen",
+      "searchPlaceholder": "Departments suchen...",
+      "entity": "Department",
+      "entities": "Departments",
+      "filter": {
+        "school": "School",
+        "schoolSearch": "School suchen..."
+      },
+      "tableColumns": {
+        "name": "Name",
+        "school": "School",
+        "schoolAbbreviation": "School Abkürzung"
+      },
+      "toastMessages": {
+        "loadFailed": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Laden der Departments. Bitte versuche es erneut"
+        },
+        "deleteSuccess": {
+          "summary": "Erfolg",
+          "detail": "Department erfolgreich gelöscht."
+        },
+        "deleteFailed": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Löschen des Departments. Bitte versuche es erneut."
+        },
+        "updateSuccess": {
+          "summary": "Erfolg",
+          "detail": "Department erfolgreich aktualisiert."
+        },
+        "updateFailed": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Aktualisieren des Departments. Bitte versuche es erneut."
+        }
+      },
+      "createDialog": {
+        "title": "Neues Department erstellen",
+        "nameLabel": "Name",
+        "namePlaceholder": "z.B. Künstliche Intelligenz",
+        "schoolLabel": "School",
+        "schoolPlaceholder": "Wählen...",
+        "createButton": "Department erstellen",
+        "creating": "Erstelle Department...",
+        "success": {
+          "created": {
+            "summary": "Erfolg",
+            "detail": "Department erfolgreich erstellt."
+          },
+          "updated": {
+            "summary": "Erfolg",
+            "detail": "Department erfolgreich aktualisiert."
+          }
+        },
+        "errors": {
+          "createFailed": {
+            "summary": "Fehler",
+            "detail": "Fehler beim Erstellen des Departments. Bitte versuche es erneut."
+          },
+          "duplicateName": {
+            "summary": "Name existiert bereits",
+            "detail": "Ein Department mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
+          }
+        }
+      },
+      "editDialog": {
+        "title": "Department bearbeiten"
+      },
+      "deleteDialog": {
+        "header": "Department löschen",
+        "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
+      }
     }
   }
 }

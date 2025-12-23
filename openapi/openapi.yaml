@@ -389,6 +389,76 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
+  /api/departments/admin/search:
+    get:
+      tags: [department-resource]
+      operationId: getDepartmentsForAdmin
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: schoolNames
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTODepartmentDTO'}
+  /api/departments/delete/{id}:
+    delete:
+      tags: [department-resource]
+      operationId: deleteDepartment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/departments/update/{id}:
+    put:
+      tags: [department-resource]
+      operationId: updateDepartment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DepartmentCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
   /api/departments/{id}:
     get:
       tags: [department-resource]
@@ -2384,6 +2454,13 @@ components:
         sort: {$ref: '#/components/schemas/SortObject'}
         totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
+    PageResponseDTODepartmentDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/DepartmentDTO'}
+        totalElements: {type: integer, format: int64}
     PageResponseDTOEmailTemplateOverviewDTO:
       type: object
       properties:
