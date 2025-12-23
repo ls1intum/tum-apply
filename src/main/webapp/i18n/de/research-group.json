@@ -49,7 +49,7 @@
       }
     },
     "emailTemplates": {
-      "newTemplate": "Neue Vorlage",
+      "newTemplate": "Vorlage erstellen",
       "signature": "Signatur",
       "systemDefault": "Systemvorlage",
       "tableColumns": {

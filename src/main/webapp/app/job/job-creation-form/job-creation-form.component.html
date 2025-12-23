@@ -23,7 +23,7 @@
   <!-- Step 1: Basic Information -->
   <ng-template #panel1>
     <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
-      <form [formGroup]="basicInfoForm">
+      <form [formGroup]="basicInfoForm" class="w-full">
         <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span></p-divider>
         <div class="form-field">
@@ -168,7 +168,7 @@
   <!-- Step 2: Position Details -->
   <ng-template #panel2>
     <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
-      <form [formGroup]="positionDetailsForm">
+      <form [formGroup]="positionDetailsForm" class="w-full">
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <br />
         <div class="form-row mb-6">
@@ -276,66 +276,68 @@
 
   <!-- Step 3: Image Selection/Upload -->
   <ng-template #panel3>
-    <div class="px-4 xl:px-32 2xl:px-64">
-      <p class="mb-4" jhiTranslate="jobCreationForm.imageSection.description"></p>
+    <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
+      <div class="w-full">
+        <p class="mb-4" jhiTranslate="jobCreationForm.imageSection.description"></p>
 
-      <!-- Default Image Section -->
-      <div class="mb-4">
-        <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
-        @if (defaultImages().length === 0) {
-          <div class="p-3 mb-4 border border-border-default rounded-lg bg-background-surface-alt flex items-center gap-2">
-            <fa-icon [icon]="['fas', 'circle-info']" class="text-primary" />
-            <p class="text-sm" jhiTranslate="jobCreationForm.imageSection.noDefaultImages"></p>
+        <!-- Default Image Section -->
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
+          @if (defaultImages().length === 0) {
+            <div class="p-3 mb-4 border border-border-default rounded-lg bg-background-surface-alt flex items-center gap-2">
+              <fa-icon [icon]="['fas', 'circle-info']" class="text-primary" />
+              <p class="text-sm" jhiTranslate="jobCreationForm.imageSection.noDefaultImages"></p>
+            </div>
+          }
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+            <!-- No Image Option -->
+            <ng-container
+              *ngTemplateOutlet="
+                imageCard;
+                context: { image: null, showDelete: false, isNoImage: true, isSelected: selectedImage() === undefined }
+              "
+            />
+
+            <!-- Default Images -->
+            @for (image of defaultImages(); track image.imageId) {
+              <ng-container
+                *ngTemplateOutlet="
+                  imageCard;
+                  context: { image: image, showDelete: false, isNoImage: false, isSelected: selectedImage()?.imageId === image.imageId }
+                "
+              />
+            }
           </div>
-        }
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-          <!-- No Image Option -->
-          <ng-container
-            *ngTemplateOutlet="
-              imageCard;
-              context: { image: null, showDelete: false, isNoImage: true, isSelected: selectedImage() === undefined }
-            "
-          />
-
-          <!-- Default Images -->
-          @for (image of defaultImages(); track image.imageId) {
-            <ng-container
-              *ngTemplateOutlet="
-                imageCard;
-                context: { image: image, showDelete: false, isNoImage: false, isSelected: selectedImage()?.imageId === image.imageId }
-              "
-            />
-          }
         </div>
-      </div>
 
-      <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.imageSection.orDivider"></span></p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.imageSection.orDivider"></span></p-divider>
 
-      <!-- Research Group Image Section -->
-      <div class="mb-8">
-        <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
-        <p class="text-text-secondary mb-4 text-sm" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
+        <!-- Research Group Image Section -->
+        <div class="mb-8">
+          <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
+          <p class="text-text-secondary mb-4 text-sm" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
 
-        <!-- Grid of research group images + upload button -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-          @for (image of researchGroupImages(); track image.imageId) {
-            <ng-container
-              *ngTemplateOutlet="
-                imageCard;
-                context: { image: image, showDelete: true, isNoImage: false, isSelected: selectedImage()?.imageId === image.imageId }
-              "
-            />
-          }
+          <!-- Grid of research group images + upload button -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+            @for (image of researchGroupImages(); track image.imageId) {
+              <ng-container
+                *ngTemplateOutlet="
+                  imageCard;
+                  context: { image: image, showDelete: true, isNoImage: false, isSelected: selectedImage()?.imageId === image.imageId }
+                "
+              />
+            }
 
-          <!-- Upload New Image Button -->
-          <div [class]="uploadContainerClasses()" (click)="fileInput.click()">
-            <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput class="hidden" />
-            <div [class]="uploadInnerClasses()">
-              @if (isUploadingImage()) {
-                <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
-              } @else {
-                <fa-icon [icon]="['fas', 'plus']" [size]="'3x'" class="text-primary" />
-              }
+            <!-- Upload New Image Button -->
+            <div [class]="uploadContainerClasses()" (click)="fileInput.click()">
+              <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput class="hidden" />
+              <div [class]="uploadInnerClasses()">
+                @if (isUploadingImage()) {
+                  <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
+                } @else {
+                  <fa-icon [icon]="['fas', 'plus']" [size]="'3x'" class="text-primary" />
+                }
+              </div>
             </div>
           </div>
         </div>
@@ -345,27 +347,29 @@
 
   <!-- Step 4: Review Page (formerly panel4, now actually panel4 but step 4) -->
   <ng-template #panel4>
-    <div class="px-4 xl:px-32 2xl:px-64">
-      <div class="extras-section">
-        <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>
-        <br />
-      </div>
-      <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
-      <div class="data-privacy-notice">
-        <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-      </div>
-      <div [formGroup]="additionalInfoForm">
-        <div class="flex align-items-start">
-          <div class="relative mr-2">
-            <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
-            <span class="required">*</span>
-          </div>
-          <label jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></label>
+    <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
+      <div class="w-full">
+        <div class="extras-section">
+          <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>
+          <br />
         </div>
+        <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
+        <div class="data-privacy-notice">
+          <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
+        </div>
+        <div [formGroup]="additionalInfoForm">
+          <div class="flex align-items-start">
+            <div class="relative mr-2">
+              <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
+              <span class="required">*</span>
+            </div>
+            <label jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></label>
+          </div>
 
-        @if (privacyAcceptedSignal() === false && publishAttempted()) {
-          <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
-        }
+          @if (privacyAcceptedSignal() === false && publishAttempted()) {
+            <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
+          }
+        </div>
       </div>
     </div>
   </ng-template>

@@ -49,7 +49,7 @@
       }
     },
     "emailTemplates": {
-      "newTemplate": "New Template",
+      "newTemplate": "Create Template",
       "signature": "Signature",
       "systemDefault": "System default",
       "tableColumns": {
