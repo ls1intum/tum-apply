@@ -3,11 +3,29 @@ package de.tum.cit.aet.core.web;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.application.constants.ApplicationState;
+import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
+import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.ApplicantTestData;
+import de.tum.cit.aet.utility.testdata.ApplicationTestData;
+import de.tum.cit.aet.utility.testdata.DocumentTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
+import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +39,9 @@ import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Integration tests for {@link UserDataExportResource}.
@@ -34,10 +54,31 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     UserRepository userRepository;
 
     @Autowired
+    ApplicantRepository applicantRepository;
+
+    @Autowired
+    ResearchGroupRepository researchGroupRepository;
+
+    @Autowired
+    JobRepository jobRepository;
+
+    @Autowired
+    ApplicationRepository applicationRepository;
+
+    @Autowired
+    DocumentRepository documentRepository;
+
+    @Autowired
+    DocumentDictionaryRepository documentDictionaryRepository;
+
+    @Autowired
     DatabaseCleaner databaseCleaner;
 
     @Autowired
     MvcTestClient api;
+
+    @Value("${aet.storage.root}")
+    private String storageRootConfig;
 
     @BeforeEach
     void setup() {
@@ -78,6 +119,75 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
 
         assertThat(entries).contains("user_data_summary.json");
         assertThat(summaryJson).isNotNull().contains(user.getEmail());
+    }
+
+    @Test
+    void exportSetsZipHeaders() {
+        User user = UserTestData.createUserWithoutResearchGroup(userRepository, "export-headers@tum.de", "Export", "Headers", "cd456ef");
+
+        MockHttpServletResponse response = api
+            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+            .getAndReturnResponse(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
+
+        assertThat(response.getContentType()).isEqualTo("application/zip");
+        assertThat(response.getHeader("Content-Disposition"))
+            .isNotNull()
+            .contains("attachment")
+            .contains("user-data-export-" + user.getUserId())
+            .contains(".zip");
+    }
+
+    @Test
+    void exportIncludesApplicantDocumentsInZip() throws Exception {
+        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
+
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        User applicantUser = applicant.getUser();
+
+        Job publishedJob = JobTestData.saved(
+            jobRepository,
+            professor,
+            researchGroup,
+            "Published Role",
+            JobState.PUBLISHED,
+            java.time.LocalDate.now().plusDays(7)
+        );
+
+        Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SENT);
+
+        String unsafeName = "cv:my?file.pdf";
+        String expectedSanitized = "cv_my_file.pdf";
+        DocumentTestData.savedDictionaryWithDocument(
+            storageRootConfig,
+            documentRepository,
+            documentDictionaryRepository,
+            professor,
+            application,
+            applicant,
+            "/testdocs/test-doc1.pdf",
+            "export-test-doc1.pdf",
+            DocumentType.CV,
+            unsafeName
+        );
+
+        byte[] zipBytes = api
+            .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+            .getAndReturnBytes(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
+
+        assertThat(zipBytes).isNotNull().isNotEmpty().hasSizeGreaterThan(50);
+
+        Set<String> entries = new HashSet<>();
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                entries.add(entry.getName());
+                zis.closeEntry();
+            }
+        }
+
+        assertThat(entries).contains("user_data_summary.json");
+        assertThat(entries).contains("documents/" + expectedSanitized);
     }
 
     @Test
