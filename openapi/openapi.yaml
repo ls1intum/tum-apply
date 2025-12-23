@@ -889,10 +889,39 @@ paths:
       tags: [image-resource]
       operationId: getDefaultJobBanners
       parameters:
-      - name: researchGroupId
+      - name: departmentId
         in: query
         required: false
         schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/defaults/job-banners/by-school:
+    get:
+      tags: [image-resource]
+      operationId: getDefaultJobBannersBySchool
+      parameters:
+      - name: schoolId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/defaults/job-banners/for-me:
+    get:
+      tags: [image-resource]
+      operationId: getMyDefaultJobBanners
       responses:
         '200':
           description: OK
@@ -930,7 +959,7 @@ paths:
       tags: [image-resource]
       operationId: uploadDefaultJobBanner
       parameters:
-      - name: researchGroupId
+      - name: departmentId
         in: query
         required: true
         schema: {type: string, format: uuid}
@@ -2163,18 +2192,15 @@ components:
       properties:
         createdAt: {type: string, format: date-time}
         imageId: {type: string, format: uuid}
-        imageType:
-          type: string
-          enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
         lastModifiedAt: {type: string, format: date-time}
         mimeType: {type: string}
-        researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         sizeBytes: {type: integer, format: int64}
         uploadedBy: {$ref: '#/components/schemas/User'}
         url: {type: string}
     ImageDTO:
       type: object
       properties:
+        departmentId: {type: string, format: uuid}
         imageId: {type: string, format: uuid}
         imageType:
           type: string
