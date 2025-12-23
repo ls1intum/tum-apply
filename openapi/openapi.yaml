@@ -474,6 +474,35 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
+    put:
+      tags: [department-resource]
+      operationId: updateDepartment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DepartmentCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
+    delete:
+      tags: [department-resource]
+      operationId: deleteDepartment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/documents/{documentDictionaryId}:
     get:
       tags: [document-resource]
