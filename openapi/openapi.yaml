@@ -1744,6 +1744,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
+  /api/users/export:
+    get:
+      tags: [user-data-export-resource]
+      summary: Export user data
+      operationId: exportUserData
+      responses:
+        '200':
+          description: OK
+          content:
+            application/zip:
+              schema: {type: string, format: binary}
+        '500': {description: Internal Server Error}
   /api/users/me:
     get:
       tags: [user-resource]

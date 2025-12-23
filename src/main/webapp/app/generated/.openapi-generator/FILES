@@ -22,6 +22,7 @@ api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
 api/researchGroupResourceApi.service.ts
 api/schoolResourceApi.service.ts
+api/userDataExportResourceApi.service.ts
 api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
