@@ -298,7 +298,9 @@ export class SlotsSectionComponent {
       if (Array.isArray(slots)) {
         this.hasAnySlots.set(slots.length > 0);
       }
-    } catch {}
+    } catch {
+      /* empty */
+    }
   }
 
   private async loadSlots(processId: string, year: number, month: number): Promise<void> {

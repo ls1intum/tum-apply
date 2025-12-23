@@ -479,10 +479,17 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void getSlotsByProcessIdAndMonthReturnsFilteredSlots() {
-        // Arrange
         int nextYear = LocalDate.now().plusYears(1).getYear();
-        LocalDate janDate = LocalDate.of(nextYear, 1, 15);
-        LocalDate febDate = LocalDate.of(nextYear, 2, 15);
+        createSlotsForJanuaryAndFebruary(nextYear);
+
+        assertJanuarySlotsFiltered(nextYear);
+        assertFebruarySlotsFiltered(nextYear);
+        assertMarchSlotsEmpty(nextYear);
+    }
+
+    private void createSlotsForJanuaryAndFebruary(int year) {
+        LocalDate janDate = LocalDate.of(year, 1, 15);
+        LocalDate febDate = LocalDate.of(year, 2, 15);
 
         CreateSlotsDTO.SlotInput slotInput1 = new CreateSlotsDTO.SlotInput(
             janDate,
@@ -491,7 +498,6 @@ class InterviewResourceTest extends AbstractResourceTest {
             "Room 101",
             null
         );
-
         CreateSlotsDTO.SlotInput slotInput2 = new CreateSlotsDTO.SlotInput(
             febDate,
             LocalTime.of(10, 0),
@@ -499,10 +505,8 @@ class InterviewResourceTest extends AbstractResourceTest {
             "Room 102",
             null
         );
-
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput1, slotInput2));
 
-        // Create slots
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .postAndRead(
@@ -511,49 +515,36 @@ class InterviewResourceTest extends AbstractResourceTest {
                 new TypeReference<List<InterviewSlotDTO>>() {},
                 201
             );
+    }
 
-        // Act (January)
-        PageResponseDTO<InterviewSlotDTO> janResponse = api
+    private void assertJanuarySlotsFiltered(int year) {
+        PageResponseDTO<InterviewSlotDTO> response = getSlotsByMonth(year, 1);
+        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().iterator().next().location()).isEqualTo("Room 101");
+    }
+
+    private void assertFebruarySlotsFiltered(int year) {
+        PageResponseDTO<InterviewSlotDTO> response = getSlotsByMonth(year, 2);
+        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().iterator().next().location()).isEqualTo("Room 102");
+    }
+
+    private void assertMarchSlotsEmpty(int year) {
+        PageResponseDTO<InterviewSlotDTO> response = getSlotsByMonth(year, 3);
+        assertThat(response.getTotalElements()).isEqualTo(0);
+        assertThat(response.getContent()).isEmpty();
+    }
+
+    private PageResponseDTO<InterviewSlotDTO> getSlotsByMonth(int year, int month) {
+        return api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots?year=" + nextYear + "&month=1",
+                "/api/interviews/processes/" + interviewProcess.getId() + "/slots?year=" + year + "&month=" + month,
                 null,
                 new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {},
                 200
             );
-
-        // Assert (January)
-        assertThat(janResponse.getTotalElements()).isEqualTo(1);
-        assertThat(janResponse.getContent()).hasSize(1);
-        assertThat(janResponse.getContent().iterator().next().location()).isEqualTo("Room 101");
-
-        // Act (February)
-        PageResponseDTO<InterviewSlotDTO> febResponse = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots?year=" + nextYear + "&month=2",
-                null,
-                new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {},
-                200
-            );
-
-        // Assert (February)
-        assertThat(febResponse.getTotalElements()).isEqualTo(1);
-        assertThat(febResponse.getContent()).hasSize(1);
-        assertThat(febResponse.getContent().iterator().next().location()).isEqualTo("Room 102");
-
-        // Act (March - Empty)
-        PageResponseDTO<InterviewSlotDTO> marResponse = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots?year=" + nextYear + "&month=3",
-                null,
-                new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {},
-                200
-            );
-
-        // Assert (March)
-        assertThat(marResponse.getTotalElements()).isEqualTo(0);
-        assertThat(marResponse.getContent()).isEmpty();
     }
 }
