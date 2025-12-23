@@ -1,4 +1,5 @@
-import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -11,6 +12,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -56,6 +58,8 @@ export class ResearchGroupMembersComponent {
   pageNumber = signal<number>(0);
   pageSize = signal<number>(10);
   total = signal<number>(0);
+
+  researchGroupId = signal<string | undefined>(undefined);
 
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
@@ -105,6 +109,24 @@ export class ResearchGroupMembersComponent {
   private accountService = inject(AccountService);
   private translate = inject(TranslateService);
   private readonly dialogService = inject(DialogService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  // Convert route observables to signals so we can create a derived computed signal
+  private readonly routeParamMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
+  private readonly routeQueryParamMap = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+
+  private readonly routeId = computed<string | undefined>(() => {
+    const params = this.routeParamMap();
+    const queryParams = this.routeQueryParamMap();
+    return params.get('id') ?? queryParams.get('researchGroupId') ?? undefined;
+  });
+
+  private readonly routeIdEffect = effect(() => {
+    const id = this.routeId();
+    this.researchGroupId.set(id);
+    void this.loadMembers();
+  });
 
   private readonly translationKey: string = 'researchGroup.members';
 
@@ -135,7 +157,10 @@ export class ResearchGroupMembersComponent {
 
   async loadMembers(): Promise<void> {
     try {
-      const members = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
+      const id = this.researchGroupId();
+      const members = id
+        ? await firstValueFrom(this.researchGroupService.getResearchGroupMembersById(id, this.pageSize(), this.pageNumber()))
+        : await firstValueFrom(this.researchGroupService.getResearchGroupMembers(this.pageSize(), this.pageNumber()));
 
       this.members.set(members.content ?? []);
       this.total.set(members.totalElements ?? 0);
@@ -158,6 +183,10 @@ export class ResearchGroupMembersComponent {
         void this.loadMembers();
       }
     });
+  }
+
+  goBack(): void {
+    void this.router.navigate(['/research-group-admin']);
   }
 
   /** Internal methods */

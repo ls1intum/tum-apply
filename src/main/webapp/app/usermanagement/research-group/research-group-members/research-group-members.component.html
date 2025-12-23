@@ -1,7 +1,11 @@
 <div class="page-container">
   <div class="header-container">
     <div class="page-header">
-      <h1 jhiTranslate="researchGroup.memberHeader">Members</h1>
+      @if (researchGroupId()) {
+        <h1 jhiTranslate="researchGroup.memberHeaderAdmin"></h1>
+      } @else {
+        <h1 jhiTranslate="researchGroup.memberHeader"></h1>
+      }
     </div>
     <jhi-button
       [label]="'researchGroup.members.addMembers'"
@@ -47,4 +51,8 @@
       />
     }
   </ng-template>
+
+  @if (researchGroupId()) {
+    <jhi-button [label]="'button.back'" severity="info" variant="outlined" [shouldTranslate]="true" icon="arrow-left" (click)="goBack()" />
+  }
 </div>
