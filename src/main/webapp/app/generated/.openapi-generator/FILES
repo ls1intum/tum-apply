@@ -87,6 +87,7 @@ model/otpCompleteDTO.ts
 model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
+model/pageResponseDTODepartmentDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts

@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -17,8 +18,6 @@ import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components
 import { TranslateDirective } from 'app/shared/language';
 import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
-
-import { ManageMembersChoiceComponent } from './manage-members-choice/manage-members-choice.component';
 
 const I18N_BASE = 'researchGroup.adminView';
 
@@ -110,6 +109,7 @@ export class ResearchGroupAdminView {
   private readonly translate = inject(TranslateService);
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private readonly dialogService = inject(DialogService);
+  private router = inject(Router);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -175,21 +175,7 @@ export class ResearchGroupAdminView {
   }
 
   onManageMembers(researchGroupId: string): void {
-    const ref = this.dialogService.open(ManageMembersChoiceComponent, {
-      header: this.translate.instant('researchGroup.members.manageMembers'),
-      data: { researchGroupId },
-      styleClass: 'research-group-add-members-dialog',
-      style: { background: 'var(--color-background-default)', width: '60rem', maxWidth: '60rem' },
-      closable: true,
-      draggable: false,
-      modal: true,
-    });
-
-    ref?.onClose.subscribe((success: boolean) => {
-      if (success) {
-        void this.loadResearchGroups();
-      }
-    });
+    this.router.navigate(['/research-group', researchGroupId, 'members']);
   }
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {

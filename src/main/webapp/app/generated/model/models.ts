@@ -56,6 +56,7 @@ export * from './otpCompleteDTO';
 export * from './pageApplicationOverviewDTO';
 export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
+export * from './pageResponseDTODepartmentDTO';
 export * from './pageResponseDTOEmailTemplateOverviewDTO';
 export * from './pageResponseDTOKeycloakUserDTO';
 export * from './pageResponseDTOResearchGroupAdminDTO';
