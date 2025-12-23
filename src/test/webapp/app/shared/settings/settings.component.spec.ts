@@ -130,8 +130,8 @@ describe('SettingsComponent', () => {
       await component.exportUserData();
 
       expect(userDataExportServiceMock.exportUserData).toHaveBeenCalledWith('response', false, { httpHeaderAccept: 'application/zip' });
-      expect(createObjectSpy).toHaveBeenCalledExactlyOnceWith();
-      expect(revokeObjectSpy).toHaveBeenCalledExactlyOnceWith();
+      expect(createObjectSpy).toHaveBeenCalledExactlyOnceWith(blob);
+      expect(revokeObjectSpy).toHaveBeenCalledExactlyOnceWith('blob:mock');
       expect(toastServiceMock.showSuccessKey).toHaveBeenCalledWith('settings.privacy.export.started');
       expect(startSpy).toHaveBeenCalledWith(60);
     } finally {
