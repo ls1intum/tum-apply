@@ -366,6 +366,9 @@
         "updateFailed": {
           "summary": "Error",
           "detail": "Error updating department. Please try again."
+        },
+        "view": {
+          "header": "Edit Department information"
         }
       },
       "createDialog": {

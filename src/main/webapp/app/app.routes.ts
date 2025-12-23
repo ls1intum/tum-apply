@@ -246,7 +246,17 @@ const routes: Routes = [
       import('./usermanagement/research-group/research-group-departments/research-group-departments.component').then(
         m => m.ResearchGroupDepartmentsComponent,
       ),
-    title: 'global.routes.researchGroup.adminView',
+    title: 'global.routes.researchGroup.departments',
+  },
+  {
+    path: 'research-group/departments/:departmentId',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-departments/departments-view/departments-view.component').then(
+        m => m.DepartmentsViewComponent,
+      ),
+    title: 'global.routes.researchGroup.departmentView',
   },
   {
     path: 'research-group/templates',

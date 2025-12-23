@@ -366,6 +366,9 @@
         "updateFailed": {
           "summary": "Fehler",
           "detail": "Fehler beim Aktualisieren des Departments. Bitte versuche es erneut."
+        },
+        "view": {
+          "header": "Department Informationen bearbeiten"
         }
       },
       "createDialog": {

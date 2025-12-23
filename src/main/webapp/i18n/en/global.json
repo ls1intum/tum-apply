@@ -30,6 +30,8 @@
       "settings": "TUMApply - Settings",
       "researchGroup": {
         "adminView": "TUMApply - Admin View",
+        "departments": "TUMApply - Department Overview",
+        "departmentView": "TUMApply - Department Detail",
         "templates": "TUMApply - My Templates",
         "templateCreation": "TUMApply - New Template",
         "templateEdit": "TUMApply - Edit Template",

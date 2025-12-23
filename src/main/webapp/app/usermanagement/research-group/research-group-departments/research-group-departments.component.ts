@@ -15,6 +15,7 @@ import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
+import { Router } from '@angular/router';
 
 import { DepartmentsViewComponent } from './departments-view/departments-view.component';
 
@@ -92,6 +93,7 @@ export class ResearchGroupDepartmentsComponent {
   private readonly schoolResourceApiService = inject(SchoolResourceApiService);
   private readonly dialogService = inject(DialogService);
   private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
 
   constructor() {
     void this.loadSchools();
@@ -156,23 +158,7 @@ export class ResearchGroupDepartmentsComponent {
       return;
     }
 
-    const dialogRef = this.dialogService.open(DepartmentsViewComponent, {
-      header: this.translate.instant(`${this.translationKey}.editDialog.title`),
-      width: '600px',
-      style: { background: 'var(--color-background-default)', width: '60rem' },
-      closable: true,
-      draggable: false,
-      modal: true,
-      data: {
-        department,
-      },
-    });
-
-    dialogRef?.onClose.subscribe((updated: boolean) => {
-      if (updated) {
-        void this.loadDepartments();
-      }
-    });
+    void this.router.navigate([`/research-group/departments/${departmentId}`]);
   }
 
   onDeleteDepartment(departmentId: string | undefined): void {

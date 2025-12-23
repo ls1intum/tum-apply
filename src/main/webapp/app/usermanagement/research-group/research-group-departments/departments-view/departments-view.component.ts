@@ -2,7 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DepartmentResourceApiService, SchoolResourceApiService } from 'app/generated';
 import { SchoolShortDTO } from 'app/generated/model/models';
 import { ToastService } from 'app/service/toast-service';
@@ -11,6 +10,7 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'jhi-department-edit-dialog',
@@ -48,21 +48,17 @@ export class DepartmentsViewComponent {
 
   readonly translationKey = 'researchGroup.departments.createDialog';
 
-  private readonly config = inject(DynamicDialogConfig);
-  private readonly ref = inject(DynamicDialogRef);
   private readonly departmentService = inject(DepartmentResourceApiService);
   private readonly schoolService = inject(SchoolResourceApiService);
   private readonly toastService = inject(ToastService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   constructor() {
-    const data = this.config.data;
-    if (data?.department) {
-      this.departmentId.set(data.department.departmentId);
-      this.form.patchValue({
-        name: data.department.name,
-        schoolId: data.department.school?.schoolId,
-      });
-      this.selectedSchoolId.set(data.department.school?.schoolId);
+    const departmentIdFromRoute = this.route.snapshot.paramMap.get('departmentId');
+    if (departmentIdFromRoute) {
+      this.departmentId.set(departmentIdFromRoute);
+      void this.loadDepartment(departmentIdFromRoute);
     }
 
     void this.loadSchools();
@@ -103,7 +99,7 @@ export class DepartmentsViewComponent {
         await firstValueFrom(this.departmentService.createDepartment(dto));
         this.toastService.showSuccessKey(`${this.translationKey}.success.created`);
       }
-      this.ref.close(true);
+      void this.router.navigate(['/research-group/departments']);
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         if (error.status === 409) {
@@ -118,6 +114,19 @@ export class DepartmentsViewComponent {
   }
 
   onCancel(): void {
-    this.ref.close(false);
+    void this.router.navigate(['/research-group/departments']);
+  }
+
+  private async loadDepartment(departmentId: string): Promise<void> {
+    try {
+      const department = await firstValueFrom(this.departmentService.getDepartmentById(departmentId));
+      this.form.patchValue({
+        name: department.name,
+        schoolId: department.school?.schoolId,
+      });
+      this.selectedSchoolId.set(department.school?.schoolId);
+    } catch {
+      this.toastService.showErrorKey(`${this.translationKey}.errors.loadDepartmentFailed`);
+    }
   }
 }
