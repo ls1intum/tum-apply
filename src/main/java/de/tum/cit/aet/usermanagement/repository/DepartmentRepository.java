@@ -2,10 +2,14 @@ package de.tum.cit.aet.usermanagement.repository;
 
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.usermanagement.domain.Department;
+import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -43,10 +47,10 @@ public interface DepartmentRepository extends TumApplyJpaRepository<Department, 
             AND (:schoolNames IS NULL OR s.name IN :schoolNames)
         """
     )
-    org.springframework.data.domain.Page<de.tum.cit.aet.usermanagement.dto.DepartmentDTO> findAllForAdmin(
-        @org.springframework.data.repository.query.Param("searchQuery") String searchQuery,
-        @org.springframework.data.repository.query.Param("schoolNames") List<String> schoolNames,
-        org.springframework.data.domain.Pageable pageable
+    Page<DepartmentDTO> findAllForAdmin(
+        @Param("searchQuery") String searchQuery,
+        @Param("schoolNames") List<String> schoolNames,
+        Pageable pageable
     );
 
     boolean existsByNameIgnoreCaseAndSchoolSchoolId(String name, UUID schoolId);

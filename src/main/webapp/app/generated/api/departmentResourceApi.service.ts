@@ -137,7 +137,7 @@ export class DepartmentResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/departments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        let localVarPath = `/api/departments/delete/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -315,7 +315,7 @@ export class DepartmentResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/departments/admin`;
+        let localVarPath = `/api/departments/admin/search`;
         return this.httpClient.request<PageResponseDTODepartmentDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -381,7 +381,7 @@ export class DepartmentResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/departments/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        let localVarPath = `/api/departments/update/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
         return this.httpClient.request<DepartmentDTO>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

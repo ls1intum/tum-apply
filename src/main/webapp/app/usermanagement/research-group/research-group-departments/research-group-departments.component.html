@@ -47,6 +47,67 @@
       />
       <jhi-confirm-dialog
         [iconOnly]="true"
+        [header]="'researchGroup.departments.deleteDialog.header' | translate"
+        [message]="'researchGroup.departments.deleteDialog.message' | translate"
+        confirmIcon="trash"
+        (confirmed)="onDeleteDepartment(department.departmentId)"
+        severity="danger"
+        [label]="'button.delete' | translate"
+        [tooltip]="'button.delete' | translate"
+      />
+    </div>
+  </ng-template>
+</div>
+
+<div class="page-container">
+  <div class="header-container">
+    <div class="page-header">
+      <h1 jhiTranslate="researchGroup.departments.header">Departments</h1>
+    </div>
+    <jhi-button
+      [label]="'researchGroup.departments.createButton'"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateDepartment()"
+      [shouldTranslate]="true"
+    />
+  </div>
+  <jhi-search-filter-sort-bar
+    [searchText]="'researchGroup.departments.searchPlaceholder' | translate"
+    [totalRecords]="total()"
+    [singleEntity]="'researchGroup.departments.entity' | translate"
+    [multipleEntities]="'researchGroup.departments.entities' | translate"
+    [filters]="filters()"
+    (searchOutput)="onSearchEmit($event)"
+    (filterOutput)="onFilterEmit($event)"
+    (sortOutput)="loadOnSortEmit($event)"
+    [sortableFields]="sortableFields"
+  />
+  <div class="table-wrapper">
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      [rows]="pageSize()"
+      [selectable]="false"
+      (lazyLoad)="loadOnTableEmit($event)"
+    />
+  </div>
+
+  <ng-template #actionTemplate let-department>
+    <div class="flex gap-2 justify-end items-center">
+      <jhi-button
+        icon="pencil"
+        [ariaLabel]="'button.edit'"
+        [tooltip]="'button.edit' | translate"
+        severity="primary"
+        variant="text"
+        [shouldTranslate]="true"
+        (click)="onEditDepartment(department.departmentId)"
+      />
+      <jhi-confirm-dialog
+        [iconOnly]="true"
         [label]="'entity.action.delete' | translate"
         [header]="'researchGroup.departments.deleteDialog.header' | translate"
         [message]="'researchGroup.departments.deleteDialog.message' | translate"

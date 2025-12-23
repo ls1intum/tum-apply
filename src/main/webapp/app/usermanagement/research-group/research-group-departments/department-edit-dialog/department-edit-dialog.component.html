@@ -3,9 +3,10 @@
     <jhi-string-input
       [control]="form.controls.name"
       [model]="form.controls.name.value"
-      [label]="translationKey + '.nameLabel' | translate"
-      [placeholder]="translationKey + '.namePlaceholder' | translate"
+      [label]="translationKey + '.nameLabel'"
+      [placeholder]="translationKey + '.namePlaceholder'"
       [required]="true"
+      [shouldTranslate]="true"
     />
   </div>
 
