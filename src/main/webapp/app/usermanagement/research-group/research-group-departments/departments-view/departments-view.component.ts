@@ -16,9 +16,9 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'jhi-department-edit-dialog',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, ButtonComponent, StringInputComponent, SelectComponent],
-  templateUrl: './department-edit-dialog.component.html',
+  templateUrl: './departments-view.component.html',
 })
-export class DepartmentEditDialogComponent {
+export class DepartmentsViewComponent {
   isSubmitting = signal(false);
   schools = signal<SchoolShortDTO[]>([]);
 

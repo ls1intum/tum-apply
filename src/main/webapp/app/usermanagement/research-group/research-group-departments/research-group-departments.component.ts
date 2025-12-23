@@ -16,7 +16,7 @@ import { DepartmentResourceApiService } from 'app/generated/api/departmentResour
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 
-import { DepartmentEditDialogComponent } from './department-edit-dialog/department-edit-dialog.component';
+import { DepartmentsViewComponent } from './departments-view/departments-view.component';
 
 interface DepartmentTableRow {
   departmentId?: string;
@@ -156,7 +156,7 @@ export class ResearchGroupDepartmentsComponent {
       return;
     }
 
-    const dialogRef = this.dialogService.open(DepartmentEditDialogComponent, {
+    const dialogRef = this.dialogService.open(DepartmentsViewComponent, {
       header: this.translate.instant(`${this.translationKey}.editDialog.title`),
       width: '600px',
       style: { background: 'var(--color-background-default)', width: '60rem' },
@@ -191,7 +191,7 @@ export class ResearchGroupDepartmentsComponent {
   }
 
   onCreateDepartment(): void {
-    const dialogRef = this.dialogService.open(DepartmentEditDialogComponent, {
+    const dialogRef = this.dialogService.open(DepartmentsViewComponent, {
       header: this.translate.instant(`${this.translationKey}.createDialog.title`),
       width: '600px',
       style: { background: 'var(--color-background-default)', width: '60rem' },
