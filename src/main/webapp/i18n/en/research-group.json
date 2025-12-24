@@ -50,6 +50,10 @@
     },
     "emailTemplates": {
       "newTemplate": "Create Template",
+      "deleteTemplateModal": {
+        "title": "Delete Template",
+        "message": "Are you sure you want to delete this template? This action cannot be undone."
+      },
       "signature": "Signature",
       "systemDefault": "System default",
       "tableColumns": {

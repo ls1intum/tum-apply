@@ -1,0 +1,27 @@
+<div class="jhi-menu">
+  <p-menu #menu [model]="menuModel()" [popup]="popup()" [appendTo]="appendTo()">
+    <ng-template pTemplate="item" let-item>
+      <div class="p-menu-item-content">
+        <a
+          class="p-menu-item-link"
+          [class]="item.styleClass"
+          (click)="item.command && item.command($event)"
+          [class.disabled]="item.disabled"
+        >
+          @if (item.icon) {
+            <span class="p-menu-item-icon">
+              <fa-icon [icon]="item.icon" />
+            </span>
+          }
+          <span class="p-menu-item-label">
+            @if (shouldTranslate()) {
+              <span jhiTranslate="{{ item.label }}"></span>
+            } @else {
+              {{ item.label }}
+            }
+          </span>
+        </a>
+      </div>
+    </ng-template>
+  </p-menu>
+</div>

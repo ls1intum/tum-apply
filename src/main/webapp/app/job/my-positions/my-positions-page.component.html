@@ -100,18 +100,7 @@
         <div class="flex justify-end gap-1">
           <jhi-button [tooltip]="'button.view' | translate" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
           <jhi-button [tooltip]="'button.actions' | translate" icon="ellipsis-vertical" variant="text" (click)="menu.toggle($event)" />
-          <p-menu #menu [model]="getMenuItems(job)" [popup]="true" appendTo="body">
-            <ng-template pTemplate="item" let-item>
-              <div class="p-menu-item-content">
-                <a class="p-menu-item-link" (click)="item.command && item.command()">
-                  <span class="p-menu-item-icon">
-                    <fa-icon [icon]="item.icon" />
-                  </span>
-                  <span class="p-menu-item-label">{{ item.label }}</span>
-                </a>
-              </div>
-            </ng-template>
-          </p-menu>
+          <jhi-menu #menu [items]="getMenuItems(job)" [shouldTranslate]="true" />
         </div>
       </ng-template>
 

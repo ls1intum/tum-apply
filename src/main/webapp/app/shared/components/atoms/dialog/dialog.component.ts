@@ -18,6 +18,8 @@ export class DialogComponent {
   modal = input<boolean>(true);
   draggable = input<boolean>(false);
   resizable = input<boolean>(false);
+  dismissableMask = input<boolean>(true);
+  closeOnEscape = input<boolean>(true);
   contentStyleClass = input<string>('');
   contentStyle = input<Record<string, string>>({});
 

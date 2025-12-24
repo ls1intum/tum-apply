@@ -50,6 +50,10 @@
     },
     "emailTemplates": {
       "newTemplate": "Vorlage erstellen",
+      "deleteTemplateModal": {
+        "title": "Vorlage löschen",
+        "message": "Möchtest du diese Vorlage wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+      },
       "signature": "Signatur",
       "systemDefault": "Systemvorlage",
       "tableColumns": {

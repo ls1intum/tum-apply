@@ -2,8 +2,6 @@ import { Component, TemplateRef, computed, inject, signal, viewChild } from '@an
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { MenuItem } from 'primeng/api';
-import { Menu } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
@@ -17,6 +15,7 @@ import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/fil
 import { emptyToUndef } from 'app/core/util/array-util.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
@@ -36,7 +35,7 @@ import { JobResourceApiService } from '../../generated/api/jobResourceApi.servic
     ConfirmDialog,
     SearchFilterSortBar,
     LocalizedDatePipe,
-    Menu,
+    MenuComponent,
     ButtonModule,
     FontAwesomeModule,
   ],
@@ -206,20 +205,22 @@ export class MyPositionsPageComponent {
     }
   }
 
-  getMenuItems(job: CreatedJobDTO): MenuItem[] {
-    const items: MenuItem[] = [];
+  getMenuItems(job: CreatedJobDTO): JhiMenuItem[] {
+    const items: JhiMenuItem[] = [];
 
     // Edit action - different behavior for DRAFT vs PUBLISHED
     if (job.state === 'DRAFT') {
       items.push({
-        label: this.translate.instant('button.edit'),
+        label: 'button.edit',
         icon: 'pencil',
+        severity: 'primary',
         command: () => this.onEditJob(job.jobId),
       });
     } else if (job.state === 'PUBLISHED') {
       items.push({
-        label: this.translate.instant('button.edit'),
+        label: 'button.edit',
         icon: 'pencil',
+        severity: 'primary',
         command: () => {
           this.currentJobId.set(job.jobId);
           this.editPublishedDialog().confirm();
@@ -230,23 +231,23 @@ export class MyPositionsPageComponent {
     // Delete/Close action - based on state
     if (job.state === 'DRAFT') {
       items.push({
-        label: this.translate.instant('button.delete'),
+        label: 'button.delete',
         icon: 'trash',
+        severity: 'danger',
         command: () => {
           this.currentJobId.set(job.jobId);
           this.deleteDialog().confirm();
         },
-        styleClass: 'text-negative-default',
       });
     } else if (job.state === 'PUBLISHED') {
       items.push({
-        label: this.translate.instant('button.close'),
+        label: 'button.close',
         icon: 'xmark',
+        severity: 'danger',
         command: () => {
           this.currentJobId.set(job.jobId);
           this.closeDialog().confirm();
         },
-        styleClass: 'text-negative-default',
       });
     }
 

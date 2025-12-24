@@ -43,6 +43,7 @@ export class ApplicationOverviewComponent {
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
   total = signal(0);
+  totalRecords = computed(() => this.total());
   searchQuery = signal<string>('');
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
@@ -63,7 +64,6 @@ export class ApplicationOverviewComponent {
         field: 'state',
         header: 'evaluation.tableHeaders.status',
         width: '10rem',
-        alignCenter: true,
         template: stateTpl,
       },
       { field: 'jobName', header: 'evaluation.tableHeaders.job', width: '26rem' },
@@ -174,7 +174,7 @@ export class ApplicationOverviewComponent {
   }
 
   navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
-    const queryParams: Record<string, any> = {
+    const queryParams: Params = {
       sortBy: this.sortBy(),
       sortDirection: this.sortDirection(),
       applicationId: application.applicationId,

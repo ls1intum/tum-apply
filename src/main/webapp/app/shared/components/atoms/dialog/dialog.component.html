@@ -4,6 +4,8 @@
   [modal]="modal()"
   [draggable]="draggable()"
   [resizable]="resizable()"
+  [dismissableMask]="dismissableMask()"
+  [closeOnEscape]="closeOnEscape()"
   [style]="{ width: width(), maxWidth: maxWidth(), height: height() }"
   [header]="shouldTranslateHeader() ? (header() | translate) : header()"
   [contentStyleClass]="contentStyleClass()"
