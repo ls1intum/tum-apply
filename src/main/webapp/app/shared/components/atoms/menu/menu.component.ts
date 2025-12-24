@@ -23,7 +23,7 @@ export type JhiMenuItem = {
   disabled?: boolean;
   separator?: boolean;
   visible?: boolean;
-  styleClass?: string; // Allow custom classes if needed
+  styleClass?: string;
 };
 
 @Component({
@@ -37,7 +37,6 @@ export class MenuComponent {
   appendTo = input<string | HTMLElement>('body');
   shouldTranslate = input<boolean>(false);
 
-  // Access to internal PrimeNG menu for toggle method
   menu = viewChild.required<Menu>('menu');
 
   // Computed property to convert JhiMenuItem to PrimeNG MenuItem format
@@ -77,17 +76,14 @@ export class MenuComponent {
     return classes.join(' ');
   }
 
-  // Expose toggle method to parent components
   toggle(event: Event): void {
     this.menu().toggle(event);
   }
 
-  // Expose show method to parent components
   show(event: Event): void {
     this.menu().show(event);
   }
 
-  // Expose hide method to parent components
   hide(): void {
     this.menu().hide();
   }
