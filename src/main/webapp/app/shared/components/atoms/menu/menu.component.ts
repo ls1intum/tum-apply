@@ -10,21 +10,21 @@ import { ButtonColor } from '../button/button.component';
 
 export type MenuItemSeverity = ButtonColor;
 
-export type MenuItemEvent = {
+export interface MenuItemEvent {
   originalEvent: Event;
   item: JhiMenuItem;
-};
+}
 
-export type JhiMenuItem = {
+export interface JhiMenuItem {
   label: string;
   icon?: string;
-  command?: (e: MenuItemEvent) => void;
+  command?: (_e: MenuItemEvent) => void;
   severity?: MenuItemSeverity;
   disabled?: boolean;
   separator?: boolean;
   visible?: boolean;
   styleClass?: string;
-};
+}
 
 @Component({
   selector: 'jhi-menu',

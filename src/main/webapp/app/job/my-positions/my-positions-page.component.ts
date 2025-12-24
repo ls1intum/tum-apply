@@ -214,7 +214,9 @@ export class MyPositionsPageComponent {
         label: 'button.edit',
         icon: 'pencil',
         severity: 'primary',
-        command: () => this.onEditJob(job.jobId),
+        command: () => {
+          this.onEditJob(job.jobId);
+        },
       });
     } else if (job.state === 'PUBLISHED') {
       items.push({
