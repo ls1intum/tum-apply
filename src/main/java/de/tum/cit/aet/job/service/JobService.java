@@ -3,8 +3,8 @@ package de.tum.cit.aet.job.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
@@ -140,7 +140,7 @@ public class JobService {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> new EntityNotFoundException("Job not found"));
 
         // Delete associated image if it exists and is not a default image
-        if (job.getImage() != null && job.getImage().getImageType() != ImageType.DEFAULT_JOB_BANNER) {
+        if (job.getImage() != null && !(job.getImage() instanceof DepartmentImage)) {
             try {
                 imageService.deleteWithoutChecks(job.getImage().getImageId());
             } catch (Exception e) {}

@@ -27,6 +27,7 @@
   <include file="changelog/00000000000015_create_schools_and_departments.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000016_add_applicant_snapshot_to_applications.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000016_create_interviewees.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000018_add_department_id_to_images.xml" relativeToChangelogFile="true"/>
 
 
 
