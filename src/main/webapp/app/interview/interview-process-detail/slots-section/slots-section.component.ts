@@ -16,6 +16,8 @@ import { MonthNavigationComponent } from './month-navigation/month-navigation.co
 import { DateHeaderComponent } from './date-header/date-header.component';
 import { SlotCardComponent } from './slot-card/slot-card.component';
 
+import { AssignApplicantModalComponent } from './assign-applicant-modal/assign-applicant-modal.component';
+
 interface GroupedSlots {
   date: string;
   localDate: Date;
@@ -35,6 +37,7 @@ interface GroupedSlots {
     DateHeaderComponent,
     SlotCardComponent,
     SlotCreationFormComponent,
+    AssignApplicantModalComponent,
     FontAwesomeModule,
   ],
   templateUrl: './slots-section.component.html',
@@ -51,6 +54,8 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
   showSlotCreationForm = signal(false);
+  showAssignModal = signal(false);
+  selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
   // Computed properties
   /**
    * Groups slots by date and sorts them chronologically
@@ -271,8 +276,13 @@ export class SlotsSectionComponent {
     }
   }
 
-  onAssignApplicant(): void {
-    // TODO: Open Assign Modal
+  onAssignApplicant(slot: InterviewSlotDTO): void {
+    this.selectedSlotForAssignment.set(slot);
+    this.showAssignModal.set(true);
+  }
+
+  onApplicantAssigned(): void {
+    void this.refreshSlots();
   }
 
   private async loadSlots(processId: string): Promise<void> {
