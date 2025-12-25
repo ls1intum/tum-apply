@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.ImageType;
+import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.usermanagement.domain.Department;
@@ -153,8 +155,8 @@ public class ImageResourceTest extends AbstractResourceTest {
         @Test
         void getDefaultJobBannersReturnsAllDefaultImagesWhenNoFilterProvided() {
             // Arrange
-            Image defaultImage1 = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
-            Image defaultImage2 = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, secondResearchGroup));
+            Image defaultImage1 = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, department));
+            Image defaultImage2 = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, department));
 
             // Act
             List<ImageDTO> result = api
@@ -169,20 +171,23 @@ public class ImageResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void getDefaultJobBannersFiltersByResearchGroupWhenIdProvided() {
-            // Arrange - Create new research groups with different schools to test filtering
+        void getDefaultJobBannersFiltersByDepartmentWhenIdProvided() {
+            // Arrange - Create new research groups with different departments to test filtering
             ResearchGroup csResearchGroup = createTestResearchGroup("CS", "Computer Science");
             ResearchGroup eeResearchGroup = createTestResearchGroup("EE", "Electrical Engineering");
 
-            Image defaultImageCS = createDefaultJobBanner(csResearchGroup);
-            createDefaultJobBanner(eeResearchGroup);
+            Department csDepartment = csResearchGroup.getDepartment();
+            Department eeDepartment = eeResearchGroup.getDepartment();
 
-            // Act - Filter by CS research group
+            Image defaultImageCS = createDefaultJobBanner(csDepartment);
+            createDefaultJobBanner(eeDepartment);
+
+            // Act - Filter by CS department
             List<ImageDTO> result = api
                 .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
                 .getAndRead(
                     API_BASE_PATH + "/defaults/job-banners",
-                    Map.of("researchGroupId", csResearchGroup.getResearchGroupId().toString()),
+                    Map.of("departmentId", csDepartment.getDepartmentId().toString()),
                     new TypeReference<List<ImageDTO>>() {},
                     200
                 );
@@ -237,7 +242,7 @@ public class ImageResourceTest extends AbstractResourceTest {
         @Test
         void getMyUploadedImagesDoesNotIncludeDefaultImages() {
             // Arrange
-            Image defaultImage = imageRepository.save(ImageTestData.newDefaultJobBanner(professorUser, researchGroup));
+            Image defaultImage = imageRepository.save(ImageTestData.newDefaultJobBanner(professorUser, department));
 
             // Act
             List<ImageDTO> result = api
@@ -349,7 +354,7 @@ public class ImageResourceTest extends AbstractResourceTest {
             // Verify image was saved to database
             Image savedImage = imageRepository.findById(result.imageId()).orElse(null);
             assertThat(savedImage).isNotNull();
-            assertThat(savedImage.getImageType()).isEqualTo(ImageType.JOB_BANNER);
+            assertThat(savedImage).isInstanceOf(ResearchGroupImage.class);
         }
 
         @Test
@@ -503,7 +508,7 @@ public class ImageResourceTest extends AbstractResourceTest {
         void uploadDefaultJobBannerSuccessfullyUploadsAsAdmin() throws Exception {
             // Arrange
             MockMultipartFile validImageFile = createValidImageFile("default-banner.jpg");
-            String url = API_BASE_PATH + "/upload/default-job-banner?researchGroupId=" + researchGroup.getResearchGroupId();
+            String url = API_BASE_PATH + "/upload/default-job-banner?departmentId=" + department.getDepartmentId();
 
             // Act
             ImageDTO result = api
@@ -515,19 +520,19 @@ public class ImageResourceTest extends AbstractResourceTest {
             assertThat(result.imageId()).isNotNull();
             assertThat(result.imageType()).isEqualTo(ImageType.DEFAULT_JOB_BANNER);
             assertThat(result.uploadedById()).isEqualTo(adminUser.getUserId());
-            assertThat(result.researchGroupId()).isEqualTo(researchGroup.getResearchGroupId());
+            assertThat(result.departmentId()).isEqualTo(department.getDepartmentId());
 
             // Verify image was saved to database
             Image savedImage = imageRepository.findById(result.imageId()).orElse(null);
             assertThat(savedImage).isNotNull();
-            assertThat(savedImage.getImageType()).isEqualTo(ImageType.DEFAULT_JOB_BANNER);
+            assertThat(savedImage).isInstanceOf(DepartmentImage.class);
         }
 
         @Test
         void uploadDefaultJobBannerRequiresAdminRole() throws Exception {
             // Arrange
             MockMultipartFile validImageFile = createValidImageFile("default-banner.jpg");
-            String url = API_BASE_PATH + "/upload/default-job-banner?researchGroupId=" + researchGroup.getResearchGroupId();
+            String url = API_BASE_PATH + "/upload/default-job-banner?departmentId=" + department.getDepartmentId();
 
             // Act & Assert - Professor trying to upload default image
             api
@@ -536,12 +541,12 @@ public class ImageResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void uploadDefaultJobBannerRequiresValidResearchGroupId() throws Exception {
+        void uploadDefaultJobBannerRequiresValidDepartmentId() throws Exception {
             // Arrange
             MockMultipartFile validImageFile = createValidImageFile("default-banner.jpg");
             UUID nonExistentId = UUID.randomUUID();
 
-            // Create a multipart file with the researchGroupId as a separate part
+            // Create a multipart file with the departmentId as a separate part
             MockMultipartFile validImageFile2 = new MockMultipartFile(
                 "file",
                 "default-banner.jpg",
@@ -549,7 +554,7 @@ public class ImageResourceTest extends AbstractResourceTest {
                 validImageFile.getBytes()
             );
 
-            String url = API_BASE_PATH + "/upload/default-job-banner?researchGroupId=" + nonExistentId;
+            String url = API_BASE_PATH + "/upload/default-job-banner?departmentId=" + nonExistentId;
 
             // Act & Assert - Admin user should get 404 when research group doesn't exist
             api
@@ -615,7 +620,7 @@ public class ImageResourceTest extends AbstractResourceTest {
         @Test
         void deleteImagePreventsNonAdminFromDeletingDefaultImage() {
             // Arrange
-            Image defaultImage = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
+            Image defaultImage = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, department));
 
             // Act & Assert
             api
@@ -629,7 +634,7 @@ public class ImageResourceTest extends AbstractResourceTest {
         @Test
         void deleteImageAllowsAdminToDeleteAnyImage() {
             // Arrange
-            Image defaultImage = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
+            Image defaultImage = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, department));
 
             // Act
             api
@@ -680,20 +685,6 @@ public class ImageResourceTest extends AbstractResourceTest {
         void deleteImageRequiresAuthentication() {
             // Act & Assert
             api.deleteAndRead(API_BASE_PATH + "/" + testImage.getImageId(), null, Void.class, 401);
-        }
-
-        @Test
-        void deleteImagePreventsUserFromDeletingJobBannerWithoutResearchGroup() {
-            // Arrange - Create a job banner without a research group (edge case)
-            Image jobBannerWithoutGroup = imageRepository.save(ImageTestData.newJobBanner(secondProfessorUser, null));
-
-            // Act & Assert - Professor should not be able to delete it
-            api
-                .with(JwtPostProcessors.jwtUser(professorUser.getUserId(), "ROLE_PROFESSOR"))
-                .deleteAndRead(API_BASE_PATH + "/" + jobBannerWithoutGroup.getImageId(), null, Void.class, 403);
-
-            // Verify image was not deleted
-            assertThat(imageRepository.findById(jobBannerWithoutGroup.getImageId())).isPresent();
         }
 
         @Test
@@ -750,7 +741,7 @@ public class ImageResourceTest extends AbstractResourceTest {
         );
     }
 
-    private Image createDefaultJobBanner(ResearchGroup researchGroup) {
-        return imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
+    private Image createDefaultJobBanner(Department department) {
+        return imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, department));
     }
 }

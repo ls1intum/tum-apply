@@ -10,6 +10,7 @@
 
 
 export interface ImageDTO { 
+    departmentId?: string;
     imageId?: string;
     imageType?: ImageDTO.ImageTypeEnum;
     researchGroupId?: string;

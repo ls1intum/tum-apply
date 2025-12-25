@@ -1,7 +1,8 @@
 package de.tum.cit.aet.core.repository;
 
-import de.tum.cit.aet.core.constants.ImageType;
+import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
@@ -11,64 +12,78 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     /**
-     * Find all images by type and specific research group ID
-     * Results are ordered by creation date (oldest first)
+     * Find all research group job banner images for a specific research group.
+     * Results are ordered by creation date (oldest first).
      *
-     * @param imageType      the type of images to find
      * @param researchGroupId the specific research group ID to filter by
      * @return a list of images belonging to that specific research group, ordered by creation date ascending
      */
-    @Query(
-        "SELECT i FROM Image i JOIN i.researchGroup rg WHERE i.imageType = :imageType AND rg.researchGroupId = :researchGroupId ORDER BY i.createdAt ASC"
-    )
-    List<Image> findByImageTypeAndResearchGroup(@Param("imageType") ImageType imageType, @Param("researchGroupId") UUID researchGroupId);
+    @Query("SELECT rgi FROM ResearchGroupImage rgi WHERE rgi.researchGroup.researchGroupId = :researchGroupId ORDER BY rgi.createdAt ASC")
+    List<ResearchGroupImage> findResearchGroupImagesByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
 
     /**
-     * Find default job banners with user information
+     * Find all default job banners with user information across all schools.
      *
-     * @param imageType the type of images to find
-     * @return a list of images with uploader information
+     * @return a list of all default job banners with uploader information
      */
-    @Query("SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy WHERE i.imageType = :imageType")
-    List<Image> findImagesWithUploader(@Param("imageType") ImageType imageType);
+    @Query("SELECT di FROM DepartmentImage di LEFT JOIN FETCH di.uploadedBy ORDER BY di.createdAt ASC")
+    List<DepartmentImage> findAllDepartmentImages();
 
     /**
-     * Find images by uploader (non-default images only)
+     * Find images by uploader (non-default images only).
+     * This excludes DEFAULT_JOB_BANNER (DepartmentImage) and returns results ordered by creation date (newest first).
      *
      * @param userId the ID of the user who uploaded the images
      * @return a list of images uploaded by the user (excludes default images)
      */
-    @Query("SELECT i FROM Image i WHERE i.uploadedBy.userId = :userId AND i.imageType != 'DEFAULT_JOB_BANNER' ORDER BY i.createdAt DESC")
+    @Query("SELECT i FROM Image i WHERE i.uploadedBy.userId = :userId AND TYPE(i) != DepartmentImage ORDER BY i.createdAt DESC")
     List<Image> findByUploaderId(@Param("userId") UUID userId);
 
     /**
-     * Find all default job banner images for a specific school
+     * Find all default job banner images for a specific school.
      *
-     * @param imageType the type of images to find (typically DEFAULT_JOB_BANNER)
      * @param schoolId the school ID to find banners for
      * @return a list of default job banners for the school
      */
     @Query(
-        "SELECT i FROM Image i LEFT JOIN FETCH i.uploadedBy JOIN i.researchGroup rg JOIN rg.department dept WHERE i.imageType = :imageType AND dept.school.schoolId = :schoolId"
+        "SELECT di FROM DepartmentImage di LEFT JOIN FETCH di.uploadedBy WHERE di.department.school.schoolId = :schoolId ORDER BY di.createdAt ASC"
     )
-    List<Image> findByImageTypeAndSchoolId(@Param("imageType") ImageType imageType, @Param("schoolId") UUID schoolId);
+    List<DepartmentImage> findDepartmentImagesBySchoolId(@Param("schoolId") UUID schoolId);
 
     /**
-     * Find all default job banner images across all schools
+     * Find all default job banner images for a specific department.
+     *
+     * @param departmentId the department ID to find banners for
+     * @return a list of default job banners for the department
+     */
+    @Query("SELECT di FROM DepartmentImage di WHERE di.department.departmentId = :departmentId ORDER BY di.createdAt ASC")
+    List<DepartmentImage> findDepartmentImagesByDepartmentId(@Param("departmentId") UUID departmentId);
+
+    /**
+     * Find all default job banner images across all schools.
      *
      * @return a list of all default job banners from all schools
      */
-    default List<Image> findDefaultJobBanners() {
-        return findImagesWithUploader(ImageType.DEFAULT_JOB_BANNER);
+    default List<DepartmentImage> findDefaultJobBanners() {
+        return findAllDepartmentImages();
     }
 
     /**
-     * Convenience method to find default job banners by school ID
+     * Convenience method to find default job banners by school ID.
      *
      * @param schoolId the school ID to find banners for
      * @return a list of default job banners for the school
      */
-    default List<Image> findDefaultJobBannersBySchool(UUID schoolId) {
-        return findByImageTypeAndSchoolId(ImageType.DEFAULT_JOB_BANNER, schoolId);
+    default List<DepartmentImage> findDefaultJobBannersBySchool(UUID schoolId) {
+        return findDepartmentImagesBySchoolId(schoolId);
     }
+
+    /**
+     * Find orphaned default images (DepartmentImages with no department).
+     * This can happen if departments are deleted without proper cleanup.
+     *
+     * @return a list of orphaned default images
+     */
+    @Query("SELECT di FROM DepartmentImage di WHERE di.department IS NULL")
+    List<DepartmentImage> findOrphanedDepartmentImages();
 }

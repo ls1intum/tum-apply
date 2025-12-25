@@ -53,6 +53,11 @@ public class PageUtil {
         RESEARCH_GROUPS_ADMIN(Set.of("name", "head", "state", "createdAt")),
 
         /**
+         * Sortable columns used in admin departments listings.
+         */
+        DEPARTMENTS_ADMIN(Set.of("name", "school.name")),
+
+        /**
          * Sortable columns used in applicant's application listings.
          */
         APPLICANT_APPLICATIONS(Set.of("createdAt"));
