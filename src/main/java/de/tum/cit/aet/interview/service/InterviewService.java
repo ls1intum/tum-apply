@@ -275,7 +275,7 @@ public class InterviewService {
      * Munich time zone.
      *
      * @param process the interview process the slot belongs to
-     * @param input   the slot definition from the frontend
+     * @param input   the slot definition from the client
      * @return a populated {@link InterviewSlot} entity ready for persistence
      */
     private InterviewSlot createSlotFromInput(InterviewProcess process, CreateSlotsDTO.SlotInput input) {
