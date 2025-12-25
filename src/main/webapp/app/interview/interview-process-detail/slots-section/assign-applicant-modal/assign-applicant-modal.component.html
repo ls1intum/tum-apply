@@ -1,0 +1,88 @@
+<jhi-dialog [visible]="visible()" (visibleChange)="visibleChange.emit($event)" header="interview.assign.title"
+    width="50rem">
+    <div class="flex flex-col gap-6">
+        <!-- Section 1: Selected Slot -->
+        <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-text-primary" jhiTranslate="interview.assign.selectedSlot">Selected
+                Slot</label>
+            <div class="bg-background-default border border-border-default rounded-lg p-4 flex flex-col gap-2">
+                <!-- Date + Time -->
+                <h3 class="text-base font-semibold text-text-primary">
+                    {{ formatDate(slot().startDateTime) }} | {{ formatTime(slot().startDateTime) }} -
+                    {{ formatTime(slot().endDateTime) }}
+                </h3>
+
+                <!-- Location -->
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                    @if (slot().location === 'virtual') {
+                    <fa-icon icon="video" class="w-4 text-center" />
+                    <span jhiTranslate="interview.slots.location.virtual">Virtual</span>
+                    } @else {
+                    <fa-icon icon="location-dot" class="w-4 text-center" />
+                    <span jhiTranslate="interview.slots.location.inPerson">In-Person</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Interviewee Selection -->
+        <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-text-primary">
+                <span jhiTranslate="interview.assign.selectApplicant">Select Applicant</span>
+                <span class="text-negative-default">*</span>
+            </label>
+
+            <!-- List Container -->
+            <div class="flex flex-col gap-2 max-h-[30vh] overflow-y-auto pr-1">
+                @if (interviewees().length === 0 && !loading()) {
+                <div
+                    class="text-center py-8 text-text-secondary border border-border-default border-dashed rounded-lg bg-background-surface">
+                    <span jhiTranslate="interview.assign.noApplicants">No invited applicants available</span>
+                </div>
+                }
+
+                @if (loading()) {
+                <div class="flex justify-center py-8">
+                    <p-progressSpinner styleClass="w-8 h-8" strokeWidth="4" />
+                </div>
+                }
+
+                @for (person of interviewees(); track person.id) {
+                <div class="p-3 rounded-lg border border-border-default bg-background-default transition-all flex items-center justify-between cursor-pointer hover:bg-background-surface"
+                    [class.border-primary-default]="isSelected(person)" [class.border-2]="isSelected(person)"
+                    [class.opacity-60]="isDisabled(person)" [class.cursor-not-allowed]="isDisabled(person)"
+                    [class.pointer-events-none]="isDisabled(person)" tabindex="0" role="button"
+                    (click)="selectApplicant(person)" (keydown.enter)="selectApplicant(person)"
+                    (keydown.space)="selectApplicant(person)">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-semibold text-text-primary">
+                            {{ person.user?.firstName }} {{ person.user?.lastName }}
+                        </span>
+                        <span class="text-xs text-text-secondary">
+                            {{ person.user?.email }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        @if (isDisabled(person)) {
+                        <span class="text-xs text-text-tertiary"
+                            jhiTranslate="interview.assign.alreadyScheduled">Already scheduled</span>
+                        }
+                        @if (isSelected(person)) {
+                        <fa-icon icon="check" class="text-primary-default" />
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Section 3: Action Buttons -->
+        <div class="flex justify-end gap-3 pt-2">
+            <jhi-button variant="text" label="button.cancel" [shouldTranslate]="true" styleClass="text-text-secondary"
+                (click)="visibleChange.emit(false)" />
+            <jhi-button label="button.assign" [shouldTranslate]="true" [disabled]="!canAssign()"
+                [loading]="assignLoading()" (click)="assignApplicant()" />
+        </div>
+    </div>
+</jhi-dialog>
