@@ -29,7 +29,8 @@
     "content": {
       "content": "Inhalt",
       "allpositions": "Alle Positionen",
-      "researchgroups": "Forschungsgruppen"
+      "researchgroups": "Forschungsgruppen",
+      "departments": "Departments"
     },
     "users": {
       "users": "Benutzer:innen",
