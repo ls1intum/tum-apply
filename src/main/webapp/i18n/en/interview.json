@@ -180,6 +180,9 @@
       "tryDifferentSearch": "Try a different search term",
       "selected": "{{count}} applicant(s) selected",
       "addSelected": "Add",
+      "tableColumns": {
+        "name": "Applicant"
+      },
       "addSuccess": {
         "summary": "Applicants added",
         "detail": "{{count}} applicant(s) added successfully"

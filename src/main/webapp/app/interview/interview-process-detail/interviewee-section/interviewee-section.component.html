@@ -52,61 +52,55 @@
   }
 </jhi-section>
 
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- Add Applicant Modal - Simple Version -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<p-dialog
-  [modal]="true"
-  [(visible)]="showAddModal"
-  [closable]="true"
-  [draggable]="false"
-  [style]="{ width: '30rem', maxWidth: '95vw' }"
-  [header]="'interview.interviewees.addTitle' | translate"
->
-  <!-- Simple List -->
-  <div class="flex flex-col max-h-[25rem] overflow-y-auto">
-    @if (loadingApplicants()) {
-    } @else if (availableApplicants().length === 0) {
-      <div class="py-8 text-center text-text-secondary" jhiTranslate="interview.interviewees.noApplicants">No applicants available</div>
-    } @else {
-      @for (applicant of availableApplicants(); track applicant.applicationDetailDTO.applicationId) {
-        <div
-          class="flex items-center gap-3 p-3 cursor-pointer hover:bg-background-surface transition-colors rounded-md"
-          [class.bg-background-surface]="applicant.selected"
-          (click)="toggleSelection(applicant.applicationDetailDTO.applicationId)"
-        >
-          <p-checkbox [binary]="true" [ngModel]="applicant.selected" (click)="$event.stopPropagation()" />
-          <div class="flex-1">
-            <div class="font-medium text-text-primary">
-              {{ applicant.applicationDetailDTO.applicant?.user?.name ?? 'Unknown' }}
-            </div>
-          </div>
-        </div>
-      }
-    }
+<!-- Template for name column with checkbox -->
+<ng-template #nameTemplate let-row>
+  <div class="flex items-center gap-3 cursor-pointer" (click)="toggleSelection(row.applicationId)">
+    <p-checkbox [binary]="true" [ngModel]="row.selected" (click)="$event.stopPropagation()" />
+    <span class="font-medium text-text-primary">{{ row.name }}</span>
   </div>
+</ng-template>
 
-  <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-2">
-      <jhi-button
-        [label]="'entity.action.cancel'"
-        [severity]="'primary'"
-        [variant]="'outlined'"
-        [shouldTranslate]="true"
-        size="sm"
-        [styleClass]="'w-28 h-10'"
-        (click)="closeAddModal()"
-      />
-      <jhi-button
-        [label]="'interview.interviewees.addSelected'"
-        [severity]="'primary'"
-        [disabled]="selectedCount() === 0"
-        [loading]="submitting()"
-        [shouldTranslate]="true"
-        size="sm"
-        [styleClass]="'w-28 h-10'"
-        (click)="addInterviewees()"
+<!-- Add Applicant Modal -->
+<jhi-dialog [visible]="showAddModal()" (visibleChange)="showAddModal.set($event)" header="interview.interviewees.addTitle" width="30rem">
+  <!-- Dynamic Table or Empty State -->
+  @if (totalApplicants() > 0) {
+    <div class="table-wrapper">
+      <jhi-dynamic-table
+        [columns]="columns()"
+        [data]="tableData()"
+        [totalRecords]="totalApplicants()"
+        [page]="pageNumber()"
+        [rows]="pageSize()"
+        [selectable]="false"
+        (lazyLoad)="loadOnTableEmit($event)"
       />
     </div>
-  </ng-template>
-</p-dialog>
+  } @else {
+    <div class="flex flex-col items-center justify-center py-12 text-center">
+      <p class="text-text-secondary" jhiTranslate="interview.interviewees.noApplicants">No applicants available</p>
+    </div>
+  }
+
+  <!-- Footer Buttons -->
+  <div class="flex justify-end gap-2 pt-4 mt-4 border-t border-border-default">
+    <jhi-button
+      [label]="'entity.action.cancel'"
+      [severity]="'primary'"
+      [variant]="'outlined'"
+      [shouldTranslate]="true"
+      size="sm"
+      [styleClass]="'w-28 h-10'"
+      (click)="closeAddModal()"
+    />
+    <jhi-button
+      [label]="'interview.interviewees.addSelected'"
+      [severity]="'primary'"
+      [disabled]="selectedCount() === 0"
+      [loading]="processingAdd()"
+      [shouldTranslate]="true"
+      size="sm"
+      [styleClass]="'w-28 h-10'"
+      (click)="addInterviewees()"
+    />
+  </div>
+</jhi-dialog>

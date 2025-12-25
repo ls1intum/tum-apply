@@ -22,6 +22,7 @@ export class InterviewProcessDetailComponent {
   readonly safeProcessId = computed(() => this.processId() ?? '');
   jobId = signal<string | null>(null);
   jobTitle = signal<string | null>(null);
+  readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
