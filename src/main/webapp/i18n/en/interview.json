@@ -165,6 +165,57 @@
           "summary": "Permission denied",
           "detail": "You don't have permission to delete this slot"
         }
+      }
+    },
+    "interviewees": {
+      "title": "Interviewees",
+      "add": "Add Applicant",
+      "addTitle": "Add Applicant",
+      "sendInvitations": "Send invitation",
+      "empty": "No interviewees yet",
+      "emptyHint": "Click \"Add Applicant\" to get started",
+      "searchPlaceholder": "Search by name or email...",
+      "selectAll": "Select all",
+      "noApplicants": "No applicants available",
+      "tryDifferentSearch": "Try a different search term",
+      "selected": "{{count}} applicant(s) selected",
+      "addSelected": "Add",
+      "tableColumns": {
+        "name": "Applicant"
+      },
+      "addSuccess": {
+        "summary": "Applicants added",
+        "detail": "{{count}} applicant(s) added successfully"
+      },
+      "filter": {
+        "ALL": "All",
+        "INVITED": "Invited",
+        "SCHEDULED": "Scheduled",
+        "UNCONTACTED": "Uncontacted",
+        "COMPLETED": "Completed"
+      },
+      "error": {
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Failed to load interviewees"
+        },
+        "loadApplicantsFailed": {
+          "summary": "Error",
+          "detail": "Failed to load available applicants"
+        },
+        "invalidApplications": {
+          "summary": "Invalid applications",
+          "detail": "Some applications belong to a different job"
+        },
+        "forbidden": {
+          "summary": "Access denied",
+          "detail": "You don't have permission for this action"
+        },
+        "addFailed": {
+          "summary": "Error",
+          "detail": "Failed to add applicants"
+        }
+      }
       },
     }
   },
