@@ -216,23 +216,18 @@
           "detail": "Failed to add applicants"
         }
       }
-      },
-    }
-  },
-  "assign": {
-    "title": "Assign Applicant to Slot",
-    "selectedSlot": "Selected Slot",
-    "selectApplicant": "Select Applicant",
-    "noApplicants": "No invited applicants available",
-    "alreadyScheduled": "Already scheduled",
-    "success": "Applicant assigned successfully",
-    "error": {
-      "alreadyBooked": "This slot is already booked",
-      "notInProcess": "Applicant is not in this interview process",
-      "failed": "Assignment failed. Please try again.",
-      "loadFailed": "Failed to load applicants"
+    },
+    "assign": {
+      "title": "Assign Applicant to Slot",
+      "selectedSlot": "Selected Slot",
+      "selectApplicant": "Select Applicant",
+      "noApplicants": "No invited applicants available",
+      "success": "Applicant assigned successfully",
+      "error": {
+        "notInProcess": "Applicant is not in this interview process",
+        "failed": "Assignment failed. Please try again.",
+        "loadFailed": "Failed to load applicants"
+      }
     }
   }
-}
-}
 }

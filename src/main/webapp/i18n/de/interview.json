@@ -216,23 +216,18 @@
           "detail": "Bewerber konnten nicht hinzugefügt werden"
         }
       }
-      },
-    }
-  },
-  "assign": {
-    "title": "Bewerber zuweisen",
-    "selectedSlot": "Ausgewählter Termin",
-    "selectApplicant": "Bewerber auswählen",
-    "noApplicants": "Keine eingeladenen Bewerber verfügbar",
-    "alreadyScheduled": "Bereits eingeplant",
-    "success": "Bewerber erfolgreich zugewiesen",
-    "error": {
-      "alreadyBooked": "Dieser Termin ist bereits gebucht",
-      "notInProcess": "Bewerber gehört nicht zu diesem Interview-Prozess",
-      "failed": "Zuweisung fehlgeschlagen. Bitte erneut versuchen.",
-      "loadFailed": "Bewerber konnten nicht geladen werden"
+    },
+    "assign": {
+      "title": "Bewerber zuweisen",
+      "selectedSlot": "Ausgewählter Termin",
+      "selectApplicant": "Bewerber auswählen",
+      "noApplicants": "Keine eingeladenen Bewerber verfügbar",
+      "success": "Bewerber erfolgreich zugewiesen",
+      "error": {
+        "notInProcess": "Bewerber gehört nicht zu diesem Interview-Prozess",
+        "failed": "Zuweisung fehlgeschlagen. Bitte erneut versuchen.",
+        "loadFailed": "Bewerber konnten nicht geladen werden"
+      }
     }
   }
-}
-}
 }

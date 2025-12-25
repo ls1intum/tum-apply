@@ -57,8 +57,9 @@ export class SlotCardComponent {
   };
 
   applicantName = (): string => {
-    // TODO: Will be implemented with Application.scheduledInterviewSlot relationship
-    return 'Applicant Name';
+    const interviewee = this.slot().interviewee;
+    if (!interviewee) return '';
+    return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
   };
 
   toggleMenu(): void {
