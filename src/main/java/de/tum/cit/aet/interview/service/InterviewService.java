@@ -6,6 +6,7 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -487,6 +489,62 @@ public class InterviewService {
 
         // 4. Delete the slot
         interviewSlotRepository.delete(slot);
+    }
+
+    /**
+     * Assigns an interviewee to an interview slot.
+     *
+     * @param slotId        the ID of the slot to assign
+     * @param applicationId the ID of the application whose interviewee should be
+     *                      assigned
+     * @return the updated slot as DTO with interviewee details
+     * @throws EntityNotFoundException        if slot or interviewee not found
+     * @throws AccessDeniedException          if user doesn't have job access
+     * @throws ResourceAlreadyExistsException if slot is already booked
+     * @throws BadRequestException            if interviewee already has a slot
+     */
+    @Transactional
+    public InterviewSlotDTO assignSlotToInterviewee(UUID slotId, UUID applicationId) {
+        // 1. Load the slot with job for security check
+        InterviewSlot slot = interviewSlotRepository
+            .findByIdWithJob(slotId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview slot", slotId));
+
+        // 2. Security: Verify current user has job access
+        Job job = slot.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Check if slot is already booked
+        if (slot.getIsBooked()) {
+            throw new ResourceAlreadyExistsException("Interview slot is already booked");
+        }
+
+        // 4. Find the interviewee by application ID within this interview process
+        UUID processId = slot.getInterviewProcess().getId();
+        Interviewee interviewee = intervieweeRepository
+            .findByApplicationApplicationIdAndInterviewProcessId(applicationId, processId)
+            .orElseThrow(() ->
+                new EntityNotFoundException("Applicant not found in this interview process. Please add the applicant first.")
+            );
+
+        // 5. interviewee must not already have a slot
+        if (interviewee.hasSlot()) {
+            throw new BadRequestException("Applicant already has a scheduled interview slot.");
+        }
+
+        // 6. Establish bidirectional relationship
+        slot.setInterviewee(interviewee);
+        slot.setIsBooked(true);
+        interviewee.getSlots().add(slot);
+
+        // 7. Save entities
+        interviewSlotRepository.save(slot);
+        intervieweeRepository.save(interviewee);
+
+        // 8. Build response with interviewee details
+        IntervieweeState state = calculateIntervieweeState(interviewee);
+        AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
+        return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
     }
 
     /**
