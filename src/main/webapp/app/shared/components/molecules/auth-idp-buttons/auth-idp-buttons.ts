@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, startWith } from 'rxjs';
@@ -17,6 +17,7 @@ import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 export class AuthIdpButtons {
   authFacadeService = inject(AuthFacadeService);
   breakpointObserver = inject(BreakpointObserver);
+  isRegistration = input<boolean>(false);
 
   readonly onlyIcons = toSignal(
     this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
@@ -39,7 +40,7 @@ export class AuthIdpButtons {
         disabled: false,
         fullWidth: true,
         onClick: () => {
-          void this.authFacadeService.loginWithProvider(IdpProvider.Apple, this.redirectUri());
+          void this.authFacadeService.loginWithProvider(IdpProvider.Apple, this.redirectUri(), this.isRegistration());
         },
       },
       {
@@ -50,7 +51,7 @@ export class AuthIdpButtons {
         disabled: false,
         fullWidth: true,
         onClick: () => {
-          void this.authFacadeService.loginWithProvider(IdpProvider.Google, this.redirectUri());
+          void this.authFacadeService.loginWithProvider(IdpProvider.Google, this.redirectUri(), this.isRegistration());
         },
       },
     ],

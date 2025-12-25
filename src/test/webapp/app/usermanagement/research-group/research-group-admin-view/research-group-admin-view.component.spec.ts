@@ -14,6 +14,7 @@ import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
 import { createDialogServiceMock, DialogServiceMock, provideDialogServiceMock } from 'util/dialog.service.mock';
+import { Router } from '@angular/router';
 
 describe('ResearchGroupAdminView', () => {
   let component: ResearchGroupAdminView;
@@ -79,6 +80,7 @@ describe('ResearchGroupAdminView', () => {
         provideTranslateMock(mockTranslateService),
         provideToastServiceMock(mockToastService),
         provideFontAwesomeTesting(),
+        { provide: Router, useValue: { navigate: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -429,7 +431,7 @@ describe('ResearchGroupAdminView', () => {
       } as unknown as DynamicDialogRef;
 
       mockDialogService.open.mockReturnValue(mockDialogRef);
-      component.onAddMembers('rg-1');
+      component.onManageMembers('rg-1');
       await Promise.resolve();
 
       expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
@@ -551,29 +553,32 @@ describe('ResearchGroupAdminView', () => {
   });
 
   describe('Adding Members to Research Group', () => {
-    it('should open add member dialog and reload on success', async () => {
-      const mockDialogRef = {
-        onClose: {
-          subscribe: vi.fn((callback: (result: boolean) => void) => {
-            callback(true);
-          }),
-        },
-      } as unknown as DynamicDialogRef;
+    it('should navigate to members page', async () => {
+      const router = TestBed.inject(Router);
+      const navigateSpy = vi.spyOn(router, 'navigate');
 
-      mockDialogService.open.mockReturnValue(mockDialogRef);
-      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
-
-      component.onAddMembers('rg-1');
+      component.onManageMembers('rg-1');
       await Promise.resolve();
 
-      expect(mockDialogService.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          header: 'researchGroup.members.addMembers',
-          data: { researchGroupId: 'rg-1' },
-        }),
-      );
-      expect(mockResearchGroupService.getResearchGroupsForAdmin).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(['/research-group', 'rg-1', 'members']);
+    });
+
+    it('should not render manage members button for denied groups', async () => {
+      mockResearchGroupService.getResearchGroupsForAdmin.mockReturnValue(of(mockPageResponse));
+      component.loadOnTableEmit({ first: 0, rows: 10 });
+      await Promise.resolve();
+      fixture.detectChanges();
+
+      const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+      // find the row that contains the denied group's researchGroup name
+      const deniedRow = Array.from(rows).find((r: any) => {
+        const text = (r && (r.innerText || r.textContent)) ?? '';
+        return text.includes('Data Science Lab');
+      }) as Element | undefined;
+      expect(deniedRow).toBeDefined();
+      const deniedEl = deniedRow as Element;
+      const manageButton = deniedEl.querySelector('[aria-label="researchGroup.members.manageMembers"]');
+      expect(manageButton).toBeNull();
     });
   });
 });

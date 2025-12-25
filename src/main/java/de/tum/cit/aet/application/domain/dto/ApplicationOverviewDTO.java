@@ -1,12 +1,10 @@
 package de.tum.cit.aet.application.domain.dto;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.core.dto.UiTextFormatter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.cglib.core.Local;
 
 @Getter
 @Setter

@@ -1,9 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AuthSessionInfoDTO } from 'app/generated/model/authSessionInfoDTO';
 import { ToastService } from 'app/service/toast-service';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthenticationResourceApiService, EmailVerificationResourceApiService, OtpCompleteDTO, UserProfileDTO } from 'app/generated';
+import {
+  AuthSessionInfoDTO,
+  AuthenticationResourceApiService,
+  EmailVerificationResourceApiService,
+  OtpCompleteDTO,
+  UserProfileDTO,
+} from 'app/generated';
 
 import PurposeEnum = OtpCompleteDTO.PurposeEnum;
 
@@ -58,6 +63,16 @@ export class ServerAuthenticationService {
   }
 
   // --------------------------- Email/OTP ----------------------------
+  /**
+   * Sends a registration confirmation email to the authenticated user.
+   *
+   * @param email - The user's email address.
+   * @returns Promise that resolves when the email has been sent.
+   */
+  async sendRegistrationEmail(email: string): Promise<void> {
+    await firstValueFrom(this.emailVerificationApi.sendRegistrationEmail({ email, registration: true }));
+  }
+
   /**
    * Sends a one-time password (OTP) to the user's email for login or registration.
    *

@@ -25,7 +25,11 @@
   <include file="changelog/00000000000013_create_interview_slot_table.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000014_create_images_table_and_add_to_jobs.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000015_create_schools_and_departments.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000016_add_applicant_snapshot_to_applications.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000016_create_interviewees.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000018_add_department_id_to_images.xml" relativeToChangelogFile="true"/>
+
+
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints

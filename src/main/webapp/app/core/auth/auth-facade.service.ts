@@ -45,6 +45,7 @@ export class AuthFacadeService {
   private readonly toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
   private readonly translationKey = 'auth.common.toast';
+  private readonly REGISTRATION_KEY = 'pendingIdpRegistration';
 
   private authMethod: AuthMethod = 'none';
 
@@ -71,6 +72,9 @@ export class AuthFacadeService {
         if (keycloakInitialized) {
           await this.accountService.loadUser();
           this.authMethod = 'keycloak';
+
+          // Check if IdP registration to be done
+          await this.handlePendingIdpRegistration();
           return true;
         }
 
@@ -107,6 +111,20 @@ export class AuthFacadeService {
   }
 
   // --------------- Email/OTP ---------------
+  /** Sends registration confirmation email after successful registration. */
+  async sendRegistrationEmail(): Promise<void> {
+    const email = this.authOrchestrator.email();
+    return this.runAuthAction(
+      async () => {
+        await this.serverAuthenticationService.sendRegistrationEmail(email);
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.registrationEmailSendFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.registrationEmailSendFailed.detail`),
+      },
+    );
+  }
+
   /** Request an OTP to be sent to the user's email. */
   async requestOtp(registration = false): Promise<void> {
     const email = this.authOrchestrator.email();
@@ -157,8 +175,12 @@ export class AuthFacadeService {
    * Logs in via a Keycloak identity provider.
    * @param provider Google, Apple, Microsoft, etc.
    * @param redirectUri optional post-login redirect
+   * @param isRegistration if true, sends a registration email after login
    */
-  async loginWithProvider(provider: IdpProvider, redirectUri?: string): Promise<void> {
+  async loginWithProvider(provider: IdpProvider, redirectUri?: string, isRegistration = false): Promise<void> {
+    if (isRegistration) {
+      localStorage.setItem(this.REGISTRATION_KEY, 'true');
+    }
     return this.runAuthAction(
       async () => {
         await this.keycloakAuthenticationService.loginWithProvider(provider, redirectUri);
@@ -199,6 +221,20 @@ export class AuthFacadeService {
         detail: this.translate.instant(`${this.translationKey}.logoutFailed.detail`),
       },
     );
+  }
+
+  private async handlePendingIdpRegistration(): Promise<void> {
+    const pending = localStorage.getItem(this.REGISTRATION_KEY);
+    if (pending === 'true') {
+      localStorage.removeItem(this.REGISTRATION_KEY);
+      const user = this.accountService.user();
+      if (user == null) return;
+
+      const email = user.email;
+      if (email.trim() === '') return;
+
+      await this.serverAuthenticationService.sendRegistrationEmail(email);
+    }
   }
 
   private getLogoutRedirectRoutes(): { targetRoute: string; redirectUrl: string } {

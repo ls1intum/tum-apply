@@ -534,14 +534,13 @@ export class JobCreationFormComponent {
 
   async loadImages(): Promise<void> {
     try {
-      const user = this.accountService.loadedUser();
-      const researchGroupId = user?.researchGroup?.researchGroupId;
-
+      // Load default job banners for the current user's department
       try {
-        const defaults = await firstValueFrom(this.imageResourceService.getDefaultJobBanners(researchGroupId));
+        const defaults = await firstValueFrom(this.imageResourceService.getMyDefaultJobBanners());
         this.defaultImages.set(defaults);
       } catch {
-        // If loading fails (e.g., department not set), don't show any default images and don't show error toast
+        // If loading fails (e.g., no department assigned), show no default images
+        this.defaultImages.set([]);
       }
 
       // Load research group's custom images

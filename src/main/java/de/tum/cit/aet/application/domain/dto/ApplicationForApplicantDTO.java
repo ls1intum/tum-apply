@@ -40,7 +40,7 @@ public record ApplicationForApplicantDTO(
         String departmentName = department != null ? department.getName() : "No Department";
         return new ApplicationForApplicantDTO(
             application.getApplicationId(),
-            ApplicantDTO.getFromEntity(application.getApplicant()),
+            ApplicantDTO.getFromApplicationSnapshot(application),
             new JobCardDTO(
                 job.getJobId(),
                 job.getTitle(),

@@ -42,7 +42,13 @@
             [showStrength]="true"
             [control]="passwordForm.controls.password"
           />
-          <jhi-button type="submit" [shouldTranslate]="true" label="auth.register.buttons.continue" [fullWidth]="true" />
+          <jhi-button
+            type="submit"
+            [shouldTranslate]="true"
+            label="auth.register.buttons.continue"
+            [fullWidth]="true"
+            (click)="sendRegistrationEmail()"
+          />
         </form>
       }
     }

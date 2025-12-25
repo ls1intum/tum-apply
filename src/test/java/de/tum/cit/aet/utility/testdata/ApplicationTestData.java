@@ -5,6 +5,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.LocalDate;
 
 /**
@@ -24,6 +25,40 @@ public final class ApplicationTestData {
         app.setProjects("Robotics Project; ML Pipeline");
         app.setSpecialSkills("Python, TensorFlow, ROS");
         app.setMotivation("Highly motivated to contribute to research.");
+
+        // Initialize snapshot fields from applicant's current profile data
+        if (applicant != null) {
+            User user = applicant.getUser();
+            if (user != null) {
+                app.setApplicantFirstName(user.getFirstName());
+                app.setApplicantLastName(user.getLastName());
+                app.setApplicantEmail(user.getEmail());
+                app.setApplicantGender(user.getGender());
+                app.setApplicantNationality(user.getNationality());
+                app.setApplicantBirthday(user.getBirthday());
+                app.setApplicantPhoneNumber(user.getPhoneNumber());
+                app.setApplicantWebsite(user.getWebsite());
+                app.setApplicantLinkedinUrl(user.getLinkedinUrl());
+            }
+
+            app.setApplicantStreet(applicant.getStreet());
+            app.setApplicantPostalCode(applicant.getPostalCode());
+            app.setApplicantCity(applicant.getCity());
+            app.setApplicantCountry(applicant.getCountry());
+
+            app.setApplicantBachelorDegreeName(applicant.getBachelorDegreeName());
+            app.setApplicantBachelorGradeUpperLimit(applicant.getBachelorGradeUpperLimit());
+            app.setApplicantBachelorGradeLowerLimit(applicant.getBachelorGradeLowerLimit());
+            app.setApplicantBachelorGrade(applicant.getBachelorGrade());
+            app.setApplicantBachelorUniversity(applicant.getBachelorUniversity());
+
+            app.setApplicantMasterDegreeName(applicant.getMasterDegreeName());
+            app.setApplicantMasterGradeUpperLimit(applicant.getMasterGradeUpperLimit());
+            app.setApplicantMasterGradeLowerLimit(applicant.getMasterGradeLowerLimit());
+            app.setApplicantMasterGrade(applicant.getMasterGrade());
+            app.setApplicantMasterUniversity(applicant.getMasterUniversity());
+        }
+
         return app;
     }
 

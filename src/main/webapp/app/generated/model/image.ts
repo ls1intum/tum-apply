@@ -7,28 +7,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ResearchGroup } from './researchGroup';
 import { User } from './user';
 
 
 export interface Image { 
     createdAt?: string;
     imageId?: string;
-    imageType?: Image.ImageTypeEnum;
     lastModifiedAt?: string;
     mimeType?: string;
-    researchGroup?: ResearchGroup;
     sizeBytes?: number;
     uploadedBy?: User;
     url?: string;
 }
-export namespace Image {
-    export type ImageTypeEnum = 'JOB_BANNER' | 'PROFILE_PICTURE' | 'DEFAULT_JOB_BANNER';
-    export const ImageTypeEnum = {
-        JobBanner: 'JOB_BANNER' as ImageTypeEnum,
-        ProfilePicture: 'PROFILE_PICTURE' as ImageTypeEnum,
-        DefaultJobBanner: 'DEFAULT_JOB_BANNER' as ImageTypeEnum
-    };
-}
-
 
