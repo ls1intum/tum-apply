@@ -4,9 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { firstValueFrom } from 'rxjs';
-
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
-
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
@@ -28,7 +26,7 @@ export class AssignApplicantModalComponent {
 
   // Outputs
   visibleChange = output<boolean>();
-  applicantAssigned = output<void>();
+  applicantAssigned = output();
 
   // State signals
   interviewees = signal<IntervieweeDTO[]>([]);

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -15,7 +15,6 @@ import { SlotCreationFormComponent } from 'app/interview/interview-process-detai
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
 import { SlotCardComponent } from './slot-card/slot-card.component';
-
 import { AssignApplicantModalComponent } from './assign-applicant-modal/assign-applicant-modal.component';
 
 interface GroupedSlots {
@@ -45,6 +44,7 @@ interface GroupedSlots {
 export class SlotsSectionComponent {
   // Inputs
   processId = input.required<string>();
+  slotAssigned = output();
 
   // Signals
   slots = signal<InterviewSlotDTO[]>([]);
@@ -283,6 +283,7 @@ export class SlotsSectionComponent {
 
   onApplicantAssigned(): void {
     void this.refreshSlots();
+    this.slotAssigned.emit();
   }
 
   private async loadSlots(processId: string): Promise<void> {

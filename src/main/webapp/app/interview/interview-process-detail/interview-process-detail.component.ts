@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
@@ -30,6 +30,9 @@ export class InterviewProcessDetailComponent {
   private readonly titleService = inject(Title);
   private readonly toastService = inject(ToastService);
 
+  // Child component reference
+  readonly intervieweeSection = viewChild(IntervieweeSectionComponent);
+
   private readonly updateTitleEffect = effect(() => {
     const title = this.jobTitle();
     if (title) {
@@ -43,6 +46,10 @@ export class InterviewProcessDetailComponent {
       this.processId.set(id);
       void this.loadProcessDetails(id);
     }
+  }
+
+  onSlotAssigned(): void {
+    void this.intervieweeSection()?.loadInterviewees();
   }
 
   navigateBack(): void {
