@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -346,10 +347,30 @@ public class InterviewService {
         Job job = process.getJob();
         currentUserService.verifyJobAccess(job);
 
-        // 3. Load and return slots
+        // 3. Load slots
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
 
-        return slots.stream().map(InterviewSlotDTO::fromEntity).toList();
+        // 4. Load interviewees with user data
+        List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
+
+        // 5. Build map of interviewee ID -> interviewee with user data
+        Map<UUID, Interviewee> intervieweeMap = interviewees.stream().collect(Collectors.toMap(Interviewee::getId, i -> i));
+
+        // 6. Map slots to DTOs, booked slots with interviewee info
+        return slots
+            .stream()
+            .map(slot -> {
+                if (slot.getInterviewee() != null) {
+                    Interviewee interviewee = intervieweeMap.get(slot.getInterviewee().getId());
+                    if (interviewee != null) {
+                        IntervieweeState state = calculateIntervieweeState(interviewee);
+                        AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
+                        return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
+                    }
+                }
+                return InterviewSlotDTO.fromEntity(slot);
+            })
+            .toList();
     }
 
     /**
