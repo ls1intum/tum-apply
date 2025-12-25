@@ -194,6 +194,9 @@
         "UNCONTACTED": "Uncontacted",
         "COMPLETED": "Completed"
       },
+      "tableColumns": {
+        "name": "Name"
+      },
       "state": {
         "UNCONTACTED": "Uncontacted",
         "INVITED": "Invited",
