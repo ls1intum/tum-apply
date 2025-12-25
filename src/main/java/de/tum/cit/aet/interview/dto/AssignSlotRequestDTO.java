@@ -9,6 +9,4 @@ import java.util.UUID;
  * Contains the application ID of the applicant to be assigned.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record AssignSlotRequestDTO(
-        @NotNull(message = "Application ID is required") UUID applicationId) {
-}
+public record AssignSlotRequestDTO(@NotNull(message = "Application ID is required") UUID applicationId) {}

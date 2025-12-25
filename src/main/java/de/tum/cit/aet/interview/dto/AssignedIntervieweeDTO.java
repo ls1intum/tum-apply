@@ -10,13 +10,7 @@ import java.util.UUID;
  * Contains user details and interview state for display purposes.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record AssignedIntervieweeDTO(
-        UUID id,
-        UUID applicationId,
-        String firstName,
-        String lastName,
-        String email,
-        IntervieweeState state) {
+public record AssignedIntervieweeDTO(UUID id, UUID applicationId, String firstName, String lastName, String email, IntervieweeState state) {
     /**
      * Creates an AssignedIntervieweeDTO from an Interviewee entity.
      *
@@ -27,11 +21,12 @@ public record AssignedIntervieweeDTO(
     public static AssignedIntervieweeDTO fromEntity(Interviewee interviewee, IntervieweeState state) {
         User user = interviewee.getApplication().getApplicant().getUser();
         return new AssignedIntervieweeDTO(
-                interviewee.getId(),
-                interviewee.getApplication().getApplicationId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                state);
+            interviewee.getId(),
+            interviewee.getApplication().getApplicationId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            state
+        );
     }
 }
