@@ -194,15 +194,6 @@
         "UNCONTACTED": "Nicht kontaktiert",
         "COMPLETED": "Abgeschlossen"
       },
-      "tableColumns": {
-        "name": "Name"
-      },
-      "state": {
-        "UNCONTACTED": "Nicht kontaktiert",
-        "INVITED": "Eingeladen",
-        "SCHEDULED": "Geplant",
-        "COMPLETED": "Abgeschlossen"
-      },
       "error": {
         "loadFailed": {
           "summary": "Fehler",

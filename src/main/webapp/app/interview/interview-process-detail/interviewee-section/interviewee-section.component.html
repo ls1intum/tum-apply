@@ -55,7 +55,7 @@
 <!-- Template for name column with checkbox -->
 <ng-template #nameTemplate let-row>
   <div class="flex items-center gap-3 cursor-pointer" (click)="toggleSelection(row.applicationId)">
-    <p-checkbox [binary]="true" [ngModel]="row.selected" (click)="$event.stopPropagation()" />
+    <p-checkbox [binary]="true" [ngModel]="row.selected" (click)="$event.stopPropagation(); toggleSelection(row.applicationId)" />
     <span class="font-medium text-text-primary">{{ row.name }}</span>
   </div>
 </ng-template>
@@ -63,7 +63,7 @@
 <!-- Add Applicant Modal -->
 <jhi-dialog [visible]="showAddModal()" (visibleChange)="showAddModal.set($event)" header="interview.interviewees.addTitle" width="30rem">
   <!-- Dynamic Table or Empty State -->
-  @if (totalApplicants() > 0) {
+  @if (tableData().length > 0) {
     <div class="table-wrapper">
       <jhi-dynamic-table
         [columns]="columns()"
