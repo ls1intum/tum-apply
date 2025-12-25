@@ -22,6 +22,7 @@ api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
 api/researchGroupResourceApi.service.ts
 api/schoolResourceApi.service.ts
+api/userDataExportResourceApi.service.ts
 api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
@@ -43,6 +44,8 @@ model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
+model/assignSlotRequestDTO.ts
+model/assignedIntervieweeDTO.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
 model/createSlotsDTO.ts
@@ -86,6 +89,7 @@ model/otpCompleteDTO.ts
 model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
+model/pageResponseDTODepartmentDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts
