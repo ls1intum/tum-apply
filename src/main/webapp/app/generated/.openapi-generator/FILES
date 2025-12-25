@@ -43,6 +43,8 @@ model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
+model/assignSlotRequestDTO.ts
+model/assignedIntervieweeDTO.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
 model/createSlotsDTO.ts
