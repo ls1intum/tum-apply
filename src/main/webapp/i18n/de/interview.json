@@ -222,11 +222,23 @@
       "selectedSlot": "Ausgewählter Termin",
       "selectApplicant": "Bewerber auswählen",
       "noApplicants": "Keine eingeladenen Bewerber verfügbar",
-      "success": "Bewerber erfolgreich zugewiesen",
+      "success": {
+        "summary": "Zuweisung erfolgreich",
+        "detail": "Der Bewerber wurde dem Termin zugewiesen."
+      },
       "error": {
-        "notInProcess": "Bewerber gehört nicht zu diesem Interview-Prozess",
-        "failed": "Zuweisung fehlgeschlagen. Bitte erneut versuchen.",
-        "loadFailed": "Bewerber konnten nicht geladen werden"
+        "notInProcess": {
+          "summary": "Ungültiger Bewerber",
+          "detail": "Bewerber gehört nicht zu diesem Interview-Prozess"
+        },
+        "failed": {
+          "summary": "Zuweisung fehlgeschlagen",
+          "detail": "Bei der Zuweisung ist ein Fehler aufgetreten. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bewerber konnten nicht geladen werden"
+        }
       }
     }
   }
