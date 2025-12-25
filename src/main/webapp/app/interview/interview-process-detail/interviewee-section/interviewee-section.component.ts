@@ -116,17 +116,39 @@ export class IntervieweeSectionComponent {
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
 
-  // Injected Services (private)
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
-  private readonly toastService = inject(ToastService);
-
   // Effect: Auto load Interviewees when processId changes
   private readonly loadEffect = effect(() => {
     if (this.processId()) {
       void this.loadInterviewees();
     }
   });
+
+  // Injected Services (private)
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  private readonly toastService = inject(ToastService);
+
+  // Add Selected Applicants as Interviewees
+  async addInterviewees(): Promise<void> {
+    const processId = this.processId();
+    if (!processId) return;
+
+    const dto: AddIntervieweesDTO = {
+      applicationIds: Array.from(this.selectedIds()),
+    };
+
+    try {
+      this.processingAdd.set(true);
+      await firstValueFrom(this.interviewService.addApplicantsToInterview(processId, dto));
+      this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
+      this.closeAddModal();
+      void this.loadInterviewees();
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.error.addFailed');
+    } finally {
+      this.processingAdd.set(false);
+    }
+  }
 
   // Data Loading: Interviewees
   async loadInterviewees(): Promise<void> {
@@ -168,22 +190,19 @@ export class IntervieweeSectionComponent {
     }
   }
 
+  // Table Pagination Handler
+  loadOnTableEmit(event: TableLazyLoadEvent): void {
+    const first = event.first ?? 0;
+    const rows = event.rows ?? 10;
+    this.pageNumber.set(first / rows);
+    this.pageSize.set(rows);
+    void this.loadApplicants();
+  }
+
   // Filter Tab Selection
   setFilter(filter: FilterTab): void {
     this.activeFilter.set(filter);
   }
-
-  // Modal Control
-  openAddModal(): void {
-    this.showAddModal.set(true);
-    void this.loadApplicants();
-  }
-
-  closeAddModal(): void {
-    this.selectedIds.set(new Set());
-    this.showAddModal.set(false);
-  }
-
   // Selection Handling
   toggleSelection(applicationId: string): void {
     const selected = new Set(this.selectedIds());
@@ -199,34 +218,14 @@ export class IntervieweeSectionComponent {
     return this.selectedIds().has(applicationId);
   }
 
-  // Table Pagination Handler
-  loadOnTableEmit(event: TableLazyLoadEvent): void {
-    const first = event.first ?? 0;
-    const rows = event.rows ?? 10;
-    this.pageNumber.set(first / rows);
-    this.pageSize.set(rows);
+  // Modal Control
+  openAddModal(): void {
+    this.showAddModal.set(true);
     void this.loadApplicants();
   }
 
-  // Add Selected Applicants as Interviewees
-  async addInterviewees(): Promise<void> {
-    const processId = this.processId();
-    if (!processId) return;
-
-    const dto: AddIntervieweesDTO = {
-      applicationIds: Array.from(this.selectedIds()),
-    };
-
-    try {
-      this.processingAdd.set(true);
-      await firstValueFrom(this.interviewService.addApplicantsToInterview(processId, dto));
-      this.toastService.showSuccessKey('interview.interviewees.addSuccess', { count: `${this.selectedCount()}` });
-      this.closeAddModal();
-      void this.loadInterviewees();
-    } catch {
-      this.toastService.showErrorKey('interview.interviewees.error.addFailed');
-    } finally {
-      this.processingAdd.set(false);
-    }
+  closeAddModal(): void {
+    this.selectedIds.set(new Set());
+    this.showAddModal.set(false);
   }
 }
