@@ -1,16 +1,22 @@
 <div class="flex gap-6 mb-4 border-b border-border-default">
   @for (tab of tabs(); track tab.key) {
-  <button type="button" class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px cursor-pointer"
-    [class]="
+    <button
+      type="button"
+      class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px cursor-pointer"
+      [class]="
         isActive(tab.key) ? 'border-primary-default text-primary-default' : 'border-transparent text-text-secondary hover:text-text-primary'
-      " (click)="onTabClick(tab.key)">
-    <span [jhiTranslate]="tab.labelKey"></span>
-    @if (tab.count !== undefined) {
-    <span class="px-2 py-0.5 text-xs rounded-full"
-      [class]="isActive(tab.key) ? 'bg-primary-default text-text-on-primary' : 'bg-background-disabled text-text-primary'">
-      {{ tab.count }}
-    </span>
-    }
-  </button>
+      "
+      (click)="onTabClick(tab.key)"
+    >
+      <span [jhiTranslate]="tab.labelKey"></span>
+      @if (tab.count !== undefined) {
+        <span
+          class="px-2 py-0.5 text-xs rounded-full"
+          [class]="isActive(tab.key) ? 'bg-primary-default text-text-on-primary' : 'bg-background-disabled text-text-primary'"
+        >
+          {{ tab.count }}
+        </span>
+      }
+    </button>
   }
 </div>
