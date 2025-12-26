@@ -1,5 +1,5 @@
 # ===================================================================
-# Spring Boot configuration for the "prod" profile.
+# Spring Boot configuration for the "test" profile.
 #
 # This configuration overrides the application.yml file.
 #
@@ -16,10 +16,8 @@
 logging:
   level:
     ROOT: INFO
-    de.tum.cit.aet: INFO
     tech.jhipster: INFO
-    org.hibernate.SQL: INFO
-    liquibase: INFO
+    de.tum.cit.aet: INFO
 
 management:
   prometheus:
@@ -44,13 +42,6 @@ spring:
           auth: true
           ssl:
             enable: true
-  # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
-  liquibase:
-    contexts: prod
-  thymeleaf:
-    cache: true
-  freemarker:
-    cache: true
   ai:
     model:
       chat: azure-openai
@@ -67,6 +58,13 @@ spring:
           options:
             deployment-name: gpt-5-mini
             temperature: 1.0
+  # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
+  liquibase:
+    contexts: prod
+  thymeleaf:
+    cache: true
+  freemarker:
+    cache: true
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:
