@@ -79,7 +79,7 @@ The model `openai/gpt-oss-20b` should appear in the list.
 
 ## Testing the Integration
 
-1. Start the Harmonia server
+1. Start the TUMapply server
 2. Call the storyWithStream API endpoint, i.e. `GET /api/ai/generate?message={message}`
    either on Swagger http://localhost:8080/swagger-ui.html or via clients like Postman
    **Note:** Calling the API requires authentication

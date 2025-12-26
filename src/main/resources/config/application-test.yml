@@ -47,8 +47,8 @@ spring:
       chat: azure-openai
     openai:
       enabled: false
-      api-key: "disabled"
-      base-url: "http://disabled"
+      api-key: 'disabled'
+      base-url: 'http://disabled'
     azure:
       openai:
         enabled: true
