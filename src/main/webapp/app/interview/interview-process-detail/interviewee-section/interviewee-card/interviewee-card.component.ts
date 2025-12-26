@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, input } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { Component, inject, input } from '@angular/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
@@ -14,6 +14,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class IntervieweeCardComponent {
   interviewee = input.required<IntervieweeDTO>();
+  private readonly translateService = inject(TranslateService);
 
   protected readonly IntervieweeState = {
     UNCONTACTED: 'UNCONTACTED',
@@ -24,12 +25,12 @@ export class IntervieweeCardComponent {
 
   formatDate(date?: string): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString([], { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(date).toLocaleDateString(this.translateService.currentLang, { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   formatTime(date?: string): string {
     if (!date) return '';
-    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return new Date(date).toLocaleTimeString(this.translateService.currentLang, { hour: '2-digit', minute: '2-digit' });
   }
 
   get timeRange(): string {

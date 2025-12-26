@@ -222,6 +222,7 @@
       "selectedSlot": "Selected Slot",
       "selectApplicant": "Select Applicant",
       "noApplicants": "No invited applicants available",
+      "allAssigned": "All applicants in the interview process already have a Slot",
       "success": {
         "summary": "Assignment Successful",
         "detail": "Applicant has been assigned to the slot."

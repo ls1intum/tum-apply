@@ -15,7 +15,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 @Component({
   selector: 'jhi-assign-applicant-modal',
   standalone: true,
-  imports: [CommonModule, TranslateModule, TranslateDirective, DialogComponent, ProgressSpinnerModule, FontAwesomeModule, ButtonComponent],
+  imports: [CommonModule, TranslateModule, DialogComponent, ProgressSpinnerModule, FontAwesomeModule, ButtonComponent],
   templateUrl: './assign-applicant-modal.component.html',
 })
 export class AssignApplicantModalComponent {
@@ -126,11 +126,20 @@ export class AssignApplicantModalComponent {
   }
 
   /**
-   * Closes the modal and resets all state.
+   * Handles visibility changes (e.g. from closing the modal via 'X' or backdrop).
+   */
+  onVisibleChange(isVisible: boolean): void {
+    if (!isVisible) {
+      this.resetState();
+    }
+    this.visibleChange.emit(isVisible);
+  }
+
+  /**
+   * Manually closes the modal.
    */
   closeModal(): void {
-    this.resetState();
-    this.visibleChange.emit(false);
+    this.onVisibleChange(false);
   }
 
   // Template helper methods
