@@ -1,0 +1,132 @@
+## Local LLM Setup (Using LM Studio)
+
+This guide explains how to set up a local LLM (Large Language Model) service for development purposes using LM Studio.
+
+### Prerequisites
+
+- A running server instance with the `local` profile
+- Newest version of LM Studio
+- Sufficient disk space for downloading LLM models (typically 10-40GB per model)
+
+### Setting up LM Studio
+
+You can set up and use LM Studio either via the GUI or CLI as follows:
+
+#### LM Studio GUI
+
+**1. Install LM Studio**
+
+Download LM Studio using the App Installer from here: https://lmstudio.ai/download
+
+**2. Download the Model**
+
+* Open the LM Studio GUI
+* Go into the **Discover** tab in the side navigation bar
+* Download the `gpt-oss-20b` model (this will take a few moments depending on your internet connection)
+* Make sure **"Enable Local LLM Service"** is active
+
+**3. Configure and activate the model**
+
+* Go into the **Developer** tab in the side navigation bar
+* Open the **"Select model to load"** dropdown menu at the top (middle):
+  * Enable **"Manually choose model load parameters"**
+  * Click on **"OpenAI's gpt-oss 20B"**
+  * Give it context `32000`
+  * Click on the button **"Load model"**
+
+**4. Start the LMS server**
+Toggle the **"Status"** switch to **"Running"**
+
+The LLM service should now be running on http://localhost:1234.
+
+#### LM Studio CLI
+
+**1. Install LM Studio**
+
+Install LM Studio using Homebrew by running the command below. This will will install the LM Studio app (GUI), which
+comes packaged with the CLI.
+For more information, see the [LM Studio CLI documentation](https://lmstudio.ai/docs/cli).
+
+```bash
+brew install --cask lm-studio
+```
+
+**2. Download the Model**
+
+ ```bash
+ lms get openai/gpt-oss-20b
+ ```
+
+**3. Configure and activate the model**
+
+```bash
+lms load openai/gpt-oss-20b --context-length 32000
+```
+
+**4. Start the LMS server**
+
+```bash
+lms server start
+```
+
+The LLM service should now be running on http://localhost:1234.
+
+#### Verify the Service Works
+
+Verify http://localhost:1234/api/v0/models lists the models.
+
+The model `openai/gpt-oss-20b` should appear in the list.
+
+## Testing the Integration
+
+1. Start the Harmonia server
+2. Call the storyWithStream API endpoint, i.e. `GET /api/ai/generate?message={message}`
+   either on Swagger http://localhost:8080/swagger-ui.html or via clients like Postman
+   **Note:** Calling the API requires authentication
+3. View the **LMS Server logs**
+1. Via CLI
+    ```bash
+    lms log stream
+    ```
+2. By opening LM Studio GUI and going into the Developer view
+4. Verify the logs
+1. include the prompt sent
+2. show progress status
+3. show the generated prediction
+
+### Performance Considerations
+
+- **Model Size**: Larger models provide better results but require more RAM and processing power. The `gpt-oss-20b`
+  model is a good balance for development.
+- **Context Length**: The `--context-length 32000` parameter controls how much text the model can process at once.
+  Adjust based on your hardware capabilities.
+- **GPU Acceleration**: LM Studio automatically uses GPU acceleration when available (Metal on macOS, CUDA on
+  Linux/Windows).
+
+### 🛠 Troubleshooting
+
+#### Exit Code 6 When Loading a Model
+
+If you encounter the following error:
+
+```
+🥲 Failed to load the model
+Error loading model. (Exit code: 6)
+```
+
+This usually means the model cannot load because the required runtime engine is missing or broken.
+
+##### ✅ Fix: Repair the MLX Runtime (macOS Apple Silicon)
+
+1. Open **LM Studio**
+2. In the left menu, click **LM Runtimes**
+3. Under **Runtime Extension Packs**, find:
+
+   **LM Studio MLX**
+
+   (Engine used for MLX / Apple Silicon models)
+
+4. If LM Studio detects an issue, a **Fix** button will appear
+5. Click **Fix** to reinstall, update, or repair the engine
+
+After the repair completes, try loading your model again.
