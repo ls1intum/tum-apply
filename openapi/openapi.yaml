@@ -3,6 +3,21 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
+  /api/ai/generate:
+    get:
+      tags: [ai-resource]
+      operationId: storyWithStream
+      parameters:
+      - name: message
+        in: query
+        required: false
+        schema: {type: string, default: Tell a story in less than 100 words}
+      responses:
+        '200':
+          description: OK
+          content:
+            text/event-stream:
+              schema: {type: string}
   /api/applications:
     put:
       tags: [application-resource]
