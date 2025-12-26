@@ -24,14 +24,14 @@ export class InterviewProcessDetailComponent {
   jobTitle = signal<string | null>(null);
   readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
 
+  // Child component reference
+  readonly intervieweeSection = viewChild(IntervieweeSectionComponent);
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly titleService = inject(Title);
   private readonly toastService = inject(ToastService);
-
-  // Child component reference
-  readonly intervieweeSection = viewChild(IntervieweeSectionComponent);
 
   private readonly updateTitleEffect = effect(() => {
     const title = this.jobTitle();

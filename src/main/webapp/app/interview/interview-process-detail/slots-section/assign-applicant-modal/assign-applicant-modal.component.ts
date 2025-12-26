@@ -1,21 +1,37 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TableModule } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
-import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
+/**
+ * Modal component for assigning an applicant to an interview slot.
+ * Displays available interviewees and allows single selection for slot assignment.
+ */
 @Component({
   selector: 'jhi-assign-applicant-modal',
   standalone: true,
-  imports: [CommonModule, TranslateModule, DialogComponent, ProgressSpinnerModule, FontAwesomeModule, ButtonComponent],
+  imports: [
+    TranslateModule,
+    TranslateDirective,
+    FormsModule,
+    DialogComponent,
+    ButtonComponent,
+    FontAwesomeModule,
+    ProgressSpinnerModule,
+    TableModule,
+    CheckboxModule,
+  ],
   templateUrl: './assign-applicant-modal.component.html',
 })
 export class AssignApplicantModalComponent {
@@ -28,22 +44,26 @@ export class AssignApplicantModalComponent {
   visibleChange = output<boolean>();
   applicantAssigned = output();
 
-  // State signals
+  // Signals
   interviewees = signal<IntervieweeDTO[]>([]);
   selectedApplicantId = signal<string | null>(null);
   loading = signal(false);
   assignLoading = signal(false);
 
-  // Injected services
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly toastService = inject(ToastService);
-
-  // Computed signals
+  // Computed
+  // Filters out already scheduled interviewees
   availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED'));
 
+  // Returns true if an applicant is selected and not currently assigning
   canAssign = computed(() => this.selectedApplicantId() !== null && !this.assignLoading());
 
-  // Effect: fetch interviewees when modal opens
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+
+  // Effects
+  /** Fetches interviewees when modal becomes visible */
   private readonly openEffect = effect(() => {
     if (this.visible()) {
       void this.fetchInterviewees();
@@ -51,39 +71,9 @@ export class AssignApplicantModalComponent {
   });
 
   /**
-   * Selects or deselects an interviewee for assignment.
-   * Disabled interviewees (already scheduled) cannot be selected.
-   */
-  selectApplicant(interviewee: IntervieweeDTO): void {
-    if (this.isDisabled(interviewee)) {
-      return;
-    }
-    const applicationId = interviewee.applicationId ?? null;
-    // Toggle selection if same applicant clicked
-    if (this.selectedApplicantId() === applicationId) {
-      this.selectedApplicantId.set(null);
-    } else {
-      this.selectedApplicantId.set(applicationId);
-    }
-  }
-
-  /**
-   * Checks if an interviewee is currently selected.
-   */
-  isSelected(interviewee: IntervieweeDTO): boolean {
-    return this.selectedApplicantId() === interviewee.applicationId;
-  }
-
-  /**
-   * Checks if an interviewee is disabled (already has a scheduled slot).
-   */
-  isDisabled(interviewee: IntervieweeDTO): boolean {
-    return interviewee.state === 'SCHEDULED';
-  }
-
-  /**
-   * Assigns the selected applicant to the slotserve.
-   * Handles success, conflict, and error cases with appropriate toasts.
+   * Assigns the selected applicant to the interview slot.
+   * Shows success toast on completion, handles 409 (conflict), 400 (bad request),
+   * and other errors with appropriate messages.
    */
   async assignApplicant(): Promise<void> {
     const applicationId = this.selectedApplicantId();
@@ -126,8 +116,32 @@ export class AssignApplicantModalComponent {
   }
 
   /**
-   * Handles visibility changes (e.g. from closing the modal via 'X' or backdrop).
+   * Toggles selection of an interviewee.
+   * Clicking the same applicant again deselects them.
    */
+  selectApplicant(interviewee: IntervieweeDTO): void {
+    if (this.isDisabled(interviewee)) {
+      return;
+    }
+    const applicationId = interviewee.applicationId ?? null;
+    if (this.selectedApplicantId() === applicationId) {
+      this.selectedApplicantId.set(null);
+    } else {
+      this.selectedApplicantId.set(applicationId);
+    }
+  }
+
+  // Returns true if the interviewee is currently selected
+  isSelected(interviewee: IntervieweeDTO): boolean {
+    return this.selectedApplicantId() === interviewee.applicationId;
+  }
+
+  // Returns true if the interviewee already has a scheduled slot
+  isDisabled(interviewee: IntervieweeDTO): boolean {
+    return interviewee.state === 'SCHEDULED';
+  }
+
+  // Handles visibility changes from the dialog component
   onVisibleChange(isVisible: boolean): void {
     if (!isVisible) {
       this.resetState();
@@ -135,30 +149,28 @@ export class AssignApplicantModalComponent {
     this.visibleChange.emit(isVisible);
   }
 
-  /**
-   * Manually closes the modal.
-   */
+  // Closes the modal and resets state
   closeModal(): void {
     this.onVisibleChange(false);
   }
 
-  // Template helper methods
+  // Template Helpers
+
+  // Formats a date string to localized time (e.g., "14:30")
   formatTime(date?: string): string {
     if (!date) return '';
-    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const locale = this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
+    return new Date(date).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   }
 
+  // Formats a date string to localized full date
   formatDate(date?: string): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString([], { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+    const locale = this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
+    return new Date(date).toLocaleDateString(locale, { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
-  getInitials(firstName?: string, lastName?: string): string {
-    const first = firstName?.charAt(0).toUpperCase() ?? '';
-    const last = lastName?.charAt(0).toUpperCase() ?? '';
-    return `${first}${last}`;
-  }
-
+  // Fetches all interviewees for the current interview process
   private async fetchInterviewees(): Promise<void> {
     try {
       this.loading.set(true);
@@ -172,6 +184,7 @@ export class AssignApplicantModalComponent {
     }
   }
 
+  // Clears selection and interviewees list
   private resetState(): void {
     this.selectedApplicantId.set(null);
     this.interviewees.set([]);

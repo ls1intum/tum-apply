@@ -14,7 +14,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class IntervieweeCardComponent {
   interviewee = input.required<IntervieweeDTO>();
-  private readonly translateService = inject(TranslateService);
 
   protected readonly IntervieweeState = {
     UNCONTACTED: 'UNCONTACTED',
@@ -22,6 +21,8 @@ export class IntervieweeCardComponent {
     SCHEDULED: 'SCHEDULED',
     COMPLETED: 'COMPLETED',
   } as const;
+
+  private readonly translateService = inject(TranslateService);
 
   formatDate(date?: string): string {
     if (!date) return '';
