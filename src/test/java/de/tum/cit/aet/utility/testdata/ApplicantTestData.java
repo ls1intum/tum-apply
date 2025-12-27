@@ -79,7 +79,7 @@ public final class ApplicantTestData {
         return applicantUser;
     }
 
-    // --- Saved variants -------------------------------------------------------------------------
+    // --- Saved variants-------------------------------------------------------------------------
 
     public static Applicant saved(ApplicantRepository repo, User user) {
         return repo.save(newApplicant(user));
@@ -89,7 +89,27 @@ public final class ApplicantTestData {
         return saved(repo, newApplicantUser());
     }
 
-    // --- Attach roles ---------------------------------------------------------------------------
+    /**
+     * Creates and saves an Applicant with a random unique email address.
+     * Useful when multiple applicants are needed in a single test.
+     */
+    public static Applicant savedWithRandomEmail(
+        ApplicantRepository repo,
+        de.tum.cit.aet.usermanagement.repository.UserRepository userRepo
+    ) {
+        User applicantUser = new User();
+        applicantUser.setUserId(UUID.randomUUID());
+        applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
+        applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
+        applicantUser.setFirstName("Test");
+        applicantUser.setLastName("Applicant");
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        attachApplicantRole(applicantUser);
+        User savedUser = userRepo.save(applicantUser);
+        return saved(repo, savedUser);
+    }
+
+    // --- Attach roles---------------------------------------------------------------------------
 
     /**
      * Attaches the APPLICANT role for a given user.
