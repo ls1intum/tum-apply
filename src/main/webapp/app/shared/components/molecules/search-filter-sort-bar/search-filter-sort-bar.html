@@ -1,4 +1,4 @@
-<div class="search-filter-sort-bar gap-2 pb-3">
+<div class="search-filter-sort-bar pb-3">
   <div class="functionality-bar">
     <p-iconfield iconPosition="left" class="min-w-[15%] flex-1">
       <p-inputicon>
@@ -30,9 +30,11 @@
       }
     </div>
   </div>
-  <div
-    class="record-count"
-    jhiTranslate="entity.filters.recordsFound"
-    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
-  ></div>
+  @if (totalRecords() > 0) {
+    <div
+      class="record-count text-text-secondary"
+      jhiTranslate="entity.filters.recordsFound"
+      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+    ></div>
+  }
 </div>

@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, Signal, ViewEncapsulation, computed, effect, input, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 
 import { DocumentHolder } from '../../organisms/document-section/document-section';
 import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-document-dialog',
-  imports: [CommonModule, DialogModule, CheckboxModule, FormsModule, DocumentViewerComponent, TranslateModule, TranslateDirective],
+  imports: [CommonModule, DialogComponent, CheckboxModule, FormsModule, DocumentViewerComponent, TranslateModule, TranslateDirective],
   templateUrl: './document-dialog.html',
   encapsulation: ViewEncapsulation.None,
 })

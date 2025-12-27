@@ -2,10 +2,11 @@
   <div class="page-header">
     <h1 jhiTranslate="evaluation.overviewHeader">Applications - Overview</h1>
   </div>
-  <div class="body">
+
+  <div class="table-wrapper">
     <jhi-search-filter-sort-bar
       [searchText]="'evaluation.searchFilterSortBar.searchText' | translate"
-      [totalRecords]="total()"
+      [totalRecords]="0"
       [singleEntity]="'evaluation.application' | translate"
       [multipleEntities]="'evaluation.applications' | translate"
       (searchOutput)="loadOnSearchEmit($event)"
@@ -29,6 +30,14 @@
       [sortableFields]="sortableFields"
     />
 
+    <div class="flex justify-between items-start gap-4 mt-4">
+      <div
+        class="text-text-secondary text-md"
+        jhiTranslate="entity.filters.recordsFound"
+        [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? ('job' | translate) : ('jobs' | translate) }"
+      ></div>
+    </div>
+
     <jhi-dynamic-table
       [columns]="columns()"
       [data]="pageData()"
@@ -42,15 +51,9 @@
     <ng-template #appliedAtTemplate let-application>
       {{ (application.appliedAt?.toString() | localizedDate) || '-' }}
     </ng-template>
+
     <ng-template #actionTemplate let-application>
-      <jhi-button
-        icon="eye"
-        [ariaLabel]="'button.view' | translate"
-        [tooltip]="'button.view' | translate"
-        severity="primary"
-        variant="text"
-        (click)="navigateToDetail(application)"
-      />
+      <jhi-button icon="eye" [tooltip]="'button.view' | translate" variant="text" (click)="navigateToDetail(application)" />
     </ng-template>
 
     <ng-template #stateTemplate let-application>

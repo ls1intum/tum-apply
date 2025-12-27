@@ -109,12 +109,10 @@
 </p-fileupload>
 
 <!-- Duplicate File Confirmation Dialog -->
-<p-dialog
+<jhi-dialog
   [visible]="showDuplicateDialog()"
   (visibleChange)="showDuplicateDialog.set($event)"
-  [modal]="true"
   [draggable]="false"
-  [closable]="false"
   [showHeader]="false"
   [style]="{ width: '33rem', boxShadow: 'none', border: 'none' }"
 >
@@ -135,4 +133,4 @@
       <jhi-button [shouldTranslate]="true" label="entity.upload.duplicate.replace" (click)="onDuplicateReplace()" />
     </div>
   </div>
-</p-dialog>
+</jhi-dialog>
