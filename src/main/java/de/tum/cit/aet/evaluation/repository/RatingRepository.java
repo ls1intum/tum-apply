@@ -24,4 +24,6 @@ public interface RatingRepository extends TumApplyJpaRepository<Rating, UUID> {
     void deleteByFromAndApplicationApplicationId(User from, UUID applicationId);
 
     Optional<Rating> findByFromAndApplicationApplicationId(User from, UUID applicationId);
+
+    Set<Rating> findAllByFrom(User from);
 }

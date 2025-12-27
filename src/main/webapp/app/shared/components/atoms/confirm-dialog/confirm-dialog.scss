@@ -18,6 +18,7 @@
   .confirm-buttons {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 0.75rem;
   }
 }
@@ -27,4 +28,19 @@
   box-shadow: none;
   border: none;
   max-width: 45rem;
+}
+
+.confirm-dialog-sm {
+  width: 400px;
+  max-width: 90vw;
+}
+
+.confirm-dialog-md {
+  width: 600px;
+  max-width: 90vw;
+}
+
+.confirm-dialog-lg {
+  width: 800px;
+  max-width: 95vw;
 }

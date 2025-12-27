@@ -13,17 +13,23 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.ImageTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
@@ -49,6 +55,12 @@ class JobResourceTest extends AbstractResourceTest {
 
     @Autowired
     DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    SchoolRepository schoolRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
 
     @Autowired
     MvcTestClient api;
@@ -91,17 +103,21 @@ class JobResourceTest extends AbstractResourceTest {
     void setup() {
         databaseCleaner.clean();
 
+        // Create school and department for research group
+        School school = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
+        Department department = DepartmentTestData.saved(departmentRepository, "Computer Science", school);
+
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
-            "Algorithms Group",
+            department,
             "Prof. Doe",
-            "alg@example.com",
+            "Algorithms Group",
             "ALG",
+            "Munich",
             "CS",
             "We do cool stuff",
             "alg@example.com",
             "80333",
-            "CIT",
             "Arcisstr. 21",
             "https://alg.tum.de",
             "ACTIVE"
@@ -625,13 +641,13 @@ class JobResourceTest extends AbstractResourceTest {
         User adminUser = UserTestData.newUserAll(UUID.randomUUID(), "admin@tum.de", "Admin", "User");
         adminUser = userRepository.save(adminUser);
 
-        Image defaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
+        Image defaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup.getDepartment()));
         Job job = jobRepository.findAll().getFirst();
         job.setImage(defaultBanner);
         jobRepository.save(job);
 
         // Create a new default banner
-        Image newDefaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup));
+        Image newDefaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup.getDepartment()));
 
         JobFormDTO updatedPayload = createJobFormDTO(job, newDefaultBanner.getImageId());
 

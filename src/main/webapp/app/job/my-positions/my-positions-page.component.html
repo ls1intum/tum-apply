@@ -66,17 +66,31 @@
             (click)="onViewJob(job.jobId)"
             [shouldTranslate]="true"
           />
-          <jhi-button
-            icon="pencil"
-            variant="text"
-            [tooltip]="job.state !== 'DRAFT' ? ('button.tooltip.editDisabled' | translate) : ('button.edit' | translate)"
-            severity="primary"
-            variant="text"
-            (click)="onEditJob(job.jobId)"
-            data-testid="edit"
-            [disabled]="job.state !== 'DRAFT'"
-            [shouldTranslate]="true"
-          />
+          @if (job.state === 'DRAFT') {
+            <jhi-button
+              icon="pencil"
+              variant="text"
+              [tooltip]="'button.edit' | translate"
+              severity="primary"
+              (click)="onEditJob(job.jobId)"
+              data-testid="edit"
+              [shouldTranslate]="true"
+            />
+          }
+          @if (job.state === 'PUBLISHED') {
+            <jhi-confirm-dialog
+              [label]="'button.edit' | translate"
+              [iconOnly]="true"
+              [tooltip]="'button.edit' | translate"
+              severity="primary"
+              [header]="'myPositionsPage.confirmDialog.editJobHeader' | translate"
+              [message]="'myPositionsPage.confirmDialog.editJobMessage' | translate"
+              (confirmed)="onEditJob(job.jobId)"
+              confirmIcon="pencil"
+              data-testid="edit"
+              [disabled]="job.state !== 'PUBLISHED'"
+            />
+          }
           @if (job.state === 'DRAFT') {
             <jhi-confirm-dialog
               [label]="'button.delete' | translate"

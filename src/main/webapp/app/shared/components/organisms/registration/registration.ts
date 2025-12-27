@@ -37,7 +37,7 @@ export class Registration {
 
   readonly registerProgress = computed(() => this.authOrchestrator.registerProgress());
   readonly totalRegisterSteps = this.authOrchestrator.totalRegisterSteps;
-  readonly registerProgressInPercent = computed(() => ((this.registerProgress() - 1) / (this.totalRegisterSteps - 1)) * 100);
+  readonly registerProgressInPercent = computed(() => (this.registerProgress() / this.totalRegisterSteps) * 100);
   readonly showBackButton = computed(() => this.authOrchestrator.registerStep() === 'otp');
   readonly showSkipButton = computed(() => this.authOrchestrator.registerStep() === 'password');
 
@@ -87,6 +87,10 @@ export class Registration {
         detail: this.translate.instant(`${this.translationKey}.updatePasswordFailed.detail`),
       },
     );
+  };
+
+  sendRegistrationEmail = async (): Promise<void> => {
+    await this.authFacade.sendRegistrationEmail();
   };
 
   onBack = (): void => {

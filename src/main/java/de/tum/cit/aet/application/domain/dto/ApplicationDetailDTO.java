@@ -6,7 +6,6 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.dto.ApplicantForApplicationDetailDTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -35,12 +34,11 @@ public record ApplicationDetailDTO(
         if (application == null) {
             throw new EntityNotFoundException("Application Entity should not be null");
         }
-        Applicant applicant = application.getApplicant();
 
         return new ApplicationDetailDTO(
             application.getApplicationId(),
             job.getJobId(),
-            ApplicantForApplicationDetailDTO.getFromEntity(applicant),
+            ApplicantForApplicationDetailDTO.getFromApplicationSnapshot(application),
             application.getState(),
             job.getSupervisingProfessor().getFirstName() + " " + job.getSupervisingProfessor().getLastName(),
             job.getResearchGroup().getName(),

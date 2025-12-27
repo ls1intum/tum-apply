@@ -1,0 +1,7 @@
+<button type="button" [class]="buttonClass()" [disabled]="disabled()" (click)="onClick()">
+  @if (shouldTranslate()) {
+    {{ label() | translate }}
+  } @else {
+    {{ label() }}
+  }
+</button>
