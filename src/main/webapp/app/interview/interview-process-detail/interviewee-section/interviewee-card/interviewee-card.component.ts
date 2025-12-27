@@ -1,20 +1,35 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
+/**
+ * Card component displaying an interviewee's status and scheduled slot details.
+ * Shows different UI based on state: UNCONTACTED, INVITED, SCHEDULED, COMPLETED.
+ */
 @Component({
   selector: 'jhi-interviewee-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule],
+  imports: [TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule],
   templateUrl: './interviewee-card.component.html',
 })
 export class IntervieweeCardComponent {
+  // Inputs
   interviewee = input.required<IntervieweeDTO>();
 
+  // Computed
+  timeRange = computed(() => {
+    const slot = this.interviewee().scheduledSlot;
+    if (!slot) return '';
+    return `${this.formatTime(slot.startDateTime)} - ${this.formatTime(slot.endDateTime)}`;
+  });
+
+  location = computed(() => this.interviewee().scheduledSlot?.location ?? '');
+  isVirtual = computed(() => this.interviewee().scheduledSlot?.location === 'virtual');
+
+  // Constants
   protected readonly IntervieweeState = {
     UNCONTACTED: 'UNCONTACTED',
     INVITED: 'INVITED',
@@ -22,33 +37,22 @@ export class IntervieweeCardComponent {
     COMPLETED: 'COMPLETED',
   } as const;
 
+  // Services
   private readonly translateService = inject(TranslateService);
 
+  // Formats date to localized string (e.g., "27. Dezember 2025")
   formatDate(date?: string): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString(this.translateService.currentLang, { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(date).toLocaleDateString(this.getLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
+  // Formats time to localized string (e.g., "14:30")
   formatTime(date?: string): string {
     if (!date) return '';
-    return new Date(date).toLocaleTimeString(this.translateService.currentLang, { hour: '2-digit', minute: '2-digit' });
+    return new Date(date).toLocaleTimeString(this.getLocale(), { hour: '2-digit', minute: '2-digit' });
   }
 
-  get timeRange(): string {
-    const slot = this.interviewee().scheduledSlot;
-    if (!slot) return '';
-    const start = this.formatTime(slot.startDateTime);
-    const end = this.formatTime(slot.endDateTime);
-    return `${start} - ${end}`;
-  }
-
-  get location(): string {
-    const slot = this.interviewee().scheduledSlot;
-    if (!slot?.location) return '';
-    return slot.location;
-  }
-
-  get isVirtual(): boolean {
-    return this.interviewee().scheduledSlot?.location === 'virtual';
+  private getLocale(): string {
+    return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
   }
 }
