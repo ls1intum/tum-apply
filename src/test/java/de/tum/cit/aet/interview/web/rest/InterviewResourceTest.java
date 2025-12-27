@@ -123,19 +123,12 @@ class InterviewResourceTest extends AbstractResourceTest {
             UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
 
-        employee = UserTestData.savedEmployeeAll(
+        employee = UserTestData.savedEmployee(
             userRepository,
             researchGroup,
             "emp.smith@tum.de",
             "Emily",
             "Smith",
-            "en",
-            "+49 89 9999",
-            "https://emp.tum.de",
-            "https://linkedin.com/in/emp",
-            "DE",
-            null,
-            "weiblich",
             UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
 

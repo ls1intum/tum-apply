@@ -204,8 +204,33 @@ public final class UserTestData {
     }
 
     /**
+     * Saved employee with essential fields only.
+     * Use this method to avoid long parameter lists.
+     */
+    public static User savedEmployee(
+        UserRepository repo,
+        ResearchGroup researchGroup,
+        String email,
+        String firstName,
+        String lastName,
+        String universityId
+    ) {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setEmail(email);
+        u.setFirstName(firstName);
+        u.setLastName(lastName);
+        u.setSelectedLanguage("en");
+        u.setResearchGroup(researchGroup);
+        u.setUniversityId(universityId != null ? universityId : UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        attachEmployeeRole(u, researchGroup);
+        return repo.save(u);
+    }
+
+    /**
      * Saved employee with all fields.
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList")
     public static User savedEmployeeAll(
         UserRepository repo,
         ResearchGroup researchGroup,
