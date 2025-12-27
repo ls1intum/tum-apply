@@ -3,7 +3,6 @@ package de.tum.cit.aet.interview.web;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
@@ -181,10 +180,7 @@ public class InterviewResource {
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
      *
      * @throws EntityNotFoundException if the slot is not found
-     *
-     * @throws AccessDeniedException if the user is not authorized to delete this
-     * slot
-     *
+     * @throws AccessDeniedException if the user is not authorized to delete this slot
      * @throws BadRequestException if the slot is booked
      */
     @ProfessorOrEmployee
@@ -203,8 +199,8 @@ public class InterviewResource {
      *
      * @param processId     the ID of the interview process
      * @param intervieweeId the ID of the interviewee
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
-     *         {@link IntervieweeDetailDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the {@link IntervieweeDetailDTO}
+     *
      * @throws EntityNotFoundException if the interviewee or process is not found
      * @throws AccessDeniedException   if the user is not authorized
      */
@@ -225,8 +221,8 @@ public class InterviewResource {
      * @param processId     the ID of the interview process
      * @param intervieweeId the ID of the interviewee
      * @param dto           the update data containing rating and/or notes
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
-     *         updated {@link IntervieweeDetailDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated {@link IntervieweeDetailDTO}
+     *
      * @throws EntityNotFoundException if the interviewee or process is not found
      * @throws AccessDeniedException   if the user is not authorized
      * @throws BadRequestException     if neither rating nor notes is provided

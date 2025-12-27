@@ -12,8 +12,7 @@ import lombok.Setter;
 
 /**
  * Entity representing an applicant who has been added to an interview process.
- * Links an Application to an InterviewProcess and tracks interview related
- * state.
+ * Links an Application to an InterviewProcess and tracks interview related state.
  */
 @Entity
 @Table(

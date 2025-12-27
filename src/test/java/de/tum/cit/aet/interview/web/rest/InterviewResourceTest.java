@@ -146,14 +146,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         interviewProcess = interviewProcessRepository.save(interviewProcess);
 
         // Shared test applicant and interviewee
-        User applicantUser = UserTestData.createUserWithoutResearchGroup(
-            userRepository,
-            "test.applicant@example.com",
-            "Test",
-            "Applicant",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
-        testApplicant = ApplicantTestData.saved(applicantRepository, applicantUser);
+        testApplicant = createApplicant();
         testApplication = ApplicationTestData.savedSent(applicationRepository, job, testApplicant);
         testInterviewee = createInterviewee(testApplication);
     }
@@ -166,8 +159,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         assertThat(details.jobId()).isEqualTo(job.getJobId());
         assertThat(details.jobTitle()).isEqualTo(job.getTitle());
-        // Stats will be 0 since we didn't create applications
-        assertThat(details.totalInterviews()).isZero();
+        // Stats reflects the testInterviewee created in setup
+        assertThat(details.totalInterviews()).isEqualTo(1);
     }
 
     @Test
@@ -522,10 +515,9 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void getSlotsByProcessIdForNonExistentProcessReturnsNotFound() {
-        Void result = api
+        api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
-        assertThat(result).isNull();
     }
 
     @Nested
@@ -572,8 +564,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void getIntervieweeDetailsWithNonExistentIdReturns404() {
-            // Act
-            Void result = api
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .getAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + UUID.randomUUID(),
@@ -581,18 +572,13 @@ class InterviewResourceTest extends AbstractResourceTest {
                     Void.class,
                     404
                 );
-
-            // Assert
-            assertThat(result).isNull();
         }
 
         @Test
         void getIntervieweeDetailsForOtherProfessorReturns403() {
-            // Arrange
             User otherProfessor = createOtherProfessor();
 
-            // Act
-            Void result = api
+            api
                 .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
                 .getAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId(),
@@ -600,9 +586,6 @@ class InterviewResourceTest extends AbstractResourceTest {
                     Void.class,
                     403
                 );
-
-            // Assert
-            assertThat(result).isNull();
         }
     }
 
@@ -690,11 +673,9 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void updateAssessmentWithInvalidRatingReturns400() {
-            // Arrange
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(5, null); // Invalid: > 2
 
-            // Act
-            Void result = api
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId() + "/assessment",
@@ -702,18 +683,13 @@ class InterviewResourceTest extends AbstractResourceTest {
                     Void.class,
                     400
                 );
-
-            // Assert
-            assertThat(result).isNull();
         }
 
         @Test
         void updateAssessmentWithEmptyBodyReturns400() {
-            // Arrange
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, null);
 
-            // Act
-            Void result = api
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId() + "/assessment",
@@ -721,18 +697,13 @@ class InterviewResourceTest extends AbstractResourceTest {
                     Void.class,
                     400
                 );
-
-            // Assert
-            assertThat(result).isNull();
         }
 
         @Test
         void updateAssessmentForNonExistentIntervieweeReturns404() {
-            // Arrange
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Test notes");
 
-            // Act
-            Void result = api
+            api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + UUID.randomUUID() + "/assessment",
@@ -740,19 +711,14 @@ class InterviewResourceTest extends AbstractResourceTest {
                     Void.class,
                     404
                 );
-
-            // Assert
-            assertThat(result).isNull();
         }
 
         @Test
         void updateAssessmentForOtherProfessorReturns403() {
-            // Arrange
             User otherProfessor = createOtherProfessor();
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Test notes");
 
-            // Act
-            Void result = api
+            api
                 .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
                 .putAndRead(
                     "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId() + "/assessment",
@@ -760,16 +726,21 @@ class InterviewResourceTest extends AbstractResourceTest {
                     Void.class,
                     403
                 );
-
-            // Assert
-            assertThat(result).isNull();
         }
     }
 
     // --- Helper methods ---
 
     private Applicant createApplicant() {
-        return ApplicantTestData.savedWithRandomEmail(applicantRepository, userRepository);
+        // Create UNSAVED user
+        User applicantUser = new User();
+        applicantUser.setUserId(UUID.randomUUID());
+        applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
+        applicantUser.setFirstName("Test");
+        applicantUser.setLastName("Applicant");
+        applicantUser.setSelectedLanguage("en");
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        return ApplicantTestData.saved(applicantRepository, applicantUser);
     }
 
     private Interviewee createInterviewee(Application application) {
@@ -780,6 +751,37 @@ class InterviewResourceTest extends AbstractResourceTest {
     }
 
     private User createOtherProfessor() {
-        return UserTestData.savedOtherProfessor(userRepository, researchGroupRepository);
+        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
+            researchGroupRepository,
+            "Other Group",
+            "Prof. Smith",
+            "other" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
+            "OTH",
+            "CS",
+            "Other research",
+            "other@example.com",
+            "80333",
+            "CIT",
+            "Other Street",
+            "https://other.tum.de",
+            "ACTIVE"
+        );
+
+        return UserTestData.savedProfessorAll(
+            userRepository,
+            otherResearchGroup,
+            null,
+            "other.prof" + UUID.randomUUID().toString().substring(0, 8) + "@tum.de",
+            "Jane",
+            "Doe",
+            "en",
+            "+49 89 5678",
+            "https://jane.tum.de",
+            "https://linkedin.com/in/jane",
+            "DE",
+            null,
+            "weiblich",
+            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
+        );
     }
 }

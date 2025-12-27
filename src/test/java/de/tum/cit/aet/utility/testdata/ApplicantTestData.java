@@ -90,6 +90,30 @@ public final class ApplicantTestData {
     }
 
     /**
+     * Saves an Applicant for a User that was already saved (with role attached).
+     * Does NOT call newApplicant to avoid re-attaching the APPLICANT role.
+     */
+    public static Applicant savedWithExistingUser(ApplicantRepository repo, User savedUser) {
+        Applicant a = new Applicant();
+        a.setUser(savedUser);
+        a.setStreet("Teststr. 1");
+        a.setPostalCode("12345");
+        a.setCity("Munich");
+        a.setCountry("de");
+        a.setBachelorDegreeName("B.Sc. Computer Science");
+        a.setBachelorGradeUpperLimit("1.0");
+        a.setBachelorGradeLowerLimit("4.0");
+        a.setBachelorGrade("1.7");
+        a.setBachelorUniversity("TUM");
+        a.setMasterDegreeName("M.Sc. Informatics");
+        a.setMasterGradeUpperLimit("1.0");
+        a.setMasterGradeLowerLimit("4.0");
+        a.setMasterGrade("1.3");
+        a.setMasterUniversity("TUM");
+        return repo.save(a);
+    }
+
+    /**
      * Creates and saves an Applicant with a random unique email address.
      * Useful when multiple applicants are needed in a single test.
      */
@@ -106,7 +130,26 @@ public final class ApplicantTestData {
         applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         attachApplicantRole(applicantUser);
         User savedUser = userRepo.save(applicantUser);
-        return saved(repo, savedUser);
+
+        // Create applicant directly without calling newApplicant to avoid re-attaching
+        // role
+        Applicant a = new Applicant();
+        a.setUser(savedUser);
+        a.setStreet("Teststr. 1");
+        a.setPostalCode("12345");
+        a.setCity("Munich");
+        a.setCountry("de");
+        a.setBachelorDegreeName("B.Sc. Computer Science");
+        a.setBachelorGradeUpperLimit("1.0");
+        a.setBachelorGradeLowerLimit("4.0");
+        a.setBachelorGrade("1.7");
+        a.setBachelorUniversity("TUM");
+        a.setMasterDegreeName("M.Sc. Informatics");
+        a.setMasterGradeUpperLimit("1.0");
+        a.setMasterGradeLowerLimit("4.0");
+        a.setMasterGrade("1.3");
+        a.setMasterUniversity("TUM");
+        return repo.save(a);
     }
 
     // --- Attach roles---------------------------------------------------------------------------
