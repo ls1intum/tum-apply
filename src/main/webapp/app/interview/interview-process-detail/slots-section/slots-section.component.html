@@ -63,7 +63,7 @@
                     [slot]="slot"
                     (editSlot)="onEditSlot()"
                     (deleteSlot)="onDeleteSlot(slot)"
-                    (assignApplicant)="onAssignApplicant()"
+                    (assignApplicant)="onAssignApplicant($event)"
                   />
                 }
 
@@ -109,3 +109,13 @@
 }
 
 <jhi-slot-creation-form [(visible)]="showSlotCreationForm" [processId]="processId()" (success)="onSlotsCreated()" />
+
+@if (selectedSlotForAssignment()) {
+  <jhi-assign-applicant-modal
+    [visible]="showAssignModal()"
+    [slot]="selectedSlotForAssignment()!"
+    [processId]="processId()"
+    (visibleChange)="showAssignModal.set($event)"
+    (applicantAssigned)="onApplicantAssigned()"
+  />
+}

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -15,6 +15,7 @@ import { SlotCreationFormComponent } from 'app/interview/interview-process-detai
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
 import { SlotCardComponent } from './slot-card/slot-card.component';
+import { AssignApplicantModalComponent } from './assign-applicant-modal/assign-applicant-modal.component';
 
 interface GroupedSlots {
   date: string;
@@ -35,6 +36,7 @@ interface GroupedSlots {
     DateHeaderComponent,
     SlotCardComponent,
     SlotCreationFormComponent,
+    AssignApplicantModalComponent,
     FontAwesomeModule,
   ],
   templateUrl: './slots-section.component.html',
@@ -42,6 +44,7 @@ interface GroupedSlots {
 export class SlotsSectionComponent {
   // Inputs
   processId = input.required<string>();
+  slotAssigned = output();
 
   // Signals
   slots = signal<InterviewSlotDTO[]>([]);
@@ -51,6 +54,8 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
   showSlotCreationForm = signal(false);
+  showAssignModal = signal(false);
+  selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
   // Computed properties
   /**
    * Groups slots by date and sorts them chronologically
@@ -271,8 +276,14 @@ export class SlotsSectionComponent {
     }
   }
 
-  onAssignApplicant(): void {
-    // TODO: Open Assign Modal
+  onAssignApplicant(slot: InterviewSlotDTO): void {
+    this.selectedSlotForAssignment.set(slot);
+    this.showAssignModal.set(true);
+  }
+
+  onApplicantAssigned(): void {
+    void this.refreshSlots();
+    this.slotAssigned.emit();
   }
 
   private async loadSlots(processId: string): Promise<void> {
