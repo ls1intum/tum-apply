@@ -110,8 +110,7 @@ jobs:
       - name: Run Lighthouse
         run: |
           echo "Running Lighthouse scans..."
-          lhci autorun \
-            --upload.target=filesystem
+          lhci autorun
 
       # ------------------------------------------------------------
       # 7) Cleanup (kill server + client)

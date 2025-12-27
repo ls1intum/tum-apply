@@ -11,10 +11,6 @@
       ],
       "numberOfRuns": 3
     },
-    "upload": {
-      "target": "filesystem",
-      "outputDir": ".lighthouseci"
-    },
     "assert": {
       "assertions": {
         "categories:performance": [
