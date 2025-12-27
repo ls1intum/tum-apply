@@ -51,7 +51,9 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0); // Pagination within the current month
   expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
   showSlotCreationForm = signal(false);
-  // Computed properties
+  hasAnySlots = signal<boolean | undefined>(undefined);
+
+  // Computed Properties (Public)
   /**
    * Groups slots by date and sorts them chronologically
    */
@@ -81,20 +83,28 @@ export class SlotsSectionComponent {
   });
 
   /**
-   * Filters grouped slots to only show the current selected month
+   * Returns the current target year based on month offset
+   */
+  currentYear = computed(() => {
+    const targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
+    return targetDate.getFullYear();
+  });
+
+  /**
+   * Returns the current target month (1-12) based on month offset
+   */
+  currentMonthNumber = computed(() => {
+    const targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
+    return targetDate.getMonth() + 1; // Convert 0-11 to 1-12
+  });
+
+  /**
+   * Returns all grouped slots
    */
   currentMonthSlots = computed(() => {
-    const allDates = this.groupedSlots();
-    const offset = this.currentMonthOffset();
-
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + offset);
-    const targetMonth = targetDate.getMonth();
-    const targetYear = targetDate.getFullYear();
-
-    return allDates.filter(group => {
-      return group.localDate.getMonth() === targetMonth && group.localDate.getFullYear() === targetYear;
-    });
+    return this.groupedSlots();
   });
 
   /**
@@ -113,7 +123,7 @@ export class SlotsSectionComponent {
     return monthDates.slice(start, end);
   });
 
-  // Formats the current month and year for display * Returns the formatted month and year string for the currently selected month.
+  // Formats the current month and year for display
   currentMonth = computed(() => {
     const targetDate = new Date();
     targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
@@ -133,26 +143,25 @@ export class SlotsSectionComponent {
 
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
+  // Constants
+  private readonly MAX_VISIBLE_SLOTS = 3;
+  private readonly DATES_PER_PAGE = 5;
+
+  // Services
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
-  private readonly MAX_VISIBLE_SLOTS = 3;
-  private readonly DATES_PER_PAGE = 5;
-
-  // Convert language change observable to signal
+  // Internal Signals for Locale
   private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
-
-  // Writable signal for current language
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
-  // Locale computed from current language signal
-  private locale = computed(() => {
+  private readonly locale = computed(() => {
     const lang = this.currentLangSignal();
     return lang === 'de' ? 'de-DE' : 'en-US';
   });
 
-  // Effect to update current language when language changes
+  // Effects
   private readonly langChangeEffect = effect(() => {
     const langEvent = this.langChangeSignal();
     if (langEvent?.lang) {
@@ -162,11 +171,18 @@ export class SlotsSectionComponent {
 
   private readonly loadSlotsEffect = effect(() => {
     const id = this.processId();
+    const year = this.currentYear();
+    const month = this.currentMonthNumber();
     if (id) {
-      void this.loadSlots(id);
+      void this.loadSlots(id, year, month);
     }
   });
 
+  private readonly checkGlobalSlotsEffect = effect(() => {
+    void this.checkGlobalSlots();
+  });
+
+  // Methods
   openCreateSlotsModal(): void {
     this.showSlotCreationForm.set(true);
   }
@@ -174,11 +190,12 @@ export class SlotsSectionComponent {
   async refreshSlots(): Promise<void> {
     const id = this.processId();
     if (id) {
-      await this.loadSlots(id);
+      await this.loadSlots(id, this.currentYear(), this.currentMonthNumber());
     }
   }
 
   onSlotsCreated(): void {
+    this.hasAnySlots.set(true);
     void this.refreshSlots();
   }
 
@@ -246,7 +263,7 @@ export class SlotsSectionComponent {
 
   async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
     const slotId = slot.id;
-    if (!slotId) {
+    if (slotId === undefined) {
       return;
     }
 
@@ -254,7 +271,7 @@ export class SlotsSectionComponent {
       this.loading.set(true);
 
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
-      await this.loadSlots(this.processId());
+      await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
@@ -275,14 +292,31 @@ export class SlotsSectionComponent {
     // TODO: Open Assign Modal
   }
 
-  private async loadSlots(processId: string): Promise<void> {
+  private async checkGlobalSlots(): Promise<void> {
+    try {
+      const slots = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId()));
+      if (Array.isArray(slots)) {
+        this.hasAnySlots.set(slots.length > 0);
+      }
+    } catch {
+      /* empty */
+    }
+  }
+
+  private async loadSlots(processId: string, year: number, month: number): Promise<void> {
     try {
       this.loading.set(true);
       this.error.set(false);
 
-      const data = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId));
+      const response = (await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month))) as
+        | InterviewSlotDTO[]
+        | { content: InterviewSlotDTO[] };
 
-      this.slots.set(data);
+      if (Array.isArray(response)) {
+        this.slots.set(response);
+      } else {
+        this.slots.set(response.content);
+      }
     } catch {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);
