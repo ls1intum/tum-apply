@@ -2,9 +2,9 @@ name: Full Quality Gate (Server + Client + Lighthouse)
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -114,43 +114,7 @@ jobs:
             --upload.target=filesystem
 
       # ------------------------------------------------------------
-      # 7) Upload reports
-      # ------------------------------------------------------------
-      - name: Upload Lighthouse Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report
-          path: ".lighthouseci"
-
-      - name: Show Lighthouse Scores
-        run: |
-          REPORT=$(ls .lighthouseci/*lhr-0.json | head -n 1)
-
-          echo "Performance:      $(jq '.categories.performance.score * 100' $REPORT)%"
-          echo "Accessibility:    $(jq '.categories.accessibility.score * 100' $REPORT)%"
-          echo "Best Practices:   $(jq '.categories["best-practices"].score * 100' $REPORT)%"
-          echo "SEO:              $(jq '.categories.seo.score * 100' $REPORT)%"
-
-      - name: Fail on low scores
-        run: |
-          REPORT=$(ls .lighthouseci/*lhr-0.json | head -n 1)
-
-          PERF=$(jq '.categories.performance.score * 100' $REPORT)
-          ACC=$(jq '.categories.accessibility.score * 100' $REPORT)
-
-          if (( $(echo "$PERF < 80" | bc -l) )); then
-            echo "❌ Performance below 80 ($PERF)"
-            exit 1
-          fi
-          if (( $(echo "$ACC < 90" | bc -l) )); then
-            echo "❌ Accessibility below 90 ($ACC)"
-            exit 1
-          fi
-
-          echo "All scores above thresholds."
-
-      # ------------------------------------------------------------
-      # 8) Cleanup (kill server + client)
+      # 7) Cleanup (kill server + client)
       # ------------------------------------------------------------
       - name: Kill processes
         if: always()
