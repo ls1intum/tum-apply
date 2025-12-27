@@ -79,7 +79,7 @@ jobs:
       - name: Start Client
         if: ${{ !vars.AET_CLIENT_URL }}
         run: |
-          npx serve build/resources/main/static -l 4200 > client.log 2>&1 &
+          npx serve build/resources/main/static -l 4200 --single > client.log 2>&1 &
           echo "CLIENT_PID=$!" >> $GITHUB_ENV
           sleep 5
 
