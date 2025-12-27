@@ -12,7 +12,8 @@ import lombok.Setter;
 
 /**
  * Entity representing an applicant who has been added to an interview process.
- * Links an Application to an InterviewProcess and tracks interview related state.
+ * Links an Application to an InterviewProcess and tracks interview related
+ * state.
  */
 @Entity
 @Table(
@@ -45,6 +46,20 @@ public class Interviewee extends AbstractAuditingEntity {
      */
     @Column(name = "last_invited")
     private Instant lastInvited;
+
+    /**
+     * Assessment rating from -2 to 2 (Likert scale).
+     * Null if not yet assessed.
+     */
+    @Column(name = "rating")
+    private Integer rating;
+
+    /**
+     * Professor's evaluation notes for this interviewee.
+     * Null if no notes have been entered.
+     */
+    @Column(name = "assessment_notes", columnDefinition = "TEXT")
+    private String assessmentNotes;
 
     /**
      * Gets the currently scheduled interview slot.

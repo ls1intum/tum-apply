@@ -2,12 +2,14 @@ package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
@@ -41,6 +43,7 @@ public class InterviewService {
     private final ApplicationRepository applicationRepository;
     private final CurrentUserService currentUserService;
     private final JobRepository jobRepository;
+    private final DocumentDictionaryService documentDictionaryService;
     private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
     /**
@@ -551,5 +554,92 @@ public class InterviewService {
             return null;
         }
         return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
+    }
+
+    /**
+     * Retrieves full details for a single interviewee including application and
+     * documents.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @return detailed interviewee information
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public IntervieweeDetailDTO getIntervieweeDetails(UUID processId, UUID intervieweeId) {
+        // 1. Load interviewee with all relations
+        Interviewee interviewee = intervieweeRepository
+            .findByIdAndProcessId(intervieweeId, processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
+
+        // 2. Security: Verify current user has job access
+        Job job = interviewee.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Build and return detail DTO
+        return mapIntervieweeToDetailDTO(interviewee, job);
+    }
+
+    /**
+     * Updates the assessment (rating and/or notes) for an interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @param dto           the update data containing rating and/or notes
+     * @return updated interviewee details
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws BadRequestException     if neither rating nor notes is provided
+     */
+    public IntervieweeDetailDTO updateAssessment(UUID processId, UUID intervieweeId, UpdateAssessmentDTO dto) {
+        // 1. Validate input
+        if (!dto.hasContent()) {
+            throw new BadRequestException("At least one of rating or notes must be provided");
+        }
+
+        // 2. Load interviewee with all relations
+        Interviewee interviewee = intervieweeRepository
+            .findByIdAndProcessId(intervieweeId, processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
+
+        // 3. Security: Verify current user has job access
+        Job job = interviewee.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 4. Update fields if provided
+        if (dto.rating() != null) {
+            interviewee.setRating(dto.rating());
+        }
+        if (dto.notes() != null) {
+            interviewee.setAssessmentNotes(dto.notes());
+        }
+
+        // 5. Save and return updated details
+        Interviewee saved = intervieweeRepository.save(interviewee);
+        return mapIntervieweeToDetailDTO(saved, job);
+    }
+
+    /**
+     * Maps an Interviewee entity to a detailed DTO including application and
+     * documents.
+     */
+    private IntervieweeDetailDTO mapIntervieweeToDetailDTO(Interviewee interviewee, Job job) {
+        Application application = interviewee.getApplication();
+        User user = application.getApplicant().getUser();
+        InterviewSlot slot = interviewee.getScheduledSlot();
+        IntervieweeState state = calculateIntervieweeState(interviewee);
+
+        return new IntervieweeDetailDTO(
+            interviewee.getId(),
+            application.getApplicationId(),
+            mapUserToIntervieweeUserDTO(user),
+            interviewee.getLastInvited(),
+            slot != null ? InterviewSlotDTO.fromEntity(slot) : null,
+            state,
+            interviewee.getRating(),
+            interviewee.getAssessmentNotes(),
+            ApplicationDetailDTO.getFromEntity(application, job),
+            documentDictionaryService.getDocumentIdsDTO(application)
+        );
     }
 }

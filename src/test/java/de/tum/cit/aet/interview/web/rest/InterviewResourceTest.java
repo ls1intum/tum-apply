@@ -4,23 +4,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
+import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
+import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.ApplicantTestData;
+import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
@@ -31,6 +41,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,15 +63,28 @@ class InterviewResourceTest extends AbstractResourceTest {
     private ResearchGroupRepository researchGroupRepository;
 
     @Autowired
+    private IntervieweeRepository intervieweeRepository;
+
+    @Autowired
+    private ApplicationRepository applicationRepository;
+
+    @Autowired
+    private ApplicantRepository applicantRepository;
+
+    @Autowired
     private DatabaseCleaner databaseCleaner;
 
     @Autowired
     private MvcTestClient api;
 
     private User professor;
+    private User employee;
     private Job job;
     private InterviewProcess interviewProcess;
     private ResearchGroup researchGroup;
+    private Applicant testApplicant;
+    private Application testApplication;
+    private Interviewee testInterviewee;
 
     @BeforeEach
     void setup() {
@@ -99,11 +123,25 @@ class InterviewResourceTest extends AbstractResourceTest {
             UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
 
+        employee = UserTestData.savedEmployee(
+            userRepository,
+            researchGroup,
+            "emp.smith@tum.de",
+            "Emily",
+            "Smith",
+            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
+        );
+
         job = JobTestData.saved(jobRepository, professor, researchGroup, "Software Engineer", JobState.PUBLISHED, LocalDate.now());
 
         interviewProcess = new InterviewProcess();
         interviewProcess.setJob(job);
         interviewProcess = interviewProcessRepository.save(interviewProcess);
+
+        // Shared test applicant and interviewee
+        testApplicant = createApplicant();
+        testApplication = ApplicationTestData.savedSent(applicationRepository, job, testApplicant);
+        testInterviewee = createInterviewee(testApplication);
     }
 
     @Test
@@ -114,8 +152,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         assertThat(details.jobId()).isEqualTo(job.getJobId());
         assertThat(details.jobTitle()).isEqualTo(job.getTitle());
-        // Stats will be 0 since we didn't create applications
-        assertThat(details.totalInterviews()).isZero();
+        // Stats reflects the testInterviewee created in setup
+        assertThat(details.totalInterviews()).isEqualTo(1);
     }
 
     @Test
@@ -470,9 +508,273 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Test
     void getSlotsByProcessIdForNonExistentProcessReturnsNotFound() {
-        Void result = api
+        api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
-        assertThat(result).isNull();
+    }
+
+    @Nested
+    class GetIntervieweeDetails {
+
+        @Test
+        void getIntervieweeDetailsAsProfessorReturnsFullDetails() {
+            // Act - use shared testInterviewee
+            IntervieweeDetailDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId(),
+                    null,
+                    IntervieweeDetailDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(testInterviewee.getId());
+            assertThat(result.applicationId()).isEqualTo(testApplication.getApplicationId());
+            assertThat(result.user()).isNotNull();
+            assertThat(result.user().email()).isEqualTo(testApplicant.getUser().getEmail());
+            assertThat(result.application()).isNotNull();
+            assertThat(result.application().motivation()).isEqualTo(testApplication.getMotivation());
+        }
+
+        @Test
+        void getIntervieweeDetailsAsEmployeeReturnsFullDetails() {
+            // Act - use employee role
+            IntervieweeDetailDTO result = api
+                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .getAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId(),
+                    null,
+                    IntervieweeDetailDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(testInterviewee.getId());
+        }
+
+        @Test
+        void getIntervieweeDetailsWithNonExistentIdReturns404() {
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + UUID.randomUUID(),
+                    null,
+                    Void.class,
+                    404
+                );
+        }
+
+        @Test
+        void getIntervieweeDetailsForOtherProfessorReturns403() {
+            User otherProfessor = createOtherProfessor();
+
+            api
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId(),
+                    null,
+                    Void.class,
+                    403
+                );
+        }
+    }
+
+    @Nested
+    class UpdateAssessment {
+
+        @Test
+        void updateAssessmentWithRatingOnlyAsProfessorReturnsUpdatedDetails() {
+            // Arrange - create new interviewee since we modify it
+            Applicant applicant = createApplicant();
+            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+            Interviewee interviewee = createInterviewee(application);
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(2, null);
+
+            // Act
+            IntervieweeDetailDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + interviewee.getId() + "/assessment",
+                    dto,
+                    IntervieweeDetailDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.rating()).isEqualTo(2);
+            assertThat(result.assessmentNotes()).isNull();
+
+            // Verify persistence
+            Interviewee saved = intervieweeRepository.findById(interviewee.getId()).orElseThrow();
+            assertThat(saved.getRating()).isEqualTo(2);
+        }
+
+        @Test
+        void updateAssessmentAsEmployeeReturnsUpdatedDetails() {
+            // Arrange
+            Applicant applicant = createApplicant();
+            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+            Interviewee interviewee = createInterviewee(application);
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Good candidate.");
+
+            // Act - use employee role
+            IntervieweeDetailDTO result = api
+                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + interviewee.getId() + "/assessment",
+                    dto,
+                    IntervieweeDetailDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.rating()).isEqualTo(1);
+            assertThat(result.assessmentNotes()).isEqualTo("Good candidate.");
+        }
+
+        @Test
+        void updateAssessmentWithNotesOnlyReturnsUpdatedDetails() {
+            // Arrange
+            Applicant applicant = createApplicant();
+            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+            Interviewee interviewee = createInterviewee(application);
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, "Good candidate with strong technical skills.");
+
+            // Act
+            IntervieweeDetailDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + interviewee.getId() + "/assessment",
+                    dto,
+                    IntervieweeDetailDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.assessmentNotes()).isEqualTo("Good candidate with strong technical skills.");
+
+            // Verify persistence
+            Interviewee saved = intervieweeRepository.findById(interviewee.getId()).orElseThrow();
+            assertThat(saved.getAssessmentNotes()).isEqualTo("Good candidate with strong technical skills.");
+        }
+
+        @Test
+        void updateAssessmentWithInvalidRatingReturns400() {
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(5, null); // Invalid: > 2
+
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId() + "/assessment",
+                    dto,
+                    Void.class,
+                    400
+                );
+        }
+
+        @Test
+        void updateAssessmentWithEmptyBodyReturns400() {
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, null);
+
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId() + "/assessment",
+                    dto,
+                    Void.class,
+                    400
+                );
+        }
+
+        @Test
+        void updateAssessmentForNonExistentIntervieweeReturns404() {
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Test notes");
+
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + UUID.randomUUID() + "/assessment",
+                    dto,
+                    Void.class,
+                    404
+                );
+        }
+
+        @Test
+        void updateAssessmentForOtherProfessorReturns403() {
+            User otherProfessor = createOtherProfessor();
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Test notes");
+
+            api
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + testInterviewee.getId() + "/assessment",
+                    dto,
+                    Void.class,
+                    403
+                );
+        }
+    }
+
+    // --- Helper methods ---
+
+    private Applicant createApplicant() {
+        // Create UNSAVED user
+        User applicantUser = new User();
+        applicantUser.setUserId(UUID.randomUUID());
+        applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
+        applicantUser.setFirstName("Test");
+        applicantUser.setLastName("Applicant");
+        applicantUser.setSelectedLanguage("en");
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        return ApplicantTestData.saved(applicantRepository, applicantUser);
+    }
+
+    private Interviewee createInterviewee(Application application) {
+        Interviewee interviewee = new Interviewee();
+        interviewee.setInterviewProcess(interviewProcess);
+        interviewee.setApplication(application);
+        return intervieweeRepository.save(interviewee);
+    }
+
+    private User createOtherProfessor() {
+        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
+            researchGroupRepository,
+            "Other Group",
+            "Prof. Smith",
+            "other" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
+            "OTH",
+            "CS",
+            "Other research",
+            "other@example.com",
+            "80333",
+            "CIT",
+            "Other Street",
+            "https://other.tum.de",
+            "ACTIVE"
+        );
+
+        return UserTestData.savedProfessorAll(
+            userRepository,
+            otherResearchGroup,
+            null,
+            "other.prof" + UUID.randomUUID().toString().substring(0, 8) + "@tum.de",
+            "Jane",
+            "Doe",
+            "en",
+            "+49 89 5678",
+            "https://jane.tum.de",
+            "https://linkedin.com/in/jane",
+            "DE",
+            null,
+            "weiblich",
+            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
+        );
     }
 }
