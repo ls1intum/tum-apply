@@ -1,0 +1,441 @@
+name: PR check
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'SECURITY.md'
+      - '../../docs-github/**'
+  push:
+    branches:
+      - main
+    tags: '[0-9]+.[0-9]+.[0-9]+'
+  release:
+    types:
+      - created
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  NODE_VERSION: 24
+  JAVA_VERSION: 25
+  GRADLE_VERSION: '9.1.0'
+  RUN_ALL_TESTS: ${{ (github.event_name == 'pull_request' && github.event.pull_request.draft == false) || github.event.repository.default_branch == github.ref_name }}
+
+jobs:
+  # ============================================
+  # VALIDATION - Schnelle Pre-Checks
+  # ============================================
+
+  validate-pr-title:
+    name: Validate PR Title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - uses: Slashgear/action-check-pr-title@v5.0.1
+        with:
+          regexp: '^`(Usability|Performance|Development|General)`:\s[A-Z].*$'
+
+  validate-gradle-wrapper:
+    name: Validate Gradle Wrapper
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v6
+      - uses: gradle/actions/wrapper-validation@v5
+        with:
+          min-wrapper-count: 1
+
+  # ============================================
+  # SERVER - Tests & Style
+  # ============================================
+
+  server-quality:
+    name: Server Quality & Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: validate-gradle-wrapper
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: |
+            17
+            ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+
+      # --- Code Style Checks ---
+      - name: ✅ Java Code Style (Spotless)
+        run: ./gradlew spotlessCheck -Pprod
+
+      - name: ✅ Java Documentation (Checkstyle)
+        run: ./gradlew checkstyleMain -x webapp -Pprod
+        if: success() || failure()
+
+      - name: ✅ Java Architecture Tests
+        run: ./gradlew test -DincludeTags='ArchitectureTest' -x webapp -Pprod
+        if: success() || failure()
+
+      # --- Unit Tests ---
+      - name: ✅ Java Unit Tests
+        if: ${{ env.RUN_ALL_TESTS }}
+        run: |
+          set -o pipefail
+          ./gradlew --console=plain test jacocoTestReport -x webapp -Pprod jacocoTestCoverageVerification | tee tests.log
+
+      - name: Print Failed Tests
+        if: failure()
+        run: grep "Test >.* FAILED\$" tests.log || echo "No failed tests."
+
+      # --- Upload Results ---
+      - name: Upload JUnit Test Results
+        if: success() || failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: junit-test-results
+          path: build/test-results/test/*.xml
+
+      - name: Upload Coverage Report
+        if: success() || failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-report-server
+          path: build/reports/jacoco/test/html/
+
+      # --- Test Reports ---
+      - name: Annotate Test Results
+        uses: ashley-taylor/junit-report-annotations-action@f9c1a5cbe28479439f82b80a5402a6d3aa1990ac
+        if: always() && github.event.pull_request.user.login != 'dependabot[bot]'
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: build/test-results/test/*.xml
+          numFailures: 99
+
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: success() || failure()
+        with:
+          name: Server Tests & Architecture
+          path: build/test-results/test/*.xml
+          reporter: java-junit
+
+      - name: Post Coverage Comment
+        if: failure() && github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            📊 **Server Test Coverage Too Low**
+
+            **🔍 View coverage locally:**
+            ```bash
+            ./gradlew test jacocoTestReport
+            open build/reports/jacoco/test/html/index.html
+            ```
+
+            **🌐 View coverage from GitHub:**
+            Download the "coverage-report-server" artifact from this workflow run.
+
+  # ============================================
+  # CLIENT - Tests, Style & Compilation
+  # ============================================
+
+  client-quality:
+    name: Client Quality & Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Remove .npmrc for Memory Issue Workaround
+        run: rm .npmrc || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # --- Style Checks ---
+      - name: ✅ TypeScript Formatting
+        run: npm run prettier:check
+
+      - name: ✅ TypeScript Code Style (Lint)
+        run: npm run lint
+        if: success() || failure()
+
+      # --- Compilation ---
+      - name: ✅ TypeScript Compilation
+        run: npm run compile:ts
+
+      - name: ✅ TypeScript Test Files Compilation
+        run: npm run compile:ts:tests
+
+      # --- Tests ---
+      - name: ✅ TypeScript Tests
+        run: npm run test:ci
+
+      - name: ✅ TypeScript Tests (Selection)
+        run: npm run test-diff:ci
+        if: success() || failure()
+
+      # --- Upload Results ---
+      - name: Upload Coverage Report
+        if: success() || failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-report-client
+          path: build/test-results/lcov-report/
+
+      - name: Post Coverage Comment
+        if: failure() && github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            📊 **Client Test Coverage Too Low**
+
+            **🔍 View coverage locally:**
+            ```bash
+            npm run test:ci
+            open build/test-results/lcov-report/index.html
+            ```
+
+            **🌐 View coverage from GitHub:**
+            Download the "coverage-report-client" artifact from this workflow run.
+
+  # ============================================
+  # OPENAPI - Generation & Auto-commit (nur mit Label)
+  # ============================================
+
+  openapi-generation:
+    name: OpenAPI Generation & Auto-commit
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'server')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.BOT_USER_TOKEN }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Start Keycloak
+        run: |
+          docker compose -f src/main/docker/services.yml up -d keycloak
+          echo "Waiting for Keycloak to be healthy..."
+          for i in {1..60}; do
+            if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+              echo "✅ Keycloak is up"
+              break
+            fi
+            echo "Waiting ($i/60)..."
+            sleep 2
+          done
+
+          if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
+            echo "❌ Keycloak did not start in time."
+            docker compose -f src/main/docker/services.yml logs keycloak || true
+            docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
+            exit 1
+          fi
+
+      - name: Generate OpenAPI Spec
+        run: ./gradlew generateApiDocs -x webapp
+
+      - name: Generate Client Code
+        run: ./gradlew openApiGenerate
+
+      - name: Stop Keycloak
+        if: always()
+        run: docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
+
+      - name: Format Generated Client Code
+        run: npx prettier --write ./src/main/webapp/app/generated
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          git add openapi/openapi.yaml src/main/webapp/app/generated -f
+          if git diff --cached --quiet; then
+            echo "no_changes_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "no_changes_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit Changes
+        if: steps.check_changes.outputs.no_changes_detected == 'false'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: update OpenAPI spec and generated client"
+          git push https://x-access-token:${{ secrets.BOT_USER_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.event.pull_request.head.ref }}
+
+      - name: Comment on PR
+        run: |
+          COMMENT=$([[ "${{ steps.check_changes.outputs.no_changes_detected }}" == "true" ]] && echo "🤖 No OpenAPI or client changes needed." || echo "🤖 OpenAPI spec and client code auto-updated and committed.")
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\":\"$COMMENT\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
+
+  # ============================================
+  # SERVER STARTUP - Validierung dass Server startet UND LIGHTHOUSE - Performance & Accessibility Scans
+  # ============================================
+
+  lighthouse-scan:
+    name: Server Startup and Lighthouse Performance & Accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [ client-quality ]
+    if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    env:
+      TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # --- Start Server ---
+      - name: Start Spring Boot Server
+        run: |
+          echo "Starting Spring Boot server..."
+          ./gradlew -Pprod bootRun > server.log 2>&1 &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+
+          echo "Waiting for server to start..."
+          sleep 240
+
+          if grep -q "Application 'TUMApply' is running!" server.log; then
+            echo "✅ Server started successfully!"
+          else
+            echo "❌ Server failed to start!"
+            cat server.log
+            exit 1
+          fi
+
+      # --- Build & Start Client (only if not using remote URL) ---
+      - name: Install Client Dependencies
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: npm ci
+
+      - name: Build Client for Production
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: npm run build
+
+      - name: Start Client Server
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: |
+          npx serve build/resources/main/static -l 4200 --single > client.log 2>&1 &
+          echo "CLIENT_PID=$!" >> $GITHUB_ENV
+          sleep 5
+
+      - name: Wait for Client Ready
+        if: ${{ !vars.AET_CLIENT_URL }}
+        run: |
+          echo "Waiting for client on http://localhost:4200 ..."
+          for i in {1..30}; do
+            if curl -fs http://localhost:4200 > /dev/null; then
+              echo "✅ Client is UP!"
+              exit 0
+            fi
+            echo "Still waiting..."
+            sleep 2
+          done
+          echo "❌ Client did not start in time"
+          exit 1
+
+      # --- Run Lighthouse ---
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.11.x
+
+      - name: ✅ Run Lighthouse Performance & Accessibility Scans
+        run: lhci autorun
+
+      # --- Cleanup ---
+      - name: Cleanup Servers
+        if: always()
+        run: |
+          echo "Stopping servers..."
+          kill $SERVER_PID || true
+          kill $CLIENT_PID || true
+
+      # --- Upload Logs on Failure ---
+      - name: Upload Server Log
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: lighthouse-server-log
+          path: server.log
+
+      - name: Upload Client Log
+        if: failure() && env.CLIENT_PID
+        uses: actions/upload-artifact@v5
+        with:
+          name: lighthouse-client-log
+          path: client.log
