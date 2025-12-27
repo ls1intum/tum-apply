@@ -7,7 +7,7 @@ import java.util.UUID;
 
 /**
  * DTO representing an interview slot.
- * Used to transfer slot information between backend and frontend without
+ * Used to transfer slot information between server and client without
  * exposing the full {@link InterviewSlot} entity.
  * Contains details such as time range, location, stream link, booking state,
  * and optionally the assigned interviewee.
@@ -26,7 +26,7 @@ public record InterviewSlotDTO(
     /**
      * Converts an {@link InterviewSlot} entity into its corresponding
      * {@link InterviewSlotDTO}.
-     * Used to transfer interview slot data to the frontend without exposing the
+     * Used to transfer interview slot data to the client without exposing the
      * full entity.
      * Does not include interviewee information.
      *
