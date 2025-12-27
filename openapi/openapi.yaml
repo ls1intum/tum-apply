@@ -1107,6 +1107,26 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/slots/{slotId}/assign:
+    post:
+      tags: [interview-resource]
+      operationId: assignSlotToInterviewee
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AssignSlotRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -2014,6 +2034,22 @@ components:
         reason: {type: string}
         reviewedAt: {type: string, format: date-time}
         reviewedBy: {$ref: '#/components/schemas/User'}
+    AssignSlotRequestDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+      required: [applicationId]
+    AssignedIntervieweeDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+        email: {type: string}
+        firstName: {type: string}
+        id: {type: string, format: uuid}
+        lastName: {type: string}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
     AuthSessionInfoDTO:
       type: object
       properties:
@@ -2248,6 +2284,7 @@ components:
         endDateTime: {type: string, format: date-time}
         id: {type: string, format: uuid}
         interviewProcessId: {type: string, format: uuid}
+        interviewee: {$ref: '#/components/schemas/AssignedIntervieweeDTO'}
         isBooked: {type: boolean}
         location: {type: string}
         startDateTime: {type: string, format: date-time}

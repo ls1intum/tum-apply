@@ -14,6 +14,8 @@ export * from './applicationEvaluationOverviewListDTO';
 export * from './applicationForApplicantDTO';
 export * from './applicationOverviewDTO';
 export * from './applicationReview';
+export * from './assignSlotRequestDTO';
+export * from './assignedIntervieweeDTO';
 export * from './authSessionInfoDTO';
 export * from './biasedWordDTO';
 export * from './createSlotsDTO';
