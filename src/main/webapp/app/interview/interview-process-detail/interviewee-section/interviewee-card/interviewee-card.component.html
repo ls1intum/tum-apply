@@ -39,9 +39,7 @@
         <!-- Location -->
         <div class="flex items-center gap-2">
           <fa-icon [icon]="isVirtual ? 'video' : 'location-dot'" class="text-xs text-icon-disabled" />
-          <span [jhiTranslate]="isVirtual ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
-            {{ location }}
-          </span>
+          <span>{{ location }}</span>
         </div>
       </div>
     }

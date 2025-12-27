@@ -44,8 +44,8 @@ export class IntervieweeCardComponent {
 
   get location(): string {
     const slot = this.interviewee().scheduledSlot;
-    if (!slot) return '';
-    return slot.location === 'virtual' ? 'virtual' : 'in-person';
+    if (!slot?.location) return '';
+    return slot.location;
   }
 
   get isVirtual(): boolean {
