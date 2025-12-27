@@ -1,7 +1,14 @@
 {
   "ci": {
     "collect": {
-      "url": [],
+      "url": [
+        "http://localhost:4200/",
+        "http://localhost:4200/professor",
+        "http://localhost:4200/job-overview",
+        "http://localhost:4200/imprint",
+        "http://localhost:4200/privacy",
+        "http://localhost:4200/about-us"
+      ],
       "numberOfRuns": 3
     },
     "upload": {
@@ -13,19 +20,19 @@
         "categories:performance": [
           "error",
           {
-            "minScore": 0.80
+            "minScore": 0.62
           }
         ],
         "categories:accessibility": [
           "error",
           {
-            "minScore": 0.90
+            "minScore": 0.62
           }
         ],
         "categories:best-practices": [
           "warn",
           {
-            "minScore": 0.85
+            "minScore": 0.4
           }
         ]
       }

@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v5
 
       # ------------------------------------------------------------
-      # 2) Setup Java + Gradle (backend)
+      # 2) Setup Java + Gradle (server)
       # ------------------------------------------------------------
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
@@ -37,25 +37,25 @@ jobs:
           java-version: '25'
 
       # ------------------------------------------------------------
-      # 3) Start backend server
+      # 3) Start server
       # ------------------------------------------------------------
       - name: Start Spring Boot
-        id: backend
+        id: server
         run: |
-          ./gradlew -Pprod bootRun > backend.log 2>&1 &
-          echo "BACKEND_PID=$!" >> $GITHUB_ENV
+          ./gradlew -Pprod bootRun > server.log 2>&1 &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
 
-          echo "Waiting for backend to start..."
+          echo "Waiting for server to start..."
           sleep 240
 
           # Kill the process to avoid timeout
           kill $SERVER_PID || true
 
-          if grep -q "Application 'TUMApply' is running!" backend.log; then
-            echo "✅ Backend started successfully!"
+          if grep -q "Application 'TUMApply' is running!" server.log; then
+            echo "✅ Server started successfully!"
           else
-            echo "❌ Backend failed to start!"
-            cat backend.log
+            echo "❌ Server failed to start!"
+            cat server.log
             exit 1
           fi
 
@@ -83,19 +83,19 @@ jobs:
           echo "CLIENT_PID=$!" >> $GITHUB_ENV
           sleep 5
 
-      - name: Wait for frontend to be ready
+      - name: Wait for client to be ready
         if: ${{ !vars.AET_CLIENT_URL }}
         run: |
-          echo "Waiting for frontend on http://localhost:4200 ..."
+          echo "Waiting for client on http://localhost:4200 ..."
           for i in {1..30}; do
             if curl -fs http://localhost:4200 > /dev/null; then
-              echo "Frontend is UP!"
+              echo "Client is UP!"
               exit 0
             fi
             echo "Still waiting..."
             sleep 2
           done
-          echo "❌ Frontend did not start in time"
+          echo "❌ Client did not start in time"
           exit 1
 
       # ------------------------------------------------------------
@@ -109,10 +109,9 @@ jobs:
       # ------------------------------------------------------------
       - name: Run Lighthouse
         run: |
-          echo "Running Lighthouse for: $TARGET_URL"
+          echo "Running Lighthouse scans..."
           lhci autorun \
-            --upload.target=filesystem \
-            --collect.url="$TARGET_URL"
+            --upload.target=filesystem
 
       # ------------------------------------------------------------
       # 7) Upload reports
@@ -151,11 +150,11 @@ jobs:
           echo "All scores above thresholds."
 
       # ------------------------------------------------------------
-      # 8) Cleanup (kill backend + frontend)
+      # 8) Cleanup (kill server + client)
       # ------------------------------------------------------------
       - name: Kill processes
         if: always()
         run: |
           echo "Stopping servers..."
-          kill $BACKEND_PID || true
+          kill $SERVER_PID || true
           kill $CLIENT_PID || true
