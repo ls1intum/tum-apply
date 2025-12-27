@@ -1,0 +1,37 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://localhost:4200/",
+        "http://localhost:4200/professor",
+        "http://localhost:4200/job-overview",
+        "http://localhost:4200/imprint",
+        "http://localhost:4200/privacy",
+        "http://localhost:4200/about-us"
+      ],
+      "numberOfRuns": 3
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": [
+          "error",
+          {
+            "minScore": 0.57
+          }
+        ],
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 0.62
+          }
+        ],
+        "categories:best-practices": [
+          "warn",
+          {
+            "minScore": 0.4
+          }
+        ]
+      }
+    }
+  }
+}
