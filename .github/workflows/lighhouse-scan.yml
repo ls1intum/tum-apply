@@ -20,7 +20,7 @@ jobs:
       # 1) Checkout
       # ------------------------------------------------------------
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       # ------------------------------------------------------------
       # 2) Setup Java + Gradle (server)
@@ -63,7 +63,7 @@ jobs:
       # 4) Install Node + build client (only for localhost mode)
       # ------------------------------------------------------------
       - name: Install Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: '${{ env.node }}'
           cache: 'npm'
