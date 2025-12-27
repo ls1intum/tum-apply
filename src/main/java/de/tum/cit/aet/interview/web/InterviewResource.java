@@ -107,12 +107,12 @@ public class InterviewResource {
         log.info("REST request to get slots for interview process: {}, year: {}, month: {}", processId, year, month);
 
         if (year != null && month != null) {
-            // New behavior: return month-filtered slots with PageResponseDTO
+            // Return month-filtered slots with PageResponseDTO
             PageResponseDTO<InterviewSlotDTO> response = interviewService.getSlotsByProcessIdAndMonth(processId, year, month);
             log.info("Returning {} slots for interview process: {} (month: {}/{})", response.getTotalElements(), processId, month, year);
             return ResponseEntity.ok(response);
         } else {
-            // Legacy behavior: return all slots as List
+            // Return all slots as List
             List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
             log.info("Returning {} slots for interview process: {}", slots.size(), processId);
             return ResponseEntity.ok(slots);
