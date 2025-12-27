@@ -10,6 +10,8 @@ import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDTO;
+import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
+import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -35,13 +37,15 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/overview} : Get interview overview for all jobs with interview process.
+     * {@code GET /api/interviews/overview} : Get interview overview for all jobs
+     * with interview process.
      * <p>
      * Returns statistics about applications in different interview states
      * (completed, scheduled, invited, uncontacted) for each job that has
      * an active interview process.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewOverviewDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     *         {@link InterviewOverviewDTO}
      */
     @ProfessorOrEmployee
     @GetMapping("/overview")
@@ -53,10 +57,12 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/processes/{processId}} : Get details for a specific interview process.
+     * {@code GET /api/interviews/processes/{processId}} : Get details for a
+     * specific interview process.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the {@link InterviewOverviewDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         {@link InterviewOverviewDTO}
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}")
@@ -75,7 +81,8 @@ public class InterviewResource {
      *
      * @param processId the ID of the interview process to which the slots belong
      * @param dto       the slot definitions sent from the frontend
-     * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing the created {@link InterviewSlotDTO}s
+     * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing
+     *         the created {@link InterviewSlotDTO}s
      */
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/slots/create")
@@ -87,15 +94,17 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/processes/{processId}/slots} : Get all slots for an interview process.
+     * {@code GET /api/interviews/processes/{processId}/slots} : Get all slots for
+     * an interview process.
      *
      * Retrieves all interview slots for the specified interview process,
      * ordered by start time (ascending).
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewSlotDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     *         {@link InterviewSlotDTO}
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException if the user is not authorized
+     * @throws AccessDeniedException   if the user is not authorized
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
@@ -107,16 +116,19 @@ public class InterviewResource {
     }
 
     /**
-     * {@code POST /api/interviews/processes/{processId}/interviewees} : Add applicants to interview process.
+     * {@code POST /api/interviews/processes/{processId}/interviewees} : Add
+     * applicants to interview process.
      *
      * Creates Interviewee entities for the given application IDs.
      * Duplicates are silently skipped (idempotent operation).
      *
      * @param processId the ID of the interview process
-     * @param dto containing the list of application IDs to add
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and list of created {@link IntervieweeDTO}s
-     * @throws EntityNotFoundException if the process or any application is not found
-     * @throws AccessDeniedException if the user is not authorized
+     * @param dto       containing the list of application IDs to add
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and list
+     *         of created {@link IntervieweeDTO}s
+     * @throws EntityNotFoundException if the process or any application is not
+     *                                 found
+     * @throws AccessDeniedException   if the user is not authorized
      */
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/interviewees")
@@ -134,14 +146,17 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/processes/{processId}/interviewees} : Get all interviewees for an interview process.
+     * {@code GET /api/interviews/processes/{processId}/interviewees} : Get all
+     * interviewees for an interview process.
      *
-     * Retrieves all interviewees for the specified interview process with their details.
+     * Retrieves all interviewees for the specified interview process with their
+     * details.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link IntervieweeDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     *         {@link IntervieweeDTO}
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException if the user is not authorized
+     * @throws AccessDeniedException   if the user is not authorized
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/interviewees")
@@ -155,13 +170,21 @@ public class InterviewResource {
         return ResponseEntity.ok(interviewees);
     }
 
-    /* {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
-     * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
+    /*
+     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview
+     * slot.
+     * Deletes an unbooked interview slot. If the slot is booked, a
+     * BadRequestException is thrown.
      *
      * @param slotId the ID of the slot to delete
+     *
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
+     *
      * @throws EntityNotFoundException if the slot is not found
-     * @throws AccessDeniedException if the user is not authorized to delete this slot
+     *
+     * @throws AccessDeniedException if the user is not authorized to delete this
+     * slot
+     *
      * @throws BadRequestException if the slot is booked
      */
     @ProfessorOrEmployee
@@ -171,5 +194,53 @@ public class InterviewResource {
         interviewService.deleteSlot(slotId);
         log.info("Successfully deleted slot: {}", slotId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * {@code GET
+     * /api/interviews/processes/{processId}/interviewees/{intervieweeId}} :
+     * Get detailed information for a single interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         {@link IntervieweeDetailDTO}
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/processes/{processId}/interviewees/{intervieweeId}")
+    public ResponseEntity<IntervieweeDetailDTO> getIntervieweeDetails(@PathVariable UUID processId, @PathVariable UUID intervieweeId) {
+        log.info("REST request to get interviewee details: {} in process: {}", intervieweeId, processId);
+        IntervieweeDetailDTO details = interviewService.getIntervieweeDetails(processId, intervieweeId);
+        log.info("Returning details for interviewee: {}", intervieweeId);
+        return ResponseEntity.ok(details);
+    }
+
+    /**
+     * {@code PUT
+     * /api/interviews/processes/{processId}/interviewees/{intervieweeId}/assessment}
+     * Update the assessment (rating and/or notes) for an interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @param dto           the update data containing rating and/or notes
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         updated {@link IntervieweeDetailDTO}
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws BadRequestException     if neither rating nor notes is provided
+     */
+    @ProfessorOrEmployee
+    @PutMapping("/processes/{processId}/interviewees/{intervieweeId}/assessment")
+    public ResponseEntity<IntervieweeDetailDTO> updateAssessment(
+        @PathVariable UUID processId,
+        @PathVariable UUID intervieweeId,
+        @Valid @RequestBody UpdateAssessmentDTO dto
+    ) {
+        log.info("REST request to update assessment for interviewee: {} in process: {}", intervieweeId, processId);
+        IntervieweeDetailDTO updated = interviewService.updateAssessment(processId, intervieweeId, dto);
+        log.info("Successfully updated assessment for interviewee: {}", intervieweeId);
+        return ResponseEntity.ok(updated);
     }
 }
