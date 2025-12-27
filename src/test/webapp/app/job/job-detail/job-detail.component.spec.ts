@@ -103,7 +103,12 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: '',
     } as JobDetails);
     component.onEditApplication();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/application/form'], { queryParams: { job: 'job123', application: 'app42' } });
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/application/for'], {
+      queryParams: {
+        job: 'job123',
+        application: 'app42',
+      },
+    });
   });
 
   it('should navigate to view application on onViewApplication()', () => {
@@ -213,7 +218,11 @@ describe('JobDetailComponent', () => {
 
   it('should call loadJobDetailsFromForm() and set jobDetails', async () => {
     const form: JobFormDTO = { title: 'FormJob', description: 'Desc' } as JobFormDTO;
-    await (component as unknown as { loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void> }).loadJobDetailsFromForm(form);
+    await (
+      component as unknown as {
+        loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void>;
+      }
+    ).loadJobDetailsFromForm(form);
     expect(component.jobDetails()).not.toBeNull();
     expect(component.dataLoaded()).toBe(true);
   });
@@ -221,7 +230,11 @@ describe('JobDetailComponent', () => {
   it('should handle error when researchGroupService fails', async () => {
     researchGroupService.getResourceGroupDetails.mockReturnValue(throwError(() => new Error('RG error')));
     const form: JobFormDTO = { title: 'FormJob' } as JobFormDTO;
-    await (component as unknown as { loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void> }).loadJobDetailsFromForm(form);
+    await (
+      component as unknown as {
+        loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void>;
+      }
+    ).loadJobDetailsFromForm(form);
     expect(mockToastService.showError).toHaveBeenCalled();
   });
 
@@ -258,7 +271,11 @@ describe('JobDetailComponent', () => {
 
   it('should compute rightActionButtons for DRAFT and trigger confirm()', () => {
     const confirmSpy = vi.fn();
-    (component as unknown as { deleteConfirmDialog: () => { confirm: () => void } }).deleteConfirmDialog = () => ({ confirm: confirmSpy });
+    (
+      component as unknown as {
+        deleteConfirmDialog: () => { confirm: () => void };
+      }
+    ).deleteConfirmDialog = () => ({ confirm: confirmSpy });
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
     const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.deleteButtonLabel);
@@ -268,7 +285,11 @@ describe('JobDetailComponent', () => {
 
   it('should compute rightActionButtons for PUBLISHED and trigger confirm()', () => {
     const confirmSpy = vi.fn();
-    (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
+    (
+      component as unknown as {
+        closeConfirmDialog: () => { confirm: () => void };
+      }
+    ).closeConfirmDialog = () => ({ confirm: confirmSpy });
     // mock professor ownership
     vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
@@ -338,7 +359,16 @@ describe('JobDetailComponent', () => {
   it('should override researchGroup fields from researchGroupDetails in form mode', () => {
     const form: JobFormDTO = { title: 'Test' } as JobFormDTO;
 
-    const result = (component as any).mapToJobDetails(form, undefined, { email: 'x@test.de', street: 'Main St', city: 'X' }, true);
+    const result = (component as any).mapToJobDetails(
+      form,
+      undefined,
+      {
+        email: 'x@test.de',
+        street: 'Main St',
+        city: 'X',
+      },
+      true,
+    );
 
     expect(result.researchGroupEmail).toBe('x@test.de');
     expect(result.researchGroupStreet).toBe('Main St');
@@ -397,7 +427,10 @@ describe('JobDetailComponent', () => {
   });
 
   it('should trigger onApply from computed button', () => {
-    const job = { belongsToResearchGroup: false, applicationState: undefined } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
+    const job = {
+      belongsToResearchGroup: false,
+      applicationState: undefined,
+    } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onApply');
     const btn = component.rightActionButtons()?.buttons[0];
