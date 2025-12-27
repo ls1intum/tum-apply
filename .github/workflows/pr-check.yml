@@ -335,7 +335,6 @@ jobs:
     name: Server Startup and Lighthouse Performance & Accessibility
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [ client-quality ]
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     env:
       TARGET_URL: ${{ vars.AET_CLIENT_URL || 'http://localhost:4200' }}
