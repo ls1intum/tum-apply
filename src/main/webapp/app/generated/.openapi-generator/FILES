@@ -2,6 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/aiResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
