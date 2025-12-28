@@ -36,7 +36,7 @@ public interface InterviewProcessRepository extends JpaRepository<InterviewProce
      */
     @Query(
         """
-        SELECT DISTINCT ip
+        SELECT ip
         FROM InterviewProcess ip
         JOIN ip.job j
         JOIN j.researchGroup rg

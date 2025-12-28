@@ -235,12 +235,12 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
             SELECT a.job, a.state, COUNT(a)
             FROM Application a
-            WHERE a.job IN (
-                SELECT ip.job FROM InterviewProcess ip
+            WHERE EXISTS (
+                SELECT 1 FROM InterviewProcess ip
                 JOIN ip.job j
                 JOIN j.researchGroup rg
                 JOIN rg.userRoles ur
-                WHERE ur.user.userId = :userId
+                WHERE ip.job = a.job AND ur.user.userId = :userId
             )
             GROUP BY a.job, a.state
         """
