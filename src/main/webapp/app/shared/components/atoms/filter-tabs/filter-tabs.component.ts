@@ -39,6 +39,9 @@ export class FilterTabsComponent<T extends string = string> {
   }
 
   onTabClick(key: T): void {
+    if (this.activeKey() === key) {
+      return;
+    }
     this.filterChange.emit(key);
   }
 }
