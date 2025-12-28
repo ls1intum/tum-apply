@@ -579,3 +579,19 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   font-weight: bold;
   color: var(--p-primary-color);
 }
+
+/* -------------------------------
+   Identity Provider Brand Colors
+------------------------------- */
+.fa-apple {
+  color: #000000 !important;
+  font-size: 1.25em !important; // Slightly increase size to match Google icon
+}
+
+.tum-apply-dark-mode .fa-apple {
+  color: #ffffff !important;
+}
+
+.fa-google {
+  color: #4285f4 !important;
+}
