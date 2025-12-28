@@ -116,16 +116,8 @@ public class InterviewResource {
             pageDTO.pageSize()
         );
 
-        PageResponseDTO<InterviewSlotDTO> response;
-        if (year != null && month != null) {
-            // Return month-filtered slots with pagination
-            response = interviewService.getSlotsByProcessIdAndMonth(processId, year, month, pageDTO);
-            log.info("Returning {} slots for interview process: {} (month: {}/{})", response.getTotalElements(), processId, month, year);
-        } else {
-            // Return all slots with pagination
-            response = interviewService.getSlotsByProcessId(processId, pageDTO);
-            log.info("Returning {} slots for interview process: {}", response.getTotalElements(), processId);
-        }
+        PageResponseDTO<InterviewSlotDTO> response = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
+        log.info("Returning {} slots for interview process: {}", response.getTotalElements(), processId);
 
         return ResponseEntity.ok(response);
     }
