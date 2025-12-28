@@ -46,7 +46,7 @@
   } @else {
     <div class="flex flex-col gap-2 -ml-3">
       @for (interviewee of filteredInterviewees(); track interviewee.id) {
-        <jhi-interviewee-card [interviewee]="interviewee" />
+        <jhi-interviewee-card [interviewee]="interviewee" [processId]="processId()" />
       }
     </div>
   }

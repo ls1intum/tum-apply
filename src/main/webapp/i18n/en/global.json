@@ -38,7 +38,8 @@
       "about-us": "TumApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
-        "detail": "Interview - {{jobTitle}}"
+        "detail": "Interview - {{jobTitle}}",
+        "assessment": "TUMApply - Interview Assessment"
       }
     },
     "menu": {

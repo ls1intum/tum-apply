@@ -216,6 +216,56 @@
           "detail": "Bewerber konnten nicht hinzugefügt werden"
         }
       }
+    },
+    "assessment": {
+      "title": "Interview Bewertung",
+      "headerPrefix": "Interview",
+      "back": "Zurück zur Übersicht",
+      "saving": "Speichern...",
+      "saved": "Gespeichert",
+      "lastSaved": "Zuletzt gespeichert",
+      "rating": {
+        "label": "Bewertung",
+        "empty": "Noch nicht bewertet"
+      },
+      "notes": {
+        "label": "Interview Notiz",
+        "placeholder": "Bewertungsnotizen hier hinzufügen...",
+        "save": "Notiz Speichern",
+        "empty": "Noch keine Notizen hinzugefügt."
+      },
+      "error": {
+        "saveFailed": {
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Bewertung konnte nicht gespeichert werden"
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bewerber konnte nicht geladen werden"
+        },
+        "notFound": {
+          "summary": "Nicht gefunden",
+          "detail": "Bewerber nicht gefunden"
+        }
+      }
+    },
+    "application": {
+      "title": "Bewerbung",
+      "motivation": {
+        "label": "Motivation"
+      },
+      "specialSkills": {
+        "label": "Besondere Fähigkeiten"
+      },
+      "interests": {
+        "label": "Interessen"
+      },
+      "documents": {
+        "label": "Dokumente"
+      },
+      "user": {
+        "label": "Bewerberinformationen"
+      }
     }
   }
 }

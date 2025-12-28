@@ -1,4 +1,7 @@
-<div class="flex items-center justify-between p-3 bg-background-default border rounded border-border-default h-16">
+<div
+  class="flex items-center justify-between p-3 bg-background-default border rounded border-border-default h-16 cursor-pointer hover:bg-primary-50 transition-colors"
+  (click)="navigateToAssessment()"
+>
   <div class="flex items-center">
     <!-- Name -->
     <span class="text-sm font-bold text-text-primary w-24 md:w-48 lg:w-64 truncate">

@@ -58,9 +58,11 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   // Check if error message should be displayed
   isOverCharLimit = computed(() => {
+    const limit = this.characterLimit();
+    if (limit === undefined || limit === null) {
+      return false;
+    }
     const count = this.characterCount();
-    const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
-
     return count - limit >= STANDARD_CHARACTER_BUFFER;
   });
   isEmpty = computed(() => extractTextFromHtml(this.htmlValue()) === '' && !this.isFocused() && this.isTouched());
@@ -71,15 +73,19 @@ export class EditorComponent extends BaseInputDirective<string> {
     if (this.isEmpty() && this.required()) {
       return this.translate.instant('global.input.error.required');
     }
-    if (this.isOverCharLimit()) {
+    if (this.isOverCharLimit() && this.characterLimit() !== undefined) {
       return this.translate.instant('global.input.error.maxLength', { max: this.characterLimit() });
     }
     return null;
   });
 
   charCounterColor = computed(() => {
+    const limit = this.characterLimit();
+    if (limit === undefined || limit === null) {
+      return 'char-counter-normal';
+    }
+
     const count = this.characterCount();
-    const limit = this.characterLimit() ?? STANDARD_CHARACTER_LIMIT;
     const over = count - limit;
 
     if (over > 0 && over < STANDARD_CHARACTER_BUFFER) {
@@ -136,17 +142,20 @@ export class EditorComponent extends BaseInputDirective<string> {
   textChanged(event: ContentChange): void {
     const { source, oldDelta, editor } = event;
 
-    const maxChars = (this.characterLimit() ?? STANDARD_CHARACTER_LIMIT) + STANDARD_CHARACTER_BUFFER;
-
-    if (source !== 'user') return;
-    const newTextLength = extractTextFromHtml(editor.root.innerHTML).length;
-    if (newTextLength > maxChars) {
-      const range = editor.getSelection();
-      editor.setContents(oldDelta, 'silent');
-      if (range) {
-        editor.setSelection(range.index, range.length, 'silent');
+    const limit = this.characterLimit();
+    // Only check limit if it is defined
+    if (limit !== undefined && limit !== null) {
+      const maxChars = limit + STANDARD_CHARACTER_BUFFER;
+      if (source !== 'user') return;
+      const newTextLength = extractTextFromHtml(editor.root.innerHTML).length;
+      if (newTextLength > maxChars) {
+        const range = editor.getSelection();
+        editor.setContents(oldDelta, 'silent');
+        if (range) {
+          editor.setSelection(range.index, range.length, 'silent');
+        }
+        return;
       }
-      return;
     }
 
     const html = editor.root.innerHTML;

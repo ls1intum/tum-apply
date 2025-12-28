@@ -62,6 +62,7 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
         SELECT i FROM Interviewee i
         JOIN FETCH i.interviewProcess ip
         JOIN FETCH ip.job j
+        LEFT JOIN FETCH i.slots
         WHERE i.id = :intervieweeId
         AND ip.id = :processId
         """
