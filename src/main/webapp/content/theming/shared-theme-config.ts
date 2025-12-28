@@ -388,6 +388,11 @@ export const sharedComponentConfig = {
       background: '{background.default}',
     },
   },
+  menu: {
+    root: {
+      background: '{background.default}',
+    },
+  },
 };
 
 /**

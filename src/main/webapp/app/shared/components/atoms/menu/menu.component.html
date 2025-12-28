@@ -2,12 +2,7 @@
   <p-menu #menu [model]="menuModel()" [popup]="popup()" [appendTo]="appendTo()">
     <ng-template pTemplate="item" let-item>
       <div class="p-menu-item-content">
-        <a
-          class="p-menu-item-link"
-          [class]="getSeverityClass(item.data)"
-          (click)="item.command && item.command($event)"
-          [class.disabled]="item.disabled"
-        >
+        <a class="p-menu-item-link" [ngClass]="item.styleClass">
           @if (item.icon) {
             <span class="p-menu-item-icon">
               <fa-icon [icon]="item.icon" />
@@ -15,7 +10,7 @@
           }
           <span class="p-menu-item-label">
             @if (shouldTranslate()) {
-              <span jhiTranslate="{{ item.label }}"></span>
+              <span [jhiTranslate]="item.label"></span>
             } @else {
               {{ item.label }}
             }

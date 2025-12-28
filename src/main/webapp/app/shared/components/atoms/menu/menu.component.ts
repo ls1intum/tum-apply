@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { Menu } from 'primeng/menu';
-import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 
 import { ButtonColor } from '../button/button.component';
@@ -16,15 +15,13 @@ export interface JhiMenuItem {
   command?: () => void;
   severity?: MenuItemSeverity;
   disabled?: boolean;
-  separator?: boolean;
-  visible?: boolean;
   styleClass?: string;
 }
 
 @Component({
   selector: 'jhi-menu',
   templateUrl: './menu.component.html',
-  imports: [CommonModule, MenuModule, FontAwesomeModule, TranslateModule, TranslateDirective],
+  imports: [CommonModule, MenuModule, FontAwesomeModule, TranslateDirective],
 })
 export class MenuComponent {
   items = input.required<JhiMenuItem[]>();
@@ -39,37 +36,22 @@ export class MenuComponent {
     return this.items().map(item => ({
       label: item.label,
       icon: item.icon,
-      command: item.command,
       disabled: item.disabled,
-      separator: item.separator,
-      visible: item.visible,
-      data: item,
+      styleClass: this.buildStyleClass(item),
+      command: () => this.handleCommand(item),
     }));
   });
 
-  // Get severity class for styling
-  getSeverityClass(item: JhiMenuItem): string {
-    const classes: string[] = [];
-
-    if (item.styleClass !== undefined && item.styleClass !== '') {
-      classes.push(item.styleClass);
-    }
-
-    if (item.severity !== undefined) {
-      const severityClassMap: Record<MenuItemSeverity, string> = {
-        primary: 'menu-primary',
-        secondary: 'menu-secondary',
-        contrast: 'menu-contrast',
-        success: 'menu-success',
-        warn: 'menu-warn',
-        danger: 'menu-danger',
-        info: 'menu-info',
-      };
-      classes.push(severityClassMap[item.severity]);
-    }
-
-    return classes.join(' ');
-  }
+  // Map severity to CSS class
+  private readonly severityClassMap: Record<MenuItemSeverity, string> = {
+    primary: 'menu-primary',
+    secondary: 'menu-secondary',
+    contrast: 'menu-contrast',
+    success: 'menu-success',
+    warn: 'menu-warn',
+    danger: 'menu-danger',
+    info: 'menu-info',
+  };
 
   toggle(event: Event): void {
     this.menu().toggle(event);
@@ -81,5 +63,35 @@ export class MenuComponent {
 
   hide(): void {
     this.menu().hide();
+  }
+
+  private handleCommand(item: JhiMenuItem): void {
+    if (item.disabled === true) {
+      return;
+    }
+    if (item.command !== undefined) {
+      item.command();
+    }
+
+    this.hide();
+  }
+
+  // Build style class string for item
+  private buildStyleClass(item: JhiMenuItem): string {
+    const parts: string[] = [];
+
+    if (item.styleClass !== undefined && item.styleClass !== '') {
+      parts.push(item.styleClass);
+    }
+
+    if (item.severity !== undefined) {
+      parts.push(this.severityClassMap[item.severity]);
+    }
+
+    if (item.disabled === true) {
+      parts.push('pointer-events-none text-text-disabled cursor-not-allowed');
+    }
+
+    return parts.length > 0 ? parts.join(' ') : '';
   }
 }
