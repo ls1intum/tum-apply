@@ -23,7 +23,8 @@ export class ThemeService {
   }
 
   getInitialTheme(): ThemeOption {
-    const syncWithSystem = localStorage.getItem('tumApplySyncWithSystem') === 'true';
+    const storedSync = localStorage.getItem('tumApplySyncWithSystem');
+    const syncWithSystem = storedSync === null ? true : storedSync === 'true';
 
     if (syncWithSystem) {
       return this.getSystemTheme();
@@ -48,7 +49,8 @@ export class ThemeService {
   }
 
   getInitialSyncWithSystem(): boolean {
-    return localStorage.getItem('tumApplySyncWithSystem') === 'true';
+    const stored = localStorage.getItem('tumApplySyncWithSystem');
+    return stored === null ? true : stored === 'true';
   }
 
   getSystemTheme(): 'light' | 'dark' {
