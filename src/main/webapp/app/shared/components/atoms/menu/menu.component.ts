@@ -38,7 +38,9 @@ export class MenuComponent {
       icon: item.icon,
       disabled: item.disabled,
       styleClass: this.buildStyleClass(item),
-      command: () => this.handleCommand(item),
+      command: () => {
+        this.handleCommand(item);
+      },
     }));
   });
 

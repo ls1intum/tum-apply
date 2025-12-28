@@ -110,7 +110,7 @@ export class JobDetailComponent {
 
   pdfExportService = inject(PdfExportResourceApiService);
 
-  readonly primaryActionButton = computed<Button | null>(() => {
+  readonly primaryActionButton = computed((): Button | null => {
     if (this.previewData()) {
       return null;
     }
@@ -380,7 +380,7 @@ export class JobDetailComponent {
       items.push({
         label: 'button.downloadPDF',
         icon: 'file-pdf',
-        severity: 'secondary',
+        severity: 'primary',
         command: () => {
           void this.onDownloadPDF();
         },
