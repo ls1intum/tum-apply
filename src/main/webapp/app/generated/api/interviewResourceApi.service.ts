@@ -25,6 +25,8 @@ import { InterviewOverviewDTO } from '../model/interviewOverviewDTO';
 import { InterviewSlotDTO } from '../model/interviewSlotDTO';
 // @ts-ignore
 import { IntervieweeDTO } from '../model/intervieweeDTO';
+// @ts-ignore
+import { PageResponseDTOInterviewSlotDTO } from '../model/pageResponseDTOInterviewSlotDTO';
 
 // @ts-ignore
 import { BASE_PATH }                     from '../variables';
@@ -381,13 +383,15 @@ export class InterviewResourceApiService extends BaseService {
      * @param processId 
      * @param year 
      * @param month 
+     * @param pageSize 
+     * @param pageNumber 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<object>;
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<object>>;
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<object>>;
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOInterviewSlotDTO>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOInterviewSlotDTO>>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOInterviewSlotDTO>>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling getSlotsByProcessId.');
         }
@@ -397,6 +401,10 @@ export class InterviewResourceApiService extends BaseService {
           <any>year, 'year');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>month, 'month');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageSize, 'pageSize');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageNumber, 'pageNumber');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -424,7 +432,7 @@ export class InterviewResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots`;
-        return this.httpClient.request<object>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageResponseDTOInterviewSlotDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
