@@ -23,10 +23,10 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { JobPreviewRequest, UserShortDTO } from 'app/generated';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 import * as DropDownOptions from '../dropdown-options';
-import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
-import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -70,10 +70,10 @@ export interface JobDetails {
     SharedModule,
     TranslateModule,
     TranslateDirective,
-    ButtonGroupComponent,
     TagComponent,
     ConfirmDialog,
     TooltipModule,
+    MenuComponent,
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
@@ -110,124 +110,74 @@ export class JobDetailComponent {
 
   pdfExportService = inject(PdfExportResourceApiService);
 
-  readonly pdfButton: Button = {
-    label: 'button.downloadPDF',
-    severity: 'secondary',
-    variant: 'outlined',
-    onClick: () => {
-      void this.onDownloadPDF();
-    },
-    disabled: false,
-    shouldTranslate: true,
-  };
-
-  readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
+  readonly primaryActionButton = computed<Button | null>(() => {
     if (this.previewData()) {
-      return {
-        direction: 'horizontal',
-        buttons: [this.pdfButton],
-      };
+      return null;
     }
     const job = this.jobDetails();
     if (!job) return null;
 
-    const addPdfButton = (buttons: Button[]): Button[] => {
-      return [...buttons, this.pdfButton];
-    };
-
-    // Case 1: Not a research group member or professor → show Apply button
+    // Case 1: Not a research group member or professor → show Apply/Edit/View button
     if (!job.belongsToResearchGroup && !this.isProfessorOrEmployee()) {
       switch (job.applicationState) {
         case undefined:
           return {
-            direction: 'horizontal',
-            buttons: addPdfButton([
-              {
-                label: 'button.apply',
-                severity: 'primary',
-                onClick: () => this.onApply(),
-                disabled: false,
-                shouldTranslate: true,
-              },
-            ]),
+            label: 'button.apply',
+            severity: 'primary',
+            onClick: () => this.onApply(),
+            disabled: false,
+            shouldTranslate: true,
           };
         case ApplicationStateEnum.Saved:
           return {
-            direction: 'horizontal',
-            buttons: addPdfButton([
-              {
-                label: 'button.edit',
-                severity: 'primary',
-                onClick: () => this.onEditApplication(),
-                disabled: false,
-                shouldTranslate: true,
-                icon: 'pencil',
-              },
-            ]),
-          };
-        default:
-          return {
-            direction: 'horizontal',
-            buttons: addPdfButton([
-              {
-                label: 'button.view',
-                severity: 'secondary',
-                onClick: () => this.onViewApplication(),
-                disabled: false,
-                shouldTranslate: true,
-                variant: 'outlined',
-              },
-            ]),
-          };
-      }
-    }
-    // Case 2: DRAFT → show Edit + Delete buttons
-    if (job.jobState === 'DRAFT') {
-      return {
-        direction: 'horizontal',
-        buttons: addPdfButton([
-          {
             label: 'button.edit',
             severity: 'primary',
-            onClick: () => this.onEditJob(),
+            onClick: () => this.onEditApplication(),
             disabled: false,
             shouldTranslate: true,
             icon: 'pencil',
-          },
-          {
-            label: this.deleteButtonLabel,
-            severity: this.deleteButtonSeverity,
-            icon: this.deleteButtonIcon,
-            onClick: () => {
-              this.deleteConfirmDialog()?.confirm();
-            },
+          };
+        default:
+          return {
+            label: 'button.view',
+            severity: 'secondary',
+            onClick: () => this.onViewApplication(),
             disabled: false,
             shouldTranslate: true,
-          },
-        ]),
+            variant: 'outlined',
+          };
+      }
+    }
+    // Case 2: DRAFT → show Edit button
+    if (job.jobState === 'DRAFT') {
+      return {
+        label: 'button.edit',
+        severity: 'primary',
+        onClick: () => this.onEditJob(),
+        disabled: false,
+        shouldTranslate: true,
+        icon: 'pencil',
       };
     }
     // Case 3: PUBLISHED and belongs to professor → show Close button
     if (job.jobState === 'PUBLISHED' && this.isOwnerOfJob(job)) {
       return {
-        direction: 'horizontal',
-        buttons: addPdfButton([
-          {
-            label: this.closeButtonLabel,
-            severity: this.closeButtonSeverity,
-            icon: this.closeButtonIcon,
-            variant: 'outlined',
-            onClick: () => {
-              this.closeConfirmDialog()?.confirm();
-            },
-            disabled: false,
-            shouldTranslate: true,
-          },
-        ]),
+        label: this.closeButtonLabel,
+        severity: this.closeButtonSeverity,
+        icon: this.closeButtonIcon,
+        onClick: () => {
+          this.closeConfirmDialog()?.confirm();
+        },
+        disabled: false,
+        shouldTranslate: true,
       };
     }
-    // Else → no buttons
+    // Else → no primary button
     return null;
+  });
+
+  readonly showPdfButtonForPreview = computed<boolean>(() => {
+    return !!this.previewData();
   });
 
   readonly stateTextMap = new Map<string, string>([
@@ -237,11 +187,11 @@ export class JobDetailComponent {
     ['APPLICANT_FOUND', 'jobState.applicantFound'],
   ]);
 
-  readonly stateSeverityMap = new Map<string, 'success' | 'warn' | 'danger' | 'info'>([
+  readonly stateSeverityMap = new Map<string, 'success' | 'info' | 'contrast' | 'secondary'>([
     ['DRAFT', 'info'],
-    ['PUBLISHED', 'success'],
-    ['CLOSED', 'danger'],
-    ['APPLICANT_FOUND', 'warn'],
+    ['PUBLISHED', 'secondary'],
+    ['CLOSED', 'contrast'],
+    ['APPLICANT_FOUND', 'success'],
   ]);
 
   private jobResourceService = inject(JobResourceApiService);
@@ -413,6 +363,39 @@ export class JobDetailComponent {
     }
   }
 
+  getMenuItems(): JhiMenuItem[] {
+    const job = this.jobDetails();
+    const items: JhiMenuItem[] = [];
+
+    // Always add PDF download option (except for preview data, where it's shown separately)
+    if (!this.previewData()) {
+      items.push({
+        label: 'button.downloadPDF',
+        icon: 'file-pdf',
+        severity: 'secondary',
+        command: () => {
+          void this.onDownloadPDF();
+        },
+      });
+    }
+
+    if (!job) return items;
+
+    // Case 2: DRAFT → add Delete button to menu
+    if (job.jobState === 'DRAFT' && job.belongsToResearchGroup) {
+      items.push({
+        label: this.deleteButtonLabel,
+        icon: this.deleteButtonIcon,
+        severity: this.deleteButtonSeverity,
+        command: () => {
+          this.deleteConfirmDialog()?.confirm();
+        },
+      });
+    }
+
+    return items;
+  }
+
   async init(): Promise<void> {
     try {
       // Get logged-in user
@@ -452,7 +435,7 @@ export class JobDetailComponent {
     return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
   }
 
-  get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
+  get jobStateColor(): 'success' | 'info' | 'contrast' | 'secondary' {
     const jobState = this.currentJobState;
     return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
   }

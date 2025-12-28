@@ -3,66 +3,66 @@
     <h1 jhiTranslate="evaluation.overviewHeader">Applications - Overview</h1>
   </div>
 
-  <div class="table-wrapper">
-    <jhi-search-filter-sort-bar
-      [searchText]="'evaluation.searchFilterSortBar.searchText' | translate"
-      [totalRecords]="0"
-      [singleEntity]="'evaluation.application' | translate"
-      [multipleEntities]="'evaluation.applications' | translate"
-      (searchOutput)="loadOnSearchEmit($event)"
-      (filterOutput)="loadOnFilterEmit($event)"
-      (sortOutput)="loadOnSortEmit($event)"
-      [filters]="[
-        {
-          filterId: 'jobTitle',
-          filterLabel: 'evaluation.tableHeaders.job',
-          filterSearchPlaceholder: 'evaluation.filterOptions.jobSearchPlaceholder',
-          filterOptions: allAvailableJobNames(),
-        },
-        {
-          filterId: 'status',
-          filterLabel: 'evaluation.tableHeaders.status',
-          filterSearchPlaceholder: 'evaluation.filterOptions.stateSearchPlaceholder',
-          filterOptions: availableStatusLabels,
-          shouldTranslateOptions: true,
-        },
-      ]"
-      [sortableFields]="sortableFields"
-    />
+  <jhi-search-filter-sort-bar
+    [searchText]="'evaluation.searchFilterSortBar.searchText' | translate"
+    [totalRecords]="0"
+    [singleEntity]="'evaluation.application' | translate"
+    [multipleEntities]="'evaluation.applications' | translate"
+    (searchOutput)="loadOnSearchEmit($event)"
+    (filterOutput)="loadOnFilterEmit($event)"
+    (sortOutput)="loadOnSortEmit($event)"
+    [filters]="[
+      {
+        filterId: 'jobTitle',
+        filterLabel: 'evaluation.tableHeaders.job',
+        filterSearchPlaceholder: 'evaluation.filterOptions.jobSearchPlaceholder',
+        filterOptions: allAvailableJobNames(),
+      },
+      {
+        filterId: 'status',
+        filterLabel: 'evaluation.tableHeaders.status',
+        filterSearchPlaceholder: 'evaluation.filterOptions.stateSearchPlaceholder',
+        filterOptions: availableStatusLabels,
+        shouldTranslateOptions: true,
+      },
+    ]"
+    [sortableFields]="sortableFields"
+  />
 
-    <div class="flex justify-between items-start gap-4 mt-4">
-      <div
-        class="text-text-secondary text-md"
-        jhiTranslate="entity.filters.recordsFound"
-        [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? ('job' | translate) : ('jobs' | translate) }"
-      ></div>
-    </div>
+  <div class="flex items-start gap-4 mt-4">
+    <div
+      class="text-text-secondary text-md"
+      jhiTranslate="entity.filters.recordsFound"
+      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? ('job' | translate) : ('jobs' | translate) }"
+    ></div>
+  </div>
 
+  <div class="my-positions-container">
     <jhi-dynamic-table
       [columns]="columns()"
       [data]="pageData()"
       [totalRecords]="total()"
       [page]="page()"
       [rows]="pageSize()"
-      [selectable]="true"
+      [selectable]="false"
       (lazyLoad)="loadOnTableEmit($event)"
     />
-
-    <ng-template #appliedAtTemplate let-application>
-      {{ (application.appliedAt?.toString() | localizedDate) || '-' }}
-    </ng-template>
-
-    <ng-template #actionTemplate let-application>
-      <jhi-button icon="eye" [tooltip]="'button.view' | translate" variant="text" (click)="navigateToDetail(application)" />
-    </ng-template>
-
-    <ng-template #stateTemplate let-application>
-      <jhi-tag
-        [text]="'evaluation.statusBadge.' + (application.state || '') | translate"
-        [color]="stateSeverityMap()[application.state] || 'info'"
-        [tooltipText]="'evaluation.statusBadge.tooltips.' + (application.state || '')"
-        width="7rem"
-      />
-    </ng-template>
   </div>
+
+  <ng-template #appliedAtTemplate let-application>
+    {{ (application.appliedAt?.toString() | localizedDate) || '-' }}
+  </ng-template>
+
+  <ng-template #actionTemplate let-application>
+    <jhi-button icon="eye" [tooltip]="'button.view' | translate" variant="text" (click)="navigateToDetail(application)" />
+  </ng-template>
+
+  <ng-template #stateTemplate let-application>
+    <jhi-tag
+      [text]="'evaluation.statusBadge.' + (application.state || '') | translate"
+      [color]="stateSeverityMap()[application.state] || 'info'"
+      [tooltipText]="'evaluation.statusBadge.tooltips.' + (application.state || '')"
+      width="7rem"
+    />
+  </ng-template>
 </div>

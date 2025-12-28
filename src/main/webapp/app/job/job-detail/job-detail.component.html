@@ -40,18 +40,49 @@
               {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
             >
           </div>
+          <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
+          @if (previewData()) {
+            <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
+          } @else if (job.belongsToResearchGroup) {
+            <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
+          }
         </div>
       </div>
       <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
-        @if (rightActionButtons()) {
-          <jhi-button-group [data]="rightActionButtons()!" [shouldTranslate]="true" />
-        }
-        <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
-        @if (previewData()) {
-          <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
-        } @else if (job.belongsToResearchGroup) {
-          <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
-        }
+        <div class="flex items-center gap-2">
+          @if (primaryActionButton()) {
+            <jhi-button
+              [label]="primaryActionButton()!.label"
+              [severity]="primaryActionButton()!.severity"
+              [variant]="primaryActionButton()!.variant"
+              [icon]="primaryActionButton()!.icon"
+              [disabled]="primaryActionButton()!.disabled"
+              [shouldTranslate]="primaryActionButton()!.shouldTranslate ?? false"
+              (click)="primaryActionButton()!.onClick()"
+            />
+          }
+          @if (showPdfButtonForPreview()) {
+            <jhi-button
+              label="button.downloadPDF"
+              severity="secondary"
+              variant="outlined"
+              icon="file-pdf"
+              [shouldTranslate]="true"
+              (click)="onDownloadPDF()"
+            />
+          }
+          @if (getMenuItems().length > 0) {
+            <jhi-button
+              severity="secondary"
+              variant="outlined"
+              icon="ellipsis-vertical"
+              label="button.actions"
+              [shouldTranslate]="true"
+              (click)="menu.toggle($event)"
+            />
+            <jhi-menu #menu [items]="getMenuItems()" [shouldTranslate]="true" />
+          }
+        </div>
       </div>
     </div>
 
