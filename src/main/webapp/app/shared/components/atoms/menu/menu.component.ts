@@ -29,7 +29,7 @@ export interface JhiMenuItem {
 export class MenuComponent {
   items = input.required<JhiMenuItem[]>();
   popup = input<boolean>(true);
-  appendTo = input<string | HTMLElement>('body');
+  appendTo = input<HTMLElement | string>('body');
   shouldTranslate = input<boolean>(false);
 
   menu = viewChild.required<Menu>('menu');

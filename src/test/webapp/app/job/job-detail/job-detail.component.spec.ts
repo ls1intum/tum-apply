@@ -6,6 +6,7 @@ import { Location } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
+import { JhiMenuItem } from 'app/shared/components/atoms/menu/menu.component';
 import { User } from 'app/core/auth/account.service';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -250,30 +251,31 @@ describe('JobDetailComponent', () => {
     expect(result.jobState).toBe('PUBLISHED');
   });
 
-  it('should compute rightActionButtons for non-research-group user', () => {
+  it('should compute primaryActionButton for non-research-group user', () => {
     const job = { belongsToResearchGroup: false, applicationState: undefined } as JobDetails;
     component.jobDetails.set(job);
-    expect(component.rightActionButtons()?.buttons[0].label).toBe('button.apply');
+    expect(component.primaryActionButton()?.label).toBe('button.apply');
   });
 
-  it('should compute rightActionButtons for DRAFT and trigger confirm()', () => {
+  it('should compute getMenuItems for DRAFT and trigger confirm()', () => {
     const confirmSpy = vi.fn();
     (component as unknown as { deleteConfirmDialog: () => { confirm: () => void } }).deleteConfirmDialog = () => ({ confirm: confirmSpy });
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
-    const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.deleteButtonLabel);
-    btn?.onClick();
+    const menuItems = component.getMenuItems();
+    const deleteItem = menuItems.find((item: JhiMenuItem) => item.label === component.deleteButtonLabel);
+    deleteItem?.command?.();
     expect(confirmSpy).toHaveBeenCalled();
   });
 
-  it('should compute rightActionButtons for PUBLISHED and trigger confirm()', () => {
+  it('should compute primaryActionButton for PUBLISHED and trigger confirm()', () => {
     const confirmSpy = vi.fn();
     (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
     // mock professor ownership
     vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
     component.jobDetails.set(job);
-    const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.closeButtonLabel);
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(confirmSpy).toHaveBeenCalled();
   });
@@ -287,7 +289,7 @@ describe('JobDetailComponent', () => {
     } as JobDetails;
 
     component.jobDetails.set(job);
-    expect(component.rightActionButtons()).toBeNull();
+    expect(component.primaryActionButton()).toBeNull();
   });
 
   it('should handle invalid job ID in init()', async () => {
@@ -388,19 +390,18 @@ describe('JobDetailComponent', () => {
     expect(spy).toHaveBeenCalledWith('jobDetailPage.noData');
   });
 
-  it('should return null from rightActionButtons when previewData exists', () => {
-    const previewSignal = signal({ title: 'Preview job' });
+  it('should return null from primaryActionButton when previewData exists', () => {
+    const previewSignal = signal({ title: 'Preview job' } as JobFormDTO);
     (component as unknown as { previewData: () => typeof previewSignal }).previewData = () => previewSignal;
-    const buttons = component.rightActionButtons();
-    expect(buttons).not.toBeNull();
-    expect(buttons?.buttons[0].label).toBe('button.downloadPDF');
+    const button = component.primaryActionButton();
+    expect(button).toBeNull();
   });
 
   it('should trigger onApply from computed button', () => {
     const job = { belongsToResearchGroup: false, applicationState: undefined } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onApply');
-    const btn = component.rightActionButtons()?.buttons[0];
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -412,7 +413,7 @@ describe('JobDetailComponent', () => {
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onEditApplication');
-    const btn = component.rightActionButtons()?.buttons[0];
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -424,7 +425,7 @@ describe('JobDetailComponent', () => {
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onViewApplication');
-    const btn = component.rightActionButtons()?.buttons[0];
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -433,7 +434,8 @@ describe('JobDetailComponent', () => {
     const spy = vi.spyOn(component, 'onEditJob');
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
-    const btn = component.rightActionButtons()?.buttons.find(b => b.label === 'button.edit');
+    const btn = component.primaryActionButton();
+    expect(btn?.label).toBe('button.edit');
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -447,9 +449,9 @@ describe('JobDetailComponent', () => {
     });
   });
 
-  it('should return null when jobDetails is falsy in rightActionButtons()', () => {
+  it('should return null when jobDetails is falsy in primaryActionButton()', () => {
     component.jobDetails.set(null);
-    const result = component.rightActionButtons();
+    const result = component.primaryActionButton();
     expect(result).toBeNull();
   });
 
@@ -481,7 +483,7 @@ describe('JobDetailComponent', () => {
   it('should return null when jobDetails do not match any button case', () => {
     const job = { belongsToResearchGroup: true, jobState: 'CLOSED' } as JobDetails;
     component.jobDetails.set(job);
-    const result = component.rightActionButtons();
+    const result = component.primaryActionButton();
     expect(result).toBeNull();
   });
 
