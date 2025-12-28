@@ -4,7 +4,7 @@
       <div class="p-menu-item-content">
         <a
           class="p-menu-item-link"
-          [class]="item.styleClass"
+          [class]="getSeverityClass(item.data)"
           (click)="item.command && item.command($event)"
           [class.disabled]="item.disabled"
         >

@@ -10,15 +10,10 @@ import { ButtonColor } from '../button/button.component';
 
 export type MenuItemSeverity = ButtonColor;
 
-export interface MenuItemEvent {
-  originalEvent: Event;
-  item: JhiMenuItem;
-}
-
 export interface JhiMenuItem {
   label: string;
   icon?: string;
-  command?: (e: MenuItemEvent) => void;
+  command?: () => void;
   severity?: MenuItemSeverity;
   disabled?: boolean;
   separator?: boolean;
@@ -48,7 +43,7 @@ export class MenuComponent {
       disabled: item.disabled,
       separator: item.separator,
       visible: item.visible,
-      styleClass: this.getSeverityClass(item),
+      data: item,
     }));
   });
 
