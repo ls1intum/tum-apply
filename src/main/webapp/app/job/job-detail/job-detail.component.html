@@ -44,7 +44,7 @@
           @if (previewData()) {
             <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
           } @else if (job.belongsToResearchGroup) {
-            <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
+            <jhi-tag class="job-state-badge" [text]="jobStateText() | translate" [color]="jobStateColor()" />
           }
         </div>
       </div>
@@ -71,7 +71,7 @@
               (click)="onDownloadPDF()"
             />
           }
-          @if (getMenuItems().length > 0) {
+          @if (menuItems().length > 0) {
             <jhi-button
               severity="secondary"
               variant="outlined"
@@ -80,7 +80,7 @@
               [shouldTranslate]="true"
               (click)="menu.toggle($event)"
             />
-            <jhi-menu #menu [items]="getMenuItems()" [shouldTranslate]="true" />
+            <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
           }
         </div>
       </div>

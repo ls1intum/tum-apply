@@ -204,6 +204,53 @@ export class JobDetailComponent {
     ['APPLICANT_FOUND', 'success'],
   ]);
 
+  readonly currentJobState = computed<string | undefined>(() => {
+    return this.jobDetails()?.jobState;
+  });
+
+  readonly jobStateText = computed<string>(() => {
+    const jobState = this.currentJobState();
+    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
+  });
+
+  readonly jobStateColor = computed<'success' | 'info' | 'contrast' | 'secondary'>(() => {
+    const jobState = this.currentJobState();
+    return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
+  });
+
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const job = this.jobDetails();
+    const items: JhiMenuItem[] = [];
+
+    // Always add PDF download option (except for preview data, where it's shown separately)
+    if (!this.previewData()) {
+      items.push({
+        label: 'button.downloadPDF',
+        icon: 'file-pdf',
+        severity: 'primary',
+        command: () => {
+          void this.onDownloadPDF();
+        },
+      });
+    }
+
+    if (!job) return items;
+
+    // Case 2: DRAFT → add Delete button to menu
+    if (job.jobState === 'DRAFT' && job.belongsToResearchGroup) {
+      items.push({
+        label: this.deleteButtonLabel,
+        icon: this.deleteButtonIcon,
+        severity: this.deleteButtonSeverity,
+        command: () => {
+          this.deleteConfirmDialog()?.confirm();
+        },
+      });
+    }
+
+    return items;
+  });
+
   private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
@@ -373,39 +420,6 @@ export class JobDetailComponent {
     }
   }
 
-  getMenuItems(): JhiMenuItem[] {
-    const job = this.jobDetails();
-    const items: JhiMenuItem[] = [];
-
-    // Always add PDF download option (except for preview data, where it's shown separately)
-    if (!this.previewData()) {
-      items.push({
-        label: 'button.downloadPDF',
-        icon: 'file-pdf',
-        severity: 'primary',
-        command: () => {
-          void this.onDownloadPDF();
-        },
-      });
-    }
-
-    if (!job) return items;
-
-    // Case 2: DRAFT → add Delete button to menu
-    if (job.jobState === 'DRAFT' && job.belongsToResearchGroup) {
-      items.push({
-        label: this.deleteButtonLabel,
-        icon: this.deleteButtonIcon,
-        severity: this.deleteButtonSeverity,
-        command: () => {
-          this.deleteConfirmDialog()?.confirm();
-        },
-      });
-    }
-
-    return items;
-  }
-
   async init(): Promise<void> {
     try {
       // Get logged-in user
@@ -434,20 +448,6 @@ export class JobDetailComponent {
 
   loadJobDetails(job: JobDetailDTO): void {
     this.jobDetails.set(this.mapToJobDetails(job, this.accountService.loadedUser()));
-  }
-
-  get currentJobState(): string | undefined {
-    return this.jobDetails()?.jobState;
-  }
-
-  get jobStateText(): string {
-    const jobState = this.currentJobState;
-    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
-  }
-
-  get jobStateColor(): 'success' | 'info' | 'contrast' | 'secondary' {
-    const jobState = this.currentJobState;
-    return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
   }
 
   private isOwnerOfJob(job: JobDetails): boolean {
