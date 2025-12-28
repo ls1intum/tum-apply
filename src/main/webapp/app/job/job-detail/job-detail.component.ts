@@ -30,6 +30,8 @@ import * as DropDownOptions from '../dropdown-options';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
+type PrimaryActionButton = Button | null;
+
 export interface JobDetails {
   supervisingProfessor: string;
   researchGroup: string;
@@ -110,7 +112,7 @@ export class JobDetailComponent {
 
   pdfExportService = inject(PdfExportResourceApiService);
 
-  readonly primaryActionButton = computed((): Button | null => {
+  readonly primaryActionButton = computed((): PrimaryActionButton => {
     if (this.previewData()) {
       return null;
     }
