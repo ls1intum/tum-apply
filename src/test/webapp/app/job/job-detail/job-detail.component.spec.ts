@@ -262,7 +262,7 @@ describe('JobDetailComponent', () => {
     (component as unknown as { deleteConfirmDialog: () => { confirm: () => void } }).deleteConfirmDialog = () => ({ confirm: confirmSpy });
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
-    const menuItems = component.getMenuItems();
+    const menuItems = component.menuItems();
     const deleteItem = menuItems.find((item: JhiMenuItem) => item.label === component.deleteButtonLabel);
     deleteItem?.command?.();
     expect(confirmSpy).toHaveBeenCalled();
