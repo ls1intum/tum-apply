@@ -294,9 +294,9 @@ export class SlotsSectionComponent {
 
   private async checkGlobalSlots(): Promise<void> {
     try {
-      const slots = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId()));
-      if (Array.isArray(slots)) {
-        this.hasAnySlots.set(slots.length > 0);
+      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId(), undefined, undefined, 1, 0));
+      if (response && typeof response === 'object' && 'totalElements' in response) {
+        this.hasAnySlots.set((response as { totalElements: number }).totalElements > 0);
       }
     } catch {
       /* empty */
@@ -308,14 +308,10 @@ export class SlotsSectionComponent {
       this.loading.set(true);
       this.error.set(false);
 
-      const response = (await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month))) as
-        | InterviewSlotDTO[]
-        | { content: InterviewSlotDTO[] };
+      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, 1000, 0));
 
-      if (Array.isArray(response)) {
-        this.slots.set(response);
-      } else {
-        this.slots.set(response.content);
+      if (response && typeof response === 'object' && 'content' in response) {
+        this.slots.set((response as { content: InterviewSlotDTO[] }).content);
       }
     } catch {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');

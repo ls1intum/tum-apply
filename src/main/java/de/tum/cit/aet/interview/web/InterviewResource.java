@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -99,24 +101,33 @@ public class InterviewResource {
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
-    public ResponseEntity<?> getSlotsByProcessId(
+    public ResponseEntity<PageResponseDTO<InterviewSlotDTO>> getSlotsByProcessId(
         @PathVariable UUID processId,
         @RequestParam(required = false) Integer year,
-        @RequestParam(required = false) Integer month
+        @RequestParam(required = false) Integer month,
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
     ) {
-        log.info("REST request to get slots for interview process: {}, year: {}, month: {}", processId, year, month);
+        log.info(
+            "REST request to get slots for interview process: {}, year: {}, month: {}, pageNumber: {}, pageSize: {}",
+            processId,
+            year,
+            month,
+            pageDTO.pageNumber(),
+            pageDTO.pageSize()
+        );
 
+        PageResponseDTO<InterviewSlotDTO> response;
         if (year != null && month != null) {
-            // Return month-filtered slots with PageResponseDTO
-            PageResponseDTO<InterviewSlotDTO> response = interviewService.getSlotsByProcessIdAndMonth(processId, year, month);
+            // Return month-filtered slots with pagination
+            response = interviewService.getSlotsByProcessIdAndMonth(processId, year, month, pageDTO);
             log.info("Returning {} slots for interview process: {} (month: {}/{})", response.getTotalElements(), processId, month, year);
-            return ResponseEntity.ok(response);
         } else {
-            // Return all slots as List
-            List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
-            log.info("Returning {} slots for interview process: {}", slots.size(), processId);
-            return ResponseEntity.ok(slots);
+            // Return all slots with pagination
+            response = interviewService.getSlotsByProcessId(processId, pageDTO);
+            log.info("Returning {} slots for interview process: {}", response.getTotalElements(), processId);
         }
+
+        return ResponseEntity.ok(response);
     }
 
     /**
