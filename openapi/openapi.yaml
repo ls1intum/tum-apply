@@ -3,6 +3,21 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
+  /api/ai/generate:
+    get:
+      tags: [ai-resource]
+      operationId: storyWithStream
+      parameters:
+      - name: message
+        in: query
+        required: false
+        schema: {type: string, default: Tell a story in less than 100 words}
+      responses:
+        '200':
+          description: OK
+          content:
+            text/event-stream:
+              schema: {type: string}
   /api/applications:
     put:
       tags: [application-resource]
@@ -474,35 +489,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/DepartmentDTO'}
-    put:
-      tags: [department-resource]
-      operationId: updateDepartment
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/DepartmentCreationDTO'}
-        required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {$ref: '#/components/schemas/DepartmentDTO'}
-    delete:
-      tags: [department-resource]
-      operationId: deleteDepartment
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200': {description: OK}
   /api/documents/{documentDictionaryId}:
     get:
       tags: [document-resource]
