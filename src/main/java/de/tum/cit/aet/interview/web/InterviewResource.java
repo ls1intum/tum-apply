@@ -95,6 +95,7 @@ public class InterviewResource {
      * @param processId the ID of the interview process
      * @param year      optional year to filter by (e.g., 2025)
      * @param month     optional month to filter by (1-12)
+     * @param pageDTO   pagination parameters (pageNumber and pageSize)
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and slots
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException if the user is not authorized
