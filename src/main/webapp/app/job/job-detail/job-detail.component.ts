@@ -13,7 +13,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
-import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent, ButtonVariant } from 'app/shared/components/atoms/button/button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
@@ -60,6 +60,16 @@ export interface JobDetails {
 
   applicationId?: string;
   applicationState?: ApplicationStateEnum;
+}
+
+export interface PrimaryActionButton {
+  label: string;
+  severity: ButtonColor;
+  variant?: ButtonVariant;
+  icon?: string;
+  onClick: () => void;
+  disabled: boolean;
+  shouldTranslate: boolean;
 }
 
 @Component({
@@ -110,7 +120,7 @@ export class JobDetailComponent {
 
   pdfExportService = inject(PdfExportResourceApiService);
 
-  readonly primaryActionButton = computed(() => {
+  readonly primaryActionButton = computed<PrimaryActionButton | null>(() => {
     if (this.previewData()) {
       return null;
     }
