@@ -228,8 +228,8 @@ describe('JobDetailComponent', () => {
 
   it('should compute jobStateText and jobStateColor correctly', () => {
     component.jobDetails.set({ jobState: 'DRAFT' } as JobDetails);
-    expect(component.jobStateText).toBe('jobState.draft');
-    expect(component.jobStateColor).toBe('info');
+    expect(component.jobStateText()).toBe('jobState.draft');
+    expect(component.jobStateColor()).toBe('info');
   });
 
   it('should map JobDetailDTO to JobDetails', () => {
@@ -373,13 +373,13 @@ describe('JobDetailComponent', () => {
 
   it('should handle unknown job state in jobStateText and jobStateColor', () => {
     component.jobDetails.set({ jobState: 'UNKNOWN_STATE' } as JobDetails);
-    expect(component.jobStateText).toBe('jobState.unknown');
-    expect(component.jobStateColor).toBe('info');
+    expect(component.jobStateText()).toBe('jobState.unknown');
+    expect(component.jobStateColor()).toBe('info');
   });
 
   it('should return default info color when no jobDetails', () => {
     component.jobDetails.set(null);
-    expect(component.jobStateColor).toBe('info');
+    expect(component.jobStateColor()).toBe('info');
   });
 
   it('should compute noData() value after language change', () => {
@@ -576,10 +576,10 @@ describe('JobDetailComponent', () => {
 
   it('should return correct fallback for jobStateText when jobState missing or unknown', () => {
     component.jobDetails.set(null);
-    expect(component.jobStateText).toBe('Unknown');
+    expect(component.jobStateText()).toBe('Unknown');
 
     component.jobDetails.set({ jobState: 'NON_EXISTENT_STATE' } as JobDetails);
-    expect(component.jobStateText).toBe('jobState.unknown');
+    expect(component.jobStateText()).toBe('jobState.unknown');
   });
 
   it('should convert workload and contractDuration to strings in mapToJobDetails', () => {
