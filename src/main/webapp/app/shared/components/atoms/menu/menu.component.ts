@@ -18,7 +18,7 @@ export interface MenuItemEvent {
 export interface JhiMenuItem {
   label: string;
   icon?: string;
-  command?: (_e: MenuItemEvent) => void;
+  command?: (e: MenuItemEvent) => void;
   severity?: MenuItemSeverity;
   disabled?: boolean;
   separator?: boolean;

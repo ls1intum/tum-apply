@@ -124,7 +124,9 @@ export class JobDetailComponent {
           return {
             label: 'button.apply',
             severity: 'primary',
-            onClick: () => this.onApply(),
+            onClick: () => {
+              this.onApply();
+            },
             disabled: false,
             shouldTranslate: true,
           };
@@ -132,7 +134,9 @@ export class JobDetailComponent {
           return {
             label: 'button.edit',
             severity: 'primary',
-            onClick: () => this.onEditApplication(),
+            onClick: () => {
+              this.onEditApplication();
+            },
             disabled: false,
             shouldTranslate: true,
             icon: 'pencil',
@@ -141,7 +145,9 @@ export class JobDetailComponent {
           return {
             label: 'button.view',
             severity: 'secondary',
-            onClick: () => this.onViewApplication(),
+            onClick: () => {
+              this.onViewApplication();
+            },
             disabled: false,
             shouldTranslate: true,
             variant: 'outlined',
@@ -153,7 +159,9 @@ export class JobDetailComponent {
       return {
         label: 'button.edit',
         severity: 'primary',
-        onClick: () => this.onEditJob(),
+        onClick: () => {
+          this.onEditJob();
+        },
         disabled: false,
         shouldTranslate: true,
         icon: 'pencil',
