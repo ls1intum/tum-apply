@@ -119,6 +119,64 @@ export class MyPositionsPageComponent {
     APPLICANT_FOUND: 'success',
   });
 
+  // Computed signal that creates a map of job IDs to their menu items
+  readonly jobMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
+    const menuMap = new Map<string, JhiMenuItem[]>();
+
+    for (const job of this.jobs()) {
+      const items: JhiMenuItem[] = [];
+
+      // Edit action - different behavior for DRAFT vs PUBLISHED
+      if (job.state === 'DRAFT') {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.onEditJob(job.jobId);
+          },
+        });
+      } else if (job.state === 'PUBLISHED') {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.editPublishedDialog().confirm();
+          },
+        });
+      }
+
+      // Delete/Close action - based on state
+      if (job.state === 'DRAFT') {
+        items.push({
+          label: 'button.delete',
+          icon: 'trash',
+          severity: 'danger',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.deleteDialog().confirm();
+          },
+        });
+      } else if (job.state === 'PUBLISHED') {
+        items.push({
+          label: 'button.close',
+          icon: 'xmark',
+          severity: 'danger',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.closeDialog().confirm();
+          },
+        });
+      }
+
+      menuMap.set(job.jobId, items);
+    }
+
+    return menuMap;
+  });
+
   private jobService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
@@ -206,54 +264,7 @@ export class MyPositionsPageComponent {
   }
 
   getMenuItems(job: CreatedJobDTO): JhiMenuItem[] {
-    const items: JhiMenuItem[] = [];
-
-    // Edit action - different behavior for DRAFT vs PUBLISHED
-    if (job.state === 'DRAFT') {
-      items.push({
-        label: 'button.edit',
-        icon: 'pencil',
-        severity: 'primary',
-        command: () => {
-          this.onEditJob(job.jobId);
-        },
-      });
-    } else if (job.state === 'PUBLISHED') {
-      items.push({
-        label: 'button.edit',
-        icon: 'pencil',
-        severity: 'primary',
-        command: () => {
-          this.currentJobId.set(job.jobId);
-          this.editPublishedDialog().confirm();
-        },
-      });
-    }
-
-    // Delete/Close action - based on state
-    if (job.state === 'DRAFT') {
-      items.push({
-        label: 'button.delete',
-        icon: 'trash',
-        severity: 'danger',
-        command: () => {
-          this.currentJobId.set(job.jobId);
-          this.deleteDialog().confirm();
-        },
-      });
-    } else if (job.state === 'PUBLISHED') {
-      items.push({
-        label: 'button.close',
-        icon: 'xmark',
-        severity: 'danger',
-        command: () => {
-          this.currentJobId.set(job.jobId);
-          this.closeDialog().confirm();
-        },
-      });
-    }
-
-    return items;
+    return this.jobMenuItems().get(job.jobId) ?? [];
   }
 
   onConfirmEdit(): void {
