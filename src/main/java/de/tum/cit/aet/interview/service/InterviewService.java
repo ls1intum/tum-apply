@@ -24,7 +24,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,13 +72,18 @@ public class InterviewService {
         List<Interviewee> allInterviewees = intervieweeRepository.findByInterviewProcessIdInWithSlots(processIds);
 
         // 5. Group interviewees by process ID and calculate state counts
-        Map<UUID, Map<IntervieweeState, Long>> countsPerProcess = new HashMap<>();
-        for (Interviewee interviewee : allInterviewees) {
-            UUID processId = interviewee.getInterviewProcess().getId();
-            IntervieweeState state = calculateIntervieweeState(interviewee);
-
-            countsPerProcess.computeIfAbsent(processId, k -> new EnumMap<>(IntervieweeState.class)).merge(state, 1L, Long::sum);
-        }
+        Map<UUID, Map<IntervieweeState, Long>> countsPerProcess = allInterviewees
+            .stream()
+            .collect(
+                Collectors.groupingBy(
+                    interviewee -> interviewee.getInterviewProcess().getId(),
+                    Collectors.groupingBy(
+                        this::calculateIntervieweeState,
+                        () -> new EnumMap<>(IntervieweeState.class),
+                        Collectors.counting()
+                    )
+                )
+            );
 
         // 6. Transform each interview process into a DTO with statistical data
         return interviewProcesses
