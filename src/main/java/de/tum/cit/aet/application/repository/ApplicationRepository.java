@@ -199,6 +199,15 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     long countByApplicantId(@Param("applicantId") UUID applicantId);
 
     /**
+     * Finds all applications submitted by a specific applicant.
+     *
+     * @param applicantId the ID of the applicant (user ID)
+     * @return a list of applications
+     */
+    @Query("SELECT a FROM Application a WHERE a.applicant.user.userId = :applicantId")
+    List<Application> findAllByApplicantId(@Param("applicantId") UUID applicantId);
+
+    /**
      * Counts applications grouped by job and state for jobs with interview
      * processes
      * belonging to a specific professor.

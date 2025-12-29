@@ -51,6 +51,7 @@ public class GlobalExceptionHandler {
         Map.entry(UnauthorizedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(MailingException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR)),
         Map.entry(InternalServerException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR)),
+        Map.entry(UnknownImageTypeException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UNKNOWN_IMAGE_TYPE)),
         Map.entry(
             HttpRequestMethodNotSupportedException.class,
             new ExceptionMetadata(HttpStatus.METHOD_NOT_ALLOWED, ErrorCode.INVALID_PARAMETER)
