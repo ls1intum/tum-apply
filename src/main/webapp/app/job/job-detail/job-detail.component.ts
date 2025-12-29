@@ -307,7 +307,6 @@ export class JobDetailComponent {
         job: this.jobId(),
       },
     });
-    // TODO - adjust to application state like in job overview page
   }
 
   onEditApplication(): void {
@@ -331,9 +330,6 @@ export class JobDetailComponent {
   }
 
   async onCloseJob(): Promise<void> {
-    // TO-DO: adjust confirmation
-    // const confirmClose = confirm('Do you really want to close this job?');
-    // if (confirmClose) {
     try {
       await firstValueFrom(this.jobResourceService.changeJobState(this.jobId(), 'CLOSED'));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
@@ -343,12 +339,9 @@ export class JobDetailComponent {
         this.toastService.showError({ detail: `Error closing job: ${error.message}` });
       }
     }
-    // }
   }
 
   async onDeleteJob(): Promise<void> {
-    // TO-DO: adjust confirmation, add dialog
-    // if (confirmDelete) {
     try {
       await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });
@@ -357,7 +350,6 @@ export class JobDetailComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
-      //  }
     }
   }
 

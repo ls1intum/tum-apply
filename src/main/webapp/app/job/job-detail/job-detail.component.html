@@ -50,15 +50,15 @@
       </div>
       <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
         <div class="flex items-center gap-2">
-          @if (primaryActionButton()) {
+          @if (primaryActionButton(); as primaryActionButton) {
             <jhi-button
-              [label]="primaryActionButton()!.label"
-              [severity]="primaryActionButton()!.severity"
-              [variant]="primaryActionButton()!.variant"
-              [icon]="primaryActionButton()!.icon"
-              [disabled]="primaryActionButton()!.disabled"
-              [shouldTranslate]="primaryActionButton()!.shouldTranslate ?? false"
-              (click)="primaryActionButton()!.onClick()"
+              [label]="primaryActionButton.label"
+              [severity]="primaryActionButton.severity"
+              [variant]="primaryActionButton.variant"
+              [icon]="primaryActionButton.icon"
+              [disabled]="primaryActionButton.disabled"
+              [shouldTranslate]="primaryActionButton.shouldTranslate ?? false"
+              (click)="primaryActionButton.onClick()"
             />
           }
           @if (showPdfButtonForPreview()) {

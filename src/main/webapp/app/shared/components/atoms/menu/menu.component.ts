@@ -68,13 +68,7 @@ export class MenuComponent {
   }
 
   private handleCommand(item: JhiMenuItem): void {
-    if (item.disabled === true) {
-      return;
-    }
-    if (item.command !== undefined) {
-      item.command();
-    }
-
+    item.command?.();
     this.hide();
   }
 
