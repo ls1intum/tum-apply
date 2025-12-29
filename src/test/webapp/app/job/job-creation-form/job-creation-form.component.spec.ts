@@ -22,6 +22,7 @@ import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 import { createLocationMock, provideLocationMock } from '../../../util/location.mock';
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 import { createJobResourceApiServiceMock, provideJobResourceApiServiceMock } from '../../../util/job-resource-api.service.mock';
+import { createImageResourceApiServiceMock, provideImageResourceApiServiceMock } from '../../../util/image-resource-api.service.mock';
 
 interface Step {
   name: string;
@@ -106,12 +107,7 @@ describe('JobCreationFormComponent', () => {
   let fixture: ComponentFixture<JobCreationFormComponent>;
   let component: JobCreationFormComponent;
   let mockJobService: ReturnType<typeof createJobResourceApiServiceMock>;
-  let imageService: {
-    getDefaultJobBanners: ReturnType<typeof vi.fn>;
-    getResearchGroupJobBanners: ReturnType<typeof vi.fn>;
-    uploadJobBanner: ReturnType<typeof vi.fn>;
-    deleteImage: ReturnType<typeof vi.fn>;
-  };
+  let mockImageService: ReturnType<typeof createImageResourceApiServiceMock>;
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
   let mockRouter: ReturnType<typeof createRouterMock>;
@@ -120,16 +116,16 @@ describe('JobCreationFormComponent', () => {
 
   beforeEach(async () => {
     mockJobService = createJobResourceApiServiceMock();
-    mockJobService.getJobById = vi.fn().mockReturnValue(of({ title: 'Loaded Job', description: 'Desc' }));
-    mockJobService.createJob = vi.fn().mockReturnValue(of({ jobId: 'new123' }));
-    mockJobService.updateJob = vi.fn().mockReturnValue(of({}));
+    mockJobService.getJobById.mockReturnValue(of({ title: 'Loaded Job', description: 'Desc' }));
+    mockJobService.createJob.mockReturnValue(of({ jobId: 'new123' }));
+    mockJobService.updateJob.mockReturnValue(of({}));
 
-    imageService = {
-      getDefaultJobBanners: vi.fn().mockReturnValue(of([])),
-      getResearchGroupJobBanners: vi.fn().mockReturnValue(of([])),
-      uploadJobBanner: vi.fn().mockReturnValue(of({ imageId: 'img123', url: '/images/test.jpg', imageType: 'JOB_BANNER' })),
-      deleteImage: vi.fn().mockReturnValue(of({})),
-    };
+    mockImageService = createImageResourceApiServiceMock();
+    mockImageService.getMyDefaultJobBanners.mockReturnValue(of([]));
+    mockImageService.getDefaultJobBanners.mockReturnValue(of([]));
+    mockImageService.getResearchGroupJobBanners.mockReturnValue(of([]));
+    mockImageService.uploadJobBanner.mockReturnValue(of({ imageId: 'img123', url: '/images/test.jpg', imageType: 'JOB_BANNER' }));
+    mockImageService.deleteImage.mockReturnValue(of({}));
 
     mockAccountService = createAccountServiceMock();
     mockAccountService.user.set({ id: 'u1', name: 'Test User' } as User);
@@ -142,7 +138,7 @@ describe('JobCreationFormComponent', () => {
       imports: [JobCreationFormComponent],
       providers: [
         provideJobResourceApiServiceMock(mockJobService),
-        { provide: ImageResourceApiService, useValue: imageService },
+        provideImageResourceApiServiceMock(mockImageService),
         provideLocationMock(mockLocation),
         provideActivatedRouteMock(mockActivatedRoute),
         provideAccountServiceMock(mockAccountService),
@@ -188,7 +184,7 @@ describe('JobCreationFormComponent', () => {
       await fixture2.whenStable();
 
       expect(fixture2.componentInstance.mode()).toBe('create');
-      expect(imageService.getDefaultJobBanners).toHaveBeenCalled();
+      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalled();
     });
 
     it('should navigate to /my-positions if edit mode but no jobId', async () => {
@@ -459,7 +455,7 @@ describe('JobCreationFormComponent', () => {
         name: 'upload failure',
         file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
         errorKey: 'jobCreationForm.imageSection.uploadFailed',
-        setupSpy: () => imageService.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed'))),
+        setupSpy: () => mockImageService.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed'))),
       },
     ])('should reject image upload when $name', async ({ file, errorKey, setupSpy }) => {
       const spy = setupSpy?.();
@@ -477,14 +473,14 @@ describe('JobCreationFormComponent', () => {
       { name: 'non-input target', event: { target: document.createElement('div') } as unknown as Event },
     ])('should handle $name gracefully', async ({ event }) => {
       await component.onImageSelected(event);
-      expect(imageService.uploadJobBanner).not.toHaveBeenCalled();
+      expect(mockImageService.uploadJobBanner).not.toHaveBeenCalled();
     });
 
     it('should upload image successfully', async () => {
       const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024);
       const mockEvent = createMockFileEvent(file);
       const mockImage: ImageDTO = { imageId: 'uploaded123', url: '/images/uploaded.jpg', imageType: 'JOB_BANNER' };
-      imageService.uploadJobBanner.mockReturnValueOnce(of(mockImage));
+      mockImageService.uploadJobBanner.mockReturnValueOnce(of(mockImage));
 
       await component.onImageSelected(mockEvent);
 
@@ -520,14 +516,14 @@ describe('JobCreationFormComponent', () => {
     it('should delete selected image successfully', async () => {
       component.selectedImage.set({ imageId: 'img1', url: '/url', imageType: 'JOB_BANNER' });
       await component.deleteSelectedImage();
-      expect(imageService.deleteImage).toHaveBeenCalledWith('img1');
+      expect(mockImageService.deleteImage).toHaveBeenCalledWith('img1');
       expect(component.selectedImage()).toBeUndefined();
       expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('jobCreationForm.imageSection.deleteImageSuccess');
     });
 
     it('should handle delete failure', async () => {
       component.selectedImage.set({ imageId: 'img1', url: '/url', imageType: 'JOB_BANNER' });
-      imageService.deleteImage.mockReturnValueOnce(throwError(() => new Error('Delete failed')));
+      mockImageService.deleteImage.mockReturnValueOnce(throwError(() => new Error('Delete failed')));
       await component.deleteSelectedImage();
       expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.imageSection.deleteImageFailed');
     });
@@ -535,7 +531,7 @@ describe('JobCreationFormComponent', () => {
     it('should skip delete when no image selected', async () => {
       component.selectedImage.set(undefined);
       await component.deleteSelectedImage();
-      expect(imageService.deleteImage).not.toHaveBeenCalled();
+      expect(mockImageService.deleteImage).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -543,7 +539,7 @@ describe('JobCreationFormComponent', () => {
         name: 'skip delete with empty imageId',
         imageId: '',
         expectations: () => {
-          expect(imageService.deleteImage).not.toHaveBeenCalled();
+          expect(mockImageService.deleteImage).not.toHaveBeenCalled();
         },
       },
       {
@@ -557,7 +553,7 @@ describe('JobCreationFormComponent', () => {
           ]);
         },
         expectations: (comp: JobCreationFormComponent) => {
-          expect(imageService.deleteImage).toHaveBeenCalledWith('img2');
+          expect(mockImageService.deleteImage).toHaveBeenCalledWith('img2');
           expect(comp.selectedImage()?.imageId).toBe('img1');
           expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('jobCreationForm.imageSection.deleteImageSuccess');
         },
@@ -572,7 +568,7 @@ describe('JobCreationFormComponent', () => {
             { imageId: 'img2', url: '/url2', imageType: 'JOB_BANNER' },
           ]);
         },
-        mockSetup: () => imageService.getResearchGroupJobBanners.mockReturnValueOnce(throwError(() => new Error('Reload failed'))),
+        mockSetup: () => mockImageService.getResearchGroupJobBanners.mockReturnValueOnce(throwError(() => new Error('Reload failed'))),
         expectations: (comp: JobCreationFormComponent) => {
           expect(comp.selectedImage()).toBeUndefined();
           expect(comp.researchGroupImages()).toHaveLength(1);
@@ -591,7 +587,7 @@ describe('JobCreationFormComponent', () => {
         { imageId: 'default1', url: '/images/default1.jpg', imageType: 'DEFAULT_JOB_BANNER' },
         { imageId: 'default2', url: '/images/default2.jpg', imageType: 'DEFAULT_JOB_BANNER' },
       ];
-      imageService.getDefaultJobBanners.mockReturnValueOnce(of(mockImages));
+      mockImageService.getMyDefaultJobBanners.mockReturnValueOnce(of(mockImages));
       await component.loadImages();
       expect(component.defaultImages()).toEqual(mockImages);
     });
@@ -604,10 +600,10 @@ describe('JobCreationFormComponent', () => {
         researchGroup: { researchGroupId: 'rg123', researchGroupName: 'Test Group' },
       } as User);
       const mockImages: ImageDTO[] = [{ imageId: 'default1', url: '/images/default1.jpg', imageType: 'DEFAULT_JOB_BANNER' }];
-      imageService.getDefaultJobBanners.mockReturnValueOnce(of(mockImages));
-      imageService.getResearchGroupJobBanners.mockReturnValueOnce(of([]));
+      mockImageService.getMyDefaultJobBanners.mockReturnValueOnce(of(mockImages));
+      mockImageService.getResearchGroupJobBanners.mockReturnValueOnce(of([]));
       await component.loadImages();
-      expect(imageService.getDefaultJobBanners).toHaveBeenCalledWith('rg123');
+      expect(mockImageService.getMyDefaultJobBanners).toHaveBeenCalled();
     });
   });
 

@@ -6,7 +6,6 @@ import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
-import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

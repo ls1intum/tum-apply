@@ -2,6 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/aiResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
@@ -22,6 +23,7 @@ api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
 api/researchGroupResourceApi.service.ts
 api/schoolResourceApi.service.ts
+api/userDataExportResourceApi.service.ts
 api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
@@ -86,6 +88,7 @@ model/otpCompleteDTO.ts
 model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
+model/pageResponseDTODepartmentDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
 model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts

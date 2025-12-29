@@ -6,6 +6,7 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
@@ -21,15 +22,17 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -148,11 +151,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = interviewProcess.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Fetch aggregated data for this specific job
         UUID jobId = interviewProcess.getJob().getJobId();
@@ -249,11 +250,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -279,7 +278,7 @@ public class InterviewService {
      * Munich time zone.
      *
      * @param process the interview process the slot belongs to
-     * @param input   the slot definition from the frontend
+     * @param input   the slot definition from the client
      * @return a populated {@link InterviewSlot} entity ready for persistence
      */
     private InterviewSlot createSlotFromInput(InterviewProcess process, CreateSlotsDTO.SlotInput input) {
@@ -374,11 +373,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Load and return slots
         List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
@@ -409,11 +406,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
@@ -457,11 +452,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = process.getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
@@ -482,16 +475,12 @@ public class InterviewService {
     public void deleteSlot(UUID slotId) {
         // 1. Load the slot
         InterviewSlot slot = interviewSlotRepository
-            .findById(slotId)
-            .orElseThrow(() -> {
-                return new EntityNotFoundException("Slot " + slotId + " not found");
-            });
+            .findByIdWithJob(slotId)
+            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
-        // 2. Security: Verify current user is the job owner or employee
+        // 2. Security: Verify current user has job access
         Job job = slot.getInterviewProcess().getJob();
-        if (!currentUserService.isSupervisingProfessorOf(job)) {
-            currentUserService.isAdminOrMemberOf(job.getResearchGroup());
-        }
+        currentUserService.verifyJobAccess(job);
 
         // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
@@ -501,6 +490,62 @@ public class InterviewService {
 
         // 4. Delete the slot
         interviewSlotRepository.delete(slot);
+    }
+
+    /**
+     * Assigns an interviewee to an interview slot.
+     *
+     * @param slotId        the ID of the slot to assign
+     * @param applicationId the ID of the application whose interviewee should be
+     *                      assigned
+     * @return the updated slot as DTO with interviewee details
+     * @throws EntityNotFoundException        if slot or interviewee not found
+     * @throws AccessDeniedException          if user doesn't have job access
+     * @throws ResourceAlreadyExistsException if slot is already booked
+     * @throws BadRequestException            if interviewee already has a slot
+     */
+    @Transactional
+    public InterviewSlotDTO assignSlotToInterviewee(UUID slotId, UUID applicationId) {
+        // 1. Load the slot with job for security check
+        InterviewSlot slot = interviewSlotRepository
+            .findByIdWithJob(slotId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview slot", slotId));
+
+        // 2. Security: Verify current user has job access
+        Job job = slot.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Check if slot is already booked
+        if (slot.getIsBooked()) {
+            throw new ResourceAlreadyExistsException("Interview slot is already booked");
+        }
+
+        // 4. Find the interviewee by application ID within this interview process
+        UUID processId = slot.getInterviewProcess().getId();
+        Interviewee interviewee = intervieweeRepository
+            .findByApplicationApplicationIdAndInterviewProcessId(applicationId, processId)
+            .orElseThrow(() ->
+                new EntityNotFoundException("Applicant not found in this interview process. Please add the applicant first.")
+            );
+
+        // 5. interviewee must not already have a slot
+        if (interviewee.hasSlot()) {
+            throw new BadRequestException("Applicant already has a scheduled interview slot.");
+        }
+
+        // 6. Establish bidirectional relationship
+        slot.setInterviewee(interviewee);
+        slot.setIsBooked(true);
+        interviewee.getSlots().add(slot);
+
+        // 7. Save entities
+        interviewSlotRepository.save(slot);
+        intervieweeRepository.save(interviewee);
+
+        // 8. Build response with interviewee details
+        IntervieweeState state = calculateIntervieweeState(interviewee);
+        AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
+        return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
     }
 
     /**

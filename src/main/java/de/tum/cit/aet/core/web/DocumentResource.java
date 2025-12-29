@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.domain.DocumentDictionary;
-import de.tum.cit.aet.core.security.annotations.Authenticated;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.core.service.DocumentService;
 import java.util.UUID;

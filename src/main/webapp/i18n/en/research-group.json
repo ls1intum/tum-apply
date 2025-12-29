@@ -3,6 +3,7 @@
     "header": "My Email Templates",
     "memberPage": "My Members",
     "memberHeader": "My Members",
+    "memberHeaderAdmin": "Research Group Members",
     "emailTemplatesHeader": "My Email Templates",
     "groupInfoHeader": "My Group",
     "groupInfo": {
@@ -100,28 +101,20 @@
       "emptySearch": "Please enter at least {{minLength}} characters to search.",
       "me": "Me",
       "manageMembers": "Manage Members",
-      "manageSubtitle": "Choose whether to add or remove members from this research group.",
-      "removeMembers": "Remove Members",
-      "removeMembersButton": "Remove members",
       "addMembers": "Add Members",
       "addMembersButton": "Add members",
       "searchPlaceholder": "Search for a member using their name or email...",
       "singleEntity": "User",
       "multipleEntities": "Users",
-
       "tableColumns": {
         "name": "Name",
         "email": "Email",
         "role": "Role"
       },
-
       "removeMemberModal": {
         "title": "Remove Member",
         "message": "Are you sure you want to remove this member from the research group?"
       },
-      "removeSelectedButton": "Remove selected",
-      "removeSelectedConfirm": "Are you sure you want to remove the selected members?",
-
       "toastMessages": {
         "loadFailed": {
           "summary": "Load Failed",
@@ -329,6 +322,80 @@
         "city": "e.g. Berlin",
         "postalCode": "e.g. 12345",
         "street": "e.g. Musterstraße 123"
+      }
+    },
+    "departments": {
+      "header": "Departments",
+      "createButton": "Create Department",
+      "searchPlaceholder": "Search departments...",
+      "entity": "Department",
+      "entities": "Departments",
+      "filter": {
+        "school": "School",
+        "schoolSearch": "Search school..."
+      },
+      "tableColumns": {
+        "name": "Name",
+        "school": "School",
+        "schoolAbbreviation": "School Abbreviation"
+      },
+      "toastMessages": {
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Error loading departments. Please try again."
+        },
+        "deleteSuccess": {
+          "summary": "Success",
+          "detail": "Department deleted successfully."
+        },
+        "deleteFailed": {
+          "summary": "Error",
+          "detail": "Error deleting department. Please try again."
+        },
+        "updateSuccess": {
+          "summary": "Success",
+          "detail": "Department updated successfully."
+        },
+        "updateFailed": {
+          "summary": "Error",
+          "detail": "Error updating department. Please try again."
+        }
+      },
+      "createDialog": {
+        "title": "Create Department",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Computer Science",
+        "schoolLabel": "School",
+        "schoolPlaceholder": "Select...",
+        "createButton": "Create Department",
+        "creating": "Creating...",
+        "errors": {
+          "createFailed": {
+            "summary": "Error",
+            "detail": "Failed to create department. Please try again."
+          },
+          "duplicateName": {
+            "summary": "Name Already Exists",
+            "detail": "A department with this name already exists. Please choose a different name."
+          }
+        },
+        "success": {
+          "created": {
+            "summary": "Success",
+            "detail": "Department created successfully."
+          },
+          "updated": {
+            "summary": "Success",
+            "detail": "Department updated successfully."
+          }
+        }
+      },
+      "editDialog": {
+        "title": "Edit Department"
+      },
+      "deleteDialog": {
+        "header": "Delete Department",
+        "message": "Are you sure you want to delete this department?"
       }
     }
   }
