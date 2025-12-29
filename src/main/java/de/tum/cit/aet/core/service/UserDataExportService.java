@@ -42,6 +42,7 @@ import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -75,6 +76,7 @@ public class UserDataExportService {
      * @throws IOException              if an I/O error occurs while writing the ZIP to the response stream
      * @throws IllegalArgumentException if the user with the given id does not exist
      */
+    @Transactional(readOnly = true)
     public void exportUserData(UUID userId, HttpServletResponse response) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
