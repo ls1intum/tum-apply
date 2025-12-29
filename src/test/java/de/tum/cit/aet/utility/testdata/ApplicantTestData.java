@@ -24,7 +24,7 @@ public final class ApplicantTestData {
         a.setStreet("Teststr. 1");
         a.setPostalCode("12345");
         a.setCity("Munich");
-        a.setCountry("Germany");
+        a.setCountry("de");
         a.setBachelorDegreeName("B.Sc. Computer Science");
         a.setBachelorGradeUpperLimit("1.0");
         a.setBachelorGradeLowerLimit("4.0");

@@ -2,13 +2,21 @@
   <!-- Header -->
   <div class="page-header flex flex-row items-center">
     <jhi-button [icon]="'arrow-left'" [variant]="'text'" [severity]="'secondary'" (click)="navigateBack()" />
-    <div class="flex left">
-      <h1 class="h1-text">{{ jobTitle() }}</h1>
-    </div>
+    <h1 class="h1-text">{{ jobTitle() }}</h1>
   </div>
 
   <!-- Slots Section -->
   @if (processId()) {
     <jhi-slots-section [processId]="safeProcessId()" />
   }
+
+  <!-- Divider -->
+  <hr class="my-6 border-[var(--p-neutral-200)]" />
+
+  <!-- Interviewee Section -->
+  @if (processId() && jobTitle()) {
+    <jhi-interviewee-section [processId]="safeProcessId()" [jobTitle]="safeJobTitle()" />
+  }
+
+  <!-- Divider -->
 </div>

@@ -4,11 +4,11 @@
       <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
     </div>
     <jhi-button
-      [label]="'researchGroup.adminView.createButton' | translate"
+      [label]="'researchGroup.adminView.createButton'"
       icon="plus"
       severity="primary"
       (click)="onCreateResearchGroup()"
-      [shouldTranslate]="false"
+      [shouldTranslate]="true"
     />
   </div>
   <div class="body">
@@ -50,7 +50,7 @@
           <jhi-button
             icon="users"
             [ariaLabel]="'researchGroup.members.manageMembers'"
-            [tooltip]="'researchGroup.members.manageMembers'"
+            [tooltip]="'researchGroup.members.manageMembers' | translate"
             severity="primary"
             variant="text"
             (click)="onManageMembers(researchGroup.id)"
