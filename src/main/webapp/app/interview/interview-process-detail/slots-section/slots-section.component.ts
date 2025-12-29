@@ -4,6 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
+import dayjs from 'dayjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
@@ -77,17 +78,11 @@ export class SlotsSectionComponent {
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
 
-  currentYear = computed(() => {
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
-    return targetDate.getFullYear();
-  });
+  targetDate = computed(() => dayjs().add(this.currentMonthOffset(), 'month'));
 
-  currentMonthNumber = computed(() => {
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
-    return targetDate.getMonth() + 1;
-  });
+  currentYear = computed(() => this.targetDate().year());
+
+  currentMonthNumber = computed(() => this.targetDate().month() + 1);
 
   currentMonthSlots = computed(() => this.groupedSlots());
 
