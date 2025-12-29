@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.Interviewee;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -48,4 +49,14 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      * @return the count of interviewees
      */
     long countByInterviewProcessId(UUID processId);
+
+    /**
+     * Finds an interviewee by application ID and interview process ID.
+     * Used when assigning an applicant to an interview slot.
+     *
+     * @param applicationId the ID of the application
+     * @param processId     the ID of the interview process
+     * @return Optional containing the interviewee if found
+     */
+    Optional<Interviewee> findByApplicationApplicationIdAndInterviewProcessId(UUID applicationId, UUID processId);
 }
