@@ -33,7 +33,10 @@
     <div
       class="text-text-secondary text-md"
       jhiTranslate="entity.filters.recordsFound"
-      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? ('job' | translate) : ('jobs' | translate) }"
+      [translateValues]="{
+        count: totalRecords(),
+        entity: totalRecords() === 1 ? ('evaluation.application' | translate) : ('evaluation.applications' | translate),
+      }"
     ></div>
   </div>
 
