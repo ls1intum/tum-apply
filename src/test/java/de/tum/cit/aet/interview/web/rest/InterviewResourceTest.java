@@ -293,332 +293,351 @@ class InterviewResourceTest extends AbstractResourceTest {
         }
     }
 
-    @Test
-    void createSlotsAsProfessorCreatesAndReturnsSlots() {
-        CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            "http://zoom.us/j/123"
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+    @Nested
+    class CreateSlots {
 
-        List<InterviewSlotDTO> createdSlots = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
+        @Test
+        void createSlotsAsProfessorCreatesAndReturnsSlots() {
+            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                "http://zoom.us/j/123"
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+
+            List<InterviewSlotDTO> createdSlots = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                    dto,
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    201
+                );
+
+            assertThat(createdSlots).hasSize(1);
+
+            InterviewSlotDTO createdSlot = createdSlots.get(0);
+            assertThat(createdSlot.location()).isEqualTo("Room 101");
+            assertThat(createdSlot.streamLink()).isEqualTo("http://zoom.us/j/123");
+            assertThat(createdSlot.isBooked()).isFalse();
+
+            // Verify exact date and time values
+            assertThat(createdSlot.startDateTime()).isNotNull();
+            assertThat(createdSlot.endDateTime()).isNotNull();
+            // Convert to LocalDateTime and check the exact values we sent
+            LocalDateTime expectedStart = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
+            LocalDateTime expectedEnd = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+            assertThat(createdSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart);
+            assertThat(createdSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd);
+
+            // Verify persistence
+            List<InterviewSlot> savedSlots = interviewSlotRepository.findAll();
+            assertThat(savedSlots).hasSize(1);
+            assertThat(savedSlots.get(0).getLocation()).isEqualTo("Room 101");
+        }
+
+        @Test
+        void createSlotsAsEmployeeCreatesAndReturnsSlots() {
+            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(12, 0),
+                LocalTime.of(13, 0),
+                "Room 101",
+                "http://zoom.us/j/123"
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+
+            List<InterviewSlotDTO> createdSlots = api
+                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                    dto,
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    201
+                );
+
+            assertThat(createdSlots).hasSize(1);
+
+            InterviewSlotDTO createdSlot = createdSlots.get(0);
+            assertThat(createdSlot.location()).isEqualTo("Room 101");
+            assertThat(createdSlot.streamLink()).isEqualTo("http://zoom.us/j/123");
+            assertThat(createdSlot.isBooked()).isFalse();
+
+            // Verify exact time values
+            LocalDateTime expectedStart = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(12, 0));
+            LocalDateTime expectedEnd = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(13, 0));
+            assertThat(createdSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart);
+            assertThat(createdSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd);
+        }
+
+        @Test
+        void createSlotsWithTimeConflictReturnsConflict() {
+            // Create an existing slot
+            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+
+            // First creation succeeds
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                    dto,
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    201
+                );
+
+            // Second creation with overlapping time should fail
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 409);
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void createSlotsWithInvalidDataReturnsBadRequest() {
+            CreateSlotsDTO.SlotInput invalidInput = new CreateSlotsDTO.SlotInput(
+                null, // date is required
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(invalidInput));
+
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 400);
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void createSlotsForOtherProfessorJobReturnsForbidden() {
+            // Create a separate research group for the other professor
+            ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
+                researchGroupRepository,
+                "Other Group",
+                "Prof. Smith",
+                "other@example.com",
+                "OTH",
+                "CS",
+                "Other research",
+                "other@example.com",
+                "80333",
+                "CIT",
+                "Other Street",
+                "https://other.tum.de",
+                "ACTIVE"
             );
 
-        assertThat(createdSlots).hasSize(1);
-
-        InterviewSlotDTO createdSlot = createdSlots.get(0);
-        assertThat(createdSlot.location()).isEqualTo("Room 101");
-        assertThat(createdSlot.streamLink()).isEqualTo("http://zoom.us/j/123");
-        assertThat(createdSlot.isBooked()).isFalse();
-
-        // Verify exact date and time values
-        assertThat(createdSlot.startDateTime()).isNotNull();
-        assertThat(createdSlot.endDateTime()).isNotNull();
-        // Convert to LocalDateTime and check the exact values we sent
-        LocalDateTime expectedStart = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
-        LocalDateTime expectedEnd = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
-        assertThat(createdSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart);
-        assertThat(createdSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd);
-
-        // Verify persistence
-        List<InterviewSlot> savedSlots = interviewSlotRepository.findAll();
-        assertThat(savedSlots).hasSize(1);
-        assertThat(savedSlots.get(0).getLocation()).isEqualTo("Room 101");
-    }
-
-    @Test
-    void createSlotsAsEmployeeCreatesAndReturnsSlots() {
-        CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(12, 0),
-            LocalTime.of(13, 0),
-            "Room 101",
-            "http://zoom.us/j/123"
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
-
-        List<InterviewSlotDTO> createdSlots = api
-            .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
-            );
-
-        assertThat(createdSlots).hasSize(1);
-    }
-
-    @Test
-    void createSlotsWithTimeConflictReturnsConflict() {
-        // Create an existing slot
-        CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
-
-        // First creation succeeds
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
-            );
-
-        // Second creation with overlapping time should fail
-        Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 409);
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void createSlotsWithInvalidDataReturnsBadRequest() {
-        CreateSlotsDTO.SlotInput invalidInput = new CreateSlotsDTO.SlotInput(
-            null, // date is required
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(invalidInput));
-
-        Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 400);
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void createSlotsForOtherProfessorJobReturnsForbidden() {
-        // Create a separate research group for the other professor
-        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Other Group",
-            "Prof. Smith",
-            "other@example.com",
-            "OTH",
-            "CS",
-            "Other research",
-            "other@example.com",
-            "80333",
-            "CIT",
-            "Other Street",
-            "https://other.tum.de",
-            "ACTIVE"
-        );
-
-        // Create another professor in a DIFFERENT research group
-        User otherProfessor = UserTestData.savedProfessorAll(
-            userRepository,
-            otherResearchGroup,
-            null,
-            "other.prof@tum.de",
-            "Jane",
-            "Doe",
-            "en",
-            "+49 89 5678",
-            "https://jane.tum.de",
-            "https://linkedin.com/in/jane",
-            "DE",
-            null,
-            "weiblich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
-
-        CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
-
-        Void result = api
-            .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 403);
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void createSlotsForNonExistentProcessReturnsNotFound() {
-        CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
-
-        Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots/create", dto, Void.class, 404);
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void getSlotsByProcessIdAsProfessorReturnsSlots() {
-        CreateSlotsDTO.SlotInput slotInput1 = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
-        CreateSlotsDTO.SlotInput slotInput2 = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(11, 0),
-            LocalTime.of(12, 0),
-            "Room 102",
-            null
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput1, slotInput2));
-
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
-            );
-
-        // Get slots
-        List<InterviewSlotDTO> slots = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots",
+            // Create another professor in a DIFFERENT research group
+            User otherProfessor = UserTestData.savedProfessorAll(
+                userRepository,
+                otherResearchGroup,
                 null,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                200
-            );
-
-        assertThat(slots).hasSize(2);
-
-        // Verify first slot
-        InterviewSlotDTO firstSlot = slots.get(0);
-        assertThat(firstSlot.location()).isEqualTo("Room 101");
-        assertThat(firstSlot.streamLink()).isNull();
-        assertThat(firstSlot.isBooked()).isFalse();
-        LocalDateTime expectedStart1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
-        LocalDateTime expectedEnd1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
-        assertThat(firstSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart1);
-        assertThat(firstSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd1);
-
-        // Verify second slot
-        InterviewSlotDTO secondSlot = slots.get(1);
-        assertThat(secondSlot.location()).isEqualTo("Room 102");
-        assertThat(secondSlot.streamLink()).isNull();
-        assertThat(secondSlot.isBooked()).isFalse();
-        LocalDateTime expectedStart2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
-        LocalDateTime expectedEnd2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(12, 0));
-        assertThat(secondSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart2);
-        assertThat(secondSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd2);
-
-        // Verify chronological ordering
-        assertThat(firstSlot.startDateTime()).isBefore(secondSlot.startDateTime());
-    }
-
-    @Test
-    void getSlotsByProcessIdAsEmployeeReturnsSlots() {
-        // Create slots first
-        CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
-        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
-
-        api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
-            );
-
-        // Get slots as employee
-        List<InterviewSlotDTO> slots = api
-            .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
-            .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots",
+                "other.prof@tum.de",
+                "Jane",
+                "Doe",
+                "en",
+                "+49 89 5678",
+                "https://jane.tum.de",
+                "https://linkedin.com/in/jane",
+                "DE",
                 null,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                200
+                "weiblich",
+                UUID.randomUUID().toString().replace("-", "").substring(0, 7)
             );
 
-        assertThat(slots).hasSize(1);
+            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 403);
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void createSlotsForNonExistentProcessReturnsNotFound() {
+            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots/create", dto, Void.class, 404);
+            assertThat(result).isNull();
+        }
     }
 
-    @Test
-    void getSlotsByProcessIdForOtherProfessorReturnsForbidden() {
-        // Create a separate research group for the other professor
-        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Other Group",
-            "Prof. Smith",
-            "other@example.com",
-            "OTH",
-            "CS",
-            "Other research",
-            "other@example.com",
-            "80333",
-            "CIT",
-            "Other Street",
-            "https://other.tum.de",
-            "ACTIVE"
-        );
+    @Nested
+    class GetSlots {
 
-        // Create another professor in a DIFFERENT research group
-        User otherProfessor = UserTestData.savedProfessorAll(
-            userRepository,
-            otherResearchGroup,
-            null,
-            "other.prof@tum.de",
-            "Jane",
-            "Doe",
-            "en",
-            "+49 89 5678",
-            "https://jane.tum.de",
-            "https://linkedin.com/in/jane",
-            "DE",
-            null,
-            "weiblich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
+        @Test
+        void getSlotsByProcessIdAsProfessorReturnsSlots() {
+            CreateSlotsDTO.SlotInput slotInput1 = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null
+            );
+            CreateSlotsDTO.SlotInput slotInput2 = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(11, 0),
+                LocalTime.of(12, 0),
+                "Room 102",
+                null
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput1, slotInput2));
 
-        Void result = api
-            .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots", null, Void.class, 403);
-        assertThat(result).isNull();
-    }
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                    dto,
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    201
+                );
 
-    @Test
-    void getSlotsByProcessIdForNonExistentProcessReturnsNotFound() {
-        Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
-        assertThat(result).isNull();
+            // Get slots
+            List<InterviewSlotDTO> slots = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots",
+                    null,
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    200
+                );
+
+            assertThat(slots).hasSize(2);
+
+            // Verify first slot
+            InterviewSlotDTO firstSlot = slots.get(0);
+            assertThat(firstSlot.location()).isEqualTo("Room 101");
+            assertThat(firstSlot.streamLink()).isNull();
+            assertThat(firstSlot.isBooked()).isFalse();
+            LocalDateTime expectedStart1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
+            LocalDateTime expectedEnd1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+            assertThat(firstSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart1);
+            assertThat(firstSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd1);
+
+            // Verify second slot
+            InterviewSlotDTO secondSlot = slots.get(1);
+            assertThat(secondSlot.location()).isEqualTo("Room 102");
+            assertThat(secondSlot.streamLink()).isNull();
+            assertThat(secondSlot.isBooked()).isFalse();
+            LocalDateTime expectedStart2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+            LocalDateTime expectedEnd2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(12, 0));
+            assertThat(secondSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart2);
+            assertThat(secondSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd2);
+
+            // Verify chronological ordering
+            assertThat(firstSlot.startDateTime()).isBefore(secondSlot.startDateTime());
+        }
+
+        @Test
+        void getSlotsByProcessIdAsEmployeeReturnsSlots() {
+            // Create slots first
+            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null
+            );
+            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                    dto,
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    201
+                );
+
+            // Get slots as employee
+            List<InterviewSlotDTO> slots = api
+                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .getAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots",
+                    null,
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    200
+                );
+
+            assertThat(slots).hasSize(1);
+        }
+
+        @Test
+        void getSlotsByProcessIdForOtherProfessorReturnsForbidden() {
+            // Create a separate research group for the other professor
+            ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
+                researchGroupRepository,
+                "Other Group",
+                "Prof. Smith",
+                "other@example.com",
+                "OTH",
+                "CS",
+                "Other research",
+                "other@example.com",
+                "80333",
+                "CIT",
+                "Other Street",
+                "https://other.tum.de",
+                "ACTIVE"
+            );
+
+            // Create another professor in a DIFFERENT research group
+            User otherProfessor = UserTestData.savedProfessorAll(
+                userRepository,
+                otherResearchGroup,
+                null,
+                "other.prof@tum.de",
+                "Jane",
+                "Doe",
+                "en",
+                "+49 89 5678",
+                "https://jane.tum.de",
+                "https://linkedin.com/in/jane",
+                "DE",
+                null,
+                "weiblich",
+                UUID.randomUUID().toString().replace("-", "").substring(0, 7)
+            );
+
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots", null, Void.class, 403);
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void getSlotsByProcessIdForNonExistentProcessReturnsNotFound() {
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
+            assertThat(result).isNull();
+        }
     }
 
     // ==================== DELETE SLOT TESTS ====================
@@ -1074,6 +1093,16 @@ class InterviewResourceTest extends AbstractResourceTest {
             assertThat(intervieweeDTO.scheduledSlot().id()).isEqualTo(slot.getId());
             assertThat(intervieweeDTO.scheduledSlot().location()).isEqualTo("Room 101");
             assertThat(intervieweeDTO.scheduledSlot().isBooked()).isTrue();
+
+            // Verify exact time values
+            LocalDateTime expectedStart = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
+            LocalDateTime expectedEnd = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+            assertThat(intervieweeDTO.scheduledSlot().startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(
+                expectedStart
+            );
+            assertThat(intervieweeDTO.scheduledSlot().endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(
+                expectedEnd
+            );
         }
 
         @Test
