@@ -8,6 +8,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
@@ -1033,10 +1034,9 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void getIntervieweesByProcessIdReturnsIntervieweeWithScheduledSlot() {
-            // Arrange - Create applicant and add to interview
+            // Arrange - Create applicant, add to interview, create slot and book it
             Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
-
             AddIntervieweesDTO addDto = new AddIntervieweesDTO(List.of(application.getApplicationId()));
 
             List<IntervieweeDTO> addedInterviewees = api
@@ -1048,33 +1048,7 @@ class InterviewResourceTest extends AbstractResourceTest {
                     201
                 );
 
-            UUID intervieweeId = addedInterviewees.get(0).id();
-
-            // Create a slot and assign it to the interviewee
-            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-                LocalDate.now().plusDays(1),
-                LocalTime.of(10, 0),
-                LocalTime.of(11, 0),
-                "Room 101",
-                null
-            );
-            CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
-
-            List<InterviewSlotDTO> createdSlots = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(
-                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                    dto,
-                    new TypeReference<List<InterviewSlotDTO>>() {},
-                    201
-                );
-
-            // Assign the slot to the interviewee directly in DB
-            InterviewSlot slot = interviewSlotRepository.findById(createdSlots.get(0).id()).orElseThrow();
-            de.tum.cit.aet.interview.domain.Interviewee interviewee = intervieweeRepository.findById(intervieweeId).orElseThrow();
-            slot.setInterviewee(interviewee);
-            slot.setIsBooked(true);
-            interviewSlotRepository.save(slot);
+            InterviewSlot slot = createAndBookSlot(addedInterviewees.get(0).id());
 
             // Act
             List<IntervieweeDTO> result = api
@@ -1093,16 +1067,37 @@ class InterviewResourceTest extends AbstractResourceTest {
             assertThat(intervieweeDTO.scheduledSlot().id()).isEqualTo(slot.getId());
             assertThat(intervieweeDTO.scheduledSlot().location()).isEqualTo("Room 101");
             assertThat(intervieweeDTO.scheduledSlot().isBooked()).isTrue();
+            assertSlotTime(intervieweeDTO.scheduledSlot(), LocalTime.of(10, 0), LocalTime.of(11, 0));
+        }
 
-            // Verify exact time values
-            LocalDateTime expectedStart = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
-            LocalDateTime expectedEnd = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
-            assertThat(intervieweeDTO.scheduledSlot().startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(
-                expectedStart
+        private InterviewSlot createAndBookSlot(UUID intervieweeId) {
+            CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null
             );
-            assertThat(intervieweeDTO.scheduledSlot().endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(
-                expectedEnd
-            );
+            List<InterviewSlotDTO> createdSlots = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                    new CreateSlotsDTO(List.of(slotInput)),
+                    new TypeReference<List<InterviewSlotDTO>>() {},
+                    201
+                );
+            InterviewSlot slot = interviewSlotRepository.findById(createdSlots.get(0).id()).orElseThrow();
+            Interviewee interviewee = intervieweeRepository.findById(intervieweeId).orElseThrow();
+            slot.setInterviewee(interviewee);
+            slot.setIsBooked(true);
+            return interviewSlotRepository.save(slot);
+        }
+
+        private void assertSlotTime(InterviewSlotDTO slot, LocalTime expectedStart, LocalTime expectedEnd) {
+            LocalDateTime start = LocalDateTime.of(LocalDate.now().plusDays(1), expectedStart);
+            LocalDateTime end = LocalDateTime.of(LocalDate.now().plusDays(1), expectedEnd);
+            assertThat(slot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(start);
+            assertThat(slot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(end);
         }
 
         @Test
