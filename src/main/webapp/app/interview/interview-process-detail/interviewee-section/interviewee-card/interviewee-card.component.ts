@@ -4,6 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatDate, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 
 /**
  * Card component displaying an interviewee's status and scheduled slot details.
@@ -19,11 +20,15 @@ export class IntervieweeCardComponent {
   // Inputs
   interviewee = input.required<IntervieweeDTO>();
 
-  // Computed
+  // Computed values
+  scheduledDate = computed(() => {
+    const slot = this.interviewee().scheduledSlot;
+    return slot ? formatDate(slot.startDateTime, this.locale()) : '';
+  });
+
   timeRange = computed(() => {
     const slot = this.interviewee().scheduledSlot;
-    if (!slot) return '';
-    return `${this.formatTime(slot.startDateTime)} - ${this.formatTime(slot.endDateTime)}`;
+    return slot ? formatTimeRange(slot.startDateTime, slot.endDateTime, this.locale()) : '';
   });
 
   location = computed(() => this.interviewee().scheduledSlot?.location ?? '');
@@ -40,19 +45,6 @@ export class IntervieweeCardComponent {
   // Services
   private readonly translateService = inject(TranslateService);
 
-  // Formats date to localized string (e.g., "27. Dezember 2025")
-  formatDate(date?: string): string {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString(this.getLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
-  }
-
-  // Formats time to localized string (e.g., "14:30")
-  formatTime(date?: string): string {
-    if (!date) return '';
-    return new Date(date).toLocaleTimeString(this.getLocale(), { hour: '2-digit', minute: '2-digit' });
-  }
-
-  private getLocale(): string {
-    return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
-  }
+  // Computed locale
+  private locale = computed(() => getLocale(this.translateService));
 }
