@@ -6,6 +6,7 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
+import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
@@ -191,5 +192,31 @@ public class InterviewResource {
         interviewService.deleteSlot(slotId);
         log.info("Successfully deleted slot: {}", slotId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * {@code POST /api/interviews/slots/{slotId}/assign} : Assign an interviewee to
+     * a slot.
+     *
+     * Assigns the applicant to the specified slot.
+     * The applicant must have been previously added to the interview process.
+     *
+     * @param slotId the ID of the slot to assign
+     * @param dto    containing the application ID
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         updated {@link InterviewSlotDTO}
+     * @throws EntityNotFoundException if the slot or interviewee is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @PostMapping("/slots/{slotId}/assign")
+    public ResponseEntity<InterviewSlotDTO> assignSlotToInterviewee(
+        @PathVariable UUID slotId,
+        @Valid @RequestBody AssignSlotRequestDTO dto
+    ) {
+        log.info("REST request to assign slot {} to application {}", slotId, dto.applicationId());
+        InterviewSlotDTO result = interviewService.assignSlotToInterviewee(slotId, dto.applicationId());
+        log.info("Successfully assigned slot {} to interviewee", slotId);
+        return ResponseEntity.ok(result);
     }
 }
