@@ -42,7 +42,8 @@ import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Slf4j
 @Service
@@ -62,9 +63,14 @@ public class UserDataExportService {
     private final DocumentRepository documentRepository;
     private final ZipExportService zipExportService;
     private final ObjectMapper objectMapper;
+    private final PlatformTransactionManager transactionManager;
 
     /**
      * Export all user-related data as a ZIP archive written to the provided {@code HttpServletResponse}.
+     *
+     * <p>To avoid holding a database transaction open while streaming data to the client,
+     * all data required for the JSON summary is collected inside a short read-only transaction
+     * first. ZIP/HTTP streaming is then performed outside of that transaction.</p>
      *
      * <p>The generated ZIP contains a JSON summary file ("user_data_summary.json") with the user's profile,
      * settings, email settings, optional applicant data and staff data. If applicant data exists, applicant
@@ -76,17 +82,13 @@ public class UserDataExportService {
      * @throws IOException              if an I/O error occurs while writing the ZIP to the response stream
      * @throws IllegalArgumentException if the user with the given id does not exist
      */
-    @Transactional(readOnly = true)
     public void exportUserData(UUID userId, HttpServletResponse response) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        UserProfileExportDTO profile = getUserProfile(user);
-        List<UserSettingDTO> settings = getUserSettings(userId);
-        List<EmailSettingDTO> emailSettings = getEmailSettings(user);
-        ApplicantDataExportDTO applicantData = applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
-        StaffDataDTO staffData = getStaffData(user);
-
-        UserDataExportDTO userData = new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
+        TransactionTemplate tx = new TransactionTemplate(transactionManager);
+        tx.setReadOnly(true);
+        UserDataExportDTO userData = tx.execute(status -> collectUserData(userId));
+        if (userData == null) {
+            throw new UserDataExportException("User data export failed: could not collect user data");
+        }
 
         zipExportService.initZipResponse(response, "user-data-export-" + userId);
 
@@ -107,6 +109,18 @@ public class UserDataExportService {
 
             zipOut.finish();
         }
+    }
+
+    private UserDataExportDTO collectUserData(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        UserProfileExportDTO profile = getUserProfile(user);
+        List<UserSettingDTO> settings = getUserSettings(userId);
+        List<EmailSettingDTO> emailSettings = getEmailSettings(user);
+        ApplicantDataExportDTO applicantData = applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
+        StaffDataDTO staffData = getStaffData(user);
+
+        return new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
     }
 
     // Private helper methods
