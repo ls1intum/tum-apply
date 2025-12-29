@@ -25,7 +25,7 @@
 
     <!-- Schedule Details (only for SCHEDULED state) -->
     @if (interviewee().state === IntervieweeState.SCHEDULED && interviewee().scheduledSlot) {
-      <div class="flex items-center gap-8 text-sm text-text-secondary">
+      <div class="flex items-center self-end gap-8 text-sm text-text-secondary">
         <!-- Date -->
         <div class="flex items-center gap-2">
           <fa-icon icon="calendar" class="text-xs text-icon-disabled" />
