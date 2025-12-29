@@ -7,12 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AssignedIntervieweeDTO } from './assignedIntervieweeDTO';
 
 
 export interface InterviewSlotDTO { 
     endDateTime?: string;
     id?: string;
     interviewProcessId?: string;
+    interviewee?: AssignedIntervieweeDTO;
     isBooked?: boolean;
     location?: string;
     startDateTime?: string;
