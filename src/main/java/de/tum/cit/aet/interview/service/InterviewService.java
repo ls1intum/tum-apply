@@ -1,12 +1,9 @@
 package de.tum.cit.aet.interview.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.exception.AccessDeniedException;
-import de.tum.cit.aet.core.exception.BadRequestException;
-import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
-import de.tum.cit.aet.core.exception.TimeConflictException;
+import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
@@ -21,13 +18,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,12 +36,15 @@ public class InterviewService {
     private final JobRepository jobRepository;
     private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
+    /*--------------------------------------------------------------
+     Interview Process Overview and Management
+    --------------------------------------------------------------*/
+
     /**
      * Get overview of all interview processes with statistics per job.
-     * Returns a list of jobs that have an active interview process with counts
-     * of applications in each state (completed, scheduled, invited, uncontacted).
-     * Future improvement: Create separate InterviewInvitation entity to better
-     * separate application review process from interview process.
+     * Returns a list of jobs that have an active interview process with counts of applications in each state (completed, scheduled, invited, uncontacted).
+     *
+     * TODO: This implementation uses IntervieweeState to track interview status.
      *
      * @return list of interview overview DTOs with statistics
      */
@@ -208,6 +202,10 @@ public class InterviewService {
         );
     }
 
+    /*--------------------------------------------------------------
+     Interview Slot and Interviewee Management
+    --------------------------------------------------------------*/
+
     /**
      * Creates and persists new interview slots for a given interview process.
      *
@@ -271,6 +269,36 @@ public class InterviewService {
         slot.setIsBooked(false);
 
         return slot;
+    }
+
+    /**
+     * Deletes a single interview slot.
+     * Only unbooked slots can be deleted.
+     *
+     * @param slotId the ID of the slot to delete
+     * @throws EntityNotFoundException if the slot is not found
+     * @throws AccessDeniedException   if the user is not authorized to delete this
+     *                                 slot
+     * @throws BadRequestException     if the slot is booked
+     */
+    public void deleteSlot(UUID slotId) {
+        // 1. Load the slot
+        InterviewSlot slot = interviewSlotRepository
+            .findByIdWithJob(slotId)
+            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
+
+        // 2. Security: Verify current user has job access
+        Job job = slot.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3.Cannot delete booked slots
+        // TODO: Implement deletion of booked slots with unassignment of applicant
+        if (slot.getIsBooked()) {
+            throw new BadRequestException("Cannot delete booked slot.");
+        }
+
+        // 4. Delete the slot
+        interviewSlotRepository.delete(slot);
     }
 
     /**
@@ -377,6 +405,10 @@ public class InterviewService {
             .toList();
     }
 
+    /*--------------------------------------------------------------
+     Interviewee Management
+    --------------------------------------------------------------*/
+
     /**
      * Adds applicants to an interview process by creating Interviewee entities.
      * Skips duplicates - if an applicant is already added, they are not added
@@ -454,36 +486,6 @@ public class InterviewService {
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
 
         return interviewees.stream().map(this::mapIntervieweeToDTO).toList();
-    }
-
-    /**
-     * Deletes a single interview slot.
-     * Only unbooked slots can be deleted.
-     *
-     * @param slotId the ID of the slot to delete
-     * @throws EntityNotFoundException if the slot is not found
-     * @throws AccessDeniedException   if the user is not authorized to delete this
-     *                                 slot
-     * @throws BadRequestException     if the slot is booked
-     */
-    public void deleteSlot(UUID slotId) {
-        // 1. Load the slot
-        InterviewSlot slot = interviewSlotRepository
-            .findByIdWithJob(slotId)
-            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
-
-        // 2. Security: Verify current user has job access
-        Job job = slot.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
-
-        // 3.Cannot delete booked slots
-        // TODO: Implement deletion of booked slots with unassignment of applicant
-        if (slot.getIsBooked()) {
-            throw new BadRequestException("Cannot delete booked slot.");
-        }
-
-        // 4. Delete the slot
-        interviewSlotRepository.delete(slot);
     }
 
     /**
@@ -596,9 +598,7 @@ public class InterviewService {
         return IntervieweeState.UNCONTACTED;
     }
 
-    /**
-     * Maps a User entity to IntervieweeUserDTO.
-     */
+    // Maps a User entity to IntervieweeUserDTO.
     private IntervieweeDTO.IntervieweeUserDTO mapUserToIntervieweeUserDTO(User user) {
         if (user == null) {
             return null;
