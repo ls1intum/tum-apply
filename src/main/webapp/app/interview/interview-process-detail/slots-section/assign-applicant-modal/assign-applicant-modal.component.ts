@@ -13,6 +13,7 @@ import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatDateWithWeekday, formatTime, getLocale } from 'app/shared/util/date-time.util';
 
 /**
  * Modal component for assigning an applicant to an interview slot.
@@ -50,12 +51,27 @@ export class AssignApplicantModalComponent {
   loading = signal(false);
   assignLoading = signal(false);
 
-  // Computed
   // Filters out already scheduled interviewees
   availableInterviewees = computed(() => this.interviewees().filter(i => i.state !== 'SCHEDULED'));
 
   // Returns true if an applicant is selected and not currently assigning
   canAssign = computed(() => this.selectedApplicantId() !== null && !this.assignLoading());
+
+  // Computed state for template conditional rendering
+  readonly intervieweeState = computed(() => {
+    if (this.loading()) return 'loading';
+    if (this.interviewees().length === 0) return 'empty';
+    if (this.availableInterviewees().length === 0) return 'allAssigned';
+    return 'selectable';
+  });
+
+  // Computed values for slot display
+  slotDate = computed(() => formatDateWithWeekday(this.slot().startDateTime, this.locale()));
+  slotStartTime = computed(() => formatTime(this.slot().startDateTime, this.locale()));
+  slotEndTime = computed(() => formatTime(this.slot().endDateTime, this.locale()));
+
+  // Computed
+  private locale = computed(() => getLocale(this.translateService));
 
   // Services
   private readonly interviewService = inject(InterviewResourceApiService);
@@ -152,22 +168,6 @@ export class AssignApplicantModalComponent {
   // Closes the modal and resets state
   closeModal(): void {
     this.onVisibleChange(false);
-  }
-
-  // Template Helpers
-
-  // Formats a date string to localized time (e.g., "14:30")
-  formatTime(date?: string): string {
-    if (!date) return '';
-    const locale = this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
-    return new Date(date).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-  }
-
-  // Formats a date string to localized full date
-  formatDate(date?: string): string {
-    if (!date) return '';
-    const locale = this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
-    return new Date(date).toLocaleDateString(locale, { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
   // Fetches all interviewees for the current interview process
