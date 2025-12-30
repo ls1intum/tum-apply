@@ -7,8 +7,7 @@ import { ProfessorDTO } from 'app/generated/model/professorDTO';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
-// Summary panel for interview booking.
-// Displays job info, supervisor, selected slot details and book button.
+/** Summary panel for interview booking. Displays job info, supervisor, selected slot details and book button. */
 @Component({
   selector: 'jhi-booking-summary',
   standalone: true,
@@ -32,53 +31,44 @@ export class BookingSummaryComponent {
 
   // Computed
   hasSelection = computed(() => this.selectedSlot() !== null);
-
   supervisorName = computed(() => {
     const s = this.supervisor();
-    if (s === undefined) return '';
-    return `${s.firstName} ${s.lastName}`;
+    return s === undefined ? '' : `${s.firstName} ${s.lastName}`;
   });
 
+  /** Formats selected slot date for display. */
   formattedDate = computed(() => {
-    const slot = this.selectedSlot();
-    const startDateTime = slot?.startDateTime;
+    const startDateTime = this.selectedSlot()?.startDateTime;
     if (startDateTime === undefined || startDateTime === '') return '';
-    return new Date(startDateTime).toLocaleDateString(this.getLocale(), {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
+    return new Date(startDateTime).toLocaleDateString(this.getLocale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   });
 
+  /** Formats selected slot time range for display. */
   formattedTime = computed(() => {
     const slot = this.selectedSlot();
-    const startDateTime = slot?.startDateTime;
-    const endDateTime = slot?.endDateTime;
-    if (startDateTime === undefined || startDateTime === '' || endDateTime === undefined || endDateTime === '') {
-      return '';
-    }
-    const locale = this.getLocale();
-    const start = new Date(startDateTime).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-    const end = new Date(endDateTime).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-    return `${start} - ${end}`;
+    const start = slot?.startDateTime;
+    const end = slot?.endDateTime;
+    if (start === undefined || start === '' || end === undefined || end === '') return '';
+    const loc = this.getLocale();
+    return `${new Date(start).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
   });
 
   isVirtual = computed(() => this.selectedSlot()?.location === 'virtual');
 
+  /** Returns date from booked appointment or selected slot. */
   displayDate = computed(() => (this.alreadyBooked() ? this.bookedDate() : this.formattedDate()));
+  /** Returns time from booked appointment or selected slot. */
   displayTime = computed(() => (this.alreadyBooked() ? this.bookedTime() : this.formattedTime()));
   displayIsVirtual = computed(() => (this.alreadyBooked() ? this.bookedIsVirtual() : this.isVirtual()));
 
+  /** Returns custom location string if available, null if generic. */
   displayLocation = computed(() => {
     const location = this.alreadyBooked() ? this.bookedLocation() : this.selectedSlot()?.location;
-    if (location !== undefined && location !== '' && location !== 'virtual') return location;
-    return null;
+    return location !== undefined && location !== '' && location !== 'virtual' ? location : null;
   });
 
-  displayLocationKey = computed(() => {
-    return this.displayIsVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson';
-  });
+  /** Returns translation key for virtual/in-person location. */
+  displayLocationKey = computed(() => this.displayIsVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
 
   // Services
   private readonly translateService = inject(TranslateService);
@@ -86,7 +76,7 @@ export class BookingSummaryComponent {
   // Signals
   private readonly langChange = toSignal(this.translateService.onLangChange);
 
-  // Private
+  /** Returns current locale based on language setting. */
   private getLocale(): string {
     this.langChange();
     return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';

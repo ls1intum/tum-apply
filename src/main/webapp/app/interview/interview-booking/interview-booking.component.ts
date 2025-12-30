@@ -15,10 +15,7 @@ import { DateHeaderComponent } from 'app/interview/interview-process-detail/slot
 import { SelectableSlotCardComponent } from './selectable-slot-card/selectable-slot-card.component';
 import { BookingSummaryComponent } from './booking-summary/booking-summary.component';
 
-/**
- * Interview booking page for applicants.
- * Allows selecting and booking an interview slot from available options.
- */
+/** Interview booking page for applicants. Allows selecting and booking an interview slot. */
 @Component({
   selector: 'jhi-interview-booking',
   standalone: true,
@@ -50,69 +47,52 @@ export class InterviewBookingComponent {
   jobTitle = computed(() => this.bookingData()?.jobTitle ?? '');
   researchGroupName = computed(() => this.bookingData()?.researchGroupName);
   supervisor = computed(() => this.bookingData()?.supervisor);
-
   supervisorName = computed(() => {
     const s = this.bookingData()?.supervisor;
-    if (s === undefined) return '';
-    return `${s.firstName} ${s.lastName}`;
+    return s === undefined ? '' : `${s.firstName} ${s.lastName}`;
   });
 
   // Computed - Booking Status
   hasBookedSlot = computed(() => this.bookingData()?.userBookingInfo?.hasBookedSlot ?? false);
   bookedSlot = computed(() => this.bookingData()?.userBookingInfo?.bookedSlot ?? null);
 
+  /** Formats the booked slot date for display. */
   bookedSlotDate = computed(() => {
-    const slot = this.bookedSlot();
-    const startDateTime = slot?.startDateTime;
+    const startDateTime = this.bookedSlot()?.startDateTime;
     if (startDateTime === undefined || startDateTime === '') return '';
-    return new Date(startDateTime).toLocaleDateString(this.locale(), {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
+    return new Date(startDateTime).toLocaleDateString(this.locale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   });
 
+  /** Formats the booked slot time range for display. */
   bookedSlotTime = computed(() => {
     const slot = this.bookedSlot();
-    const startDateTime = slot?.startDateTime;
-    const endDateTime = slot?.endDateTime;
-    if (startDateTime === undefined || startDateTime === '' || endDateTime === undefined || endDateTime === '') {
-      return '';
-    }
+    const start = slot?.startDateTime;
+    const end = slot?.endDateTime;
+    if (start === undefined || start === '' || end === undefined || end === '') return '';
     const loc = this.locale();
-    const start = new Date(startDateTime).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
-    const end = new Date(endDateTime).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
-    return `${start} - ${end}`;
+    return `${new Date(start).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
   });
 
+  /** Returns location string or translated virtual/in-person label. */
   bookedSlotLocation = computed(() => {
     const slot = this.bookedSlot();
     if (slot === null) return '';
-    const location = slot.location;
-    if (location !== undefined && location !== '' && location !== 'virtual') {
-      return location;
-    }
-    return this.translateService.instant(location === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
+    const loc = slot.location;
+    if (loc !== undefined && loc !== '' && loc !== 'virtual') return loc;
+    return this.translateService.instant(loc === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
   });
 
   isBookedVirtual = computed(() => this.bookedSlot()?.location === 'virtual');
 
-  // Computed - Slot Grouping
+  /** Groups available slots by date and sorts chronologically. */
   groupedSlots = computed(() => {
-    const data = this.bookingData();
-    const slots = data?.availableSlots;
+    const slots = this.bookingData()?.availableSlots;
     if (slots === undefined || slots.length === 0) return [];
 
     const grouped = new Map<string, InterviewSlotDTO[]>();
-
     slots.forEach(slot => {
-      const localDate = new Date(this.safeDate(slot.startDateTime));
-      const dateKey = localDate.toISOString().split('T')[0];
-
-      if (!grouped.has(dateKey)) {
-        grouped.set(dateKey, []);
-      }
+      const dateKey = new Date(this.safeDate(slot.startDateTime)).toISOString().split('T')[0];
+      if (!grouped.has(dateKey)) grouped.set(dateKey, []);
       grouped.get(dateKey)?.push(slot);
     });
 
@@ -125,142 +105,122 @@ export class InterviewBookingComponent {
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
 
+  /** Filters slots to only show the currently selected month. */
   currentMonthSlots = computed(() => {
     const allDates = this.groupedSlots();
-    const offset = this.currentMonthOffset();
-
     const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + offset);
-    const targetMonth = targetDate.getMonth();
-    const targetYear = targetDate.getFullYear();
-
-    return allDates.filter(group => group.localDate.getMonth() === targetMonth && group.localDate.getFullYear() === targetYear);
+    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
+    return allDates.filter(g => g.localDate.getMonth() === targetDate.getMonth() && g.localDate.getFullYear() === targetDate.getFullYear());
   });
 
+  /** Returns the current page of date groups for display. */
   paginatedSlots = computed(() => {
-    const monthDates = this.currentMonthSlots();
-    const page = this.currentDatePage();
-    const start = page * this.DATES_PER_PAGE;
-    const end = start + this.DATES_PER_PAGE;
-    return monthDates.slice(start, end);
+    const start = this.currentDatePage() * this.DATES_PER_PAGE;
+    return this.currentMonthSlots().slice(start, start + this.DATES_PER_PAGE);
   });
 
   // Computed - Pagination
   totalDatePages = computed(() => Math.ceil(this.currentMonthSlots().length / this.DATES_PER_PAGE));
   canGoPreviousDate = computed(() => this.currentDatePage() > 0);
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
-
   currentMonthLabel = computed(() => {
     const targetDate = new Date();
     targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
     return targetDate.toLocaleDateString(this.locale(), { month: 'long', year: 'numeric' });
   });
 
-  // Constants (private)
+  // Constants
   private readonly DATES_PER_PAGE = 4;
 
-  // Services (private - must come after public fields)
+  // Services
   private readonly route = inject(ActivatedRoute);
   private readonly bookingService = inject(InterviewBookingResourceApiService);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
-  // Signals (private)
+  // Signals
   private readonly langChange = toSignal(this.translateService.onLangChange);
 
   // Effects
   private readonly loadEffect = effect(() => {
     const processId = this.route.snapshot.paramMap.get('processId');
-    if (processId !== null && processId !== '') {
-      void this.loadData(processId);
-    }
+    if (processId !== null && processId !== '') void this.loadData(processId);
   });
 
-  // Methods - Slot Selection
+  /** Toggles slot selection. */
   onSlotSelected(slot: InterviewSlotDTO): void {
-    if (this.selectedSlot()?.id === slot.id) {
-      this.selectedSlot.set(null);
-    } else {
-      this.selectedSlot.set(slot);
-    }
+    this.selectedSlot.set(this.selectedSlot()?.id === slot.id ? null : slot);
   }
 
+  /** Initiates booking for the selected slot. */
   onBook(): void {
-    const slot = this.selectedSlot();
-    if (slot === null) return;
-
+    if (this.selectedSlot() === null) return;
     // TODO: Call booking API when endpoint exists
     this.toastService.showInfoKey('interview.booking.bookedSuccessPlaceholder');
   }
 
-  // Methods - Navigation
+  /** Navigates to the previous month. */
   previousMonth(): void {
     this.currentMonthOffset.update(v => v - 1);
     this.currentDatePage.set(0);
   }
 
+  /** Navigates to the next month. */
   nextMonth(): void {
     this.currentMonthOffset.update(v => v + 1);
     this.currentDatePage.set(0);
   }
 
+  /** Navigates to the previous date page. */
   previousDatePage(): void {
-    if (this.canGoPreviousDate()) {
-      this.currentDatePage.update(v => v - 1);
-    }
+    if (this.canGoPreviousDate()) this.currentDatePage.update(v => v - 1);
   }
 
+  /** Navigates to the next date page. */
   nextDatePage(): void {
-    if (this.canGoNextDate()) {
-      this.currentDatePage.update(v => v + 1);
-    }
+    if (this.canGoNextDate()) this.currentDatePage.update(v => v + 1);
   }
 
-  // Methods - Expand/Collapse
+  /** Returns visible slots for a date, respecting expansion state. */
   getVisibleSlots(dateKey: string, allSlots: InterviewSlotDTO[]): InterviewSlotDTO[] {
-    const isExpanded = this.expandedDates().has(dateKey);
-    if (isExpanded || allSlots.length <= this.MAX_VISIBLE_SLOTS) {
-      return allSlots;
-    }
-    return allSlots.slice(0, this.MAX_VISIBLE_SLOTS);
+    return this.expandedDates().has(dateKey) || allSlots.length <= this.MAX_VISIBLE_SLOTS ? allSlots : allSlots.slice(0, this.MAX_VISIBLE_SLOTS);
   }
 
+  /** Returns count of hidden slots for a date. */
   getRemainingCount(dateKey: string, totalSlots: number): number {
-    if (this.expandedDates().has(dateKey)) return 0;
-    return Math.max(0, totalSlots - this.MAX_VISIBLE_SLOTS);
+    return this.expandedDates().has(dateKey) ? 0 : Math.max(0, totalSlots - this.MAX_VISIBLE_SLOTS);
   }
 
+  /** Checks if a date group is expanded. */
   isExpanded(dateKey: string): boolean {
     return this.expandedDates().has(dateKey);
   }
 
+  /** Toggles expansion state for a date group. */
   toggleExpanded(dateKey: string): void {
     const expanded = new Set(this.expandedDates());
-    if (expanded.has(dateKey)) {
-      expanded.delete(dateKey);
-    } else {
-      expanded.add(dateKey);
-    }
+    expanded.has(dateKey) ? expanded.delete(dateKey) : expanded.add(dateKey);
     this.expandedDates.set(expanded);
   }
 
+  /** Returns translated "show more" text with count. */
   getShowMoreText(count: number): string {
     const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
     return `${count} ${this.translateService.instant(key)}`;
   }
 
-  // Private
+  /** Returns current locale based on language setting. */
   private locale(): string {
     this.langChange();
     return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
   }
 
+  /** Loads booking data from the API. */
   private async loadData(processId: string): Promise<void> {
     try {
       this.loading.set(true);
       this.error.set(false);
-      const data = await firstValueFrom(this.bookingService.getBookingData(processId));
-      this.bookingData.set(data);
+      this.bookingData.set(await firstValueFrom(this.bookingService.getBookingData(processId)));
     } catch {
       this.error.set(true);
     } finally {
@@ -268,8 +228,8 @@ export class InterviewBookingComponent {
     }
   }
 
+  /** Safely converts date string to timestamp. */
   private safeDate(value?: string): number {
-    if (value === undefined || value === '') return Number.POSITIVE_INFINITY;
-    return new Date(value).getTime();
+    return value === undefined || value === '' ? Number.POSITIVE_INFINITY : new Date(value).getTime();
   }
 }
