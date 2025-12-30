@@ -1,0 +1,40 @@
+{
+    "interview": {
+        "booking": {
+            "title": "Wähle deinen Interview Termin",
+            "summary": "Zusammenfassung",
+            "topic": "Thema",
+            "jobTitle": "Titel",
+            "researchGroup": "Forschungsgruppe",
+            "supervisor": "Betreuer:in",
+            "selectedInterview": "Ausgewähltes Interview",
+            "date": "Datum",
+            "time": "Uhrzeit",
+            "location": "Ort",
+            "book": "Termin buchen",
+            "noSlotSelected": "Wähle einen Termin aus",
+            "noSlotsAvailable": "Keine Termine in diesem Monat verfügbar.",
+            "details": "Details",
+            "error": {
+                "title": "Fehler",
+                "message": "Buchungsdaten konnten nicht geladen werden."
+            },
+            "success": {
+                "title": "Termin gebucht!",
+                "message": "Du hast deinen Interview-Termin erfolgreich gebucht."
+            },
+            "bookedSuccessPlaceholder": {
+                "summary": "Buchung erfolgreich",
+                "detail": "Dies ist ein Platzhalter für die Buchung."
+            }
+        },
+        "slots": {
+            "location": {
+                "virtual": "Virtuell",
+                "inPerson": "Persönlich"
+            },
+            "slotsCountSingular": "Termin",
+            "slotsCountPlural": "Termine"
+        }
+    }
+}
