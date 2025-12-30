@@ -92,7 +92,6 @@ model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTODepartmentDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
-model/pageResponseDTOInterviewSlotDTO.ts
 model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
