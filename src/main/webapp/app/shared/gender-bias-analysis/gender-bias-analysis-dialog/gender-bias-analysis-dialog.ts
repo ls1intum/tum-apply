@@ -25,9 +25,9 @@ export class GenderBiasAnalysisDialogComponent {
     if (!coding) return 'genderDecoder.formulationTexts.neutral';
 
     switch (coding) {
-      case 'masculine-coded':
+      case 'non-inclusive-coded':
         return 'genderDecoder.formulationTexts.nonInclusive';
-      case 'feminine-coded':
+      case 'inclusive-coded':
         return 'genderDecoder.formulationTexts.inclusive';
       case 'neutral':
       case 'empty':
@@ -42,9 +42,9 @@ export class GenderBiasAnalysisDialogComponent {
     if (!coding) return 'genderDecoder.explanations.neutral';
 
     switch (coding) {
-      case 'masculine-coded':
+      case 'non-inclusive-coded':
         return 'genderDecoder.explanations.non-inclusive-coded';
-      case 'feminine-coded':
+      case 'inclusive-coded':
         return 'genderDecoder.explanations.inclusive-coded';
       case 'neutral':
         return 'genderDecoder.explanations.neutral';
