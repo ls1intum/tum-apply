@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /**
- * Analyzes text for gender-coded language (masculine vs feminine stereotypes)
+ * Analyzes text for gender-coded language (non-inclusive vs inclusive
+ * stereotypes)
  */
 @Component
 public class GenderBiasAnalyzer {
