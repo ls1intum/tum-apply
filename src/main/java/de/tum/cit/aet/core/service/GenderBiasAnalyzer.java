@@ -142,8 +142,8 @@ public class GenderBiasAnalyzer {
      */
     public record AnalysisResult(
         String originalText,
-        List<String> masculineWords,
-        List<String> feminineWords,
+        List<String> nonInclusiveWords,
+        List<String> inclusiveWords,
         int masculineCount,
         int feminineCount,
         String coding,

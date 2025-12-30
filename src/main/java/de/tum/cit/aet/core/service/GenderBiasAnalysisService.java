@@ -42,13 +42,13 @@ public class GenderBiasAnalysisService {
     private List<BiasedWordDTO> convertToWordDTOs(GenderBiasAnalyzer.AnalysisResult result) {
         List<BiasedWordDTO> dtos = new ArrayList<>();
 
-        // Add masculine words
-        for (String word : result.masculineWords()) {
+        // Add non inslusive words
+        for (String word : result.nonInclusiveWords()) {
             dtos.add(new BiasedWordDTO(word, "masculine"));
         }
 
-        // Add feminine words
-        for (String word : result.feminineWords()) {
+        // Add inclusive words
+        for (String word : result.inclusiveWords()) {
             dtos.add(new BiasedWordDTO(word, "feminine"));
         }
 
