@@ -1,40 +1,40 @@
 {
-    "interview": {
-        "booking": {
-            "title": "Select your Interview Slot",
-            "summary": "Summary",
-            "topic": "Topic",
-            "jobTitle": "Title",
-            "researchGroup": "Research Group",
-            "supervisor": "Supervisor",
-            "selectedInterview": "Selected Interview",
-            "date": "Date",
-            "time": "Time",
-            "location": "Location",
-            "book": "Book Interview",
-            "noSlotSelected": "Select a slot to continue",
-            "noSlotsAvailable": "No slots available for this month.",
-            "details": "Details",
-            "error": {
-                "title": "Error",
-                "message": "Unable to load booking data."
-            },
-            "success": {
-                "title": "Interview Booked!",
-                "message": "You have successfully booked your interview slot."
-            },
-            "bookedSuccessPlaceholder": {
-                "summary": "Booking Successful",
-                "detail": "This is a placeholder for the booking action."
-            }
-        },
-        "slots": {
-            "location": {
-                "virtual": "Virtual",
-                "inPerson": "In-Person"
-            },
-            "slotsCountSingular": "Slot",
-            "slotsCountPlural": "Slots"
-        }
+  "interview": {
+    "booking": {
+      "title": "Select your Interview Slot",
+      "summary": "Summary",
+      "topic": "Topic",
+      "jobTitle": "Title",
+      "researchGroup": "Research Group",
+      "supervisor": "Supervisor",
+      "selectedInterview": "Selected Interview",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "book": "Book Interview",
+      "noSlotSelected": "Select a slot to continue",
+      "noSlotsAvailable": "No slots available for this month.",
+      "details": "Details",
+      "error": {
+        "title": "Error",
+        "message": "Unable to load booking data."
+      },
+      "success": {
+        "title": "Interview Booked!",
+        "message": "You have successfully booked your interview slot."
+      },
+      "bookedSuccessPlaceholder": {
+        "summary": "Booking Successful",
+        "detail": "This is a placeholder for the booking action."
+      }
+    },
+    "slots": {
+      "location": {
+        "virtual": "Virtual",
+        "inPerson": "In-Person"
+      },
+      "slotsCountSingular": "Slot",
+      "slotsCountPlural": "Slots"
     }
+  }
 }

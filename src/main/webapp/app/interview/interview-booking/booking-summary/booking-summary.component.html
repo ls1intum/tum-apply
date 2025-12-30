@@ -3,9 +3,7 @@
 
   <!-- Job Info Section -->
   <div class="border border-border-default rounded-lg p-4 mb-4">
-    <div class="text-xs text-text-secondary uppercase font-semibold mb-3" jhiTranslate="interview.booking.topic">
-      Topic
-    </div>
+    <div class="text-xs text-text-secondary uppercase font-semibold mb-3" jhiTranslate="interview.booking.topic">Topic</div>
 
     <div class="flex flex-col gap-3">
       <!-- Title -->
@@ -22,9 +20,7 @@
         <div class="flex items-start gap-2">
           <fa-icon icon="building-columns" class="text-text-secondary mt-0.5 w-4" />
           <div>
-            <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.researchGroup">
-              Research Group
-            </div>
+            <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.researchGroup">Research Group</div>
             <div class="text-sm font-medium text-text-primary">{{ researchGroupName() }}</div>
           </div>
         </div>
@@ -73,17 +69,15 @@
           <div>
             <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.location">Location</div>
             <div class="text-sm font-medium text-text-primary">
-                            <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
-                                Location
-                            </span>
+              <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
+                Location
+              </span>
             </div>
           </div>
         </div>
       </div>
     } @else {
-      <div class="text-sm text-text-secondary italic" jhiTranslate="interview.booking.noSlotSelected">
-        Select a slot to continue
-      </div>
+      <div class="text-sm text-text-secondary italic" jhiTranslate="interview.booking.noSlotSelected">Select a slot to continue</div>
     }
   </div>
 

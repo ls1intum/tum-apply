@@ -52,10 +52,11 @@ export class InterviewBookingComponent {
     return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
   });
 
-  // Computed (Data Extraction)
-  jobTitle = computed(() => this.bookingData()?.jobInfo?.title ?? '');
-  researchGroupName = computed(() => this.bookingData()?.jobInfo?.researchGroup?.name);
+  // Computed
+  jobTitle = computed(() => this.bookingData()?.jobTitle ?? '');
   supervisor = computed(() => this.bookingData()?.supervisor);
+  researchGroupName = computed(() => this.bookingData()?.researchGroupName);
+
   supervisorName = computed(() => {
     const s = this.supervisor();
     if (!s) return '';
