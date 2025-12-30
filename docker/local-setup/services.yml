@@ -3,9 +3,9 @@ name: tumapply
 services:
   mysql:
     extends:
-      file: ./mysql.yml
+      file: mysql.yml
       service: mysql
   keycloak:
     extends:
-      file: ./keycloak.yml
+      file: keycloak.yml
       service: keycloak
