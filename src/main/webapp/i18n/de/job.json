@@ -245,6 +245,9 @@
       "supervisor": "Betreuer:in",
       "startDate": "Startdatum"
     },
+    "ariaLabels": {
+      "viewJobDetails": "Details anzeigen für {{title}}"
+    },
     "hoursPerWeek": "{{workload}} h/Woche",
     "errors": {
       "loadFilter": {

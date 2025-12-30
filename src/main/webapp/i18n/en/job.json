@@ -245,6 +245,9 @@
       "supervisor": "Supervisor",
       "startDate": "Start Date"
     },
+    "ariaLabels": {
+      "viewJobDetails": "View details for {{title}}"
+    },
     "hoursPerWeek": "{{workload}} h/week",
     "errors": {
       "loadFilter": {
