@@ -198,9 +198,9 @@ export class EditorComponent extends BaseInputDirective<string> {
   private getCodingTranslationKey(coding: string): string {
     switch (coding) {
       case 'masculine-coded':
-        return 'genderDecoder.formulationTexts.manly';
+        return 'genderDecoder.formulationTexts.nonInclusive';
       case 'feminine-coded':
-        return 'genderDecoder.formulationTexts.feminine';
+        return 'genderDecoder.formulationTexts.inclusive';
       case 'neutral':
         return 'genderDecoder.formulationTexts.neutral';
       case 'empty':
