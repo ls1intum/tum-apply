@@ -110,4 +110,23 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         """
     )
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
+
+    /**
+     * Finds all unbooked, future interview slots for a given interview process.
+     * Used for the applicant booking page to display available time slots.
+     *
+     * @param processId the ID of the interview process
+     * @param now       the current timestamp to filter out past slots
+     * @return list of available slots ordered by start time ascending
+     */
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.id = :processId
+        AND s.isBooked = false
+        AND s.startDateTime >= :now
+        ORDER BY s.startDateTime ASC
+        """
+    )
+    List<InterviewSlot> findAvailableSlotsByProcessId(@Param("processId") UUID processId, @Param("now") Instant now);
 }
