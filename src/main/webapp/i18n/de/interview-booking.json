@@ -33,17 +33,6 @@
         "summary": "Buchung erfolgreich",
         "detail": "Dies ist ein Platzhalter für die Buchung."
       }
-    },
-    "slots": {
-      "location": {
-        "virtual": "Virtuell",
-        "inPerson": "Persönlich"
-      },
-      "slotsCountSingular": "Termin",
-      "slotsCountPlural": "Termine",
-      "showLess": "Weniger anzeigen",
-      "showMoreSingular": "weiterer Termin",
-      "showMorePlural": "weitere Termine"
     }
   }
 }
