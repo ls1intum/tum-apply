@@ -992,7 +992,7 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
-  /api/interviews/booking/processes/{processId}:
+  /api/interviews/booking/{processId}:
     get:
       tags: [interview-booking-resource]
       operationId: getBookingData
