@@ -1,5 +1,5 @@
 <div
-  class="min-w-[11rem] rounded-lg p-2.5 cursor-pointer transition-all border"
+  class="w-full rounded-lg p-2.5 cursor-pointer transition-all border"
   [class.border-primary-default]="selected()"
   [class.bg-background-surface-alt]="selected()"
   [class.border-border-default]="!selected()"
@@ -10,10 +10,21 @@
     <!-- Time Range -->
     <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
 
-    <!-- Duration -->
-    <div class="flex items-center gap-1 text-xs text-text-secondary">
-      <fa-icon icon="clock" class="text-[0.625rem]" />
-      <span>{{ duration() }}</span>
+    <!-- Meta Info Row -->
+    <div class="flex items-center justify-between text-xs text-text-secondary mt-1">
+      <div class="flex items-center gap-1">
+        <fa-icon icon="clock" class="text-[0.625rem]" />
+        <span>{{ duration() }}</span>
+      </div>
+
+      <div class="flex items-center gap-1 max-w-[50%] truncate">
+        <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[0.625rem]" />
+        @if (isVirtual()) {
+          <span jhiTranslate="interview.slots.location.virtual"></span>
+        } @else {
+          <span jhiTranslate="interview.slots.location.inPerson"></span>
+        }
+      </div>
     </div>
   </div>
 </div>
