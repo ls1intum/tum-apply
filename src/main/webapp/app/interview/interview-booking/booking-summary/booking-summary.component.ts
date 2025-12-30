@@ -40,7 +40,12 @@ export class BookingSummaryComponent {
   formattedDate = computed(() => {
     const startDateTime = this.selectedSlot()?.startDateTime;
     if (startDateTime === undefined || startDateTime === '') return '';
-    return new Date(startDateTime).toLocaleDateString(this.getLocale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(startDateTime).toLocaleDateString(this.getLocale(), {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
   });
 
   /** Formats selected slot time range for display. */
@@ -68,7 +73,7 @@ export class BookingSummaryComponent {
   });
 
   /** Returns translation key for virtual/in-person location. */
-  displayLocationKey = computed(() => this.displayIsVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
+  displayLocationKey = computed(() => (this.displayIsVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'));
 
   // Services
   private readonly translateService = inject(TranslateService);

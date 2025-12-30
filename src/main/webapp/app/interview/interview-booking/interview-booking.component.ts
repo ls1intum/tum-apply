@@ -183,7 +183,9 @@ export class InterviewBookingComponent {
 
   /** Returns visible slots for a date, respecting expansion state. */
   getVisibleSlots(dateKey: string, allSlots: InterviewSlotDTO[]): InterviewSlotDTO[] {
-    return this.expandedDates().has(dateKey) || allSlots.length <= this.MAX_VISIBLE_SLOTS ? allSlots : allSlots.slice(0, this.MAX_VISIBLE_SLOTS);
+    return this.expandedDates().has(dateKey) || allSlots.length <= this.MAX_VISIBLE_SLOTS
+      ? allSlots
+      : allSlots.slice(0, this.MAX_VISIBLE_SLOTS);
   }
 
   /** Returns count of hidden slots for a date. */
