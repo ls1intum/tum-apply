@@ -44,12 +44,12 @@ public class GenderBiasAnalysisService {
 
         // Add non inslusive words
         for (String word : result.nonInclusiveWords()) {
-            dtos.add(new BiasedWordDTO(word, "masculine"));
+            dtos.add(new BiasedWordDTO(word, "non-inclusive"));
         }
 
         // Add inclusive words
         for (String word : result.inclusiveWords()) {
-            dtos.add(new BiasedWordDTO(word, "feminine"));
+            dtos.add(new BiasedWordDTO(word, "inclusive"));
         }
 
         return dtos;
