@@ -71,19 +71,15 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
     @Autowired
     private MvcTestClient api;
 
-    private User professor;
-    private Job job;
     private InterviewProcess interviewProcess;
-    private ResearchGroup researchGroup;
     private User applicantUser;
-    private Applicant applicant;
     private Application application;
 
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
 
-        researchGroup = ResearchGroupTestData.savedAll(
+        ResearchGroup researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
             "Prof. Doe",
             "Algorithms Group",
@@ -99,7 +95,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             "ACTIVE"
         );
 
-        professor = UserTestData.savedProfessorAll(
+        User professor = UserTestData.savedProfessorAll(
             userRepository,
             researchGroup,
             null,
@@ -116,14 +112,14 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
 
-        job = JobTestData.saved(jobRepository, professor, researchGroup, "Software Engineer", JobState.PUBLISHED, LocalDate.now());
+        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Software Engineer", JobState.PUBLISHED, LocalDate.now());
 
         interviewProcess = new InterviewProcess();
         interviewProcess.setJob(job);
         interviewProcess = interviewProcessRepository.save(interviewProcess);
 
         // Create applicant user and application
-        applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
         applicantUser = applicant.getUser();
         application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
     }
