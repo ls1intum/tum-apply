@@ -145,8 +145,8 @@ public class GenderBiasAnalyzer {
         String originalText,
         List<String> nonInclusiveWords,
         List<String> inclusiveWords,
-        int masculineCount,
-        int feminineCount,
+        int nonInclusiveCount,
+        int inclusiveCount,
         String coding,
         String language
     ) {}
