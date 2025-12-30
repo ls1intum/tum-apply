@@ -40,7 +40,10 @@
         "inPerson": "Persönlich"
       },
       "slotsCountSingular": "Termin",
-      "slotsCountPlural": "Termine"
+      "slotsCountPlural": "Termine",
+      "showLess": "Weniger anzeigen",
+      "showMoreSingular": "weiterer Termin",
+      "showMorePlural": "weitere Termine"
     }
   }
 }

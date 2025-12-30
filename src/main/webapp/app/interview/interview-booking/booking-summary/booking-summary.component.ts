@@ -23,7 +23,7 @@ export class BookingSummaryComponent {
   // Inputs
   jobTitle = input.required<string>();
   researchGroupName = input<string>();
-  supervisor = input.required<ProfessorDTO>();
+  supervisor = input<ProfessorDTO>();
   selectedSlot = input<InterviewSlotDTO | null>(null);
   alreadyBooked = input(false);
   bookedDate = input<string>('');
@@ -42,6 +42,7 @@ export class BookingSummaryComponent {
 
   supervisorName = computed(() => {
     const s = this.supervisor();
+    if (!s) return '';
     return `${s.firstName} ${s.lastName}`;
   });
 

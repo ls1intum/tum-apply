@@ -88,8 +88,6 @@
     <div class="mt-8 flex gap-4">
       <jhi-button severity="primary" variant="outlined" label="interview.booking.success.viewDetails"
         [shouldTranslate]="true" />
-      <jhi-button severity="danger" variant="text" label="interview.booking.success.cancelBooking"
-        [shouldTranslate]="true" />
     </div>
   </div>
   } @else {
@@ -168,7 +166,7 @@
     <!-- Right Sidebar: Booking Summary -->
     <div class="w-full lg:w-[20rem] flex-shrink-0">
       <div class="lg:sticky lg:top-4">
-        <jhi-booking-summary [jobTitle]="jobTitle()" [supervisor]="supervisor()!"
+        <jhi-booking-summary [jobTitle]="jobTitle()" [supervisor]="supervisor()"
           [researchGroupName]="researchGroupName()" [selectedSlot]="selectedSlot()" [alreadyBooked]="hasBookedSlot()"
           [bookedDate]="bookedSlotDate()" [bookedTime]="bookedSlotTime()" [bookedIsVirtual]="isBookedVirtual()"
           [bookedLocation]="bookedSlotLocation()" (book)="onBook()" />
