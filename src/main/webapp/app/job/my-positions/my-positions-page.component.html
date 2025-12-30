@@ -42,7 +42,7 @@
     <div class="body">
       <jhi-search-filter-sort-bar
         [searchText]="'myPositionsPage.searchFilterSortBar.searchText' | translate"
-        [totalRecords]="0"
+        [totalRecords]="totalRecords()"
         [singleEntity]="'job' | translate"
         [multipleEntities]="'jobs' | translate"
         (searchOutput)="onSearchEmit($event)"
@@ -58,13 +58,7 @@
           },
         ]"
         [sortableFields]="sortableFields"
-      />
-      <div class="flex justify-between items-end gap-4 mt-2">
-        <div
-          class="text-text-secondary text-md"
-          jhiTranslate="entity.filters.recordsFound"
-          [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? ('job' | translate) : ('jobs' | translate) }"
-        ></div>
+      >
         <jhi-button
           label="myPositionsPage.header.createButton"
           icon="plus"
@@ -72,7 +66,7 @@
           (click)="onCreateJob()"
           [shouldTranslate]="true"
         />
-      </div>
+      </jhi-search-filter-sort-bar>
       <div class="table-wrapper">
         <jhi-dynamic-table
           [columns]="columns()"

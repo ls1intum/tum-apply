@@ -1,4 +1,4 @@
-<div class="search-filter-sort-bar pb-3">
+<div class="search-filter-sort-bar">
   <div class="functionality-bar">
     <p-iconfield iconPosition="left" class="min-w-[15%] flex-1">
       <p-inputicon>
@@ -31,10 +31,13 @@
     </div>
   </div>
   @if (totalRecords() > 0) {
-    <div
-      class="record-count text-text-secondary"
-      jhiTranslate="entity.filters.recordsFound"
-      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
-    ></div>
+    <div class="flex justify-between items-end gap-4 mt-2">
+      <div
+        class="text-text-secondary text-md"
+        jhiTranslate="entity.filters.recordsFound"
+        [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+      ></div>
+      <ng-content />
+    </div>
   }
 </div>

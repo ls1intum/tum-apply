@@ -5,7 +5,7 @@
 
   <jhi-search-filter-sort-bar
     [searchText]="'evaluation.searchFilterSortBar.searchText' | translate"
-    [totalRecords]="0"
+    [totalRecords]="totalRecords()"
     [singleEntity]="'evaluation.application' | translate"
     [multipleEntities]="'evaluation.applications' | translate"
     (searchOutput)="loadOnSearchEmit($event)"
@@ -28,17 +28,6 @@
     ]"
     [sortableFields]="sortableFields"
   />
-
-  <div class="flex items-start gap-4 mt-2">
-    <div
-      class="text-text-secondary text-md"
-      jhiTranslate="entity.filters.recordsFound"
-      [translateValues]="{
-        count: totalRecords(),
-        entity: totalRecords() === 1 ? ('evaluation.application' | translate) : ('evaluation.applications' | translate),
-      }"
-    ></div>
-  </div>
 
   <div class="my-positions-container">
     <jhi-dynamic-table
