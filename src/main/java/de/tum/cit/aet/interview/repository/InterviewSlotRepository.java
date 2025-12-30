@@ -3,9 +3,10 @@ package de.tum.cit.aet.interview.repository;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,17 +19,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UUID> {
     /**
-     * Finds all interview slots for a given interview process, ordered by start
-     * time.
-     * Retrieves all interview slots belonging to a given interview process,
-     * ordered chronologically by their start date and time.
+     * Finds all interview slots for a given interview process with pagination.
+     * Results are ordered by start time ascending.
      *
      * @param processId the ID of the interview process
-     * @return a list of {@link InterviewSlot} entities associated with the given
-     *         process
+     * @param pageable  pagination information
+     * @return a page of {@link InterviewSlot} entities
      */
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
-    List<InterviewSlot> findByInterviewProcessIdOrderByStartDateTime(@Param("processId") UUID processId);
+    Page<InterviewSlot> findByInterviewProcessId(@Param("processId") UUID processId, Pageable pageable);
 
     /**
      * Finds a slot by ID with job and research group.
@@ -110,4 +109,31 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         """
     )
     boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
+
+    /**
+     * Finds all interview slots for a given interview process within a specific
+     * month.
+     * Results are paginated and ordered by start time.
+     *
+     * @param processId  the ID of the interview process
+     * @param monthStart the start of the month (inclusive)
+     * @param monthEnd   the end of the month (exclusive)
+     * @param pageable   pagination information
+     * @return a page of {@link InterviewSlot} entities for the specified month
+     */
+    @Query(
+        """
+            SELECT s FROM InterviewSlot s
+            WHERE s.interviewProcess.id = :processId
+            AND s.startDateTime >= :monthStart
+            AND s.startDateTime < :monthEnd
+            ORDER BY s.startDateTime
+        """
+    )
+    Page<InterviewSlot> findByProcessIdAndMonth(
+        @Param("processId") UUID processId,
+        @Param("monthStart") Instant monthStart,
+        @Param("monthEnd") Instant monthEnd,
+        Pageable pageable
+    );
 }

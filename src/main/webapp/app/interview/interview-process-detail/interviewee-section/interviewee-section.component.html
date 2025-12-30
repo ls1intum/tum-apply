@@ -12,30 +12,7 @@
   </div>
 
   <!-- Filter Tabs -->
-  <div class="flex gap-6 mb-4 border-b border-border-default -ml-3">
-    @for (tab of filterTabs(); track tab.key) {
-      <button
-        class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px"
-        [class.border-primary-default]="activeFilter() === tab.key"
-        [class.text-primary-default]="activeFilter() === tab.key"
-        [class.border-transparent]="activeFilter() !== tab.key"
-        [class.text-text-secondary]="activeFilter() !== tab.key"
-        [class.hover:text-text-primary]="activeFilter() !== tab.key"
-        (click)="setFilter(tab.key)"
-      >
-        <span [jhiTranslate]="'interview.interviewees.filter.' + tab.key"></span>
-        <span
-          class="px-2 py-0.5 text-xs rounded-full"
-          [class.bg-primary-default]="activeFilter() === tab.key"
-          [class.text-text-on-primary]="activeFilter() === tab.key"
-          [class.bg-background-disabled]="activeFilter() !== tab.key"
-          [class.text-text-primary]="activeFilter() !== tab.key"
-        >
-          {{ tab.count }}
-        </span>
-      </button>
-    }
-  </div>
+  <jhi-filter-tabs [tabs]="filterTabs()" [activeKey]="activeFilter()" (filterChange)="setFilter($event)" class="-ml-3" />
 
   <!-- Interviewees List -->
   @if (loadingInterviewees()) {

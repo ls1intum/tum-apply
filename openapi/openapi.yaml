@@ -1066,14 +1066,28 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
+      - name: year
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: month
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+              schema: {$ref: '#/components/schemas/PageResponseDTOInterviewSlotDTO'}
   /api/interviews/processes/{processId}/slots/create:
     post:
       tags: [interview-resource]
@@ -2557,6 +2571,13 @@ components:
         content:
           type: array
           items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOInterviewSlotDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOKeycloakUserDTO:
       type: object

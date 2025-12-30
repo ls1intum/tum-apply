@@ -1,9 +1,9 @@
 package de.tum.cit.aet.interview.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
-import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,6 @@ public class InterviewResource {
 
     /**
      * {@code GET /api/interviews/overview} : Get interview overview for all jobs with interview process.
-     * <p>
      * Returns statistics about applications in different interview states
      * (completed, scheduled, invited, uncontacted) for each job that has
      * an active interview process.
@@ -90,21 +90,38 @@ public class InterviewResource {
     /**
      * {@code GET /api/interviews/processes/{processId}/slots} : Get all slots for an interview process.
      *
-     * Retrieves all interview slots for the specified interview process,
-     * ordered by start time (ascending).
+     * If year and month are provided, returns only slots for that month.
+     * Otherwise, returns all slots for the process.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewSlotDTO}
+     * @param year      optional year to filter by (e.g., 2025)
+     * @param month     optional month to filter by (1-12)
+     * @param pageDTO   pagination parameters (pageNumber and pageSize)
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and slots
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException if the user is not authorized
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
-    public ResponseEntity<List<InterviewSlotDTO>> getSlotsByProcessId(@PathVariable UUID processId) {
-        log.info("REST request to get all slots for interview process: {}", processId);
-        List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
-        log.info("Returning {} slots for interview process: {}", slots.size(), processId);
-        return ResponseEntity.ok(slots);
+    public ResponseEntity<PageResponseDTO<InterviewSlotDTO>> getSlotsByProcessId(
+        @PathVariable UUID processId,
+        @RequestParam(required = false) Integer year,
+        @RequestParam(required = false) Integer month,
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+    ) {
+        log.info(
+            "REST request to get slots for interview process: {}, year: {}, month: {}, pageNumber: {}, pageSize: {}",
+            processId,
+            year,
+            month,
+            pageDTO.pageNumber(),
+            pageDTO.pageSize()
+        );
+
+        PageResponseDTO<InterviewSlotDTO> response = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
+        log.info("Returning {} slots for interview process: {}", response.getTotalElements(), processId);
+
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -156,8 +173,11 @@ public class InterviewResource {
         return ResponseEntity.ok(interviewees);
     }
 
-    /* {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
-     * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
+    /*
+     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview
+     * slot.
+     * Deletes an unbooked interview slot. If the slot is booked, a
+     * BadRequestException is thrown.
      *
      * @param slotId the ID of the slot to delete
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
