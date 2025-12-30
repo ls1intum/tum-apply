@@ -1,27 +1,33 @@
 {
   "interview": {
     "booking": {
-      "title": "Select your Interview Slot",
+      "title": "Interview Appointment Booking",
       "summary": "Summary",
-      "topic": "Topic",
+      "topic": "Position",
       "jobTitle": "Title",
       "researchGroup": "Research Group",
       "supervisor": "Supervisor",
-      "selectedInterview": "Selected Interview",
+      "selectedInterview": "Selected Appointment",
+      "yourAppointment": "Your Appointment",
       "date": "Date",
       "time": "Time",
       "location": "Location",
-      "book": "Book Interview",
       "noSlotSelected": "Select a slot to continue",
-      "noSlotsAvailable": "No slots available for this month.",
+      "book": "Book Slot",
+      "alreadyBooked": "Already Booked",
+      "noSlotsFormatted": "No slots available",
+      "noSlotsInMonth": "No slots in this month",
       "details": "Details",
       "error": {
         "title": "Error",
-        "message": "Unable to load booking data."
+        "message": "Could not load data.",
+        "retry": "Retry"
       },
       "success": {
         "title": "Interview Booked!",
-        "message": "You have successfully booked your interview slot."
+        "message": "You have successfully booked your interview slot.",
+        "viewDetails": "View Details",
+        "cancelBooking": "Cancel Booking"
       },
       "bookedSuccessPlaceholder": {
         "summary": "Booking Successful",
