@@ -5,7 +5,7 @@
 
   <jhi-search-filter-sort-bar
     [searchText]="'evaluation.searchFilterSortBar.searchText' | translate"
-    [totalRecords]="totalRecords()"
+    [totalRecords]="total()"
     [singleEntity]="'evaluation.application' | translate"
     [multipleEntities]="'evaluation.applications' | translate"
     (searchOutput)="loadOnSearchEmit($event)"

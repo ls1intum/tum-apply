@@ -43,7 +43,6 @@ export class ApplicationOverviewComponent {
   sortBy = signal<string>('createdAt');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
   total = signal(0);
-  totalRecords = computed(() => this.total());
   searchQuery = signal<string>('');
 
   readonly actionTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
