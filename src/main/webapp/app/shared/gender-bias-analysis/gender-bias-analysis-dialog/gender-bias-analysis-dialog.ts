@@ -55,22 +55,22 @@ export class GenderBiasAnalysisDialogComponent {
     }
   });
 
-  readonly masculineWords = computed(() => {
+  readonly nonInclusiveWords = computed(() => {
     const words = this.result()?.biasedWords ?? [];
-    return words.filter(w => w.type === 'masculine');
+    return words.filter(w => w.type === 'non-inclusive');
   });
 
-  readonly feminineWords = computed(() => {
+  readonly inclusiveWords = computed(() => {
     const words = this.result()?.biasedWords ?? [];
-    return words.filter(w => w.type === 'feminine');
+    return words.filter(w => w.type === 'inclusive');
   });
 
-  readonly masculineWordCounts = computed(() => {
-    return this.getWordCounts(this.masculineWords());
+  readonly nonInclusiveWordCounts = computed(() => {
+    return this.getWordCounts(this.nonInclusiveWords());
   });
 
-  readonly feminineWordCounts = computed(() => {
-    return this.getWordCounts(this.feminineWords());
+  readonly inclusiveWordCounts = computed(() => {
+    return this.getWordCounts(this.inclusiveWords());
   });
 
   onVisibleChange(isVisible: boolean): void {
@@ -81,7 +81,7 @@ export class GenderBiasAnalysisDialogComponent {
   }
 
   getBiasTypeClass(type: string): string {
-    return type === 'masculine' ? 'masculine-badge' : 'feminine-badge';
+    return type === 'non-inclusive' ? 'non-inclusive-badge' : 'inclusive-badge';
   }
 
   private getWordCounts(words: BiasedWordDTO[]): Map<string, number> {
