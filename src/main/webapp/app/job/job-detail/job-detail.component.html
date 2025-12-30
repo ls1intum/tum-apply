@@ -4,7 +4,6 @@
   [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
   [label]="closeButtonLabel | translate"
-  variant="outlined"
   [severity]="closeButtonSeverity"
   [confirmIcon]="closeButtonIcon"
   [showOpenButton]="false"
@@ -50,17 +49,6 @@
       </div>
       <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
         <div class="flex items-center gap-2">
-          @if (primaryActionButton(); as primaryActionButton) {
-            <jhi-button
-              [label]="primaryActionButton.label"
-              [severity]="primaryActionButton.severity"
-              [variant]="primaryActionButton.variant"
-              [icon]="primaryActionButton.icon"
-              [disabled]="primaryActionButton.disabled"
-              [shouldTranslate]="primaryActionButton.shouldTranslate"
-              (click)="primaryActionButton.onClick()"
-            />
-          }
           @if (showPdfButtonForPreview()) {
             <jhi-button
               label="button.downloadPDF"
@@ -71,7 +59,17 @@
               (click)="onDownloadPDF()"
             />
           }
-          @if (menuItems().length > 0) {
+          @for (item of individualActionButtons(); track item.label) {
+            <jhi-button
+              [label]="item.label"
+              [severity]="item.severity ?? 'secondary'"
+              variant="outlined"
+              [icon]="item.icon"
+              [shouldTranslate]="true"
+              (click)="item.command?.()"
+            />
+          }
+          @if (shouldShowKebabMenu()) {
             <jhi-button
               severity="secondary"
               variant="outlined"
@@ -81,6 +79,17 @@
               (click)="menu.toggle($event)"
             />
             <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
+          }
+          @if (primaryActionButton(); as primaryActionButton) {
+            <jhi-button
+              [label]="primaryActionButton.label"
+              [severity]="primaryActionButton.severity"
+              [variant]="primaryActionButton.variant"
+              [icon]="primaryActionButton.icon"
+              [disabled]="primaryActionButton.disabled"
+              [shouldTranslate]="primaryActionButton.shouldTranslate"
+              (click)="primaryActionButton.onClick()"
+            />
           }
         </div>
       </div>

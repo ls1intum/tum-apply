@@ -259,6 +259,24 @@ export class JobDetailComponent {
     return items;
   });
 
+  readonly shouldShowKebabMenu = computed<boolean>(() => {
+    const primaryButton = this.primaryActionButton();
+    const menuItemsCount = this.menuItems().length;
+    const totalActions = (primaryButton ? 1 : 0) + menuItemsCount;
+
+    // Only show kebab menu if there are 3 or more total actions
+    return totalActions >= 3;
+  });
+
+  readonly individualActionButtons = computed<JhiMenuItem[]>(() => {
+    // If we should show kebab menu, return empty array
+    if (this.shouldShowKebabMenu()) {
+      return [];
+    }
+    // Otherwise, return all menu items to be shown as individual buttons
+    return this.menuItems();
+  });
+
   private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
