@@ -1,49 +1,49 @@
 {
-    "interview": {
-        "booking": {
-            "title": "Interview Appointment Booking",
-            "summary": "Summary",
-            "topic": "Position",
-            "jobTitle": "Title",
-            "researchGroup": "Research Group",
-            "supervisor": "Supervisor",
-            "selectedInterview": "Selected Appointment",
-            "yourAppointment": "Your Appointment",
-            "date": "Date",
-            "time": "Time",
-            "location": "Location",
-            "noSlotSelected": "Select a slot to continue",
-            "book": "Book Slot",
-            "alreadyBooked": "Already Booked",
-            "noSlotsFormatted": "No slots available",
-            "noSlotsInMonth": "No slots in this month",
-            "details": "Details",
-            "error": {
-                "title": "Error",
-                "message": "Could not load data.",
-                "retry": "Retry"
-            },
-            "success": {
-                "title": "Interview Booked!",
-                "message": "You have successfully booked your interview slot.",
-                "viewDetails": "View Details",
-                "cancelBooking": "Cancel Booking"
-            },
-            "bookedSuccessPlaceholder": {
-                "summary": "Booking Successful",
-                "detail": "This is a placeholder for the booking action."
-            }
-        },
-        "slots": {
-            "location": {
-                "virtual": "Virtual",
-                "inPerson": "In-Person"
-            },
-            "slotsCountSingular": "Slot",
-            "slotsCountPlural": "Slots",
-            "showLess": "Show Less",
-            "showMoreSingular": "more",
-            "showMorePlural": "more"
-        }
+  "interview": {
+    "booking": {
+      "title": "Interview Appointment Booking",
+      "summary": "Summary",
+      "topic": "Position",
+      "jobTitle": "Title",
+      "researchGroup": "Research Group",
+      "supervisor": "Supervisor",
+      "selectedInterview": "Selected Appointment",
+      "yourAppointment": "Your Appointment",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "noSlotSelected": "Select a slot to continue",
+      "book": "Book Slot",
+      "alreadyBooked": "Already Booked",
+      "noSlotsFormatted": "No slots available",
+      "noSlotsInMonth": "No slots in this month",
+      "details": "Details",
+      "error": {
+        "title": "Error",
+        "message": "Could not load data.",
+        "retry": "Retry"
+      },
+      "success": {
+        "title": "Interview Booked!",
+        "message": "You have successfully booked your interview slot.",
+        "viewDetails": "View Details",
+        "cancelBooking": "Cancel Booking"
+      },
+      "bookedSuccessPlaceholder": {
+        "summary": "Booking Successful",
+        "detail": "This is a placeholder for the booking action."
+      }
+    },
+    "slots": {
+      "location": {
+        "virtual": "Virtual",
+        "inPerson": "In-Person"
+      },
+      "slotsCountSingular": "Slot",
+      "slotsCountPlural": "Slots",
+      "showLess": "Show Less",
+      "showMoreSingular": "more",
+      "showMorePlural": "more"
     }
+  }
 }

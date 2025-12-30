@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-
 import { InterviewBookingResourceApiService } from 'app/generated/api/interviewBookingResourceApi.service';
 import { BookingDTO } from 'app/generated/model/bookingDTO';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
@@ -12,6 +11,7 @@ import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
+
 import { SelectableSlotCardComponent } from './selectable-slot-card/selectable-slot-card.component';
 import { BookingSummaryComponent } from './booking-summary/booking-summary.component';
 
@@ -35,7 +35,6 @@ import { BookingSummaryComponent } from './booking-summary/booking-summary.compo
 })
 export class InterviewBookingComponent {
   // Constants
-  private readonly DATES_PER_PAGE = 4;
   readonly MAX_VISIBLE_SLOTS = 8;
 
   // Signals
@@ -54,7 +53,7 @@ export class InterviewBookingComponent {
 
   supervisorName = computed(() => {
     const s = this.bookingData()?.supervisor;
-    if (!s) return '';
+    if (s === undefined) return '';
     return `${s.firstName} ${s.lastName}`;
   });
 
@@ -64,8 +63,9 @@ export class InterviewBookingComponent {
 
   bookedSlotDate = computed(() => {
     const slot = this.bookedSlot();
-    if (!slot?.startDateTime) return '';
-    return new Date(slot.startDateTime).toLocaleDateString(this.locale(), {
+    const startDateTime = slot?.startDateTime;
+    if (startDateTime === undefined || startDateTime === '') return '';
+    return new Date(startDateTime).toLocaleDateString(this.locale(), {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
@@ -75,22 +75,25 @@ export class InterviewBookingComponent {
 
   bookedSlotTime = computed(() => {
     const slot = this.bookedSlot();
-    if (!slot?.startDateTime || !slot.endDateTime) return '';
+    const startDateTime = slot?.startDateTime;
+    const endDateTime = slot?.endDateTime;
+    if (startDateTime === undefined || startDateTime === '' || endDateTime === undefined || endDateTime === '') {
+      return '';
+    }
     const loc = this.locale();
-    const start = new Date(slot.startDateTime).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
-    const end = new Date(slot.endDateTime).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
+    const start = new Date(startDateTime).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
+    const end = new Date(endDateTime).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
     return `${start} - ${end}`;
   });
 
   bookedSlotLocation = computed(() => {
     const slot = this.bookedSlot();
-    if (!slot) return '';
-    if (slot.location && slot.location !== 'virtual') {
-      return slot.location;
+    if (slot === null) return '';
+    const location = slot.location;
+    if (location !== undefined && location !== '' && location !== 'virtual') {
+      return location;
     }
-    return this.translateService.instant(
-      slot.location === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson',
-    );
+    return this.translateService.instant(location === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
   });
 
   isBookedVirtual = computed(() => this.bookedSlot()?.location === 'virtual');
@@ -98,11 +101,12 @@ export class InterviewBookingComponent {
   // Computed - Slot Grouping
   groupedSlots = computed(() => {
     const data = this.bookingData();
-    if (!data?.availableSlots?.length) return [];
+    const slots = data?.availableSlots;
+    if (slots === undefined || slots.length === 0) return [];
 
     const grouped = new Map<string, InterviewSlotDTO[]>();
 
-    data.availableSlots.forEach(slot => {
+    slots.forEach(slot => {
       const localDate = new Date(this.safeDate(slot.startDateTime));
       const dateKey = localDate.toISOString().split('T')[0];
 
@@ -152,17 +156,22 @@ export class InterviewBookingComponent {
     return targetDate.toLocaleDateString(this.locale(), { month: 'long', year: 'numeric' });
   });
 
-  // Services
+  // Constants (private)
+  private readonly DATES_PER_PAGE = 4;
+
+  // Services (private - must come after public fields)
   private readonly route = inject(ActivatedRoute);
   private readonly bookingService = inject(InterviewBookingResourceApiService);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
-  private readonly currentLang = toSignal(this.translateService.onLangChange);
+
+  // Signals (private)
+  private readonly langChange = toSignal(this.translateService.onLangChange);
 
   // Effects
   private readonly loadEffect = effect(() => {
     const processId = this.route.snapshot.paramMap.get('processId');
-    if (processId) {
+    if (processId !== null && processId !== '') {
       void this.loadData(processId);
     }
   });
@@ -178,9 +187,9 @@ export class InterviewBookingComponent {
 
   onBook(): void {
     const slot = this.selectedSlot();
-    if (!slot) return;
+    if (slot === null) return;
 
-    console.log('Booking slot:', slot);
+    // TODO: Call booking API when endpoint exists
     this.toastService.showInfoKey('interview.booking.bookedSuccessPlaceholder');
   }
 
@@ -242,7 +251,7 @@ export class InterviewBookingComponent {
 
   // Private
   private locale(): string {
-    this.currentLang();
+    this.langChange();
     return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
   }
 
@@ -260,6 +269,7 @@ export class InterviewBookingComponent {
   }
 
   private safeDate(value?: string): number {
-    return value ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
+    if (value === undefined || value === '') return Number.POSITIVE_INFINITY;
+    return new Date(value).getTime();
   }
 }

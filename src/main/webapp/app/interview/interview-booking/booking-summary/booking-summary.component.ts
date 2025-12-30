@@ -2,7 +2,6 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ProfessorDTO } from 'app/generated/model/professorDTO';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -17,9 +16,6 @@ import TranslateDirective from 'app/shared/language/translate.directive';
   templateUrl: './booking-summary.component.html',
 })
 export class BookingSummaryComponent {
-  // Services
-  private readonly translateService = inject(TranslateService);
-
   // Inputs
   jobTitle = input.required<string>();
   researchGroupName = input<string>();
@@ -32,24 +28,22 @@ export class BookingSummaryComponent {
   bookedLocation = input<string | undefined>(undefined);
 
   // Outputs
-  book = output<void>();
-
-  // Signals
-  private readonly currentLang = toSignal(this.translateService.onLangChange);
+  book = output();
 
   // Computed
   hasSelection = computed(() => this.selectedSlot() !== null);
 
   supervisorName = computed(() => {
     const s = this.supervisor();
-    if (!s) return '';
+    if (s === undefined) return '';
     return `${s.firstName} ${s.lastName}`;
   });
 
   formattedDate = computed(() => {
     const slot = this.selectedSlot();
-    if (!slot?.startDateTime) return '';
-    return new Date(slot.startDateTime).toLocaleDateString(this.getLocale(), {
+    const startDateTime = slot?.startDateTime;
+    if (startDateTime === undefined || startDateTime === '') return '';
+    return new Date(startDateTime).toLocaleDateString(this.getLocale(), {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
@@ -59,10 +53,14 @@ export class BookingSummaryComponent {
 
   formattedTime = computed(() => {
     const slot = this.selectedSlot();
-    if (!slot?.startDateTime || !slot.endDateTime) return '';
+    const startDateTime = slot?.startDateTime;
+    const endDateTime = slot?.endDateTime;
+    if (startDateTime === undefined || startDateTime === '' || endDateTime === undefined || endDateTime === '') {
+      return '';
+    }
     const locale = this.getLocale();
-    const start = new Date(slot.startDateTime).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-    const end = new Date(slot.endDateTime).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    const start = new Date(startDateTime).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    const end = new Date(endDateTime).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     return `${start} - ${end}`;
   });
 
@@ -72,21 +70,25 @@ export class BookingSummaryComponent {
   displayTime = computed(() => (this.alreadyBooked() ? this.bookedTime() : this.formattedTime()));
   displayIsVirtual = computed(() => (this.alreadyBooked() ? this.bookedIsVirtual() : this.isVirtual()));
 
-  // Returns location string if custom, null if should use translation key
   displayLocation = computed(() => {
     const location = this.alreadyBooked() ? this.bookedLocation() : this.selectedSlot()?.location;
-    if (location && location !== 'virtual') return location;
+    if (location !== undefined && location !== '' && location !== 'virtual') return location;
     return null;
   });
 
-  // Returns translation key for virtual/in-person
   displayLocationKey = computed(() => {
     return this.displayIsVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson';
   });
 
+  // Services
+  private readonly translateService = inject(TranslateService);
+
+  // Signals
+  private readonly langChange = toSignal(this.translateService.onLangChange);
+
   // Private
   private getLocale(): string {
-    this.currentLang(); // Register dependency for reactivity
+    this.langChange();
     return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
   }
 }
