@@ -1,6 +1,6 @@
 package de.tum.cit.aet.interview.web;
 
-import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.core.security.annotations.Applicant;
 import de.tum.cit.aet.interview.dto.BookingDTO;
 import de.tum.cit.aet.interview.service.InterviewBookingService;
 import java.util.UUID;
@@ -24,15 +24,15 @@ public class InterviewBookingResource {
     private final InterviewBookingService bookingService;
 
     /**
-     * {@code GET /api/interviews/booking/processes/{processId}} :
+     * {@code GET /api/interviews/booking/{processId}} :
      * Get booking page data for applicant self-service slot booking.
      *
      * @param processId the ID of the interview process
      * @return booking page data with job info, user's booking status, and available
      *         slots
      */
-    @Authenticated
-    @GetMapping("/processes/{processId}")
+    @Applicant
+    @GetMapping("/{processId}")
     public ResponseEntity<BookingDTO> getBookingData(@PathVariable UUID processId) {
         log.info("REST request to get booking data for process: {}", processId);
         BookingDTO data = bookingService.getBookingData(processId);

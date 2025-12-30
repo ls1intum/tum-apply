@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class InterviewBookingResourceTest extends AbstractResourceTest {
 
-    private static final String BOOKING_API = "/api/interviews/booking/processes/";
+    private static final String API_BASE_PATH = "/api/interviews/booking/";
 
     @Autowired
     private InterviewProcessRepository interviewProcessRepository;
@@ -137,7 +137,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             // Act
             BookingDTO result = api
                 .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead(BOOKING_API + interviewProcess.getId(), null, BookingDTO.class, 200);
+                .getAndRead(API_BASE_PATH + interviewProcess.getId(), null, BookingDTO.class, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -158,7 +158,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             // Act
             Void result = api
                 .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead(BOOKING_API + interviewProcess.getId(), null, Void.class, 403);
+                .getAndRead(API_BASE_PATH + interviewProcess.getId(), null, Void.class, 403);
 
             // Assert
             assertThat(result).isNull();
@@ -176,7 +176,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             // Act
             Void result = api
                 .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead(BOOKING_API + interviewProcess.getId(), null, Void.class, 403);
+                .getAndRead(API_BASE_PATH + interviewProcess.getId(), null, Void.class, 403);
 
             // Assert
             assertThat(result).isNull();
@@ -190,7 +190,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             // Act
             Void result = api
                 .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead(BOOKING_API + UUID.randomUUID(), null, Void.class, 404);
+                .getAndRead(API_BASE_PATH + UUID.randomUUID(), null, Void.class, 404);
 
             // Assert
             assertThat(result).isNull();
@@ -214,7 +214,7 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             // Act
             BookingDTO result = api
                 .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
-                .getAndRead(BOOKING_API + interviewProcess.getId(), null, BookingDTO.class, 200);
+                .getAndRead(API_BASE_PATH + interviewProcess.getId(), null, BookingDTO.class, 200);
 
             // Assert: Only 2 future unbooked slots
             assertThat(result.availableSlots()).hasSize(2);
