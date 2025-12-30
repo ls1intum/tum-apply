@@ -1,0 +1,19 @@
+<div
+  class="min-w-[11rem] rounded-lg p-2.5 cursor-pointer transition-all border"
+  [class.border-primary-default]="selected()"
+  [class.bg-background-surface-alt]="selected()"
+  [class.border-border-default]="!selected()"
+  [class.hover:bg-background-surface]="!selected()"
+  (click)="onSelect()"
+>
+  <div class="flex flex-col gap-1">
+    <!-- Time Range -->
+    <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
+
+    <!-- Duration -->
+    <div class="flex items-center gap-1 text-xs text-text-secondary">
+      <fa-icon icon="clock" class="text-[0.625rem]" />
+      <span>{{ duration() }}</span>
+    </div>
+  </div>
+</div>
