@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
@@ -24,8 +24,8 @@ export class InterviewProcessDetailComponent {
   jobTitle = signal<string | null>(null);
   readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
 
-  // Child component reference
-  readonly intervieweeSection = viewChild(IntervieweeSectionComponent);
+  // Signal to trigger interviewee section reload
+  intervieweeRefreshKey = signal(0);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -49,7 +49,7 @@ export class InterviewProcessDetailComponent {
   }
 
   onSlotAssigned(): void {
-    void this.intervieweeSection()?.loadInterviewees();
+    this.intervieweeRefreshKey.update(k => k + 1);
   }
 
   navigateBack(): void {

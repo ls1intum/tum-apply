@@ -47,6 +47,7 @@ export class IntervieweeSectionComponent {
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
+  refreshKey = input<number>(0); // Increment to trigger reload from parent
 
   // Interviewee List State
   interviewees = signal<IntervieweeDTO[]>([]); // All interviewees for this process
@@ -116,9 +117,11 @@ export class IntervieweeSectionComponent {
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
 
-  // Effect: Auto load Interviewees when processId changes
+  // Effect: Auto load Interviewees when processId or refreshKey changes
   private readonly loadEffect = effect(() => {
-    if (this.processId()) {
+    const pid = this.processId();
+    this.refreshKey(); // Track refreshKey to trigger reload
+    if (pid) {
       void this.loadInterviewees();
     }
   });
