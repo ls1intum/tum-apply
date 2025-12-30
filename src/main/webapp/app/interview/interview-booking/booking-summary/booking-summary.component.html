@@ -1,0 +1,90 @@
+<div class="flex flex-col flex-1 pl-6 border-l border-border-default">
+  <h2 class="text-xl font-bold mb-6" jhiTranslate="interview.booking.summary">Summary</h2>
+
+  <!-- Job Info Section -->
+  <div class="border border-border-default rounded p-4 mb-4">
+    <div class="text-xs text-text-secondary uppercase font-semibold mb-3" jhiTranslate="interview.booking.topic">
+      Topic
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <!-- Title -->
+      <div class="flex items-start gap-2">
+        <fa-icon icon="briefcase" class="text-text-secondary mt-0.5 w-4" />
+        <div>
+          <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.jobTitle">Title</div>
+          <div class="text-sm font-medium text-text-primary">{{ jobTitle() }}</div>
+        </div>
+      </div>
+
+      <!-- Research Group -->
+      @if (researchGroupName()) {
+      <div class="flex items-start gap-2">
+        <fa-icon icon="building-columns" class="text-text-secondary mt-0.5 w-4" />
+        <div>
+          <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.researchGroup">Research Group</div>
+          <div class="text-sm font-medium text-text-primary">{{ researchGroupName() }}</div>
+        </div>
+      </div>
+      }
+
+      <!-- Supervisor -->
+      <div class="flex items-start gap-2">
+        <fa-icon icon="user-tie" class="text-text-secondary mt-0.5 w-4" />
+        <div>
+          <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.supervisor">Supervisor</div>
+          <div class="text-sm font-medium text-text-primary">{{ supervisorName() }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Slot Section -->
+  <div class="border border-border-default rounded p-4 mb-auto">
+    <div class="text-xs text-text-secondary uppercase font-semibold mb-3"
+      jhiTranslate="interview.booking.selectedInterview">
+      Selected Interview
+    </div>
+
+    @if (hasSelection()) {
+    <div class="flex flex-col gap-3">
+      <!-- Date -->
+      <div class="flex items-start gap-2">
+        <fa-icon icon="calendar" class="text-text-secondary mt-0.5 w-4" />
+        <div>
+          <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.date">Date</div>
+          <div class="text-sm font-medium text-text-primary">{{ formattedDate() }}</div>
+        </div>
+      </div>
+
+      <!-- Time -->
+      <div class="flex items-start gap-2">
+        <fa-icon icon="clock" class="text-text-secondary mt-0.5 w-4" />
+        <div>
+          <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.time">Time</div>
+          <div class="text-sm font-medium text-text-primary">{{ formattedTime() }}</div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="flex items-start gap-2">
+        <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-text-secondary mt-0.5 w-4" />
+        <div>
+          <div class="text-xs text-text-secondary" jhiTranslate="interview.booking.location">Location</div>
+          <div class="text-sm font-medium text-text-primary">{{ location() }}</div>
+        </div>
+      </div>
+    </div>
+    } @else {
+    <div class="text-sm text-text-secondary italic" jhiTranslate="interview.booking.noSlotSelected">
+      Select a slot to continue
+    </div>
+    }
+  </div>
+
+  <!-- Book Button -->
+  <div class="mt-4">
+    <jhi-button [fullWidth]="true" severity="primary" [disabled]="!hasSelection()" label="interview.booking.book"
+      [shouldTranslate]="true" (click)="onBook()" />
+  </div>
+</div>
