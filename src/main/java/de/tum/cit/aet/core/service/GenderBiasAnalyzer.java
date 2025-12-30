@@ -16,8 +16,8 @@ public class GenderBiasAnalyzer {
 
     public GenderBiasAnalyzer() {
         wordListsByLanguage = new HashMap<>();
-        wordListsByLanguage.put("de", new WordLists(GenderBiasWordLists.GERMAN_MASCULINE, GenderBiasWordLists.GERMAN_FEMININE));
-        wordListsByLanguage.put("en", new WordLists(GenderBiasWordLists.ENGLISH_MASCULINE, GenderBiasWordLists.ENGLISH_FEMININE));
+        wordListsByLanguage.put("de", new WordLists(GenderBiasWordLists.GERMAN_NON_INCLUSIVE, GenderBiasWordLists.GERMAN_INCLUSIVE));
+        wordListsByLanguage.put("en", new WordLists(GenderBiasWordLists.ENGLISH_NON_INCLUSIVE, GenderBiasWordLists.ENGLISH_INCLUSIVE));
     }
 
     /**
