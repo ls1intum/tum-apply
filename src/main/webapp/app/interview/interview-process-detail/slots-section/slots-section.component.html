@@ -115,6 +115,7 @@
     [visible]="showAssignModal()"
     [slot]="selectedSlotForAssignment()!"
     [processId]="processId()"
+    [refreshKey]="refreshKey()"
     (visibleChange)="showAssignModal.set($event)"
     (applicantAssigned)="onApplicantAssigned()"
   />

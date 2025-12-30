@@ -56,6 +56,7 @@ export class SlotsSectionComponent {
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
   selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
+  refreshKey = signal(0);
   // Computed properties
   /**
    * Groups slots by date and sorts them chronologically
@@ -278,6 +279,7 @@ export class SlotsSectionComponent {
 
   onAssignApplicant(slot: InterviewSlotDTO): void {
     this.selectedSlotForAssignment.set(slot);
+    this.refreshKey.update(n => n + 1);
     this.showAssignModal.set(true);
   }
 

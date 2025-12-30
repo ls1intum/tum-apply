@@ -2,9 +2,7 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CheckboxModule } from 'primeng/checkbox';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { TableModule } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
@@ -14,11 +12,11 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatDateWithWeekday, formatTime, getLocale } from 'app/shared/util/date-time.util';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 
-/**
- * Modal component for assigning an applicant to an interview slot.
- * Displays available interviewees and allows single selection for slot assignment.
- */
+// Modal component for assigning an applicant to an interview slot.
+// Displays available interviewees and allows single selection for slot assignment.
 @Component({
   selector: 'jhi-assign-applicant-modal',
   standalone: true,
@@ -30,8 +28,8 @@ import { formatDateWithWeekday, formatTime, getLocale } from 'app/shared/util/da
     ButtonComponent,
     FontAwesomeModule,
     ProgressSpinnerModule,
-    TableModule,
-    CheckboxModule,
+    CheckboxComponent,
+    DynamicTableComponent,
   ],
   templateUrl: './assign-applicant-modal.component.html',
 })
@@ -40,6 +38,7 @@ export class AssignApplicantModalComponent {
   visible = input.required<boolean>();
   slot = input.required<InterviewSlotDTO>();
   processId = input.required<string>();
+  refreshKey = input<number>(0);
 
   // Outputs
   visibleChange = output<boolean>();
@@ -79,23 +78,22 @@ export class AssignApplicantModalComponent {
   private readonly translateService = inject(TranslateService);
 
   // Effects
-  /** Fetches interviewees when modal becomes visible */
-  private readonly openEffect = effect(() => {
+  // Fetches interviewees when modal becomes visible or refreshKey changes
+  private readonly loadEffect = effect(() => {
+    this.refreshKey(); // Track refreshKey to trigger reload
     if (this.visible()) {
       void this.fetchInterviewees();
     }
   });
 
-  /**
-   * Assigns the selected applicant to the interview slot.
-   * Shows success toast on completion, handles 409 (conflict), 400 (bad request),
-   * and other errors with appropriate messages.
-   */
+  // Assigns the selected applicant to the interview slot.
+  // Shows success toast on completion, handles 409 (conflict), 400 (bad request),
+  // and other errors with appropriate messages.
   async assignApplicant(): Promise<void> {
     const applicationId = this.selectedApplicantId();
     const slotId = this.slot().id;
 
-    if (!applicationId || !slotId) {
+    if (applicationId === null || slotId === undefined) {
       return;
     }
 
@@ -131,10 +129,8 @@ export class AssignApplicantModalComponent {
     }
   }
 
-  /**
-   * Toggles selection of an interviewee.
-   * Clicking the same applicant again deselects them.
-   */
+  // Toggles selection of an interviewee.
+  // Clicking the same applicant again deselects them.
   selectApplicant(interviewee: IntervieweeDTO): void {
     if (this.isDisabled(interviewee)) {
       return;

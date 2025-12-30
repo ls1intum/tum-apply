@@ -2,13 +2,13 @@
   <div class="flex flex-col gap-6">
     <!-- Section 1: Selected Slot -->
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-primary" jhiTranslate="interview.assign.selectedSlot">Selected Slot</label>
-      <div class="bg-background-default border border-default rounded-lg p-4 flex flex-col gap-2">
+      <label class="text-sm font-medium text-text-primary" jhiTranslate="interview.assign.selectedSlot">Selected Slot</label>
+      <div class="bg-background-default border border-border-default rounded p-4 flex flex-col gap-2">
         <!-- Date + Time -->
-        <h3 class="text-base font-semibold text-primary">{{ slotDate() }} | {{ slotStartTime() }} - {{ slotEndTime() }}</h3>
+        <h3 class="text-base font-semibold text-text-primary">{{ slotDate() }} | {{ slotStartTime() }} - {{ slotEndTime() }}</h3>
 
         <!-- Location -->
-        <div class="flex items-center gap-2 text-sm text-secondary">
+        <div class="flex items-center gap-2 text-sm text-text-secondary">
           @if (slot().location === 'virtual') {
             <fa-icon icon="video" class="w-4 text-center" />
             <span jhiTranslate="interview.slots.location.virtual">Virtual</span>
@@ -22,7 +22,7 @@
 
     <!-- Section 2: Interviewee Selection -->
     <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-primary">
+      <label class="text-sm font-medium text-text-primary">
         <span jhiTranslate="interview.assign.selectApplicant">Select Applicant</span>
         <span class="text-negative-default">*</span>
       </label>
@@ -34,29 +34,24 @@
             <p-progressSpinner styleClass="w-8 h-8" strokeWidth="4" />
           </div>
         } @else if (intervieweeState() === 'empty') {
-          <div class="text-center py-8 text-secondary">
+          <div class="text-center py-8 text-text-secondary">
             <span jhiTranslate="interview.assign.noApplicants">No invited applicants available</span>
           </div>
         } @else if (intervieweeState() === 'allAssigned') {
-          <div class="text-center py-8 text-secondary">
+          <div class="text-center py-8 text-text-secondary">
             <div class="flex flex-col items-center gap-2">
               <fa-icon icon="check-circle" class="text-2xl text-positive-default" />
               <span jhiTranslate="interview.assign.allAssigned">All applicants in the interview process already have an appointment</span>
             </div>
           </div>
         } @else {
-          <p-table [value]="availableInterviewees()" [rowHover]="true" styleClass="p-datatable-sm">
-            <ng-template pTemplate="body" let-person>
-              <tr class="cursor-pointer hover:bg-background-surface transition-colors" (click)="selectApplicant(person)">
-                <td class="border-0 w-8 py-2 pl-2">
-                  <p-checkbox [binary]="true" [ngModel]="isSelected(person)" (click)="$event.stopPropagation(); selectApplicant(person)" />
-                </td>
-                <td class="border-0 py-2">
-                  <span class="font-medium text-primary">{{ person.user?.firstName }} {{ person.user?.lastName }}</span>
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
+          <jhi-dynamic-table
+            [data]="availableInterviewees()"
+            [columns]="[{ field: 'applicant', header: '', width: '100%', template: applicantTpl }]"
+            [rows]="availableInterviewees().length"
+            [totalRecords]="availableInterviewees().length"
+            [hideHeader]="true"
+          />
         }
       </div>
     </div>
@@ -83,4 +78,11 @@
       />
     </div>
   </div>
+
+  <ng-template #applicantTpl let-person>
+    <div class="flex items-center gap-3 cursor-pointer" (click)="selectApplicant(person)">
+      <jhi-checkbox [model]="isSelected(person)" [errorEnabled]="false" (click)="$event.stopPropagation(); selectApplicant(person)" />
+      <span class="font-medium text-text-primary">{{ person.user?.firstName }} {{ person.user?.lastName }}</span>
+    </div>
+  </ng-template>
 </jhi-dialog>
