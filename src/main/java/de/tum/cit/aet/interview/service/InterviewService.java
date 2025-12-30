@@ -3,6 +3,8 @@ package de.tum.cit.aet.interview.service;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -31,6 +33,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -358,17 +363,22 @@ public class InterviewService {
     }
 
     /**
-     * Retrieves all interview slots for a given interview process.
+     * Retrieves interview slots for a given interview process with optional month filtering.
+     * If year and month are provided, returns only slots within that month.
+     * Otherwise, returns all slots for the process.
      * Slots are returned ordered by start time (ascending).
      *
      * @param processId the ID of the interview process
-     * @return a list of interview slots ordered by start time
+     * @param year      optional year to filter by (e.g., 2025)
+     * @param month     optional month to filter by (1-12)
+     * @param pageDTO   pagination information
+     * @return a page of interview slots ordered by start time
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException   if the user is not authorized to view these
      *                                 slots
      */
-    public List<InterviewSlotDTO> getSlotsByProcessId(UUID processId) {
-        // 1.Load Interview Process
+    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessId(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
+        // 1. Load Interview Process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
@@ -377,10 +387,23 @@ public class InterviewService {
         Job job = process.getJob();
         currentUserService.verifyJobAccess(job);
 
-        // 3. Load and return slots
-        List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdOrderByStartDateTime(processId);
+        // 3. Convert PageDTO to Pageable
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
-        return slots.stream().map(InterviewSlotDTO::fromEntity).toList();
+        // 4. Query slots - with or without month filter
+        Page<InterviewSlot> slotsPage;
+        if (year != null && month != null) {
+            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
+            ZonedDateTime monthEnd = monthStart.plusMonths(1);
+            slotsPage = interviewSlotRepository.findByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable);
+        } else {
+            slotsPage = interviewSlotRepository.findByInterviewProcessId(processId, pageable);
+        }
+
+        // 5. Convert to DTOs and return
+        List<InterviewSlotDTO> slotDTOs = slotsPage.getContent().stream().map(InterviewSlotDTO::fromEntity).toList();
+
+        return new PageResponseDTO<>(slotDTOs, slotsPage.getTotalElements());
     }
 
     /**

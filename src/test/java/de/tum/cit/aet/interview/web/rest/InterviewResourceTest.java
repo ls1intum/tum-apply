@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
@@ -409,16 +410,19 @@ class InterviewResourceTest extends AbstractResourceTest {
             );
 
         // Get slots
-        List<InterviewSlotDTO> slots = api
+        PageResponseDTO<InterviewSlotDTO> response = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots",
+                "/api/interviews/processes/" + interviewProcess.getId() + "/slots?pageNumber=0&pageSize=100",
                 null,
-                new TypeReference<List<InterviewSlotDTO>>() {},
+                new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {},
                 200
             );
 
-        assertThat(slots).hasSize(2);
+        assertThat(response.getTotalElements()).isEqualTo(2);
+        assertThat(response.getContent()).hasSize(2);
+
+        List<InterviewSlotDTO> slots = response.getContent().stream().toList();
 
         // Verify first slot
         InterviewSlotDTO firstSlot = slots.get(0);
@@ -483,7 +487,12 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         Void result = api
             .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots", null, Void.class, 403);
+            .getAndRead(
+                "/api/interviews/processes/" + interviewProcess.getId() + "/slots?pageNumber=0&pageSize=100",
+                null,
+                Void.class,
+                403
+            );
         assertThat(result).isNull();
     }
 
@@ -491,7 +500,7 @@ class InterviewResourceTest extends AbstractResourceTest {
     void getSlotsByProcessIdForNonExistentProcessReturnsNotFound() {
         Void result = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
+            .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots?pageNumber=0&pageSize=100", null, Void.class, 404);
         assertThat(result).isNull();
     }
 
@@ -666,5 +675,82 @@ class InterviewResourceTest extends AbstractResourceTest {
         slot.setLocation("Room 101");
         slot.setIsBooked(false);
         return interviewSlotRepository.save(slot);
+    }
+
+    @Test
+    void getSlotsByProcessIdAndMonthReturnsFilteredSlots() {
+        int nextYear = LocalDate.now().plusYears(1).getYear();
+        createSlotsForJanuaryAndFebruary(nextYear);
+
+        assertJanuarySlotsFiltered(nextYear);
+        assertFebruarySlotsFiltered(nextYear);
+        assertMarchSlotsEmpty(nextYear);
+    }
+
+    private void createSlotsForJanuaryAndFebruary(int year) {
+        LocalDate janDate = LocalDate.of(year, 1, 15);
+        LocalDate febDate = LocalDate.of(year, 2, 15);
+
+        CreateSlotsDTO.SlotInput slotInput1 = new CreateSlotsDTO.SlotInput(
+            janDate,
+            LocalTime.of(10, 0),
+            LocalTime.of(11, 0),
+            "Room 101",
+            null
+        );
+        CreateSlotsDTO.SlotInput slotInput2 = new CreateSlotsDTO.SlotInput(
+            febDate,
+            LocalTime.of(10, 0),
+            LocalTime.of(11, 0),
+            "Room 102",
+            null
+        );
+        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput1, slotInput2));
+
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(
+                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                dto,
+                new TypeReference<List<InterviewSlotDTO>>() {},
+                201
+            );
+    }
+
+    private void assertJanuarySlotsFiltered(int year) {
+        PageResponseDTO<InterviewSlotDTO> response = getSlotsByMonth(year, 1);
+        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().iterator().next().location()).isEqualTo("Room 101");
+    }
+
+    private void assertFebruarySlotsFiltered(int year) {
+        PageResponseDTO<InterviewSlotDTO> response = getSlotsByMonth(year, 2);
+        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().iterator().next().location()).isEqualTo("Room 102");
+    }
+
+    private void assertMarchSlotsEmpty(int year) {
+        PageResponseDTO<InterviewSlotDTO> response = getSlotsByMonth(year, 3);
+        assertThat(response.getTotalElements()).isEqualTo(0);
+        assertThat(response.getContent()).isEmpty();
+    }
+
+    private PageResponseDTO<InterviewSlotDTO> getSlotsByMonth(int year, int month) {
+        return api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(
+                "/api/interviews/processes/" +
+                    interviewProcess.getId() +
+                    "/slots?year=" +
+                    year +
+                    "&month=" +
+                    month +
+                    "&pageNumber=0&pageSize=100",
+                null,
+                new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {},
+                200
+            );
     }
 }
