@@ -65,23 +65,25 @@ public class TemplateProcessingService {
             addMetaData(emailTemplateTranslation.getLanguage(), dataModel);
 
             String templateName = emailTemplateTranslation.getEmailTemplate().getTemplateName() != null
-                    ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
-                    : "inline";
+                ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
+                : "inline";
 
             Template inlineTemplate = new Template(
-                    templateName,
-                    new StringReader(emailTemplateTranslation.getBodyHtml()),
-                    freemarkerConfig);
+                templateName,
+                new StringReader(emailTemplateTranslation.getBodyHtml()),
+                freemarkerConfig
+            );
 
             String htmlBody = render(inlineTemplate, dataModel);
             return renderLayout(emailTemplateTranslation.getLanguage(), htmlBody, false);
         } catch (IOException ex) {
             throw new TemplateProcessingException(
-                    "Failed to process inline FreeMarker template: " +
-                            emailTemplateTranslation.getEmailTemplate().getTemplateName() +
-                            " for language: " +
-                            emailTemplateTranslation.getLanguage(),
-                    ex);
+                "Failed to process inline FreeMarker template: " +
+                    emailTemplateTranslation.getEmailTemplate().getTemplateName() +
+                    " for language: " +
+                    emailTemplateTranslation.getLanguage(),
+                ex
+            );
         }
     }
 
@@ -132,8 +134,7 @@ public class TemplateProcessingService {
             template.process(dataModel, writer);
             return writer.toString();
         } catch (IOException | TemplateException ex) {
-            throw new TemplateProcessingException("Failed to render FreeMarker template '" + template.getName() + "'",
-                    ex);
+            throw new TemplateProcessingException("Failed to render FreeMarker template '" + template.getName() + "'", ex);
         }
     }
 
@@ -191,10 +192,8 @@ public class TemplateProcessingService {
     }
 
     private static final java.time.ZoneId CET_TIMEZONE = java.time.ZoneId.of("Europe/Berlin");
-    private static final java.time.format.DateTimeFormatter DATE_FORMATTER = java.time.format.DateTimeFormatter
-            .ofPattern("dd.MM.yyyy");
-    private static final java.time.format.DateTimeFormatter TIME_FORMATTER = java.time.format.DateTimeFormatter
-            .ofPattern("HH:mm");
+    private static final java.time.format.DateTimeFormatter DATE_FORMATTER = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final java.time.format.DateTimeFormatter TIME_FORMATTER = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
 
     private void addInterviewSlotData(Map<String, Object> dataModel, InterviewSlot slot) {
         java.time.ZonedDateTime startTime = slot.getStartDateTime().atZone(CET_TIMEZONE);

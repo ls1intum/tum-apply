@@ -132,7 +132,8 @@ public class EmailService {
     }
 
     /**
-     * Logs the email instead of sending it. Used for local testing or when sending is disabled.
+     * Logs the email instead of sending it. Used for local testing or when sending
+     * is disabled.
      *
      * @param email   the email
      * @param subject the rendered subject
@@ -189,6 +190,7 @@ public class EmailService {
             helper.setText(body, true);
 
             attachDocuments(email, helper);
+            attachIcsCalendar(email, helper);
 
             mailSender.send(message);
         } catch (MailException | IOException | MessagingException e) {
@@ -216,7 +218,8 @@ public class EmailService {
     }
 
     /**
-     * Filters a list of users to those who have notification enabled for a given email type.
+     * Filters a list of users to those who have notification enabled for a given
+     * email type.
      *
      * @param users the users to filter
      * @param email the email context
@@ -257,5 +260,22 @@ public class EmailService {
             helper.addAttachment("document_" + count, attachment);
             count++;
         }
+    }
+
+    /**
+     * Attaches ICS calendar file to the outgoing email message.
+     *
+     * @param email  the email containing ICS content
+     * @param helper the message helper
+     * @throws MessagingException if attaching the calendar fails
+     */
+    private void attachIcsCalendar(Email email, MimeMessageHelper helper) throws MessagingException {
+        if (email.getIcsContent() == null || email.getIcsFileName() == null) {
+            return;
+        }
+
+        byte[] icsBytes = email.getIcsContent().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        InputStreamSource icsSource = new ByteArrayResource(icsBytes);
+        helper.addAttachment(email.getIcsFileName(), icsSource, "text/calendar");
     }
 }
