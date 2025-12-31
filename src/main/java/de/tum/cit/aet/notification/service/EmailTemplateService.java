@@ -56,11 +56,11 @@ public class EmailTemplateService {
     @Transactional // for write -> read
     protected EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
         return emailTemplateRepository
-                .findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType)
-                .orElseGet(() -> {
-                    EmailTemplate newTemplate = createDefaultTemplate(researchGroup, templateName, emailType);
-                    return emailTemplateRepository.save(newTemplate);
-                });
+            .findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType)
+            .orElseGet(() -> {
+                EmailTemplate newTemplate = createDefaultTemplate(researchGroup, templateName, emailType);
+                return emailTemplateRepository.save(newTemplate);
+            });
     }
 
     /**

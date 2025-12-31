@@ -39,6 +39,7 @@ public class TemplateProcessingService {
      * Renders the email subject line for display in the final email.
      *
      * @param emailTemplateTranslation the email template translation
+     * @param content                  the domain object for variable binding
      * @return the prefixed subject line
      */
     public String renderSubject(EmailTemplateTranslation emailTemplateTranslation, Object content) {
