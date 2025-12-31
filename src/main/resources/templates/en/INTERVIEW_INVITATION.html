@@ -1,0 +1,22 @@
+<p>Dear <#if APPLICANT_GENDER?? && APPLICANT_GENDER=="female">Ms<#elseif APPLICANT_GENDER?? && APPLICANT_GENDER=="male">Mr</#if> ${APPLICANT_LAST_NAME!},</p>
+
+<p>
+  Thank you for your application. After reviewing your application documents, we would like
+  to invite you to an interview to get to know you better.
+</p>
+
+<p>
+  <strong>Date & Time:</strong> ${INTERVIEW_DATE!} ${INTERVIEW_START_TIME!}–${INTERVIEW_END_TIME!}<br />
+  <strong>Location:</strong> ${INTERVIEW_LOCATION!}<#if INTERVIEW_STREAM_LINK??><br />
+  <strong>Video Link:</strong> <a href="${INTERVIEW_STREAM_LINK!}">${INTERVIEW_STREAM_LINK!}</a></#if>
+</p>
+
+<p>We look forward to meeting you.</p>
+
+<p>
+  Kind regards,<br /><br />
+  ${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}<br />
+  ${RESEARCH_GROUP_NAME!}<br />
+  Technical University of Munich<br />
+  ${SUPERVISING_PROFESSOR_EMAIL!}<#if SUPERVISING_PROFESSOR_PHONE??> | ${SUPERVISING_PROFESSOR_PHONE!}</#if>
+</p>
