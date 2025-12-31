@@ -1,7 +1,7 @@
 import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
@@ -35,7 +35,7 @@ interface ApplicantRow {
     FormsModule,
     TranslateModule,
     TranslateDirective,
-    CheckboxModule,
+    CheckboxComponent,
     ButtonComponent,
     DialogComponent,
     FilterTabsComponent,
