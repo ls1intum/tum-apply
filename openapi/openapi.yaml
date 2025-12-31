@@ -2176,7 +2176,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2185,7 +2185,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2194,7 +2194,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2206,7 +2206,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
