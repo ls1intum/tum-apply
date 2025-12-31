@@ -1,22 +1,24 @@
-<p>Sehr geehrte<#if APPLICANT_GENDER?? && APPLICANT_GENDER=="female"> Frau<#elseif APPLICANT_GENDER?? && APPLICANT_GENDER=="male">r Herr</#if> ${APPLICANT_LAST_NAME!},</p>
+<p>Sehr geehrte<#if APPLICANT_GENDER?? && APPLICANT_GENDER=="female"> Frau<#elseif APPLICANT_GENDER?? &&
+            APPLICANT_GENDER=="male">r Herr</#if> ${APPLICANT_LAST_NAME!},</p>
 
 <p>
-  vielen Dank für Ihre Bewerbung. Nach Sichtung Ihrer Bewerbungsunterlagen möchten wir Sie gerne
-  zu einem Interview einladen, um Sie näher kennenzulernen.
+    vielen Dank für Ihre Bewerbung. Nach Sichtung Ihrer Bewerbungsunterlagen möchten wir Sie gerne
+    zu einem Interview einladen, um Sie näher kennenzulernen.
 </p>
 
 <p>
-  <strong>Termin:</strong> ${INTERVIEW_DATE!} um ${INTERVIEW_START_TIME!}–${INTERVIEW_END_TIME!}<br />
-  <strong>Ort:</strong> ${INTERVIEW_LOCATION!}<#if INTERVIEW_STREAM_LINK??><br />
-  <strong>Videolink:</strong> <a href="${INTERVIEW_STREAM_LINK!}">${INTERVIEW_STREAM_LINK!}</a></#if>
+    <strong>Termin:</strong> ${INTERVIEW_DATE!} um ${INTERVIEW_START_TIME!}–${INTERVIEW_END_TIME!}<br />
+    <strong>Ort:</strong> ${INTERVIEW_LOCATION!}<#if INTERVIEW_STREAM_LINK??><br />
+        <strong>Videolink:</strong> <a href="${INTERVIEW_STREAM_LINK!}">${INTERVIEW_STREAM_LINK!}</a>
+    </#if>
 </p>
 
 <p>Wir freuen uns auf das Gespräch.</p>
 
 <p>
-  Mit freundlichen Grüßen<br /><br />
-  ${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}<br />
-  ${RESEARCH_GROUP_NAME!}<br />
-  Technische Universität München<br />
-  ${SUPERVISING_PROFESSOR_EMAIL!}<#if SUPERVISING_PROFESSOR_PHONE??> | ${SUPERVISING_PROFESSOR_PHONE!}</#if>
+    Mit freundlichen Grüßen<br /><br />
+    ${SUPERVISING_PROFESSOR_FIRST_NAME!} ${SUPERVISING_PROFESSOR_LAST_NAME!}<br />
+    ${RESEARCH_GROUP_NAME!}<br />
+    Technische Universität München<br />
+    ${SUPERVISING_PROFESSOR_EMAIL!}
 </p>

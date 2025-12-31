@@ -85,10 +85,6 @@ public class IcsCalendarService {
         if (text == null) {
             return "";
         }
-        return text
-                .replace("\\", "\\\\")
-                .replace(",", "\\,")
-                .replace(";", "\\;")
-                .replace("\n", "\\n");
+        return text.replace("\\", "\\\\").replace(",", "\\,").replace(";", "\\;").replace("\n", "\\n");
     }
 }
