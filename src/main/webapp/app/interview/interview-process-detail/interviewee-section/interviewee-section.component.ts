@@ -11,14 +11,15 @@ import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { FilterTab, FilterTabsComponent } from 'app/shared/components/atoms/filter-tabs/filter-tabs.component';
 import { Section } from 'app/shared/components/atoms/section/section';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
-// Filter tabs for interviewee states
-type FilterTab = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
+// Filter key type for interviewee states
+type FilterKey = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
 
 // Row data structure for the applicant selection table
 interface ApplicantRow {
@@ -37,6 +38,7 @@ interface ApplicantRow {
     CheckboxModule,
     ButtonComponent,
     DialogComponent,
+    FilterTabsComponent,
     Section,
     IntervieweeCardComponent,
     DynamicTableComponent,
@@ -47,12 +49,12 @@ export class IntervieweeSectionComponent {
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
-  refreshKey = input<number>(0); // Increment to trigger reload from parent
+  refreshKey = input<number>(0);
 
   // Interviewee List State
   interviewees = signal<IntervieweeDTO[]>([]); // All interviewees for this process
   loadingInterviewees = signal(false);
-  activeFilter = signal<FilterTab>('ALL'); // Currently selected filter tab
+  activeFilter = signal<FilterKey>('ALL'); // Currently selected filter tab
 
   // Add Applicant Modal State
   showAddModal = signal(false);
@@ -70,14 +72,18 @@ export class IntervieweeSectionComponent {
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
 
   // Computed: Filter Tabs with Counts
-  filterTabs = computed(() => {
+  filterTabs = computed<FilterTab<FilterKey>[]>(() => {
     const all = this.interviewees();
     return [
-      { key: 'ALL' as FilterTab, count: all.length },
-      { key: 'INVITED' as FilterTab, count: all.filter(i => i.state === 'INVITED').length },
-      { key: 'SCHEDULED' as FilterTab, count: all.filter(i => i.state === 'SCHEDULED').length },
-      { key: 'UNCONTACTED' as FilterTab, count: all.filter(i => i.state === 'UNCONTACTED').length },
-      { key: 'COMPLETED' as FilterTab, count: all.filter(i => i.state === 'COMPLETED').length },
+      { key: 'ALL', labelKey: 'interview.interviewees.filter.ALL', count: all.length },
+      { key: 'INVITED', labelKey: 'interview.interviewees.filter.INVITED', count: all.filter(i => i.state === 'INVITED').length },
+      { key: 'SCHEDULED', labelKey: 'interview.interviewees.filter.SCHEDULED', count: all.filter(i => i.state === 'SCHEDULED').length },
+      {
+        key: 'UNCONTACTED',
+        labelKey: 'interview.interviewees.filter.UNCONTACTED',
+        count: all.filter(i => i.state === 'UNCONTACTED').length,
+      },
+      { key: 'COMPLETED', labelKey: 'interview.interviewees.filter.COMPLETED', count: all.filter(i => i.state === 'COMPLETED').length },
     ];
   });
 
@@ -119,9 +125,8 @@ export class IntervieweeSectionComponent {
 
   // Effect: Auto load Interviewees when processId or refreshKey changes
   private readonly loadEffect = effect(() => {
-    const pid = this.processId();
     this.refreshKey(); // Track refreshKey to trigger reload
-    if (pid) {
+    if (this.processId()) {
       void this.loadInterviewees();
     }
   });
@@ -203,7 +208,7 @@ export class IntervieweeSectionComponent {
   }
 
   // Filter Tab Selection
-  setFilter(filter: FilterTab): void {
+  setFilter(filter: FilterKey): void {
     this.activeFilter.set(filter);
   }
   // Selection Handling
