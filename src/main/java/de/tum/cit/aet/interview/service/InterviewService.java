@@ -428,7 +428,9 @@ public class InterviewService {
             .map(slot -> {
                 if (slot.getInterviewee() != null) {
                     Interviewee interviewee = slot.getInterviewee();
-                    IntervieweeState state = calculateIntervieweeState(interviewee);
+                    IntervieweeState state = slot.getEndDateTime().isBefore(Instant.now())
+                        ? IntervieweeState.COMPLETED
+                        : IntervieweeState.SCHEDULED;
                     AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
                     return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
                 }
