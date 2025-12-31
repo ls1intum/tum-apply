@@ -279,6 +279,7 @@
       "created": "Created",
       "lastModified": "Last Modified"
     },
+    "noFurtherActions": "No further actions available",
     "confirmDialog": {
       "closeHeader": "Confirm Position Closure",
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",
