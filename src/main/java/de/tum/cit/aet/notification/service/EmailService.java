@@ -110,9 +110,9 @@ public class EmailService {
      */
     private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
         if (StringUtils.isNotEmpty(email.getCustomSubject()) || emailTemplateTranslation == null) {
-            return templateProcessingService.renderSubject(email.getCustomSubject());
+            return templateProcessingService.renderSubject(email.getCustomSubject(), email.getContent());
         }
-        return templateProcessingService.renderSubject(emailTemplateTranslation);
+        return templateProcessingService.renderSubject(emailTemplateTranslation, email.getContent());
     }
 
     /**

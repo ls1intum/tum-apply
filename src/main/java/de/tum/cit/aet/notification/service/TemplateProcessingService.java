@@ -41,12 +41,27 @@ public class TemplateProcessingService {
      * @param emailTemplateTranslation the email template translation
      * @return the prefixed subject line
      */
-    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
-        return renderSubject(emailTemplateTranslation.getSubject());
+    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation, Object content) {
+        return renderSubject(emailTemplateTranslation.getSubject(), content);
     }
 
-    public String renderSubject(String subject) {
-        return "TUMApply - " + subject;
+    /**
+     * Renders a raw subject string using FreeMarker variables.
+     *
+     * @param rawSubject the raw subject string
+     * @param content    the domain object for variable binding
+     * @return the rendered and prefixed subject line
+     */
+    public String renderSubject(String rawSubject, Object content) {
+        try {
+            Map<String, Object> dataModel = createDataModel(content);
+            // Render subject through Freemarker string template
+            Template subjectTemplate = new Template("subject", new StringReader(rawSubject), freemarkerConfig);
+            String renderedSubject = render(subjectTemplate, dataModel);
+            return "TUMApply - " + renderedSubject;
+        } catch (IOException ex) {
+            throw new TemplateProcessingException("Failed to render subject template", ex);
+        }
     }
 
     /**
