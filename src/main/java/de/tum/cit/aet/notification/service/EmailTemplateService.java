@@ -104,6 +104,7 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     public PageResponseDTO<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
+        addMissingTemplates(researchGroup);
         Pageable pageable = PageRequest.of(
             pageDTO.pageNumber(),
             pageDTO.pageSize(),
