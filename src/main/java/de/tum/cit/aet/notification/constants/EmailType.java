@@ -15,7 +15,8 @@ public enum EmailType {
      * To: Applicant whose application was accepted
      * BCC: Supervising Professor of accepted application
      */
-    APPLICATION_ACCEPTED("APPLICATION_ACCEPTED", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE), true, true),
+    APPLICATION_ACCEPTED("APPLICATION_ACCEPTED", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE),
+            true, true),
 
     /**
      * When an application was rejected
@@ -39,7 +40,13 @@ public enum EmailType {
      * Confirmation that application was successfully withdrawn
      * To: Applicant who withdrew the application
      */
-    APPLICATION_WITHDRAWN("APPLICATION_WITHDRAWN", Set.of(UserRole.APPLICANT), false, false);
+    APPLICATION_WITHDRAWN("APPLICATION_WITHDRAWN", Set.of(UserRole.APPLICANT), false, false),
+
+    /**
+     * Interview invitation when applicant is assigned to an interview slot
+     * To: Applicant who was assigned to the slot
+     */
+    INTERVIEW_INVITATION("INTERVIEW_INVITATION", Set.of(UserRole.APPLICANT), true, false);
 
     private final String value;
 
