@@ -6,10 +6,10 @@
     </span>
 
     <!-- Status Group -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-end gap-3 mr-8">
       <!-- Status Bar -->
       <div
-        class="w-1 h-6 mb-2 rounded-full"
+        class="w-1 h-6 rounded-full"
         [class.bg-primary-200]="interviewee().state === IntervieweeState.UNCONTACTED"
         [class.bg-primary-300]="interviewee().state === IntervieweeState.INVITED"
         [class.bg-primary-400]="interviewee().state === IntervieweeState.SCHEDULED"
@@ -17,19 +17,41 @@
       ></div>
 
       <!-- Status Text -->
-      <span class="text-text-secondary text-sm whitespace-nowrap" [jhiTranslate]="'interview.interviewees.filter.' + interviewee().state">
-      </span>
+      <span class="text-secondary text-sm whitespace-nowrap" [jhiTranslate]="'interview.interviewees.filter.' + interviewee().state"></span>
     </div>
+
+    <!-- Schedule Details (only for SCHEDULED state) -->
+    @if (interviewee().state === IntervieweeState.SCHEDULED && interviewee().scheduledSlot) {
+      <div class="flex items-center self-end gap-8 text-sm text-secondary">
+        <!-- Date -->
+        <div class="flex items-center gap-2">
+          <fa-icon icon="calendar" class="text-xs text-icon-disabled" />
+          <span>{{ scheduledDate() }}</span>
+        </div>
+
+        <!-- Time -->
+        <div class="flex items-center gap-2">
+          <fa-icon icon="clock" class="text-xs text-icon-disabled" />
+          <span>{{ timeRange() }}</span>
+        </div>
+
+        <!-- Location -->
+        <div class="flex items-center gap-2">
+          <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-xs text-icon-disabled" />
+          <span>{{ location() }}</span>
+        </div>
+      </div>
+    }
   </div>
 
-  <!-- Actions for UNCONTACTED state  -->
+  <!-- Actions for UNCONTACTED state -->
   @if (interviewee().state === IntervieweeState.UNCONTACTED) {
     <jhi-button
-      [label]="'interview.interviewees.sendInvitations'"
+      label="interview.interviewees.sendInvitations"
       [shouldTranslate]="true"
-      [icon]="'paper-plane'"
-      [variant]="'outlined'"
-      [severity]="'primary'"
+      icon="paper-plane"
+      variant="outlined"
+      severity="primary"
       (click)="$event.stopPropagation()"
     />
   }

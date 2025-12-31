@@ -1,7 +1,7 @@
 import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { CheckboxModule } from 'primeng/checkbox';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
@@ -35,7 +35,7 @@ interface ApplicantRow {
     FormsModule,
     TranslateModule,
     TranslateDirective,
-    CheckboxModule,
+    CheckboxComponent,
     ButtonComponent,
     DialogComponent,
     FilterTabsComponent,
@@ -49,6 +49,7 @@ export class IntervieweeSectionComponent {
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
+  refreshKey = input<number>(0);
 
   // Interviewee List State
   interviewees = signal<IntervieweeDTO[]>([]); // All interviewees for this process
@@ -122,8 +123,9 @@ export class IntervieweeSectionComponent {
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
 
-  // Effect: Auto load Interviewees when processId changes
+  // Effect: Auto load Interviewees when processId or refreshKey changes
   private readonly loadEffect = effect(() => {
+    this.refreshKey(); // Track refreshKey to trigger reload
     if (this.processId()) {
       void this.loadInterviewees();
     }

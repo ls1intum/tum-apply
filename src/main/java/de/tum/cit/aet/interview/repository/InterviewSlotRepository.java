@@ -26,6 +26,11 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable  pagination information
      * @return a page of {@link InterviewSlot} entities
      */
+    @EntityGraph(
+        attributePaths = {
+            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
+        }
+    )
     @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
     Page<InterviewSlot> findByInterviewProcessId(@Param("processId") UUID processId, Pageable pageable);
 
@@ -121,13 +126,18 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable   pagination information
      * @return a page of {@link InterviewSlot} entities for the specified month
      */
+    @EntityGraph(
+        attributePaths = {
+            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
+        }
+    )
     @Query(
         """
-            SELECT s FROM InterviewSlot s
-            WHERE s.interviewProcess.id = :processId
-            AND s.startDateTime >= :monthStart
-            AND s.startDateTime < :monthEnd
-            ORDER BY s.startDateTime
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.id = :processId
+        AND s.startDateTime >= :monthStart
+        AND s.startDateTime < :monthEnd
+        ORDER BY s.startDateTime
         """
     )
     Page<InterviewSlot> findByProcessIdAndMonth(
