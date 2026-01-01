@@ -269,7 +269,7 @@ jobs:
 
       - name: Start Keycloak
         run: |
-          docker compose -f src/main/docker/services.yml up -d keycloak
+          docker compose -f docker/local-setup/services.yml up -d keycloak
           echo "Waiting for Keycloak to be healthy..."
           for i in {1..60}; do
             if curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
@@ -282,8 +282,8 @@ jobs:
 
           if ! curl -sSf http://localhost:9080/realms/tumapply/.well-known/openid-configuration >/dev/null 2>&1; then
             echo "❌ Keycloak did not start in time."
-            docker compose -f src/main/docker/services.yml logs keycloak || true
-            docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
+            docker compose -f docker/local-setup/services.yml logs keycloak || true
+            docker compose -f docker/local-setup/services.yml down --remove-orphans --volumes || true
             exit 1
           fi
 
@@ -295,7 +295,7 @@ jobs:
 
       - name: Stop Keycloak
         if: always()
-        run: docker compose -f src/main/docker/services.yml down --remove-orphans --volumes || true
+        run: docker compose -f docker/local-setup/services.yml down --remove-orphans --volumes || true
 
       - name: Format Generated Client Code
         run: npx prettier --write ./src/main/webapp/app/generated
