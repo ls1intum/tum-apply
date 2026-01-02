@@ -37,6 +37,7 @@
         jhiTranslate="entity.filters.recordsFound"
         [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
       ></div>
+      <!-- Content projection slot for parent components to inject custom controls (e.g. action buttons) -->
       <ng-content />
     </div>
   }
