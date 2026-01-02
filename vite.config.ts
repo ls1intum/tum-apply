@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 
 import angular from '@analogjs/vite-plugin-angular';
 import path from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({mode}) => ({
   plugins: [
     angular(),
     tsconfigPaths({
@@ -22,8 +22,8 @@ export default defineConfig(({ mode }) => ({
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: 'build/test-results/lcov-report',
       provider: 'v8',
-      all: false,
-      exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts', 'src/test/webapp/util/**'],
+      all: true,
+      exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts', 'src/test/webapp/util/**', '**/*.html', '**/*.scss'],
     },
   },
   define: {
