@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { firstValueFrom } from 'rxjs';
+import dayjs from 'dayjs/esm';
 import { InterviewResourceApiService } from 'app/generated';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
@@ -15,6 +15,7 @@ import { SlotCreationFormComponent } from 'app/interview/interview-process-detai
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
 import { SlotCardComponent } from './slot-card/slot-card.component';
+import { AssignApplicantModalComponent } from './assign-applicant-modal/assign-applicant-modal.component';
 
 interface GroupedSlots {
   date: string;
@@ -26,7 +27,6 @@ interface GroupedSlots {
   selector: 'jhi-slots-section',
   standalone: true,
   imports: [
-    CommonModule,
     TranslateModule,
     TranslateDirective,
     ButtonComponent,
@@ -36,6 +36,7 @@ interface GroupedSlots {
     SlotCardComponent,
     SlotCreationFormComponent,
     FontAwesomeModule,
+    AssignApplicantModalComponent,
   ],
   templateUrl: './slots-section.component.html',
 })
@@ -43,21 +44,26 @@ export class SlotsSectionComponent {
   // Inputs
   processId = input.required<string>();
 
+  // Outputs
+  slotAssigned = output();
+
   // Signals
   slots = signal<InterviewSlotDTO[]>([]);
   loading = signal(true);
   error = signal(false);
-  currentMonthOffset = signal(0); // 0 = current month, -1 = previous month, +1 = next month
-  currentDatePage = signal(0); // Pagination within the current month
-  expandedDates = signal<Set<string>>(new Set()); // Tracks which date groups are expanded
+  currentMonthOffset = signal(0);
+  currentDatePage = signal(0);
+  expandedDates = signal<Set<string>>(new Set());
   showSlotCreationForm = signal(false);
-  // Computed properties
-  /**
-   * Groups slots by date and sorts them chronologically
-   */
+  showAssignModal = signal(false);
+  selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
+  refreshKey = signal(0);
+  hasAnySlots = signal<boolean | undefined>(undefined);
+
+  // Computed
   groupedSlots = computed<GroupedSlots[]>(() => {
     const slotsData = this.slots();
-    if (!slotsData.length) return [];
+    if (slotsData.length === 0) return [];
 
     const grouped = new Map<string, InterviewSlotDTO[]>();
 
@@ -80,46 +86,25 @@ export class SlotsSectionComponent {
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
 
-  /**
-   * Filters grouped slots to only show the current selected month
-   */
-  currentMonthSlots = computed(() => {
-    const allDates = this.groupedSlots();
-    const offset = this.currentMonthOffset();
+  targetDate = computed(() => dayjs().add(this.currentMonthOffset(), 'month'));
 
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + offset);
-    const targetMonth = targetDate.getMonth();
-    const targetYear = targetDate.getFullYear();
+  currentYear = computed(() => this.targetDate().year());
 
-    return allDates.filter(group => {
-      return group.localDate.getMonth() === targetMonth && group.localDate.getFullYear() === targetYear;
-    });
-  });
+  currentMonthNumber = computed(() => this.targetDate().month() + 1);
 
-  /**
-   * Paginates the current month's slots to show max 5 dates at a time
-   */
+  currentMonthSlots = computed(() => this.groupedSlots());
+
   paginatedSlots = computed(() => {
-    // Get all date groups for the currently selected month
     const monthDates = this.currentMonthSlots();
-    // Get current page
     const page = this.currentDatePage();
-    // Calculate start index
     const start = page * this.DATES_PER_PAGE;
-    // Calculate end index
     const end = start + this.DATES_PER_PAGE;
-    // Returns the slots for current page
     return monthDates.slice(start, end);
   });
 
-  // Formats the current month and year for display * Returns the formatted month and year string for the currently selected month.
   currentMonth = computed(() => {
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
-
-    // Format the date as "Month Year" in the user's selected language (de-DE or en-US)
-    return targetDate.toLocaleDateString(this.locale(), {
+    const date = this.targetDate();
+    return date.toDate().toLocaleDateString(this.locale(), {
       month: 'long',
       year: 'numeric',
     });
@@ -133,52 +118,59 @@ export class SlotsSectionComponent {
 
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
 
+  // Constants
+  private readonly MAX_VISIBLE_SLOTS = 3;
+  private readonly DATES_PER_PAGE = 5;
+
+  // Services
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
-  private readonly MAX_VISIBLE_SLOTS = 3;
-  private readonly DATES_PER_PAGE = 5;
-
-  // Convert language change observable to signal
+  // Private signals
   private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
-
-  // Writable signal for current language
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
-  // Locale computed from current language signal
   private locale = computed(() => {
     const lang = this.currentLangSignal();
     return lang === 'de' ? 'de-DE' : 'en-US';
   });
 
-  // Effect to update current language when language changes
+  // Effects
   private readonly langChangeEffect = effect(() => {
     const langEvent = this.langChangeSignal();
-    if (langEvent?.lang) {
+    if (langEvent?.lang !== undefined) {
       this.currentLangSignal.set(langEvent.lang);
     }
   });
 
   private readonly loadSlotsEffect = effect(() => {
     const id = this.processId();
-    if (id) {
-      void this.loadSlots(id);
+    const year = this.currentYear();
+    const month = this.currentMonthNumber();
+    if (id !== '') {
+      void this.loadSlots(id, year, month);
     }
   });
 
+  private readonly checkGlobalSlotsEffect = effect(() => {
+    void this.checkGlobalSlots();
+  });
+
+  // Public methods
   openCreateSlotsModal(): void {
     this.showSlotCreationForm.set(true);
   }
 
   async refreshSlots(): Promise<void> {
     const id = this.processId();
-    if (id) {
-      await this.loadSlots(id);
+    if (id !== '') {
+      await this.loadSlots(id, this.currentYear(), this.currentMonthNumber());
     }
   }
 
   onSlotsCreated(): void {
+    this.hasAnySlots.set(true);
     void this.refreshSlots();
   }
 
@@ -232,9 +224,6 @@ export class SlotsSectionComponent {
     this.expandedDates.set(expanded);
   }
 
-  /**
-   * Returns properly pluralized "show more" text based on count
-   */
   getShowMoreText(count: number): string {
     const key = count === 1 ? 'interview.slots.showMoreSingular' : 'interview.slots.showMorePlural';
     return `${count} ${this.translateService.instant(key)}`;
@@ -246,7 +235,7 @@ export class SlotsSectionComponent {
 
   async onDeleteSlot(slot: InterviewSlotDTO): Promise<void> {
     const slotId = slot.id;
-    if (!slotId) {
+    if (slotId === undefined) {
       return;
     }
 
@@ -254,7 +243,7 @@ export class SlotsSectionComponent {
       this.loading.set(true);
 
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
-      await this.loadSlots(this.processId());
+      await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
@@ -271,18 +260,44 @@ export class SlotsSectionComponent {
     }
   }
 
-  onAssignApplicant(): void {
-    // TODO: Open Assign Modal
+  onAssignApplicant(slot: InterviewSlotDTO): void {
+    this.selectedSlotForAssignment.set(slot);
+    this.refreshKey.update(n => n + 1);
+    this.showAssignModal.set(true);
   }
 
-  private async loadSlots(processId: string): Promise<void> {
+  onApplicantAssigned(): void {
+    void this.refreshSlots();
+    this.slotAssigned.emit();
+  }
+
+  // Private methods
+  private async checkGlobalSlots(): Promise<void> {
     try {
-      this.loading.set(true);
+      // Just check if any slots exist
+      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId(), undefined, undefined, 0, 1));
+      this.hasAnySlots.set((response.totalElements ?? 0) > 0);
+    } catch {
+      // Ignore errors
+    }
+  }
+
+  private async loadSlots(processId: string, year: number, month: number): Promise<void> {
+    const isFirstLoad = this.hasAnySlots() === undefined;
+
+    try {
+      if (isFirstLoad) {
+        this.loading.set(true);
+      }
       this.error.set(false);
 
-      const data = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId));
+      // Server side filtering by year and month
+      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, 0, 1000));
 
-      this.slots.set(data);
+      this.slots.set(response.content ?? []);
+      if (this.hasAnySlots() === undefined) {
+        this.hasAnySlots.set((response.totalElements ?? 0) > 0);
+      }
     } catch {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
       this.error.set(true);
@@ -292,6 +307,6 @@ export class SlotsSectionComponent {
   }
 
   private safeDate(value?: string): number {
-    return value ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
+    return value !== undefined && value !== '' ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
   }
 }
