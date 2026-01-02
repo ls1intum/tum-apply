@@ -72,24 +72,24 @@ describe('GenderBiasAnalysisDialogComponent', () => {
   });
 
   describe('codingTranslationKey computed', () => {
-    it('should return correct key for masculine-coded', () => {
+    it('should return correct key for non-inclusive-coded', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.manly');
+      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.nonInclusive');
     });
 
-    it('should return correct key for feminine-coded', () => {
+    it('should return correct key for inclusive-coded', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         biasedWords: [],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.feminine');
+      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.inclusive');
     });
 
     it('should return correct key for neutral', () => {
@@ -140,24 +140,24 @@ describe('GenderBiasAnalysisDialogComponent', () => {
   });
 
   describe('explanationTranslationKey computed', () => {
-    it('should return correct key for masculine-coded', () => {
+    it('should return correct key for non-inclusive-coded', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.masculine-coded');
+      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.non-inclusive-coded');
     });
 
-    it('should return correct key for feminine-coded', () => {
+    it('should return correct key for inclusive-coded', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         biasedWords: [],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.feminine-coded');
+      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.inclusive-coded');
     });
 
     it('should return correct key for neutral', () => {
@@ -198,61 +198,61 @@ describe('GenderBiasAnalysisDialogComponent', () => {
   });
 
   describe('getBiasTypeClass', () => {
-    it('should return masculine-badge for masculine type', () => {
+    it('should return non-inclusive-badge for nonInclusive type', () => {
       const { component } = createComponentWithInputs(true);
-      const result = component.getBiasTypeClass('masculine');
-      expect(result).toBe('masculine-badge');
+      const result = component.getBiasTypeClass('non-inclusive');
+      expect(result).toBe('non-inclusive-badge');
     });
 
-    it('should return feminine-badge for feminine type', () => {
+    it('should return inclusive-badge for inclusive type', () => {
       const { component } = createComponentWithInputs(true);
-      const result = component.getBiasTypeClass('feminine');
-      expect(result).toBe('feminine-badge');
+      const result = component.getBiasTypeClass('inclusive');
+      expect(result).toBe('inclusive-badge');
     });
 
-    it('should return feminine-badge for any other type', () => {
+    it('should return inclusive-badge for any other type', () => {
       const { component } = createComponentWithInputs(true);
       const result = component.getBiasTypeClass('neutral');
-      expect(result).toBe('feminine-badge');
+      expect(result).toBe('inclusive-badge');
     });
 
-    it('should return feminine-badge for empty string', () => {
+    it('should return inclusive-badge for empty string', () => {
       const { component } = createComponentWithInputs(true);
       const result = component.getBiasTypeClass('');
-      expect(result).toBe('feminine-badge');
+      expect(result).toBe('inclusive-badge');
     });
   });
 
-  describe('masculineWords computed', () => {
-    it('should filter and return only masculine words', () => {
+  describe('nonInclusiveWords computed', () => {
+    it('should filter and return only non-inclusive words', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'supportive', type: 'feminine' },
-          { word: 'decisive', type: 'masculine' },
+          { word: 'leader', type: 'non-inclusive' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'decisive', type: 'non-inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const result = component.masculineWords();
+      const result = component.nonInclusiveWords();
 
       expect(result).toHaveLength(2);
       expect(result[0].word).toBe('leader');
       expect(result[1].word).toBe('decisive');
     });
 
-    it('should return empty array when no masculine words exist', () => {
+    it('should return empty array when no non-inclusive words exist', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         biasedWords: [
-          { word: 'supportive', type: 'feminine' },
-          { word: 'caring', type: 'feminine' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'caring', type: 'inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.masculineWords()).toHaveLength(0);
+      expect(component.nonInclusiveWords()).toHaveLength(0);
     });
 
     it('should return empty array when biasedWords is undefined', () => {
@@ -262,46 +262,46 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.masculineWords()).toHaveLength(0);
+      expect(component.nonInclusiveWords()).toHaveLength(0);
     });
 
     it('should return empty array when result is null', () => {
       const { component } = createComponentWithInputs(true, null);
 
-      expect(component.masculineWords()).toHaveLength(0);
+      expect(component.nonInclusiveWords()).toHaveLength(0);
     });
   });
 
-  describe('feminineWords computed', () => {
-    it('should filter and return only feminine words', () => {
+  describe('inclusiveWords computed', () => {
+    it('should filter and return only inclusive words', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'supportive', type: 'feminine' },
-          { word: 'caring', type: 'feminine' },
+          { word: 'leader', type: 'nonInclusive' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'caring', type: 'inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const result = component.feminineWords();
+      const result = component.inclusiveWords();
 
       expect(result).toHaveLength(2);
       expect(result[0].word).toBe('supportive');
       expect(result[1].word).toBe('caring');
     });
 
-    it('should return empty array when no feminine words exist', () => {
+    it('should return empty array when no inclusive words exist', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'decisive', type: 'masculine' },
+          { word: 'leader', type: 'nonInclusive' },
+          { word: 'decisive', type: 'nonInclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.feminineWords()).toHaveLength(0);
+      expect(component.inclusiveWords()).toHaveLength(0);
     });
 
     it('should return empty array when biasedWords is undefined', () => {
@@ -311,92 +311,92 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.feminineWords()).toHaveLength(0);
+      expect(component.inclusiveWords()).toHaveLength(0);
     });
   });
 
-  describe('masculineWordCounts computed', () => {
-    it('should return word counts for masculine words only', () => {
+  describe('nonInclusiveWordCounts computed', () => {
+    it('should return word counts for non-inclusive words only', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'supportive', type: 'feminine' },
-          { word: 'leader', type: 'masculine' },
-          { word: 'decisive', type: 'masculine' },
+          { word: 'leader', type: 'non-inclusive' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'leader', type: 'non-inclusive' },
+          { word: 'decisive', type: 'non-inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const result = component.masculineWordCounts();
+      const result = component.nonInclusiveWordCounts();
 
       expect(result.get('leader')).toBe(2);
       expect(result.get('decisive')).toBe(1);
       expect(result.get('supportive')).toBeUndefined();
     });
 
-    it('should return empty map when no masculine words exist', () => {
+    it('should return empty map when no nonInclusive words exist', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         biasedWords: [
-          { word: 'supportive', type: 'feminine' },
-          { word: 'caring', type: 'feminine' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'caring', type: 'inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.masculineWordCounts().size).toBe(0);
+      expect(component.nonInclusiveWordCounts().size).toBe(0);
     });
 
     it('should handle words with undefined word property', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: undefined, type: 'masculine' },
-          { word: 'leader', type: 'masculine' },
+          { word: 'leader', type: 'non-inclusive' },
+          { word: undefined, type: 'non-inclusive' },
+          { word: 'leader', type: 'non-inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const result = component.masculineWordCounts();
+      const result = component.nonInclusiveWordCounts();
 
       expect(result.get('leader')).toBe(2);
       expect(result.get('undefined')).toBeUndefined();
     });
   });
 
-  describe('feminineWordCounts computed', () => {
-    it('should return word counts for feminine words only', () => {
+  describe('inclusiveWordCounts computed', () => {
+    it('should return word counts for inclusive words only', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'supportive', type: 'feminine' },
-          { word: 'supportive', type: 'feminine' },
-          { word: 'caring', type: 'feminine' },
+          { word: 'leader', type: 'nonInclusive' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'caring', type: 'inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const result = component.feminineWordCounts();
+      const result = component.inclusiveWordCounts();
 
       expect(result.get('supportive')).toBe(2);
       expect(result.get('caring')).toBe(1);
       expect(result.get('leader')).toBeUndefined();
     });
 
-    it('should return empty map when no feminine words exist', () => {
+    it('should return empty map when no inclusive words exist', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'decisive', type: 'masculine' },
+          { word: 'leader', type: 'nonInclusive' },
+          { word: 'decisive', type: 'nonInclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.feminineWordCounts().size).toBe(0);
+      expect(component.inclusiveWordCounts().size).toBe(0);
     });
   });
 
@@ -408,8 +408,8 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
     it('should accept result input', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
-        biasedWords: [{ word: 'leader', type: 'masculine' }],
+        coding: 'non-inclusive-coded',
+        biasedWords: [{ word: 'leader', type: 'nonInclusive' }],
       };
 
       const { component } = createComponentWithInputs(true, mockResult);
@@ -434,59 +434,58 @@ describe('GenderBiasAnalysisDialogComponent', () => {
   });
 
   describe('integration scenarios', () => {
-    it('should handle complete masculine-coded analysis result', () => {
+    it('should handle complete non-inclusive-coded analysis result', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'decisive', type: 'masculine' },
-          { word: 'leader', type: 'masculine' },
+          { word: 'leader', type: 'non-inclusive' },
+          { word: 'decisive', type: 'non-inclusive' },
+          { word: 'leader', type: 'non-inclusive' },
         ],
       };
 
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.manly');
-      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.masculine-coded');
-      expect(component.masculineWords()).toHaveLength(3);
-      expect(component.masculineWordCounts().get('leader')).toBe(2);
-      expect(component.masculineWordCounts().get('decisive')).toBe(1);
+      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.nonInclusive');
+      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.non-inclusive-coded');
+      expect(component.nonInclusiveWordCounts().get('leader')).toBe(2);
+      expect(component.nonInclusiveWordCounts().get('decisive')).toBe(1);
     });
 
-    it('should handle complete feminine-coded analysis result', () => {
+    it('should handle complete inclusive-coded analysis result', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         biasedWords: [
-          { word: 'supportive', type: 'feminine' },
-          { word: 'caring', type: 'feminine' },
-          { word: 'supportive', type: 'feminine' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'caring', type: 'inclusive' },
+          { word: 'supportive', type: 'inclusive' },
         ],
       };
 
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.feminine');
-      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.feminine-coded');
-      expect(component.feminineWords()).toHaveLength(3);
-      expect(component.feminineWordCounts().get('supportive')).toBe(2);
-      expect(component.feminineWordCounts().get('caring')).toBe(1);
+      expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.inclusive');
+      expect(component.explanationTranslationKey()).toBe('genderDecoder.explanations.inclusive-coded');
+      expect(component.inclusiveWords()).toHaveLength(3);
+      expect(component.inclusiveWordCounts().get('supportive')).toBe(2);
+      expect(component.inclusiveWordCounts().get('caring')).toBe(1);
     });
 
     it('should handle mixed biased words result', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader', type: 'masculine' },
-          { word: 'supportive', type: 'feminine' },
-          { word: 'decisive', type: 'masculine' },
-          { word: 'caring', type: 'feminine' },
+          { word: 'leader', type: 'non-inclusive' },
+          { word: 'supportive', type: 'inclusive' },
+          { word: 'decisive', type: 'non-inclusive' },
+          { word: 'caring', type: 'inclusive' },
         ],
       };
 
       const { component } = createComponentWithInputs(true, mockResult);
 
-      expect(component.masculineWords()).toHaveLength(2);
-      expect(component.feminineWords()).toHaveLength(2);
+      expect(component.nonInclusiveWords()).toHaveLength(2);
+      expect(component.inclusiveWords()).toHaveLength(2);
     });
 
     it('should handle neutral result with no biased words', () => {
@@ -498,8 +497,8 @@ describe('GenderBiasAnalysisDialogComponent', () => {
       const { component } = createComponentWithInputs(true, mockResult);
 
       expect(component.codingTranslationKey()).toBe('genderDecoder.formulationTexts.neutral');
-      expect(component.masculineWords()).toHaveLength(0);
-      expect(component.feminineWords()).toHaveLength(0);
+      expect(component.nonInclusiveWords()).toHaveLength(0);
+      expect(component.inclusiveWords()).toHaveLength(0);
     });
 
     it('should handle empty result', () => {
@@ -518,15 +517,15 @@ describe('GenderBiasAnalysisDialogComponent', () => {
   describe('edge cases', () => {
     it('should handle words with special characters', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'leader-like', type: 'masculine' },
-          { word: "leader's", type: 'masculine' },
+          { word: 'leader-like', type: 'non-inclusive' },
+          { word: "leader's", type: 'non-inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const counts = component.masculineWordCounts();
+      const counts = component.nonInclusiveWordCounts();
 
       expect(counts.get('leader-like')).toBe(1);
       expect(counts.get("leader's")).toBe(1);
@@ -534,16 +533,16 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
     it('should handle case-sensitive word counting', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: 'Leader', type: 'masculine' },
-          { word: 'leader', type: 'masculine' },
-          { word: 'LEADER', type: 'masculine' },
+          { word: 'Leader', type: 'non-inclusive' },
+          { word: 'leader', type: 'non-inclusive' },
+          { word: 'LEADER', type: 'non-inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const counts = component.masculineWordCounts();
+      const counts = component.nonInclusiveWordCounts();
 
       expect(counts.get('Leader')).toBe(1);
       expect(counts.get('leader')).toBe(1);
@@ -552,15 +551,15 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
     it('should handle empty string as word', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: '', type: 'masculine' },
-          { word: 'leader', type: 'masculine' },
+          { word: '', type: 'non-inclusive' },
+          { word: 'leader', type: 'non-inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const counts = component.masculineWordCounts();
+      const counts = component.nonInclusiveWordCounts();
 
       expect(counts.get('')).toBeUndefined();
       expect(counts.get('leader')).toBe(1);
@@ -568,15 +567,15 @@ describe('GenderBiasAnalysisDialogComponent', () => {
 
     it('should handle whitespace-only words', () => {
       const mockResult: GenderBiasAnalysisResponse = {
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         biasedWords: [
-          { word: '   ', type: 'masculine' },
-          { word: 'leader', type: 'masculine' },
+          { word: '   ', type: 'non-inclusive' },
+          { word: 'leader', type: 'non-inclusive' },
         ],
       };
       const { component } = createComponentWithInputs(true, mockResult);
 
-      const counts = component.masculineWordCounts();
+      const counts = component.nonInclusiveWordCounts();
 
       expect(counts.get('   ')).toBe(1);
       expect(counts.get('leader')).toBe(1);

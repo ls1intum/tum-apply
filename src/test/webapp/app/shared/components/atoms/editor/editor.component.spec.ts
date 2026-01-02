@@ -328,7 +328,7 @@ describe('EditorComponent', () => {
 
       fixture.componentRef.setInput('showGenderDecoderButton', true);
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         words: [],
       } as GenderBiasAnalysisResponse);
       fixture.detectChanges();
@@ -384,34 +384,34 @@ describe('EditorComponent', () => {
       expect(comp.codingDisplay()).toBeNull();
     });
 
-    it('should return translated text for masculine-coded', () => {
+    it('should return translated text for non-inclusive-coded', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         words: [],
       } as GenderBiasAnalysisResponse);
 
       fixture.detectChanges();
 
       const result = comp.codingDisplay();
-      expect(result).toBe('genderDecoder.formulationTexts.manly');
+      expect(result).toBe('genderDecoder.formulationTexts.nonInclusive');
     });
 
-    it('should return translated text for feminine-coded', () => {
+    it('should return translated text for inclusive-coded', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
-        coding: 'feminine-coded',
+        coding: 'inclusive-coded',
         words: [],
       } as GenderBiasAnalysisResponse);
 
       fixture.detectChanges();
 
       const result = comp.codingDisplay();
-      expect(result).toBe('genderDecoder.formulationTexts.feminine');
+      expect(result).toBe('genderDecoder.formulationTexts.inclusive');
     });
 
     it('should return translated text for neutral', () => {
@@ -449,21 +449,21 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         words: [],
       } as GenderBiasAnalysisResponse);
 
       fixture.detectChanges();
 
       const result1 = comp.codingDisplay();
-      expect(result1).toBe('genderDecoder.formulationTexts.manly');
+      expect(result1).toBe('genderDecoder.formulationTexts.nonInclusive');
 
       comp['translate'].use('de');
       await fixture.whenStable();
       fixture.detectChanges();
 
       const result2 = comp.codingDisplay();
-      expect(result2).toBe('genderDecoder.formulationTexts.manly');
+      expect(result2).toBe('genderDecoder.formulationTexts.nonInclusive');
     });
   });
 
@@ -516,7 +516,7 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       vi.spyOn(comp, 'analysisResult').mockReturnValue({
-        coding: 'masculine-coded',
+        coding: 'non-inclusive-coded',
         words: [],
       } as GenderBiasAnalysisResponse);
 
@@ -605,20 +605,20 @@ describe('EditorComponent', () => {
   });
 
   describe('getCodingTranslationKey', () => {
-    it('should return correct key for "masculine-coded"', () => {
+    it('should return correct key for "non-inclusive-coded"', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      const result = comp['getCodingTranslationKey']('masculine-coded');
-      expect(result).toBe('genderDecoder.formulationTexts.manly');
+      const result = comp['getCodingTranslationKey']('non-inclusive-coded');
+      expect(result).toBe('genderDecoder.formulationTexts.nonInclusive');
     });
 
-    it('should return correct key for "feminine-coded"', () => {
+    it('should return correct key for "inclusive-coded"', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      const result = comp['getCodingTranslationKey']('feminine-coded');
-      expect(result).toBe('genderDecoder.formulationTexts.feminine');
+      const result = comp['getCodingTranslationKey']('inclusive-coded');
+      expect(result).toBe('genderDecoder.formulationTexts.inclusive');
     });
 
     it('should return correct key for "neutral"', () => {
