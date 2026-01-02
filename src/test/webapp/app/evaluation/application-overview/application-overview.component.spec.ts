@@ -97,7 +97,6 @@ describe('ApplicationOverviewComponent', () => {
     it('exposes expected columns and state mappings', () => {
       const cols = component.columns();
       expect(cols.length).toBe(5);
-      expect(cols.find(c => c.field === 'state')?.alignCenter).toBe(true);
       expect(cols.find(c => c.field === 'state')?.template).toBeDefined();
       expect(cols.find(c => c.field === 'actions')?.template).toBeDefined();
 

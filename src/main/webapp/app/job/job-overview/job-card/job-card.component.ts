@@ -75,4 +75,11 @@ export class JobCardComponent {
   onViewDetails(): void {
     void this.router.navigate([`/job/detail/${this.jobId()}`]);
   }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.onViewDetails();
+    }
+  }
 }
