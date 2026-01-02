@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, Signal, ViewEncapsulation, computed, effect, input, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
@@ -12,7 +11,7 @@ import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-document-dialog',
-  imports: [CommonModule, DialogModule, CheckboxModule, FormsModule, DocumentViewerComponent, TranslateModule, TranslateDirective],
+  imports: [DialogModule, CheckboxModule, FormsModule, DocumentViewerComponent, TranslateModule, TranslateDirective],
   templateUrl: './document-dialog.html',
   encapsulation: ViewEncapsulation.None,
 })

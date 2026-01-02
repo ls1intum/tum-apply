@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
@@ -37,7 +36,6 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
 @Component({
   selector: 'jhi-application-creation-page3',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FloatLabelModule,
     DividerModule,

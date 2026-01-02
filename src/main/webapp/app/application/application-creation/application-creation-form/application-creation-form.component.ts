@@ -1,6 +1,6 @@
 import { Component, TemplateRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -48,7 +48,6 @@ const applyflow = 'entity.toast.applyFlow';
 @Component({
   selector: 'jhi-application-creation-form',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     DividerModule,
     CheckboxModule,

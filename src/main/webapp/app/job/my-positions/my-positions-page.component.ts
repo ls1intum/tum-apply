@@ -1,5 +1,4 @@
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { AccountService } from 'app/core/auth/account.service';
@@ -23,7 +22,6 @@ import { JobResourceApiService } from '../../generated/api/jobResourceApi.servic
   selector: 'jhi-my-positions-page',
   standalone: true,
   imports: [
-    CommonModule,
     TagComponent,
     ButtonComponent,
     DynamicTableComponent,

@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
-import { CommonModule } from '@angular/common';
 import { firstValueFrom, map } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -21,7 +20,7 @@ import * as DropdownOptions from '../.././dropdown-options';
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
-  imports: [CommonModule, TableModule, JobCardComponent, PaginatorModule, SharedModule, SearchFilterSortBar],
+  imports: [TableModule, JobCardComponent, PaginatorModule, SharedModule, SearchFilterSortBar],
   templateUrl: './job-card-list.component.html',
 })
 export class JobCardListComponent {

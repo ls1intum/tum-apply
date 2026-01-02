@@ -1,5 +1,4 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
@@ -23,7 +22,6 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
   selector: 'jhi-application-overview',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     LocalizedDatePipe,
     ButtonComponent,
