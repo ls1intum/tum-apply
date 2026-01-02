@@ -104,15 +104,9 @@
     "@tailwindcss/postcss": "4.1.18",
     "@types/node": "24.10.3",
     "@types/quill": "2.0.14",
-<<<<<<< HEAD
     "@vitest/coverage-v8": "4.0.16",
     "angular-eslint": "21.1.0",
     "autoprefixer": "10.4.22",
-=======
-    "@vitest/coverage-v8": "3.2.4",
-    "angular-eslint": "20.6.0",
-    "autoprefixer": "10.4.23",
->>>>>>> origin/main
     "concurrently": "9.2.1",
     "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
