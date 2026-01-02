@@ -17,7 +17,17 @@ import importPlugin from 'eslint-plugin-import';
 export default [
   // 🔒 Completely ignore all generated files BEFORE any other config runs
   {
-    ignores: ['src/main/webapp/app/generated/**', 'docs/**', 'gradle/**', 'src/test/webapp/**', 'vite.config.ts', 'build/', '**/build/**', 'supporting_scripts/local-pr-coverage/local-pr-coverage.mjs', 'eslint.config.mjs'],
+    ignores: [
+      'src/main/webapp/app/generated/**',
+      'docs/**',
+      'gradle/**',
+      'src/test/webapp/**',
+      'vite.config.ts',
+      'build/',
+      '**/build/**',
+      'supporting_scripts/local-pr-coverage/local-pr-coverage.mjs',
+      'eslint.config.mjs',
+    ],
   },
   // 🌐 Base ignore and global config
   ...tseslint.config(
@@ -61,7 +71,7 @@ export default [
     {
       files: ['**/*.{js,cjs,mjs}'],
       rules: {
-        'no-unused-vars': ['error', {argsIgnorePattern: '^_'}],
+        'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       },
     },
 
@@ -113,12 +123,12 @@ export default [
         ...tsPlugin.configs.recommended.rules,
         ...angularPlugin.configs.recommended.rules,
 
-        '@angular-eslint/component-selector': ['error', {type: 'element', prefix: 'jhi', style: 'kebab-case'}],
-        '@angular-eslint/directive-selector': ['error', {type: 'attribute', prefix: 'jhi', style: 'camelCase'}],
+        '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'jhi', style: 'kebab-case' }],
+        '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'jhi', style: 'camelCase' }],
         '@angular-eslint/relative-url-prefix': 'error',
-        '@angular-eslint/directive-class-suffix': ['error', {suffixes: ['Directive']}],
+        '@angular-eslint/directive-class-suffix': ['error', { suffixes: ['Directive'] }],
         '@typescript-eslint/consistent-type-definitions': 'off',
-        '@typescript-eslint/explicit-function-return-type': ['error', {allowExpressions: true}],
+        '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
         '@typescript-eslint/member-ordering': [
           'error',
           {
@@ -152,7 +162,7 @@ export default [
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/prefer-nullish-coalescing': 'error',
         '@typescript-eslint/prefer-optional-chain': 'error',
-        '@typescript-eslint/restrict-template-expressions': ['error', {allowNumber: true}],
+        '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
         '@typescript-eslint/unbound-method': 'off',
         '@typescript-eslint/no-explicit-any': 'warn',
         '@typescript-eslint/strict-boolean-expressions': 'warn',
@@ -166,16 +176,16 @@ export default [
 
         'arrow-body-style': 'error',
         curly: 'error',
-        eqeqeq: ['error', 'always', {null: 'ignore'}],
+        eqeqeq: ['error', 'always', { null: 'ignore' }],
         'guard-for-in': 'error',
         'no-bitwise': 'error',
         'no-caller': 'error',
-        'no-console': ['error', {allow: ['warn', 'error']}],
+        'no-console': ['error', { allow: ['warn', 'error'] }],
         'no-eval': 'error',
         'no-labels': 'error',
         'no-new': 'error',
         'no-new-wrappers': 'error',
-        'object-shorthand': ['error', 'always', {avoidExplicitReturnArrows: true}],
+        'object-shorthand': ['error', 'always', { avoidExplicitReturnArrows: true }],
         radix: 'error',
         'spaced-comment': ['warn', 'always'],
         'no-unused-private-class-members': 'error',
@@ -251,7 +261,7 @@ export default [
         prettier: prettierPlugin,
       },
       rules: {
-        'prettier/prettier': ['error', {parser: 'angular'}],
+        'prettier/prettier': ['error', { parser: 'angular' }],
         '@angular-eslint/template/click-events-have-key-events': 'warn',
         '@angular-eslint/template/interactive-supports-focus': 'warn',
         '@angular-eslint/template/label-has-associated-control': 'warn',
