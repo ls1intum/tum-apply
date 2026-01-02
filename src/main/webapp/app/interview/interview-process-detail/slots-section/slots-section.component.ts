@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -15,6 +15,7 @@ import { SlotCreationFormComponent } from 'app/interview/interview-process-detai
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
 import { SlotCardComponent } from './slot-card/slot-card.component';
+import { AssignApplicantModalComponent } from './assign-applicant-modal/assign-applicant-modal.component';
 
 interface GroupedSlots {
   date: string;
@@ -28,19 +29,23 @@ interface GroupedSlots {
   imports: [
     TranslateModule,
     TranslateDirective,
-    FontAwesomeModule,
-    ProgressSpinnerModule,
     ButtonComponent,
+    ProgressSpinnerModule,
     MonthNavigationComponent,
     DateHeaderComponent,
     SlotCardComponent,
     SlotCreationFormComponent,
+    FontAwesomeModule,
+    AssignApplicantModalComponent,
   ],
   templateUrl: './slots-section.component.html',
 })
 export class SlotsSectionComponent {
   // Inputs
   processId = input.required<string>();
+
+  // Outputs
+  slotAssigned = output();
 
   // Signals
   slots = signal<InterviewSlotDTO[]>([]);
@@ -50,6 +55,9 @@ export class SlotsSectionComponent {
   currentDatePage = signal(0);
   expandedDates = signal<Set<string>>(new Set());
   showSlotCreationForm = signal(false);
+  showAssignModal = signal(false);
+  selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
+  refreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
 
   // Computed
@@ -94,19 +102,17 @@ export class SlotsSectionComponent {
     return monthDates.slice(start, end);
   });
 
-  // Formats the current month and year for display
   currentMonth = computed(() => {
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
-
-    // Format the date as "Month Year" in the user's selected language (de-DE or en-US)
-    return targetDate.toLocaleDateString(this.locale(), {
+    const date = this.targetDate();
+    return date.toDate().toLocaleDateString(this.locale(), {
       month: 'long',
       year: 'numeric',
     });
   });
 
-  totalDatePages = computed(() => Math.ceil(this.currentMonthSlots().length / this.DATES_PER_PAGE));
+  totalDatePages = computed(() => {
+    return Math.ceil(this.currentMonthSlots().length / this.DATES_PER_PAGE);
+  });
 
   canGoPreviousDate = computed(() => this.currentDatePage() > 0);
 
@@ -121,11 +127,11 @@ export class SlotsSectionComponent {
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
-  // Internal Signals
+  // Private signals
   private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
-  private readonly locale = computed(() => {
+  private locale = computed(() => {
     const lang = this.currentLangSignal();
     return lang === 'de' ? 'de-DE' : 'en-US';
   });
@@ -133,9 +139,8 @@ export class SlotsSectionComponent {
   // Effects
   private readonly langChangeEffect = effect(() => {
     const langEvent = this.langChangeSignal();
-    const lang = langEvent?.lang;
-    if (lang !== undefined) {
-      this.currentLangSignal.set(lang);
+    if (langEvent?.lang !== undefined) {
+      this.currentLangSignal.set(langEvent.lang);
     }
   });
 
@@ -152,7 +157,7 @@ export class SlotsSectionComponent {
     void this.checkGlobalSlots();
   });
 
-  // Methods
+  // Public methods
   openCreateSlotsModal(): void {
     this.showSlotCreationForm.set(true);
   }
@@ -235,6 +240,8 @@ export class SlotsSectionComponent {
     }
 
     try {
+      this.loading.set(true);
+
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
       await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
 
@@ -253,18 +260,25 @@ export class SlotsSectionComponent {
     }
   }
 
-  onAssignApplicant(): void {
-    // TODO: Open Assign Modal
+  onAssignApplicant(slot: InterviewSlotDTO): void {
+    this.selectedSlotForAssignment.set(slot);
+    this.refreshKey.update(n => n + 1);
+    this.showAssignModal.set(true);
   }
 
+  onApplicantAssigned(): void {
+    void this.refreshSlots();
+    this.slotAssigned.emit();
+  }
+
+  // Private methods
   private async checkGlobalSlots(): Promise<void> {
     try {
-      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId(), undefined, undefined, 1, 0));
-      if ('totalElements' in response) {
-        this.hasAnySlots.set((response as { totalElements: number }).totalElements > 0);
-      }
+      // Just check if any slots exist
+      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId(), undefined, undefined, 0, 1));
+      this.hasAnySlots.set((response.totalElements ?? 0) > 0);
     } catch {
-      /* empty */
+      // Ignore errors
     }
   }
 
@@ -277,10 +291,12 @@ export class SlotsSectionComponent {
       }
       this.error.set(false);
 
-      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, 1000, 0));
+      // Server side filtering by year and month
+      const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, 0, 1000));
 
-      if ('content' in response) {
-        this.slots.set((response as { content: InterviewSlotDTO[] }).content);
+      this.slots.set(response.content ?? []);
+      if (this.hasAnySlots() === undefined) {
+        this.hasAnySlots.set((response.totalElements ?? 0) > 0);
       }
     } catch {
       this.toastService.showErrorKey('interview.slots.error.loadFailed');
@@ -290,7 +306,7 @@ export class SlotsSectionComponent {
     }
   }
 
-  private safeDate(value: string | undefined): number {
+  private safeDate(value?: string): number {
     return value !== undefined && value !== '' ? new Date(value).getTime() : Number.POSITIVE_INFINITY;
   }
 }

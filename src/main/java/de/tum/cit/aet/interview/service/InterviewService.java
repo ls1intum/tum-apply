@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,15 +52,16 @@ public class InterviewService {
     private final JobRepository jobRepository;
     private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
+    /*--------------------------------------------------------------
+     Interview Process Overview and Management
+    --------------------------------------------------------------*/
+
     /**
      * Get overview of all interview processes with statistics per job.
-     * Returns a list of jobs that have an active interview process with counts
-     * of applications in each state (completed, scheduled, invited, uncontacted).
-     * <p>
-     * <p>
-     * TODO: This implementation uses ApplicationState to track interview status.
-     * Future improvement: Create separate InterviewInvitation entity to better
-     * separate application review process from interview process.
+     * Returns a list of jobs that have an active interview process with counts of
+     * applications in each state (completed, scheduled, invited, uncontacted).
+     *
+     * TODO: This implementation uses IntervieweeState to track interview status.
      *
      * @return list of interview overview DTOs with statistics
      */
@@ -71,61 +73,47 @@ public class InterviewService {
         // 2. Load all active interview processes for this professor
         List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
 
-        // 2. If no interview processes exist, return an empty list
+        // 3. If no interview processes exist, return an empty list
         if (interviewProcesses.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // 4. Fetch aggregated data: count of applications per job and ApplicationState
-        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(professorId);
+        // 4. Fetch all interviewees for these processes in a single query
+        List<UUID> processIds = interviewProcesses.stream().map(InterviewProcess::getId).toList();
+        List<Interviewee> allInterviewees = intervieweeRepository.findByInterviewProcessIdInWithSlots(processIds);
 
-        // 5.Build a map structure with jobId as key
-        // The inner map contains the count of applications per ApplicationState
-        Map<UUID, Map<ApplicationState, Long>> countsPerJobAndState = new HashMap<>();
+        // 5. Group interviewees by process ID and calculate state counts
+        Map<UUID, Map<IntervieweeState, Long>> countsPerProcess = allInterviewees
+            .stream()
+            .collect(
+                Collectors.groupingBy(
+                    interviewee -> interviewee.getInterviewProcess().getId(),
+                    Collectors.groupingBy(
+                        this::calculateIntervieweeState,
+                        () -> new EnumMap<>(IntervieweeState.class),
+                        Collectors.counting()
+                    )
+                )
+            );
 
-        // 6. Process the results and organize them into the map structure
-        for (Object[] result : countResults) {
-            Job job = (Job) result[0];
-            ApplicationState state = (ApplicationState) result[1];
-            Long count = (Long) result[2];
-
-            countsPerJobAndState.computeIfAbsent(job.getJobId(), k -> new EnumMap<>(ApplicationState.class)).put(state, count);
-        }
-
-        // 7.Transform each interview process into a DTO with statistical data
+        // 6. Transform each interview process into a DTO with statistical data
         return interviewProcesses
             .stream()
             .map(interviewProcess -> {
                 Job job = interviewProcess.getJob();
                 UUID jobId = job.getJobId();
+                UUID processId = interviewProcess.getId();
 
-                // Get the state counts for this job (or an empty map if no data exists)
-                Map<ApplicationState, Long> stateCounts = countsPerJobAndState.getOrDefault(jobId, Collections.emptyMap());
+                // Get the state counts for this process (or an empty map if no data exists)
+                Map<IntervieweeState, Long> stateCounts = countsPerProcess.getOrDefault(processId, Collections.emptyMap());
 
-                // Count applications in interview specific states
-                // COMPLETED: Interview has been completed
-                long completedCount = stateCounts.getOrDefault(ApplicationState.COMPLETED, 0L);
+                // Count interviewees by state
+                long completedCount = stateCounts.getOrDefault(IntervieweeState.COMPLETED, 0L);
+                long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
+                long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
+                long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
 
-                // SCHEDULED: Interview appointment has been scheduled
-                long scheduledCount = stateCounts.getOrDefault(ApplicationState.SCHEDULED, 0L);
-
-                // INVITED: Candidate has been invited to interview, but no appointment yet
-                long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
-
-                // TODO: Replace with InterviewInvitation entity lookup
-                // Calculate "uncontacted" - applications that haven't been invited to interview
-                // yet
-                // Currently: uncontacted = applications not yet moved to interview process
-                // These states represent applications that are still in the review process (or
-                // submitted applications) but have not yet transitioned to the interview phase
-                // Future: uncontacted = applications explicitly added to interview but not
-                // invited
-                long uncontactedCount =
-                    stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + // Application is
-                    // being reviewed
-                    stateCounts.getOrDefault(ApplicationState.SENT, 0L); // Application has been submitted
-
-                // Calculate total number of all applications in this interview process
+                // Calculate total number of all interviewees in this interview process
                 long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
 
                 // Create the DTO with all statistical data for the UI
@@ -160,34 +148,26 @@ public class InterviewService {
         Job job = interviewProcess.getJob();
         currentUserService.verifyJobAccess(job);
 
-        // 3. Fetch aggregated data for this specific job
-        UUID jobId = interviewProcess.getJob().getJobId();
-        UUID currentUserId = currentUserService.getUserId();
-        List<Object[]> countResults = applicationRepository.countApplicationsByJobAndStateForInterviewProcesses(currentUserId);
+        // 3. Fetch interviewees for this process and calculate state counts
+        List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdInWithSlots(List.of(processId));
 
-        // Filter for this specific job
-        Map<ApplicationState, Long> stateCounts = new EnumMap<>(ApplicationState.class);
-        for (Object[] result : countResults) {
-            job = (Job) result[0];
-            if (job.getJobId().equals(jobId)) {
-                ApplicationState state = (ApplicationState) result[1];
-                Long count = (Long) result[2];
-                stateCounts.put(state, count);
-            }
+        Map<IntervieweeState, Long> stateCounts = new EnumMap<>(IntervieweeState.class);
+        for (Interviewee interviewee : interviewees) {
+            IntervieweeState state = calculateIntervieweeState(interviewee);
+            stateCounts.merge(state, 1L, Long::sum);
         }
 
         // 4. Calculate stats
-        long completedCount = stateCounts.getOrDefault(ApplicationState.COMPLETED, 0L);
-        long scheduledCount = stateCounts.getOrDefault(ApplicationState.SCHEDULED, 0L);
-        long invitedCount = stateCounts.getOrDefault(ApplicationState.INVITED, 0L);
-        long uncontactedCount =
-            stateCounts.getOrDefault(ApplicationState.IN_REVIEW, 0L) + stateCounts.getOrDefault(ApplicationState.SENT, 0L);
+        long completedCount = stateCounts.getOrDefault(IntervieweeState.COMPLETED, 0L);
+        long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
+        long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
+        long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
         long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
 
         return new InterviewOverviewDTO(
-            jobId,
+            job.getJobId(),
             interviewProcess.getId(),
-            interviewProcess.getJob().getTitle(),
+            job.getTitle(),
             completedCount,
             scheduledCount,
             invitedCount,
@@ -238,6 +218,10 @@ public class InterviewService {
             interviewProcess.getCreatedAt()
         );
     }
+
+    /*--------------------------------------------------------------
+     Interview Slot and Interviewee Management
+    --------------------------------------------------------------*/
 
     /**
      * Creates and persists new interview slots for a given interview process.
@@ -305,6 +289,36 @@ public class InterviewService {
     }
 
     /**
+     * Deletes a single interview slot.
+     * Only unbooked slots can be deleted.
+     *
+     * @param slotId the ID of the slot to delete
+     * @throws EntityNotFoundException if the slot is not found
+     * @throws AccessDeniedException   if the user is not authorized to delete this
+     *                                 slot
+     * @throws BadRequestException     if the slot is booked
+     */
+    public void deleteSlot(UUID slotId) {
+        // 1. Load the slot
+        InterviewSlot slot = interviewSlotRepository
+            .findByIdWithJob(slotId)
+            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
+
+        // 2. Security: Verify current user has job access
+        Job job = slot.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3.Cannot delete booked slots
+        // TODO: Implement deletion of booked slots with unassignment of applicant
+        if (slot.getIsBooked()) {
+            throw new BadRequestException("Cannot delete booked slot.");
+        }
+
+        // 4. Delete the slot
+        interviewSlotRepository.delete(slot);
+    }
+
+    /**
      * Validates that none of the new slots conflict with existing slots of the same
      * professor.
      *
@@ -363,7 +377,8 @@ public class InterviewService {
     }
 
     /**
-     * Retrieves interview slots for a given interview process with optional month filtering.
+     * Retrieves interview slots for a given interview process with optional month
+     * filtering.
      * If year and month are provided, returns only slots within that month.
      * Otherwise, returns all slots for the process.
      * Slots are returned ordered by start time (ascending).
@@ -381,7 +396,7 @@ public class InterviewService {
         // 1. Load Interview Process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
-            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
+            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
         // 2. Security: Verify current user has job access
         Job job = process.getJob();
@@ -400,11 +415,29 @@ public class InterviewService {
             slotsPage = interviewSlotRepository.findByInterviewProcessId(processId, pageable);
         }
 
-        // 5. Convert to DTOs and return
-        List<InterviewSlotDTO> slotDTOs = slotsPage.getContent().stream().map(InterviewSlotDTO::fromEntity).toList();
+        // 5. Convert to DTOs (using rich mapping logic)
+        List<InterviewSlotDTO> slotDTOs = slotsPage
+            .getContent()
+            .stream()
+            .map(slot -> {
+                if (slot.getInterviewee() != null) {
+                    Interviewee interviewee = slot.getInterviewee();
+                    IntervieweeState state = slot.getEndDateTime().isBefore(Instant.now())
+                        ? IntervieweeState.COMPLETED
+                        : IntervieweeState.SCHEDULED;
+                    AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
+                    return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
+                }
+                return InterviewSlotDTO.fromEntity(slot);
+            })
+            .toList();
 
         return new PageResponseDTO<>(slotDTOs, slotsPage.getTotalElements());
     }
+
+    /*--------------------------------------------------------------
+     Interviewee Management
+    --------------------------------------------------------------*/
 
     /**
      * Adds applicants to an interview process by creating Interviewee entities.
@@ -483,36 +516,6 @@ public class InterviewService {
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
 
         return interviewees.stream().map(this::mapIntervieweeToDTO).toList();
-    }
-
-    /**
-     * Deletes a single interview slot.
-     * Only unbooked slots can be deleted.
-     *
-     * @param slotId the ID of the slot to delete
-     * @throws EntityNotFoundException if the slot is not found
-     * @throws AccessDeniedException   if the user is not authorized to delete this
-     *                                 slot
-     * @throws BadRequestException     if the slot is booked
-     */
-    public void deleteSlot(UUID slotId) {
-        // 1. Load the slot
-        InterviewSlot slot = interviewSlotRepository
-            .findByIdWithJob(slotId)
-            .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
-
-        // 2. Security: Verify current user has job access
-        Job job = slot.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
-
-        // 3.Cannot delete booked slots
-        // TODO: Implement deletion of booked slots with unassignment of applicant
-        if (slot.getIsBooked()) {
-            throw new BadRequestException("Cannot delete booked slot.");
-        }
-
-        // 4. Delete the slot
-        interviewSlotRepository.delete(slot);
     }
 
     /**
@@ -625,9 +628,7 @@ public class InterviewService {
         return IntervieweeState.UNCONTACTED;
     }
 
-    /**
-     * Maps a User entity to IntervieweeUserDTO.
-     */
+    // Maps a User entity to IntervieweeUserDTO.
     private IntervieweeDTO.IntervieweeUserDTO mapUserToIntervieweeUserDTO(User user) {
         if (user == null) {
             return null;
