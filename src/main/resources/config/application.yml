@@ -281,6 +281,7 @@ aet:
   email:
     enabled: ${AET_EMAIL_ENABLED:false}
     from: ${AET_EMAIL_FROM:tum-apply.aet@xcit.tum.de}
+    from-name: ${AET_EMAIL_FROM_NAME:TUMApply}
   storage:
     root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400
@@ -335,7 +336,7 @@ keycloak:
 
 security:
   otp:
-    length: ${OTP_LENGTH:8}
+    length: ${OTP_LENGTH:6}
     ttl-seconds: ${OTP_TTL_SECONDS:900}
     max-attempts: ${OTP_MAX_ATTEMPTS:6}
     resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}

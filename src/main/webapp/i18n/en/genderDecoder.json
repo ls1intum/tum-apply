@@ -2,20 +2,21 @@
   "genderDecoder": {
     "resultTitle": "Gender Bias Analysis",
     "buttonLabel": "Check",
-    "masculineWords": "Masculine-coded words",
-    "feminineWords": "Feminine-coded words",
+    "nonInclusiveWords": "Non-Gender-Inclusive terms",
+    "inclusiveWords": "Gender-inclusive terms",
     "noWordsFound": "No words found",
     "openAnaylsis": "Click here for more information",
+    "originalDecoder": "Based on the <a href=\"https://gender-decoder.katmatfield.com/\" target=\"_blank\"  class='external-link' rel=\"noopener noreferrer\">original gender decoder</a> by Kat Matfield",
     "formulationTexts": {
-      "manly": "Predominantly masculine wording",
-      "feminine": "Predominantly feminine wording",
+      "nonInclusive": "Non-Gender-Inclusive wording",
+      "inclusive": "Gender-inclusive wording",
       "neutral": "Neutral wording"
     },
     "explanations": {
-      "masculine-coded": "Your posting contains more stereotypically masculine-coded than feminine-coded words. Studies show this appeals more to men and may discourage women from applying.",
-      "feminine-coded": "Your posting contains more stereotypically feminine-coded than masculine-coded words. This may encourage women to apply. Stereotypically feminine-coded wording barely affects men's application interest.",
-      "empty": "Your posting contains no gender-coded words. The language is gender-fair.",
-      "neutral": "Your posting contains stereotypically masculine and feminine-coded words equally. The language is gender-fair."
+      "non-inclusive-coded": "Your posting contains wording that leans toward non-gender-inclusive language. Such language can affect how appealing the role is to different candidates. To ensure the posting resonates with a broad and diverse audience, you may consider using more gender-inclusive phrasing.",
+      "inclusive-coded": "Your posting uses wording that is gender-inclusive. Research suggests that such language can increase the appeal of a role to many candidates and generally does not discourage others.",
+      "empty": "Your posting contains no indicators of either gender-inclusive or non-gender-inclusive language. The language appears broadly appealing.",
+      "neutral": "Your posting contains a balanced mix of gender-inclusive and non-gender-inclusive wording. The language appears inclusive and broadly appealing."
     },
     "error": {
       "summary": "Error",

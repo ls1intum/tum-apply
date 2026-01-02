@@ -1,6 +1,6 @@
 <header class="app-header border-b border-border-default">
   <div (click)="navigateToHome()" class="logo-section">
-    <img alt="TUMApply Logo" class="h-8" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+    <img alt="TUMApply Logo" class="tumapply-logo h-8" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
     <span class="app-name">TUMApply</span>
     @if (isProfessorPage()) {
       <span class="professor" jhiTranslate="header.professorTitle"></span>
@@ -18,14 +18,35 @@
         }
       }
     </div>
-    <jhi-button
-      class="theme-toggle-button"
-      (click)="toggleColorScheme()"
-      [icon]="isDarkMode() ? 'moon' : 'sun'"
-      severity="primary"
-      variant="text"
-      [tooltip]="'header.theme' | translate"
-    />
+
+    <div class="theme-switch" (mouseenter)="onThemeAreaEnter()" (mouseleave)="onThemeAreaLeave()">
+      <jhi-button
+        class="theme-toggle-button"
+        (click)="toggleTheme()"
+        (mouseenter)="onThemeButtonEnter($event)"
+        [icon]="isDarkMode() ? 'moon' : 'sun'"
+        variant="text"
+        severity="primary"
+      />
+
+      <p-popover #popover>
+        <div class="max-w-[15rem]">
+          <div class="flex items-center gap-2 mb-2">
+            <fa-icon [icon]="isDarkMode() ? 'moon' : 'sun'" class="text-primary text-xl" />
+            <span
+              class="text-base font-semibold text-primary flex-1"
+              jhiTranslate="{{ isDarkMode() ? 'header.darkMode' : 'header.lightMode' }}"
+            ></span>
+          </div>
+          <div class="border-b border-border-default mb-2"></div>
+          <div class="flex items-center gap-2">
+            <fa-icon icon="sync" class="text-primary text-base" />
+            <span class="flex-1 text-xs text-primary" jhiTranslate="header.syncWithSystem"></span>
+            <p-toggleSwitch [ngModel]="syncWithSystem()" (ngModelChange)="onSyncWithSystemChange($event)" styleClass="p-inputswitch-sm" />
+          </div>
+        </div>
+      </p-popover>
+    </div>
 
     @if (user() === undefined) {
       @if (isProfessorPage()) {

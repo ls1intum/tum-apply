@@ -288,11 +288,19 @@ public class PDFExportService {
         String address = formatAddress(group.getStreet(), group.getPostalCode(), group.getCity());
         Map<String, String> items = new LinkedHashMap<>();
 
-        if (hasValue(address)) items.put(labels.get("address"), address);
-        if (hasValue(group.getEmail())) items.put(labels.get("email"), group.getEmail());
-        if (hasValue(group.getWebsite())) items.put(labels.get("website"), group.getWebsite());
+        if (hasValue(address)) {
+            items.put(labels.get("address"), address);
+        }
+        if (hasValue(group.getEmail())) {
+            items.put(labels.get("email"), group.getEmail());
+        }
+        if (hasValue(group.getWebsite())) {
+            items.put(labels.get("website"), group.getWebsite());
+        }
 
-        if (items.isEmpty()) return;
+        if (items.isEmpty()) {
+            return;
+        }
 
         builder.startInfoSection(labels.get("contactDetails"));
         items.forEach(builder::addSectionData);

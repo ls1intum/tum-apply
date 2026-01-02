@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, WritableSignal, computed, inject } from '@angular/core';
+import { Component, ViewEncapsulation, WritableSignal, computed, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -12,9 +12,14 @@ import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { Popover } from 'primeng/popover';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+import { FormsModule } from '@angular/forms';
+import { ThemeService } from 'app/service/theme.service';
 
-import TranslateDirective from '../../../language/translate.directive';
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { SelectOption } from '../../atoms/select/select.component';
+import TranslateDirective from '../../../language/translate.directive';
 
 @Component({
   selector: 'jhi-header',
@@ -24,12 +29,11 @@ import { ButtonComponent } from '../../atoms/button/button.component';
     ButtonComponent,
     FontAwesomeModule,
     TranslateModule,
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
     DynamicDialogModule,
     TranslateDirective,
+    Popover,
+    ToggleSwitch,
+    FormsModule,
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
@@ -52,6 +56,21 @@ export class HeaderComponent {
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
   router = inject(Router);
+  themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+  syncWithSystem = this.themeService.syncWithSystem;
+  themePopover = viewChild<Popover>('popover');
+  isOverButton = signal<boolean>(false);
+  isOverPopover = signal<boolean>(false);
+
+  themeOptions: SelectOption[] = [
+    { name: 'Light', value: 'light' },
+    { name: 'Dark', value: 'dark' },
+    { name: 'Blossom', value: 'blossom' },
+    { name: 'AquaBloom', value: 'aquabloom' },
+  ];
+
+  selectedTheme = computed(() => this.themeOptions.find(opt => opt.value === this.theme()));
 
   routeAuthorities = toSignal(
     this.router.events.pipe(
@@ -83,6 +102,7 @@ export class HeaderComponent {
 
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
+  private popoverTimeout?: number;
 
   navigateToHome(): void {
     if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
@@ -122,26 +142,49 @@ export class HeaderComponent {
     void this.authFacadeService.logout();
   }
 
-  toggleColorScheme(): void {
-    const root = document.documentElement;
+  onThemeChange(option: SelectOption): void {
+    this.themeService.setTheme(option.value as 'light' | 'dark' | 'blossom' | 'aquabloom');
+  }
 
-    // turn off transitions
-    root.classList.add('theme-switching');
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 
-    const isDark = !root.classList.contains('tum-apply-dark-mode');
+  onSyncWithSystemChange(value: boolean): void {
+    this.themeService.setSyncWithSystem(value);
+  }
 
-    if (isDark) {
-      root.classList.add('tum-apply-dark-mode');
-    } else {
-      root.classList.remove('tum-apply-dark-mode');
+  onThemeAreaEnter(): void {
+    this.isOverButton.set(true);
+    this.clearPopoverTimeout();
+  }
+
+  onThemeAreaLeave(): void {
+    this.isOverButton.set(false);
+    this.checkAndHidePopover();
+  }
+
+  onThemeButtonEnter(event: Event): void {
+    const popover = this.themePopover();
+    popover?.show(event);
+
+    // Attach event listeners to popover container after it's shown
+    if (popover) {
+      setTimeout(() => {
+        const container = popover.container;
+        if (container) {
+          // Remove old listeners if they exist
+          container.onmouseenter = () => {
+            this.isOverPopover.set(true);
+            this.clearPopoverTimeout();
+          };
+          container.onmouseleave = () => {
+            this.isOverPopover.set(false);
+            this.checkAndHidePopover();
+          };
+        }
+      }, 0);
     }
-
-    localStorage.setItem('tumApplyTheme', isDark ? 'dark' : 'light');
-
-    // allow one frame for styles to apply, then restore transitions
-    window.requestAnimationFrame(() => {
-      root.classList.remove('theme-switching');
-    });
   }
 
   toggleLanguage(language: string): void {
@@ -150,5 +193,21 @@ export class HeaderComponent {
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
+  }
+
+  private clearPopoverTimeout(): void {
+    if (this.popoverTimeout !== undefined) {
+      clearTimeout(this.popoverTimeout);
+      this.popoverTimeout = undefined;
+    }
+  }
+
+  private checkAndHidePopover(): void {
+    this.clearPopoverTimeout();
+    this.popoverTimeout = window.setTimeout(() => {
+      if (!this.isOverButton() && !this.isOverPopover()) {
+        this.themePopover()?.hide();
+      }
+    }, 200);
   }
 }

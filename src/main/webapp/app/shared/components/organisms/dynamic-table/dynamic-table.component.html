@@ -11,16 +11,18 @@
 >
   <!-- Header -->
   <ng-template pTemplate="header">
-    <tr>
-      @if (selectable()) {
-        <th class="selection-col">
-          <p-tableHeaderCheckbox />
-        </th>
-      }
-      @for (col of columns(); track col.field) {
-        <th [style.width]="col.width" jhiTranslate="{{ col.header }}"></th>
-      }
-    </tr>
+    @if (!hideHeader()) {
+      <tr>
+        @if (selectable()) {
+          <th class="selection-col">
+            <p-tableHeaderCheckbox />
+          </th>
+        }
+        @for (col of columns(); track col.field) {
+          <th [style.width]="col.width" jhiTranslate="{{ col.header }}"></th>
+        }
+      </tr>
+    }
   </ng-template>
 
   <!-- Body -->

@@ -21,8 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This service is responsible for generating, sending, and verifying OTP codes
- * sent to users' email addresses.
+ * This service is responsible for generating, sending, and verifying OTP codes sent to users' email addresses as well as sending registration confirmation emails.
  */
 @Service
 public class EmailVerificationService {
@@ -56,6 +55,43 @@ public class EmailVerificationService {
     }
 
     /**
+     * Sends a welcome/confirmation email after successful registration.
+     *
+     * @param rawEmail the raw email address of the newly registered user
+     */
+    public void sendRegistrationConfirmationEmail(String rawEmail) {
+        String emailAddress = StringUtil.normalize(rawEmail, true);
+
+        User user = new User();
+        user.setEmail(emailAddress);
+
+        Email email = Email.builder()
+            .to(user)
+            .customSubject("Welcome to TUMApply!")
+            .customBody(generateRegistrationConfirmationHTML())
+            .sendAlways(true)
+            .build();
+        asyncEmailSender.sendAsync(email);
+    }
+
+    /**
+     * Generates the HTML content for the registration confirmation email.
+     *
+     * @return the HTML content as a String
+     */
+    private String generateRegistrationConfirmationHTML() {
+        return """
+          <h2 style="margin:0 0 16px 0;font-size:20px;color:#0A66C2;">Welcome to TUMApply!</h2>
+          <p style="margin:0 0 16px 0;">Thank you for registering with TUMApply.</p>
+          <p style="margin:0 0 16px 0;">Your account has been successfully created. You can now explore available positions and submit your applications.</p>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="https://tumapply.aet.cit.tum.de/" style="display:inline-block;padding:12px 24px;background:#0A66C2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">Get Started</a>
+          </div>
+          <p style="margin:16px 0 0 0;color:#555;font-size:12px;">If you did not create this account, please contact our support team.</p>
+        """;
+    }
+
+    /**
      * Generates a new OTP for the given email, invalidates any previous active OTPs,
      * saves the new OTP in the repository, and sends the verification code via email.
      * <p>
@@ -80,7 +116,7 @@ public class EmailVerificationService {
         emailVerificationOtpRepository.invalidateAllForEmail(emailAddress);
 
         // Generate OTP
-        String code = OtpUtil.generateAlphanumeric(otpLength);
+        String code = OtpUtil.generateNumeric(otpLength);
         String salt = OtpUtil.randomBase64(16);
         String hash = OtpUtil.hmacSha256Base64(otpHmacSecret, code + "|" + salt + "|" + emailAddress);
 

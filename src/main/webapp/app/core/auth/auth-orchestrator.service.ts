@@ -35,7 +35,7 @@ export class AuthOrchestratorService {
   readonly mode = signal<AuthFlowMode>('login');
   // substates per flow
   loginStep = signal<LoginStep>('email');
-  registerStep = signal<RegisterStep>('email');
+  registerStep = signal<RegisterStep>(null);
   // form state (shared across flows)
   readonly email = signal<string>('');
   readonly firstName = signal<string>('');
@@ -46,9 +46,9 @@ export class AuthOrchestratorService {
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
-    return Math.max(idx + 1, 1);
+    return idx;
   });
-  readonly totalRegisterSteps = REGISTER_STEPS.length;
+  readonly totalRegisterSteps = REGISTER_STEPS.length - 1;
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
   readonly injector = inject(Injector);
@@ -144,7 +144,10 @@ export class AuthOrchestratorService {
 
   switchToRegister(): void {
     this.mode.set('register');
-    this.registerStep.set('email');
+    this.registerStep.set(null);
+    requestAnimationFrame(() => {
+      this.registerStep.set('email');
+    });
   }
 
   clearError(): void {

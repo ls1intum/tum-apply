@@ -299,6 +299,11 @@
         "country": "Land",
         "postcode": "Postleitzahl"
       },
+      "placeholder": {
+        "selectNationality": "Wähle deine Nationalität...",
+        "selectGender": "Wähle dein Geschlecht...",
+        "selectCountry": "Wähle dein Land..."
+      },
       "section": {
         "contactInformation": "Kontaktinformationen",
         "voluntaryInformation": "Freiwillige Informationen",

@@ -86,6 +86,30 @@ public class ResearchGroupService {
     }
 
     /**
+     * Get all members of the research group by id.
+     *
+     * @param researchGroupId the ID of the research group
+     * @param pageDTO pagination information
+     * @return paginated list of research group members
+     */
+    public PageResponseDTO<UserShortDTO> getResearchGroupMembersById(UUID researchGroupId, PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
+
+        // First query: Get paginated user IDs to avoid N+1 query problem
+        Page<UUID> userIdsPage = userRepository.findUserIdsByResearchGroupId(researchGroupId, pageable);
+
+        if (userIdsPage.isEmpty()) {
+            return new PageResponseDTO<>(List.of(), 0L);
+        }
+
+        // Second query: Fetch full user data with collections for the paginated IDs
+        // We pass null for currentUserId to request alphabetical ordering without pinning any user first
+        List<User> members = userRepository.findUsersWithRolesByIdsForResearchGroup(userIdsPage.getContent(), null);
+
+        return new PageResponseDTO<>(members.stream().map(UserShortDTO::new).toList(), userIdsPage.getTotalElements());
+    }
+
+    /**
      * Removes a member from the current user's research group.
      * This operation removes both associated roles and direct research group membership.
      * @param userId the ID of the user to remove from the research group
@@ -93,18 +117,16 @@ public class ResearchGroupService {
      */
     @Transactional
     public void removeMemberFromResearchGroup(UUID userId) {
-        // Get the current user's research group ID for validation
-        UUID currentUserResearchGroupId = currentUserService.getResearchGroupIdIfMember();
-
         // Verify that the user exists and belongs to the same research group
         User userToRemove = userRepository
             .findWithResearchGroupRolesByUserId(userId)
             .orElseThrow(() -> EntityNotFoundException.forId("User", userId));
 
-        // Ensure user belongs to the same research group
+        // Ensure user belongs to the same research group or current user is admin
         if (
-            userToRemove.getResearchGroup() == null ||
-            !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserResearchGroupId)
+            !currentUserService.isAdmin() &&
+            (userToRemove.getResearchGroup() == null ||
+                !userToRemove.getResearchGroup().getResearchGroupId().equals(currentUserService.getResearchGroupIdIfMember()))
         ) {
             throw new AccessDeniedException("User is not a member of your research group");
         }
@@ -115,23 +137,23 @@ public class ResearchGroupService {
             throw new BadRequestException("Cannot remove yourself from the research group");
         }
 
-        boolean currentUserIsProfessor = currentUserService.getCurrentUser().isProfessor();
-
-        boolean userToRemoveIsProfessor = userToRemove
-            .getResearchGroupRoles()
-            .stream()
-            .anyMatch(r -> UserRole.PROFESSOR.equals(r.getRole()));
-
-        if (!currentUserIsProfessor && userToRemoveIsProfessor) {
-            throw new AccessDeniedException("You do not have permission to remove a Professor.");
-        }
+        // Store the research group temporarily before removing it from the user
+        ResearchGroup oldGroup = userToRemove.getResearchGroup();
 
         // Remove the direct research group membership
         userToRemove.setResearchGroup(null);
         userRepository.save(userToRemove);
 
         // Remove research group associations from user's roles
-        userResearchGroupRoleRepository.removeResearchGroupFromUserRoles(userId);
+        if (oldGroup != null) {
+            userResearchGroupRoleRepository
+                .findByUserAndResearchGroup(userToRemove, oldGroup)
+                .ifPresent(role -> {
+                    role.setRole(UserRole.APPLICANT);
+                    role.setResearchGroup(null);
+                    userResearchGroupRoleRepository.save(role);
+                });
+        }
     }
 
     /**
@@ -250,47 +272,6 @@ public class ResearchGroupService {
     }
 
     /**
-     * Provisions a target user (professor) into an existing research group.
-     * - Caller must be ADMIN (enforced in controller).
-     * - Group must already exist (manual creation).
-     * - Uses dto.universityId as the user's TUM id (e.g., "ab12cde").
-     * - Idempotent: if mapping exists with PROFESSOR, no-op.
-     *
-     * @param dto the research group + user information to provision
-     * @return the research group after provisioning
-     * @throws EntityNotFoundException if the user or the group does not exist
-     */
-    @Transactional
-    public ResearchGroup provisionResearchGroup(ResearchGroupProvisionDTO dto) {
-        User user = userRepository
-            .findByUniversityIdIgnoreCase(dto.universityId())
-            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(dto.universityId())));
-
-        ResearchGroup group = researchGroupRepository
-            .findById(dto.researchGroupId())
-            .orElseThrow(() -> new EntityNotFoundException("ResearchGroup with id '%s' not found".formatted(dto.researchGroupId())));
-
-        if (user.getResearchGroup() == null || !group.getResearchGroupId().equals(user.getResearchGroup().getResearchGroupId())) {
-            user.setResearchGroup(group);
-            userRepository.save(user);
-        }
-
-        Optional<UserResearchGroupRole> existing = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, group);
-        if (existing.isEmpty()) {
-            UserResearchGroupRole mapping = new UserResearchGroupRole();
-            mapping.setUser(user);
-            mapping.setResearchGroup(group);
-            mapping.setRole(UserRole.PROFESSOR);
-            userResearchGroupRoleRepository.save(mapping);
-        } else if (existing.get().getRole() != UserRole.PROFESSOR) {
-            existing.get().setRole(UserRole.PROFESSOR);
-            userResearchGroupRoleRepository.save(existing.get());
-        }
-
-        return group;
-    }
-
-    /**
      * Activates a DRAFT research group (admin only).
      * Changes the state from DRAFT to ACTIVE, allowing the research group to be used.
      * This operation can only be performed on research groups in DRAFT state.
@@ -311,8 +292,8 @@ public class ResearchGroupService {
 
         Set<UserResearchGroupRole> roles = userResearchGroupRoleRepository.findAllByResearchGroup(group);
 
-        if (roles.size() != 1) {
-            log.warn("Expected exactly 1 user for draft research group {}, found {}", researchGroupId, roles.size());
+        if (roles.isEmpty()) {
+            log.warn("Expected at least 1 user for draft research group {}, found none", researchGroupId);
         }
 
         roles
@@ -321,7 +302,6 @@ public class ResearchGroupService {
             .forEach(role -> {
                 role.setRole(UserRole.PROFESSOR);
                 userResearchGroupRoleRepository.save(role);
-                log.info("Upgraded user {} to PROFESSOR for research group {}", role.getUser().getUserId(), group.getResearchGroupId());
             });
 
         return saved;
@@ -344,9 +324,7 @@ public class ResearchGroupService {
             throw new IllegalStateException("Only DRAFT groups can be denied");
         }
         group.setState(ResearchGroupState.DENIED);
-        ResearchGroup saved = researchGroupRepository.save(group);
-
-        return saved;
+        return researchGroupRepository.save(group);
     }
 
     /**
@@ -366,9 +344,7 @@ public class ResearchGroupService {
             throw new IllegalStateException("Only ACTIVE groups can be withdrawn");
         }
         group.setState(ResearchGroupState.DRAFT);
-        ResearchGroup saved = researchGroupRepository.save(group);
-
-        return saved;
+        return researchGroupRepository.save(group);
     }
 
     /**
@@ -439,18 +415,7 @@ public class ResearchGroupService {
         currentUser.setResearchGroup(saved);
         userRepository.save(currentUser);
 
-        UserResearchGroupRole role = userResearchGroupRoleRepository
-            .findAllByUser(currentUser)
-            .stream()
-            .findFirst()
-            .orElseGet(() -> {
-                UserResearchGroupRole newRole = new UserResearchGroupRole();
-                newRole.setUser(currentUser);
-                return newRole;
-            });
-        role.setRole(UserRole.APPLICANT);
-        role.setResearchGroup(researchGroup);
-        userResearchGroupRoleRepository.save(role);
+        ensureUserRoleInGroup(currentUser, saved, UserRole.APPLICANT);
 
         return saved;
     }
@@ -483,18 +448,6 @@ public class ResearchGroupService {
             );
         }
 
-        // Validate that the user has a PROFESSOR role or can be assigned one
-        Set<UserResearchGroupRole> existingRoles = userResearchGroupRoleRepository.findAllByUser(professor);
-        boolean hasProfessorRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.PROFESSOR);
-        boolean hasApplicantRole = existingRoles.stream().anyMatch(role -> role.getRole() == UserRole.APPLICANT);
-
-        // User should either have PROFESSOR role already, or have APPLICANT role (can be upgraded), or no role yet
-        if (!hasProfessorRole && !hasApplicantRole && !existingRoles.isEmpty()) {
-            throw new IllegalArgumentException(
-                "User with universityId '%s' has incompatible roles and cannot be assigned as professor".formatted(request.universityId())
-            );
-        }
-
         ResearchGroup researchGroup = new ResearchGroup();
         populateResearchGroupFromRequest(researchGroup, request);
         researchGroup.setState(ResearchGroupState.ACTIVE);
@@ -511,18 +464,7 @@ public class ResearchGroupService {
         userRepository.save(professor);
 
         // Update or create the PROFESSOR role
-        UserResearchGroupRole role = existingRoles
-            .stream()
-            .findFirst()
-            .orElseGet(() -> {
-                UserResearchGroupRole newRole = new UserResearchGroupRole();
-                newRole.setUser(professor);
-                return newRole;
-            });
-
-        role.setRole(UserRole.PROFESSOR);
-        role.setResearchGroup(saved);
-        userResearchGroupRoleRepository.save(role);
+        ensureUserRoleInGroup(professor, saved, UserRole.PROFESSOR);
 
         return saved;
     }
@@ -571,70 +513,132 @@ public class ResearchGroupService {
         );
 
         sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
-
-        log.info("Employee access request sent to support: userId={} professorName={}", currentUser.getUserId(), request.professorName());
     }
 
     /**
      * Adds multiple members to a research group.
-     * Sends an email notification to each added user.
+     * <p>
+     * For each provided Keycloak user, this method ensures they exist in the local database.
+     * If a user does not exist locally, they are created. The user is then assigned to the specified
+     * research group. An email notification is sent only if the user is newly created or if their
+     * research group assignment has changed.
      *
-     * @param userIds the IDs of the users to be added to the research group
-     * @param researchGroupId the ID of the research group to add members to; if null, uses current user's group
+     * @param keycloakUsers   A list of {@link KeycloakUserDTO} representing the users to be added.
+     * @param researchGroupId The ID of the research group to which the members will be added.
+     *                        If null, the current user's group is used (if they are a professor).
      */
     @Transactional
-    public void addMembersToResearchGroup(List<UUID> userIds, UUID researchGroupId) {
+    public void addMembersToResearchGroup(List<KeycloakUserDTO> keycloakUsers, UUID researchGroupId) {
         UUID targetGroupId = researchGroupId != null ? researchGroupId : currentUserService.getResearchGroupIdIfMember();
         ResearchGroup researchGroup = researchGroupRepository.findByIdElseThrow(targetGroupId);
 
-        for (UUID userId : userIds) {
-            User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
-
-            if (
-                user.getResearchGroup() != null && user.getResearchGroup().getResearchGroupId().equals(researchGroup.getResearchGroupId())
-            ) {
-                continue;
+        for (KeycloakUserDTO keycloakUser : keycloakUsers) {
+            if (keycloakUser.universityId() == null || keycloakUser.universityId().isBlank()) {
+                throw new BadRequestException("User with ID '%s' does not have a valid universityId.".formatted(keycloakUser.id()));
             }
+            Optional<User> result = userRepository.findByUniversityIdIgnoreCase(keycloakUser.universityId());
+            User user;
 
-            UserResearchGroupRole role = userResearchGroupRoleRepository
-                .findByUserAndResearchGroup(user, researchGroup)
-                .orElseGet(() -> {
-                    UserResearchGroupRole newRole = new UserResearchGroupRole();
-                    newRole.setUser(user);
-                    newRole.setRole(UserRole.EMPLOYEE);
-                    return newRole;
-                });
-
+            if (result.isPresent()) {
+                user = result.get();
+                if (user.getResearchGroup() != null) {
+                    throw new AlreadyMemberOfResearchGroupException(
+                        "User with universityId '%s' is already a member of a research group.".formatted(keycloakUser.universityId())
+                    );
+                }
+            } else {
+                user = new User();
+                user.setUserId(keycloakUser.id());
+                user.setEmail(keycloakUser.email());
+                user.setFirstName(keycloakUser.firstName());
+                user.setLastName(keycloakUser.lastName());
+                user.setUniversityId(keycloakUser.universityId());
+            }
+            // Assign research group and save user
             user.setResearchGroup(researchGroup);
+            if (user.getSelectedLanguage() == null) {
+                user.setSelectedLanguage("en");
+            }
             userRepository.save(user);
 
-            role.setResearchGroup(researchGroup);
-            userResearchGroupRoleRepository.save(role);
+            // Ensure the user has a role in the research group
+            ensureUserRoleInGroup(user, researchGroup, UserRole.EMPLOYEE);
 
-            String emailBody = String.format(
-                """
-                <html>
-                <body>
-                    <h2>Welcome to the Research Group!</h2>
-                    <p>Dear %s %s,</p>
-                    <p>You have been successfully added to the research group <strong>%s</strong>.</p>
-                    <p>Feel free to contact your head or our support.</p>
-                    <p>Best regards,<br>The TumApply Team</p>
-                </body>
-                </html>
-                """,
-                user.getFirstName(),
-                user.getLastName(),
-                researchGroup.getName()
-            );
-
-            sendEmail(
-                user.getEmail(),
-                "You have been added to the research group " + researchGroup.getName(),
-                emailBody,
-                user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
-            );
+            // Send notification email because the group was newly assigned or changed
+            sendWelcomeToResearchGroupEmail(user, researchGroup);
         }
+    }
+
+    /**
+     * Ensures a user has a specific role within a research group.
+     * If the user already has a role in the group, it will be updated to the new role if different.
+     * If the user has no role in the group, a new role mapping is created.
+     *
+     * @param user          The user to assign the role to.
+     * @param researchGroup The research group for the role.
+     * @param targetRole    The role to assign (e.g., PROFESSOR, APPLICANT).
+     */
+    private void ensureUserRoleInGroup(User user, ResearchGroup researchGroup, UserRole targetRole) {
+        Optional<UserResearchGroupRole> existingRole = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, researchGroup);
+
+        if (existingRole.isPresent()) {
+            if (existingRole.get().getRole() != targetRole) {
+                existingRole.get().setRole(targetRole);
+                userResearchGroupRoleRepository.save(existingRole.get());
+            }
+        } else {
+            // Check if the user has a role without a research group (e.g. Applicant) and update it
+            Optional<UserResearchGroupRole> roleWithoutGroup = userResearchGroupRoleRepository
+                .findAllByUser(user)
+                .stream()
+                .filter(role -> role.getResearchGroup() == null)
+                .findFirst();
+
+            if (roleWithoutGroup.isPresent()) {
+                UserResearchGroupRole role = roleWithoutGroup.get();
+                role.setResearchGroup(researchGroup);
+                role.setRole(targetRole);
+                userResearchGroupRoleRepository.save(role);
+            } else {
+                UserResearchGroupRole newRole = new UserResearchGroupRole();
+                newRole.setUser(user);
+                newRole.setResearchGroup(researchGroup);
+                newRole.setRole(targetRole);
+                userResearchGroupRoleRepository.save(newRole);
+            }
+        }
+    }
+
+    /**
+     * Sends a welcome email to a user who has been added to a new research group.
+     *
+     * @param user          The user who was added.
+     * @param researchGroup The research group they were added to.
+     */
+    private void sendWelcomeToResearchGroupEmail(User user, ResearchGroup researchGroup) {
+        String emailBody = String.format(
+            """
+            <html>
+            <body>
+                <h2>Welcome to the Research Group!</h2>
+                <p>Dear %s %s,</p>
+                <p>You have been successfully added to the research group <strong>%s</strong>.</p>
+                <p>Feel free to contact your head or our support.</p>
+                <p>Best regards,<br>The TumApply Team</p>
+            </body>
+            </html>
+            """,
+            user.getFirstName(),
+            user.getLastName(),
+            researchGroup.getName()
+        );
+
+        sendEmail(
+            user.getEmail(),
+            "You have been added to the research group " + researchGroup.getName(),
+            emailBody,
+            user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
+        );
     }
 
     /**

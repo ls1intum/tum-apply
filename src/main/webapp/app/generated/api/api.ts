@@ -1,5 +1,5 @@
-export * from './adminResourceApi.service';
-import { AdminResourceApiService } from './adminResourceApi.service';
+export * from './aiResourceApi.service';
+import { AiResourceApiService } from './aiResourceApi.service';
 export * from './applicationEvaluationResourceApi.service';
 import { ApplicationEvaluationResourceApiService } from './applicationEvaluationResourceApi.service';
 export * from './applicationResourceApi.service';
@@ -38,6 +38,8 @@ export * from './researchGroupResourceApi.service';
 import { ResearchGroupResourceApiService } from './researchGroupResourceApi.service';
 export * from './schoolResourceApi.service';
 import { SchoolResourceApiService } from './schoolResourceApi.service';
+export * from './userDataExportResourceApi.service';
+import { UserDataExportResourceApiService } from './userDataExportResourceApi.service';
 export * from './userResourceApi.service';
 import { UserResourceApiService } from './userResourceApi.service';
-export const APIS = [AdminResourceApiService, ApplicationEvaluationResourceApiService, ApplicationResourceApiService, AuthenticationResourceApiService, DepartmentResourceApiService, DocumentResourceApiService, EmailSettingResourceApiService, EmailTemplateResourceApiService, EmailVerificationResourceApiService, GenderBiasAnalysisResourceApiService, ImageResourceApiService, InternalCommentResourceApiService, InterviewResourceApiService, JobResourceApiService, PdfExportResourceApiService, ProfOnboardingResourceApiService, PublicConfigResourceApiService, RatingResourceApiService, ResearchGroupResourceApiService, SchoolResourceApiService, UserResourceApiService];
+export const APIS = [AiResourceApiService, ApplicationEvaluationResourceApiService, ApplicationResourceApiService, AuthenticationResourceApiService, DepartmentResourceApiService, DocumentResourceApiService, EmailSettingResourceApiService, EmailTemplateResourceApiService, EmailVerificationResourceApiService, GenderBiasAnalysisResourceApiService, ImageResourceApiService, InternalCommentResourceApiService, InterviewResourceApiService, JobResourceApiService, PdfExportResourceApiService, ProfOnboardingResourceApiService, PublicConfigResourceApiService, RatingResourceApiService, ResearchGroupResourceApiService, SchoolResourceApiService, UserDataExportResourceApiService, UserResourceApiService];

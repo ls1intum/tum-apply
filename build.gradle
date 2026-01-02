@@ -28,7 +28,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.0.5"
+version = "1.1.1"
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
@@ -196,7 +196,7 @@ dependencies {
   testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
-  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.16.0"
+  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.16.1"
   implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
   implementation "org.apache.commons:commons-lang3:3.20.0"
   annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -307,6 +307,14 @@ dependencies {
 
   // Used for pdf creation
   implementation 'com.itextpdf:html2pdf:6.3.0'
+
+  // Align all Spring AI modules to the same version
+  implementation platform("org.springframework.ai:spring-ai-bom:1.1.2")
+  // Azure OpenAI (prod, or when you want Azure)
+  implementation "org.springframework.ai:spring-ai-starter-model-azure-openai" // can also use non-azure models
+  implementation "org.springframework.ai:spring-ai-starter-model-chat-memory-repository-jdbc"
+  // OpenAI / OpenAI-compatible (dev, localhost:1234, etc.)
+  implementation "org.springframework.ai:spring-ai-starter-model-openai"
 }
 
 tasks.register("cleanResources", Delete) {

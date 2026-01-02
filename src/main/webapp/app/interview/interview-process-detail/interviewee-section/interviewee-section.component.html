@@ -1,0 +1,83 @@
+<jhi-section [titleKey]="'interview.interviewees.title'">
+  <!-- Actions Slot -->
+  <div actions class="flex gap-2 ml-auto">
+    <jhi-button
+      [label]="'interview.interviewees.add'"
+      [icon]="'plus'"
+      [severity]="'primary'"
+      size="sm"
+      [shouldTranslate]="true"
+      (click)="openAddModal()"
+    />
+  </div>
+
+  <!-- Filter Tabs -->
+  <jhi-filter-tabs [tabs]="filterTabs()" [activeKey]="activeFilter()" (filterChange)="setFilter($event)" class="-ml-3" />
+
+  <!-- Interviewees List -->
+  @if (loadingInterviewees()) {
+  } @else if (filteredInterviewees().length === 0) {
+    <div class="flex flex-col items-center justify-center py-12 text-center">
+      <p class="text-text-secondary" jhiTranslate="interview.interviewees.empty">No interviewees yet</p>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-2 -ml-3">
+      @for (interviewee of filteredInterviewees(); track interviewee.id) {
+        <jhi-interviewee-card [interviewee]="interviewee" />
+      }
+    </div>
+  }
+</jhi-section>
+
+<!-- Template for name column with checkbox -->
+<ng-template #nameTemplate let-row>
+  <div class="flex items-center gap-3 cursor-pointer" (click)="toggleSelection(row.applicationId)">
+    <jhi-checkbox [model]="row.selected" [errorEnabled]="false" (click)="$event.stopPropagation(); toggleSelection(row.applicationId)" />
+    <span class="font-medium text-text-primary">{{ row.name }}</span>
+  </div>
+</ng-template>
+
+<!-- Add Applicant Modal -->
+<jhi-dialog [visible]="showAddModal()" (visibleChange)="showAddModal.set($event)" header="interview.interviewees.addTitle" width="30rem">
+  <!-- Dynamic Table or Empty State -->
+  @if (tableData().length > 0) {
+    <div class="table-wrapper">
+      <jhi-dynamic-table
+        [columns]="columns()"
+        [data]="tableData()"
+        [totalRecords]="totalApplicants()"
+        [page]="pageNumber()"
+        [rows]="pageSize()"
+        [selectable]="false"
+        (lazyLoad)="loadOnTableEmit($event)"
+      />
+    </div>
+  } @else {
+    <div class="flex flex-col items-center justify-center py-12 text-center">
+      <p class="text-text-secondary" jhiTranslate="interview.interviewees.noApplicants">No applicants available</p>
+    </div>
+  }
+
+  <!-- Footer Buttons -->
+  <div class="flex justify-end gap-2 pt-4 mt-4 border-t border-border-default">
+    <jhi-button
+      [label]="'entity.action.cancel'"
+      [severity]="'primary'"
+      [variant]="'outlined'"
+      [shouldTranslate]="true"
+      size="sm"
+      [styleClass]="'w-28 h-10'"
+      (click)="closeAddModal()"
+    />
+    <jhi-button
+      [label]="'interview.interviewees.addSelected'"
+      [severity]="'primary'"
+      [disabled]="selectedCount() === 0"
+      [loading]="processingAdd()"
+      [shouldTranslate]="true"
+      size="sm"
+      [styleClass]="'w-28 h-10'"
+      (click)="addInterviewees()"
+    />
+  </div>
+</jhi-dialog>

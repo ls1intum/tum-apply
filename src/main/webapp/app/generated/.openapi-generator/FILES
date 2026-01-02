@@ -2,7 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/adminResourceApi.service.ts
+api/aiResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
@@ -23,12 +23,14 @@ api/publicConfigResourceApi.service.ts
 api/ratingResourceApi.service.ts
 api/researchGroupResourceApi.service.ts
 api/schoolResourceApi.service.ts
+api/userDataExportResourceApi.service.ts
 api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
 index.ts
 model/acceptDTO.ts
+model/addIntervieweesDTO.ts
 model/addMembersToResearchGroupDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
@@ -43,6 +45,8 @@ model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
+model/assignSlotRequestDTO.ts
+model/assignedIntervieweeDTO.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
 model/createSlotsDTO.ts
@@ -70,6 +74,8 @@ model/internalCommentDTO.ts
 model/internalCommentUpdateDTO.ts
 model/interviewOverviewDTO.ts
 model/interviewSlotDTO.ts
+model/intervieweeDTO.ts
+model/intervieweeUserDTO.ts
 model/job.ts
 model/jobCardDTO.ts
 model/jobDTO.ts
@@ -77,13 +83,17 @@ model/jobDetailDTO.ts
 model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/jobPreviewRequest.ts
+model/keycloakUserDTO.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
 model/pageApplicationOverviewDTO.ts
 model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
+model/pageResponseDTODepartmentDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
+model/pageResponseDTOInterviewSlotDTO.ts
+model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts
 model/pageResponseDTOUserShortDTO.ts
@@ -97,7 +107,6 @@ model/researchGroup.ts
 model/researchGroupAdminDTO.ts
 model/researchGroupDTO.ts
 model/researchGroupLargeDTO.ts
-model/researchGroupProvisionDTO.ts
 model/researchGroupRequestDTO.ts
 model/researchGroupShortDTO.ts
 model/school.ts

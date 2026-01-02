@@ -4,11 +4,11 @@
       <h1 jhiTranslate="researchGroup.adminView.title" class="h1-text"></h1>
     </div>
     <jhi-button
-      [label]="'researchGroup.adminView.createButton' | translate"
+      [label]="'researchGroup.adminView.createButton'"
       icon="plus"
       severity="primary"
       (click)="onCreateResearchGroup()"
-      [shouldTranslate]="false"
+      [shouldTranslate]="true"
     />
   </div>
   <div class="body">
@@ -46,14 +46,17 @@
           variant="text"
           (click)="onViewResearchGroup(researchGroup.id)"
         />
-        <jhi-button
-          icon="user-plus"
-          [ariaLabel]="'researchGroup.members.addMembers' | translate"
-          [tooltip]="'researchGroup.members.addMembers' | translate"
-          severity="primary"
-          variant="text"
-          (click)="onAddMembers(researchGroup.id)"
-        />
+        @if (researchGroup.status !== 'DENIED') {
+          <jhi-button
+            icon="users"
+            [ariaLabel]="'researchGroup.members.manageMembers'"
+            [tooltip]="'researchGroup.members.manageMembers' | translate"
+            severity="primary"
+            variant="text"
+            (click)="onManageMembers(researchGroup.id)"
+            [shouldTranslate]="true"
+          />
+        }
         @if (researchGroup.status === 'ACTIVE') {
           <jhi-confirm-dialog
             [label]="'button.withdraw' | translate"
