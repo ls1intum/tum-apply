@@ -3,7 +3,6 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { AccountService } from 'app/core/auth/account.service';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
@@ -31,7 +30,6 @@ export interface ResearchGroupFormData {
 @Component({
   selector: 'jhi-research-group-info',
   imports: [
-    CommonModule,
     StringInputComponent,
     ButtonComponent,
     EditorComponent,

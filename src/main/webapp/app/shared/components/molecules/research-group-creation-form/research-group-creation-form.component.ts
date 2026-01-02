@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -30,7 +29,6 @@ type FormMode = 'professor' | 'admin';
   selector: 'jhi-professor-request-access-form',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     StringInputComponent,
     ButtonComponent,

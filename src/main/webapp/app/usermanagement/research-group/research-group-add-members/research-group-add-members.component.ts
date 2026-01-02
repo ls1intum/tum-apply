@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -17,16 +16,7 @@ const I18N_BASE = 'researchGroup.members';
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
-  imports: [
-    CommonModule,
-    TranslateModule,
-    SearchFilterSortBar,
-    ButtonComponent,
-    CheckboxModule,
-    FormsModule,
-    PaginatorModule,
-    ConfirmDialog,
-  ],
+  imports: [TranslateModule, SearchFilterSortBar, ButtonComponent, CheckboxModule, FormsModule, PaginatorModule, ConfirmDialog],
   templateUrl: './research-group-add-members.component.html',
 })
 export class ResearchGroupAddMembersComponent {

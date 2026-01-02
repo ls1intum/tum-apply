@@ -591,7 +591,14 @@ describe('ApplicationForm', () => {
       const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
+      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+        of(
+          new HttpResponse({
+            body: {},
+            status: 200,
+          }),
+        ),
+      );
 
       const result = await comp.sendCreateApplicationData('SENT', true);
 
@@ -614,7 +621,14 @@ describe('ApplicationForm', () => {
       const clearLocalStorageSpy = spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
       // Mock updateApplication to return success
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
+      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+        of(
+          new HttpResponse({
+            body: {},
+            status: 200,
+          }),
+        ),
+      );
 
       const result = await comp.sendCreateApplicationData('SAVED', false);
 
@@ -655,7 +669,14 @@ describe('ApplicationForm', () => {
       spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
       spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
 
-      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(of(new HttpResponse({ body: {}, status: 200 })));
+      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+        of(
+          new HttpResponse({
+            body: {},
+            status: 200,
+          }),
+        ),
+      );
 
       const result = await comp.sendCreateApplicationData('SENT', false);
 
@@ -1740,6 +1761,7 @@ describe('ApplicationForm', () => {
       comp.applicationId.set('app-123');
 
       const getDocumentDictionaryIdsSpy = vi.spyOn(applicationResourceApiService, 'getDocumentDictionaryIds');
+      getDocumentDictionaryIdsSpy.mockClear();
 
       comp.updateDocumentInformation();
 
@@ -1793,6 +1815,7 @@ describe('ApplicationForm', () => {
 
       const getDocumentSpy = vi.spyOn(applicationResourceApiService, 'getDocumentDictionaryIds');
       const errorSpy = vi.spyOn(toast, 'showErrorKey');
+      getDocumentSpy.mockClear();
 
       comp.updateDocumentInformation();
 

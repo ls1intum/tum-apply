@@ -124,7 +124,13 @@ describe('JobCreationFormComponent', () => {
     mockImageService.getMyDefaultJobBanners.mockReturnValue(of([]));
     mockImageService.getDefaultJobBanners.mockReturnValue(of([]));
     mockImageService.getResearchGroupJobBanners.mockReturnValue(of([]));
-    mockImageService.uploadJobBanner.mockReturnValue(of({ imageId: 'img123', url: '/images/test.jpg', imageType: 'JOB_BANNER' }));
+    mockImageService.uploadJobBanner.mockReturnValue(
+      of({
+        imageId: 'img123',
+        url: '/images/test.jpg',
+        imageType: 'JOB_BANNER',
+      }),
+    );
     mockImageService.deleteImage.mockReturnValue(of({}));
 
     mockAccountService = createAccountServiceMock();
@@ -379,7 +385,7 @@ describe('JobCreationFormComponent', () => {
       component.jobId.set('job123');
       component.mode.set('edit');
 
-      const job = await vi.waitFor(() => mockJobService.getJobById('job123'));
+      const job = await vi.waitFor(() => new mockJobService.getJobById('job123'));
       expect(job).toBeDefined();
       expect(mockJobService.getJobById).toHaveBeenCalledWith('job123');
     });
@@ -404,7 +410,11 @@ describe('JobCreationFormComponent', () => {
 
       // Custom image
       component.defaultImages.set([{ imageId: 'default1', url: '/images/default.jpg', imageType: 'DEFAULT_JOB_BANNER' }]);
-      getPrivate(component).populateForm({ title: 'Test', imageId: 'custom123', imageUrl: '/images/custom.jpg' } as JobDTO);
+      getPrivate(component).populateForm({
+        title: 'Test',
+        imageId: 'custom123',
+        imageUrl: '/images/custom.jpg',
+      } as JobDTO);
       expect(component.selectedImage()?.imageId).toBe('custom123');
       expect(component.selectedImage()?.imageType).toBe('JOB_BANNER');
     });
@@ -443,7 +453,11 @@ describe('JobCreationFormComponent', () => {
         name: 'dimensions too large',
         file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
         errorKey: 'jobCreationForm.imageSection.dimensionsTooLarge',
-        setupSpy: () => vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValueOnce({ width: 5000, height: 5000 }),
+        setupSpy: () =>
+          vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValueOnce({
+            width: 5000,
+            height: 5000,
+          }),
       },
       {
         name: 'invalid image file',
@@ -492,7 +506,11 @@ describe('JobCreationFormComponent', () => {
 
     it('should handle image selection and computed signals', () => {
       // Select default image
-      const defaultImage: ImageDTO = { imageId: 'default1', url: '/images/default1.jpg', imageType: 'DEFAULT_JOB_BANNER' };
+      const defaultImage: ImageDTO = {
+        imageId: 'default1',
+        url: '/images/default1.jpg',
+        imageType: 'DEFAULT_JOB_BANNER',
+      };
       component.selectImage(defaultImage);
       expect(component.selectedImage()).toEqual(defaultImage);
       expect(component.imageForm.get('imageId')?.value).toBe('default1');
@@ -568,7 +586,9 @@ describe('JobCreationFormComponent', () => {
             { imageId: 'img2', url: '/url2', imageType: 'JOB_BANNER' },
           ]);
         },
-        mockSetup: () => mockImageService.getResearchGroupJobBanners.mockReturnValueOnce(throwError(() => new Error('Reload failed'))),
+        mockSetup: () => {
+          mockImageService.getResearchGroupJobBanners.mockReturnValueOnce(throwError(() => new Error('Reload failed')));
+        },
         expectations: (comp: JobCreationFormComponent) => {
           expect(comp.selectedImage()).toBeUndefined();
           expect(comp.researchGroupImages()).toHaveLength(1);
@@ -599,7 +619,13 @@ describe('JobCreationFormComponent', () => {
         email: 'test@example.com',
         researchGroup: { researchGroupId: 'rg123', researchGroupName: 'Test Group' },
       } as User);
-      const mockImages: ImageDTO[] = [{ imageId: 'default1', url: '/images/default1.jpg', imageType: 'DEFAULT_JOB_BANNER' }];
+      const mockImages: ImageDTO[] = [
+        {
+          imageId: 'default1',
+          url: '/images/default1.jpg',
+          imageType: 'DEFAULT_JOB_BANNER',
+        },
+      ];
       mockImageService.getMyDefaultJobBanners.mockReturnValueOnce(of(mockImages));
       mockImageService.getResearchGroupJobBanners.mockReturnValueOnce(of([]));
       await component.loadImages();

@@ -1,5 +1,4 @@
 import { Component, computed, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 
@@ -10,7 +9,7 @@ type InfoBoxSeverity = 'primary' | 'secondary';
 @Component({
   selector: 'jhi-info-box',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, TranslateDirective],
+  imports: [FontAwesomeModule, TranslateDirective],
   templateUrl: './info-box.component.html',
 })
 export class InfoBoxComponent {

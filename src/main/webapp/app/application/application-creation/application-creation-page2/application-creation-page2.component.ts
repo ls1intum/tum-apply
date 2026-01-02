@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UploadButtonComponent } from 'app/shared/components/atoms/upload-button/upload-button.component';
@@ -50,7 +49,6 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
   templateUrl: './application-creation-page2.component.html',
   styleUrl: './application-creation-page2.component.scss',
   imports: [
-    CommonModule,
     DividerModule,
     UploadButtonComponent,
     ReactiveFormsModule,

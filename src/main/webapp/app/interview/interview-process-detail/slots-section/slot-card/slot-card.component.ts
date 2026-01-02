@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, computed, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
@@ -11,7 +10,7 @@ import { formatTimeRange } from 'app/shared/util/date-time.util';
 @Component({
   selector: 'jhi-slot-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule, ConfirmDialog],
+  imports: [TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule, ConfirmDialog],
   templateUrl: './slot-card.component.html',
   host: {
     '(document:click)': 'handleOutsideClick($event)',

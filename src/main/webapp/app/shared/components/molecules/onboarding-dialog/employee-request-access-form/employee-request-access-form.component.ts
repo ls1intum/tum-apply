@@ -1,7 +1,6 @@
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -17,7 +16,7 @@ import { OnboardingDialog } from '../onboarding-dialog';
 
 @Component({
   selector: 'jhi-employee-request-access-form',
-  imports: [CommonModule, ReactiveFormsModule, StringInputComponent, ButtonComponent, TranslateModule, TranslateDirective, ConfirmDialog],
+  imports: [ReactiveFormsModule, StringInputComponent, ButtonComponent, TranslateModule, TranslateDirective, ConfirmDialog],
   templateUrl: './employee-request-access-form.component.html',
 })
 export class EmployeeRequestAccessFormComponent {
