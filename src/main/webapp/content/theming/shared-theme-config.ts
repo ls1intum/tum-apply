@@ -46,8 +46,9 @@ export const sharedComponentConfig = {
           danger: {
             background: '{danger.color}',
             color: '{danger.inverseColor}',
-            hoverColor: '{base.white}',
+            hoverColor: '{danger.inverseColor}',
             hoverBackground: '{danger.hoverColor}',
+            activeColor: '{danger.inverseColor}',
             activeBackground: '{danger.activeColor}',
           },
           warn: {
@@ -384,6 +385,11 @@ export const sharedComponentConfig = {
     },
   },
   popover: {
+    root: {
+      background: '{background.default}',
+    },
+  },
+  menu: {
     root: {
       background: '{background.default}',
     },

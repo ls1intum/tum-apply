@@ -1,16 +1,12 @@
 <div class="input-container">
   <div class="label-top label-input-wrapper">
-    <div class="label-with-tooltip">
-      @if (label(); as label) {
-        <label class="custom-label" [for]="inputId()">
-          {{ shouldTranslate() ? (label | translate) : label }}
-          @if (required()) {
-            <span class="required">*</span>
-          }
-        </label>
-      }
-      @if (icon(); as icon) {
-        <span class="tooltip-wrapper">
+    @if (label(); as label) {
+      <label class="custom-label" [for]="inputId()">
+        {{ shouldTranslate() ? (label | translate) : label }}
+        @if (required()) {
+          <span class="required">*</span>
+        }
+        @if (icon(); as icon) {
           @if (icon === 'circle-info' && tooltipText()) {
             <fa-icon
               class="icon"
@@ -21,9 +17,9 @@
           } @else {
             <fa-icon class="icon" [icon]="['fas', icon ?? '']" />
           }
-        </span>
-      }
-    </div>
+        }
+      </label>
+    }
 
     <div [class.error]="inputState() === 'invalid'" class="input-wrapper">
       @if (control()) {
