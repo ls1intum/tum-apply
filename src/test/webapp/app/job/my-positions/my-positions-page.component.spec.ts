@@ -225,6 +225,7 @@ describe('MyPositionsPageComponent', () => {
       name: '',
     });
     const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
+    spy.mockClear();
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
     expect(spy).not.toHaveBeenCalled();
   });
@@ -248,6 +249,7 @@ describe('MyPositionsPageComponent', () => {
   it('should set userId to empty string when loadedUser returns undefined', async () => {
     vi.spyOn(accountService, 'loadedUser').mockReturnValue(undefined);
     const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
+    spy.mockClear();
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
     expect(component.userId()).toBe('');
     expect(spy).not.toHaveBeenCalled();
@@ -260,7 +262,10 @@ describe('MyPositionsPageComponent', () => {
       name: '',
     });
     mockJobService.getJobsByProfessor.mockReturnValueOnce(
-      of({ content: undefined, totalElements: undefined }) as unknown as ReturnType<typeof mockJobService.getJobsByProfessor>,
+      of({
+        content: undefined,
+        totalElements: undefined,
+      }) as unknown as any,
     );
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
@@ -281,9 +286,8 @@ describe('MyPositionsPageComponent', () => {
       totalElements: 1,
     };
 
-    const spy = vi
-      .spyOn(mockJobService, 'getJobsByProfessor')
-      .mockReturnValue(of(mockResponse) as unknown as ReturnType<typeof mockJobService.getJobsByProfessor>);
+    const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
+    spy.mockReturnValue(of(mockResponse));
 
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
