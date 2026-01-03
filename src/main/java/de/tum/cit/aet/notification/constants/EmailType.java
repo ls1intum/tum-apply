@@ -39,7 +39,13 @@ public enum EmailType {
      * Confirmation that application was successfully withdrawn
      * To: Applicant who withdrew the application
      */
-    APPLICATION_WITHDRAWN("APPLICATION_WITHDRAWN", Set.of(UserRole.APPLICANT), false, false);
+    APPLICATION_WITHDRAWN("APPLICATION_WITHDRAWN", Set.of(UserRole.APPLICANT), false, false),
+
+    /**
+     * Interview invitation when applicant is assigned to an interview slot
+     * To: Applicant who was assigned to the slot
+     */
+    INTERVIEW_INVITATION("INTERVIEW_INVITATION", Set.of(UserRole.APPLICANT), true, false);
 
     private final String value;
 
