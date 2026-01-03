@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
@@ -14,6 +14,8 @@ import { ButtonComponent } from '../components/atoms/button/button.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 
+type SettingsTab = 'general' | 'notifications' | 'privacy';
+const SETTINGS_TAB_STORAGE_KEY = 'settings.activeTab';
 @Component({
   selector: 'jhi-settings',
   imports: [FontAwesomeModule, TranslateModule, TranslateDirective, EmailSettingsComponent, SelectComponent, ButtonComponent],
@@ -21,6 +23,7 @@ import { EmailSettingsComponent } from './email-settings/email-settings.componen
   styleUrl: './settings.component.scss',
 })
 export class SettingsComponent {
+  readonly activeTab = signal<SettingsTab>('notifications');
   readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
 
   themeOptions: SelectOption[] = [
@@ -53,6 +56,16 @@ export class SettingsComponent {
     const authorities = this.accountService.loadedUser()?.authorities;
     this.role.set(authorities?.map(authority => authority as UserShortDTO.RolesEnum)[0]);
 
+    const saved = localStorage.getItem(SETTINGS_TAB_STORAGE_KEY);
+
+    // Unsure loaded tab stays loaded after reload
+    if (saved === 'general' || saved === 'notifications' || saved === 'privacy') {
+      this.activeTab.set(saved);
+    }
+    effect(() => {
+      localStorage.setItem(SETTINGS_TAB_STORAGE_KEY, this.activeTab());
+    });
+
     this.destroyRef.onDestroy(() => {
       this.exportCooldownSub?.unsubscribe();
       this.exportCooldownSub = null;
@@ -68,6 +81,10 @@ export class SettingsComponent {
       this.themeService.setSyncWithSystem(false);
       this.themeService.setTheme(value as ThemeOption);
     }
+  }
+
+  setTab(tab: SettingsTab): void {
+    this.activeTab.set(tab);
   }
 
   /**

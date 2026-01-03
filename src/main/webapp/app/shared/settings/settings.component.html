@@ -3,60 +3,104 @@
     <h1 jhiTranslate="settings.header">Settings</h1>
   </div>
 
-  <div class="notifications">
-    <div class="settings-sub-heading">
-      <fa-icon class="icon" [icon]="['fas', 'bell']" />
-      <h2 jhiTranslate="settings.notifications.header"></h2>
-    </div>
-    <jhi-email-settings [currentRole]="role()" />
+  <!-- Tabs -->
+  <div class="settings-tabs" role="tablist" aria-label="Settings tabs">
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      (click)="setTab('general')"
+      [class.active]="activeTab() === 'general'"
+      [attr.aria-selected]="activeTab() === 'general'"
+    >
+      <span jhiTranslate="settings.tabs.general"></span>
+    </button>
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      (click)="setTab('notifications')"
+      [class.active]="activeTab() === 'notifications'"
+      [attr.aria-selected]="activeTab() === 'notifications'"
+    >
+      <span jhiTranslate="settings.tabs.notifications"></span>
+    </button>
   </div>
 
-  <div class="mb-4">
-    <div class="text-primary-default text-lg font-semibold mb-2 ml-4">
-      <h2 jhiTranslate="settings.appearance.header"></h2>
-    </div>
-    <div class="px-4 pb-4">
-      <div class="flex flex-row items-center justify-between">
-        <label class="text-base font-medium text-text-secondary" jhiTranslate="settings.appearance.theme.label"></label>
-        <jhi-select [items]="themeOptions" [selected]="selectedTheme()" (selectedChange)="onThemeChange($event)" [translateItems]="true" />
-      </div>
-    </div>
-  </div>
-
-  <div class="mb-4">
-    <div class="text-primary-default text-lg font-semibold mb-2 ml-4">
-      <h2 jhiTranslate="settings.privacy.header"></h2>
-    </div>
-
-    <div class="px-4 pb-4">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="max-w-3xl flex flex-col">
-          <div class="text-base font-medium text-text-secondary" jhiTranslate="settings.privacy.export.header"></div>
-          <div class="text-sm text-text-secondary mt-1" jhiTranslate="settings.privacy.export.description"></div>
+  <!-- Tab Content -->
+  <div class="tab-panel" role="tabpanel">
+    @switch (activeTab()) {
+      @case ('notifications') {
+        <div class="notifications content-container">
+          <jhi-email-settings [currentRole]="role()" />
         </div>
+      }
 
-        <div class="export-actions flex flex-col items-start md:items-end gap-2">
-          <div class="flex flex-row items-center gap-3">
-            <jhi-button
-              (click)="exportUserData()"
-              [label]="'settings.privacy.export.button'"
-              severity="primary"
-              [shouldTranslate]="true"
-              [disabled]="exportButtonDisabled()"
-            />
+      @case ('general') {
+        <div class="content-container">
+          <!-- Appearance block -->
+          <div class="mb-4">
+            <div class="text-primary-default text-lg font-semibold mb-2">
+              <h2 jhiTranslate="settings.appearance.header"></h2>
+            </div>
 
-            @if (exportInProgress()) {
-              <div class="text-sm text-text-secondary" jhiTranslate="settings.privacy.export.inProgress"></div>
-            }
+            <div class="pb-3">
+              <div class="flex flex-row items-center justify-between">
+                <label class="text-base font-medium text-text-secondary" jhiTranslate="settings.appearance.theme.label"></label>
+                <jhi-select
+                  [items]="themeOptions"
+                  [selected]="selectedTheme()"
+                  (selectedChange)="onThemeChange($event)"
+                  [translateItems]="true"
+                />
+              </div>
+            </div>
           </div>
 
-          @if (exportCooldownRemaining() > 0) {
-            <div class="text-sm text-text-secondary">
-              <span [translateValues]="{ seconds: exportCooldownRemaining() }" jhiTranslate="settings.privacy.export.cooldown"></span>
+          <div class="section-divider" role="separator" aria-hidden="true"></div>
+
+          <!-- Privacy block -->
+          <div class="mb-4">
+            <div class="text-primary-default text-lg font-semibold mb-2">
+              <h2 jhiTranslate="settings.privacy.header"></h2>
             </div>
-          }
+
+            <div class="pb-4">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="max-w-3xl flex flex-col">
+                  <div class="text-base font-medium text-text-secondary" jhiTranslate="settings.privacy.export.header"></div>
+                  <div class="text-sm text-text-secondary mt-1" jhiTranslate="settings.privacy.export.description"></div>
+                </div>
+
+                <div class="export-actions flex flex-col items-start md:items-end gap-2">
+                  <div class="flex flex-row items-center gap-3">
+                    <jhi-button
+                      (click)="exportUserData()"
+                      [label]="'settings.privacy.export.button'"
+                      severity="primary"
+                      [shouldTranslate]="true"
+                      [disabled]="exportButtonDisabled()"
+                    />
+
+                    @if (exportInProgress()) {
+                      <div class="text-sm text-text-secondary" jhiTranslate="settings.privacy.export.inProgress"></div>
+                    }
+                  </div>
+
+                  @if (exportCooldownRemaining() > 0) {
+                    <div class="text-sm text-text-secondary">
+                      <span
+                        [translateValues]="{ seconds: exportCooldownRemaining() }"
+                        jhiTranslate="settings.privacy.export.cooldown"
+                      ></span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      }
+    }
   </div>
 </div>
