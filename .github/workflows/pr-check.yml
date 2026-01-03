@@ -107,14 +107,14 @@ jobs:
       # --- Upload Results ---
       - name: Upload JUnit Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: junit-test-results
           path: build/test-results/test/*.xml
 
       - name: Upload Coverage Report
         if: success() || failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report-server
           path: build/reports/jacoco/test/html/
@@ -206,7 +206,7 @@ jobs:
       # --- Upload Results ---
       - name: Upload Coverage Report
         if: success() || failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report-client
           path: build/test-results/lcov-report/
@@ -427,14 +427,14 @@ jobs:
       # --- Upload Logs on Failure ---
       - name: Upload Server Log
         if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: lighthouse-server-log
           path: server.log
 
       - name: Upload Client Log
         if: failure() && env.CLIENT_PID
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: lighthouse-client-log
           path: client.log
