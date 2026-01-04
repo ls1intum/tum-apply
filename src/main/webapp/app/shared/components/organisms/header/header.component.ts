@@ -6,7 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { filter, fromEventPattern, map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
@@ -27,14 +27,6 @@ import TranslateDirective from '../../../language/translate.directive';
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
-  bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
-    const observer = new MutationObserver(handler as MutationCallback);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }).pipe(map(() => document.documentElement.classList.contains('tum-apply-dark-mode')));
-  isDarkMode = toSignal(this.bodyClassChanges$, {
-    initialValue: document.documentElement.classList.contains('tum-apply-dark-mode'),
-  });
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
     initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
@@ -45,6 +37,7 @@ export class HeaderComponent {
   router = inject(Router);
   themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  isDarkMode = computed(() => this.theme() === 'dark');
 
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
