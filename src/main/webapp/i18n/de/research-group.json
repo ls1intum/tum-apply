@@ -3,6 +3,7 @@
     "header": "Meine E-Mail-Vorlagen",
     "memberPage": "Meine Mitglieder",
     "memberHeader": "Meine Mitglieder",
+    "memberHeaderAdmin": "Mitglieder der Forschungsgruppe",
     "emailTemplatesHeader": "Meine E-Mail-Vorlagen",
     "groupInfoHeader": "Meine Gruppe",
     "groupInfo": {
@@ -49,7 +50,11 @@
       }
     },
     "emailTemplates": {
-      "newTemplate": "Neue Vorlage",
+      "newTemplate": "Vorlage erstellen",
+      "deleteTemplateModal": {
+        "title": "Vorlage löschen",
+        "message": "Möchtest du diese Vorlage wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+      },
       "signature": "Signatur",
       "systemDefault": "Systemvorlage",
       "tableColumns": {
@@ -100,28 +105,20 @@
       "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
       "me": "Ich",
       "manageMembers": "Mitglieder verwalten",
-      "manageSubtitle": "Wähle, ob du Mitglieder zur Forschungsgruppe hinzufügen oder entfernen möchtest.",
-      "removeMembers": "Mitglieder entfernen",
-      "removeMembersButton": "Mitglieder entfernen",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
       "singleEntity": "Benutzer:in",
       "multipleEntities": "Benutzer:innen",
-
       "tableColumns": {
         "name": "Name",
         "email": "E-Mail",
         "role": "Rolle"
       },
-
       "removeMemberModal": {
         "title": "Mitglied entfernen",
         "message": "Möchtest du dieses Mitglied wirklich aus der Forschungsgruppe entfernen?"
       },
-      "removeSelectedButton": "Ausgewählte entfernen",
-      "removeSelectedConfirm": "Möchtest du die ausgewählten Mitglieder wirklich entfernen?",
-
       "toastMessages": {
         "loadFailed": {
           "summary": "Fehler beim Laden",
@@ -329,6 +326,80 @@
         "city": "z.B. Berlin",
         "postalCode": "z.B. 12345",
         "street": "z.B. Musterstraße 123"
+      }
+    },
+    "departments": {
+      "header": "Departments",
+      "createButton": "Department erstellen",
+      "searchPlaceholder": "Departments suchen...",
+      "entity": "Department",
+      "entities": "Departments",
+      "filter": {
+        "school": "School",
+        "schoolSearch": "School suchen..."
+      },
+      "tableColumns": {
+        "name": "Name",
+        "school": "School",
+        "schoolAbbreviation": "School Abkürzung"
+      },
+      "toastMessages": {
+        "loadFailed": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Laden der Departments. Bitte versuche es erneut"
+        },
+        "deleteSuccess": {
+          "summary": "Erfolg",
+          "detail": "Department erfolgreich gelöscht."
+        },
+        "deleteFailed": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Löschen des Departments. Bitte versuche es erneut."
+        },
+        "updateSuccess": {
+          "summary": "Erfolg",
+          "detail": "Department erfolgreich aktualisiert."
+        },
+        "updateFailed": {
+          "summary": "Fehler",
+          "detail": "Fehler beim Aktualisieren des Departments. Bitte versuche es erneut."
+        }
+      },
+      "createDialog": {
+        "title": "Neues Department erstellen",
+        "nameLabel": "Name",
+        "namePlaceholder": "z.B. Künstliche Intelligenz",
+        "schoolLabel": "School",
+        "schoolPlaceholder": "Wählen...",
+        "createButton": "Department erstellen",
+        "creating": "Erstelle Department...",
+        "success": {
+          "created": {
+            "summary": "Erfolg",
+            "detail": "Department erfolgreich erstellt."
+          },
+          "updated": {
+            "summary": "Erfolg",
+            "detail": "Department erfolgreich aktualisiert."
+          }
+        },
+        "errors": {
+          "createFailed": {
+            "summary": "Fehler",
+            "detail": "Fehler beim Erstellen des Departments. Bitte versuche es erneut."
+          },
+          "duplicateName": {
+            "summary": "Name existiert bereits",
+            "detail": "Ein Department mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen."
+          }
+        }
+      },
+      "editDialog": {
+        "title": "Department bearbeiten"
+      },
+      "deleteDialog": {
+        "header": "Department löschen",
+        "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
       }
     }
   }

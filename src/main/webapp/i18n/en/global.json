@@ -301,7 +301,8 @@
       },
       "placeholder": {
         "selectNationality": "Select your nationality...",
-        "selectGender": "Select your gender..."
+        "selectGender": "Select your gender...",
+        "selectCountry": "Select your country..."
       },
       "section": {
         "contactInformation": "Contact Information",

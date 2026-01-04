@@ -166,6 +166,81 @@
           "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
         }
       }
+    },
+    "interviewees": {
+      "title": "Bewerber:innen",
+      "add": "Bewerber:in hinzufügen",
+      "addTitle": "Bewerber:in hinzufügen",
+      "sendInvitations": "Einladung senden",
+      "empty": "Noch keine Bewerber:innen hinzugefügt",
+      "emptyHint": "Klicke auf \"Bewerber:in hinzufügen\", um zu starten",
+      "searchPlaceholder": "Nach Name oder E-Mail suchen...",
+      "selectAll": "Alle auswählen",
+      "noApplicants": "Keine Bewerber:innen verfügbar",
+      "tryDifferentSearch": "Versuche einen anderen Suchbegriff",
+      "selected": "{{count}} Bewerber:in(nen) ausgewählt",
+      "addSelected": "Hinzufügen",
+      "tableColumns": {
+        "name": "Bewerber:in"
+      },
+      "addSuccess": {
+        "summary": "Bewerber:in hinzugefügt",
+        "detail": "{{count}} Bewerber:in(nen) erfolgreich hinzugefügt"
+      },
+      "filter": {
+        "ALL": "Alle",
+        "INVITED": "Eingeladen",
+        "SCHEDULED": "Geplant",
+        "UNCONTACTED": "Nicht kontaktiert",
+        "COMPLETED": "Abgeschlossen"
+      },
+      "error": {
+        "loadFailed": {
+          "summary": "Fehler",
+          "detail": "Bewerber:innen konnten nicht geladen werden"
+        },
+        "loadApplicantsFailed": {
+          "summary": "Fehler",
+          "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+        },
+        "invalidApplications": {
+          "summary": "Ungültige Bewerbungen",
+          "detail": "Einige Bewerbungen gehören zu einem anderen Job"
+        },
+        "forbidden": {
+          "summary": "Keine Berechtigung",
+          "detail": "Du hast keine Berechtigung für diese Aktion"
+        },
+        "addFailed": {
+          "summary": "Fehler",
+          "detail": "Bewerber:innen konnten nicht hinzugefügt werden"
+        }
+      }
+    },
+    "assign": {
+      "title": "Bewerber:in zuweisen",
+      "selectedSlot": "Ausgewählter Termin",
+      "selectApplicant": "Bewerber:in auswählen",
+      "noApplicants": "Keine eingeladenen Bewerber:innen verfügbar",
+      "allAssigned": "Alle Bewerber:innen im Interviewprozess haben bereits einen Termin",
+      "success": {
+        "summary": "Zuweisung erfolgreich",
+        "detail": "Die Bewerber:in wurde dem Termin zugewiesen."
+      },
+      "error": {
+        "notInProcess": {
+          "summary": "Ungültige:r Bewerber:in",
+          "detail": "Bewerber:in ist nicht in diesem Interviewprozess"
+        },
+        "failed": {
+          "summary": "Zuweisung fehlgeschlagen",
+          "detail": "Fehler beim Zuweisen der Bewerber:in. Bitte versuchen Sie es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+        }
+      }
     }
   }
 }

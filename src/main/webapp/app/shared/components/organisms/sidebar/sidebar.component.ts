@@ -175,7 +175,8 @@ export class SidebarComponent {
           title: 'sidebar.content.content',
           buttons: [
             { icon: 'folder', text: 'sidebar.content.allpositions', link: '/all-positions' },
-            { icon: 'microscope', text: 'sidebar.content.researchgroups', link: '/research-group/admin-view' },
+            { icon: 'research-group', text: 'sidebar.content.researchgroups', link: '/research-group/admin-view' },
+            { icon: 'building-user', text: 'sidebar.content.departments', link: '/research-group/departments' },
           ],
         },
         {

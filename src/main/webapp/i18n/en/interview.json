@@ -166,6 +166,81 @@
           "detail": "You don't have permission to delete this slot"
         }
       }
+    },
+    "interviewees": {
+      "title": "Interviewees",
+      "add": "Add Applicant",
+      "addTitle": "Add Applicant",
+      "sendInvitations": "Send invitation",
+      "empty": "No interviewees yet",
+      "emptyHint": "Click \"Add Applicant\" to get started",
+      "searchPlaceholder": "Search by name or email...",
+      "selectAll": "Select all",
+      "noApplicants": "No applicants available",
+      "tryDifferentSearch": "Try a different search term",
+      "selected": "{{count}} applicant(s) selected",
+      "addSelected": "Add",
+      "tableColumns": {
+        "name": "Applicant"
+      },
+      "addSuccess": {
+        "summary": "Applicants added",
+        "detail": "{{count}} applicant(s) added successfully"
+      },
+      "filter": {
+        "ALL": "All",
+        "INVITED": "Invited",
+        "SCHEDULED": "Scheduled",
+        "UNCONTACTED": "Uncontacted",
+        "COMPLETED": "Completed"
+      },
+      "error": {
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Failed to load interviewees"
+        },
+        "loadApplicantsFailed": {
+          "summary": "Error",
+          "detail": "Failed to load available applicants"
+        },
+        "invalidApplications": {
+          "summary": "Invalid applications",
+          "detail": "Some applications belong to a different job"
+        },
+        "forbidden": {
+          "summary": "Access denied",
+          "detail": "You don't have permission for this action"
+        },
+        "addFailed": {
+          "summary": "Error",
+          "detail": "Failed to add applicants"
+        }
+      }
+    },
+    "assign": {
+      "title": "Assign Applicant to Slot",
+      "selectedSlot": "Selected Slot",
+      "selectApplicant": "Select Applicant",
+      "noApplicants": "No invited applicants available",
+      "allAssigned": "All applicants in the interview process already have a Slot",
+      "success": {
+        "summary": "Assignment Successful",
+        "detail": "Applicant has been assigned to the slot."
+      },
+      "error": {
+        "notInProcess": {
+          "summary": "Invalid Applicant",
+          "detail": "Applicant is not in this interview process"
+        },
+        "failed": {
+          "summary": "Assignment Failed",
+          "detail": "An error occurred while assigning the applicant. Please try again."
+        },
+        "loadFailed": {
+          "summary": "Loading Failed",
+          "detail": "Failed to load available applicants"
+        }
+      }
     }
   }
 }

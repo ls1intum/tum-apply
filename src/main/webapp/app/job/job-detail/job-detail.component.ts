@@ -13,7 +13,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
-import { Button, ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent, ButtonVariant } from 'app/shared/components/atoms/button/button.component';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
@@ -23,10 +23,10 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { JobPreviewRequest, UserShortDTO } from 'app/generated';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import TranslateDirective from 'app/shared/language/translate.directive';
 
 import * as DropDownOptions from '../dropdown-options';
-import ButtonGroupComponent, { ButtonGroupData } from '../../shared/components/molecules/button-group/button-group.component';
-import TranslateDirective from '../../shared/language/translate.directive';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
 
@@ -62,6 +62,16 @@ export interface JobDetails {
   applicationState?: ApplicationStateEnum;
 }
 
+export interface PrimaryActionButton {
+  label: string;
+  severity: ButtonColor;
+  variant?: ButtonVariant;
+  icon?: string;
+  onClick: () => void;
+  disabled: boolean;
+  shouldTranslate: boolean;
+}
+
 @Component({
   selector: 'jhi-job-detail',
   imports: [
@@ -70,10 +80,10 @@ export interface JobDetails {
     SharedModule,
     TranslateModule,
     TranslateDirective,
-    ButtonGroupComponent,
     TagComponent,
     ConfirmDialog,
     TooltipModule,
+    MenuComponent,
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
@@ -110,124 +120,82 @@ export class JobDetailComponent {
 
   pdfExportService = inject(PdfExportResourceApiService);
 
-  readonly pdfButton: Button = {
-    label: 'button.downloadPDF',
-    severity: 'secondary',
-    variant: 'outlined',
-    onClick: () => {
-      void this.onDownloadPDF();
-    },
-    disabled: false,
-    shouldTranslate: true,
-  };
-
-  readonly rightActionButtons = computed<ButtonGroupData | null>(() => {
+  readonly primaryActionButton = computed<PrimaryActionButton | null>(() => {
     if (this.previewData()) {
-      return {
-        direction: 'horizontal',
-        buttons: [this.pdfButton],
-      };
+      return null;
     }
     const job = this.jobDetails();
     if (!job) return null;
 
-    const addPdfButton = (buttons: Button[]): Button[] => {
-      return [...buttons, this.pdfButton];
-    };
-
-    // Case 1: Not a research group member or professor → show Apply button
+    // Case 1: Not a research group member or professor → show Apply/Edit/View button
     if (!job.belongsToResearchGroup && !this.isProfessorOrEmployee()) {
       switch (job.applicationState) {
         case undefined:
           return {
-            direction: 'horizontal',
-            buttons: addPdfButton([
-              {
-                label: 'button.apply',
-                severity: 'primary',
-                onClick: () => this.onApply(),
-                disabled: false,
-                shouldTranslate: true,
-              },
-            ]),
-          };
-        case ApplicationStateEnum.Saved:
-          return {
-            direction: 'horizontal',
-            buttons: addPdfButton([
-              {
-                label: 'button.edit',
-                severity: 'primary',
-                onClick: () => this.onEditApplication(),
-                disabled: false,
-                shouldTranslate: true,
-                icon: 'pencil',
-              },
-            ]),
-          };
-        default:
-          return {
-            direction: 'horizontal',
-            buttons: addPdfButton([
-              {
-                label: 'button.view',
-                severity: 'secondary',
-                onClick: () => this.onViewApplication(),
-                disabled: false,
-                shouldTranslate: true,
-                variant: 'outlined',
-              },
-            ]),
-          };
-      }
-    }
-    // Case 2: DRAFT → show Edit + Delete buttons
-    if (job.jobState === 'DRAFT') {
-      return {
-        direction: 'horizontal',
-        buttons: addPdfButton([
-          {
-            label: 'button.edit',
+            label: 'button.apply',
             severity: 'primary',
-            onClick: () => this.onEditJob(),
-            disabled: false,
-            shouldTranslate: true,
-            icon: 'pencil',
-          },
-          {
-            label: this.deleteButtonLabel,
-            severity: this.deleteButtonSeverity,
-            icon: this.deleteButtonIcon,
             onClick: () => {
-              this.deleteConfirmDialog()?.confirm();
+              this.onApply();
             },
             disabled: false,
             shouldTranslate: true,
-          },
-        ]),
+          };
+        case ApplicationStateEnum.Saved:
+          return {
+            label: 'button.edit',
+            severity: 'primary',
+            onClick: () => {
+              this.onEditApplication();
+            },
+            disabled: false,
+            shouldTranslate: true,
+            icon: 'pencil',
+          };
+        default:
+          return {
+            label: 'button.view',
+            severity: 'secondary',
+            onClick: () => {
+              this.onViewApplication();
+            },
+            disabled: false,
+            shouldTranslate: true,
+            variant: 'outlined',
+          };
+      }
+    }
+    // Case 2: DRAFT → show Edit button
+    if (job.jobState === 'DRAFT') {
+      return {
+        label: 'button.edit',
+        severity: 'primary',
+        onClick: () => {
+          this.onEditJob();
+        },
+        disabled: false,
+        shouldTranslate: true,
+        icon: 'pencil',
       };
     }
     // Case 3: PUBLISHED and belongs to professor → show Close button
     if (job.jobState === 'PUBLISHED' && this.isOwnerOfJob(job)) {
       return {
-        direction: 'horizontal',
-        buttons: addPdfButton([
-          {
-            label: this.closeButtonLabel,
-            severity: this.closeButtonSeverity,
-            icon: this.closeButtonIcon,
-            variant: 'outlined',
-            onClick: () => {
-              this.closeConfirmDialog()?.confirm();
-            },
-            disabled: false,
-            shouldTranslate: true,
-          },
-        ]),
+        label: this.closeButtonLabel,
+        severity: this.closeButtonSeverity,
+        icon: this.closeButtonIcon,
+        onClick: () => {
+          this.closeConfirmDialog()?.confirm();
+        },
+        disabled: false,
+        shouldTranslate: true,
       };
     }
-    // Else → no buttons
+    // Else → no primary button
     return null;
+  });
+
+  readonly showPdfButtonForPreview = computed<boolean>(() => {
+    return !!this.previewData();
   });
 
   readonly stateTextMap = new Map<string, string>([
@@ -237,12 +205,77 @@ export class JobDetailComponent {
     ['APPLICANT_FOUND', 'jobState.applicantFound'],
   ]);
 
-  readonly stateSeverityMap = new Map<string, 'success' | 'warn' | 'danger' | 'info'>([
+  readonly stateSeverityMap = new Map<string, 'success' | 'info' | 'contrast' | 'secondary'>([
     ['DRAFT', 'info'],
-    ['PUBLISHED', 'success'],
-    ['CLOSED', 'danger'],
-    ['APPLICANT_FOUND', 'warn'],
+    ['PUBLISHED', 'secondary'],
+    ['CLOSED', 'contrast'],
+    ['APPLICANT_FOUND', 'success'],
   ]);
+
+  readonly currentJobState = computed<string | undefined>(() => {
+    return this.jobDetails()?.jobState;
+  });
+
+  readonly jobStateText = computed<string>(() => {
+    const jobState = this.currentJobState();
+    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
+  });
+
+  readonly jobStateColor = computed<'success' | 'info' | 'contrast' | 'secondary'>(() => {
+    const jobState = this.currentJobState();
+    return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
+  });
+
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const job = this.jobDetails();
+    const items: JhiMenuItem[] = [];
+
+    // Always add PDF download option (except for preview data, where it's shown separately)
+    if (!this.previewData()) {
+      items.push({
+        label: 'button.downloadPDF',
+        icon: 'file-pdf',
+        severity: 'primary',
+        command: () => {
+          void this.onDownloadPDF();
+        },
+      });
+    }
+
+    if (!job) return items;
+
+    // Case 2: DRAFT → add Delete button to menu
+    if (job.jobState === 'DRAFT' && job.belongsToResearchGroup) {
+      items.push({
+        label: this.deleteButtonLabel,
+        icon: this.deleteButtonIcon,
+        severity: this.deleteButtonSeverity,
+        command: () => {
+          this.deleteConfirmDialog()?.confirm();
+        },
+      });
+    }
+
+    return items;
+  });
+
+  readonly shouldShowKebabMenu = computed<boolean>(() => {
+    const primaryButton = this.primaryActionButton();
+    const menuItemsCount = this.menuItems().length;
+    const totalActions = (primaryButton ? 1 : 0) + menuItemsCount;
+
+    // Only show kebab menu if there are 3 or more total actions
+    return totalActions >= 3;
+  });
+
+  readonly individualActionButtons = computed<JhiMenuItem[]>(() => {
+    // If we should show kebab menu, return empty array
+    if (this.shouldShowKebabMenu()) {
+      return [];
+    }
+    // Otherwise, return all menu items to be shown as individual buttons
+    return this.menuItems();
+  });
 
   private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
@@ -292,7 +325,6 @@ export class JobDetailComponent {
         job: this.jobId(),
       },
     });
-    // TODO - adjust to application state like in job overview page
   }
 
   onEditApplication(): void {
@@ -316,9 +348,6 @@ export class JobDetailComponent {
   }
 
   async onCloseJob(): Promise<void> {
-    // TO-DO: adjust confirmation
-    // const confirmClose = confirm('Do you really want to close this job?');
-    // if (confirmClose) {
     try {
       await firstValueFrom(this.jobResourceService.changeJobState(this.jobId(), 'CLOSED'));
       this.toastService.showSuccess({ detail: 'Job successfully closed' });
@@ -328,12 +357,9 @@ export class JobDetailComponent {
         this.toastService.showError({ detail: `Error closing job: ${error.message}` });
       }
     }
-    // }
   }
 
   async onDeleteJob(): Promise<void> {
-    // TO-DO: adjust confirmation, add dialog
-    // if (confirmDelete) {
     try {
       await firstValueFrom(this.jobResourceService.deleteJob(this.jobId()));
       this.toastService.showSuccess({ detail: 'Job successfully deleted' });
@@ -342,7 +368,6 @@ export class JobDetailComponent {
       if (error instanceof Error) {
         this.toastService.showError({ detail: `Error deleting job: ${error.message}` });
       }
-      //  }
     }
   }
 
@@ -441,20 +466,6 @@ export class JobDetailComponent {
 
   loadJobDetails(job: JobDetailDTO): void {
     this.jobDetails.set(this.mapToJobDetails(job, this.accountService.loadedUser()));
-  }
-
-  get currentJobState(): string | undefined {
-    return this.jobDetails()?.jobState;
-  }
-
-  get jobStateText(): string {
-    const jobState = this.currentJobState;
-    return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
-  }
-
-  get jobStateColor(): 'success' | 'warn' | 'danger' | 'info' {
-    const jobState = this.currentJobState;
-    return jobState ? (this.stateSeverityMap.get(jobState) ?? 'info') : 'info';
   }
 
   private isOwnerOfJob(job: JobDetails): boolean {
