@@ -19,33 +19,15 @@
       }
     </div>
 
-    <div class="theme-switch" (mouseenter)="onThemeAreaEnter()" (mouseleave)="onThemeAreaLeave()">
+    <div class="theme-switch">
       <jhi-button
         class="theme-toggle-button"
         (click)="toggleTheme()"
-        (mouseenter)="onThemeButtonEnter($event)"
         [icon]="isDarkMode() ? 'moon' : 'sun'"
+        [tooltip]="'header.theme' | translate"
         variant="text"
         severity="primary"
       />
-
-      <p-popover #popover>
-        <div class="max-w-[15rem]">
-          <div class="flex items-center gap-2 mb-2">
-            <fa-icon [icon]="isDarkMode() ? 'moon' : 'sun'" class="text-primary text-xl" />
-            <span
-              class="text-base font-semibold text-primary flex-1"
-              jhiTranslate="{{ isDarkMode() ? 'header.darkMode' : 'header.lightMode' }}"
-            ></span>
-          </div>
-          <div class="border-b border-border-default mb-2"></div>
-          <div class="flex items-center gap-2">
-            <fa-icon icon="sync" class="text-primary text-base" />
-            <span class="flex-1 text-xs text-primary" jhiTranslate="header.syncWithSystem"></span>
-            <p-toggleSwitch [ngModel]="syncWithSystem()" (ngModelChange)="onSyncWithSystemChange($event)" styleClass="p-inputswitch-sm" />
-          </div>
-        </div>
-      </p-popover>
     </div>
 
     @if (user() === undefined) {
