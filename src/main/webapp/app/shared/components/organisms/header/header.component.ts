@@ -87,7 +87,7 @@ export class HeaderComponent {
         let route = this.router.routerState.snapshot.root;
         while (route.firstChild) route = route.firstChild;
         const data = route.data as Record<string, unknown>;
-        return data['authorities'] ?? [];
+        return data.authorities ?? [];
       }),
     ),
     {
@@ -95,7 +95,7 @@ export class HeaderComponent {
         let route = this.router.routerState.snapshot.root;
         while (route.firstChild) route = route.firstChild;
         const data = route.data as Record<string, unknown>;
-        return data['authorities'] ?? [];
+        return data.authorities ?? [];
       })(),
     },
   );
@@ -115,7 +115,9 @@ export class HeaderComponent {
   private popoverTimeout?: number;
 
   constructor() {
-    afterNextRender(() => this.setupBannerObserver());
+    afterNextRender(() => {
+      this.setupBannerObserver();
+    });
 
     // Re-setup on navigation
     this.router.events
@@ -126,7 +128,9 @@ export class HeaderComponent {
       .subscribe(() => {
         this.observer?.disconnect();
         // Give the banner component time to render
-        setTimeout(() => this.setupBannerObserver(), 0);
+        setTimeout(() => {
+          this.setupBannerObserver();
+        }, 0);
       });
 
     this.destroyRef.onDestroy(() => this.observer?.disconnect());
