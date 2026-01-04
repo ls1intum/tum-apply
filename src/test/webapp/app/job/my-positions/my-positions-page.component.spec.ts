@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, it, expect, vi, Mocked } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, throwError, EMPTY } from 'rxjs';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -46,6 +46,7 @@ describe('MyPositionsPageComponent', () => {
 
     router = {
       navigate: vi.fn(),
+      events: EMPTY,
     } as unknown as Mocked<Router>;
 
     await TestBed.configureTestingModule({
