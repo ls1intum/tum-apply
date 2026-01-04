@@ -202,6 +202,16 @@
     },
     "filterBy": "Filter By:",
     "sortBy": "Sort By:",
+    "sorting": {
+      "ascending": {
+        "text": "Ascending (A-Z)",
+        "number": "Ascending (1-9)"
+      },
+      "descending": {
+        "text": "Descending (Z-A)",
+        "number": "Descending (9-1)"
+      }
+    },
     "upload": {
       "upload_instruction_standard": "Please upload",
       "upload_instruction": {
