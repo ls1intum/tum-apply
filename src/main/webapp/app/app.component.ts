@@ -23,27 +23,5 @@ export default class AppComponent {
     registerLocaleData(locale);
     this.iconLibrary.addIcons(...fontAwesomeIcons, ...Object.values(tumApplyIconPack));
     this.dpConfig.minDate = { year: dayjs().subtract(100, 'year').year(), month: 1, day: 1 };
-    this.setSystemTheme();
-  }
-
-  private setSystemTheme(): void {
-    /* const classList = document.documentElement.classList;
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-    
-        // set initial theme based on system preference
-        if (prefersDark.matches) {
-          classList.add('dark-theme');
-        } else {
-          classList.remove('dark-theme');
-        }
-    
-        // change theme dynamically when user changes system theme
-        prefersDark.addEventListener('change', e => {
-          if (e.matches) {
-            classList.add('dark-theme');
-          } else {
-            classList.remove('dark-theme');
-          }
-        });*/
   }
 }

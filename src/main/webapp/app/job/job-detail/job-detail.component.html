@@ -4,7 +4,6 @@
   [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
   [label]="closeButtonLabel | translate"
-  variant="outlined"
   [severity]="closeButtonSeverity"
   [confirmIcon]="closeButtonIcon"
   [showOpenButton]="false"
@@ -40,18 +39,59 @@
               {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
             >
           </div>
+          <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
+          @if (previewData()) {
+            <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
+          } @else if (job.belongsToResearchGroup) {
+            <jhi-tag class="job-state-badge" [text]="jobStateText() | translate" [color]="jobStateColor()" />
+          }
         </div>
       </div>
       <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
-        @if (rightActionButtons()) {
-          <jhi-button-group [data]="rightActionButtons()!" [shouldTranslate]="true" />
-        }
-        <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
-        @if (previewData()) {
-          <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
-        } @else if (job.belongsToResearchGroup) {
-          <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
-        }
+        <div class="flex items-center gap-2">
+          @if (showPdfButtonForPreview()) {
+            <jhi-button
+              label="button.downloadPDF"
+              severity="secondary"
+              variant="outlined"
+              icon="file-pdf"
+              [shouldTranslate]="true"
+              (click)="onDownloadPDF()"
+            />
+          }
+          @for (item of individualActionButtons(); track item.label) {
+            <jhi-button
+              [label]="item.label"
+              [severity]="item.severity ?? 'secondary'"
+              variant="outlined"
+              [icon]="item.icon"
+              [shouldTranslate]="true"
+              (click)="item.command?.()"
+            />
+          }
+          @if (shouldShowKebabMenu()) {
+            <jhi-button
+              severity="secondary"
+              variant="outlined"
+              icon="ellipsis-vertical"
+              label="button.actions"
+              [shouldTranslate]="true"
+              (click)="menu.toggle($event)"
+            />
+            <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
+          }
+          @if (primaryActionButton(); as primaryActionButton) {
+            <jhi-button
+              [label]="primaryActionButton.label"
+              [severity]="primaryActionButton.severity"
+              [variant]="primaryActionButton.variant"
+              [icon]="primaryActionButton.icon"
+              [disabled]="primaryActionButton.disabled"
+              [shouldTranslate]="primaryActionButton.shouldTranslate"
+              (click)="primaryActionButton.onClick()"
+            />
+          }
+        </div>
       </div>
     </div>
 

@@ -7,11 +7,11 @@ To launch required third-party services, JHipster generates Docker Compose files
 Start services:
 
 ```bash
-docker compose -f src/main/docker/services.yml up -d
+docker compose -f docker/local-setup/services.yml up -d
 ```
 
 Stop and remove containers:
 
 ```bash
-docker compose -f src/main/docker/services.yml down
+docker compose -f docker/local-setup/services.yml down
 ```

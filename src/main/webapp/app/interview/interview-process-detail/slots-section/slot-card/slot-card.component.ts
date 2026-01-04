@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, computed, inject, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatTimeRange } from 'app/shared/util/date-time.util';
 
 @Component({
   selector: 'jhi-slot-card',
@@ -25,7 +26,16 @@ export class SlotCardComponent {
   deleteSlot = output<InterviewSlotDTO>();
   assignApplicant = output<InterviewSlotDTO>();
 
-  private readonly TIMEZONE = 'Europe/Berlin';
+  // Computed values
+  timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
+  isVirtual = computed(() => this.slot().location === 'virtual');
+  isBooked = computed(() => this.slot().isBooked ?? false);
+  applicantName = computed(() => {
+    const interviewee = this.slot().interviewee;
+    if (!interviewee) return '';
+    return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
+  });
+
   private readonly elementRef = inject(ElementRef);
 
   handleOutsideClick(event: Event): void {
@@ -33,33 +43,6 @@ export class SlotCardComponent {
       this.showMenu.set(false);
     }
   }
-
-  formatTime(date?: string): string {
-    if (!date) {
-      return '';
-    }
-    const d = new Date(date);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  timeRange = (): string => {
-    const start = this.formatTime(this.slot().startDateTime);
-    const end = this.formatTime(this.slot().endDateTime);
-    return `${start} - ${end}`;
-  };
-
-  isVirtual = (): boolean => {
-    return this.slot().location === 'virtual';
-  };
-
-  isBooked = (): boolean => {
-    return this.slot().isBooked ?? false;
-  };
-
-  applicantName = (): string => {
-    // TODO: Will be implemented with Application.scheduledInterviewSlot relationship
-    return 'Applicant Name';
-  };
 
   toggleMenu(): void {
     this.showMenu.update(v => !v);
