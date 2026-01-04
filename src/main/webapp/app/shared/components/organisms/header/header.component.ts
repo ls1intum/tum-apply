@@ -87,7 +87,6 @@ export class HeaderComponent {
         let route = this.router.routerState.snapshot.root;
         while (route.firstChild) route = route.firstChild;
         const data = route.data as any;
-
         return data?.['authorities'] ?? [];
       }),
     ),
@@ -96,7 +95,6 @@ export class HeaderComponent {
         let route = this.router.routerState.snapshot.root;
         while (route.firstChild) route = route.firstChild;
         const data = route.data as any;
-
         return data?.['authorities'] ?? [];
       })(),
     },
