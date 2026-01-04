@@ -86,16 +86,18 @@ export class HeaderComponent {
       map(() => {
         let route = this.router.routerState.snapshot.root;
         while (route.firstChild) route = route.firstChild;
-        const data = route.data as Record<string, unknown>;
-        return data.authorities ?? [];
+        const data = route.data as any;
+
+        return data?.['authorities'] ?? [];
       }),
     ),
     {
       initialValue: (() => {
         let route = this.router.routerState.snapshot.root;
         while (route.firstChild) route = route.firstChild;
-        const data = route.data as Record<string, unknown>;
-        return data.authorities ?? [];
+        const data = route.data as any;
+
+        return data?.['authorities'] ?? [];
       })(),
     },
   );
