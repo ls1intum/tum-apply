@@ -213,6 +213,12 @@
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
       "add": "Hinzufügen",
+      "deleteDocument": {
+        "confirm": {
+          "header": "Dokument löschen",
+          "message": "Möchtest du dieses Dokument wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden."
+        }
+      },
       "clear": "Alles löschen",
       "upload": "Hochladen",
       "instruction": "Hier klicken oder Dateien hinziehen, um sie hochzuladen.",

@@ -14,6 +14,7 @@ import { FileSelectEvent } from 'primeng/fileupload';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 
 import { ButtonComponent } from '../button/button.component';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 
 const DocumentType = {
   BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
@@ -37,6 +38,7 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
     TranslateModule,
     TranslateDirective,
     DialogComponent,
+    ConfirmDialog,
   ],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
