@@ -85,11 +85,11 @@ describe('ConfirmDialog', () => {
       expect(fixture.componentInstance.variant()).toBe('outlined');
     });
 
-    it('should apply iconOnly prop correctly', () => {
+    it('should apply confirmIcon prop correctly', () => {
       const fixture = createFixture();
-      fixture.componentRef.setInput('iconOnly', true);
+      fixture.componentRef.setInput('confirmIcon', 'check');
       fixture.detectChanges();
-      expect(fixture.componentInstance.iconOnly()).toBe(true);
+      expect(fixture.componentInstance.confirmIcon()).toBe('check');
     });
   });
 
@@ -119,7 +119,7 @@ describe('ConfirmDialog', () => {
 
     it('should pass correct icon to open button component', () => {
       const fixture = createFixture();
-      fixture.componentRef.setInput('icon', 'trash');
+      fixture.componentRef.setInput('confirmIcon', 'trash');
       fixture.componentRef.setInput('showOpenButton', true);
       fixture.detectChanges();
       const buttonDebug = fixture.debugElement.query(By.directive(ButtonComponent));
