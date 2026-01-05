@@ -216,7 +216,7 @@
       "deleteDocument": {
         "confirm": {
           "header": "Dokument löschen",
-          "message": "Möchtest du dieses Dokument wirklich löschen? Die Aktion kann nicht rückgängig gemacht werden."
+          "message": "Möchtest du dieses Dokument wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
         }
       },
       "clear": "Alles löschen",
