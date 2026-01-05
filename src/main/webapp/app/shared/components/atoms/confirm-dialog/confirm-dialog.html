@@ -10,7 +10,14 @@
       </p>
 
       <div class="confirm-buttons">
-        <jhi-button class="cancel" [shouldTranslate]="true" label="entity.action.cancel" (click)="onReject()" variant="outlined" />
+        <jhi-button
+          class="cancel"
+          [shouldTranslate]="true"
+          label="entity.action.cancel"
+          (click)="onReject()"
+          variant="outlined"
+          [size]="size()"
+        />
         <jhi-button
           class="confirm"
           [label]="label()"
@@ -19,6 +26,7 @@
           [severity]="severity()"
           [variant]="variant()"
           [disabled]="disabled()"
+          [size]="size()"
         />
       </div>
     </div>
@@ -35,5 +43,6 @@
     [tooltip]="tooltip()"
     [tooltipPosition]="tooltipPosition()"
     [disabled]="disabled()"
+    [size]="size()"
   />
 }

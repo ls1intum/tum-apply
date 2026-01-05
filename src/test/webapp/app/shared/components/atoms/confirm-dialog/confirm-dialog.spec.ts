@@ -91,6 +91,13 @@ describe('ConfirmDialog', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.confirmIcon()).toBe('check');
     });
+
+    it('should apply iconOnly prop correctly', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('iconOnly', true);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.iconOnly()).toBe(true);
+    });
   });
 
   describe('Open Button Behaviour', () => {
@@ -119,7 +126,7 @@ describe('ConfirmDialog', () => {
 
     it('should pass correct icon to open button component', () => {
       const fixture = createFixture();
-      fixture.componentRef.setInput('confirmIcon', 'trash');
+      fixture.componentRef.setInput('icon', 'trash');
       fixture.componentRef.setInput('showOpenButton', true);
       fixture.detectChanges();
       const buttonDebug = fixture.debugElement.query(By.directive(ButtonComponent));
@@ -156,6 +163,29 @@ describe('ConfirmDialog', () => {
       const button = fixture.nativeElement.querySelector('jhi-button');
       button.click();
       expect(confirmSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should hide label and use text variant when iconOnly is true', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('icon', 'trash');
+      fixture.componentRef.setInput('iconOnly', true);
+      fixture.componentRef.setInput('showOpenButton', true);
+      fixture.detectChanges();
+      const buttonDebug = fixture.debugElement.query(By.directive(ButtonComponent));
+      const buttonComponent = buttonDebug.componentInstance as ButtonComponent;
+      expect(buttonComponent.label()).toBeUndefined();
+      expect(buttonComponent.variant()).toBe('text');
+    });
+
+    it('should show label when iconOnly is false', () => {
+      const fixture = createFixture();
+      fixture.componentRef.setInput('icon', 'trash');
+      fixture.componentRef.setInput('iconOnly', false);
+      fixture.componentRef.setInput('showOpenButton', true);
+      fixture.detectChanges();
+      const buttonDebug = fixture.debugElement.query(By.directive(ButtonComponent));
+      const buttonComponent = buttonDebug.componentInstance as ButtonComponent;
+      expect(buttonComponent.label()).toBe('Delete');
     });
   });
 
