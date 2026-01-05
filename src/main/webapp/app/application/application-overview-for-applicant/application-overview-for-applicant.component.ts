@@ -13,6 +13,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -31,6 +32,7 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
     ConfirmDialogModule,
     ConfirmDialog,
     TimeAgoPipe,
+    MenuComponent,
   ],
   templateUrl: './application-overview-for-applicant.component.html',
   styleUrl: './application-overview-for-applicant.component.scss',
@@ -66,6 +68,13 @@ export default class ApplicationOverviewForApplicantComponent {
 
   // Template reference for created column (relative time)
   readonly timeSinceCreationTemplate = viewChild.required<TemplateRef<unknown>>('timeSinceCreationTemplate');
+
+  // Confirm dialog references
+  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
+  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+
+  // Track current application ID for dialogs
+  currentApplicationId = signal<string | undefined>(undefined);
 
   // Computed table column definitions including custom templates
   readonly columns = computed<DynamicTableColumn[]>(() => {
@@ -110,6 +119,60 @@ export default class ApplicationOverviewForApplicantComponent {
     { displayName: 'entity.applicationOverview.columns.created', fieldName: 'createdAt', type: 'TEXT' },
   ];
 
+  // Computed signal that creates a map of application IDs to their menu items
+  readonly applicationMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
+    const menuMap = new Map<string, JhiMenuItem[]>();
+
+    for (const application of this.pageData()) {
+      if (application.applicationId === undefined) continue;
+
+      const items: JhiMenuItem[] = [];
+      const applicationId = application.applicationId;
+
+      // Edit action - only for SAVED applications
+      if (application.applicationState === 'SAVED') {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.onUpdateApplication(applicationId);
+          },
+        });
+      }
+
+      // Withdraw action - for SENT or IN_REVIEW applications
+      if (['SENT', 'IN_REVIEW'].includes(application.applicationState ?? '')) {
+        items.push({
+          label: 'button.withdraw',
+          icon: 'withdraw',
+          severity: 'danger',
+          command: () => {
+            this.currentApplicationId.set(applicationId);
+            this.withdrawDialog().confirm();
+          },
+        });
+      }
+
+      // Delete action - only for SAVED applications
+      if (application.applicationState === 'SAVED') {
+        items.push({
+          label: 'button.delete',
+          icon: 'trash',
+          severity: 'danger',
+          command: () => {
+            this.currentApplicationId.set(applicationId);
+            this.deleteDialog().confirm();
+          },
+        });
+      }
+
+      menuMap.set(applicationId, items);
+    }
+
+    return menuMap;
+  });
+
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
@@ -141,6 +204,11 @@ export default class ApplicationOverviewForApplicantComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  getMenuItems(application: ApplicationOverviewDTO): JhiMenuItem[] {
+    if (application.applicationId === undefined) return [];
+    return this.applicationMenuItems().get(application.applicationId) ?? [];
   }
 
   onViewApplication(applicationId: string): void {
