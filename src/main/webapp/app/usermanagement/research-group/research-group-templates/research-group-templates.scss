@@ -5,14 +5,13 @@
   .table-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
     width: 100%;
     align-self: center;
 
     .actions {
       display: flex;
       flex-direction: row;
-      justify-content: left;
+      justify-content: right;
       gap: 1rem;
     }
   }

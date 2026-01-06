@@ -61,6 +61,7 @@ export * from './pageCreatedJobDTO';
 export * from './pageJobCardDTO';
 export * from './pageResponseDTODepartmentDTO';
 export * from './pageResponseDTOEmailTemplateOverviewDTO';
+export * from './pageResponseDTOInterviewSlotDTO';
 export * from './pageResponseDTOKeycloakUserDTO';
 export * from './pageResponseDTOResearchGroupAdminDTO';
 export * from './pageResponseDTOResearchGroupDTO';

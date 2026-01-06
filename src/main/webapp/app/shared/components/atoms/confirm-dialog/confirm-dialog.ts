@@ -39,6 +39,8 @@ export class ConfirmDialog {
     this.confirmationService.confirm({
       message: this.message(),
       header: this.header(),
+      dismissableMask: true,
+      closeOnEscape: true,
       accept: () => {
         this.confirmed.emit(this.data());
       },

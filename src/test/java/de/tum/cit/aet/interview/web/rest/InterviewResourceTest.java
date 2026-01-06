@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
@@ -408,16 +409,21 @@ class InterviewResourceTest extends AbstractResourceTest {
                 201
             );
 
-        // Get slots
-        List<InterviewSlotDTO> slots = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots",
-                null,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                200
-            );
+        // Get slots with pagination (add year and month to match server-side filtering)
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        String url =
+            "/api/interviews/processes/" +
+            interviewProcess.getId() +
+            "/slots?year=" +
+            tomorrow.getYear() +
+            "&month=" +
+            tomorrow.getMonthValue();
 
+        PageResponseDTO<InterviewSlotDTO> response = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(url, null, new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {}, 200);
+
+        List<InterviewSlotDTO> slots = new java.util.ArrayList<>(response.getContent());
         assertThat(slots).hasSize(2);
 
         // Verify first slot

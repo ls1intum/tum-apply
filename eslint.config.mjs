@@ -17,7 +17,17 @@ import importPlugin from 'eslint-plugin-import';
 export default [
   // 🔒 Completely ignore all generated files BEFORE any other config runs
   {
-    ignores: ['src/main/webapp/app/generated/**', 'docs/**', 'gradle/**', 'src/test/webapp/**', 'vite.config.ts', 'build/', '**/build/**'],
+    ignores: [
+      'src/main/webapp/app/generated/**',
+      'docs/**',
+      'gradle/**',
+      'src/test/webapp/**',
+      'vite.config.ts',
+      'build/',
+      '**/build/**',
+      'supporting_scripts/local-pr-coverage/local-pr-coverage.mjs',
+      'eslint.config.mjs',
+    ],
   },
   // 🌐 Base ignore and global config
   ...tseslint.config(
