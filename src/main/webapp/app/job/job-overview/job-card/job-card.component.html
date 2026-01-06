@@ -1,6 +1,10 @@
 <div
-  class="rounded-lg border border-border-default hover:scale-[1.02] hover:bg-background-surface transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  class="rounded-lg border border-border-default hover:scale-[1.02] hover:bg-background-surface focus-within:ring-2 focus-within:ring-primary focus-within:outline-none transition-all duration-200 overflow-hidden cursor-pointer w-full h-full max-h-[26rem] flex flex-col"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="'jobOverviewPage.ariaLabels.viewJobDetails' | translate: { title: jobTitle() }"
   (click)="onViewDetails()"
+  (keydown)="onKeyDown($event)"
 >
   <div
     class="relative h-32 flex items-end px-4 pb-3 bg-cover bg-center flex-shrink-0"
