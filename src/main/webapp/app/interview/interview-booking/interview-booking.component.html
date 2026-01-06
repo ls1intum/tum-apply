@@ -1,4 +1,4 @@
-<div class="page-container flex flex-col min-h-screen">
+<div class="page-container flex flex-col">
   <!-- Header -->
   <div class="page-header">
     <h1 jhiTranslate="interview.booking.title">Select your Interview Slot</h1>
@@ -87,7 +87,7 @@
       </div>
     } @else {
       <!-- Booking Selection -->
-      <div class="flex flex-col lg:flex-row gap-8 items-start w-full h-full">
+      <div class="flex flex-col lg:flex-row gap-8 items-stretch w-full min-h-[calc(100vh-12rem)]">
         <!-- LEFT: Slots Section -->
         <div class="flex-1 flex flex-col min-w-0">
           <!-- Navigation Header -->
@@ -139,7 +139,7 @@
                             [icon]="isExpanded(group.date) ? 'chevron-up' : 'chevron-down'"
                             [label]="
                               isExpanded(group.date)
-                                ? 'interview.slots.showLess'
+                                ? 'interview.process.slots.showLess'
                                 : getShowMoreText(getRemainingCount(group.date, group.slots.length))
                             "
                             [shouldTranslate]="isExpanded(group.date)"
@@ -165,8 +165,8 @@
         <div class="w-px bg-border-default self-stretch hidden lg:block"></div>
 
         <!-- Right Sidebar: Booking Summary -->
-        <div class="w-full lg:w-[20rem] flex-shrink-0">
-          <div class="lg:sticky lg:top-4">
+        <div class="w-full lg:w-[20rem] flex-shrink-0 flex flex-col">
+          <div class="flex-1 flex flex-col">
             <jhi-booking-summary
               [jobTitle]="jobTitle()"
               [supervisor]="supervisor()"

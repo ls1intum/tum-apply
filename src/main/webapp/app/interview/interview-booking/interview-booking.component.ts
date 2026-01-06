@@ -4,12 +4,14 @@ import { ActivatedRoute } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import dayjs from 'dayjs/esm';
 import { InterviewBookingResourceApiService } from 'app/generated/api/interviewBookingResourceApi.service';
 import { BookingDTO } from 'app/generated/model/bookingDTO';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatTimeRange } from 'app/shared/util/date-time.util';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
 
 import { SelectableSlotCardComponent } from './selectable-slot-card/selectable-slot-card.component';
@@ -34,7 +36,7 @@ export class InterviewBookingComponent {
   // Constants
   readonly MAX_VISIBLE_SLOTS = 8;
 
-  // Signals
+  // Signals - State
   bookingData = signal<BookingDTO | null>(null);
   loading = signal(true);
   error = signal(false);
@@ -42,6 +44,11 @@ export class InterviewBookingComponent {
   currentMonthOffset = signal(0);
   currentDatePage = signal(0);
   expandedDates = signal<Set<string>>(new Set());
+
+  // Computed- Date Info
+  targetDate = computed(() => dayjs().add(this.currentMonthOffset(), 'month'));
+  currentYear = computed(() => this.targetDate().year());
+  currentMonthNumber = computed(() => this.targetDate().month() + 1);
 
   // Computed - Job Info
   jobTitle = computed(() => this.bookingData()?.jobTitle ?? '');
@@ -66,32 +73,32 @@ export class InterviewBookingComponent {
   /** Formats the booked slot time range for display. */
   bookedSlotTime = computed(() => {
     const slot = this.bookedSlot();
-    const start = slot?.startDateTime;
-    const end = slot?.endDateTime;
-    if (start === undefined || start === '' || end === undefined || end === '') return '';
-    const loc = this.locale();
-    return `${new Date(start).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
+    const startDateTime = slot?.startDateTime;
+    const endDateTime = slot?.endDateTime;
+    if (startDateTime === undefined || startDateTime === '' || endDateTime === undefined || endDateTime === '') return '';
+    return formatTimeRange(startDateTime, endDateTime, this.locale());
   });
 
   /** Returns location string or translated virtual/in-person label. */
   bookedSlotLocation = computed(() => {
     const slot = this.bookedSlot();
     if (slot === null) return '';
-    const loc = slot.location;
-    if (loc !== undefined && loc !== '' && loc !== 'virtual') return loc;
-    return this.translateService.instant(loc === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
+    const location = slot.location;
+    if (location !== undefined && location !== '' && location !== 'virtual') return location;
+    return this.translateService.instant(location === 'virtual' ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson');
   });
 
   isBookedVirtual = computed(() => this.bookedSlot()?.location === 'virtual');
 
-  /** Groups available slots by date and sorts chronologically. */
+  /** Groups available slots by date and sorts chronologically (slots already filtered by server). */
   groupedSlots = computed(() => {
     const slots = this.bookingData()?.availableSlots;
     if (slots === undefined || slots.length === 0) return [];
 
     const grouped = new Map<string, InterviewSlotDTO[]>();
     slots.forEach(slot => {
-      const dateKey = new Date(this.safeDate(slot.startDateTime)).toISOString().split('T')[0];
+      const localDate = new Date(this.safeDate(slot.startDateTime));
+      const dateKey = localDate.toISOString().split('T')[0];
       if (!grouped.has(dateKey)) grouped.set(dateKey, []);
       grouped.get(dateKey)?.push(slot);
     });
@@ -105,13 +112,8 @@ export class InterviewBookingComponent {
       .sort((a, b) => a.localDate.getTime() - b.localDate.getTime());
   });
 
-  /** Filters slots to only show the currently selected month. */
-  currentMonthSlots = computed(() => {
-    const allDates = this.groupedSlots();
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
-    return allDates.filter(g => g.localDate.getMonth() === targetDate.getMonth() && g.localDate.getFullYear() === targetDate.getFullYear());
-  });
+  /** Returns all slots for current month (server already filters by month). */
+  currentMonthSlots = computed(() => this.groupedSlots());
 
   /** Returns the current page of date groups for display. */
   paginatedSlots = computed(() => {
@@ -123,10 +125,9 @@ export class InterviewBookingComponent {
   totalDatePages = computed(() => Math.ceil(this.currentMonthSlots().length / this.DATES_PER_PAGE));
   canGoPreviousDate = computed(() => this.currentDatePage() > 0);
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
+
   currentMonthLabel = computed(() => {
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + this.currentMonthOffset());
-    return targetDate.toLocaleDateString(this.locale(), { month: 'long', year: 'numeric' });
+    return this.targetDate().toDate().toLocaleDateString(this.locale(), { month: 'long', year: 'numeric' });
   });
 
   // Constants
@@ -138,13 +139,30 @@ export class InterviewBookingComponent {
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
 
-  // Signals
-  private readonly langChange = toSignal(this.translateService.onLangChange);
+  // Private Signals
+  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
+  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
+
+  private locale = computed(() => {
+    const lang = this.currentLangSignal();
+    return lang === 'de' ? 'de-DE' : 'en-US';
+  });
 
   // Effects
+  private readonly langChangeEffect = effect(() => {
+    const langEvent = this.langChangeSignal();
+    if (langEvent?.lang !== undefined) {
+      this.currentLangSignal.set(langEvent.lang);
+    }
+  });
+
   private readonly loadEffect = effect(() => {
+    const year = this.currentYear();
+    const month = this.currentMonthNumber();
     const processId = this.route.snapshot.paramMap.get('processId');
-    if (processId !== null && processId !== '') void this.loadData(processId);
+    if (processId !== null && processId !== '') {
+      void this.loadData(processId, year, month);
+    }
   });
 
   /** Toggles slot selection. */
@@ -159,16 +177,18 @@ export class InterviewBookingComponent {
     this.toastService.showInfoKey('interview.booking.bookedSuccessPlaceholder');
   }
 
-  /** Navigates to the previous month. */
+  /** Navigates to the previous month and reloads slots. */
   previousMonth(): void {
     this.currentMonthOffset.update(v => v - 1);
     this.currentDatePage.set(0);
+    this.expandedDates.set(new Set());
   }
 
-  /** Navigates to the next month. */
+  /** Navigates to the next month and reloads slots. */
   nextMonth(): void {
     this.currentMonthOffset.update(v => v + 1);
     this.currentDatePage.set(0);
+    this.expandedDates.set(new Set());
   }
 
   /** Navigates to the previous date page. */
@@ -201,7 +221,11 @@ export class InterviewBookingComponent {
   /** Toggles expansion state for a date group. */
   toggleExpanded(dateKey: string): void {
     const expanded = new Set(this.expandedDates());
-    expanded.has(dateKey) ? expanded.delete(dateKey) : expanded.add(dateKey);
+    if (expanded.has(dateKey)) {
+      expanded.delete(dateKey);
+    } else {
+      expanded.add(dateKey);
+    }
     this.expandedDates.set(expanded);
   }
 
@@ -211,18 +235,13 @@ export class InterviewBookingComponent {
     return `${count} ${this.translateService.instant(key)}`;
   }
 
-  /** Returns current locale based on language setting. */
-  private locale(): string {
-    this.langChange();
-    return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
-  }
-
-  /** Loads booking data from the API. */
-  private async loadData(processId: string): Promise<void> {
+  /** Loads booking data from the API with month filter for server-side pagination. */
+  private async loadData(processId: string, year: number, month: number): Promise<void> {
     try {
       this.loading.set(true);
       this.error.set(false);
-      this.bookingData.set(await firstValueFrom(this.bookingService.getBookingData(processId)));
+      const data = await firstValueFrom(this.bookingService.getBookingData(processId, year, month));
+      this.bookingData.set(data);
     } catch {
       this.error.set(true);
     } finally {

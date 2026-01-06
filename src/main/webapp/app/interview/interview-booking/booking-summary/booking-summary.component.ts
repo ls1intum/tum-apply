@@ -13,6 +13,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
   standalone: true,
   imports: [FontAwesomeModule, TranslateModule, TranslateDirective, ButtonComponent],
   templateUrl: './booking-summary.component.html',
+  host: { class: 'flex flex-col h-full' },
 })
 export class BookingSummaryComponent {
   // Inputs
