@@ -18,7 +18,8 @@ export class ThemeService {
   private readonly rootElement = document.documentElement;
 
   constructor() {
-    this.setTheme(this.theme());
+    const shouldSave = !this.syncWithSystem();
+    this.setTheme(this.theme(), shouldSave);
     this.setupSystemThemeListener();
   }
 
@@ -61,12 +62,13 @@ export class ThemeService {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', e => {
       if (this.syncWithSystem()) {
-        this.setTheme(e.matches ? 'dark' : 'light');
+        // Don't save to localStorage when syncing with system
+        this.setTheme(e.matches ? 'dark' : 'light', false);
       }
     });
   }
 
-  setTheme(theme: ThemeOption): void {
+  setTheme(theme: ThemeOption, saveToStorage = true): void {
     this.theme.set(theme);
 
     const root = this.rootElement;
@@ -94,7 +96,9 @@ export class ThemeService {
       }
     }
 
-    localStorage.setItem('tumApplyTheme', theme);
+    if (saveToStorage) {
+      localStorage.setItem('tumApplyTheme', theme);
+    }
 
     // allow one frame for styles to apply, then restore transitions
     window.requestAnimationFrame(() => {
@@ -114,8 +118,10 @@ export class ThemeService {
     localStorage.setItem('tumApplySyncWithSystem', String(value));
 
     if (value) {
+      // When enabling system sync, remove the stored theme and don't save to localStorage
+      localStorage.removeItem('tumApplyTheme');
       const systemTheme = this.getSystemTheme();
-      this.setTheme(systemTheme);
+      this.setTheme(systemTheme, false);
     }
   }
 }
