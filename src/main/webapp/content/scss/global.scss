@@ -106,6 +106,14 @@
    outside component with appendTo="body"
 --------------------------------------------------- */
 
+// Remove jhi-menu from layout flow to prevent spacing issues
+jhi-menu {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 .p-menu-item-link {
   &.menu-primary {
     color: var(--p-primary-color);

@@ -154,13 +154,12 @@ export class JobDetailComponent {
         default:
           return {
             label: 'button.view',
-            severity: 'secondary',
+            severity: 'primary',
             onClick: () => {
               this.onViewApplication();
             },
             disabled: false,
             shouldTranslate: true,
-            variant: 'outlined',
           };
       }
     }

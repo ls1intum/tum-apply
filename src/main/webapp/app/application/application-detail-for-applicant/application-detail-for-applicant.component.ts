@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
@@ -12,6 +12,7 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -30,11 +31,14 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     ConfirmDialogModule,
     ConfirmDialog,
     TranslateModule,
+    MenuComponent,
   ],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
+  withdrawConfirmDialog = viewChild<ConfirmDialog>('withdrawConfirmDialog');
+  deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');
   // preview application data passed from parent component (if any)
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
@@ -59,6 +63,86 @@ export default class ApplicationDetailForApplicantComponent {
     if (preview) return preview;
 
     return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
+  });
+
+  readonly primaryActionButton = computed<JhiMenuItem | null>(() => {
+    const app = this.application();
+    if (!app) return null;
+
+    // Edit button for SAVED state
+    if (['SAVED'].includes(app.applicationState)) {
+      return {
+        label: 'button.edit',
+        icon: 'pencil',
+        severity: 'primary',
+        command: () => {
+          this.onUpdateApplication();
+        },
+      };
+    }
+
+    return null;
+  });
+
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const app = this.application();
+    const items: JhiMenuItem[] = [];
+
+    if (!app) return items;
+
+    // Always add PDF download option
+    items.push({
+      label: 'button.downloadPDF',
+      icon: 'file-pdf',
+      severity: 'secondary',
+      command: () => {
+        this.onDownloadPDF();
+      },
+    });
+
+    // Add Withdraw button for SENT/IN_REVIEW states
+    if (['SENT', 'IN_REVIEW'].includes(app.applicationState)) {
+      items.push({
+        label: 'button.withdraw',
+        icon: 'withdraw',
+        severity: 'danger',
+        command: () => {
+          this.withdrawConfirmDialog()?.confirm();
+        },
+      });
+    }
+
+    // Add Delete button for SAVED state
+    if (['SAVED'].includes(app.applicationState)) {
+      items.push({
+        label: 'button.delete',
+        icon: 'trash',
+        severity: 'danger',
+        command: () => {
+          this.deleteConfirmDialog()?.confirm();
+        },
+      });
+    }
+
+    return items;
+  });
+
+  readonly shouldShowKebabMenu = computed<boolean>(() => {
+    const primaryButton = this.primaryActionButton();
+    const menuItemsCount = this.menuItems().length;
+    const totalActions = (primaryButton ? 1 : 0) + menuItemsCount;
+
+    // Show kebab menu if there are 3 or more total actions
+    return totalActions >= 3;
+  });
+
+  readonly individualActionButtons = computed<JhiMenuItem[]>(() => {
+    // If we should show kebab menu, return empty array
+    if (this.shouldShowKebabMenu()) {
+      return [];
+    }
+    // Otherwise, return all menu items to be shown as individual buttons
+    return this.menuItems();
   });
 
   readonly dropDownOptions = DropDownOptions;
@@ -115,8 +199,9 @@ export default class ApplicationDetailForApplicantComponent {
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'application.pdf';
 
-      if (contentDisposition) {
-        filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'application.pdf';
+      if (contentDisposition !== null) {
+        const match = /filename="([^"]+)"/.exec(contentDisposition);
+        filename = match?.[1] ?? 'application.pdf';
       }
 
       const blob = response.body;
