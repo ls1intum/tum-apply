@@ -607,7 +607,6 @@ export default class ApplicationCreationFormComponent {
       modal: true,
     });
 
-    // TODO: maybe switch to creating the account in this component
     // Poll account state until a user is available or timeout
     const started = Date.now();
     await new Promise<void>((resolve, reject) => {
@@ -754,7 +753,7 @@ export default class ApplicationCreationFormComponent {
     this.localStorageService.clearApplicationDraft(this.applicationId(), this.jobId());
   }
 
-  /* TODO
+  /*
    * `queueMicroTask` is here to fix a timing issue with the ToastService.
    * on opening the webpage directly to this component, the Toastservice is not ready to be rendered in the DOM, so it's functions are being executed, but no toast is visible
    * tried different strategies of fixing the timing issue:

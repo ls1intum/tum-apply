@@ -24,7 +24,6 @@ export class ProfessorBenefitsSectionComponent {
           isExternalLink: false,
           onClick: () => void this.router.navigate(['/job-overview']),
         },
-        // TODO: replace link with platform overview when available
         {
           label: 'professorLandingPage.platformBenefits.button2',
           severity: 'primary',

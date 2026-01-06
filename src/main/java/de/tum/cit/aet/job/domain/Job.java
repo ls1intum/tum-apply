@@ -45,7 +45,6 @@ public class Job extends AbstractAuditingEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    // TODO will be an enum
     @Column(name = "field_of_studies")
     private String fieldOfStudies;
 

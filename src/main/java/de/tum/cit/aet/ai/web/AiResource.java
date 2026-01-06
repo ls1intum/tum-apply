@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("!openapi")
 public class AiResource {
 
+    private static final int MAX_TOKENS = 2048;
     private final ChatClient chatClient;
 
     public AiResource(ChatClient chatClient) {
