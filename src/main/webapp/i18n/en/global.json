@@ -236,6 +236,11 @@
         "message": "A document with the name \"{{filename}}\" already exists. Do you want to replace it?",
         "replace": "Replace"
       },
+      "replacement": {
+        "title": "Replace existing file",
+        "message": "You have already uploaded a file. Do you want to replace it with the new file?",
+        "replace": "Replace"
+      },
       "error": {
         "replace_failed": "Failed to replace document",
         "too_large": "Files are too large",

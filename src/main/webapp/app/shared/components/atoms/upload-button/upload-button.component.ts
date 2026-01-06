@@ -6,12 +6,12 @@ import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { FileSelectEvent } from 'primeng/fileupload';
-import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { ButtonComponent } from '../button/button.component';
 
@@ -36,7 +36,7 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
     TooltipModule,
     TranslateModule,
     TranslateDirective,
-    DialogComponent,
+    ConfirmDialog,
   ],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
@@ -57,18 +57,37 @@ export class UploadButtonComponent {
   selectedFiles = signal<File[] | undefined>(undefined);
   isUploading = signal<boolean>(false);
   disabled = computed(() => (this.documentIds()?.length ?? 0) > 0);
+  allowMultiple = input<boolean>(true);
 
   // Duplicate dialog state
-  showDuplicateDialog = signal<boolean>(false);
   pendingDuplicateFile = signal<File | null>(null);
   duplicateFileName = signal<string>('');
+  duplicateMessage = computed(() =>
+    this.translateService.instant('entity.upload.duplicate.message', { filename: this.duplicateFileName() }),
+  );
+
+  // Replacement dialog state (for single file mode)
+  pendingReplacementFiles = signal<File[]>([]);
+
+  duplicateConfirmDialog = viewChild<ConfirmDialog>('duplicateConfirmDialog');
+  replacementConfirmDialog = viewChild<ConfirmDialog>('replacementConfirmDialog');
 
   private applicationService = inject(ApplicationResourceApiService);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
+  private translateService = inject(TranslateService);
 
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;
+
+    // For single-file mode, check if document already exists
+    if (!this.allowMultiple() && (this.documentIds()?.length ?? 0) > 0) {
+      this.pendingReplacementFiles.set(files);
+      this.replacementConfirmDialog()?.confirm();
+      this.fileUploadComponent()?.clear();
+      this.resetNativeFileInput();
+      return;
+    }
 
     // Check for duplicate filenames
     for (const file of files) {
@@ -76,7 +95,12 @@ export class UploadButtonComponent {
         // Show confirmation dialog for duplicate
         this.pendingDuplicateFile.set(file);
         this.duplicateFileName.set(file.name);
-        this.showDuplicateDialog.set(true);
+
+        // Use setTimeout to ensure signal updates before dialog shows
+        setTimeout(() => {
+          this.duplicateConfirmDialog()?.confirm();
+        }, 0);
+
         this.fileUploadComponent()?.clear();
         this.resetNativeFileInput();
         return;
@@ -87,14 +111,9 @@ export class UploadButtonComponent {
     await this.processFiles(files);
   }
 
-  onDuplicateCancel(): void {
-    this.closeDuplicateDialog();
-  }
-
-  async onDuplicateReplace(): Promise<void> {
+  async onConfirmDuplicate(): Promise<void> {
     const pendingFile = this.pendingDuplicateFile();
     if (!pendingFile) {
-      this.closeDuplicateDialog();
       return;
     }
 
@@ -107,13 +126,37 @@ export class UploadButtonComponent {
         this.documentIds.set(updatedList);
       } catch {
         this.toastService.showErrorKey('entity.upload.error.replace_failed');
-        this.closeDuplicateDialog();
+        this.pendingDuplicateFile.set(null);
         return;
       }
     }
 
-    this.closeDuplicateDialog();
     await this.processFiles([pendingFile]);
+    this.pendingDuplicateFile.set(null);
+  }
+
+  async onConfirmReplacement(): Promise<void> {
+    const pendingFiles = this.pendingReplacementFiles();
+    if (pendingFiles.length === 0) {
+      return;
+    }
+
+    // Delete all existing documents (for single-file mode replacement)
+    const existingDocs = this.documentIds() ?? [];
+    for (const doc of existingDocs) {
+      try {
+        await firstValueFrom(this.applicationService.deleteDocumentFromApplication(doc.id));
+      } catch {
+        this.toastService.showErrorKey('entity.upload.error.replace_failed');
+        return;
+      }
+    }
+
+    // Clear the document list before uploading new file
+    this.documentIds.set([]);
+
+    await this.processFiles(pendingFiles);
+    this.pendingReplacementFiles.set([]);
   }
 
   async onUpload(): Promise<void> {
@@ -191,12 +234,6 @@ export class UploadButtonComponent {
   private isDuplicateFilename(filename: string): boolean {
     const existingDocs = this.documentIds() ?? [];
     return existingDocs.some(doc => doc.name === filename);
-  }
-
-  private closeDuplicateDialog(): void {
-    this.showDuplicateDialog.set(false);
-    this.pendingDuplicateFile.set(null);
-    this.duplicateFileName.set('');
   }
 
   private async processFiles(files: File[]): Promise<void> {

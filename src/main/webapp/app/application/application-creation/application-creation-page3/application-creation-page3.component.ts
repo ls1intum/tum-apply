@@ -64,9 +64,10 @@ export default class ApplicationCreationPage3Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
-  formbuilder = inject(FormBuilder);
-
   hasInitialized = signal(false);
+  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
+
+  formbuilder = inject(FormBuilder);
 
   page3Form: FormGroup = this.formbuilder.group({
     experiences: ['', htmlTextRequiredValidator], // TODO: tried putting htmlTextMaxLengthValidator(1000) but it created bugs such as step 3 not loading fully and auto-save breaking
@@ -87,8 +88,6 @@ export default class ApplicationCreationPage3Component {
     const docInfoHolder = this.documentIdsCv();
     return docInfoHolder ? [docInfoHolder] : undefined;
   });
-
-  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;
