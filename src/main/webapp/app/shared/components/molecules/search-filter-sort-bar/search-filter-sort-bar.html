@@ -1,4 +1,4 @@
-<div class="search-filter-sort-bar gap-2 pb-3">
+<div class="search-filter-sort-bar">
   <div class="functionality-bar">
     <p-iconfield iconPosition="left" class="min-w-[15%] flex-1">
       <p-inputicon>
@@ -30,9 +30,15 @@
       }
     </div>
   </div>
-  <div
-    class="record-count"
-    jhiTranslate="entity.filters.recordsFound"
-    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
-  ></div>
+  @if (totalRecords() > 0) {
+    <div class="flex justify-between items-end gap-4 mt-4">
+      <div
+        class="text-text-secondary text-md"
+        jhiTranslate="entity.filters.recordsFound"
+        [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+      ></div>
+      <!-- Content projection slot for parent components to inject custom controls (e.g. action buttons) -->
+      <ng-content />
+    </div>
+  }
 </div>

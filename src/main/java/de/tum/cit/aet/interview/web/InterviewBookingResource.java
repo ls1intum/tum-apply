@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -28,14 +29,21 @@ public class InterviewBookingResource {
      * Get booking page data for applicant self-service slot booking.
      *
      * @param processId the ID of the interview process
+     * @param year      optional year for month-based slot filtering (requires
+     *                  month)
+     * @param month     optional month (1-12) for filtering slots (requires year)
      * @return booking page data with job info, user's booking status, and available
      *         slots
      */
     @Applicant
     @GetMapping("/{processId}")
-    public ResponseEntity<BookingDTO> getBookingData(@PathVariable UUID processId) {
-        log.info("REST request to get booking data for process: {}", processId);
-        BookingDTO data = bookingService.getBookingData(processId);
+    public ResponseEntity<BookingDTO> getBookingData(
+        @PathVariable UUID processId,
+        @RequestParam(required = false) Integer year,
+        @RequestParam(required = false) Integer month
+    ) {
+        log.info("REST request to get booking data for process: {}, year: {}, month: {}", processId, year, month);
+        BookingDTO data = bookingService.getBookingData(processId, year, month);
         return ResponseEntity.ok(data);
     }
 }

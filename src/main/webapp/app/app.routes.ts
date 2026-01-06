@@ -24,69 +24,6 @@ const routes: Routes = [
       import('./shared/pages/professor-landing-page/professor-landing-page.component').then(m => m.ProfessorLandingPageComponent),
     title: 'global.routes.landingPage.professor',
   },
-  {
-    path: '',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [] },
-    loadChildren: () => import(`./entities/entity.routes`),
-  },
-
-  // ======================================================================================
-  // Playground
-  // ======================================================================================
-  {
-    path: 'playground/badge',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/badge-playground/badge-playground.component').then(m => m.BadgePlaygroundComponent),
-  },
-  {
-    path: 'playground/button',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/button-play-ground/button-play-ground.component').then(c => c.ButtonPlayGroundComponent),
-  },
-  {
-    path: 'playground/stepper',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/stepper-playground/stepper-playground.component').then(c => c.StepperPlaygroundComponent),
-  },
-  {
-    path: 'playground/editor',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/editor-playground/editor-playground.component').then(m => m.EditorPlaygroundComponent),
-  },
-  {
-    path: 'playground/docviewer',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () =>
-      import('./playground/document-viewer-playground/document-viewer-playground.component').then(c => c.DocumentViewerPlaygroundComponent),
-  },
-  {
-    path: 'playground/rating',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/rating-playground/rating-playground').then(c => c.RatingPlayground),
-  },
-  {
-    path: 'playground/comment',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadComponent: () => import('./playground/comment-playground/comment-playground').then(c => c.CommentPlayground),
-  },
-
-  // ======================================================================================
-  // User Management
-  // ======================================================================================
-  {
-    path: 'admin',
-    canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
-    loadChildren: () => import('./admin/admin.routes'),
-  },
 
   // ======================================================================================
   // Job

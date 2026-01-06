@@ -1,5 +1,6 @@
 {
   "button": {
+    "actions": "Aktionen",
     "cancel": "Abbrechen",
     "close": "Schließen",
     "confirm": "Bestätigen",
@@ -22,6 +23,6 @@
     "tooltip": {
       "editDisabled": "Nur Entwürfe können bearbeitet werden"
     },
-    "downloadPDF": "PDF exportieren"
+    "downloadPDF": "Exportieren"
   }
 }

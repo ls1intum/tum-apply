@@ -16,6 +16,8 @@ import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.dto.ProfessorDTO;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -43,13 +45,15 @@ public class InterviewBookingService {
      * Contains job info, user's booking status, and available slots.
      *
      * @param processId the ID of the interview process
+     * @param year      optional year for month filtering (requires month)
+     * @param month     optional month for filtering (1-12, requires year)
      * @return the booking data DTO
      * @throws EntityNotFoundException if the process doesn't exist
      * @throws AccessDeniedException   if user is not invited to this process
      */
-    public BookingDTO getBookingData(UUID processId) {
+    public BookingDTO getBookingData(UUID processId, Integer year, Integer month) {
         UUID userId = currentUserService.getUserId();
-        log.info("Getting booking data for process {} and user {}", processId, userId);
+        log.info("Getting booking data for process {} and user {}, year: {}, month: {}", processId, userId, year, month);
 
         // 1. Load interview process with job
         InterviewProcess process = interviewProcessRepository
@@ -81,11 +85,7 @@ public class InterviewBookingService {
         // 6. Get available slots (only if not already booked)
         List<InterviewSlotDTO> availableSlots = Collections.emptyList();
         if (bookedSlot == null) {
-            availableSlots = interviewSlotRepository
-                .findAvailableSlotsByProcessId(processId, Instant.now())
-                .stream()
-                .map(InterviewSlotDTO::fromEntity)
-                .toList();
+            availableSlots = loadAvailableSlots(processId, year, month);
         }
 
         return new BookingDTO(
@@ -95,5 +95,29 @@ public class InterviewBookingService {
             bookingInfo,
             availableSlots
         );
+    }
+
+    /**
+     * Loads available slots with optional month filtering.
+     *
+     * @param processId the interview process ID
+     * @param year      optional year (requires month)
+     * @param month     optional month 1-12 (requires year)
+     * @return list of available slot DTOs
+     */
+    private List<InterviewSlotDTO> loadAvailableSlots(UUID processId, Integer year, Integer month) {
+        List<InterviewSlot> slots;
+
+        if (year != null && month != null) {
+            // Filter by month
+            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+            ZonedDateTime monthEnd = monthStart.plusMonths(1);
+            slots = interviewSlotRepository.findAvailableSlotsByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant());
+        } else {
+            // Load all future slots
+            slots = interviewSlotRepository.findAvailableSlotsByProcessId(processId, Instant.now());
+        }
+
+        return slots.stream().map(InterviewSlotDTO::fromEntity).toList();
     }
 }

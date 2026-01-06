@@ -10,5 +10,5 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @Documented
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAnyRole('APPLICANT','PROFESSOR','ADMIN')")
+@PreAuthorize("hasAnyRole('APPLICANT','EMPLOYEE','PROFESSOR','ADMIN')")
 public @interface Authenticated {}
