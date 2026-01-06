@@ -341,20 +341,15 @@
     }
 
     @if (!previewDetailData()) {
-      <section class="action-buttons-section">
-        <div class="button-wrapper">
-          <!-- Left-aligned Back button -->
-          <div class="left-buttons">
-            <jhi-button
-              icon="arrow-left"
-              [label]="'button.back'"
-              [shouldTranslate]="true"
-              severity="info"
-              [variant]="'outlined'"
-              (click)="onBack()"
-            />
-          </div>
-        </div>
+      <section class="mt-8 pt-8 border-t border-divider-default">
+        <jhi-button
+          icon="arrow-left"
+          [label]="'button.back'"
+          [shouldTranslate]="true"
+          severity="info"
+          [variant]="'outlined'"
+          (click)="onBack()"
+        />
       </section>
     }
   } @else {
