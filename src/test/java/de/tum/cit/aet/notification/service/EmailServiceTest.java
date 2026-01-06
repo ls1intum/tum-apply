@@ -53,6 +53,8 @@ class EmailServiceTest {
     private static final String ALT_BODY = "<b>Hi</b>";
     private static final String ALT_BODY_HTML = "<p>B</p>";
 
+    private static final Object TEST_CONTENT = new Object();
+
     @Mock
     private TemplateProcessingService templateProcessingService;
 
@@ -123,13 +125,13 @@ class EmailServiceTest {
         return tpl;
     }
 
-    private void stubRenderedFromTemplate(EmailTemplateTranslation tpl, String subject, String bodyHtml) {
-        when(templateProcessingService.renderSubject(tpl)).thenReturn(subject);
-        when(templateProcessingService.renderTemplate(eq(tpl), any())).thenReturn(bodyHtml);
+    private void stubRenderedFromTemplate(EmailTemplateTranslation tpl, Object content, String subject, String bodyHtml) {
+        when(templateProcessingService.renderSubject(eq(tpl), eq(content))).thenReturn(subject);
+        when(templateProcessingService.renderTemplate(eq(tpl), eq(content))).thenReturn(bodyHtml);
     }
 
-    private void stubRenderedCustom(String subject, String bodyHtml) {
-        when(templateProcessingService.renderSubject(subject)).thenReturn(subject);
+    private void stubRenderedCustom(Object content, String subject, String bodyHtml) {
+        when(templateProcessingService.renderSubject(eq(subject), eq(content))).thenReturn(subject);
         when(templateProcessingService.renderRawTemplate(eq(Language.ENGLISH), eq(bodyHtml))).thenReturn(bodyHtml);
     }
 
@@ -140,9 +142,14 @@ class EmailServiceTest {
         void logsOnlyAndDoesNotAcquireMailSender() {
             disableEmail();
 
-            Email email = baseEmail.customSubject(ALT_SUBJECT).customBody(ALT_BODY).language(Language.ENGLISH).build();
+            Email email = baseEmail
+                .customSubject(ALT_SUBJECT)
+                .customBody(ALT_BODY)
+                .content(TEST_CONTENT)
+                .language(Language.ENGLISH)
+                .build();
 
-            stubRenderedCustom(ALT_SUBJECT, ALT_BODY);
+            stubRenderedCustom(TEST_CONTENT, ALT_SUBJECT, ALT_BODY);
 
             emailService.send(email);
 
@@ -161,9 +168,10 @@ class EmailServiceTest {
                 .language(Language.ENGLISH)
                 .customSubject(CUSTOM_SUBJECT)
                 .customBody(CUSTOM_BODY)
+                .content(TEST_CONTENT)
                 .build();
 
-            stubRenderedCustom(CUSTOM_SUBJECT, CUSTOM_BODY);
+            stubRenderedCustom(TEST_CONTENT, CUSTOM_SUBJECT, CUSTOM_BODY);
 
             emailService.send(email);
 
@@ -180,12 +188,12 @@ class EmailServiceTest {
             stubMailSender();
 
             EmailTemplateTranslation tpl = stubTemplateTranslation();
-            stubRenderedFromTemplate(tpl, SUBJECT, BODY_HTML);
+            stubRenderedFromTemplate(tpl, TEST_CONTENT, SUBJECT, BODY_HTML);
 
             Email email = baseEmail
                 .researchGroup(new ResearchGroup())
                 .templateName("default")
-                .content(new Object())
+                .content(TEST_CONTENT)
                 .language(Language.ENGLISH)
                 .sendAlways(true)
                 .build();
@@ -193,8 +201,8 @@ class EmailServiceTest {
             emailService.send(email);
 
             verify(mailSender).send(any(MimeMessage.class));
-            verify(templateProcessingService).renderSubject(tpl);
-            verify(templateProcessingService).renderTemplate(eq(tpl), any());
+            verify(templateProcessingService).renderSubject(eq(tpl), eq(TEST_CONTENT));
+            verify(templateProcessingService).renderTemplate(eq(tpl), eq(TEST_CONTENT));
         }
 
         @Test
@@ -203,7 +211,7 @@ class EmailServiceTest {
             stubMailSender();
 
             EmailTemplateTranslation tpl = stubTemplateTranslation();
-            stubRenderedFromTemplate(tpl, SHORT_SUBJECT, ALT_BODY_HTML);
+            stubRenderedFromTemplate(tpl, TEST_CONTENT, SHORT_SUBJECT, ALT_BODY_HTML);
 
             UUID docId = UUID.randomUUID();
             Document doc = new Document();
@@ -220,7 +228,7 @@ class EmailServiceTest {
                 .researchGroup(new ResearchGroup())
                 .templateName("default")
                 .emailType(EmailType.APPLICATION_SENT)
-                .content(new Object())
+                .content(TEST_CONTENT)
                 .sendAlways(true)
                 .documentIds(Set.of(docId))
                 .build();
@@ -255,7 +263,6 @@ class EmailServiceTest {
 
             when(emailSettingService.canNotify(EmailType.APPLICATION_SENT, u1)).thenReturn(false);
             when(emailSettingService.canNotify(EmailType.APPLICATION_SENT, u2)).thenReturn(false);
-            stubRenderedCustom(CUSTOM_SUBJECT, CUSTOM_BODY);
 
             emailService.send(email);
 
@@ -284,7 +291,7 @@ class EmailServiceTest {
             stubMailSender();
 
             EmailTemplateTranslation tpl = stubTemplateTranslation();
-            stubRenderedFromTemplate(tpl, SHORT_SUBJECT, ALT_BODY_HTML);
+            stubRenderedFromTemplate(tpl, TEST_CONTENT, SHORT_SUBJECT, ALT_BODY_HTML);
 
             UUID docId = UUID.randomUUID();
             Document doc = new Document();
@@ -294,7 +301,7 @@ class EmailServiceTest {
             Email email = baseEmail
                 .researchGroup(new ResearchGroup())
                 .templateName("default")
-                .content(new Object())
+                .content(TEST_CONTENT)
                 .sendAlways(true)
                 .documentIds(Set.of(docId))
                 .build();
@@ -315,12 +322,12 @@ class EmailServiceTest {
             when(documentRepository.findById(missing)).thenReturn(Optional.empty());
 
             EmailTemplateTranslation tpl = stubTemplateTranslation();
-            stubRenderedFromTemplate(tpl, SHORT_SUBJECT, ALT_BODY_HTML);
+            stubRenderedFromTemplate(tpl, TEST_CONTENT, SHORT_SUBJECT, ALT_BODY_HTML);
 
             Email email = baseEmail
                 .researchGroup(new ResearchGroup())
                 .templateName("default")
-                .content(new Object())
+                .content(TEST_CONTENT)
                 .sendAlways(true)
                 .documentIds(Set.of(missing))
                 .build();
@@ -334,12 +341,12 @@ class EmailServiceTest {
             stubMailSender();
 
             EmailTemplateTranslation tpl = stubTemplateTranslation();
-            stubRenderedFromTemplate(tpl, SUBJECT, BODY_HTML);
+            stubRenderedFromTemplate(tpl, TEST_CONTENT, SUBJECT, BODY_HTML);
 
             Email email = baseEmail
                 .researchGroup(new ResearchGroup())
                 .templateName("default")
-                .content(new Object())
+                .content(TEST_CONTENT)
                 .sendAlways(true)
                 .build();
 

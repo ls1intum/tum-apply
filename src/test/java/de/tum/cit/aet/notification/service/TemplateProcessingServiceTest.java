@@ -48,12 +48,12 @@ class TemplateProcessingServiceTest {
         void addsPrefixWhenTranslationGiven() {
             EmailTemplateTranslation translation = new EmailTemplateTranslation();
             translation.setSubject("Welcome");
-            assertThat(service.renderSubject(translation)).isEqualTo("TUMApply - Welcome");
+            assertThat(service.renderSubject(translation, mockApplication())).isEqualTo("TUMApply - Welcome");
         }
 
         @Test
         void addsPrefixWhenStringGiven() {
-            assertThat(service.renderSubject("Subject")).isEqualTo("TUMApply - Subject");
+            assertThat(service.renderSubject("Subject", mockApplication())).isEqualTo("TUMApply - Subject");
         }
     }
 
@@ -94,6 +94,27 @@ class TemplateProcessingServiceTest {
             String result = service.renderTemplate(translation, group);
 
             assertThat(result).contains("RG");
+        }
+
+        @Test
+        void withInterviewSlotInjectsSlotAndJobVariables() throws Exception {
+            EmailTemplateTranslation translation = translation("${INTERVIEW_LOCATION} - ${JOB_TITLE}", Language.ENGLISH, "interview");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            Job job = mockApplication().getJob();
+            de.tum.cit.aet.interview.domain.InterviewProcess process = new de.tum.cit.aet.interview.domain.InterviewProcess();
+            process.setJob(job);
+
+            de.tum.cit.aet.interview.domain.InterviewSlot slot = new de.tum.cit.aet.interview.domain.InterviewSlot();
+            slot.setInterviewProcess(process);
+            slot.setStartDateTime(java.time.Instant.now());
+            slot.setEndDateTime(java.time.Instant.now().plus(1, java.time.temporal.ChronoUnit.HOURS));
+            slot.setLocation("Room 101");
+
+            String result = service.renderTemplate(translation, slot);
+
+            assertThat(result).contains("Room 101", "JobTitle");
         }
 
         @Test
