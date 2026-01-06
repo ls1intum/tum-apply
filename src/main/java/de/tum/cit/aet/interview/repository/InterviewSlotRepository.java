@@ -3,6 +3,7 @@ package de.tum.cit.aet.interview.repository;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
