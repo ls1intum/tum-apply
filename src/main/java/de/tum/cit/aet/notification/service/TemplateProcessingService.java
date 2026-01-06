@@ -68,10 +68,8 @@ public class TemplateProcessingService {
     /**
      * Renders the HTML email body using FreeMarker and applies layout formatting.
      *
-     * @param emailTemplateTranslation the template translation containing raw HTML
-     *                                 and language
-     * @param content                  the domain object (e.g. Application, Job) for
-     *                                 variable binding
+     * @param emailTemplateTranslation the template translation containing raw HTML and language
+     * @param content                  the domain object (e.g. Application, Job) for variable binding
      * @return the fully rendered HTML email body
      * @throws TemplateProcessingException if template parsing or rendering fails
      */
