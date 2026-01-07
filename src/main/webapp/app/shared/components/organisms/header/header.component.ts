@@ -1,5 +1,5 @@
-import { Component, ViewEncapsulation, WritableSignal, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, ViewEncapsulation, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -38,16 +38,14 @@ export class HeaderComponent {
   themeService = inject(ThemeService);
   theme = this.themeService.theme;
   isDarkMode = computed(() => this.theme() === 'dark');
-
+  showBorder = signal(false);
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
     { name: 'Dark', value: 'dark' },
     { name: 'Blossom', value: 'blossom' },
     { name: 'AquaBloom', value: 'aquabloom' },
   ];
-
   selectedTheme = computed(() => this.themeOptions.find(opt => opt.value === this.theme()));
-
   routeAuthorities = toSignal(
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
@@ -76,8 +74,32 @@ export class HeaderComponent {
     );
   });
 
+  private destroyRef = inject(DestroyRef);
+  private observer?: IntersectionObserver;
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
+
+  constructor() {
+    afterNextRender(() => {
+      this.setupBannerObserver();
+    });
+
+    // Re-setup on navigation
+    this.router.events
+      .pipe(
+        filter(e => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.observer?.disconnect();
+        // Give the banner component time to render
+        setTimeout(() => {
+          this.setupBannerObserver();
+        }, 0);
+      });
+
+    this.destroyRef.onDestroy(() => this.observer?.disconnect());
+  }
 
   navigateToHome(): void {
     if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
@@ -131,5 +153,32 @@ export class HeaderComponent {
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
+  }
+
+  private setupBannerObserver(): void {
+    const banner = document.querySelector('jhi-banner-section');
+    const isLandingPage = this.router.url === '/' || this.router.url === '/professor';
+
+    if (!isLandingPage) {
+      // Other pages: always show border
+      this.showBorder.set(true);
+      return;
+    }
+
+    // Landing pages with banner: show border only when scrolled past banner
+    if (!banner) {
+      // No banner on landing page: show border
+      this.showBorder.set(true);
+      return;
+    }
+
+    // Start with border hidden (banner is visible at top)
+    this.showBorder.set(false);
+
+    // Show border when banner scrolls out of view
+    this.observer = new IntersectionObserver(([entry]) => {
+      this.showBorder.set(!entry.isIntersecting);
+    });
+    this.observer.observe(banner);
   }
 }

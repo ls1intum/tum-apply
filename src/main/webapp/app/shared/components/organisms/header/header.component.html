@@ -1,4 +1,9 @@
-<header class="app-header border-b border-border-default">
+<header
+  class="app-header border-b transition-colors duration-300"
+  [class.border-border-default]="showBorder()"
+  [class.border-transparent]="!showBorder()"
+  [class.shadow-sm]="showBorder()"
+>
   <div (click)="navigateToHome()" class="logo-section">
     <img alt="TUMApply Logo" class="tumapply-logo h-8" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
     <span class="app-name">TUMApply</span>

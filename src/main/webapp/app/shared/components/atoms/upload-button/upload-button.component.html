@@ -96,7 +96,17 @@
                   <small class="text-muted">{{ formatSize(info.size) }}</small>
                 </td>
                 <td class="border-r-0">
-                  <jhi-button icon="trash" severity="danger" variant="text" (click)="deleteDictionary(info)" aria-label="Remove file" />
+                  <jhi-confirm-dialog
+                    [label]="'button.delete' | translate"
+                    [header]="'entity.upload.deleteDocument.confirm.header' | translate"
+                    [message]="'entity.upload.deleteDocument.confirm.message' | translate"
+                    [severity]="'danger'"
+                    confirmIcon="trash"
+                    [iconOnly]="true"
+                    [tooltip]="'button.delete' | translate"
+                    size="sm"
+                    (confirmed)="deleteDictionary(info)"
+                  />
                 </td>
               </tr>
             }
