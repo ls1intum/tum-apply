@@ -297,8 +297,10 @@ describe('UploadButtonComponent', () => {
 
   describe('Duplicate Handling', () => {
     it('should detect duplicate filename and show dialog instead of uploading', async () => {
+      vi.useFakeTimers();
       const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
       const component = fixture.componentInstance;
+      fixture.detectChanges(); // Initialize viewChildren
 
       // 1. Simulate existing document
       component.documentIds.set([{ id: '1', name: 'existing.pdf', size: 1000 }]);
@@ -310,10 +312,15 @@ describe('UploadButtonComponent', () => {
 
       await component.onFileSelected({ currentFiles: [newFile] } as FileSelectEvent);
 
+      // Advance timers to execute setTimeout
+      await vi.runAllTimersAsync();
+
       expect(confirmDialogSpy).toHaveBeenCalled();
       expect(component.pendingDuplicateFile()).toBe(newFile);
       expect(component.duplicateFileName()).toBe('existing.pdf');
       expect(uploadSpy).not.toHaveBeenCalled();
+
+      vi.useRealTimers();
     });
 
     it('should replace duplicate file: delete old then upload new', async () => {
