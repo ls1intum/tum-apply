@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { UploadButtonComponent, DocumentType } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
@@ -40,6 +41,7 @@ describe('UploadButtonComponent', () => {
         provideHttpClientMock(),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
+        provideNoopAnimations(),
       ],
     }).compileComponents();
   });
