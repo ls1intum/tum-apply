@@ -48,17 +48,7 @@ class TemplateProcessingServiceTest {
         void addsPrefixWhenTranslationGiven() {
             EmailTemplateTranslation translation = new EmailTemplateTranslation();
             translation.setSubject("Welcome");
-            assertThat(service.renderSubject(translation)).isEqualTo("TUMApply - Welcome");
-        }
-
-        @Test
-        void addsPrefixWhenStringGiven() {
-            assertThat(service.renderSubject("Subject")).isEqualTo("TUMApply - Subject");
-        }
-
-        @Test
-        void handlesNullContentWhenStringGiven() {
-            assertThat(service.renderSubject("Subject", null)).isEqualTo("TUMApply - Subject");
+            assertThat(service.renderSubject(translation, null)).isEqualTo("TUMApply - Welcome");
         }
 
         @Test

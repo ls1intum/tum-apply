@@ -35,16 +35,6 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Renders the email subject line for display in the final email.
-     *
-     * @param emailTemplateTranslation the email template translation
-     * @return the prefixed subject line
-     */
-    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
-        return renderSubject(emailTemplateTranslation.getSubject(), null);
-    }
-
-    /**
      * Renders the email subject line for display in the final email using the provided content for variable binding.
      *
      * @param emailTemplateTranslation the email template translation
@@ -53,16 +43,6 @@ public class TemplateProcessingService {
      */
     public String renderSubject(EmailTemplateTranslation emailTemplateTranslation, Object content) {
         return renderSubject(emailTemplateTranslation.getSubject(), content);
-    }
-
-    /**
-     * Renders a raw subject string using FreeMarker variables.
-     *
-     * @param rawSubject the raw subject string
-     * @return the rendered and prefixed subject line
-     */
-    public String renderSubject(String rawSubject) {
-        return renderSubject(rawSubject, null);
     }
 
     /**
