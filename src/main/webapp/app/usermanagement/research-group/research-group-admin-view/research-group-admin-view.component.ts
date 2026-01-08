@@ -16,7 +16,6 @@ import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TranslateDirective } from 'app/shared/language';
-import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 
 const I18N_BASE = 'researchGroup.adminView';
@@ -145,15 +144,7 @@ export class ResearchGroupAdminView {
   }
 
   onViewResearchGroup(researchGroupId: string): void {
-    this.dialogService.open(ResearchGroupDetailViewComponent, {
-      header: this.translate.instant('researchGroup.detailView.title'),
-      data: { researchGroupId },
-      styleClass: 'research-group-detail-dialog',
-      style: { background: 'var(--color-background-default)', width: '60rem' },
-      closable: true,
-      draggable: false,
-      modal: true,
-    });
+    void this.router.navigate(['/research-group/detail', researchGroupId]);
   }
 
   onCreateResearchGroup(): void {
