@@ -81,7 +81,6 @@ describe('MyPositionsPageComponent', () => {
     expect(columns.find(c => c.field === 'actions')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'startDate')?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'createdAt')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
 
     expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();

@@ -11,9 +11,10 @@ import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
 import { FileSelectEvent } from 'primeng/fileupload';
-import { DialogModule } from 'primeng/dialog';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 
 import { ButtonComponent } from '../button/button.component';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 
 const DocumentType = {
   BACHELOR_TRANSCRIPT: 'BACHELOR_TRANSCRIPT',
@@ -36,7 +37,8 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
     TooltipModule,
     TranslateModule,
     TranslateDirective,
-    DialogModule,
+    DialogComponent,
+    ConfirmDialog,
   ],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',

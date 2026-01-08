@@ -2,6 +2,7 @@ import { Component, TemplateRef, computed, inject, signal, viewChild } from '@an
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 import { AccountService } from 'app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { TranslateDirective } from 'app/shared/language';
@@ -12,11 +13,13 @@ import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filt
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { emptyToUndef } from 'app/core/util/array-util.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 import { TagComponent } from '../../shared/components/atoms/tag/tag.component';
-import { ButtonComponent } from '../../shared/components/atoms/button/button.component';
 import { CreatedJobDTO } from '../../generated/model/createdJobDTO';
 import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
 @Component({
@@ -32,6 +35,9 @@ import { JobResourceApiService } from '../../generated/api/jobResourceApi.servic
     ConfirmDialog,
     SearchFilterSortBar,
     LocalizedDatePipe,
+    MenuComponent,
+    ButtonModule,
+    FontAwesomeModule,
   ],
   templateUrl: './my-positions-page.component.html',
   styleUrl: './my-positions-page.component.scss',
@@ -75,28 +81,30 @@ export class MyPositionsPageComponent {
   readonly lastModifiedAtTemplate = viewChild.required<TemplateRef<unknown>>('lastModifiedAtTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  readonly editPublishedDialog = viewChild.required<ConfirmDialog>('editPublishedDialog');
+  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
+  readonly closeDialog = viewChild.required<ConfirmDialog>('closeDialog');
+
+  currentJobId = signal<string | undefined>(undefined);
+
   readonly selectedStatusFilters = signal<string[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
     const tpl = this.actionTemplate();
     const stateTpl = this.stateTemplate();
     const startDateTpl = this.startDateTemplate();
-    const createdAtTpl = this.createdAtTemplate();
     const lastModifiedAtTpl = this.lastModifiedAtTemplate();
 
     return [
-      { field: 'avatar', header: '', width: '5rem' },
       { field: 'professorName', header: 'myPositionsPage.tableColumn.supervisingProfessor', width: '12rem' },
-      { field: 'title', header: 'myPositionsPage.tableColumn.job', width: '26rem' },
+      { field: 'title', header: 'myPositionsPage.tableColumn.job', width: '20rem' },
       {
         field: 'state',
         header: 'myPositionsPage.tableColumn.status',
         width: '10rem',
-        alignCenter: true,
         template: stateTpl,
       },
       { field: 'startDate', header: 'myPositionsPage.tableColumn.startDate', width: '10rem', template: startDateTpl },
-      { field: 'createdAt', header: 'myPositionsPage.tableColumn.created', width: '10rem', template: createdAtTpl },
       { field: 'lastModifiedAt', header: 'myPositionsPage.tableColumn.lastModified', width: '10rem', template: lastModifiedAtTpl },
       { field: 'actions', header: '', width: '5rem', template: tpl },
     ];
@@ -109,6 +117,64 @@ export class MyPositionsPageComponent {
     PUBLISHED: 'secondary',
     CLOSED: 'contrast',
     APPLICANT_FOUND: 'success',
+  });
+
+  // Computed signal that creates a map of job IDs to their menu items
+  readonly jobMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
+    const menuMap = new Map<string, JhiMenuItem[]>();
+
+    for (const job of this.jobs()) {
+      const items: JhiMenuItem[] = [];
+
+      // Edit action - different behavior for DRAFT vs PUBLISHED
+      if (job.state === 'DRAFT') {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.onEditJob(job.jobId);
+          },
+        });
+      } else if (job.state === 'PUBLISHED') {
+        items.push({
+          label: 'button.edit',
+          icon: 'pencil',
+          severity: 'primary',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.editPublishedDialog().confirm();
+          },
+        });
+      }
+
+      // Delete/Close action - based on state
+      if (job.state === 'DRAFT') {
+        items.push({
+          label: 'button.delete',
+          icon: 'trash',
+          severity: 'danger',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.deleteDialog().confirm();
+          },
+        });
+      } else if (job.state === 'PUBLISHED') {
+        items.push({
+          label: 'button.close',
+          icon: 'xmark',
+          severity: 'danger',
+          command: () => {
+            this.currentJobId.set(job.jobId);
+            this.closeDialog().confirm();
+          },
+        });
+      }
+
+      menuMap.set(job.jobId, items);
+    }
+
+    return menuMap;
   });
 
   private jobService = inject(JobResourceApiService);
@@ -156,21 +222,21 @@ export class MyPositionsPageComponent {
   }
 
   onCreateJob(): void {
-    this.router.navigate(['/job/create']);
+    void this.router.navigate(['/job/create']);
   }
 
   onEditJob(jobId: string): void {
     if (!jobId) {
       console.error('Unable to edit job with job id:', jobId);
     }
-    this.router.navigate([`/job/edit/${jobId}`]);
+    void this.router.navigate([`/job/edit/${jobId}`]);
   }
 
   onViewJob(jobId: string): void {
     if (!jobId) {
       console.error('Unable to view job with job id:', jobId);
     }
-    this.router.navigate([`/job/detail/${jobId}`]);
+    void this.router.navigate([`/job/detail/${jobId}`]);
   }
 
   async onDeleteJob(jobId: string): Promise<void> {
@@ -194,6 +260,31 @@ export class MyPositionsPageComponent {
       if (error instanceof Error) {
         this.toastService.showErrorKey(`${this.translationKey}.toastMessages.closeJobFailed`, { detail: error.message });
       }
+    }
+  }
+
+  getMenuItems(job: CreatedJobDTO): JhiMenuItem[] {
+    return this.jobMenuItems().get(job.jobId) ?? [];
+  }
+
+  onConfirmEdit(): void {
+    const jobId = this.currentJobId();
+    if (jobId !== undefined && jobId !== '') {
+      this.onEditJob(jobId);
+    }
+  }
+
+  async onConfirmDelete(): Promise<void> {
+    const jobId = this.currentJobId();
+    if (jobId !== undefined && jobId !== '') {
+      await this.onDeleteJob(jobId);
+    }
+  }
+
+  async onConfirmClose(): Promise<void> {
+    const jobId = this.currentJobId();
+    if (jobId !== undefined && jobId !== '') {
+      await this.onCloseJob(jobId);
     }
   }
 

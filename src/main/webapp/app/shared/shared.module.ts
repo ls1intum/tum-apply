@@ -7,24 +7,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import FindLanguageFromKeyPipe from './language/find-language-from-key.pipe';
 import LocalizedDatePipe from './pipes/localized-date.pipe';
 import TranslateDirective from './language/translate.directive';
-import { AlertComponent } from './alert/alert.component';
-import { AlertErrorComponent } from './alert/alert-error.component';
 
 /**
  * Application wide Module
  */
 @NgModule({
-  imports: [AlertComponent, AlertErrorComponent, FindLanguageFromKeyPipe, TranslateDirective, LocalizedDatePipe],
-  exports: [
-    CommonModule,
-    NgbModule,
-    FontAwesomeModule,
-    AlertComponent,
-    AlertErrorComponent,
-    TranslateModule,
-    FindLanguageFromKeyPipe,
-    TranslateDirective,
-    LocalizedDatePipe,
-  ],
+  imports: [FindLanguageFromKeyPipe, TranslateDirective, LocalizedDatePipe],
+  exports: [CommonModule, NgbModule, FontAwesomeModule, TranslateModule, FindLanguageFromKeyPipe, TranslateDirective, LocalizedDatePipe],
 })
 export default class SharedModule {}

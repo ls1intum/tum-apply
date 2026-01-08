@@ -4,10 +4,13 @@
   font-weight: 700;
   font-size: 1.5rem;
   padding-bottom: 1rem;
+  max-width: 100%;
   min-width: 0;
-  overflow-wrap: anywhere;
+  flex: 1 1 auto;
+  overflow-wrap: break-word;
   word-wrap: break-word;
   white-space: normal;
+  hyphens: auto;
 }
 
 .header-container {
@@ -15,11 +18,11 @@
   justify-content: space-between;
   align-items: start;
   padding-bottom: 1rem;
+  gap: 1.5rem;
 
   @media (max-width: bp.$md) {
     flex-direction: column;
     align-items: stretch;
-    gap: 1.5rem;
   }
 
   .page-header {
