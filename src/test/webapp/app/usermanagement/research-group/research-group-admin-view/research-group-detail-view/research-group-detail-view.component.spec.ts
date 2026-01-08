@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
+import { Router } from '@angular/router';
 
 import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -10,7 +11,7 @@ import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
-import { provideDynamicDialogConfigMock } from 'util/dynamicdialogref.mock';
+import { provideRouterMock } from 'util/router.mock';
 
 describe('ResearchGroupDetailViewComponent', () => {
   let component: ResearchGroupDetailViewComponent;
@@ -23,7 +24,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     getDepartments: ReturnType<typeof vi.fn>;
   };
   let mockToastService: ToastServiceMock;
-  let mockDialogConfig: DynamicDialogConfig;
+  let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
 
   const mockResearchGroupData: ResearchGroupDTO = {
     name: 'AI Research Lab',
@@ -56,20 +57,17 @@ describe('ResearchGroupDetailViewComponent', () => {
 
     mockToastService = createToastServiceMock();
 
-    mockDialogConfig = {
-      data: {
-        researchGroupId: 'rg-123',
-      },
-    };
+    mockActivatedRoute = createActivatedRouteMock({ researchGroupId: 'rg-123' });
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupDetailViewComponent],
       providers: [
         { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
         { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
-        provideDynamicDialogConfigMock(mockDialogConfig),
+        provideActivatedRouteMock(mockActivatedRoute),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
+        provideRouterMock(),
       ],
     }).compileComponents();
 
@@ -106,8 +104,8 @@ describe('ResearchGroupDetailViewComponent', () => {
       expect(component.researchGroupId()).toBe('rg-123');
     });
 
-    it('should handle undefined researchGroupId in dialog config', () => {
-      mockDialogConfig.data = undefined;
+    it('should handle undefined researchGroupId in route params', () => {
+      mockActivatedRoute.setParams({});
       expect(component.researchGroupId()).toBeUndefined();
     });
 
@@ -138,7 +136,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     });
 
     it('should not load data when researchGroupId is undefined', async () => {
-      mockDialogConfig.data = undefined;
+      mockActivatedRoute.setParams({});
 
       await component.ngOnInit();
 
@@ -147,7 +145,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     });
 
     it('should not load data when researchGroupId is empty string', async () => {
-      mockDialogConfig.data = { researchGroupId: '' };
+      mockActivatedRoute.setParams({ researchGroupId: '' });
 
       await component.ngOnInit();
 
@@ -156,7 +154,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     });
 
     it('should not load data when researchGroupId is whitespace', async () => {
-      mockDialogConfig.data = { researchGroupId: '   ' };
+      mockActivatedRoute.setParams({ researchGroupId: '   ' });
 
       await component.ngOnInit();
 
@@ -197,7 +195,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     });
 
     it('should show error when saving without researchGroupId', async () => {
-      mockDialogConfig.data = undefined;
+      mockActivatedRoute.setParams({});
       component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
 
       await component.onSave();
@@ -207,7 +205,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     });
 
     it('should show error when saving with null researchGroupId', async () => {
-      mockDialogConfig.data = { researchGroupId: null as unknown as string };
+      mockActivatedRoute.setParams({ researchGroupId: '' });
       component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
 
       await component.onSave();
@@ -217,7 +215,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     });
 
     it('should show error when saving with empty researchGroupId', async () => {
-      mockDialogConfig.data = { researchGroupId: '' };
+      mockActivatedRoute.setParams({ researchGroupId: '' });
       component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
 
       await component.onSave();
@@ -227,7 +225,7 @@ describe('ResearchGroupDetailViewComponent', () => {
     });
 
     it('should show error when saving with whitespace researchGroupId', async () => {
-      mockDialogConfig.data = { researchGroupId: '   ' };
+      mockActivatedRoute.setParams({ researchGroupId: '   ' });
       component.form.patchValue({ name: 'Test', head: 'Test Head', departmentId: 'dept-1' });
 
       await component.onSave();
@@ -468,5 +466,11 @@ describe('ResearchGroupDetailViewComponent', () => {
 
     const options = component.departmentOptions();
     expect(options).toEqual([{ name: '', value: '' }]);
+  });
+
+  it('should navigate back to admin view', () => {
+    const router = TestBed.inject(Router);
+    component.goBack();
+    expect(router.navigate).toHaveBeenCalledWith(['/research-group/admin-view']);
   });
 });
