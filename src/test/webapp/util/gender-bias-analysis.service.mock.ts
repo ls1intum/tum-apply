@@ -1,9 +1,8 @@
-// gender-bias-analysis.service.mock.ts
-import { GenderBiasAnalysisService } from 'app/service/gender-bias-analysis-service';
 import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
 import { GenderBiasAnalysisResponse } from 'app/generated';
+import { GenderBiasAnalysisService } from 'app/shared/gender-bias-analysis/gender-bias-analysis';
 
 export type GenderBiasAnalysisServiceMock = Pick<GenderBiasAnalysisService, 'triggerAnalysis' | 'getAnalysisForField'>;
 export function createGenderBiasAnalysisServiceMock(): GenderBiasAnalysisServiceMock {
