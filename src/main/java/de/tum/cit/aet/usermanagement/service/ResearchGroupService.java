@@ -304,6 +304,8 @@ public class ResearchGroupService {
                 userResearchGroupRoleRepository.save(role);
             });
 
+        userRepository.findByUniversityIdIgnoreCase(saved.getUniversityId()).ifPresent(prof -> sendApprovedResearchGroupEmail(prof, group));
+
         return saved;
     }
 
@@ -638,6 +640,39 @@ public class ResearchGroupService {
             "You have been added to the research group " + researchGroup.getName(),
             emailBody,
             user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
+        );
+    }
+
+    /**
+     * Sends a welcome email to a user who has been added to a new research group.
+     *
+     * @param user          The user who was added.
+     * @param researchGroup The research group they were added to.
+     */
+    private void sendApprovedResearchGroupEmail(User prof, ResearchGroup researchGroup) {
+        String emailBody = String.format(
+            """
+            <html>
+            <body>
+                <h2>Your research group was activated!</h2>
+                <p>Dear %s %s,</p>
+                <p>Your research group <strong>%s</strong> was successfully activated.</p>
+                <p>You can now create job listings and manage your research group. Check out our <a href="https://ls1intum.github.io/tum-apply/">documentation</a> for further guidnace.</p>
+                <p>Feel free to contact our support.</p>
+                <p>Best regards,<br>The TumApply Team</p>
+            </body>
+            </html>
+            """,
+            prof.getFirstName(),
+            prof.getLastName(),
+            researchGroup.getName()
+        );
+
+        sendEmail(
+            prof.getEmail(),
+            "Your research group " + researchGroup.getName() + " was activated",
+            emailBody,
+            prof.getSelectedLanguage() != null ? Language.fromCode(prof.getSelectedLanguage()) : Language.ENGLISH
         );
     }
 
