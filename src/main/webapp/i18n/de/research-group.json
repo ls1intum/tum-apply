@@ -203,7 +203,7 @@
       "success": {
         "approve": {
           "summary": "Erfolg",
-          "detail": "Forschungsgruppe erfolgreich genehmigt"
+          "detail": "Forschungsgruppe erfolgreich genehmigt. Der Professor wurde benachrichtigt."
         },
         "deny": {
           "summary": "Erfolg",

@@ -662,7 +662,6 @@ public class ResearchGroupService {
             """
             <html>
             <body>
-                <h2>Your research group was activated!</h2>
                 <p>Dear %s %s,</p>
                 <p>Your research group <strong>%s</strong> was successfully activated.</p>
                 <p>You can now create job listings and manage your research group. Check out our <a href="https://ls1intum.github.io/tum-apply/">documentation</a> for further guidance.</p>
