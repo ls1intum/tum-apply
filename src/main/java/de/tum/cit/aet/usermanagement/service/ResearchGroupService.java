@@ -14,6 +14,7 @@ import de.tum.cit.aet.core.util.PageUtil;
 import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.notification.service.mail.Email.EmailBuilder;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Department;
@@ -514,7 +515,13 @@ public class ResearchGroupService {
             request.professorName()
         );
 
-        sendEmail(supportEmail, "Employee Research Group Access Request - " + currentUser.getEmail(), emailBody, Language.ENGLISH);
+        sendEmail(
+            supportEmail,
+            "Employee Research Group Access Request - " + currentUser.getEmail(),
+            emailBody,
+            Language.ENGLISH,
+            currentUser
+        );
     }
 
     /**
@@ -639,7 +646,8 @@ public class ResearchGroupService {
             user.getEmail(),
             "You have been added to the research group " + researchGroup.getName(),
             emailBody,
-            user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH
+            user.getSelectedLanguage() != null ? Language.fromCode(user.getSelectedLanguage()) : Language.ENGLISH,
+            researchGroup
         );
     }
 
@@ -657,7 +665,7 @@ public class ResearchGroupService {
                 <h2>Your research group was activated!</h2>
                 <p>Dear %s %s,</p>
                 <p>Your research group <strong>%s</strong> was successfully activated.</p>
-                <p>You can now create job listings and manage your research group. Check out our <a href="https://ls1intum.github.io/tum-apply/">documentation</a> for further guidnace.</p>
+                <p>You can now create job listings and manage your research group. Check out our <a href="https://ls1intum.github.io/tum-apply/">documentation</a> for further guidance.</p>
                 <p>Feel free to contact our support.</p>
                 <p>Best regards,<br>The TumApply Team</p>
             </body>
@@ -672,7 +680,8 @@ public class ResearchGroupService {
             prof.getEmail(),
             "Your research group " + researchGroup.getName() + " was activated",
             emailBody,
-            prof.getSelectedLanguage() != null ? Language.fromCode(prof.getSelectedLanguage()) : Language.ENGLISH
+            prof.getSelectedLanguage() != null ? Language.fromCode(prof.getSelectedLanguage()) : Language.ENGLISH,
+            researchGroup
         );
     }
 
@@ -685,12 +694,16 @@ public class ResearchGroupService {
      * @param body the HTML email body
      * @param language the language preference for the email
      */
-    private void sendEmail(String recipientEmail, String subject, String body, Language language) {
+    private void sendEmail(String recipientEmail, String subject, String body, Language language, Object content) {
         User recipient = new User();
         recipient.setEmail(recipientEmail);
         recipient.setSelectedLanguage(language.getCode());
 
-        Email email = Email.builder().to(recipient).customSubject(subject).customBody(body).sendAlways(true).language(language).build();
+        EmailBuilder builder = Email.builder().to(recipient).customSubject(subject).customBody(body).sendAlways(true).language(language);
+        if (content != null) {
+            builder.content(content);
+        }
+        Email email = builder.build();
 
         emailSender.sendAsync(email);
     }

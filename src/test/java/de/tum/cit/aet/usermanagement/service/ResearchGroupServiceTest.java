@@ -362,6 +362,31 @@ class ResearchGroupServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Only DRAFT or DENIED groups can be activated");
         }
+
+        @Test
+        void sendsApprovalEmailToProfessorOnActivate() {
+            // Arrange
+            testResearchGroup.setState(ResearchGroupState.DRAFT);
+            testResearchGroup.setUniversityId("uni123");
+
+            User prof = UserTestData.newUserAll(UUID.randomUUID(), "prof@test.com", "Prof", "X");
+            prof.setUniversityId("uni123");
+
+            when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
+            when(researchGroupRepository.save(testResearchGroup)).thenReturn(testResearchGroup);
+            when(userResearchGroupRoleRepository.findAllByResearchGroup(testResearchGroup)).thenReturn(Set.of());
+            when(userRepository.findByUniversityIdIgnoreCase("uni123")).thenReturn(Optional.of(prof));
+
+            // Act
+            researchGroupService.activateResearchGroup(TEST_RESEARCH_GROUP_ID);
+
+            // Assert
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(emailSender).sendAsync(emailCaptor.capture());
+            Email sent = emailCaptor.getValue();
+            assertThat(sent.getContent()).isEqualTo(testResearchGroup);
+            assertThat(sent.getTo()).anyMatch(u -> u.getEmail().equals("prof@test.com"));
+        }
     }
 
     @Nested

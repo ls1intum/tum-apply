@@ -55,7 +55,7 @@ public class TemplateProcessingService {
      */
     public String renderSubject(String rawSubject, Object content) {
         try {
-            Map<String, Object> dataModel = createDataModel(content);
+            Map<String, Object> dataModel = content == null ? new HashMap<>() : createDataModel(content);
             // Render subject through Freemarker string template
             Template subjectTemplate = new Template("subject", new StringReader(rawSubject), freemarkerConfig);
             String renderedSubject = render(subjectTemplate, dataModel);
