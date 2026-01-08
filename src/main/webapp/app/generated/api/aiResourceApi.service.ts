@@ -16,6 +16,8 @@ import { HttpClient,
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { AiResponseDTO } from '../model/aiResponseDTO';
+// @ts-ignore
 import { JobFormDTO } from '../model/jobFormDTO';
 
 // @ts-ignore
@@ -39,9 +41,9 @@ export class AiResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<string>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<string>>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<string>>;
+    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AiResponseDTO>;
+    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AiResponseDTO>>;
+    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AiResponseDTO>>;
     public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (jobFormDTO === null || jobFormDTO === undefined) {
             throw new Error('Required parameter jobFormDTO was null or undefined when calling generateJobApplicationDraft.');
@@ -82,7 +84,7 @@ export class AiResourceApiService extends BaseService {
         }
 
         let localVarPath = `/api/ai/generate`;
-        return this.httpClient.request<string>('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<AiResponseDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: jobFormDTO,
