@@ -1,6 +1,7 @@
 package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.job.dto.AiResponseDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -22,11 +23,9 @@ import org.springframework.web.bind.annotation.*;
 public class AiResource {
 
     private final AiService aiService;
-    private final ChatClient chatClient;
 
-    public AiResource(AiService aiService, ChatClient chatClient) {
+    public AiResource(AiService aiService) {
         this.aiService = aiService;
-        this.chatClient = chatClient;
     }
 
     /**
@@ -51,7 +50,7 @@ public class AiResource {
      */
 
     @PostMapping(value = "generate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
+    public ResponseEntity<AiResponseDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
         log.info("AI draft request received");
         return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
     }

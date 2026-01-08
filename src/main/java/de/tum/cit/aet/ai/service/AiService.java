@@ -1,5 +1,6 @@
 package de.tum.cit.aet.ai.service;
 
+import de.tum.cit.aet.job.dto.AiResponseDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -63,9 +64,9 @@ public class AiService {
      * @return The generated job posting content
      */
 
-    public String generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) {
+    public AiResponseDTO generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) {
         log.info("Calling AI draft generation ...");
         String prompt = BASE_PROMPT.formatted(jobFormDTO.description(), jobFormDTO.requirements(), jobFormDTO.tasks());
-        return chatClient.prompt().user(prompt).call().content();
+        return new AiResponseDTO(chatClient.prompt().user(prompt).call().content());
     }
 }
