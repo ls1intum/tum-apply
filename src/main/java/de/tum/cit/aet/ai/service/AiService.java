@@ -6,10 +6,10 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @Service
 @Slf4j
 public class AiService {
+
     private final String BASE_PROMPT = """
         You are an AI writing assistant for academic job postings at a prestigious university(TUM).
 
@@ -54,10 +54,18 @@ public class AiService {
         this.chatClient = chatClient;
     }
 
+    /**
+     * Generates a polished job application draft from the provided job form data.
+     * The draft is generated using the configured ChatClient with AGG\-compliant,
+     * gender\-inclusive language.
+     *
+     * @param jobFormDTO the job form data containing description, requirements, and tasks
+     * @return The generated job posting content
+     */
+
     public String generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) {
         log.info("Calling AI draft generation ...");
         String prompt = BASE_PROMPT.formatted(jobFormDTO.description(), jobFormDTO.requirements(), jobFormDTO.tasks());
         return chatClient.prompt().user(prompt).call().content();
     }
-
 }

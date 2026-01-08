@@ -33,8 +33,8 @@ public class AiResource {
      * Example endpoint to generate a story based on the provided message. (Must be deleted or changed later)
      * Streams the response as a text event stream.
      *
-     * param message The input message to generate the story from.
-     * return The generated story content.
+     * @param message The input message to generate the story from.
+     * @return The generated story content.
 
     GetMapping(value = "generate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public String storyWithStream(@RequestParam(defaultValue = "Tell a story in less than 100 words") String message) {
@@ -42,6 +42,13 @@ public class AiResource {
         return chatClient.prompt().user(message).call().content();
     }
     */
+
+    /**
+     * Generate a job application draft from the provided structured job form.
+     *
+     * @param jobForm the job form data used to build the AI prompt
+     * @return a ResponseEntity containing the generated draft as JSON string
+     */
 
     @PostMapping(value = "generate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
