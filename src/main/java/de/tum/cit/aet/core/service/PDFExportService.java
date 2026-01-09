@@ -375,7 +375,7 @@ public class PDFExportService {
         return (value != null && !value.isEmpty()) ? value : "-";
     }
 
-    private String formatDate(Object date) {
+    String formatDate(Object date) {
         if (date == null) {
             return "-";
         }
