@@ -52,12 +52,13 @@ public class EmailService {
     private String fromName;
 
     public EmailService(
-            TemplateProcessingService templateProcessingService,
-            ObjectProvider<JavaMailSender> mailSenderProvider,
-            DocumentService documentService,
-            DocumentRepository documentRepository,
-            EmailSettingService emailSettingService,
-            EmailTemplateService emailTemplateService) {
+        TemplateProcessingService templateProcessingService,
+        ObjectProvider<JavaMailSender> mailSenderProvider,
+        DocumentService documentService,
+        DocumentRepository documentRepository,
+        EmailSettingService emailSettingService,
+        EmailTemplateService emailTemplateService
+    ) {
         this.templateProcessingService = templateProcessingService;
         this.mailSenderProvider = mailSenderProvider;
         this.documentService = documentService;
@@ -141,19 +142,20 @@ public class EmailService {
      */
     private void simulateEmail(Email email, String subject, String body) {
         log.info(
-                """
-                        >>>> Sending Simulated Email <<<<
-                          To: {}
-                          CC: {}
-                          BCC: {}
-                          Subject: {}
-                          Parsed Body: {}
-                        """,
-                getRecipientsToNotify(email.getTo(), email),
-                getRecipientsToNotify(email.getCc(), email),
-                getRecipientsToNotify(email.getBcc(), email),
-                subject,
-                Jsoup.parse(body));
+            """
+            >>>> Sending Simulated Email <<<<
+              To: {}
+              CC: {}
+              BCC: {}
+              Subject: {}
+              Parsed Body: {}
+            """,
+            getRecipientsToNotify(email.getTo(), email),
+            getRecipientsToNotify(email.getCc(), email),
+            getRecipientsToNotify(email.getBcc(), email),
+            subject,
+            Jsoup.parse(body)
+        );
     }
 
     /**
@@ -209,10 +211,11 @@ public class EmailService {
             return null;
         }
         return emailTemplateService.getTemplateTranslation(
-                email.getResearchGroup(),
-                email.getTemplateName(),
-                email.getEmailType(),
-                email.getLanguage());
+            email.getResearchGroup(),
+            email.getTemplateName(),
+            email.getEmailType(),
+            email.getLanguage()
+        );
     }
 
     /**
@@ -228,10 +231,10 @@ public class EmailService {
             return users.stream().map(User::getEmail).collect(Collectors.toSet());
         }
         return users
-                .stream()
-                .filter(user -> emailSettingService.canNotify(email.getEmailType(), user))
-                .map(User::getEmail)
-                .collect(Collectors.toSet());
+            .stream()
+            .filter(user -> emailSettingService.canNotify(email.getEmailType(), user))
+            .map(User::getEmail)
+            .collect(Collectors.toSet());
     }
 
     /**
@@ -250,8 +253,8 @@ public class EmailService {
         int count = 1;
         for (UUID documentId : email.getDocumentIds()) {
             Document document = documentRepository
-                    .findById(documentId)
-                    .orElseThrow(() -> EntityNotFoundException.forId("document", documentId));
+                .findById(documentId)
+                .orElseThrow(() -> EntityNotFoundException.forId("document", documentId));
 
             Resource content = documentService.download(document);
             InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
