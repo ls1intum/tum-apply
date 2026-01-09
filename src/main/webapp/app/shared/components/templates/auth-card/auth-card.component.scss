@@ -1,6 +1,14 @@
 .login-card {
+  position: relative;
   border-radius: 0.75rem;
-  background: var(--p-background-surface);
+  background: var(--p-background-default);
   width: auto;
-  max-width: 35rem;
+  max-width: 25rem;
+
+  .close-button {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    transform: scale(0.8);
+  }
 }

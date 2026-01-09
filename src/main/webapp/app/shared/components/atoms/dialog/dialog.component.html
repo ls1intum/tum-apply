@@ -1,0 +1,18 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="modal()"
+  [draggable]="draggable()"
+  [resizable]="resizable()"
+  [dismissableMask]="dismissableMask()"
+  [closeOnEscape]="closeOnEscape()"
+  [closable]="closable()"
+  [showHeader]="showHeader()"
+  [styleClass]="styleClass()"
+  [style]="mergedStyle()"
+  [header]="shouldTranslateHeader() ? (header() | translate) : header()"
+  [contentStyleClass]="contentStyleClass()"
+  [contentStyle]="contentStyle()"
+>
+  <ng-content />
+</p-dialog>

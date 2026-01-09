@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -108,6 +109,7 @@ export class ResearchGroupAdminView {
   private readonly translate = inject(TranslateService);
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private readonly dialogService = inject(DialogService);
+  private router = inject(Router);
 
   loadOnTableEmit(event: TableLazyLoadEvent): void {
     const page = Math.floor((event.first ?? 0) / (event.rows ?? this.pageSize()));
@@ -147,8 +149,9 @@ export class ResearchGroupAdminView {
       header: this.translate.instant('researchGroup.detailView.title'),
       data: { researchGroupId },
       styleClass: 'research-group-detail-dialog',
-      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      style: { background: 'var(--color-background-default)', width: '60rem' },
       closable: true,
+      draggable: false,
       modal: true,
     });
   }
@@ -158,16 +161,21 @@ export class ResearchGroupAdminView {
       header: this.translate.instant('researchGroup.adminView.createDialog.title'),
       data: { mode: 'admin' },
       styleClass: 'research-group-create-dialog',
-      style: { background: 'var(--p-background-default)', maxWidth: '50rem' },
+      style: { background: 'var(--color-background-default)', width: '60rem' },
       closable: true,
+      draggable: false,
       modal: true,
     });
 
     dialogRef?.onClose.subscribe(result => {
-      if (result) {
+      if (result === true) {
         void this.loadResearchGroups();
       }
     });
+  }
+
+  onManageMembers(researchGroupId: string): void {
+    this.router.navigate(['/research-group', researchGroupId, 'members']);
   }
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {

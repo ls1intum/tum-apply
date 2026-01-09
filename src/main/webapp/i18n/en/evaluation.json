@@ -62,7 +62,6 @@
       "applicantName": "Name",
       "applicantGender": "Gender",
       "applicantNationality": "Nationality",
-      "applicantPreferredLanguage": "Preferred Language",
       "applicantLinkedIn": "LinkedIn",
       "applicantWebsite": "Website",
       "educationTitle": "Education",
@@ -95,6 +94,12 @@
       "ratingOtherRatings": "Other Ratings",
       "commentTitle": "Comments",
       "commentDescription": "Leave internal comments to discuss the application with other reviewers or keep personal notes. These are not visible to the applicant."
+    },
+    "deleteComment": {
+      "confirm": {
+        "header": "Delete Comment",
+        "message": "Are you sure you want to delete this comment? This action cannot be undone!"
+      }
     },
     "errors": {
       "loadJobNames": {

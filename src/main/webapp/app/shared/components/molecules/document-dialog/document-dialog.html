@@ -1,9 +1,8 @@
-<p-dialog
-  [header]="'evaluation.details.documentTitle' | translate"
-  [modal]="true"
+<jhi-dialog
+  [header]="'evaluation.details.documentTitle'"
   [draggable]="false"
   [(visible)]="isOpen"
-  styleClass="max-h-[90vh] w-3/5 max-w-[100rem]"
+  [styleClass]="'max-h-[90vh] w-3/5 max-w-[100rem]'"
 >
   <div class="flex flex-col md:flex-row gap-6 h-[70vh] max-h-[calc(90vh-8rem)] overflow-hidden">
     <!-- LEFT: List of documents -->
@@ -23,21 +22,15 @@
             -->
             <!-- Label container -->
             <div
-              class="grow cursor-pointer px-3 py-2 hover:rounded-lg"
+              class="grow cursor-pointer px-3 py-2 rounded hover:text-text-on-primary hover:bg-primary-default"
+              [class.bg-background-surface-alt]="isSelected(item.document.id)()"
               (click)="selectDoc(item.document.id)"
-              [class.bg-[var(--p-primary-color)]]="isSelected(item.document.id)()"
-              [class.hover:bg-[var(--p-primary-hover-color-outlined)]]="!isSelected(item.document.id)()"
-              [class.rounded-lg]="isSelected(item.document.id)()"
               role="button"
               tabindex="0"
               (keydown.enter)="selectDoc(item.document.id)"
               (keydown.space)="selectDoc(item.document.id); $event.preventDefault()"
             >
-              <span
-                class="block truncate"
-                [class.text-[var(--p-text-on-primary)]]="isSelected(item.document.id)()"
-                [jhiTranslate]="item.label"
-              ></span>
+              <span class="block truncate" [jhiTranslate]="item.label"></span>
             </div>
           </li>
         }
@@ -53,4 +46,4 @@
       }
     </div>
   </div>
-</p-dialog>
+</jhi-dialog>

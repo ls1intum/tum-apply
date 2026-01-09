@@ -15,4 +15,6 @@ public enum ErrorCode {
     UNAUTHORIZED,
     UPLOAD_FAILED,
     VALIDATION_ERROR,
+    TIME_CONFLICT,
+    UNKNOWN_IMAGE_TYPE,
 }

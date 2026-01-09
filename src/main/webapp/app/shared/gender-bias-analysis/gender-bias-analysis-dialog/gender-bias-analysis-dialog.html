@@ -1,0 +1,103 @@
+<p-dialog
+  [visible]="visible()"
+  [modal]="true"
+  [draggable]="false"
+  (visibleChange)="onVisibleChange($event)"
+  [style]="{
+    'background-color': 'var(--p-background-default)',
+    'border-radius': 'var(--p-button-border-radius)',
+  }"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-2">
+      <span class="text-lg font-semibold">
+        {{ 'genderDecoder.resultTitle' | translate }}
+      </span>
+      <fa-icon
+        class="text-primary"
+        [icon]="['fas', 'circle-info']"
+        [pTooltip]="'genderDecoder.originalDecoder' | translate"
+        [escape]="false"
+        tooltipPosition="top"
+        [autoHide]="false"
+      />
+    </div>
+  </ng-template>
+
+  @if (result(); as analysisResult) {
+    <div class="space-y-6">
+      <!-- Coding Summary -->
+      <div class="text-center">
+        <p class="font-semibold text-lg">
+          {{ codingTranslationKey() | translate }}
+        </p>
+      </div>
+
+      <!-- Explanation -->
+      <div
+        class="p-4 border-l-4 rounded"
+        [ngClass]="{
+          'bg-amber-100 border-amber-900': analysisResult.coding === 'non-inclusive-coded',
+          'bg-blue-50 border-blue-500': analysisResult.coding !== 'non-inclusive-coded',
+        }"
+      >
+        <div class="text-gray-700 leading-relaxed" [innerHTML]="explanationTranslationKey() | translate"></div>
+      </div>
+
+      <!-- Biased Words - Two Columns -->
+      @if (analysisResult.biasedWords && analysisResult.biasedWords.length > 0) {
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Non Inclusive Words Column -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 pb-2 border-b-2 border-blue-300">
+              <div class="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"></div>
+              <div class="font-semibold text-gray-700">
+                {{ 'genderDecoder.nonInclusiveWords' | translate }}&nbsp;<span class="text-gray-500"
+                  >({{ nonInclusiveWords().length }})</span
+                >
+              </div>
+            </div>
+            <ul class="list-disc list-inside space-y-1 pl-2">
+              @for (entry of nonInclusiveWordCounts() | keyvalue; track entry.key) {
+                <li class="text-gray-800">
+                  {{ entry.key }}
+                  @if (entry.value > 1) {
+                    <span class="text-gray-500"> ({{ entry.value }})</span>
+                  }
+                </li>
+              } @empty {
+                <p class="italic text-sm" [style.color]="'var(--p-text-disabled)'">
+                  {{ 'genderDecoder.noWordsFound' | translate }}
+                </p>
+              }
+            </ul>
+          </div>
+
+          <!-- Inclusive Words Column -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 pb-2 border-b-2 border-blue-300">
+              <div class="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0"></div>
+              <div class="font-semibold text-gray-700">
+                {{ 'genderDecoder.inclusiveWords' | translate }}&nbsp;<span class="text-gray-500">({{ inclusiveWords().length }})</span>
+              </div>
+            </div>
+            <ul class="list-disc list-inside space-y-1 pl-2">
+              @for (entry of inclusiveWordCounts() | keyvalue; track entry.key) {
+                <li class="text-gray-800">
+                  {{ entry.key }}
+                  @if (entry.value > 1) {
+                    <span class="text-gray-500"> ({{ entry.value }})</span>
+                  }
+                </li>
+              } @empty {
+                <p class="italic text-sm" [style.color]="'var(--p-text-disabled)'">
+                  {{ 'genderDecoder.noWordsFound' | translate }}
+                </p>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</p-dialog>

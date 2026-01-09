@@ -1,7 +1,12 @@
-<header class="app-header shadow">
+<header
+  class="app-header border-b transition-colors duration-300"
+  [class.border-border-default]="showBorder()"
+  [class.border-transparent]="!showBorder()"
+  [class.shadow-sm]="showBorder()"
+>
   <div (click)="navigateToHome()" class="logo-section">
-    <img alt="TUM Logo" class="tum-logo" src="content/images/tum-logo/tum-logo-blue.svg" />
-    <span class="app-name">Apply</span>
+    <img alt="TUMApply Logo" class="tumapply-logo h-8" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+    <span class="app-name">TUMApply</span>
     @if (isProfessorPage()) {
       <span class="professor" jhiTranslate="header.professorTitle"></span>
     }
@@ -18,13 +23,17 @@
         }
       }
     </div>
-    <!--<jhi-button
-			  class="theme-toggle-button"
-			  (click)="toggleColorScheme()"
-			  [icon]="isDarkMode() ? 'moon' : 'sun'"
-			  severity="primary"
-			  variant="text"
-			/>-->
+
+    <div class="theme-switch">
+      <jhi-button
+        class="theme-toggle-button"
+        (click)="toggleTheme()"
+        [icon]="isDarkMode() ? 'moon' : 'custom-sun'"
+        [tooltip]="'header.theme' | translate"
+        variant="text"
+        severity="primary"
+      />
+    </div>
 
     @if (user() === undefined) {
       @if (isProfessorPage()) {

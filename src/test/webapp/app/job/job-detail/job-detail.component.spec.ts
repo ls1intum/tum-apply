@@ -6,6 +6,7 @@ import { Location } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 
 import { JobDetailComponent, JobDetails } from 'app/job/job-detail/job-detail.component';
+import { JhiMenuItem } from 'app/shared/components/atoms/menu/menu.component';
 import { User } from 'app/core/auth/account.service';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
@@ -19,7 +20,6 @@ import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
 import { createAccountServiceMock, provideAccountServiceMock } from '../../../util/account.service.mock';
 import { createRouterMock, provideRouterMock } from '../../../util/router.mock';
 import { createToastServiceMock, provideToastServiceMock } from '../../../util/toast-service.mock';
-import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 
 describe('JobDetailComponent', () => {
   let fixture: ComponentFixture<JobDetailComponent>;
@@ -37,10 +37,6 @@ describe('JobDetailComponent', () => {
   let mockAccountService: ReturnType<typeof createAccountServiceMock>;
   let mockToastService = createToastServiceMock();
   let researchGroupService: { getResourceGroupDetails: ReturnType<typeof vi.fn> };
-  let pdfExportService: {
-    exportJobToPDF: ReturnType<typeof vi.fn>;
-    exportJobPreviewToPDF: ReturnType<typeof vi.fn>;
-  };
 
   beforeEach(async () => {
     location = { back: vi.fn() } as unknown as Location;
@@ -55,18 +51,12 @@ describe('JobDetailComponent', () => {
       getResourceGroupDetails: vi.fn().mockReturnValue(of({ description: 'RG Desc' })),
     };
 
-    pdfExportService = {
-      exportJobToPDF: vi.fn(),
-      exportJobPreviewToPDF: vi.fn(),
-    };
-
     await TestBed.configureTestingModule({
       imports: [JobDetailComponent],
       providers: [
         { provide: Location, useValue: location },
         { provide: JobResourceApiService, useValue: jobService },
         { provide: ResearchGroupResourceApiService, useValue: researchGroupService },
-        { provide: PdfExportResourceApiService, useValue: pdfExportService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['job_id', 'job123']]) } } },
         provideToastServiceMock(mockToastService),
         provideRouterMock(mockRouter),
@@ -238,8 +228,8 @@ describe('JobDetailComponent', () => {
 
   it('should compute jobStateText and jobStateColor correctly', () => {
     component.jobDetails.set({ jobState: 'DRAFT' } as JobDetails);
-    expect(component.jobStateText).toBe('jobState.draft');
-    expect(component.jobStateColor).toBe('info');
+    expect(component.jobStateText()).toBe('jobState.draft');
+    expect(component.jobStateColor()).toBe('info');
   });
 
   it('should map JobDetailDTO to JobDetails', () => {
@@ -261,36 +251,37 @@ describe('JobDetailComponent', () => {
     expect(result.jobState).toBe('PUBLISHED');
   });
 
-  it('should compute rightActionButtons for non-research-group user', () => {
+  it('should compute primaryActionButton for non-research-group user', () => {
     const job = { belongsToResearchGroup: false, applicationState: undefined } as JobDetails;
     component.jobDetails.set(job);
-    expect(component.rightActionButtons()?.buttons[0].label).toBe('button.apply');
+    expect(component.primaryActionButton()?.label).toBe('button.apply');
   });
 
-  it('should compute rightActionButtons for DRAFT and trigger confirm()', () => {
+  it('should compute getMenuItems for DRAFT and trigger confirm()', () => {
     const confirmSpy = vi.fn();
     (component as unknown as { deleteConfirmDialog: () => { confirm: () => void } }).deleteConfirmDialog = () => ({ confirm: confirmSpy });
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
-    const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.deleteButtonLabel);
-    btn?.onClick();
+    const menuItems = component.menuItems();
+    const deleteItem = menuItems.find((item: JhiMenuItem) => item.label === component.deleteButtonLabel);
+    deleteItem?.command?.();
     expect(confirmSpy).toHaveBeenCalled();
   });
 
-  it('should compute rightActionButtons for PUBLISHED and trigger confirm()', () => {
+  it('should compute primaryActionButton for PUBLISHED and trigger confirm()', () => {
     const confirmSpy = vi.fn();
     (component as unknown as { closeConfirmDialog: () => { confirm: () => void } }).closeConfirmDialog = () => ({ confirm: confirmSpy });
     // mock professor ownership
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const job = { belongsToResearchGroup: true, jobState: 'PUBLISHED' } as JobDetails;
     component.jobDetails.set(job);
-    const btn = component.rightActionButtons()?.buttons.find(b => b.label === component.closeButtonLabel);
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(confirmSpy).toHaveBeenCalled();
   });
 
   it('should return null for PUBLISHED job when user is professor but not owner', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
 
     const job = {
       belongsToResearchGroup: false,
@@ -298,7 +289,7 @@ describe('JobDetailComponent', () => {
     } as JobDetails;
 
     component.jobDetails.set(job);
-    expect(component.rightActionButtons()).toBeNull();
+    expect(component.primaryActionButton()).toBeNull();
   });
 
   it('should handle invalid job ID in init()', async () => {
@@ -335,13 +326,13 @@ describe('JobDetailComponent', () => {
   });
 
   it('isOwnerOfJob should return false when not professor', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(false);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(false);
     const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: true } as JobDetails);
     expect(result).toBe(false);
   });
 
   it('isOwnerOfJob should return false when job does not belong to research group', () => {
-    vi.spyOn(component, 'isProfessor').mockReturnValue(true);
+    vi.spyOn(component, 'isProfessorOrEmployee').mockReturnValue(true);
     const result = (component as any).isOwnerOfJob({ belongsToResearchGroup: false } as JobDetails);
     expect(result).toBe(false);
   });
@@ -382,13 +373,13 @@ describe('JobDetailComponent', () => {
 
   it('should handle unknown job state in jobStateText and jobStateColor', () => {
     component.jobDetails.set({ jobState: 'UNKNOWN_STATE' } as JobDetails);
-    expect(component.jobStateText).toBe('jobState.unknown');
-    expect(component.jobStateColor).toBe('info');
+    expect(component.jobStateText()).toBe('jobState.unknown');
+    expect(component.jobStateColor()).toBe('info');
   });
 
   it('should return default info color when no jobDetails', () => {
     component.jobDetails.set(null);
-    expect(component.jobStateColor).toBe('info');
+    expect(component.jobStateColor()).toBe('info');
   });
 
   it('should compute noData() value after language change', () => {
@@ -399,19 +390,18 @@ describe('JobDetailComponent', () => {
     expect(spy).toHaveBeenCalledWith('jobDetailPage.noData');
   });
 
-  it('should return null from rightActionButtons when previewData exists', () => {
-    const previewSignal = signal({ title: 'Preview job' });
+  it('should return null from primaryActionButton when previewData exists', () => {
+    const previewSignal = signal({ title: 'Preview job' } as JobFormDTO);
     (component as unknown as { previewData: () => typeof previewSignal }).previewData = () => previewSignal;
-    const buttons = component.rightActionButtons();
-    expect(buttons).not.toBeNull();
-    expect(buttons?.buttons[0].label).toBe('button.downloadPDF');
+    const button = component.primaryActionButton();
+    expect(button).toBeNull();
   });
 
   it('should trigger onApply from computed button', () => {
     const job = { belongsToResearchGroup: false, applicationState: undefined } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onApply');
-    const btn = component.rightActionButtons()?.buttons[0];
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -423,7 +413,7 @@ describe('JobDetailComponent', () => {
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onEditApplication');
-    const btn = component.rightActionButtons()?.buttons[0];
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -435,7 +425,7 @@ describe('JobDetailComponent', () => {
     } as unknown as ReturnType<JobDetailComponent['jobDetails']>;
     component.jobDetails.set(job);
     const spy = vi.spyOn(component, 'onViewApplication');
-    const btn = component.rightActionButtons()?.buttons[0];
+    const btn = component.primaryActionButton();
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -444,7 +434,8 @@ describe('JobDetailComponent', () => {
     const spy = vi.spyOn(component, 'onEditJob');
     const job = { belongsToResearchGroup: true, jobState: 'DRAFT' } as JobDetails;
     component.jobDetails.set(job);
-    const btn = component.rightActionButtons()?.buttons.find(b => b.label === 'button.edit');
+    const btn = component.primaryActionButton();
+    expect(btn?.label).toBe('button.edit');
     btn?.onClick();
     expect(spy).toHaveBeenCalled();
   });
@@ -458,9 +449,9 @@ describe('JobDetailComponent', () => {
     });
   });
 
-  it('should return null when jobDetails is falsy in rightActionButtons()', () => {
+  it('should return null when jobDetails is falsy in primaryActionButton()', () => {
     component.jobDetails.set(null);
-    const result = component.rightActionButtons();
+    const result = component.primaryActionButton();
     expect(result).toBeNull();
   });
 
@@ -492,7 +483,7 @@ describe('JobDetailComponent', () => {
   it('should return null when jobDetails do not match any button case', () => {
     const job = { belongsToResearchGroup: true, jobState: 'CLOSED' } as JobDetails;
     component.jobDetails.set(job);
-    const result = component.rightActionButtons();
+    const result = component.primaryActionButton();
     expect(result).toBeNull();
   });
 
@@ -585,10 +576,10 @@ describe('JobDetailComponent', () => {
 
   it('should return correct fallback for jobStateText when jobState missing or unknown', () => {
     component.jobDetails.set(null);
-    expect(component.jobStateText).toBe('Unknown');
+    expect(component.jobStateText()).toBe('Unknown');
 
     component.jobDetails.set({ jobState: 'NON_EXISTENT_STATE' } as JobDetails);
-    expect(component.jobStateText).toBe('jobState.unknown');
+    expect(component.jobStateText()).toBe('jobState.unknown');
   });
 
   it('should convert workload and contractDuration to strings in mapToJobDetails', () => {
@@ -683,120 +674,5 @@ describe('JobDetailComponent', () => {
       }
     ).mapToJobDetails(dto, user as User);
     expect(result.belongsToResearchGroup).toBe(true);
-  });
-
-  describe('PDF Download functionality', () => {
-    it('should call onDownloadPDF when pdfButton is clicked', async () => {
-      const spy = vi.spyOn(component, 'onDownloadPDF');
-      component.pdfButton.onClick();
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should show error when preview formData is missing', async () => {
-      const signalReturningUndefined = signal<JobFormDTO | undefined>(undefined);
-
-      vi.spyOn(component, 'previewData').mockReturnValue(signalReturningUndefined);
-
-      await component.onDownloadPDF();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
-    });
-
-    it('should download PDF for normal job', async () => {
-      const mockResponse = {
-        headers: { get: vi.fn().mockReturnValue('attachment; filename="test.pdf"') },
-        body: new Blob(['pdf content'], { type: 'application/pdf' }),
-      };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
-
-      component.jobId.set('job123');
-      await component.onDownloadPDF();
-
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledWith('job123', expect.any(Object), 'response');
-    });
-
-    it('should download PDF for preview job', async () => {
-      const mockResponse = {
-        headers: { get: vi.fn().mockReturnValue('attachment; filename="preview.pdf"') },
-        body: new Blob(['pdf content'], { type: 'application/pdf' }),
-      };
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
-
-      const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
-      fixture.componentRef.setInput('previewData', signal(previewJob));
-
-      await component.onDownloadPDF();
-
-      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalled();
-    });
-
-    it('should show error when preview formData is missing', async () => {
-      fixture.componentRef.setInput('previewData', signal(undefined));
-
-      await component.onDownloadPDF();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
-    });
-
-    it('should handle error in preview PDF generation', async () => {
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
-
-      const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
-      fixture.componentRef.setInput('previewData', signal(previewJob));
-
-      await component.onDownloadPDF();
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
-    });
-
-    it('should handle error in normal PDF generation', async () => {
-      pdfExportService.exportJobToPDF.mockReturnValue(throwError(() => new Error('PDF error')));
-
-      component.jobId.set('job123');
-      await component.onDownloadPDF();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
-    });
-
-    it('should handle missing Content-Disposition header', async () => {
-      const mockResponse = {
-        headers: { get: vi.fn().mockReturnValue(null) },
-        body: new Blob(['pdf content'], { type: 'application/pdf' }),
-      };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
-
-      component.jobId.set('job123');
-      await component.onDownloadPDF();
-
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalled();
-    });
-
-    it('should use default filename when regex does not match Content-Disposition', async () => {
-      const mockResponse = {
-        headers: { get: vi.fn().mockReturnValue('attachment; badformat') },
-        body: new Blob(['pdf content'], { type: 'application/pdf' }),
-      };
-      pdfExportService.exportJobToPDF.mockReturnValue(of(mockResponse));
-
-      component.jobId.set('job123');
-      await component.onDownloadPDF();
-
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalled();
-    });
-
-    it('should use default filename when regex does not match in preview mode', async () => {
-      const mockResponse = {
-        headers: { get: vi.fn().mockReturnValue('attachment; badformat') },
-        body: new Blob(['pdf content'], { type: 'application/pdf' }),
-      };
-      pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
-
-      const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
-      const signalWithData = signal(previewJob);
-      vi.spyOn(component, 'previewData').mockReturnValue(signalWithData);
-
-      await component.onDownloadPDF();
-
-      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalled();
-    });
   });
 });

@@ -2,7 +2,7 @@ package de.tum.cit.aet.evaluation.web;
 
 import de.tum.cit.aet.core.dto.OffsetPageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.evaluation.dto.*;
 import de.tum.cit.aet.evaluation.service.ApplicationEvaluationService;
@@ -35,8 +35,8 @@ public class ApplicationEvaluationResource {
      * @param acceptDTO     the acceptance details
      * @return HTTP 204 No Content response
      */
+    @ProfessorOrEmployee
     @PostMapping("/applications/{applicationId}/accept")
-    @Professor
     public ResponseEntity<Void> acceptApplication(@PathVariable UUID applicationId, @RequestBody @Valid AcceptDTO acceptDTO) {
         applicationEvaluationService.acceptApplication(applicationId, acceptDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
@@ -49,8 +49,8 @@ public class ApplicationEvaluationResource {
      * @param rejectDTO     the rejection details
      * @return HTTP 204 No Content response
      */
+    @ProfessorOrEmployee
     @PostMapping("/applications/{applicationId}/reject")
-    @Professor
     public ResponseEntity<Void> rejectApplication(@PathVariable UUID applicationId, @RequestBody @Valid RejectDTO rejectDTO) {
         applicationEvaluationService.rejectApplication(applicationId, rejectDTO, currentUserService.getUser());
         return ResponseEntity.noContent().build();
@@ -65,14 +65,14 @@ public class ApplicationEvaluationResource {
      * @param filterDto     the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationOverviewListDTO}
      */
+    @ProfessorOrEmployee
     @GetMapping("/applications")
-    @Professor
     public ResponseEntity<ApplicationEvaluationOverviewListDTO> getApplicationsOverviews(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getAllApplicationsOverviews(researchGroupId, offsetPageDTO, sortDto, filterDto)
@@ -89,13 +89,13 @@ public class ApplicationEvaluationResource {
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
     @GetMapping("/application-details")
-    @Professor
+    @ProfessorOrEmployee
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetails(
         @ParameterObject @Valid @ModelAttribute OffsetPageDTO offsetPageDTO,
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         return ResponseEntity.ok(applicationEvaluationService.getApplicationsDetails(researchGroupId, offsetPageDTO, sortDto, filterDto));
     }
@@ -110,15 +110,15 @@ public class ApplicationEvaluationResource {
      * @param filterDto     the {@link EvaluationFilterDTO} specifying dynamic filters to apply
      * @return a {@link ResponseEntity} containing the {@link ApplicationEvaluationDetailListDTO}
      */
+    @ProfessorOrEmployee
     @GetMapping("/application-details/window")
-    @Professor
     public ResponseEntity<ApplicationEvaluationDetailListDTO> getApplicationsDetailsWindow(
         @RequestParam UUID applicationId,
         @RequestParam int windowSize,
         @ParameterObject @ModelAttribute SortDTO sortDto,
         @ParameterObject @ModelAttribute EvaluationFilterDTO filterDto
     ) {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         return ResponseEntity.ok(
             applicationEvaluationService.getApplicationsDetailsWindow(applicationId, windowSize, researchGroupId, sortDto, filterDto)
@@ -131,8 +131,8 @@ public class ApplicationEvaluationResource {
      * @param applicationId the ID of the application to update
      * @return 204 No Content if the update was processed successfully
      */
+    @ProfessorOrEmployee
     @PutMapping("/applications/{applicationId}/open")
-    @Professor
     public ResponseEntity<Void> markApplicationAsInReview(@PathVariable UUID applicationId) {
         applicationEvaluationService.markApplicationAsInReview(applicationId);
         return ResponseEntity.noContent().build();
@@ -155,8 +155,8 @@ public class ApplicationEvaluationResource {
             ),
         }
     )
+    @ProfessorOrEmployee
     @GetMapping(path = "/applications/{applicationId}/documents-download", produces = "application/zip")
-    @Professor
     public void downloadAll(@PathVariable("applicationId") UUID applicationId, HttpServletResponse response) throws IOException {
         applicationEvaluationService.downloadAllDocumentsForApplication(applicationId, response);
     }
@@ -167,10 +167,10 @@ public class ApplicationEvaluationResource {
      *
      * @return ResponseEntity with list of job names
      */
+    @ProfessorOrEmployee
     @GetMapping("/job-names")
-    @Professor
     public ResponseEntity<List<String>> getAllJobNames() {
-        UUID researchGroupId = currentUserService.getResearchGroupIdIfProfessor();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         List<String> jobNames = applicationEvaluationService.getAllJobNames(researchGroupId);
         return ResponseEntity.ok(jobNames);

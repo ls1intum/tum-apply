@@ -72,6 +72,14 @@
         "label": "Abbreviation",
         "placeholder": "e.g. AI"
       },
+      "school": {
+        "label": "School",
+        "placeholder": "Select..."
+      },
+      "department": {
+        "label": "Department",
+        "placeholder": "Select..."
+      },
       "researchGroupContactEmail": {
         "label": "Email",
         "placeholder": "e.g. kontakt@forschung.de"
@@ -120,6 +128,18 @@
       "error": {
         "summary": "Submission Failed",
         "detail": "Failed to submit your request. Please try again or contact support."
+      },
+      "loadDataFailed": {
+        "summary": "Error",
+        "detail": "Failed to load schools and departments. Please refresh the page or try again later."
+      },
+      "errorDuplicateName": {
+        "summary": "Name Already Exists",
+        "detail": "A research group with this name already exists. Please choose a different name."
+      },
+      "errorUserNotFound": {
+        "summary": "User Not Found",
+        "detail": "No user was found with the provided TUM-ID. Please check the TUM-ID."
       },
       "cancel": "Cancel",
       "submit": "Send Request",

@@ -1,16 +1,18 @@
 import { Component, computed, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProgressBar } from 'primeng/progressbar';
+import { ToastMessageInput } from 'app/service/toast-service';
+import { TranslateService } from '@ngx-translate/core';
+import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
+import { AccountService } from 'app/core/auth/account.service';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 
 import { CredentialsGroupComponent } from '../../molecules/credentials-group/credentials-group.component';
-import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator.service';
 import { TranslateDirective } from '../../../language';
 import { OtpInput } from '../../atoms/otp-input/otp-input';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { PasswordInputComponent } from '../../atoms/password-input/password-input';
 import { ProfileComponent } from '../../molecules/profile/profile.component';
-import { AccountService } from '../../../../core/auth/account.service';
-import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
 
 @Component({
   selector: 'jhi-registration',
@@ -31,14 +33,17 @@ export class Registration {
   readonly authFacade = inject(AuthFacadeService);
   readonly accountService = inject(AccountService);
   readonly authOrchestrator = inject(AuthOrchestratorService);
+  readonly translate = inject(TranslateService);
 
   readonly registerProgress = computed(() => this.authOrchestrator.registerProgress());
   readonly totalRegisterSteps = this.authOrchestrator.totalRegisterSteps;
-  readonly registerProgressInPercent = computed(() => ((this.registerProgress() - 1) / (this.totalRegisterSteps - 1)) * 100);
+  readonly registerProgressInPercent = computed(() => (this.registerProgress() / this.totalRegisterSteps) * 100);
   readonly showBackButton = computed(() => this.authOrchestrator.registerStep() === 'otp');
   readonly showSkipButton = computed(() => this.authOrchestrator.registerStep() === 'password');
 
   passwordForm: FormGroup<{ password: FormControl<string> }>;
+
+  private readonly translationKey = 'auth.common.toast';
 
   constructor() {
     const fb = inject(FormBuilder);
@@ -58,18 +63,34 @@ export class Registration {
   };
 
   setProfile = async (firstName: string, lastName: string): Promise<void> => {
-    await this.runWithOrchestratorBusy(async () => {
-      await this.accountService.updateUser(firstName, lastName);
-      this.authOrchestrator.nextStep();
-    }, 'Could not update your profile name. Please try again.');
+    await this.runWithOrchestratorBusy(
+      async () => {
+        await this.accountService.updateUser(firstName, lastName);
+        this.authOrchestrator.nextStep();
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.updateNameFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.updateNameFailed.detail`),
+      },
+    );
   };
 
   setPassword = async (): Promise<void> => {
     const { password } = this.passwordForm.getRawValue();
-    await this.runWithOrchestratorBusy(async () => {
-      await this.accountService.updatePassword(password);
-      this.authOrchestrator.nextStep();
-    }, 'Could not update your password. Please try again.');
+    await this.runWithOrchestratorBusy(
+      async () => {
+        await this.accountService.updatePassword(password);
+        this.authOrchestrator.nextStep();
+      },
+      {
+        summary: this.translate.instant(`${this.translationKey}.updatePasswordFailed.summary`),
+        detail: this.translate.instant(`${this.translationKey}.updatePasswordFailed.detail`),
+      },
+    );
+  };
+
+  sendRegistrationEmail = async (): Promise<void> => {
+    await this.authFacade.sendRegistrationEmail();
   };
 
   onBack = (): void => {
@@ -87,7 +108,13 @@ export class Registration {
    * @param action The async function to execute
    * @param errorMessage Optional custom error message to show if the action fails
    */
-  private async runWithOrchestratorBusy(action: () => Promise<void>, errorMessage = 'An error occurred. Please try again.'): Promise<void> {
+  private async runWithOrchestratorBusy(
+    action: () => Promise<void>,
+    errorMessage: ToastMessageInput = {
+      summary: this.translate.instant(`${this.translationKey}.error.summary`),
+      detail: this.translate.instant(`${this.translationKey}.error.detail`),
+    },
+  ): Promise<void> {
     this.authOrchestrator.isBusy.set(true);
     try {
       await action();

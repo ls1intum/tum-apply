@@ -37,7 +37,8 @@
       },
       "about-us": "TumApply - Über uns",
       "interview": {
-        "overview": "TUMApply - Interviewübersicht"
+        "overview": "TUMApply - Interviewübersicht",
+        "detail": "Interview - {{jobTitle}}"
       }
     },
     "menu": {
@@ -170,7 +171,6 @@
       "master_info": "Informationen zum Masterabschluss",
       "gender": "Geschlecht",
       "desired_start_date": "Gewünschtes Anfangsdatum",
-      "preferred_language": "Bevorzugte Sprache",
       "applicant_info": "Bewerberinformationen",
       "nationality": "Nationalität",
       "website": "Webseite",
@@ -202,6 +202,16 @@
     },
     "filterBy": "Filtern nach:",
     "sortBy": "Sortieren nach:",
+    "sorting": {
+      "ascending": {
+        "text": "Aufsteigend (A-Z)",
+        "number": "Aufsteigend (1-9)"
+      },
+      "descending": {
+        "text": "Absteigend (Z-A)",
+        "number": "Absteigend (9-1)"
+      }
+    },
     "upload": {
       "upload_instruction_standard": "Bitte hochladen",
       "upload_instruction": {
@@ -213,6 +223,12 @@
       "uploaded_document": "Hochgeladenes Dokument für ",
       "uploaded_documents": "Hochgeladene Dokumente für ",
       "add": "Hinzufügen",
+      "deleteDocument": {
+        "confirm": {
+          "header": "Dokument löschen",
+          "message": "Möchtest du dieses Dokument wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+        }
+      },
       "clear": "Alles löschen",
       "upload": "Hochladen",
       "instruction": "Hier klicken oder Dateien hinziehen, um sie hochzuladen.",
@@ -230,6 +246,18 @@
         "already_uploaded": "Bereits hochgeladen",
         "remove": "Diese Datei aus der Upload-Liste entfernen",
         "delete": "Diese Datei vom Server löschen"
+      },
+      "duplicate": {
+        "title": "Dokument bereits vorhanden",
+        "message": "Ein Dokument mit dem Namen \"{{filename}}\" existiert bereits. Möchtest du es ersetzen?",
+        "replace": "Ersetzen"
+      },
+      "error": {
+        "replace_failed": "Dokument konnte nicht ersetzt werden",
+        "too_large": "Dateien sind zu groß",
+        "upload_failed": "Upload fehlgeschlagen",
+        "delete_failed": "Dokument konnte nicht gelöscht werden",
+        "rename_failed": "Dokument konnte nicht umbenannt werden"
       }
     },
     "application_overview": {
@@ -279,7 +307,6 @@
         "phoneNumber": "Telefonnummer",
         "gender": "Geschlecht",
         "nationality": "Nationalität",
-        "language": "Bevorzugte Sprache",
         "dateOfBirth": "Geburtsdatum",
         "website": "Webseite",
         "linkedIn": "LinkedIn",
@@ -288,13 +315,15 @@
         "country": "Land",
         "postcode": "Postleitzahl"
       },
+      "placeholder": {
+        "selectNationality": "Wähle deine Nationalität...",
+        "selectGender": "Wähle dein Geschlecht...",
+        "selectCountry": "Wähle dein Land..."
+      },
       "section": {
         "contactInformation": "Kontaktinformationen",
         "voluntaryInformation": "Freiwillige Informationen",
         "address": "Adressinformationen"
-      },
-      "tooltip": {
-        "language": "Wähle deine bevorzugte Kommunikationssprache."
       },
       "validation": {
         "postalCode": "Bitte gib eine gültige Postleitzahl für das ausgewählte Land ein."
@@ -382,7 +411,8 @@
         "accepted": "Angenommen",
         "rejected": "Abgelehnt",
         "withdrawn": "Zurückgezogen",
-        "closed": "Geschlossen"
+        "closed": "Geschlossen",
+        "inReview": "In Prüfung"
       },
       "columns": {
         "positionTitle": "Stellentitel",

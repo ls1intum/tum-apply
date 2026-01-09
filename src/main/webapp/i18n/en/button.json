@@ -1,5 +1,6 @@
 {
   "button": {
+    "actions": "Actions",
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
@@ -17,9 +18,11 @@
     "next": "Next",
     "apply": "Apply",
     "publish": "Publish",
+    "chooseFile": "Choose File",
+    "assign": "Assign",
     "tooltip": {
       "editDisabled": "Only drafts can be edited"
     },
-    "downloadPDF": "Export PDF"
+    "downloadPDF": "Export"
   }
 }

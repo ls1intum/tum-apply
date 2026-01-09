@@ -1,11 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { AuthSessionInfoDTO } from 'app/generated/model/authSessionInfoDTO';
-
-import { AuthenticationResourceApiService } from '../../generated/api/authenticationResourceApi.service';
-import { EmailVerificationResourceApiService } from '../../generated/api/emailVerificationResourceApi.service';
-import { UserProfileDTO } from '../../generated/model/userProfileDTO';
-import { OtpCompleteDTO } from '../../generated/model/otpCompleteDTO';
+import { ToastService } from 'app/service/toast-service';
+import { TranslateService } from '@ngx-translate/core';
+import {
+  AuthSessionInfoDTO,
+  AuthenticationResourceApiService,
+  EmailVerificationResourceApiService,
+  OtpCompleteDTO,
+  UserProfileDTO,
+} from 'app/generated';
 
 import PurposeEnum = OtpCompleteDTO.PurposeEnum;
 
@@ -32,6 +35,9 @@ export class ServerAuthenticationService {
   private refreshTimerId?: number;
   private refreshInFlight: Promise<boolean> | null = null;
 
+  private readonly toastService = inject(ToastService);
+  private readonly translate = inject(TranslateService);
+  private readonly translationKey = 'auth.common.toast';
   private readonly authenticationApi = inject(AuthenticationResourceApiService);
   private readonly emailVerificationApi = inject(EmailVerificationResourceApiService);
 
@@ -57,6 +63,16 @@ export class ServerAuthenticationService {
   }
 
   // --------------------------- Email/OTP ----------------------------
+  /**
+   * Sends a registration confirmation email to the authenticated user.
+   *
+   * @param email - The user's email address.
+   * @returns Promise that resolves when the email has been sent.
+   */
+  async sendRegistrationEmail(email: string): Promise<void> {
+    await firstValueFrom(this.emailVerificationApi.sendRegistrationEmail({ email, registration: true }));
+  }
+
   /**
    * Sends a one-time password (OTP) to the user's email for login or registration.
    *
@@ -109,7 +125,7 @@ export class ServerAuthenticationService {
    *
    * @returns Promise resolving to AuthSessionInfoDTO with new session expiry.
    */
-  async refreshTokens(): Promise<boolean> {
+  async refreshTokens(initialization = false): Promise<boolean> {
     if (this.refreshInFlight) {
       return this.refreshInFlight;
     }
@@ -119,6 +135,12 @@ export class ServerAuthenticationService {
         return true;
       })
       .catch((e: unknown) => {
+        if (!initialization) {
+          this.toastService.showError({
+            summary: this.translate.instant(`${this.translationKey}.refreshTokenFailed.summary`),
+            detail: this.translate.instant(`${this.translationKey}.refreshTokenFailed.detail`),
+          });
+        }
         console.warn('Failed to refresh token, logging out...', e);
         return false;
       })

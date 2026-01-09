@@ -2,8 +2,11 @@
   "landingPage": {
     "hero": {
       "headline": "Apply for your Doctorate at TUM CIT",
-      "subline": "TUMapply is your gateway to doctoral research at the TUM School of Computation, Information and Technology",
-      "button": "Browse Positions"
+      "subline": "TUMapply is your gateway to doctoral research at the TUM School of Computation, Information and Technology"
+    },
+    "banner": {
+      "portalName": "TUM Apply - Promotion at TUM",
+      "universityName": "Technical University of Munich"
     },
     "doctoralJourney": {
       "headline": "Start your Doctoral Journey at TUM CIT",
@@ -104,6 +107,14 @@
           "content": "No, TUMApply only lists a selection of available positions for the TUM School of Computation, Information and Technology. You can find more job postings on other channels such as the <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong><u>myTUM Job Platform</u></strong></a> or on individual research group websites."
         }
       }
+    },
+    "jobsPreview": {
+      "headline": "Latest Positions",
+      "subline": "A short selection of open positions",
+      "seeMore": "View all positions",
+      "noJobs": "No jobs available at the moment",
+      "goToJobOverview": "Go to job overview",
+      "loadFailed": "Failed to load jobs"
     }
   }
 }

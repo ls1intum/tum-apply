@@ -28,7 +28,6 @@ public class DocumentResource {
      */
     @GetMapping("/{documentDictionaryId}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable UUID documentDictionaryId) {
-        //TODO authorize access
         DocumentDictionary documentDictionary = documentDictionaryService.findDocumentDictionaryById(documentDictionaryId);
         return ResponseEntity.ok(documentService.download(documentDictionary.getDocument()));
     }

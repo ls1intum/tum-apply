@@ -62,7 +62,6 @@
       "applicantName": "Name",
       "applicantGender": "Geschlecht",
       "applicantNationality": "Nationalität",
-      "applicantPreferredLanguage": "Bevorzugte Sprache",
       "applicantLinkedIn": "LinkedIn",
       "applicantWebsite": "Webseite",
       "educationTitle": "Ausbildung",
@@ -95,6 +94,12 @@
       "ratingOtherRatings": "Bewertungen Anderer",
       "commentTitle": "Kommentare",
       "commentDescription": "Hinterlasse interne Kommentare, um die Bewerbung mit anderen zu diskutieren oder persönliche Notizen zu machen. Diese sind für die Bewerber:innen nicht sichtbar."
+    },
+    "deleteComment": {
+      "confirm": {
+        "header": "Kommentar löschen",
+        "message": "Bist du sicher, dass du diesen Kommentar löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden!"
+      }
     },
     "errors": {
       "loadJobNames": {

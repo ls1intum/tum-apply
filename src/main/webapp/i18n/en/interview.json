@@ -3,12 +3,12 @@
     "overview": {
       "title": "Interviews",
       "positions": {
-        "title": "Positionen"
+        "title": "Positions"
       },
       "loading": "Loading interview processes...",
       "empty": {
         "title": "No Interview Processes",
-        "description": "You haven't created any interview processes yet. Click \"New Interview Process\" to get started."
+        "description": "You haven't created any interview processes yet. Click on \"New Interview Process\" to get started."
       },
       "actions": {
         "newProcess": "New Interview Process",
@@ -19,7 +19,7 @@
         "scheduled": "Scheduled",
         "invited": "Invited",
         "uncontacted": "Uncontacted",
-        "totalInterviews": "Total interviews"
+        "totalInterviews": "Total Interviews"
       },
       "upcoming": {
         "title": "Upcoming",
@@ -27,6 +27,219 @@
       },
       "error": {
         "failedToLoad": "Failed to load interview processes."
+      }
+    },
+    "detail": {
+      "error": {
+        "title": "Failed to load slots",
+        "description": "There was an error loading the interview slots. Please try again.",
+        "retry": "Retry",
+        "loadFailed": {
+          "summary": "Load Failed",
+          "detail": "Failed to load interview process details"
+        }
+      },
+      "empty": {
+        "title": "No slots yet",
+        "description": "Create your first interview slots to get started."
+      },
+      "noSlotsInMonth": "No slots in {{month}}",
+      "showLess": "Show less"
+    },
+    "slots": {
+      "addSlots": "Add Slots",
+      "slotsCountSingular": "slot",
+      "slotsCountPlural": "slots",
+      "showMoreSingular": "more slot",
+      "showMorePlural": "more slots",
+      "error": {
+        "loadFailed": {
+          "summary": "Failed to load interview slots",
+          "detail": "The interview slots could not be loaded. Please refresh the page or contact an admin."
+        }
+      },
+      "status": {
+        "booked": "booked"
+      },
+      "location": {
+        "virtual": "virtual",
+        "inPerson": "in-person"
+      },
+      "create": {
+        "title": "Create Interview Slots",
+        "addSlot": "Add Slot",
+        "removeSlot": "Remove Slot",
+        "slotNumber": "Slot {{number}}",
+        "date": "Date",
+        "selectDate": "Select a date...",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "location": "Location",
+        "inPerson": "In-Person",
+        "virtual": "Virtual",
+        "streamLink": "Meeting Link",
+        "streamLinkPlaceholder": "https://meet.google.com/...",
+        "cancel": "Cancel",
+        "create": "Create Slots",
+        "creating": "Creating...",
+        "success": {
+          "summary": "Slots Created",
+          "detail": "Interview slots have been created successfully."
+        },
+        "error": {
+          "generic": {
+            "summary": "Creation Failed",
+            "detail": "Failed to create slots. Please try again."
+          },
+          "conflict": {
+            "summary": "Conflict Detected",
+            "detail": "Some slots conflict with existing ones. Please adjust the times."
+          },
+          "validation": {
+            "summary": "Validation Error",
+            "detail": "Please check the form for errors."
+          },
+          "noSlots": {
+            "summary": "No Slots",
+            "detail": "Please create at least one slot before saving."
+          }
+        },
+        "validation": {
+          "required": "This field is required",
+          "endBeforeStart": "End time must be after start time",
+          "conflict": "Time conflict with another slot",
+          "streamLinkRequired": "Meeting link is required for virtual slots",
+          "durationPositive": "Duration must be at least 1 minute",
+          "breakPositive": "Break duration cannot be negative",
+          "locationRequired": {
+            "summary": "Missing Location",
+            "detail": "Location is required for all slots"
+          },
+          "rangeTooShort": "Time range is too short for a {{duration}} min interview"
+        },
+        "interviewLength": "Interview Length",
+        "interviewBreaks": "Interview Breaks",
+        "breakTooltip": "Break time between consecutive interview slots",
+        "durationTooltip": "Duration of each interview slot",
+        "addRangeTooltip": "Automatically create multiple interview slots within a time window using the configured break time",
+        "addSlotsTooltip": "Add single slots manually one by one",
+        "copySuccess": {
+          "summary": "Successfully copied slots",
+          "detail": "Slot configurations were successfully applied to all days."
+        },
+        "selectDates": "Select Dates",
+        "noDateSelected": "No Date selected",
+        "noDateSelectedDesc": "Please select one or multiple dates in the calendar",
+        "sameSlotsForAllDays": "Same slots for all days",
+        "addRange": "Add Time Range",
+        "noSlotsYet": "No Slots yet",
+        "noSlotsYetDesc": "Add a time range or a single slot to get started",
+        "singleSlot": "Single Slot",
+        "rangeSlot": "Time Range",
+        "bookedSlot": "Booked Slot",
+        "addStartTime": "Add a start time to create this slot",
+        "addStartAndEndTime": "Add a start and end time to see slots in this range",
+        "saveSlots": "Save Slots",
+        "locationPlaceholder": "e.g. Room 01.02.03 or Zoom Link",
+        "useForAll": "Use same location for all slots",
+        "custom": "Custom"
+      },
+      "delete": {
+        "confirm": {
+          "header": "Slot Deletion",
+          "message": "Are you sure you want to delete this slot?"
+        },
+        "success": {
+          "summary": "Slot deleted",
+          "detail": "Slot deleted successfully."
+        },
+        "error": {
+          "summary": "Delete failed",
+          "detail": "The slot could not be deleted. Please try again or contact an admin."
+        },
+        "errorBooked": {
+          "summary": "Delete failed",
+          "detail": "Cannot delete booked slots."
+        },
+        "errorForbidden": {
+          "summary": "Permission denied",
+          "detail": "You don't have permission to delete this slot"
+        }
+      }
+    },
+    "interviewees": {
+      "title": "Interviewees",
+      "add": "Add Applicant",
+      "addTitle": "Add Applicant",
+      "sendInvitations": "Send invitation",
+      "empty": "No interviewees yet",
+      "emptyHint": "Click \"Add Applicant\" to get started",
+      "searchPlaceholder": "Search by name or email...",
+      "selectAll": "Select all",
+      "noApplicants": "No applicants available",
+      "tryDifferentSearch": "Try a different search term",
+      "selected": "{{count}} applicant(s) selected",
+      "addSelected": "Add",
+      "tableColumns": {
+        "name": "Applicant"
+      },
+      "addSuccess": {
+        "summary": "Applicants added",
+        "detail": "{{count}} applicant(s) added successfully"
+      },
+      "filter": {
+        "ALL": "All",
+        "INVITED": "Invited",
+        "SCHEDULED": "Scheduled",
+        "UNCONTACTED": "Uncontacted",
+        "COMPLETED": "Completed"
+      },
+      "error": {
+        "loadFailed": {
+          "summary": "Error",
+          "detail": "Failed to load interviewees"
+        },
+        "loadApplicantsFailed": {
+          "summary": "Error",
+          "detail": "Failed to load available applicants"
+        },
+        "invalidApplications": {
+          "summary": "Invalid applications",
+          "detail": "Some applications belong to a different job"
+        },
+        "forbidden": {
+          "summary": "Access denied",
+          "detail": "You don't have permission for this action"
+        },
+        "addFailed": {
+          "summary": "Error",
+          "detail": "Failed to add applicants"
+        }
+      }
+    },
+    "assign": {
+      "title": "Assign Applicant to Slot",
+      "selectedSlot": "Selected Slot",
+      "selectApplicant": "Select Applicant",
+      "noApplicants": "No invited applicants available",
+      "allAssigned": "All applicants in the interview process already have a Slot",
+      "success": {
+        "summary": "Assignment Successful",
+        "detail": "Applicant has been assigned to the slot."
+      },
+      "error": {
+        "notInProcess": {
+          "summary": "Invalid Applicant",
+          "detail": "Applicant is not in this interview process"
+        },
+        "failed": {
+          "summary": "Assignment Failed",
+          "detail": "An error occurred while assigning the applicant. Please try again."
+        },
+        "loadFailed": {
+          "summary": "Loading Failed",
+          "detail": "Failed to load available applicants"
+        }
       }
     }
   }

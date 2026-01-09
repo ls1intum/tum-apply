@@ -12,23 +12,17 @@
 
     @if (canEdit() && !isCreate()) {
       <div class="comment-actions">
-        <jhi-button
-          variant="text"
-          [ariaLabel]="'button.edit' | translate"
-          [tooltip]="'button.edit' | translate"
-          icon="pen"
-          (click)="startEdit()"
-          [disabled]="isEdit()"
-          size="sm"
-        />
-        <jhi-button
-          variant="text"
-          [ariaLabel]="'button.delete' | translate"
+        <jhi-button variant="text" [tooltip]="'button.edit' | translate" icon="pen" (click)="startEdit()" [disabled]="isEdit()" size="sm" />
+        <jhi-confirm-dialog
+          [label]="'button.delete' | translate"
+          [header]="'evaluation.deleteComment.confirm.header' | translate"
+          [message]="'evaluation.deleteComment.confirm.message' | translate"
+          [severity]="'danger'"
+          confirmIcon="trash"
+          [iconOnly]="true"
           [tooltip]="'button.delete' | translate"
-          icon="trash-alt"
           size="sm"
-          (click)="deleted.emit()"
-          severity="danger"
+          (confirmed)="deleted.emit()"
         />
       </div>
     }

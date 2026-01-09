@@ -1,10 +1,8 @@
 package de.tum.cit.aet.application.repository;
 
-import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
-import de.tum.cit.aet.job.domain.Job;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -26,46 +24,47 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
                     new de.tum.cit.aet.usermanagement.dto.UserDTO(
                         ap.user.userId,
-                        ap.user.email,
+                        a.applicantEmail,
                         ap.user.avatar,
-                        ap.user.firstName,
-                        ap.user.lastName,
-                        ap.user.gender,
-                        ap.user.nationality,
-                        ap.user.birthday,
-                        ap.user.phoneNumber,
-                        ap.user.website,
-                        ap.user.linkedinUrl,
+                        a.applicantFirstName,
+                        a.applicantLastName,
+                        a.applicantGender,
+                        a.applicantNationality,
+                        a.applicantBirthday,
+                        a.applicantPhoneNumber,
+                        a.applicantWebsite,
+                        a.applicantLinkedinUrl,
                         ap.user.selectedLanguage,
                         NULL
                     ),
-                    ap.street,
-                    ap.postalCode,
-                    ap.city,
-                    ap.country,
-                    ap.bachelorDegreeName,
-                    ap.bachelorGradeUpperLimit,
-                    ap.bachelorGradeLowerLimit,
-                    ap.bachelorGrade,
-                    ap.bachelorUniversity,
-                    ap.masterDegreeName,
-                    ap.masterGradeUpperLimit,
-                    ap.masterGradeLowerLimit,
-                    ap.masterGrade,
-                    ap.masterUniversity
+                    a.applicantStreet,
+                    a.applicantPostalCode,
+                    a.applicantCity,
+                    a.applicantCountry,
+                    a.applicantBachelorDegreeName,
+                    a.applicantBachelorGradeUpperLimit,
+                    a.applicantBachelorGradeLowerLimit,
+                    a.applicantBachelorGrade,
+                    a.applicantBachelorUniversity,
+                    a.applicantMasterDegreeName,
+                    a.applicantMasterGradeUpperLimit,
+                    a.applicantMasterGradeLowerLimit,
+                    a.applicantMasterGrade,
+                    a.applicantMasterUniversity
                 ),
                 new de.tum.cit.aet.job.dto.JobCardDTO(
                     j.jobId,
                     j.title,
-                    j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
                     j.startDate,
                     j.endDate,
-                    j.contractDuration
+                    j.contractDuration,
+                    i.url
                 ),
                 a.state,
                 a.desiredStartDate,
@@ -77,7 +76,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.applicant ap
             LEFT JOIN a.job j
-
+            LEFT JOIN j.researchGroup rg
+            LEFT JOIN rg.department d
+            LEFT JOIN j.image i
         WHERE a.applicationId = :id
         """
     )
@@ -90,46 +91,47 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
                 new de.tum.cit.aet.usermanagement.dto.ApplicantDTO(
                     new de.tum.cit.aet.usermanagement.dto.UserDTO(
                         ap.user.userId,
-                        ap.user.email,
+                        a.applicantEmail,
                         ap.user.avatar,
-                        ap.user.firstName,
-                        ap.user.lastName,
-                        ap.user.gender,
-                        ap.user.nationality,
-                        ap.user.birthday,
-                        ap.user.phoneNumber,
-                        ap.user.website,
-                        ap.user.linkedinUrl,
+                        a.applicantFirstName,
+                        a.applicantLastName,
+                        a.applicantGender,
+                        a.applicantNationality,
+                        a.applicantBirthday,
+                        a.applicantPhoneNumber,
+                        a.applicantWebsite,
+                        a.applicantLinkedinUrl,
                         ap.user.selectedLanguage,
                         NULL
                     ),
-                    ap.street,
-                    ap.postalCode,
-                    ap.city,
-                    ap.country,
-                    ap.bachelorDegreeName,
-                    ap.bachelorGradeUpperLimit,
-                    ap.bachelorGradeLowerLimit,
-                    ap.bachelorGrade,
-                    ap.bachelorUniversity,
-                    ap.masterDegreeName,
-                    ap.masterGradeUpperLimit,
-                    ap.masterGradeLowerLimit,
-                    ap.masterGrade,
-                    ap.masterUniversity
+                    a.applicantStreet,
+                    a.applicantPostalCode,
+                    a.applicantCity,
+                    a.applicantCountry,
+                    a.applicantBachelorDegreeName,
+                    a.applicantBachelorGradeUpperLimit,
+                    a.applicantBachelorGradeLowerLimit,
+                    a.applicantBachelorGrade,
+                    a.applicantBachelorUniversity,
+                    a.applicantMasterDegreeName,
+                    a.applicantMasterGradeUpperLimit,
+                    a.applicantMasterGradeLowerLimit,
+                    a.applicantMasterGrade,
+                    a.applicantMasterUniversity
                 ),
                 new de.tum.cit.aet.job.dto.JobCardDTO(
                     j.jobId,
                     j.title,
-                    j.fieldOfStudies,
                     j.location,
                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                    COALESCE(d.name, 'No Department'),
                     a.applicationId,
                     a.state,
                     j.workload,
                     j.startDate,
                     j.endDate,
-                    j.contractDuration
+                    j.contractDuration,
+                    i.url
                 ),
                 a.state,
                 a.desiredStartDate,
@@ -141,6 +143,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             LEFT JOIN a.job j
             LEFT JOIN a.applicant ap
+            LEFT JOIN j.researchGroup rg
+            LEFT JOIN rg.department d
+            LEFT JOIN j.image i
             WHERE ap.user.userId = :userId AND j.jobId = :jobId
         """
     )
@@ -194,12 +199,24 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     long countByApplicantId(@Param("applicantId") UUID applicantId);
 
     /**
-     * Counts applications grouped by job and state for jobs with interview processes
+     * Finds all applications submitted by a specific applicant.
+     *
+     * @param applicantId the ID of the applicant (user ID)
+     * @return a list of applications
+     */
+    @Query("SELECT a FROM Application a WHERE a.applicant.user.userId = :applicantId")
+    List<Application> findAllByApplicantId(@Param("applicantId") UUID applicantId);
+
+    /**
+     * Counts applications grouped by job and state for jobs with interview
+     * processes
      * belonging to a specific professor.
-     * This is optimized to fetch all counts in a single query instead of N×M queries.
+     * This is optimized to fetch all counts in a single query instead of N×M
+     * queries.
      * Used by the interview overview to efficiently get statistics across all jobs.
      *
-     * @param professorId the ID of the professor whose jobs to count applications for
+     * @param professorId the ID of the professor whose jobs to count applications
+     *                    for
      * @return List of Object arrays containing [Job, ApplicationState, Count]
      */
     @Query(

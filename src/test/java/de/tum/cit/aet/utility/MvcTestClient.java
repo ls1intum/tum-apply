@@ -98,6 +98,7 @@ public class MvcTestClient {
         MvcResult result;
         switch (expectedStatus) {
             case 200 -> result = getOk(url, params, accepts);
+            case 204 -> result = getNoContent(url, params, accepts);
             case 400 -> result = getInvalid(url, params, accepts);
             case 401 -> result = getUnauthorized(url, params, accepts);
             case 403 -> result = getForbidden(url, params, accepts);
@@ -119,7 +120,7 @@ public class MvcTestClient {
                 builder.file(file);
             }
             // Apply default Accept header and RequestPostProcessors (e.g., JWT)
-            applyDefaults(builder);
+            builder = (MockMultipartHttpServletRequestBuilder) applyDefaults(builder);
             MvcResult result = mockMvc.perform(builder).andExpect(status().is(expectedStatus)).andReturn();
 
             String body = result.getResponse().getContentAsString();
@@ -151,7 +152,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a GET and asserts the given status, then returns the raw response body as bytes.
+     * Performs a GET and asserts the given status, then returns the raw response
+     * body as bytes.
      * Useful for binary downloads (e.g. ZIP, PDF).
      */
     public byte[] getAndReturnBytes(String url, Map<String, String> params, int expectedStatus, MediaType... accepts) {
@@ -184,37 +186,39 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a POST with a JSON body and asserts the given status, then returns
-     * the raw response
-     * body as bytes.
-     * Useful for binary downloads (e.g. PDF) returned from POST requests.
+     * Performs a GET and asserts the given status, then returns the full servlet
+     * response.
+     * Useful for asserting headers/content-type for downloads.
      */
-    public byte[] postAndReturnBytes(String url, Object body, int expectedStatus, MediaType... accepts) {
+    public MockHttpServletResponse getAndReturnResponse(String url, Map<String, String> params, int expectedStatus, MediaType... accepts) {
         try {
-            ResultActions action = mockMvc.perform(
-                applyDefaults(post(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
-            );
-
-            MockHttpServletResponse response;
-            switch (expectedStatus) {
-                case 200 -> response = action.andExpect(status().isOk()).andReturn().getResponse();
-                case 204 -> response = action.andExpect(status().isNoContent()).andReturn().getResponse();
-                case 400 -> response = action.andExpect(status().isBadRequest()).andReturn().getResponse();
-                case 401 -> response = action.andExpect(status().isUnauthorized()).andReturn().getResponse();
-                case 403 -> response = action.andExpect(status().isForbidden()).andReturn().getResponse();
-                case 404 -> response = action.andExpect(status().isNotFound()).andReturn().getResponse();
-                case 500 -> response = action.andExpect(status().isInternalServerError()).andReturn().getResponse();
-                default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+            MultiValueMap<String, String> multiParams = new LinkedMultiValueMap<>();
+            if (params != null) {
+                params.forEach(multiParams::add);
             }
 
-            return response.getContentAsByteArray();
+            ResultActions action = mockMvc.perform(
+                applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url).params(multiParams), accepts)
+            );
+
+            return switch (expectedStatus) {
+                case 200 -> action.andExpect(status().isOk()).andReturn().getResponse();
+                case 204 -> action.andExpect(status().isNoContent()).andReturn().getResponse();
+                case 400 -> action.andExpect(status().isBadRequest()).andReturn().getResponse();
+                case 401 -> action.andExpect(status().isUnauthorized()).andReturn().getResponse();
+                case 403 -> action.andExpect(status().isForbidden()).andReturn().getResponse();
+                case 404 -> action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 500 -> action.andExpect(status().isInternalServerError()).andReturn().getResponse();
+                default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+            };
         } catch (Exception e) {
-            throw new AssertionError("POST " + url + " failed with status " + expectedStatus, e);
+            throw new AssertionError("GET " + url + " failed with status " + expectedStatus, e);
         }
     }
 
     /**
-     * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the given class.
+     * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the
+     * given class.
      * If type is Void, only the assertion is performed.
      */
     public <T> T postAndRead(String url, Object body, Class<T> type, int expectedStatus, MediaType... accepts) {
@@ -228,6 +232,7 @@ public class MvcTestClient {
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             case 409 -> result = postConflict(url, body, accepts);
+            case 500 -> result = postInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -252,6 +257,7 @@ public class MvcTestClient {
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             case 409 -> result = postConflict(url, body, accepts);
+            case 500 -> result = postInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
         return read(result, typeRef);
@@ -313,6 +319,7 @@ public class MvcTestClient {
             case 401 -> result = deleteUnauthorized(url, body, accepts);
             case 403 -> result = deleteForbidden(url, body, accepts);
             case 404 -> result = deleteNotFound(url, body, accepts);
+            case 500 -> result = deleteInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
 
@@ -342,6 +349,18 @@ public class MvcTestClient {
             return get(url, params, accepts).andExpect(status().isOk()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("GET " + url + " failed", e);
+        }
+    }
+
+    /**
+     * Low-level GET that asserts 200 OK and returns the MvcResult.
+     * Wraps checked exceptions as AssertionError for cleaner tests.
+     */
+    private MvcResult getNoContent(String url, Map<String, String> params, MediaType... accepts) {
+        try {
+            return get(url, params, accepts).andExpect(status().isNoContent()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("GET " + url + " failed with 204", e);
         }
     }
 
@@ -490,6 +509,18 @@ public class MvcTestClient {
     }
 
     /**
+     * Low-level POST that asserts 500 Internal Server Error and returns the
+     * MvcResult.
+     */
+    private MvcResult postInternalServerError(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isInternalServerError()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with 500", e);
+        }
+    }
+
+    /**
      * Low-level PUT that asserts 200 OK and returns the MvcResult.
      */
     private MvcResult putOk(String url, Object body, MediaType... accepts) {
@@ -633,16 +664,20 @@ public class MvcTestClient {
         }
     }
 
+    /**
+     * Low-level DELETE that asserts 500 Internal Server Error and returns the
+     * MvcResult.
+     */
+    private MvcResult deleteInternalServerError(String url, Object body, MediaType... accepts) {
+        try {
+            return deleteJson(url, body, accepts).andExpect(status().isInternalServerError()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("DELETE " + url + " failed with 500", e);
+        }
+    }
+
     // --- HTTP performers (low-level, throw checked Exception)
     // -----------------------------------
-
-    /**
-     * Builds and performs a GET applying default Accept and any configured
-     * RequestPostProcessors.
-     */
-    private ResultActions get(String url, MediaType... accepts) throws Exception {
-        return mockMvc.perform(applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url), accepts));
-    }
 
     /**
      * Builds and performs a GET with query parameters, applying defaults and

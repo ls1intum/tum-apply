@@ -3,21 +3,21 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/admin/research-groups/provision:
-    post:
-      tags: [admin-resource]
-      operationId: provisionResearchGroup
-      requestBody:
-        content:
-          application/json:
-            schema: {$ref: '#/components/schemas/ResearchGroupProvisionDTO'}
-        required: true
+  /api/ai/generate:
+    get:
+      tags: [ai-resource]
+      operationId: storyWithStream
+      parameters:
+      - name: message
+        in: query
+        required: false
+        schema: {type: string, default: Tell a story in less than 100 words}
       responses:
         '200':
           description: OK
           content:
-            application/json:
-              schema: {$ref: '#/components/schemas/ResearchGroup'}
+            text/event-stream:
+              schema: {type: string}
   /api/applications:
     put:
       tags: [application-resource]
@@ -332,6 +332,17 @@ paths:
         required: true
       responses:
         '200': {description: OK}
+  /api/auth/send-registration-email:
+    post:
+      tags: [email-verification-resource]
+      operationId: sendRegistrationEmail
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SendCodeRequest'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/comments/{commentId}:
     put:
       tags: [internal-comment-resource]
@@ -362,6 +373,122 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/departments:
+    get:
+      tags: [department-resource]
+      operationId: getDepartments
+      parameters:
+      - name: schoolId
+        in: query
+        required: false
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/DepartmentDTO'}
+    post:
+      tags: [department-resource]
+      operationId: createDepartment
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DepartmentCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
+  /api/departments/admin/search:
+    get:
+      tags: [department-resource]
+      operationId: getDepartmentsForAdmin
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: schoolNames
+        in: query
+        required: false
+        schema:
+          type: array
+          items: {type: string}
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      - name: sortBy
+        in: query
+        required: false
+        schema: {type: string}
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [ASC, DESC]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTODepartmentDTO'}
+  /api/departments/delete/{id}:
+    delete:
+      tags: [department-resource]
+      operationId: deleteDepartment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/departments/update/{id}:
+    put:
+      tags: [department-resource]
+      operationId: updateDepartment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DepartmentCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
+  /api/departments/{id}:
+    get:
+      tags: [department-resource]
+      operationId: getDepartmentById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DepartmentDTO'}
   /api/documents/{documentDictionaryId}:
     get:
       tags: [document-resource]
@@ -713,6 +840,43 @@ paths:
           content:
             application/pdf:
               schema: {type: string, format: binary}
+  /api/export/job/preview/pdf:
+    post:
+      tags: [pdf-export-resource]
+      operationId: exportJobPreviewToPDF
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JobPreviewRequest'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema: {type: string, format: binary}
+  /api/export/job/{id}/pdf:
+    post:
+      tags: [pdf-export-resource]
+      operationId: exportJobToPDF
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {type: string}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema: {type: string, format: binary}
   /api/gender-bias/analyze:
     post:
       tags: [gender-bias-analysis-resource]
@@ -743,6 +907,128 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/GenderBiasAnalysisResponse'}
+  /api/images/defaults/job-banners:
+    get:
+      tags: [image-resource]
+      operationId: getDefaultJobBanners
+      parameters:
+      - name: departmentId
+        in: query
+        required: false
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/defaults/job-banners/by-school:
+    get:
+      tags: [image-resource]
+      operationId: getDefaultJobBannersBySchool
+      parameters:
+      - name: schoolId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/defaults/job-banners/for-me:
+    get:
+      tags: [image-resource]
+      operationId: getMyDefaultJobBanners
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/my-uploads:
+    get:
+      tags: [image-resource]
+      operationId: getMyUploadedImages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/research-group/job-banners:
+    get:
+      tags: [image-resource]
+      operationId: getResearchGroupJobBanners
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/default-job-banner:
+    post:
+      tags: [image-resource]
+      operationId: uploadDefaultJobBanner
+      parameters:
+      - name: departmentId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/job-banner:
+    post:
+      tags: [image-resource]
+      operationId: uploadJobBanner
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/{imageId}:
+    delete:
+      tags: [image-resource]
+      operationId: deleteImage
+      parameters:
+      - name: imageId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -755,6 +1041,143 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/InterviewOverviewDTO'}
+  /api/interviews/processes/{processId}:
+    get:
+      tags: [interview-resource]
+      operationId: getInterviewProcessDetails
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewOverviewDTO'}
+  /api/interviews/processes/{processId}/interviewees:
+    get:
+      tags: [interview-resource]
+      operationId: getIntervieweesByProcessId
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/IntervieweeDTO'}
+    post:
+      tags: [interview-resource]
+      operationId: addApplicantsToInterview
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AddIntervieweesDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/IntervieweeDTO'}
+  /api/interviews/processes/{processId}/slots:
+    get:
+      tags: [interview-resource]
+      operationId: getSlotsByProcessId
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: year
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: month
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: page
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 20}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOInterviewSlotDTO'}
+  /api/interviews/processes/{processId}/slots/create:
+    post:
+      tags: [interview-resource]
+      operationId: createSlots
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateSlotsDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/slots/{slotId}:
+    delete:
+      tags: [interview-resource]
+      operationId: deleteSlot
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200': {description: OK}
+  /api/interviews/slots/{slotId}/assign:
+    post:
+      tags: [interview-resource]
+      operationId: assignSlotToInterviewee
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AssignSlotRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -1131,6 +1554,16 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
+    post:
+      tags: [research-group-resource]
+      operationId: addMembersToResearchGroup
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AddMembersToResearchGroupDTO'}
+        required: true
+      responses:
+        '200': {description: OK}
   /api/research-groups/members/{userId}:
     delete:
       tags: [research-group-resource]
@@ -1221,6 +1654,29 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/{researchGroupId}/members:
+    get:
+      tags: [research-group-resource]
+      operationId: getResearchGroupMembersById
+      parameters:
+      - name: researchGroupId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOUserShortDTO'}
   /api/research-groups/{researchGroupId}/withdraw:
     post:
       tags: [research-group-resource]
@@ -1236,6 +1692,59 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/schools:
+    get:
+      tags: [school-resource]
+      operationId: getAllSchools
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/SchoolShortDTO'}
+    post:
+      tags: [school-resource]
+      operationId: createSchool
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SchoolCreationDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SchoolShortDTO'}
+  /api/schools/with-departments:
+    get:
+      tags: [school-resource]
+      operationId: getAllSchoolsWithDepartments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/SchoolDTO'}
+  /api/schools/{id}:
+    get:
+      tags: [school-resource]
+      operationId: getSchoolById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SchoolDTO'}
   /api/settings/emails:
     get:
       tags: [email-setting-resource]
@@ -1269,6 +1778,41 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/EmailSettingDTO'}
                 uniqueItems: true
+  /api/users/available-for-research-group:
+    get:
+      tags: [user-resource]
+      operationId: getAvailableUsersForResearchGroup
+      parameters:
+      - name: pageSize
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 1}
+      - name: pageNumber
+        in: query
+        required: false
+        schema: {type: integer, format: int32, minimum: 0}
+      - name: searchQuery
+        in: query
+        required: false
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
+  /api/users/export:
+    get:
+      tags: [user-data-export-resource]
+      summary: Export user data
+      operationId: exportUserData
+      responses:
+        '200':
+          description: OK
+          content:
+            application/zip:
+              schema: {type: string, format: binary}
+        '500': {description: Internal Server Error}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1309,6 +1853,22 @@ components:
         closeJob: {type: boolean}
         message: {type: string, maxLength: 3000, minLength: 0}
         notifyApplicant: {type: boolean}
+    AddIntervieweesDTO:
+      type: object
+      properties:
+        applicationIds:
+          type: array
+          items: {type: string, format: uuid}
+      required: [applicationIds]
+    AddMembersToResearchGroupDTO:
+      type: object
+      properties:
+        keycloakUsers:
+          type: array
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
+          minItems: 1
+        researchGroupId: {type: string, format: uuid}
+      required: [keycloakUsers]
     Applicant:
       type: object
       properties:
@@ -1370,6 +1930,29 @@ components:
       type: object
       properties:
         applicant: {$ref: '#/components/schemas/Applicant'}
+        applicantBachelorDegreeName: {type: string}
+        applicantBachelorGrade: {type: string}
+        applicantBachelorGradeLowerLimit: {type: string}
+        applicantBachelorGradeUpperLimit: {type: string}
+        applicantBachelorUniversity: {type: string}
+        applicantBirthday: {type: string, format: date}
+        applicantCity: {type: string}
+        applicantCountry: {type: string}
+        applicantEmail: {type: string}
+        applicantFirstName: {type: string}
+        applicantGender: {type: string}
+        applicantLastName: {type: string}
+        applicantLinkedinUrl: {type: string}
+        applicantMasterDegreeName: {type: string}
+        applicantMasterGrade: {type: string}
+        applicantMasterGradeLowerLimit: {type: string}
+        applicantMasterGradeUpperLimit: {type: string}
+        applicantMasterUniversity: {type: string}
+        applicantNationality: {type: string}
+        applicantPhoneNumber: {type: string}
+        applicantPostalCode: {type: string}
+        applicantStreet: {type: string}
+        applicantWebsite: {type: string}
         applicationId: {type: string, format: uuid}
         applicationReview: {$ref: '#/components/schemas/ApplicationReview'}
         appliedAt: {type: string, format: date-time}
@@ -1490,10 +2073,10 @@ components:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
+        createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         researchGroup: {type: string}
-        timeSinceCreation: {type: string}
     ApplicationReview:
       type: object
       properties:
@@ -1502,6 +2085,22 @@ components:
         reason: {type: string}
         reviewedAt: {type: string, format: date-time}
         reviewedBy: {$ref: '#/components/schemas/User'}
+    AssignSlotRequestDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+      required: [applicationId]
+    AssignedIntervieweeDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+        email: {type: string}
+        firstName: {type: string}
+        id: {type: string, format: uuid}
+        lastName: {type: string}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
     AuthSessionInfoDTO:
       type: object
       properties:
@@ -1513,6 +2112,14 @@ components:
       properties:
         type: {type: string}
         word: {type: string}
+    CreateSlotsDTO:
+      type: object
+      properties:
+        slots:
+          type: array
+          items: {$ref: '#/components/schemas/SlotInput'}
+          minItems: 1
+      required: [slots]
     CreatedJobDTO:
       type: object
       properties:
@@ -1566,6 +2173,31 @@ components:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
     CustomFieldDTO: {}
+    Department:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        departmentId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        name: {type: string}
+        school: {$ref: '#/components/schemas/School'}
+    DepartmentCreationDTO:
+      type: object
+      properties:
+        name: {type: string, maxLength: 200, minLength: 2}
+        schoolId: {type: string, format: uuid}
+      required: [name, schoolId]
+    DepartmentDTO:
+      type: object
+      properties:
+        departmentId: {type: string, format: uuid}
+        name: {type: string}
+        school: {$ref: '#/components/schemas/SchoolShortDTO'}
+    DepartmentShortDTO:
+      type: object
+      properties:
+        departmentId: {type: string, format: uuid}
+        name: {type: string}
     DocumentDTO: {}
     DocumentInformationHolderDTO:
       type: object
@@ -1640,6 +2272,28 @@ components:
         coding: {type: string}
         language: {type: string}
         originalText: {type: string}
+    Image:
+      type: object
+      properties:
+        createdAt: {type: string, format: date-time}
+        imageId: {type: string, format: uuid}
+        lastModifiedAt: {type: string, format: date-time}
+        mimeType: {type: string}
+        sizeBytes: {type: integer, format: int64}
+        uploadedBy: {$ref: '#/components/schemas/User'}
+        url: {type: string}
+    ImageDTO:
+      type: object
+      properties:
+        departmentId: {type: string, format: uuid}
+        imageId: {type: string, format: uuid}
+        imageType:
+          type: string
+          enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
+        researchGroupId: {type: string, format: uuid}
+        sizeBytes: {type: integer, format: int64}
+        uploadedById: {type: string, format: uuid}
+        url: {type: string}
     InternalComment:
       type: object
       properties:
@@ -1669,11 +2323,41 @@ components:
         invitedCount: {type: integer, format: int64}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
+        processId: {type: string, format: uuid}
         scheduledCount: {type: integer, format: int64}
         totalInterviews: {type: integer, format: int64}
         uncontactedCount: {type: integer, format: int64}
-      required: [completedCount, invitedCount, jobId, jobTitle, scheduledCount, totalInterviews,
-        uncontactedCount]
+      required: [completedCount, invitedCount, jobId, jobTitle, processId, scheduledCount,
+        totalInterviews, uncontactedCount]
+    InterviewSlotDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        interviewProcessId: {type: string, format: uuid}
+        interviewee: {$ref: '#/components/schemas/AssignedIntervieweeDTO'}
+        isBooked: {type: boolean}
+        location: {type: string}
+        startDateTime: {type: string, format: date-time}
+        streamLink: {type: string}
+    IntervieweeDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+        id: {type: string, format: uuid}
+        lastInvited: {type: string, format: date-time}
+        scheduledSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
+        user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
+    IntervieweeUserDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        lastName: {type: string}
+        userId: {type: string, format: uuid}
     Job:
       type: object
       properties:
@@ -1693,6 +2377,7 @@ components:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        image: {$ref: '#/components/schemas/Image'}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location:
@@ -1719,7 +2404,8 @@ components:
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
             INVITED, SCHEDULED, COMPLETED]
         contractDuration: {type: integer, format: int32}
-        fieldOfStudies: {type: string}
+        departmentName: {type: string}
+        imageUrl: {type: string}
         jobId: {type: string, format: uuid}
         location: {type: string}
         professorName: {type: string}
@@ -1728,7 +2414,7 @@ components:
         startDate: {type: string, format: date}
         title: {type: string}
         workload: {type: integer, format: int32}
-      required: [fieldOfStudies, jobId, location, professorName, title]
+      required: [jobId, location, professorName, title]
     JobDTO:
       type: object
       properties:
@@ -1740,6 +2426,8 @@ components:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        imageId: {type: string, format: uuid}
+        imageUrl: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
@@ -1806,6 +2494,7 @@ components:
           type: string
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
+        imageId: {type: string, format: uuid}
         jobId: {type: string, format: uuid}
         location:
           type: string
@@ -1829,6 +2518,15 @@ components:
         labels:
           type: object
           additionalProperties: {type: string}
+    KeycloakUserDTO:
+      type: object
+      properties:
+        email: {type: string}
+        firstName: {type: string}
+        id: {type: string, format: uuid}
+        lastName: {type: string}
+        universityId: {type: string}
+        username: {type: string}
     LoginRequestDTO:
       type: object
       properties:
@@ -1897,12 +2595,33 @@ components:
         sort: {$ref: '#/components/schemas/SortObject'}
         totalElements: {type: integer, format: int64}
         totalPages: {type: integer, format: int32}
+    PageResponseDTODepartmentDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/DepartmentDTO'}
+        totalElements: {type: integer, format: int64}
     PageResponseDTOEmailTemplateOverviewDTO:
       type: object
       properties:
         content:
           type: array
           items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOInterviewSlotDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        totalElements: {type: integer, format: int64}
+    PageResponseDTOKeycloakUserDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/KeycloakUserDTO'}
         totalElements: {type: integer, format: int64}
     PageResponseDTOResearchGroupAdminDTO:
       type: object
@@ -1974,6 +2693,7 @@ components:
         city: {type: string}
         createdAt: {type: string, format: date-time}
         defaultFieldOfStudies: {type: string}
+        department: {$ref: '#/components/schemas/Department'}
         description: {type: string}
         email: {type: string}
         head: {type: string}
@@ -1981,7 +2701,7 @@ components:
         name: {type: string}
         postalCode: {type: string}
         researchGroupId: {type: string, format: uuid}
-        school: {type: string}
+        school: {$ref: '#/components/schemas/School'}
         state:
           type: string
           enum: [DRAFT, ACTIVE, DENIED]
@@ -1996,6 +2716,7 @@ components:
       type: object
       properties:
         createdAt: {type: string, format: date-time}
+        department: {$ref: '#/components/schemas/DepartmentDTO'}
         id: {type: string, format: uuid}
         professorName: {type: string}
         researchGroup: {type: string}
@@ -2008,12 +2729,12 @@ components:
         abbreviation: {type: string}
         city: {type: string}
         defaultFieldOfStudies: {type: string}
+        departmentId: {type: string, format: uuid}
         description: {type: string}
         email: {type: string, format: email}
         head: {type: string, minLength: 1}
         name: {type: string, minLength: 1}
         postalCode: {type: string}
-        school: {type: string}
         state:
           type: string
           enum: [DRAFT, ACTIVE, DENIED]
@@ -2029,12 +2750,6 @@ components:
         postalCode: {type: string}
         street: {type: string}
         website: {type: string}
-    ResearchGroupProvisionDTO:
-      type: object
-      properties:
-        researchGroupId: {type: string, format: uuid}
-        universityId: {type: string, maxLength: 7, minLength: 3}
-      required: [universityId]
     ResearchGroupRequestDTO:
       type: object
       properties:
@@ -2042,28 +2757,67 @@ components:
         city: {type: string}
         contactEmail: {type: string}
         defaultFieldOfStudies: {type: string}
+        departmentId: {type: string, format: uuid}
         description: {type: string}
         firstName: {type: string}
         lastName: {type: string}
         postalCode: {type: string}
         researchGroupHead: {type: string}
         researchGroupName: {type: string}
-        school: {type: string}
         street: {type: string}
         title: {type: string}
         universityId: {type: string}
         website: {type: string}
+      required: [departmentId]
     ResearchGroupShortDTO:
       type: object
       properties:
         name: {type: string}
         researchGroupId: {type: string, format: uuid}
+    School:
+      type: object
+      properties:
+        abbreviation: {type: string}
+        createdAt: {type: string, format: date-time}
+        lastModifiedAt: {type: string, format: date-time}
+        name: {type: string}
+        schoolId: {type: string, format: uuid}
+    SchoolCreationDTO:
+      type: object
+      properties:
+        abbreviation: {type: string, maxLength: 20, minLength: 2}
+        name: {type: string, maxLength: 200, minLength: 2}
+      required: [abbreviation, name]
+    SchoolDTO:
+      type: object
+      properties:
+        abbreviation: {type: string}
+        departments:
+          type: array
+          items: {$ref: '#/components/schemas/DepartmentShortDTO'}
+        name: {type: string}
+        schoolId: {type: string, format: uuid}
+    SchoolShortDTO:
+      type: object
+      properties:
+        abbreviation: {type: string}
+        name: {type: string}
+        schoolId: {type: string, format: uuid}
     SendCodeRequest:
       type: object
       properties:
         email: {type: string, format: email, minLength: 1}
         registration: {type: boolean}
       required: [email]
+    SlotInput:
+      type: object
+      properties:
+        date: {type: string, format: date}
+        endTime: {type: string}
+        location: {type: string, maxLength: 255, minLength: 0}
+        startTime: {type: string}
+        streamLink: {type: string, maxLength: 500, minLength: 0}
+      required: [date, endTime, location, startTime]
     SortObject:
       type: object
       properties:
@@ -2153,7 +2907,6 @@ components:
         name: {type: string}
         nationality: {type: string}
         phoneNumber: {type: string}
-        preferredLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
       required: [userId]
@@ -2168,7 +2921,7 @@ components:
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         role:
           type: string
-          enum: [APPLICANT, PROFESSOR, ADMIN]
+          enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         user: {$ref: '#/components/schemas/User'}
         userResearchGroupRoleId: {type: string, format: uuid}
     UserShortDTO:
@@ -2182,5 +2935,5 @@ components:
           type: array
           items:
             type: string
-            enum: [APPLICANT, PROFESSOR, ADMIN]
+            enum: [APPLICANT, PROFESSOR, ADMIN, EMPLOYEE]
         userId: {type: string, format: uuid}

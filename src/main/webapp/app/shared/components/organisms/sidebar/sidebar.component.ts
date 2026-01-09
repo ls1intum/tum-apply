@@ -131,6 +131,38 @@ export class SidebarComponent {
           ],
         },
       ],
+      EMPLOYEE: [
+        {
+          title: 'sidebar.manage.manage',
+          buttons: [
+            { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
+            { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
+          ],
+        },
+        {
+          title: 'sidebar.applications.applications',
+          buttons: [
+            {
+              icon: 'application-overview',
+              text: 'sidebar.applications.applicationoverview',
+              link: '/evaluation/overview',
+            },
+            {
+              icon: 'review-applications',
+              text: 'sidebar.applications.reviewapplications',
+              link: '/evaluation/application',
+            },
+          ],
+        },
+        {
+          title: 'sidebar.researchgroup.researchgroup',
+          buttons: [
+            { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
+            { icon: 'users', text: 'sidebar.researchgroup.yourmembers', link: '/research-group/members' },
+            { icon: 'research-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
+          ],
+        },
+      ],
       ADMIN: [
         {
           title: 'sidebar.dashboard.dashboard',
@@ -143,7 +175,8 @@ export class SidebarComponent {
           title: 'sidebar.content.content',
           buttons: [
             { icon: 'folder', text: 'sidebar.content.allpositions', link: '/all-positions' },
-            { icon: 'microscope', text: 'sidebar.content.researchgroups', link: '/research-group/admin-view' },
+            { icon: 'research-group', text: 'sidebar.content.researchgroups', link: '/research-group/admin-view' },
+            { icon: 'building-user', text: 'sidebar.content.departments', link: '/research-group/departments' },
           ],
         },
         {

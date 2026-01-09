@@ -4,7 +4,6 @@
   padding: 1.5rem;
 
   .confirm-title {
-    color: var(--p-text-primary);
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -12,7 +11,6 @@
   }
 
   .confirm-message {
-    color: var(--p-text-primary);
     text-align: left;
     margin-bottom: 1.5rem;
   }
@@ -20,6 +18,7 @@
   .confirm-buttons {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 0.75rem;
   }
 }
@@ -29,5 +28,19 @@
   box-shadow: none;
   border: none;
   max-width: 45rem;
-  width: 100%;
+}
+
+.confirm-dialog-sm {
+  width: 400px;
+  max-width: 90vw;
+}
+
+.confirm-dialog-md {
+  width: 600px;
+  max-width: 90vw;
+}
+
+.confirm-dialog-lg {
+  width: 800px;
+  max-width: 95vw;
 }

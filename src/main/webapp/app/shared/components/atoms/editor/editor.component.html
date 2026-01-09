@@ -58,6 +58,32 @@
           <span class="ql-formats">
             <button class="ql-link" aria-label="Insert Link" type="button"></button>
           </span>
+
+          @if (showGenderDecoderButton()) {
+            <span class="ql-formats ml-auto !flex items-center gap-2 flex-shrink-0 max-w-full">
+              @if (codingDisplay(); as coding) {
+                <span
+                  class="px-3 py-1 rounded text-xs break-words"
+                  [ngClass]="analysisResult()?.coding === 'non-inclusive-coded' ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"
+                >
+                  {{ coding }}
+                </span>
+              }
+              @if (shouldShowButton()) {
+                <button
+                  type="button"
+                  class="whitespace-nowrap w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center cursor-pointer hover:brightness-93 flex-shrink-0"
+                  [style]="'color: var(--p-primary-color); border: 1px solid var(--p-primary-color); background-color: white;'"
+                  (click)="onGenderDecoderClick()"
+                  [pTooltip]="'genderDecoder.openAnaylsis' | translate"
+                  tooltipPosition="top"
+                  [disabled]="!analysisResult()"
+                >
+                  ?
+                </button>
+              }
+            </span>
+          }
         </div>
       </quill-editor>
     </div>
@@ -77,3 +103,11 @@
     </div>
   </div>
 </div>
+@if (showGenderDecoderButton()) {
+  <jhi-gender-bias-analysis-dialog
+    [visible]="showAnalysisModal()"
+    [result]="analysisResult()"
+    (visibleChange)="showAnalysisModal.set($event)"
+    (closeDialog)="closeAnalysisModal()"
+  />
+}

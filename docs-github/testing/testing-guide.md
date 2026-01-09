@@ -1,16 +1,16 @@
 # Testing Guide
 
-This document describes how to run and structure tests in TUMApply, both for the Spring Boot server and Angular client.
+This document describes how to write and run and structure tests in TUMApply, both for the Spring Boot server and Angular client.
 
 ---
 
-## Server-Side Testing (Spring Boot)
+## 📂 Test Location & Structure (Mirror Source)
 
-To run all server tests including unit and integration tests, use:
+To ensure maintainability, we strictly follow a **Mirror Structure**. This means the directory hierarchy in the test folder must **exactly match** the package structure of the source code.
 
-```bash
-./gradlew test integrationTest jacocoTestReport
-```
+Test files are located in : `src/test`
+
+---
 
 ### Test Types
 
@@ -22,26 +22,21 @@ Test reports will be available under `build/reports/tests/` and `build/reports/j
 
 ---
 
-## Client-Side Testing (Angular + Jest)
+## Client-Side Testing (Angular)
 
-Client tests are powered by **Jest** and run independently from the server:
+- Test runner: **Vitest**  
+  Example command:
+  ```bash
+  npm run test:ci
+  ```
+- View coverage report of tests:
 
-```bash
-./npmw test
-```
+  ```bash
+  open build/test-results/lcov-report/index.html
+  ```
 
-Tests are colocated with components and services in the Angular structure.
-
-### Example
-
-```ts
-describe('NavbarComponent', () => {
-    it('should toggle theme', () => {
-        const fixture = TestBed.createComponent(NavbarComponent);
-    ...
-    });
-});
-```
+- Coverage thresholds (CI): **95%** for statements/branches/functions/lines.  
+  Keep unit tests close to the component you change. Prefer focused DOM and behavior tests (validation, visibility of actions, rendering of states, sorting/filter effects).
 
 You can also run tests with code coverage:
 
@@ -51,40 +46,28 @@ You can also run tests with code coverage:
 
 ---
 
-## Code Quality & SonarQube
+## Server-Side Testing (Spring Boot)
 
-We use **SonarQube** to continuously inspect code quality. To start a local SonarQube server:
+### Tools
+
+- **JUnit 5:** The main testing framework.
+- **AssertJ:** Used for fluent assertions.
+- **Mockito:** For mocking dependencies in isolated unit tests.
+
+Run all tests with:
 
 ```bash
-docker compose -f src/main/docker/sonar.yml up -d
+ ./gradlew test
 ```
 
-Access it at [http://localhost:9001](http://localhost:9001)
+Generate test coverage report with:
 
-Note: we have turned off forced authentication redirect for UI in [src/main/docker/sonar.yml](src/main/docker/sonar.yml)
-for out of the box experience while trying out SonarQube, for real use cases turn it back on.
-
-You can run a Sonar analysis with using
-the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the gradle
-plugin.
-
-Then, run a Sonar analysis:
-
-```
-./gradlew -Pprod clean check jacocoTestReport sonarqube -Dsonar.login=admin -Dsonar.password=admin
+```bash
+ ./gradlew test jacocoTestReport
 ```
 
-Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured
-from [sonar-project.properties](sonar-project.properties) as shown below:
+View coverage report of tests:
 
+```bash
+ open build/reports/jacoco/test/html/index.html
 ```
-sonar.login=admin
-sonar.password=admin
-```
-
----
-
-## Notes
-
-- Make sure Docker is running before executing SonarQube commands
-- Adjust test file naming (`*.spec.ts`, `*Test.java`) to ensure they are picked up

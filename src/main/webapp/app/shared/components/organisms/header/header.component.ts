@@ -1,58 +1,51 @@
-import { Component, ViewEncapsulation, WritableSignal, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, ViewEncapsulation, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { filter, fromEventPattern, map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
+import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
+import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
+import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { ThemeService } from 'app/service/theme.service';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
-import { AuthFacadeService } from '../../../../core/auth/auth-facade.service';
-import { AuthDialogService } from '../../../../core/auth/auth-dialog.service';
+import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
-import { IdpProvider } from '../../../../core/auth/keycloak-authentication.service';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
-    CommonModule,
-    ButtonComponent,
-    FontAwesomeModule,
-    TranslateModule,
-    DynamicDialogModule,
-    TranslateDirective,
-  ],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
-  bodyClassChanges$ = fromEventPattern<MutationRecord[]>(handler => {
-    const observer = new MutationObserver(handler as MutationCallback);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }).pipe(map(() => document.body.classList.contains('tum-apply-dark-mode')));
-  isDarkMode = toSignal(this.bodyClassChanges$, {
-    initialValue: document.body.classList.contains('tum-apply-dark-mode'),
-  });
   translateService = inject(TranslateService);
   currentLanguage = toSignal(this.translateService.onLangChange.pipe(map(event => event.lang.toUpperCase())), {
-    initialValue: this.translateService.currentLang ? this.translateService.currentLang.toUpperCase() : 'EN',
+    initialValue: this.translateService.getCurrentLang() ? this.translateService.getCurrentLang().toUpperCase() : 'EN',
   });
   languages = LANGUAGES.map(lang => lang.toUpperCase());
   accountService = inject(AccountService);
   user: WritableSignal<User | undefined> = this.accountService.user;
   router = inject(Router);
-
+  themeService = inject(ThemeService);
+  theme = this.themeService.theme;
+  isDarkMode = computed(() => this.theme() === 'dark');
+  showBorder = signal(false);
+  themeOptions: SelectOption[] = [
+    { name: 'Light', value: 'light' },
+    { name: 'Dark', value: 'dark' },
+    { name: 'Blossom', value: 'blossom' },
+    { name: 'AquaBloom', value: 'aquabloom' },
+  ];
+  selectedTheme = computed(() => this.themeOptions.find(opt => opt.value === this.theme()));
   routeAuthorities = toSignal(
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
@@ -81,8 +74,32 @@ export class HeaderComponent {
     );
   });
 
+  private destroyRef = inject(DestroyRef);
+  private observer?: IntersectionObserver;
   private authFacadeService = inject(AuthFacadeService);
   private authDialogService = inject(AuthDialogService);
+
+  constructor() {
+    afterNextRender(() => {
+      this.setupBannerObserver();
+    });
+
+    // Re-setup on navigation
+    this.router.events
+      .pipe(
+        filter(e => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.observer?.disconnect();
+        // Give the banner component time to render
+        setTimeout(() => {
+          this.setupBannerObserver();
+        }, 0);
+      });
+
+    this.destroyRef.onDestroy(() => this.observer?.disconnect());
+  }
 
   navigateToHome(): void {
     if (this.accountService.hasAnyAuthority(['PROFESSOR']) || this.router.url === '/professor') {
@@ -103,9 +120,6 @@ export class HeaderComponent {
   openLoginDialog(): void {
     this.authDialogService.open({
       mode: 'login',
-      onSuccess() {
-        // TODO: reload or show toast
-      },
     });
   }
 
@@ -125,12 +139,13 @@ export class HeaderComponent {
     void this.authFacadeService.logout();
   }
 
-  /*
-  toggleColorScheme(): void {
-    const className = 'tum-apply-dark-mode';
-    document.body.classList.toggle(className);
+  onThemeChange(option: SelectOption): void {
+    this.themeService.setTheme(option.value as 'light' | 'dark' | 'blossom' | 'aquabloom');
   }
-  */
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 
   toggleLanguage(language: string): void {
     if (this.languages.includes(language)) {
@@ -138,5 +153,32 @@ export class HeaderComponent {
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
+  }
+
+  private setupBannerObserver(): void {
+    const banner = document.querySelector('jhi-banner-section');
+    const isLandingPage = this.router.url === '/' || this.router.url === '/professor';
+
+    if (!isLandingPage) {
+      // Other pages: always show border
+      this.showBorder.set(true);
+      return;
+    }
+
+    // Landing pages with banner: show border only when scrolled past banner
+    if (!banner) {
+      // No banner on landing page: show border
+      this.showBorder.set(true);
+      return;
+    }
+
+    // Start with border hidden (banner is visible at top)
+    this.showBorder.set(false);
+
+    // Show border when banner scrolls out of view
+    this.observer = new IntersectionObserver(([entry]) => {
+      this.showBorder.set(!entry.isIntersecting);
+    });
+    this.observer.observe(banner);
   }
 }

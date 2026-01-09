@@ -202,7 +202,7 @@ describe('DatePickerComponent', () => {
 
       // Test with custom minDate
       setInputAndDetectChanges(fixture, 'minDate', TEST_DATES.customMinDate);
-      expect(fixture.componentInstance.effectiveMinDate()).toBe(TEST_DATES.customMinDate);
+      expect(fixture.componentInstance.effectiveMinDate()).toStrictEqual(TEST_DATES.customMinDate);
     });
   });
 

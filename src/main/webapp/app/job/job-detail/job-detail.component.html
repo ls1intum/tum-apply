@@ -4,7 +4,6 @@
   [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
   [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
   [label]="closeButtonLabel | translate"
-  variant="outlined"
   [severity]="closeButtonSeverity"
   [confirmIcon]="closeButtonIcon"
   [showOpenButton]="false"
@@ -25,7 +24,7 @@
 @if (jobDetails(); as job) {
   <div [class]="isSummaryPage() ? '' : 'page-container'">
     <!-- Header Section -->
-    <div class="header-container mb-8 border-b border-gray-300">
+    <div class="header-container mb-8 border-b border-divider-default">
       <div class="flex flex-col gap-4">
         <h1 class="page-header">{{ job.title }}</h1>
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
@@ -35,20 +34,64 @@
           </div>
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
-            <span><strong jhiTranslate="jobDetailPage.header.location"></strong> {{ job.location || '-' }}</span>
+            <span
+              ><strong jhiTranslate="jobDetailPage.header.location"></strong>
+              {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
+            >
           </div>
+          <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
+          @if (previewData()) {
+            <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
+          } @else if (job.belongsToResearchGroup) {
+            <jhi-tag class="job-state-badge" [text]="jobStateText() | translate" [color]="jobStateColor()" />
+          }
         </div>
       </div>
       <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
-        @if (rightActionButtons()) {
-          <jhi-button-group [data]="rightActionButtons()!" [shouldTranslate]="true" />
-        }
-        <!-- display job state if the logged-in user belongs to the research group, display draft if form is in preview -->
-        @if (previewData()) {
-          <jhi-tag class="job-state-badge" [text]="'jobState.preview' | translate" [color]="'info'" />
-        } @else if (job.belongsToResearchGroup) {
-          <jhi-tag class="job-state-badge" [text]="jobStateText | translate" [color]="jobStateColor" />
-        }
+        <div class="flex items-center gap-2">
+          @if (showPdfButtonForPreview()) {
+            <jhi-button
+              label="button.downloadPDF"
+              severity="secondary"
+              variant="outlined"
+              icon="file-pdf"
+              [shouldTranslate]="true"
+              (click)="onDownloadPDF()"
+            />
+          }
+          @for (item of individualActionButtons(); track item.label) {
+            <jhi-button
+              [label]="item.label"
+              [severity]="item.severity ?? 'secondary'"
+              variant="outlined"
+              [icon]="item.icon"
+              [shouldTranslate]="true"
+              (click)="item.command?.()"
+            />
+          }
+          @if (shouldShowKebabMenu()) {
+            <jhi-button
+              severity="secondary"
+              variant="outlined"
+              icon="ellipsis-vertical"
+              label="button.actions"
+              [shouldTranslate]="true"
+              (click)="menu.toggle($event)"
+            />
+            <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
+          }
+          @if (primaryActionButton(); as primaryActionButton) {
+            <jhi-button
+              [label]="primaryActionButton.label"
+              [severity]="primaryActionButton.severity"
+              [variant]="primaryActionButton.variant"
+              [icon]="primaryActionButton.icon"
+              [disabled]="primaryActionButton.disabled"
+              [shouldTranslate]="primaryActionButton.shouldTranslate"
+              (click)="primaryActionButton.onClick()"
+            />
+          }
+        </div>
       </div>
     </div>
 
@@ -83,7 +126,7 @@
             <div class="info-list">
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
-                <span class="value">{{ job.fieldOfStudies || '-' }}</span>
+                <span class="value">{{ (dropDownOptions.getFieldOfStudiesTranslationKey(job.fieldOfStudies) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.researchArea"></span>
@@ -107,16 +150,16 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fundingType"></span>
-                <span class="value">{{ job.fundingType || '-' }}</span>
+                <span class="value">{{ (dropDownOptions.getFundingTypeTranslationKey(job.fundingType) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
-                <span class="value">{{ job.startDate || '-' }}</span>
+                <span class="value">{{ (job.startDate | localizedDate) || '-' }}</span>
               </div>
               @if (job.endDate) {
                 <div class="info-row">
                   <span jhiTranslate="jobDetailPage.labels.applicationEndDate"></span>
-                  <span class="value text-danger">{{ job.endDate }}</span>
+                  <span class="value text-negative-default">{{ job.endDate | localizedDate }}</span>
                 </div>
               }
             </div>
@@ -127,7 +170,7 @@
           <div class="section-card-header">
             <fa-icon [icon]="['fas', 'research-group']" class="icon" />
             <h3 class="section-card-title" jhiTranslate="jobDetailPage.cards.researchGroup"></h3>
-            @if (isProfessor() && job.belongsToResearchGroup) {
+            @if (isProfessorOrEmployee() && job.belongsToResearchGroup) {
               <fa-icon
                 [icon]="['fas', 'pencil']"
                 class="icon edit-icon cursor-pointer ml-auto"
@@ -186,13 +229,13 @@
     <section class="mb-8">
       <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
       <div
-        class="leading-relaxed text-sm p-4 bg-gray-50 border-l-4 border-primary rounded wrap-anywhere"
+        class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded wrap-anywhere"
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
       ></div>
     </section>
 
     @if (!previewData()) {
-      <section class="mt-8 pt-8 border-t border-gray-300">
+      <section class="mt-8 pt-8 border-t border-divider-default">
         <div class="flex justify-start">
           <jhi-button
             label="button.back"

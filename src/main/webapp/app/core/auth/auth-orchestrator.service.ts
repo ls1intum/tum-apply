@@ -2,6 +2,7 @@ import { Injectable, Injector, computed, effect, inject, signal } from '@angular
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY, endWith, interval, startWith, switchMap, takeUntil, timer } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { ToastMessageInput, ToastService } from 'app/service/toast-service';
 
 import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep } from './models/auth.model';
 
@@ -28,25 +29,26 @@ import { AuthFlowMode, AuthOpenOptions, LoginStep, REGISTER_STEPS, RegisterStep 
  */
 export class AuthOrchestratorService {
   readonly config = inject(ApplicationConfigService);
+  readonly toastService = inject(ToastService);
   // high level dialog state
   readonly isOpen = signal(false);
   readonly mode = signal<AuthFlowMode>('login');
   // substates per flow
   loginStep = signal<LoginStep>('email');
-  registerStep = signal<RegisterStep>('email');
+  registerStep = signal<RegisterStep>(null);
   // form state (shared across flows)
   readonly email = signal<string>('');
   readonly firstName = signal<string>('');
   readonly lastName = signal<string>('');
   // UX state
   readonly isBusy = signal(false);
-  readonly error = signal<string | null>(null);
+  readonly error = signal<ToastMessageInput | null>(null);
   // progress for registration dialog
   readonly registerProgress = computed(() => {
     const idx = REGISTER_STEPS.indexOf(this.registerStep());
-    return Math.max(idx + 1, 1);
+    return idx;
   });
-  readonly totalRegisterSteps = REGISTER_STEPS.length;
+  readonly totalRegisterSteps = REGISTER_STEPS.length - 1;
   // cooldown for OTP resend
   readonly cooldownUntil = signal<number | null>(null);
   readonly injector = inject(Injector);
@@ -142,15 +144,21 @@ export class AuthOrchestratorService {
 
   switchToRegister(): void {
     this.mode.set('register');
-    this.registerStep.set('email');
+    this.registerStep.set(null);
+    requestAnimationFrame(() => {
+      this.registerStep.set('email');
+    });
   }
 
   clearError(): void {
     this.error.set(null);
   }
 
-  setError(msg: string | null): void {
+  setError(msg: ToastMessageInput | null): void {
     this.error.set(msg);
+    if (msg) {
+      this.toastService.showError(msg);
+    }
   }
 
   nextStep(loginStep?: LoginStep): void {

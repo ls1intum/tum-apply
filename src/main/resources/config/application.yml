@@ -101,7 +101,7 @@ spring:
     compose:
       enabled: true
       lifecycle-management: start-only
-      file: src/main/docker/services.yml
+      file: docker/local-setup/services.yml
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by gradle when building the JAR file
@@ -169,6 +169,11 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
   security:
     oauth2:
       resourceserver:
@@ -276,9 +281,17 @@ aet:
   email:
     enabled: ${AET_EMAIL_ENABLED:false}
     from: ${AET_EMAIL_FROM:tum-apply.aet@xcit.tum.de}
+    from-name: ${AET_EMAIL_FROM_NAME:TUMApply}
   storage:
     root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400
+    # Image storage settings
+    image-root: ${AET_STORAGE_IMAGE_ROOT:storage/images}
+    # Maximum image file size in bytes (default: 5MB)
+    max-image-size-bytes: ${AET_STORAGE_MAX_IMAGE_SIZE_BYTES:5242880}
+    # Maximum image dimensions (width and height) in pixels
+    max-image-width: ${AET_STORAGE_MAX_IMAGE_WIDTH:4096}
+    max-image-height: ${AET_STORAGE_MAX_IMAGE_HEIGHT:4096}
   download:
     deterministic-zip: false
   client:
@@ -323,7 +336,7 @@ keycloak:
 
 security:
   otp:
-    length: ${OTP_LENGTH:8}
+    length: ${OTP_LENGTH:6}
     ttl-seconds: ${OTP_TTL_SECONDS:900}
     max-attempts: ${OTP_MAX_ATTEMPTS:6}
     resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}

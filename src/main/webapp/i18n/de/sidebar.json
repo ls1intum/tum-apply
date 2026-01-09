@@ -29,11 +29,12 @@
     "content": {
       "content": "Inhalt",
       "allpositions": "Alle Positionen",
-      "researchgroups": "Forschungsgruppen"
+      "researchgroups": "Forschungsgruppen",
+      "departments": "Departments"
     },
     "users": {
-      "users": "Benutzer",
-      "manageusers": "Benutzer verwalten",
+      "users": "Benutzer:innen",
+      "manageusers": "Benutzer:innnen verwalten",
       "file": "Bewerbungen"
     },
     "system": {

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { provideToastServiceMock } from '../../../util/toast-service.mock';
+import { provideToastServiceMock } from 'util/toast-service.mock';
 
 describe('ApplicationConfigService', () => {
   let service: ApplicationConfigService;
@@ -32,7 +32,7 @@ describe('ApplicationConfigService', () => {
     it('should store a frozen clone and not the original reference', () => {
       const input = {
         keycloak: { url: 'http://kc', realm: 'tumapply', clientId: 'client' },
-        otp: { length: 4, ttlSeconds: 120, resendCooldownSeconds: 30 },
+        otp: { length: 3, ttlSeconds: 120, resendCooldownSeconds: 30 },
       };
 
       service.setAppConfig(input);
@@ -59,7 +59,7 @@ describe('ApplicationConfigService', () => {
       service.setAppConfig({});
 
       expect(service.keycloak).toEqual({ url: '', realm: '', clientId: '' });
-      expect(service.otp).toEqual({ length: 6, ttlSeconds: 300, resendCooldownSeconds: 60 });
+      expect(service.otp).toEqual({ length: 4, ttlSeconds: 300, resendCooldownSeconds: 60 });
     });
 
     it('should return provided values when present', () => {

@@ -71,4 +71,8 @@
       <a class="clickable-link" [routerLink]="['/job/detail', row.jobId]">{{ row.jobTitle }}</a>
     </div>
   </ng-template>
+
+  <ng-template #timeSinceCreationTemplate let-row>
+    {{ row.createdAt | timeAgo }}
+  </ng-template>
 </div>

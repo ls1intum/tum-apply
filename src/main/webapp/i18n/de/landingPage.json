@@ -2,8 +2,11 @@
   "landingPage": {
     "hero": {
       "headline": "Bewirb dich für deine Promotion an der TUM CIT",
-      "subline": "TUMapply ist dein Zugang zur Promotion an der TUM School of Computation, Information and Technology",
-      "button": "Stellen durchsuchen"
+      "subline": "TUMapply ist dein Zugang zur Promotion an der TUM School of Computation, Information and Technology"
+    },
+    "banner": {
+      "portalName": "TUM Apply - Promotion an der TUM",
+      "universityName": "Technische Universität München"
     },
     "doctoralJourney": {
       "headline": "Starte deine Promotionsreise an der TUM CIT",
@@ -104,6 +107,14 @@
           "content": "Nein, auf TUMApply sind nur ausgewählte Ausschreibungen für die TUM School of Computation, Information and Technology zu finden. Weitere Stellenanzeigen findest du auf anderen Kanälen wie der <a href='https://portal.mytum.de/jobs/wissenschaftler' class='external-link'><strong><u>myTUM Jobplattform</u></strong></a> oder auf den Websites einzelner Forschungsgruppen."
         }
       }
+    },
+    "jobsPreview": {
+      "headline": "Aktuelle Stellen",
+      "subline": "Eine kurze Auswahl offener Stellen",
+      "seeMore": "Alle Stellen ansehen",
+      "noJobs": "Derzeit sind keine Stellen verfügbar",
+      "goToJobOverview": "Zur Stellenübersicht",
+      "loadFailed": "Laden der Stellen fehlgeschlagen"
     }
   }
 }

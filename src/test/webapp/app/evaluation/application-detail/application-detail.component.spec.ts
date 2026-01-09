@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BehaviorSubject, of, throwError } from 'rxjs';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-
+import { convertToParamMap, Router } from '@angular/router';
 import { ApplicationDetailComponent } from 'app/evaluation/application-detail/application-detail.component';
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';

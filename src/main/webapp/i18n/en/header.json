@@ -4,6 +4,11 @@
     "professorTitle": "Professor",
     "professor": "Are you a professor?",
     "applicant": "Are you an applicant?",
-    "logout": "Logout"
+    "logout": "Logout",
+    "theme": "Toggle Theme",
+    "universityName": "Technical University of Munich",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "syncWithSystem": "Sync with Operating System"
   }
 }

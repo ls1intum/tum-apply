@@ -17,6 +17,8 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateDTO } from '../../../generated/model/emailTemplateDTO';
+import { AccountService } from '../../../core/auth/account.service';
+import { UserShortDTO } from '../../../generated/model/userShortDTO';
 
 @Component({
   selector: 'jhi-research-group-template-edit',
@@ -42,6 +44,7 @@ export class ResearchGroupTemplateEdit {
   readonly emailTemplateService = inject(EmailTemplateResourceApiService);
   readonly translate = inject(TranslateService);
   readonly toastService = inject(ToastService);
+  readonly accountService = inject(AccountService);
 
   autoSaveTimer: number | undefined;
 
@@ -172,12 +175,14 @@ export class ResearchGroupTemplateEdit {
       this.skipNextAutosave = false;
       return;
     }
-
     const isNonDefault = form.isDefault === false;
     const nameMissing = form.templateName?.trim() == null;
     const typeMissing = !form.emailType;
 
     if (isNonDefault && (nameMissing || typeMissing)) return;
+
+    const isEmployee = this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
+    if (isEmployee) return;
 
     this.savingState.set('SAVING');
     this.clearAutoSaveTimer();

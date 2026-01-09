@@ -150,6 +150,19 @@ public class CurrentUserService {
     }
 
     /**
+     * Returns the research group ID if the current user is a professor or employee.
+     *
+     * @return the research group ID if user is a professor or employee
+     * @throws AccessDeniedException if the user is not a member of any research
+     *                               group
+     */
+    public UUID getResearchGroupIdIfMember() {
+        return getCurrentUser()
+            .getResearchGroupIdIfMember()
+            .orElseThrow(() -> new AccessDeniedException("Current User does not have a research group"));
+    }
+
+    /**
      * Returns the research group if the current user is a professor.
      *
      * @return the research group ID if user is a professor
@@ -191,6 +204,44 @@ public class CurrentUserService {
     }
 
     /**
+     * Checks if the current user has a employee role.
+     *
+     * @return true if the user is a employee, false otherwise
+     */
+    public boolean isEmployee() {
+        return getCurrentUser().isEmployee();
+    }
+
+    /**
+     * Checks if the current user is the supervising professor of the given job.
+     *
+     * @param job the job to check
+     * @return true if the user is the supervising professor, false otherwise
+     */
+    public boolean isSupervisingProfessorOf(Job job) {
+        if (job == null || job.getSupervisingProfessor() == null) {
+            return false;
+        }
+        return job.getSupervisingProfessor().getUserId().equals(getUserId());
+    }
+
+    /**
+     * Verifies that the current user has access to the given job.
+     * Access is granted if the user is:
+     * - The supervising professor of the job, OR
+     * - A member (professor/employee) of the job's research group
+     *
+     * @param job the job to check access for
+     * @throws AccessDeniedException if the user has no access
+     */
+    public void verifyJobAccess(Job job) {
+        if (isSupervisingProfessorOf(job)) {
+            return;
+        }
+        isAdminOrMemberOf(job.getResearchGroup());
+    }
+
+    /**
      * Checks whether the current user is either an admin or professor of the
      * specified research group.
      *
@@ -202,7 +253,7 @@ public class CurrentUserService {
         if (
             isAdmin() ||
             getCurrentUser()
-                .getResearchGroupIdIfProfessor()
+                .getResearchGroupIdIfMember()
                 .map(id -> id.equals(researchGroupId))
                 .orElse(false)
         ) {

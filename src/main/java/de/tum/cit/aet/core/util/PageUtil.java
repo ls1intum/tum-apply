@@ -39,7 +39,6 @@ public class PageUtil {
                 "abbreviation",
                 "email",
                 "website",
-                "school",
                 "description",
                 "defaultFieldOfStudies",
                 "street",
@@ -52,6 +51,11 @@ public class PageUtil {
          * Sortable columns used in admin research group listings.
          */
         RESEARCH_GROUPS_ADMIN(Set.of("name", "head", "state", "createdAt")),
+
+        /**
+         * Sortable columns used in admin departments listings.
+         */
+        DEPARTMENTS_ADMIN(Set.of("name", "school.name")),
 
         /**
          * Sortable columns used in applicant's application listings.

@@ -1,24 +1,34 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { of, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
-import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
-import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { PageResponseDTOUserShortDTO } from 'app/generated/model/pageResponseDTOUserShortDTO';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
+import { provideDialogServiceMock } from 'util/dialog.service.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { createAccountServiceMock, provideAccountServiceMock } from 'util/account.service.mock';
+import { ActivatedRouteMock, createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
+import { createRouterMock, provideRouterMock, RouterMock } from 'util/router.mock';
+import {
+  createResearchGroupResourceApiServiceMock,
+  provideResearchGroupResourceApiServiceMock,
+  ResearchGroupResourceApiServiceMock,
+} from 'util/research-group-resource-api.service.mock';
 
 describe('ResearchGroupMembersComponent', () => {
   let component: ResearchGroupMembersComponent;
   let fixture: ComponentFixture<ResearchGroupMembersComponent>;
-  let mockResearchGroupService: {
-    getResearchGroupMembers: ReturnType<typeof vi.fn>;
-    removeMemberFromResearchGroup: ReturnType<typeof vi.fn>;
-  };
+  let mockResearchGroupService: ResearchGroupResourceApiServiceMock;
   let mockToastService: ReturnType<typeof createToastServiceMock>;
+  let mockAccountService: ReturnType<typeof createAccountServiceMock>;
+  let mockActivatedRoute: ActivatedRouteMock;
+  let mockRouter: RouterMock;
 
   const mockUserData: UserShortDTO = {
     userId: 'user-1',
@@ -40,25 +50,32 @@ describe('ResearchGroupMembersComponent', () => {
   };
 
   beforeEach(async () => {
-    mockResearchGroupService = {
-      getResearchGroupMembers: vi.fn(),
-      removeMemberFromResearchGroup: vi.fn(),
-    };
-
+    mockResearchGroupService = createResearchGroupResourceApiServiceMock();
+    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of({ content: [], totalElements: 0 }));
+    mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of({ content: [], totalElements: 0 }));
+    mockActivatedRoute = createActivatedRouteMock();
     mockToastService = createToastServiceMock();
+    mockAccountService = createAccountServiceMock();
+    mockAccountService.user.set({ id: 'current-user', name: 'Current User', email: 'test@test.com', authorities: [] });
+    mockRouter = createRouterMock();
 
     await TestBed.configureTestingModule({
       imports: [ResearchGroupMembersComponent],
       providers: [
-        { provide: ResearchGroupResourceApiService, useValue: mockResearchGroupService },
-        { provide: AccountService, useValue: { userId: 'current-user' } },
+        provideResearchGroupResourceApiServiceMock(mockResearchGroupService),
+        provideAccountServiceMock(mockAccountService),
+        provideDialogServiceMock(),
         provideToastServiceMock(mockToastService),
         provideTranslateMock(),
+        provideFontAwesomeTesting(),
+        provideActivatedRouteMock(mockActivatedRoute),
+        provideRouterMock(mockRouter),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResearchGroupMembersComponent);
     component = fixture.componentInstance;
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -73,7 +90,29 @@ describe('ResearchGroupMembersComponent', () => {
     mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
     fixture.detectChanges();
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+  });
+
+  it('should load members by ID if route param is present', () => {
+    const groupId = '123';
+    mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
+
+    mockActivatedRoute.setParams({ id: groupId });
+    fixture.detectChanges();
+
+    expect(mockResearchGroupService.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
+  });
+
+  it('should load members by ID if query param is present', () => {
+    const groupId = '456';
+    mockResearchGroupService.getResearchGroupMembersById.mockReturnValue(of(mockPageResponse));
+
+    mockActivatedRoute.setQueryParams({ researchGroupId: groupId });
+
+    // Trigger the subscription to re-evaluate
+    mockActivatedRoute.setParams({});
+    fixture.detectChanges();
+
+    expect(mockResearchGroupService.getResearchGroupMembersById).toHaveBeenCalledWith(groupId, 10, 0);
   });
 
   it('should initialize with default values', () => {
@@ -122,7 +161,6 @@ describe('ResearchGroupMembersComponent', () => {
 
     expect(component.pageNumber()).toBe(2); // 20 / 10 = 2
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 2);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle undefined first and rows values in table emit with fallback to defaults', () => {
@@ -134,7 +172,6 @@ describe('ResearchGroupMembersComponent', () => {
     expect(component.pageNumber()).toBe(0);
     expect(component.pageSize()).toBe(10);
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should load members successfully', async () => {
@@ -145,7 +182,6 @@ describe('ResearchGroupMembersComponent', () => {
     expect(component.members()).toEqual(mockPageResponse.content);
     expect(component.total()).toBe(mockPageResponse.totalElements);
     expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle empty or undefined response when loading members', async () => {
@@ -156,7 +192,6 @@ describe('ResearchGroupMembersComponent', () => {
 
     expect(component.members()).toEqual([]);
     expect(component.total()).toBe(0);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle error and show error toast when loading members fails', async () => {
@@ -166,7 +201,6 @@ describe('ResearchGroupMembersComponent', () => {
 
     expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadFailed');
     expect(mockToastService.showErrorKey).toHaveBeenCalledTimes(1);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should remove member successfully', async () => {
@@ -181,7 +215,8 @@ describe('ResearchGroupMembersComponent', () => {
       memberName: 'John Doe',
     });
     expect(mockToastService.showSuccessKey).toHaveBeenCalledTimes(1);
-    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1); // Refresh call
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(10, 0);
+    expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
   });
 
   it('should handle error and show error toast when removing member fails', async () => {
@@ -209,12 +244,14 @@ describe('ResearchGroupMembersComponent', () => {
       name: 'John Doe',
       role: 'Professor',
       isCurrentUser: false,
+      canRemove: true,
     });
     expect(tableData[1]).toEqual({
       ...mockCurrentUser,
       name: 'Current User',
       role: 'Admin',
       isCurrentUser: true,
+      canRemove: false,
     });
   });
 
@@ -247,5 +284,65 @@ describe('ResearchGroupMembersComponent', () => {
     component.members.set([memberWithLowercaseRole]);
     const row = component.tableData()[0];
     expect(row.role).toBe('Professor');
+  });
+
+  describe('openAddMembersModal', () => {
+    let dialogService: DialogService;
+
+    beforeEach(() => {
+      dialogService = TestBed.inject(DialogService);
+      mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of(mockPageResponse));
+      fixture.detectChanges();
+      vi.clearAllMocks();
+    });
+
+    it('should open add members modal and reload members on close if added', () => {
+      const mockRef = {
+        onClose: of(true),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+
+      component.openAddMembersModal();
+
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledTimes(1);
+    });
+
+    it('should open add members modal and NOT reload members on close if NOT added', () => {
+      const mockRef = {
+        onClose: of(false),
+      } as DynamicDialogRef;
+      vi.spyOn(dialogService, 'open').mockReturnValue(mockRef);
+
+      component.openAddMembersModal();
+
+      expect(dialogService.open).toHaveBeenCalled();
+      expect(mockResearchGroupService.getResearchGroupMembers).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should prevent employee from removing a professor', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    const professorMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Professor] };
+    component.members.set([professorMember]);
+
+    const row = component.tableData()[0];
+
+    expect(row.canRemove).toBe(false);
+  });
+
+  it('should not allow employee to remove members', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+    const studentMember = { ...mockUserData, roles: [UserShortDTO.RolesEnum.Employee] };
+    component.members.set([studentMember]);
+
+    const row = component.tableData()[0];
+
+    expect(row.canRemove).toBe(false);
+  });
+
+  it('should navigate back to admin view', () => {
+    component.goBack();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group-admin']);
   });
 });

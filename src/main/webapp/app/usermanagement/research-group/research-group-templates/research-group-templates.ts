@@ -4,6 +4,7 @@ import { firstValueFrom, map } from 'rxjs';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
@@ -11,10 +12,12 @@ import TranslateDirective from '../../../shared/language/translate.directive';
 import { ToastService } from '../../../service/toast-service';
 import { EmailTemplateResourceApiService } from '../../../generated/api/emailTemplateResourceApi.service';
 import { EmailTemplateOverviewDTO } from '../../../generated/model/emailTemplateOverviewDTO';
+import { AccountService } from '../../../core/auth/account.service';
+import { UserShortDTO } from '../../../generated/model/userShortDTO';
 
 @Component({
   selector: 'jhi-research-group-templates',
-  imports: [DynamicTableComponent, ButtonComponent, TranslateDirective, TranslateModule],
+  imports: [DynamicTableComponent, ButtonComponent, TranslateDirective, TranslateModule, ConfirmDialog],
   templateUrl: './research-group-templates.html',
   styleUrl: './research-group-templates.scss',
 })
@@ -27,20 +30,24 @@ export class ResearchGroupTemplates {
   protected readonly toastService = inject(ToastService);
   protected readonly translate = inject(TranslateService);
   protected readonly router = inject(Router);
+  protected readonly accountService = inject(AccountService);
 
   protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
 
-  protected readonly editTemplate = viewChild.required<TemplateRef<unknown>>('editTemplate');
-  protected readonly deleteTemplate = viewChild.required<TemplateRef<unknown>>('deleteTemplate');
+  protected readonly actionsTemplate = viewChild.required<TemplateRef<unknown>>('actionsTemplate');
+
+  protected readonly isEmployee = computed<boolean>(() => {
+    const currentUserAuthorities = this.accountService.userAuthorities;
+    return currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false;
+  });
 
   protected readonly columns = computed<DynamicTableColumn[]>(() => {
-    const editTemplate = this.editTemplate();
-    const deleteTemplate = this.deleteTemplate();
+    const actionsTemplate = this.actionsTemplate();
+
     return [
       { field: 'displayName', header: `${this.translationKey}.tableColumns.templateName`, width: '28rem' },
       { field: 'createdBy', header: `${this.translationKey}.tableColumns.createdBy`, width: '15rem' },
-      { field: '', header: '', width: '1rem', template: editTemplate },
-      { field: '', header: '', width: '1rem', template: deleteTemplate },
+      { field: 'actions', header: '', width: '5rem', template: actionsTemplate },
     ];
   });
 

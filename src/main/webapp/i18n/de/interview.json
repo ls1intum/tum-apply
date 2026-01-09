@@ -28,6 +28,219 @@
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
       }
+    },
+    "detail": {
+      "error": {
+        "title": "Termine konnten nicht geladen werden",
+        "description": "Beim Laden der Interview Termine ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+        "retry": "Erneut versuchen",
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Interview Prozess Informationen konnten nicht geladen werden"
+        }
+      },
+      "empty": {
+        "title": "Noch keine Termine",
+        "description": "Erstelle deine ersten Interview Termine."
+      },
+      "noSlotsInMonth": "Keine Termine in {{month}}",
+      "showLess": "Weniger anzeigen"
+    },
+    "slots": {
+      "addSlots": "Termine hinzufügen",
+      "slotsCountSingular": "Termin",
+      "slotsCountPlural": "Termine",
+      "showMoreSingular": "weiteren Termin",
+      "showMorePlural": "weitere Termine",
+      "error": {
+        "loadFailed": {
+          "summary": "Interview Termine konnten nicht geladen werden",
+          "detail": "Die Interview Termine konnten nicht geladen werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
+      },
+      "status": {
+        "booked": "Gebucht"
+      },
+      "location": {
+        "virtual": "virtuell",
+        "inPerson": "vor Ort"
+      },
+      "create": {
+        "title": "Interview Termin erstellen",
+        "removeSlot": "Termin entfernen",
+        "slotNumber": "Termin {{number}}",
+        "date": "Datum",
+        "selectDate": "Datum auswählen...",
+        "startTime": "Startzeit",
+        "endTime": "Endzeit",
+        "location": "Ort",
+        "inPerson": "Vor Ort",
+        "virtual": "Virtuell",
+        "streamLink": "Meeting-Link",
+        "streamLinkPlaceholder": "https://meet.google.com/...",
+        "cancel": "Abbrechen",
+        "create": "Termine erstellen",
+        "creating": "Wird erstellt...",
+        "success": {
+          "summary": "Termine erstellt",
+          "detail": "Die Interview Termine wurden erfolgreich erstellt."
+        },
+        "error": {
+          "generic": {
+            "summary": "Erstellung fehlgeschlagen",
+            "detail": "Termine konnten nicht erstellt werden. Bitte versuche es erneut."
+          },
+          "conflict": {
+            "summary": "Konflikt erkannt",
+            "detail": "Einige Termine überschneiden sich mit bestehenden. Bitte passe die Zeiten an."
+          },
+          "validation": {
+            "summary": "Validierungsfehler",
+            "detail": "Bitte überprüfe das Formular auf Fehler."
+          },
+          "noSlots": {
+            "summary": "Keine Termine",
+            "detail": "Bitte erstelle mindestens einen Termin vor dem Speichern."
+          }
+        },
+        "validation": {
+          "required": "Dieses Feld ist erforderlich",
+          "endBeforeStart": "Endzeit muss nach Startzeit liegen",
+          "conflict": "Zeitkonflikt mit einem anderen Termin",
+          "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
+          "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
+          "breakPositive": "Pausendauer darf nicht negativ sein",
+          "locationRequired": {
+            "summary": "Ort fehlt",
+            "detail": "Ort ist für alle Termine erforderlich"
+          },
+          "rangeTooShort": "Der Zeitraum ist zu kurz für ein {{duration}}-minütiges Interview"
+        },
+        "interviewLength": "Interviewdauer",
+        "interviewBreaks": "Pausen",
+        "breakTooltip": "Pausenzeit zwischen aufeinanderfolgenden Interview Terminen",
+        "durationTooltip": "Dauer eines Interview Termins",
+        "addRangeTooltip": "Mehrere Termine automatisch innerhalb eines Zeitfensters, mit festgelegter Pausenzeit, erstellen",
+        "addSlotsTooltip": "Einzelne Termine hinzufügen",
+        "copySuccess": {
+          "summary": "Termine erfolgreich kopiert",
+          "detail": "Die Terminkonfigurationen wurden erfolgreich auf alle anderen Tage übertragen."
+        },
+        "selectDates": "Daten auswählen",
+        "noDateSelected": "Kein Datum ausgewählt",
+        "noDateSelectedDesc": "Bitte wähle ein oder mehrere Daten im Kalender aus",
+        "sameSlotsForAllDays": "Gleicher Termin für alle Tage",
+        "addRange": "Zeitraum",
+        "addSlot": "Einzeltermin",
+        "noSlotsYet": "Noch keine Termine",
+        "noSlotsYetDesc": "Füge einen Zeitraum oder einen einzelnen Termin hinzu, um zu beginnen",
+        "singleSlot": "Einzelner Termin",
+        "rangeSlot": "Zeitraum",
+        "bookedSlot": "Gebuchter Termin",
+        "addStartTime": "Startzeit hinzufügen, um diesen Termin zu erstellen",
+        "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
+        "saveSlots": "Termine speichern",
+        "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
+        "useForAll": "Gleicher Ort für alle Termine",
+        "custom": "Eigenes"
+      },
+      "delete": {
+        "confirm": {
+          "header": "Löschvorgang bestätigen",
+          "message": "Möchtest du diesen Termin wirklich löschen?"
+        },
+        "success": {
+          "summary": "Termin gelöscht",
+          "detail": "Der Termin wurde erfolgreich gelöscht"
+        },
+        "error": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Der Termin konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "errorBooked": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Gebuchte Termine können nicht gelöscht werden."
+        },
+        "errorForbidden": {
+          "summary": "Zugriff verweigert",
+          "detail": "Du hast keine Berechtigung, diesen Termin zu löschen"
+        }
+      }
+    },
+    "interviewees": {
+      "title": "Bewerber:innen",
+      "add": "Bewerber:in hinzufügen",
+      "addTitle": "Bewerber:in hinzufügen",
+      "sendInvitations": "Einladung senden",
+      "empty": "Noch keine Bewerber:innen hinzugefügt",
+      "emptyHint": "Klicke auf \"Bewerber:in hinzufügen\", um zu starten",
+      "searchPlaceholder": "Nach Name oder E-Mail suchen...",
+      "selectAll": "Alle auswählen",
+      "noApplicants": "Keine Bewerber:innen verfügbar",
+      "tryDifferentSearch": "Versuche einen anderen Suchbegriff",
+      "selected": "{{count}} Bewerber:in(nen) ausgewählt",
+      "addSelected": "Hinzufügen",
+      "tableColumns": {
+        "name": "Bewerber:in"
+      },
+      "addSuccess": {
+        "summary": "Bewerber:in hinzugefügt",
+        "detail": "{{count}} Bewerber:in(nen) erfolgreich hinzugefügt"
+      },
+      "filter": {
+        "ALL": "Alle",
+        "INVITED": "Eingeladen",
+        "SCHEDULED": "Geplant",
+        "UNCONTACTED": "Nicht kontaktiert",
+        "COMPLETED": "Abgeschlossen"
+      },
+      "error": {
+        "loadFailed": {
+          "summary": "Fehler",
+          "detail": "Bewerber:innen konnten nicht geladen werden"
+        },
+        "loadApplicantsFailed": {
+          "summary": "Fehler",
+          "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+        },
+        "invalidApplications": {
+          "summary": "Ungültige Bewerbungen",
+          "detail": "Einige Bewerbungen gehören zu einem anderen Job"
+        },
+        "forbidden": {
+          "summary": "Keine Berechtigung",
+          "detail": "Du hast keine Berechtigung für diese Aktion"
+        },
+        "addFailed": {
+          "summary": "Fehler",
+          "detail": "Bewerber:innen konnten nicht hinzugefügt werden"
+        }
+      }
+    },
+    "assign": {
+      "title": "Bewerber:in zuweisen",
+      "selectedSlot": "Ausgewählter Termin",
+      "selectApplicant": "Bewerber:in auswählen",
+      "noApplicants": "Keine eingeladenen Bewerber:innen verfügbar",
+      "allAssigned": "Alle Bewerber:innen im Interviewprozess haben bereits einen Termin",
+      "success": {
+        "summary": "Zuweisung erfolgreich",
+        "detail": "Die Bewerber:in wurde dem Termin zugewiesen."
+      },
+      "error": {
+        "notInProcess": {
+          "summary": "Ungültige:r Bewerber:in",
+          "detail": "Bewerber:in ist nicht in diesem Interviewprozess"
+        },
+        "failed": {
+          "summary": "Zuweisung fehlgeschlagen",
+          "detail": "Fehler beim Zuweisen der Bewerber:in. Bitte versuchen Sie es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+        }
+      }
     }
   }
 }

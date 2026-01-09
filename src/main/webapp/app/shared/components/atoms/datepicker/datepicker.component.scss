@@ -2,11 +2,6 @@
   display: flex;
   flex-direction: column;
   position: relative;
-
-  .custom-label {
-    color: var(--p-text-color);
-  }
-
   .fa-circle-info {
     color: var(--p-primary-color);
   }
@@ -21,7 +16,6 @@
 
     .p-inputtext {
       border: 0.1rem solid var(--p-border-default);
-      background: transparent;
 
       &:disabled {
         background-color: var(--p-background-disabled);
@@ -36,16 +30,11 @@
 
     .p-datepicker-dropdown {
       background-color: var(--p-primary-color);
-      color: var(--p-background-default);
       border: 0.1rem;
 
       &:disabled {
         background-color: var(--p-text-disabled);
       }
-    }
-
-    .p-inputtext::placeholder {
-      color: var(--p-text-primary);
     }
 
     .p-inputtext:disabled::placeholder {
@@ -65,9 +54,26 @@
     }
 
     .p-ripple.p-datepicker-select-month,
-    .p-ripple.p-datepicker-select-year,
-    .p-datepicker-decade {
+    .p-ripple.p-datepicker-select-year {
       color: var(--p-primary-color);
+
+      &:hover {
+        background: var(--p-primary-hover-color-outlined);
+      }
+    }
+
+    .p-datepicker-today > .p-datepicker-day {
+      background: var(--p-primary-hover-color-outlined);
+      color: var(--p-text-primary);
+    }
+
+    .p-datepicker-day,
+    .p-datepicker-month,
+    .p-datepicker-year {
+      &:hover {
+        background: var(--p-primary-color);
+        color: var(--p-text-on-primary);
+      }
     }
   }
 }

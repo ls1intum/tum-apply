@@ -9,10 +9,11 @@ import {
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule, TitleStrategy, provideRouter, withRouterConfig } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 import './config/dayjs';
-import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { MissingTranslationHandler, provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DatePipe } from '@angular/common';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -25,15 +26,17 @@ import { initializeAppConfig } from 'app/core/config/runtime-config.loader';
 
 import { TUMApplyPreset } from '../content/theming/tumapplypreset';
 
+import { I18N_HASH } from './environments/environment';
 import { httpInterceptorProviders } from './core/interceptor';
 import routes from './app.routes';
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { AppPageTitleStrategy } from './app-page-title-strategy';
-import { missingTranslationHandler, translatePartialLoader } from './config/translation.config';
+import { missingTranslationHandler } from './config/translation.config';
 import { AuthInterceptor } from './core/interceptor/auth.interceptor';
 import { ErrorHandlerInterceptor } from './core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from './core/interceptor/notification.interceptor';
 import { AuthFacadeService } from './core/auth/auth-facade.service';
+import { PrimengTranslationService } from './shared/language/primeng-translation.service';
 
 /**
  * Application initializer that enforces strict order:
@@ -49,10 +52,15 @@ export async function initializeApp(): Promise<void> {
   await authFacade.initAuth();
 }
 
+export function initializePrimeNgI18n(): void {
+  inject(PrimengTranslationService);
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
     provideAppInitializer(initializeApp),
+    provideAppInitializer(initializePrimeNgI18n),
     provideZonelessChangeDetection(),
     provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideAnimations(),
@@ -68,21 +76,17 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(BrowserModule),
     // Set this to true to enable service worker (PWA)
     importProvidersFrom(ServiceWorkerModule.register('ngsw-worker.js', { enabled: false })),
-    importProvidersFrom(
-      RouterModule,
-      ScrollingModule,
-      TranslateModule.forRoot({
-        loader: {
-          provide: TranslateLoader,
-          useFactory: translatePartialLoader,
-          deps: [HttpClient],
-        },
-        missingTranslationHandler: {
-          provide: MissingTranslationHandler,
-          useFactory: missingTranslationHandler,
-        },
+    importProvidersFrom(RouterModule, ScrollingModule),
+    provideTranslateService({
+      loader: provideTranslateHttpLoader({
+        prefix: '/i18n/',
+        suffix: `.json?_=${I18N_HASH}`,
       }),
-    ),
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useFactory: missingTranslationHandler,
+      },
+    }),
     provideHttpClient(withInterceptorsFromDi()),
     Title,
     { provide: LOCALE_ID, useValue: 'en' },

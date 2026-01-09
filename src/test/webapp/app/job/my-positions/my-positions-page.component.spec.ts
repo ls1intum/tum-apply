@@ -80,13 +80,12 @@ describe('MyPositionsPageComponent', () => {
 
     expect(columns.find(c => c.field === 'actions')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
+    expect(columns.find(c => c.field === 'startDate')?.template).toBeTruthy();
+    expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
 
     expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();
     expect(columns.find(c => c.field === 'professorName')?.template).toBeUndefined();
     expect(columns.find(c => c.field === 'title')?.template).toBeUndefined();
-    expect(columns.find(c => c.field === 'startDate')?.template).toBeUndefined();
-    expect(columns.find(c => c.field === 'createdAt')?.template).toBeUndefined();
-    expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeUndefined();
   });
 
   it('should navigate to create job', () => {
@@ -181,32 +180,34 @@ describe('MyPositionsPageComponent', () => {
     const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
     await component.onDeleteJob('1');
     expect(mockJobService.deleteJob).toHaveBeenCalledWith('1');
-    expect(mockToastService.showSuccess).toHaveBeenCalled();
+    expect(mockToastService.showSuccessKey).toHaveBeenCalled();
     expect(loadSpy).toHaveBeenCalled();
   });
 
   it('should handle delete job error', async () => {
     vi.spyOn(mockJobService, 'deleteJob').mockReturnValueOnce(throwError(() => new Error('delete failed')));
     await component.onDeleteJob('1');
-    expect(mockToastService.showError).toHaveBeenCalledWith({
-      detail: expect.stringContaining('delete failed'),
-    });
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
+      'myPositionsPage.toastMessages.deleteJobFailed',
+      expect.objectContaining({ detail: expect.stringContaining('delete failed') }),
+    );
   });
 
   it('should close job successfully', async () => {
     const loadSpy = vi.spyOn(component as unknown as { loadJobs: () => Promise<void> }, 'loadJobs').mockResolvedValue();
     await component.onCloseJob('1');
     expect(mockJobService.changeJobState).toHaveBeenCalledWith('1', 'CLOSED');
-    expect(mockToastService.showSuccess).toHaveBeenCalled();
+    expect(mockToastService.showSuccessKey).toHaveBeenCalled();
     expect(loadSpy).toHaveBeenCalled();
   });
 
   it('should handle close job error', async () => {
     vi.spyOn(mockJobService, 'changeJobState').mockReturnValueOnce(throwError(() => new Error('close fail')));
     await component.onCloseJob('1');
-    expect(mockToastService.showError).toHaveBeenCalledWith({
-      detail: expect.stringContaining('close fail'),
-    });
+    expect(mockToastService.showErrorKey).toHaveBeenCalledWith(
+      'myPositionsPage.toastMessages.closeJobFailed',
+      expect.objectContaining({ detail: expect.stringContaining('close fail') }),
+    );
   });
 
   it('should correctly build stateTextMap from availableStatusOptions', () => {

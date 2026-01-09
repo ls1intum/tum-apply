@@ -19,10 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PDFExportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -33,18 +35,6 @@ public class PDFExportService {
     private final CurrentUserService currentUserService;
 
     private final UserRepository userRepository;
-
-    public PDFExportService(
-        ApplicationService applicationService,
-        JobService jobService,
-        CurrentUserService currentUserService,
-        UserRepository userRepository
-    ) {
-        this.applicationService = applicationService;
-        this.jobService = jobService;
-        this.currentUserService = currentUserService;
-        this.userRepository = userRepository;
-    }
 
     // ------------------- Main methods -------------------
 
@@ -100,7 +90,6 @@ public class PDFExportService {
 
         builder
             .startInfoSection(labels.get("applicantInfo"))
-            .addSectionData(labels.get("preferredLanguage"), getValue(app.applicant().user().preferredLanguage()))
             .addSectionData(labels.get("desiredStartDate"), formatDate(app.desiredDate()))
             .addSectionData(labels.get("gender"), getValue(app.applicant().user().gender()))
             .addSectionData(labels.get("nationality"), getValue(app.applicant().user().nationality()));
@@ -160,7 +149,7 @@ public class PDFExportService {
 
         builder.addHeaderItem(labels.get("jobBy") + job.supervisingProfessorName() + labels.get("forJob") + "'" + job.title() + "'");
         try {
-            if (currentUserService.isProfessor()) {
+            if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
             }
         } catch (Exception e) {}
@@ -299,11 +288,19 @@ public class PDFExportService {
         String address = formatAddress(group.getStreet(), group.getPostalCode(), group.getCity());
         Map<String, String> items = new LinkedHashMap<>();
 
-        if (hasValue(address)) items.put(labels.get("address"), address);
-        if (hasValue(group.getEmail())) items.put(labels.get("email"), group.getEmail());
-        if (hasValue(group.getWebsite())) items.put(labels.get("website"), group.getWebsite());
+        if (hasValue(address)) {
+            items.put(labels.get("address"), address);
+        }
+        if (hasValue(group.getEmail())) {
+            items.put(labels.get("email"), group.getEmail());
+        }
+        if (hasValue(group.getWebsite())) {
+            items.put(labels.get("website"), group.getWebsite());
+        }
 
-        if (items.isEmpty()) return;
+        if (items.isEmpty()) {
+            return;
+        }
 
         builder.startInfoSection(labels.get("contactDetails"));
         items.forEach(builder::addSectionData);
@@ -378,6 +375,16 @@ public class PDFExportService {
         return (value != null && !value.isEmpty()) ? value : "-";
     }
 
+    private String formatDate(Object date) {
+        if (date == null) {
+            return "-";
+        }
+        if (date instanceof java.time.LocalDate localDate) {
+            return localDate.format(DATE_FORMATTER);
+        }
+        return date.toString();
+    }
+
     private String formatWorkload(Integer workload, String unit) {
         return workload != null ? workload + (" " + unit) : "-";
     }
@@ -387,7 +394,9 @@ public class PDFExportService {
     }
 
     private String sanitizeFilename(String filename) {
-        if (filename == null) return "document";
+        if (filename == null) {
+            return "document";
+        }
         return filename.replaceAll("[^a-zA-Z0-9-_]", "_").substring(0, Math.min(filename.length(), 50));
     }
 
@@ -411,13 +420,5 @@ public class PDFExportService {
         }
 
         return String.join(", ", parts);
-    }
-
-    String formatDate(Object date) {
-        if (date == null) return "-";
-        if (date instanceof java.time.LocalDate localDate) {
-            return localDate.format(DATE_FORMATTER);
-        }
-        return date.toString();
     }
 }

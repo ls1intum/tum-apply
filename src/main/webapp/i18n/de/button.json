@@ -1,5 +1,6 @@
 {
   "button": {
+    "actions": "Aktionen",
     "cancel": "Abbrechen",
     "close": "Schließen",
     "confirm": "Bestätigen",
@@ -17,9 +18,11 @@
     "next": "Weiter",
     "apply": "Bewerben",
     "publish": "Veröffentlichen",
+    "chooseFile": "Datei auswählen",
+    "assign": "Zuweisen",
     "tooltip": {
       "editDisabled": "Nur Entwürfe können bearbeitet werden"
     },
-    "downloadPDF": "PDF exportieren"
+    "downloadPDF": "Exportieren"
   }
 }

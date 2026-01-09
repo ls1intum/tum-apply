@@ -3,8 +3,93 @@
   --p-stepper-step-number-size: 1.75rem;
   --p-stepper-step-number-font-size: 1rem;
   --p-stepper-step-title-font-weight: 500;
+  --p-accordion-header-background: var(--p-background-default);
+  --p-accordion-header-color: var(--p-text-primary);
+  --p-accordion-header-hover-background: var(--p-background-surface);
+  --p-accordion-header-active-hover-background: var(--p-background-surface);
+  --p-accordion-content-background: var(--p-background-default);
 }
 
 p-step[data-p-active='true'] .p-step-title {
   font-weight: 700 !important;
+  color: var(--p-text-primary) !important;
+}
+/* -------------------------------
+   Custom Global Styles for Login
+---------------------------------- */
+.login-header-button .p-button-text.p-button-info {
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.registration-header-button .p-button-text {
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.login-header-button .p-button-text.p-button-info:hover,
+.registration-header-button .p-button-text:hover {
+  filter: drop-shadow(0 0 0.075rem white);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* -------------------------------
+   Custom Global Styles for Tags
+---------------------------------- */
+.p-tag {
+  border: 0.1rem solid var(--p-border-default) !important;
+}
+
+.p-tag-success {
+  border-color: var(--p-success-500) !important;
+}
+
+.p-tag-info {
+  border-color: var(--p-neutral-500) !important;
+}
+
+.p-tag-secondary {
+  border-color: var(--p-secondary-500) !important;
+}
+
+.p-tag-danger {
+  border-color: var(--p-danger-500) !important;
+}
+
+.p-tag-warn {
+  border-color: var(--p-warn-500) !important;
+}
+
+.p-tag-contrast {
+  border-color: var(--p-accent-500) !important;
+}
+
+/* -------------------------------
+   Custom Global Styles for Accordion
+---------------------------------- */
+.p-accordionpanel:not(.p-disabled).p-accordionpanel-active > .p-accordionheader {
+  background: var(--p-background-surface) !important;
+}
+
+/* Disable all transitions and animations while switching theme */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* -------------------------------
+   Registration Page: Orange Buttons
+---------------------------------- */
+.registration-content {
+  jhi-auth-idp-buttons .p-button-outlined {
+    background: transparent !important;
+    border-color: var(--p-accent-color) !important;
+    color: var(--p-accent-color) !important;
+
+    &:hover {
+      background: var(--p-accent-hover-color-outlined) !important;
+    }
+  }
 }

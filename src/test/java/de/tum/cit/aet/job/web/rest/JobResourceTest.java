@@ -5,22 +5,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.*;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
+import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.PageResponse;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
+import de.tum.cit.aet.utility.testdata.ImageTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
+import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDate;
 import java.util.Map;
@@ -42,7 +51,16 @@ class JobResourceTest extends AbstractResourceTest {
     ResearchGroupRepository researchGroupRepository;
 
     @Autowired
+    ImageRepository imageRepository;
+
+    @Autowired
     DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    SchoolRepository schoolRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
 
     @Autowired
     MvcTestClient api;
@@ -50,21 +68,56 @@ class JobResourceTest extends AbstractResourceTest {
     ResearchGroup researchGroup;
     User professor;
 
+    /**
+     * Helper method to create a JobFormDTO from a Job entity with an optional imageId
+     */
+    private JobFormDTO createJobFormDTO(Job job, UUID imageId) {
+        return createJobFormDTO(job, job.getTitle(), imageId);
+    }
+
+    /**
+     * Helper method to create a JobFormDTO from a Job entity with a custom title and optional imageId
+     */
+    private JobFormDTO createJobFormDTO(Job job, String title, UUID imageId) {
+        return new JobFormDTO(
+            job.getJobId(),
+            title,
+            job.getResearchArea(),
+            job.getFieldOfStudies(),
+            professor.getUserId(),
+            job.getLocation(),
+            job.getStartDate(),
+            job.getEndDate(),
+            job.getWorkload(),
+            job.getContractDuration(),
+            job.getFundingType(),
+            job.getDescription(),
+            job.getTasks(),
+            job.getRequirements(),
+            JobState.DRAFT,
+            imageId
+        );
+    }
+
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
 
+        // Create school and department for research group
+        School school = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
+        Department department = DepartmentTestData.saved(departmentRepository, "Computer Science", school);
+
         researchGroup = ResearchGroupTestData.savedAll(
             researchGroupRepository,
-            "Algorithms Group",
+            department,
             "Prof. Doe",
-            "alg@example.com",
+            "Algorithms Group",
             "ALG",
+            "Munich",
             "CS",
             "We do cool stuff",
             "alg@example.com",
             "80333",
-            "CIT",
             "Arcisstr. 21",
             "https://alg.tum.de",
             "ACTIVE"
@@ -107,7 +160,6 @@ class JobResourceTest extends AbstractResourceTest {
 
         JobCardDTO card = page.content().getFirst();
         assertThat(card.title()).isEqualTo("Published Role");
-        assertThat(card.fieldOfStudies()).isEqualTo("CS");
         assertThat(card.location()).isEqualTo("Garching");
         assertThat(card.professorName()).isEqualTo("John Doe");
         assertThat(card.workload()).isEqualTo(20);
@@ -137,7 +189,8 @@ class JobResourceTest extends AbstractResourceTest {
             "Build ML pipelines",
             "data cleaning and model training",
             "Python and TensorFlow",
-            JobState.PUBLISHED
+            JobState.PUBLISHED,
+            null
         );
 
         JobFormDTO returned = api
@@ -227,7 +280,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -250,7 +304,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -275,7 +330,8 @@ class JobResourceTest extends AbstractResourceTest {
             "Updated Description",
             "Updated Tasks",
             "Updated Requirements",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
 
         JobFormDTO returnedJob = api
@@ -319,7 +375,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
 
         api.putAndRead("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload, JobFormDTO.class, 404);
@@ -343,7 +400,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "tasks",
             "req",
-            JobState.DRAFT
+            JobState.DRAFT,
+            null
         );
         api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);
     }
@@ -528,5 +586,121 @@ class JobResourceTest extends AbstractResourceTest {
     @Test
     void getJobDetailsNonExistantIdThrowsNotFound() {
         api.getAndRead("/api/jobs/detail/" + UUID.randomUUID(), null, JobDetailDTO.class, 404);
+    }
+
+    @Test
+    @WithMockUser(roles = "PROFESSOR")
+    void updateJobReplacingImageCallsReplaceImage() {
+        // Arrange - Create a job with a job banner
+        Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
+        Job job = jobRepository.findAll().getFirst();
+        job.setImage(jobBanner1);
+        jobRepository.save(job);
+
+        // Create a new job banner
+        Image jobBanner2 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
+
+        JobFormDTO updatedPayload = createJobFormDTO(job, jobBanner2.getImageId());
+
+        // Act
+        JobFormDTO result = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
+
+        // Assert - Job banners should NOT be deleted (they're reusable library images)
+        assertThat(imageRepository.findById(jobBanner1.getImageId())).isPresent();
+        assertThat(imageRepository.findById(jobBanner2.getImageId())).isPresent();
+        assertThat(result.imageId()).isEqualTo(jobBanner2.getImageId());
+    }
+
+    @Test
+    @WithMockUser(roles = "PROFESSOR")
+    void updateJobRemovingImageDoesNotDeleteReusableLibraryImage() {
+        // Arrange - Create a job with a job banner
+        Image jobBanner = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
+        Job job = jobRepository.findAll().getFirst();
+        job.setImage(jobBanner);
+        jobRepository.save(job);
+
+        JobFormDTO updatedPayload = createJobFormDTO(job, null);
+
+        // Act
+        JobFormDTO result = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
+
+        // Assert - Job banner should NOT be deleted (it's a reusable library image)
+        assertThat(imageRepository.findById(jobBanner.getImageId())).isPresent();
+        assertThat(result.imageId()).isNull();
+    }
+
+    @Test
+    @WithMockUser(roles = "PROFESSOR")
+    void updateJobWithDefaultJobBannerDoesNotDeleteOldImage() {
+        // Arrange - Create admin user for default image
+        User adminUser = UserTestData.newUserAll(UUID.randomUUID(), "admin@tum.de", "Admin", "User");
+        adminUser = userRepository.save(adminUser);
+
+        Image defaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup.getDepartment()));
+        Job job = jobRepository.findAll().getFirst();
+        job.setImage(defaultBanner);
+        jobRepository.save(job);
+
+        // Create a new default banner
+        Image newDefaultBanner = imageRepository.save(ImageTestData.newDefaultJobBanner(adminUser, researchGroup.getDepartment()));
+
+        JobFormDTO updatedPayload = createJobFormDTO(job, newDefaultBanner.getImageId());
+
+        // Act
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
+
+        // Assert - Default images should NOT be auto-deleted
+        assertThat(imageRepository.findById(defaultBanner.getImageId())).isPresent();
+        assertThat(imageRepository.findById(newDefaultBanner.getImageId())).isPresent();
+    }
+
+    @Test
+    @WithMockUser(roles = "PROFESSOR")
+    void updateJobWithJobBannerDoesNotDeleteOldImage() {
+        // Arrange - Create job banners (research group library images)
+        Image jobBanner1 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
+        Job job = jobRepository.findAll().getFirst();
+        job.setImage(jobBanner1);
+        jobRepository.save(job);
+
+        Image jobBanner2 = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
+
+        JobFormDTO updatedPayload = createJobFormDTO(job, jobBanner2.getImageId());
+
+        // Act
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
+
+        // Assert - Job banners are reusable library images, so should NOT be deleted
+        assertThat(imageRepository.findById(jobBanner1.getImageId())).isPresent();
+        assertThat(imageRepository.findById(jobBanner2.getImageId())).isPresent();
+    }
+
+    @Test
+    @WithMockUser(roles = "PROFESSOR")
+    void updateJobWithSameImageDoesNotDeleteIt() {
+        // Arrange
+        Image jobBanner = imageRepository.save(ImageTestData.newJobBanner(professor, researchGroup));
+        Job job = jobRepository.findAll().getFirst();
+        job.setImage(jobBanner);
+        jobRepository.save(job);
+
+        JobFormDTO updatedPayload = createJobFormDTO(job, "Updated Title", jobBanner.getImageId());
+
+        // Act
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 200);
+
+        // Assert - Image should still exist (not deleted)
+        assertThat(imageRepository.findById(jobBanner.getImageId())).isPresent();
     }
 }

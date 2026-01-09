@@ -13,22 +13,7 @@ Make sure you have the following installed:
 - **Docker** and **Docker Compose**
 - **MySQL CLI**
 - **Git**
-
----
-
-## Environment Variables
-
-Environment-specific values are stored in a `.env.local` file in the root of the project.
-
-- Copy `.env.example` to `.env.local`:
-  ```bash
-  cp .env.example .env.local
-  ```
-- Fill in the required secrets or configuration values. Please ask your team lead for the necessary secrets if needed.
-- Never commit your `.env.local` file – it may contain sensitive information.
-
-For details on each variable and how environments are handled in development, test, and production, refer to
-the [Environment Configuration Guide](environment-variables.md).
+- **Spring AI compatible instance** (for example via LM Studio, see below)
 
 ---
 
@@ -38,6 +23,12 @@ Install npm dependencies:
 
 ```bash
 npm install
+```
+
+Make sure Docker Desktop is running, then execute:
+
+```bash
+docker compose -f docker/local-setup/services.yml up -d
 ```
 
 Start the server and client development servers in two separate terminals:
@@ -52,26 +43,10 @@ npm run start
 
 ---
 
-## Managing Dependencies
+## Spring AI
 
-Use `npm` for consistent dependency management:
-
-- Install a new package:
-
-  ```bash
-  npm install --save --save-exact <package-name>
-  ```
-
-- Install TypeScript types:
-
-  ```bash
-  npm install --save-dev --save-exact @types/<package>
-  ```
-
-- Update dependencies:
-  ```bash
-  npm run update
-  ```
+To be able to run the server you need a working Spring AI instance. You can either use a remote instance or set up a
+local one using LM Studio. Follow the instructions in the [Spring AI Setup Guide](./spring-ai.md) to get started.
 
 ---
 
@@ -83,7 +58,7 @@ You can use Angular CLI commands to generate new code:
 ng generate component my-component
 ```
 
-This will create and update the relevant files inside `src/main/webapp/app/:
+This will create and update the relevant files inside `src/main/webapp/app/`:
 
 ```
 create src/main/webapp/app/my-component/my-component.component.html
@@ -93,27 +68,11 @@ update src/main/webapp/app/app.config.ts
 
 ---
 
-## Webpack and Runtime Assets
-
-If you install libraries with JS or CSS files (e.g., Leaflet), make sure to import them:
-
-```ts
-// src/main/webapp/app/app.config.ts
-import 'leaflet/dist/leaflet.js';
-
-// src/main/webapp/content/scss/vendor.scss
-@import
-'leaflet/dist/leaflet.css';
-```
-
----
-
 ## Developer Tools
 
 We use:
 
 - **Angular CLI** for client tooling
-- **Webpack** for bundling
 - **npm scripts** for project tasks (`./npmw run`)
 - **Browser Auto-Refresh** with hot-reload enabled by default
 
@@ -123,3 +82,4 @@ We use:
 
 - Only run `npm install` when dependencies change
 - You can run `npm help` to get more info about available commands
+- If you encounter unexpected build issues, try running `./gradlew clean build` to reset the environment.

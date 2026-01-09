@@ -4,7 +4,7 @@
   </div>
 
   <div class="table-wrapper">
-    <div class="actions">
+    <div class="actions flex justify-end gap-4">
       <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
       <!-- Will be added later
       <jhi-button label="researchGroup.emailTemplates.signature" variant="outlined" icon="pen-nib" [shouldTranslate]="true" />
@@ -20,18 +20,22 @@
       (lazyLoad)="onTableEmit($event)"
     />
 
-    <ng-template #editTemplate let-template>
-      <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
-    </ng-template>
-    <ng-template #deleteTemplate let-template>
-      <jhi-button
-        variant="text"
-        icon="trash-alt"
-        severity="danger"
-        [tooltip]="'button.delete' | translate"
-        [disabled]="template.isDefault"
-        (click)="delete(template.emailTemplateId)"
-      />
+    <ng-template #actionsTemplate let-template>
+      <div class="flex justify-end gap-1">
+        <jhi-button variant="text" icon="pen" [tooltip]="'button.edit' | translate" (click)="navigateToEdit(template.emailTemplateId)" />
+        @if (!isEmployee()) {
+          <jhi-confirm-dialog
+            [label]="'button.delete' | translate"
+            [header]="'researchGroup.emailTemplates.deleteTemplateModal.title' | translate"
+            [message]="'researchGroup.emailTemplates.deleteTemplateModal.message' | translate"
+            confirmIcon="trash"
+            (confirmed)="delete(template.emailTemplateId)"
+            severity="danger"
+            [tooltip]="'button.delete' | translate"
+            [iconOnly]="true"
+          />
+        }
+      </div>
     </ng-template>
   </div>
 </div>
