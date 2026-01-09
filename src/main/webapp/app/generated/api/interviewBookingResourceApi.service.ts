@@ -38,13 +38,15 @@ export class InterviewBookingResourceApiService extends BaseService {
      * @param processId 
      * @param year 
      * @param month 
+     * @param pageSize 
+     * @param pageNumber 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getBookingData(processId: string, year?: number, month?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<BookingDTO>;
-    public getBookingData(processId: string, year?: number, month?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<BookingDTO>>;
-    public getBookingData(processId: string, year?: number, month?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<BookingDTO>>;
-    public getBookingData(processId: string, year?: number, month?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getBookingData(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<BookingDTO>;
+    public getBookingData(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<BookingDTO>>;
+    public getBookingData(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<BookingDTO>>;
+    public getBookingData(processId: string, year?: number, month?: number, pageSize?: number, pageNumber?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling getBookingData.');
         }
@@ -54,6 +56,10 @@ export class InterviewBookingResourceApiService extends BaseService {
           <any>year, 'year');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>month, 'month');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageSize, 'pageSize');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>pageNumber, 'pageNumber');
 
         let localVarHeaders = this.defaultHeaders;
 
