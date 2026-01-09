@@ -129,7 +129,7 @@ public class UserDataDeletionService {
         finalizedApplications.forEach(this::anonymizeApplicationData);
         nonFinalized.forEach(this::deleteApplicationData);
 
-        // documentRepository.deleteByApplicantId(userId);
+        applicantRepository.deleteById(userId);
     }
 
     private void deleteApplicationData(Application application) {
