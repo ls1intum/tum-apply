@@ -81,20 +81,24 @@ export class HeaderComponent {
     if (!this.user()) {
       return [];
     }
-    
+
     return [
       {
         label: this.translateService.instant('header.settings'),
         icon: 'pi pi-cog', // TODO items anpassen
-        command: () => this.navigateToSettings(),
+        command: () => {
+          this.navigateToSettings();
+        },
       },
       {
         separator: true,
       },
       {
         label: this.translateService.instant('header.logout'),
-        icon: 'pi pi-sign-out', // TODO items anpassen 
-        command: () => this.logout(),
+        icon: 'pi pi-sign-out', // TODO items anpassen
+        command: () => {
+          this.logout();
+        },
       },
     ];
   });
