@@ -3,12 +3,12 @@
 
   <!-- Job Info Section -->
   <div class="border border-border-default rounded-lg p-4 mb-4">
-    <div class="text-xs text-text-secondary uppercase font-semibold mb-3" jhiTranslate="interview.booking.topic">Topic</div>
+    <div class="text-sm text-text-secondary uppercase font-semibold mb-3" jhiTranslate="interview.booking.topic">Topic</div>
 
     <div class="flex flex-col gap-3">
       <!-- Title -->
       <div>
-        <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.jobTitle">Title</div>
+        <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.jobTitle">Title</div>
         <div class="flex items-center gap-2">
           <fa-icon icon="briefcase" class="text-primary w-4" />
           <div class="text-sm font-medium text-text-primary">{{ jobTitle() }}</div>
@@ -18,7 +18,7 @@
       <!-- Research Group -->
       @if (researchGroupName()) {
         <div class="flex flex-col">
-          <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.researchGroup">Research Group</div>
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.researchGroup">Research Group</div>
           <div class="flex items-center gap-2">
             <fa-icon icon="research-group" class="text-primary w-4" />
             <div class="text-sm font-medium text-text-primary">{{ researchGroupName() }}</div>
@@ -28,7 +28,7 @@
 
       <!-- Supervisor -->
       <div>
-        <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.supervisor">Supervisor</div>
+        <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.supervisor">Supervisor</div>
         <div class="flex items-center gap-2">
           <fa-icon icon="user-tie" class="text-primary w-4" />
           <div class="text-sm font-medium text-text-primary">{{ supervisorName() }}</div>
@@ -39,7 +39,7 @@
 
   <!-- Selected Slot / Booked Slot Section -->
   <div class="border border-border-default rounded-lg p-4 mb-auto">
-    <div class="text-xs text-text-secondary uppercase font-semibold mb-3">
+    <div class="text-sm text-text-secondary uppercase font-semibold mb-3">
       @if (alreadyBooked()) {
         <span jhiTranslate="interview.booking.yourAppointment">Your Appointment</span>
       } @else {
@@ -47,11 +47,11 @@
       }
     </div>
 
-    @if (hasSelection() || alreadyBooked()) {
+    @if (hasSelection()) {
       <div class="flex flex-col gap-3">
         <!-- Date -->
         <div>
-          <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.date">Date</div>
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.date">Date</div>
           <div class="flex items-center gap-2">
             <fa-icon icon="calendar" class="text-primary w-4" />
             <div class="text-sm font-medium text-text-primary">{{ displayDate() }}</div>
@@ -60,7 +60,7 @@
 
         <!-- Time -->
         <div>
-          <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.time">Time</div>
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.time">Time</div>
           <div class="flex items-center gap-2">
             <fa-icon icon="clock" class="text-primary w-4" />
             <div class="text-sm font-medium text-text-primary">{{ displayTime() }}</div>
@@ -69,7 +69,7 @@
 
         <!-- Location -->
         <div>
-          <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.location">Location</div>
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.location">Location</div>
           <div class="flex items-center gap-2">
             <fa-icon icon="location-dot" class="text-primary w-4" />
             <div class="text-sm font-medium text-text-primary">
