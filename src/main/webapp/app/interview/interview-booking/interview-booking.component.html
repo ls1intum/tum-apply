@@ -5,9 +5,9 @@
   </div>
 
   @if (error()) {
-    <div class="bg-background-surface text-negative-default p-4 rounded-lg border border-negative-default">
-      <div class="font-bold mb-1" jhiTranslate="interview.booking.error.title">Error</div>
-      <div jhiTranslate="interview.booking.error.description">Unable to load booking data.</div>
+    <div class="p-4">
+      <div class="font-bold text-negative-default mb-1" jhiTranslate="interview.booking.error.title">Error</div>
+      <div class="text-negative-default" jhiTranslate="interview.booking.error.description">Unable to load booking data.</div>
     </div>
   } @else if (bookingData()) {
     @if (hasBookedSlot()) {
