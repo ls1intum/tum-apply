@@ -1,4 +1,5 @@
-import { Component, ViewEncapsulation, computed, input, output, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { SelectComponent, SelectOption } from '../select/select.component';
 import { ButtonComponent } from '../button/button.component';
@@ -45,14 +46,31 @@ export class Sorting {
     return { name: cur.displayName, value: cur.fieldName };
   });
 
+  private translateService = inject(TranslateService);
+
   getSortIcon(): string {
     const type = this.currentOption().type;
     const asc = this.isAsc();
 
     if (type === 'NUMBER') {
-      return asc ? 'arrow-down-1-9' : 'arrow-up-1-9';
+      return asc ? 'arrow-up-1-9' : 'arrow-down-9-1';
     } else {
-      return asc ? 'arrow-down-a-z' : 'arrow-up-a-z';
+      return asc ? 'arrow-up-a-z' : 'arrow-down-z-a';
+    }
+  }
+
+  getSortTooltip(): string {
+    const type = this.currentOption().type;
+    const asc = this.isAsc();
+
+    if (type === 'NUMBER') {
+      return asc
+        ? this.translateService.instant('entity.sorting.ascending.number')
+        : this.translateService.instant('entity.sorting.descending.number');
+    } else {
+      return asc
+        ? this.translateService.instant('entity.sorting.ascending.text')
+        : this.translateService.instant('entity.sorting.descending.text');
     }
   }
 

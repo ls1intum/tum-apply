@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Sorting, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('Sorting', () => {
   const mockSortOptions: SortOption[] = [
@@ -18,9 +19,21 @@ describe('Sorting', () => {
   }
 
   beforeEach(async () => {
+    const translateServiceMock = {
+      instant: vi.fn((key: string) => {
+        const translations: Record<string, string> = {
+          'entity.sorting.ascending.text': 'Ascending (A-Z)',
+          'entity.sorting.descending.text': 'Descending (Z-A)',
+          'entity.sorting.ascending.number': 'Ascending (1-9)',
+          'entity.sorting.descending.number': 'Descending (9-1)',
+        };
+        return translations[key] || key;
+      }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [Sorting],
-      providers: [provideFontAwesomeTesting()],
+      providers: [provideFontAwesomeTesting(), { provide: TranslateService, useValue: translateServiceMock }],
     }).compileComponents();
   });
 
@@ -48,22 +61,41 @@ describe('Sorting', () => {
   it('should return correct sort icon for TEXT type', () => {
     const sortingFixture = createSortingFixture();
 
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-a-z');
+    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-z-a');
 
     sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-a-z');
+    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-a-z');
   });
 
   it('should return correct sort icon for NUMBER type', () => {
     const sortingFixture = createSortingFixture();
 
-    // Select the Age field (NUMBER type)
     sortingFixture.componentInstance.selectedOption.set(mockSortOptions[1]);
 
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-1-9');
+    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-9-1');
 
     sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-1-9');
+    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-1-9');
+  });
+
+  it('should return correct sort tooltip for TEXT type', () => {
+    const sortingFixture = createSortingFixture();
+
+    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('Descending (Z-A)');
+
+    sortingFixture.componentInstance.isAsc.set(true);
+    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('Ascending (A-Z)');
+  });
+
+  it('should return correct sort tooltip for NUMBER type', () => {
+    const sortingFixture = createSortingFixture();
+
+    sortingFixture.componentInstance.selectedOption.set(mockSortOptions[1]);
+
+    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('Descending (9-1)');
+
+    sortingFixture.componentInstance.isAsc.set(true);
+    expect(sortingFixture.componentInstance.getSortTooltip()).toBe('Ascending (1-9)');
   });
 
   it('should change selected option and emit sort change', () => {
