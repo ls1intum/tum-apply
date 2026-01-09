@@ -57,15 +57,6 @@ public class InterviewBookingService {
      */
     public BookingDTO getBookingData(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
         UUID userId = currentUserService.getUserId();
-        log.info(
-            "Getting booking data for process {} and user {}, year: {}, month: {}, page: {}, size: {}",
-            processId,
-            userId,
-            year,
-            month,
-            pageDTO.pageNumber(),
-            pageDTO.pageSize()
-        );
 
         // 1. Load interview process with job
         InterviewProcess process = interviewProcessRepository
