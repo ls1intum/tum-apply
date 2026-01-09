@@ -34,7 +34,7 @@ public class IcsCalendarService {
         ics.append("VERSION:2.0\r\n");
         ics.append("PRODID:-//TUMApply//Interview//EN\r\n");
         ics.append("CALSCALE:GREGORIAN\r\n");
-        ics.append("METHOD:REQUEST\r\n");
+        ics.append("METHOD:PUBLISH\r\n");
         ics.append("BEGIN:VEVENT\r\n");
         ics.append("UID:").append(uid).append("\r\n");
         ics.append("DTSTAMP:").append(ZonedDateTime.now(CET_TIMEZONE).format(ICS_DATE_FORMAT)).append("\r\n");
