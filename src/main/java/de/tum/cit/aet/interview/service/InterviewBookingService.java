@@ -123,11 +123,11 @@ public class InterviewBookingService {
         List<InterviewSlot> slots;
 
         if (year != null && month != null) {
-            // Filter by month
+            // Filter by month (only future slots)
             ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
             ZonedDateTime monthEnd = monthStart.plusMonths(1);
             slots = interviewSlotRepository
-                .findAvailableSlotsByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable)
+                .findAvailableSlotsByProcessIdAndMonth(processId, Instant.now(), monthStart.toInstant(), monthEnd.toInstant(), pageable)
                 .getContent();
         } else {
             // Load all future slots

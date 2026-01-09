@@ -169,21 +169,24 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     List<InterviewSlot> findAvailableSlotsByProcessId(@Param("processId") UUID processId, @Param("now") Instant now);
 
     /**
-     * Finds all unbooked interview slots for a given process within a specific
-     * month.
+     * Finds all unbooked future interview slots for a given process within a
+     * specific month.
+     * Only returns slots that are both within the month AND in the future.
      * Used for server-side pagination on the applicant booking page.
      *
      * @param processId  the ID of the interview process
+     * @param now        the current time (to filter out past slots)
      * @param monthStart the start of the month (inclusive)
      * @param monthEnd   the end of the month (exclusive)
      * @param pageable   pagination information
-     * @return page of available slots ordered by start time ascending
+     * @return page of available future slots ordered by start time ascending
      */
     @Query(
         """
         SELECT s FROM InterviewSlot s
         WHERE s.interviewProcess.id = :processId
         AND s.isBooked = false
+        AND s.startDateTime >= :now
         AND s.startDateTime >= :monthStart
         AND s.startDateTime < :monthEnd
         ORDER BY s.startDateTime ASC
@@ -191,6 +194,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     )
     Page<InterviewSlot> findAvailableSlotsByProcessIdAndMonth(
         @Param("processId") UUID processId,
+        @Param("now") Instant now,
         @Param("monthStart") Instant monthStart,
         @Param("monthEnd") Instant monthEnd,
         Pageable pageable
