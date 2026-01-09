@@ -46,15 +46,17 @@ public class IcsCalendarService {
             ics.append("LOCATION:").append(escapeIcsText(slot.getLocation())).append("\r\n");
         }
 
+        boolean hasStreamLink = slot.getStreamLink() != null && !slot.getStreamLink().isBlank();
+
         // Build description
         StringBuilder description = new StringBuilder();
         description.append("Interview for: ").append(job.getTitle());
-        if (slot.getStreamLink() != null && !slot.getStreamLink().isBlank()) {
+        if (hasStreamLink) {
             description.append("\\nVideo Link: ").append(slot.getStreamLink());
         }
         ics.append("DESCRIPTION:").append(escapeIcsText(description.toString())).append("\r\n");
 
-        if (slot.getStreamLink() != null && !slot.getStreamLink().isBlank()) {
+        if (hasStreamLink) {
             ics.append("URL:").append(slot.getStreamLink()).append("\r\n");
         }
 
