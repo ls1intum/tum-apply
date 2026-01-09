@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.security.annotations.Applicant;
 import de.tum.cit.aet.interview.dto.BookingDTO;
 import de.tum.cit.aet.interview.service.InterviewBookingService;
 import jakarta.validation.Valid;
+import java.time.YearMonth;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,15 +49,10 @@ public class InterviewBookingResource {
         @RequestParam(required = false) Integer month,
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
     ) {
-        log.info(
-            "REST request to get booking data for process: {}, year: {}, month: {}, page: {}, size: {}",
-            processId,
-            year,
-            month,
-            pageDTO.pageNumber(),
-            pageDTO.pageSize()
-        );
-        BookingDTO data = bookingService.getBookingData(processId, year, month, pageDTO);
+        // Convert separate year/month to YearMonth (null if either is missing)
+        YearMonth yearMonth = (year != null && month != null) ? YearMonth.of(year, month) : null;
+
+        BookingDTO data = bookingService.getBookingData(processId, yearMonth, pageDTO);
         return ResponseEntity.ok(data);
     }
 }

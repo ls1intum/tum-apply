@@ -17,6 +17,7 @@ import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.dto.ProfessorDTO;
 import java.time.Instant;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -48,14 +49,13 @@ public class InterviewBookingService {
      * Contains job info, user's booking status, and available slots.
      *
      * @param processId the ID of the interview process
-     * @param year      optional year for month filtering (requires month)
-     * @param month     optional month for filtering (1-12, requires year)
+     * @param yearMonth optional year/month for filtering slots
      * @param pageDTO   pagination parameters
      * @return the booking data DTO
      * @throws EntityNotFoundException if the process doesn't exist
      * @throws AccessDeniedException   if user is not invited to this process
      */
-    public BookingDTO getBookingData(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
+    public BookingDTO getBookingData(UUID processId, YearMonth yearMonth, PageDTO pageDTO) {
         UUID userId = currentUserService.getUserId();
 
         // 1. Load interview process with job
@@ -88,7 +88,7 @@ public class InterviewBookingService {
         // 6. Get available slots (only if not already booked)
         List<InterviewSlotDTO> availableSlots = Collections.emptyList();
         if (bookedSlot == null) {
-            availableSlots = loadAvailableSlots(processId, year, month, pageDTO);
+            availableSlots = loadAvailableSlots(processId, yearMonth, pageDTO);
         }
 
         return new BookingDTO(
@@ -104,19 +104,18 @@ public class InterviewBookingService {
      * Loads available slots with optional month filtering.
      *
      * @param processId the interview process ID
-     * @param year      optional year (requires month)
-     * @param month     optional month 1-12 (requires year)
+     * @param yearMonth optional year/month filter
      * @param pageDTO   pagination parameters
      * @return list of available slot DTOs
      */
-    private List<InterviewSlotDTO> loadAvailableSlots(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
+    private List<InterviewSlotDTO> loadAvailableSlots(UUID processId, YearMonth yearMonth, PageDTO pageDTO) {
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         List<InterviewSlot> slots;
 
-        if (year != null && month != null) {
+        if (yearMonth != null) {
             // Filter by month (only future slots)
-            ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-            ZonedDateTime monthEnd = monthStart.plusMonths(1);
+            ZonedDateTime monthStart = yearMonth.atDay(1).atStartOfDay(ZoneId.systemDefault());
+            ZonedDateTime monthEnd = yearMonth.plusMonths(1).atDay(1).atStartOfDay(ZoneId.systemDefault());
             slots = interviewSlotRepository
                 .findAvailableSlotsByProcessIdAndMonth(processId, Instant.now(), monthStart.toInstant(), monthEnd.toInstant(), pageable)
                 .getContent();
