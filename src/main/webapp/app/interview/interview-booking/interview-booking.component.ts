@@ -240,7 +240,7 @@ export class InterviewBookingComponent {
     try {
       this.loading.set(true);
       this.error.set(false);
-      const data = await firstValueFrom(this.bookingService.getBookingData(processId, year, month));
+      const data = await firstValueFrom(this.bookingService.getBookingData(processId, year, month, 100, 0));
       this.bookingData.set(data);
     } catch {
       this.error.set(true);
