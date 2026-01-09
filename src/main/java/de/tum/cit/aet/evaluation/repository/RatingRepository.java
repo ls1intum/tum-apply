@@ -23,14 +23,14 @@ public interface RatingRepository extends TumApplyJpaRepository<Rating, UUID> {
     )
     Set<Rating> findByApplicationApplicationId(@Param("applicationId") UUID applicationId);
 
+    Optional<Rating> findByFromAndApplicationApplicationId(User from, UUID applicationId);
+
+    Set<Rating> findAllByFrom(User from);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Rating r WHERE r.application.applicationId = :applicationId")
     void deleteByApplicationId(@Param("applicationId") UUID applicationId);
 
     void deleteByFromAndApplicationApplicationId(User from, UUID applicationId);
-
-    Optional<Rating> findByFromAndApplicationApplicationId(User from, UUID applicationId);
-
-    Set<Rating> findAllByFrom(User from);
 }
