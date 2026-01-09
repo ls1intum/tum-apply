@@ -4,15 +4,12 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.security.annotations.Applicant;
 import de.tum.cit.aet.interview.dto.BookingDTO;
 import de.tum.cit.aet.interview.service.InterviewBookingService;
-import jakarta.validation.Valid;
 import java.time.YearMonth;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +34,8 @@ public class InterviewBookingResource {
      * @param year      optional year for month-based slot filtering (requires
      *                  month)
      * @param month     optional month (1-12) for filtering slots (requires year)
-     * @param pageDTO   pagination parameters
+     * @param page      pagination page number (default 0)
+     * @param size      pagination page size (default 20)
      * @return booking page data with job info, user's booking status, and available
      *         slots
      */
@@ -47,10 +45,12 @@ public class InterviewBookingResource {
         @PathVariable UUID processId,
         @RequestParam(required = false) Integer year,
         @RequestParam(required = false) Integer month,
-        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
     ) {
         // Convert separate year/month to YearMonth (null if either is missing)
         YearMonth yearMonth = (year != null && month != null) ? YearMonth.of(year, month) : null;
+        PageDTO pageDTO = new PageDTO(size, page);
 
         BookingDTO data = bookingService.getBookingData(processId, yearMonth, pageDTO);
         return ResponseEntity.ok(data);
