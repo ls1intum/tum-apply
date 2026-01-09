@@ -50,7 +50,7 @@ public class AiResource {
      */
 
     @PostMapping(value = "generate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AiResponseDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) throws JsonProcessingException {
+    public ResponseEntity<AiResponseDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
         log.info("POST /api/ai/generate - Request received");
         return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
     }

@@ -45,16 +45,19 @@ public class AiService {
      * @return The generated job posting content
      */
 
-    public AiResponseDTO generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) throws JsonProcessingException {
+    public AiResponseDTO generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) {
         String prompt = jobDescriptionGenerationPrompt.formatted(jobFormDTO.description(), jobFormDTO.requirements(), jobFormDTO.tasks());
         String raw = chatClient.prompt().user(prompt).call().content();
         String cleanedJSON = cleanupJSON(raw);
-
-        return objectMapper.readValue(cleanedJSON, AiResponseDTO.class);
+        try {
+            return objectMapper.readValue(cleanedJSON, AiResponseDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     * Sanitizes raw AI output and extracts the JSON object.
+     * Sanitizes raw AI output and extracts the substring between the first '{' and the last '}'
      *
      * @param aiResponse the raw response from the ChatClient
      * @return cleaned JSON string or "{}" if input is null or empty
