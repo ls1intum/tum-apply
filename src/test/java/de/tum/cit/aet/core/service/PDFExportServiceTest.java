@@ -128,7 +128,6 @@ class PDFExportServiceTest {
         // Setup nested applicant mock
         var applicantMock = mock(ApplicantForApplicationDetailDTO.class);
         var userMock = mock(UserForApplicationDetailDTO.class);
-        lenient().when(userMock.preferredLanguage()).thenReturn("English");
         lenient().when(userMock.gender()).thenReturn("Male");
         lenient().when(userMock.nationality()).thenReturn("German");
         lenient().when(userMock.website()).thenReturn("https://example.com");
@@ -269,7 +268,6 @@ class PDFExportServiceTest {
             var applicantMock = mock(ApplicantForApplicationDetailDTO.class);
             var userMock = mock(UserForApplicationDetailDTO.class);
 
-            when(userMock.preferredLanguage()).thenReturn("English");
             when(userMock.gender()).thenReturn("Male");
             when(userMock.nationality()).thenReturn("German");
             when(userMock.website()).thenReturn(null);
@@ -336,6 +334,21 @@ class PDFExportServiceTest {
             assertThat(result).isNotNull();
             verify(jobService).getJobDetails(TEST_JOB_ID);
             verify(currentUserService).isProfessor();
+        }
+
+        @Test
+        void shouldExportJobToPDFForEmployee() {
+            JobDetailDTO jobDetail = createJobDetailDTO();
+            when(jobService.getJobDetails(TEST_JOB_ID)).thenReturn(jobDetail);
+            when(currentUserService.isProfessor()).thenReturn(false);
+            when(currentUserService.isEmployee()).thenReturn(true);
+
+            Resource result = pdfExportService.exportJobToPDF(TEST_JOB_ID, testLabels);
+
+            assertThat(result).isNotNull();
+            verify(jobService).getJobDetails(TEST_JOB_ID);
+            verify(currentUserService).isProfessor();
+            verify(currentUserService).isEmployee();
         }
 
         @Test
