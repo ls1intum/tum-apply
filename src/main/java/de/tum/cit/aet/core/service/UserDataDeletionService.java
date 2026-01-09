@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.service;
 
 import com.itextpdf.io.exceptions.IOException;
-import com.itextpdf.layout.element.Image;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -15,7 +14,6 @@ import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
-import de.tum.cit.aet.job.domain.CustomField;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
@@ -25,8 +23,12 @@ import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -93,19 +95,21 @@ public class UserDataDeletionService {
         emailSettingRepository.deleteByUserId(userId);
         userResearchGroupRoleRepository.deleteByUserId(userId);
         userSettingRepository.deleteByUserId(userId);
+        // TODO: delete missing files
     }
 
     private void deleteProfesserUserData(UUID userId, User professor) {
-        // TODO: applications are automatically closed for deleted jobs
         emailTemplateRepository.removeUserInformationFromTemplate(userId);
         imageRepository.deleteProfileImageByUserId(userId);
         imageRepository.anonymizeImagesByUserId(userId);
+        // TODO: applications are automatically closed for deleted jobs
     }
 
     private void deleteEmployeeUserData(UUID userId, User employee) {
         emailTemplateRepository.removeUserInformationFromTemplate(userId);
         imageRepository.deleteProfileImageByUserId(userId);
         imageRepository.anonymizeImagesByUserId(userId);
+        // TODO: delete missing files
     }
 
     private void deleteApplicantUserData(UUID userId, User applicant) {
@@ -113,31 +117,33 @@ public class UserDataDeletionService {
 
         List<Application> applications = applicationRepository.findAllByApplicantId(userId);
 
-        List<Application> finalizedApplications = applications
-            .stream()
-            .filter(appl -> appl.getState() == ApplicationState.REJECTED || appl.getState() == ApplicationState.ACCEPTED)
-            .toList();
+        EnumSet<ApplicationState> finalStates = EnumSet.of(ApplicationState.REJECTED, ApplicationState.ACCEPTED);
 
-        List<Application> nonFinalized = applications
+        Map<Boolean, List<Application>> parts = applications
             .stream()
-            .filter(appl -> appl.getState() != ApplicationState.REJECTED && appl.getState() != ApplicationState.ACCEPTED)
-            .toList();
+            .collect(Collectors.partitioningBy(appl -> finalStates.contains(appl.getState())));
 
-        finalizedApplications.forEach(application -> anonymizeApplicationData(application));
-        nonFinalized.forEach(application -> deleteApplicationData(userId, application));
+        List<Application> finalizedApplications = parts.getOrDefault(true, Collections.emptyList());
+        List<Application> nonFinalized = parts.getOrDefault(false, Collections.emptyList());
+
+        finalizedApplications.forEach(this::anonymizeApplicationData);
+        nonFinalized.forEach(this::deleteApplicationData);
 
         // documentRepository.deleteByApplicantId(userId);
     }
 
-    private void deleteApplicationData(UUID userId, Application application) {
-        customFieldAnswerRepository.deleteByApplicationId(application.getApplicationId());
-        documentDictionaryRepository.deleteByApplicationId(application.getApplicationId());
-        applicationReviewRepository.deleteByApplicationId(application.getApplicationId());
-        internalCommentRepository.deleteByApplicationId(application.getApplicationId());
-        ratingRepository.deleteByApplicationId(application.getApplicationId());
-        intervieweeRepository.deleteByApplicationId(application.getApplicationId());
+    private void deleteApplicationData(Application application) {
+        UUID applicationId = application.getApplicationId();
 
-        applicationRepository.deleteById(application.getApplicationId());
+        customFieldAnswerRepository.deleteByApplicationId(applicationId);
+        documentDictionaryRepository.deleteByApplicationId(applicationId);
+        documentRepository.deleteByUploadedBy(applicationId);
+        applicationReviewRepository.deleteByApplicationId(applicationId);
+        internalCommentRepository.deleteByApplicationId(applicationId);
+        ratingRepository.deleteByApplicationId(applicationId);
+        intervieweeRepository.deleteByApplicationId(applicationId);
+
+        applicationRepository.deleteById(applicationId);
     }
 
     private void anonymizeApplicationData(Application application) {
