@@ -1835,7 +1835,7 @@ components:
     AiResponseDTO:
       type: object
       properties:
-        content: {type: string}
+        jobDescription: {type: string}
     Applicant:
       type: object
       properties:
