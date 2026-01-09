@@ -10,6 +10,6 @@
 
 
 export interface AiResponseDTO { 
-    content?: string;
+    jobDescription?: string;
 }
 
