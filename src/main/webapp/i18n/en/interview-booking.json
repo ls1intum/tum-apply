@@ -19,8 +19,8 @@
       "noSlotsInMonth": "No slots in this month",
       "details": "Details",
       "error": {
-        "title": "Error",
-        "message": "Could not load data.",
+        "title": "Failed to load booking data",
+        "description": "The booking data could not be loaded. Please refresh the page or try again.",
         "retry": "Retry"
       },
       "success": {

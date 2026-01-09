@@ -19,8 +19,8 @@
       "noSlotsInMonth": "Keine Termine in diesem Monat",
       "details": "Details",
       "error": {
-        "title": "Fehler",
-        "message": "Daten konnten nicht geladen werden.",
+        "title": "Buchungsdaten konnten nicht geladen werden",
+        "description": "Die Buchungsdaten konnten nicht geladen werden. Bitte aktualisiere die Seite oder versuche es erneut.",
         "retry": "Erneut versuchen"
       },
       "success": {
