@@ -36,6 +36,16 @@ public interface DocumentDictionaryRepository extends TumApplyJpaRepository<Docu
     void deleteByApplicantId(@Param("applicantId") UUID applicantId);
 
     /**
+     * Deletes all document dictionary entries for a specific application.
+     *
+     * @param applicationId the UUID of the application whose document dictionary entries should be deleted
+     */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM DocumentDictionary dd WHERE dd.application.applicationId = :applicationId")
+    void deleteByApplicationId(@Param("applicationId") UUID applicationId);
+
+    /**
      * Anonymizes all document dictionary entries for a specific applicant.
      *
      * @param applicantId the UUID of the applicant whose document dictionary entries should be anonymized

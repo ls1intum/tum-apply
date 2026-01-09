@@ -106,6 +106,6 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      */
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Image i SET i.uploadedBy = NULL WHERE i.uploadedBy = :userId", nativeQuery = true)
+    @Query(value = "UPDATE Image i SET i.uploadedBy.userId = NULL WHERE i.uploadedBy.userId = :userId", nativeQuery = true)
     void anonymizeImagesByUserId(@Param("userId") UUID userId);
 }

@@ -3,7 +3,9 @@ package de.tum.cit.aet.core.service;
 import com.itextpdf.io.exceptions.IOException;
 import com.itextpdf.layout.element.Image;
 import de.tum.cit.aet.application.constants.ApplicationState;
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.application.repository.CustomFieldAnswerRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
@@ -12,6 +14,8 @@ import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.job.domain.CustomField;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
@@ -37,12 +41,14 @@ public class UserDataDeletionService {
     private final EmailSettingRepository emailSettingRepository;
     private final EmailTemplateRepository emailTemplateRepository;
     private final ApplicationRepository applicationRepository;
+    private final CustomFieldAnswerRepository customFieldAnswerRepository;
     private final DocumentDictionaryRepository documentDictionaryRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
     private final InternalCommentRepository internalCommentRepository;
     private final RatingRepository ratingRepository;
     private final DocumentRepository documentRepository;
     private final ImageRepository imageRepository;
+    private final IntervieweeRepository intervieweeRepository;
 
     /**
      * Deletes all data associated with the specified user from application repositories and any external storage,
@@ -96,32 +102,45 @@ public class UserDataDeletionService {
         imageRepository.anonymizeImagesByUserId(userId);
     }
 
-    private void deleteApplicantUserData(UUID userId, User applicant) {
-        imageRepository.deleteProfileImageByUserId(userId);
-
-        boolean hasFinalizedApplications = applicationRepository
-            .findAllByApplicantId(userId)
-            .stream()
-            .anyMatch(appl -> appl.getState() == ApplicationState.REJECTED || appl.getState() == ApplicationState.ACCEPTED);
-
-        if (hasFinalizedApplications) {
-            // TODO: Anonymize applicant data in applications
-            documentDictionaryRepository.anonymizeByApplicantId(userId);
-            return;
-        }
-
-        documentDictionaryRepository
-            .findAllByApplicant(applicantRepository.findById(userId).orElseThrow())
-            .forEach(dd -> {
-                documentDictionaryRepository.deleteById(dd.getDocumentDictionaryId());
-                documentRepository.deleteById(dd.getDocument().getDocumentId());
-            });
-        // documentRepository.deleteByApplicantId(userId);
-    }
-
     private void deleteEmployeeUserData(UUID userId, User employee) {
         emailTemplateRepository.removeUserInformationFromTemplate(userId);
         imageRepository.deleteProfileImageByUserId(userId);
         imageRepository.anonymizeImagesByUserId(userId);
+    }
+
+    private void deleteApplicantUserData(UUID userId, User applicant) {
+        imageRepository.deleteProfileImageByUserId(userId);
+
+        List<Application> applications = applicationRepository.findAllByApplicantId(userId);
+
+        List<Application> finalizedApplications = applications
+            .stream()
+            .filter(appl -> appl.getState() == ApplicationState.REJECTED || appl.getState() == ApplicationState.ACCEPTED)
+            .toList();
+
+        List<Application> nonFinalized = applications
+            .stream()
+            .filter(appl -> appl.getState() != ApplicationState.REJECTED && appl.getState() != ApplicationState.ACCEPTED)
+            .toList();
+
+        finalizedApplications.forEach(application -> anonymizeApplicationData(application));
+        nonFinalized.forEach(application -> deleteApplicationData(userId, application));
+
+        // documentRepository.deleteByApplicantId(userId);
+    }
+
+    private void deleteApplicationData(UUID userId, Application application) {
+        customFieldAnswerRepository.deleteByApplicationId(application.getApplicationId());
+        documentDictionaryRepository.deleteByApplicationId(application.getApplicationId());
+        applicationReviewRepository.deleteByApplicationId(application.getApplicationId());
+        internalCommentRepository.deleteByApplicationId(application.getApplicationId());
+        ratingRepository.deleteByApplicationId(application.getApplicationId());
+        intervieweeRepository.deleteByApplicationId(application.getApplicationId());
+
+        applicationRepository.deleteById(application.getApplicationId());
+    }
+
+    private void anonymizeApplicationData(Application application) {
+        // TODO: Implement
     }
 }

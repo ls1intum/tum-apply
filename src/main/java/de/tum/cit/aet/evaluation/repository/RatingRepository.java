@@ -6,9 +6,11 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface RatingRepository extends TumApplyJpaRepository<Rating, UUID> {
@@ -20,6 +22,11 @@ public interface RatingRepository extends TumApplyJpaRepository<Rating, UUID> {
         """
     )
     Set<Rating> findByApplicationApplicationId(@Param("applicationId") UUID applicationId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Rating r WHERE r.application.applicationId = :applicationId")
+    void deleteByApplicationId(@Param("applicationId") UUID applicationId);
 
     void deleteByFromAndApplicationApplicationId(User from, UUID applicationId);
 

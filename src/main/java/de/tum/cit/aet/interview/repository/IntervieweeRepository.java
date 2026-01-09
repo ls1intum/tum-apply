@@ -7,9 +7,11 @@ import de.tum.cit.aet.interview.domain.Interviewee;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee, UUID> {
@@ -75,4 +77,14 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
         """
     )
     List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
+
+    /**
+     * Deletes interviewees for a given application id.
+     *
+     * @param applicationId the id of the application
+     */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Interviewee i WHERE i.application.applicationId = :applicationId")
+    void deleteByApplicationId(@Param("applicationId") UUID applicationId);
 }
