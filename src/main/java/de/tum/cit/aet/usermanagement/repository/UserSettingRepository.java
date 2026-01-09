@@ -55,4 +55,20 @@ public interface UserSettingRepository extends TumApplyJpaRepository<UserSetting
         nativeQuery = true
     )
     void upsert(@Param("userId") UUID userId, @Param("key") String key, @Param("value") String value);
+
+    /**
+     * Deletes all settings for a specific user.
+     *
+     * @param userId the UUID of the user whose settings should be deleted
+     */
+    @Modifying
+    @Transactional
+    @Query(
+        value = """
+        DELETE FROM user_settings us
+        WHERE us.user_id = :userId
+        """,
+        nativeQuery = true
+    )
+    void deleteByUserId(@Param("userId") UUID userId);
 }

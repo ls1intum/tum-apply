@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<UserResearchGroupRole, UUID> {
@@ -30,4 +31,20 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
     @Modifying
     @Query("UPDATE UserResearchGroupRole urgr SET urgr.researchGroup = null WHERE urgr.user.userId = :userId")
     void removeResearchGroupFromUserRoles(@Param("userId") UUID userId);
+
+    /**
+     * Deletes all settings for a specific user.
+     *
+     * @param userId the UUID of the user whose settings should be deleted
+     */
+    @Modifying
+    @Transactional
+    @Query(
+        value = """
+        DELETE FROM UserResearchGroupRole urgr
+        WHERE urgr.user_id = :userId
+        """,
+        nativeQuery = true
+    )
+    void deleteByUserId(@Param("userId") UUID userId);
 }
