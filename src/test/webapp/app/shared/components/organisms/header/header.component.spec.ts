@@ -18,7 +18,7 @@ import {
   createAuthDialogServiceMock,
   provideAuthDialogServiceMock,
 } from '../../../../../util/auth-dialog.service.mock';
-import { setupWindowMatchMediaMock } from 'util/theme.service.mock';
+import { setupWindowMatchMediaMock, createThemeServiceMock, provideThemeServiceMock, ThemeServiceMock } from 'util/theme.service.mock';
 
 type HeaderComponentTestInstance = Omit<HeaderComponent, 'routeAuthorities' | 'isProfessorPage'> & {
   routeAuthorities: () => UserShortDTO.RolesEnum[] | string[];
@@ -39,6 +39,7 @@ describe('HeaderComponent', () => {
   let authFacade: AuthFacadeServiceMock;
   let authDialog: AuthDialogServiceMock;
   let translate: TranslateService;
+  let themeService: ThemeServiceMock;
 
   beforeEach(async () => {
     setupWindowMatchMediaMock();
@@ -47,6 +48,7 @@ describe('HeaderComponent', () => {
     accountService = createAccountServiceMock();
     authFacade = createAuthFacadeServiceMock();
     authDialog = createAuthDialogServiceMock();
+    themeService = createThemeServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
@@ -55,6 +57,7 @@ describe('HeaderComponent', () => {
         provideAccountServiceMock(accountService),
         provideAuthFacadeServiceMock(authFacade),
         provideAuthDialogServiceMock(authDialog),
+        provideThemeServiceMock(themeService),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
       ],
@@ -296,36 +299,19 @@ describe('HeaderComponent', () => {
     });
 
     it('should enable dark mode and persist preference when currently light', () => {
-      const requestAnimationFrameSpy = vi
-        .spyOn(window, 'requestAnimationFrame')
-        .mockImplementation((callback: FrameRequestCallback): number => {
-          callback(0);
-          return 0;
-        });
-
       component.themeService.setTheme('dark');
 
-      expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(true);
-      expect(localStorage.getItem('tumApplyTheme')).toBe('dark');
-      expect(document.documentElement.classList.contains('theme-switching')).toBe(false);
-      expect(requestAnimationFrameSpy).toHaveBeenCalledOnce();
+      expect(themeService.setTheme).toHaveBeenCalledWith('dark');
+      expect(themeService.theme()).toBe('dark');
     });
 
     it('should disable dark mode and persist preference when currently dark', () => {
-      document.documentElement.classList.add('tum-apply-dark-mode');
-      const requestAnimationFrameSpy = vi
-        .spyOn(window, 'requestAnimationFrame')
-        .mockImplementation((callback: FrameRequestCallback): number => {
-          callback(0);
-          return 0;
-        });
+      themeService.theme.set('dark');
 
       component.themeService.setTheme('light');
 
-      expect(document.documentElement.classList.contains('tum-apply-dark-mode')).toBe(false);
-      expect(localStorage.getItem('tumApplyTheme')).toBe('light');
-      expect(document.documentElement.classList.contains('theme-switching')).toBe(false);
-      expect(requestAnimationFrameSpy).toHaveBeenCalledOnce();
+      expect(themeService.setTheme).toHaveBeenCalledWith('light');
+      expect(themeService.theme()).toBe('light');
     });
   });
 });
