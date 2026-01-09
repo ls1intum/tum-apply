@@ -55,17 +55,12 @@
       }
       <jhi-button class="header-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
-      <div class="profile">
+      <div class="profile" (click)="profileMenu.toggle($event)">
         <fa-icon class="profile-icon" icon="user" />
         <span class="font-medium">{{ user()?.name }}</span>
+        <fa-icon class="dropdown-icon" icon="chevron-down" />
       </div>
-      <jhi-button
-        class="header-button"
-        (click)="logout()"
-        label="{{ 'header.logout' | translate }}"
-        severity="primary"
-        variant="outlined"
-      />
+      <p-menu #profileMenu [model]="profileMenuItems()" [popup]="true" [appendTo]="'body'" />
     }
   </div>
 </header>

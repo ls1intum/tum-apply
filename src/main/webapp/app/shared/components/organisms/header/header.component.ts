@@ -8,6 +8,8 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { Menu } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
@@ -21,7 +23,7 @@ import TranslateDirective from '../../../language/translate.directive';
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective, Menu],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -72,6 +74,29 @@ export class HeaderComponent {
       this.accountService.hasAnyAuthority(['PROFESSOR']) ||
       (Array.isArray(auths) && auths.includes(UserShortDTO.RolesEnum.Professor))
     );
+  });
+
+  profileMenuItems = computed<MenuItem[]>(() => {
+    this.currentLanguage();
+    if (!this.user()) {
+      return [];
+    }
+    
+    return [
+      {
+        label: this.translateService.instant('header.settings'),
+        icon: 'pi pi-cog', // TODO items anpassen
+        command: () => this.navigateToSettings(),
+      },
+      {
+        separator: true,
+      },
+      {
+        label: this.translateService.instant('header.logout'),
+        icon: 'pi pi-sign-out', // TODO items anpassen 
+        command: () => this.logout(),
+      },
+    ];
   });
 
   private destroyRef = inject(DestroyRef);
@@ -153,6 +178,10 @@ export class HeaderComponent {
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
+  }
+
+  navigateToSettings(): void {
+    void this.router.navigate(['/settings']);
   }
 
   private setupBannerObserver(): void {

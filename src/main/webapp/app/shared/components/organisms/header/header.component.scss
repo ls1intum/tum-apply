@@ -72,9 +72,18 @@
 
     .profile {
       display: flex;
-      padding: 0.25rem 0.25rem;
+      padding: 0.5rem 0.75rem;
+      margin-right: -1rem;
       align-items: center;
-      gap: 1rem;
+      gap: 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--p-primary-hover-color-outlined);
+      }
 
       .profile-icon {
         display: flex;
@@ -85,6 +94,11 @@
         border-radius: 50%;
         background: var(--p-primary-color);
         color: var(--p-text-on-primary);
+      }
+
+      .dropdown-icon {
+        font-size: 0.75rem;
+        color: var(--p-text-color);
       }
     }
 
@@ -99,6 +113,36 @@
         font-size: 0.9rem;
         border-radius: 0.5rem;
       }
+    }
+  }
+}
+
+.profile-menu {
+  margin-top: 0.5rem;
+  min-width: 12rem;
+
+  &:hover {
+      background-color: var(--p-primary-hover-color-outlined);
+  }
+  .p-menuitem-link {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--p-primary-hover-color-outlined);
+    } // TODO Background color funktioniert nicht richtig
+
+    .p-menuitem-icon {
+      font-size: 1rem;
+      color: var(--p-text-secondary);
+    }
+
+    .p-menuitem-text {
+      font-size: 0.95rem;
+      color: var(--p-text-color);
     }
   }
 }
