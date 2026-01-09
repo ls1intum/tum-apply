@@ -14,7 +14,7 @@ import { ButtonComponent } from '../components/atoms/button/button.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 
-type SettingsTab = 'general' | 'notifications' | 'privacy';
+type SettingsTab = 'general' | 'notifications';
 const SETTINGS_TAB_STORAGE_KEY = 'settings.activeTab';
 @Component({
   selector: 'jhi-settings',
@@ -59,7 +59,7 @@ export class SettingsComponent {
     const saved = localStorage.getItem(SETTINGS_TAB_STORAGE_KEY);
 
     // Unsure loaded tab stays loaded after reload
-    if (saved === 'general' || saved === 'notifications' || saved === 'privacy') {
+    if (saved === 'general' || saved === 'notifications') {
       this.activeTab.set(saved);
     }
     effect(() => {
