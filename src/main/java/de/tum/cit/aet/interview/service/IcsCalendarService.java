@@ -5,7 +5,6 @@ import de.tum.cit.aet.job.domain.Job;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 /**
