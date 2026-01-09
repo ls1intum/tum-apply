@@ -7,9 +7,11 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface EmailSettingRepository extends TumApplyJpaRepository<EmailSetting, UUID> {
@@ -44,4 +46,20 @@ public interface EmailSettingRepository extends TumApplyJpaRepository<EmailSetti
         """
     )
     Set<EmailType> findAvailableEmailTypesForUser(@Param("user") User user);
+
+    /**
+     * Deletes all email settings for a specific user.
+     *
+     * @param userId the UUID of the user whose settings should be deleted
+     */
+    @Modifying
+    @Transactional
+    @Query(
+        value = """
+        DELETE FROM EmailSetting es
+        WHERE es.userId = :userId
+        """,
+        nativeQuery = true
+    )
+    void deleteByUserId(@Param("userId") UUID userId);
 }

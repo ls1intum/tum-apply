@@ -5,9 +5,11 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
@@ -86,4 +88,24 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      */
     @Query("SELECT di FROM DepartmentImage di WHERE di.department IS NULL")
     List<DepartmentImage> findOrphanedDepartmentImages();
+
+    /**
+     * Deletes all images for a specific user.
+     *
+     * @param userId the UUID of the user whose images should be deleted
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM ProfileImage pi WHERE pi.uploadedBy = :userId", nativeQuery = true)
+    void deleteProfileImageByUserId(@Param("userId") UUID userId);
+
+    /**
+     * Anonymize all images for a specific user.
+     *
+     * @param userId the UUID of the user whose images should be anonymized
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Image i SET i.uploadedBy = NULL WHERE i.uploadedBy = :userId", nativeQuery = true)
+    void anonymizeImagesByUserId(@Param("userId") UUID userId);
 }

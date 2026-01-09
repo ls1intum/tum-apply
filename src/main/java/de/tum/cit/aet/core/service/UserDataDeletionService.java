@@ -1,15 +1,19 @@
 package de.tum.cit.aet.core.service;
 
 import com.itextpdf.io.exceptions.IOException;
+import com.itextpdf.layout.element.Image;
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
+import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
@@ -31,12 +35,14 @@ public class UserDataDeletionService {
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final UserSettingRepository userSettingRepository;
     private final EmailSettingRepository emailSettingRepository;
+    private final EmailTemplateRepository emailTemplateRepository;
     private final ApplicationRepository applicationRepository;
     private final DocumentDictionaryRepository documentDictionaryRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
     private final InternalCommentRepository internalCommentRepository;
     private final RatingRepository ratingRepository;
     private final DocumentRepository documentRepository;
+    private final ImageRepository imageRepository;
 
     /**
      * Deletes all data associated with the specified user from application repositories and any external storage,
@@ -57,6 +63,8 @@ public class UserDataDeletionService {
             throw new AccessDeniedException("Admins cannot delete themselves.");
         }
 
+        deleteCommonUserData(userId, user);
+
         if (roles.contains(UserRole.PROFESSOR)) {
             deleteProfesserUserData(userId, user);
         }
@@ -73,13 +81,47 @@ public class UserDataDeletionService {
         userRepository.deleteById(userId);
     }
 
+    // ---------------------------- Helper methods ------------------------------
+
+    private void deleteCommonUserData(UUID userId, User user) {
+        emailSettingRepository.deleteByUserId(userId);
+        userResearchGroupRoleRepository.deleteByUserId(userId);
+        userSettingRepository.deleteByUserId(userId);
+    }
+
     private void deleteProfesserUserData(UUID userId, User professor) {
         // TODO: applications are automatically closed for deleted jobs
+        emailTemplateRepository.removeUserInformationFromTemplate(userId);
+        imageRepository.deleteProfileImageByUserId(userId);
+        imageRepository.anonymizeImagesByUserId(userId);
     }
 
     private void deleteApplicantUserData(UUID userId, User applicant) {
-        // TODO: clarify when application process is done, when can the application be deleted, when should it be stored after the user still requested for deletion?
+        imageRepository.deleteProfileImageByUserId(userId);
+
+        boolean hasFinalizedApplications = applicationRepository
+            .findAllByApplicantId(userId)
+            .stream()
+            .anyMatch(appl -> appl.getState() == ApplicationState.REJECTED || appl.getState() == ApplicationState.ACCEPTED);
+
+        if (hasFinalizedApplications) {
+            // TODO: Anonymize applicant data in applications
+            documentDictionaryRepository.anonymizeByApplicantId(userId);
+            return;
+        }
+
+        documentDictionaryRepository
+            .findAllByApplicant(applicantRepository.findById(userId).orElseThrow())
+            .forEach(dd -> {
+                documentDictionaryRepository.deleteById(dd.getDocumentDictionaryId());
+                documentRepository.deleteById(dd.getDocument().getDocumentId());
+            });
+        // documentRepository.deleteByApplicantId(userId);
     }
 
-    private void deleteEmployeeUserData(UUID userId, User applicant) {}
+    private void deleteEmployeeUserData(UUID userId, User employee) {
+        emailTemplateRepository.removeUserInformationFromTemplate(userId);
+        imageRepository.deleteProfileImageByUserId(userId);
+        imageRepository.anonymizeImagesByUserId(userId);
+    }
 }
