@@ -31,6 +31,7 @@ export class DynamicTableComponent {
   totalRecords = input<number>(0);
   page = input<number>(0);
   selectable = input<boolean>(false);
+  hideHeader = input<boolean>(false);
 
   lazyLoad = output<TableLazyLoadEvent>();
 

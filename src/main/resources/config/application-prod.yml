@@ -16,8 +16,10 @@
 logging:
   level:
     ROOT: INFO
-    tech.jhipster: INFO
     de.tum.cit.aet: INFO
+    tech.jhipster: INFO
+    org.hibernate.SQL: INFO
+    liquibase: INFO
 
 management:
   prometheus:
@@ -49,6 +51,22 @@ spring:
     cache: true
   freemarker:
     cache: true
+  ai:
+    model:
+      chat: azure-openai
+    openai:
+      enabled: false
+      api-key: 'disabled'
+      base-url: 'http://disabled'
+    azure:
+      openai:
+        enabled: true
+        api-key: ${SPRING_AI_AZURE_API_KEY}
+        endpoint: https://endpoint.openai.azure.com
+        chat:
+          options:
+            deployment-name: gpt-5-mini
+            temperature: 1.0
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:

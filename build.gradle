@@ -16,11 +16,9 @@ plugins {
   id "com.github.andygoossens.modernizer" version "${modernizerPluginVersion}"
   id "com.github.ben-manes.versions" version "0.53.0"
   id "com.github.node-gradle.node" version "${gradleNodePluginVersion}"
-  id "com.google.cloud.tools.jib" version "3.4.5"
   id "com.gorylenko.gradle-git-properties" version "${gitPropertiesPluginVersion}"
   id "io.spring.dependency-management" version "1.1.7"
   id "org.liquibase.gradle" version "${liquibasePluginVersion}"
-  id "org.sonarqube" version "7.0.1.6134"
   id "org.springframework.boot" version "${springBootVersion}"
   id "org.springdoc.openapi-gradle-plugin" version "1.9.0"
   // TODO: we cannot upgrade to the latest version yet, because of liquibase and openapi errors
@@ -170,12 +168,6 @@ repositories {
 }
 
 dependencies {
-
-  // import JHipster dependencies BOM
-  implementation platform("tech.jhipster:jhipster-dependencies:${jhipsterDependenciesVersion}")
-
-  implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
-
   // Defines low-level streaming API, and includes JSON-specific implementations
   implementation "com.fasterxml.jackson.core:jackson-core:${fasterxml_version}"
   // Contains standard Jackson annotations
@@ -188,19 +180,16 @@ dependencies {
   // Support JSON serialization and deserialization of Hibernate (https://hibernate.org) specific data types and properties; especially lazy-loading aspects
   implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:${fasterxml_version}"
   implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:${fasterxml_version}"
-
-
+  // Testing: Architecture tests for Java code
   testImplementation("com.tngtech.archunit:archunit-junit5-api:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
   testRuntimeOnly("com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}") {
     exclude group: "org.slf4j", module: "slf4j-api"
   }
-  implementation "io.micrometer:micrometer-registry-prometheus-simpleclient:1.16.0"
-  implementation "jakarta.annotation:jakarta.annotation-api:3.0.0"
+  // Utilities: Helper functions for strings, arrays, etc.
   implementation "org.apache.commons:commons-lang3:3.20.0"
-  annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-  implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+  // Spring Boot Starters and related
   annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
   implementation "org.springframework.boot:spring-boot-loader-tools"
   implementation "org.springframework.boot:spring-boot-starter-actuator"
@@ -220,7 +209,6 @@ dependencies {
   testImplementation "org.springframework.boot:spring-boot-test"
   testImplementation "org.springframework.security:spring-security-test"
   implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-
   // Consistently use the latest version of spring framework modules the latest version to avoid security vulnerabilities
   implementation "org.springframework:spring-aop:${springFrameworkVersion}"
   implementation "org.springframework:spring-aspects:${springFrameworkVersion}"
@@ -238,7 +226,6 @@ dependencies {
   implementation "org.springframework:spring-web:${springFrameworkVersion}"
   implementation "org.springframework:spring-webflux:${springFrameworkVersion}"
   implementation "org.springframework:spring-websocket:${springFrameworkVersion}"
-
   // Consistently use the latest version of all spring security modules to avoid vulnerabilities
   implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
   implementation "org.springframework.security:spring-security-data:${springSecurityVersion}"
@@ -252,12 +239,12 @@ dependencies {
   implementation "org.springframework.security:spring-security-messaging:${springSecurityVersion}"
   implementation "org.springframework.security:spring-security-ldap:${springSecurityVersion}"
   testImplementation "org.springframework.security:spring-security-test:${springSecurityVersion}"
-
+  // Database and connection pooling
   implementation "com.mysql:mysql-connector-j:9.5.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
-
+  // JHipster framework utilities
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
-
+  // Caching
   implementation "org.springframework.boot:spring-boot-starter-cache"
   implementation "com.github.ben-manes.caffeine:caffeine:3.2.3"
   implementation "com.github.ben-manes.caffeine:jcache:3.2.3"
@@ -265,10 +252,9 @@ dependencies {
   implementation "org.hibernate.orm:hibernate-jcache:${hibernateVersion}"
   implementation "org.hibernate.orm:hibernate-core:${hibernateVersion}"
   implementation "org.hibernate.validator:hibernate-validator:9.1.0.Final"
-
-
   // needed for OpenAPI generation
   implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14"
+  implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
   implementation("org.yaml:snakeyaml") {
     version {
       strictly "${snakeyaml_version}"
@@ -276,37 +262,39 @@ dependencies {
     }
   }
   runtimeOnly "com.h2database:h2:2.4.240"
-
-
+  // Testing with containers
   testImplementation "org.testcontainers:jdbc:${testcontainersVersion}"
   testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
   testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
   testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+  // Annotation processors
   annotationProcessor "org.glassfish.jaxb:jaxb-runtime:4.0.6"
   annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen:${hibernateVersion}"
-  developmentOnly "org.springframework.boot:spring-boot-docker-compose:${springBootVersion}"
-  developmentOnly "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
   compileOnly "org.projectlombok:lombok:${lombokVersion}"
   annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
   testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
   testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
+  // Development tools
+  developmentOnly "org.springframework.boot:spring-boot-docker-compose:${springBootVersion}"
+  developmentOnly "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
   // FreeMarker
   implementation "org.springframework.boot:spring-boot-starter-freemarker:${springBootVersion}"
-
   // Jsoup for sanitizing HTML
   implementation "org.jsoup:jsoup:1.21.2"
-
   // Spring Retry
   implementation "org.springframework.retry:spring-retry:2.0.12"
-
   // Keycloak
   implementation "org.keycloak:keycloak-admin-client:${keycloakVersion}"
   implementation "org.keycloak:keycloak-authz-client:${keycloakVersion}"
-
   // Used for pdf creation
   implementation 'com.itextpdf:html2pdf:6.3.0'
+  // Align all Spring AI modules to the same version
+  implementation platform("org.springframework.ai:spring-ai-bom:1.1.2")
+  // Azure OpenAI (prod, or when you want Azure)
+  implementation "org.springframework.ai:spring-ai-starter-model-azure-openai" // can also use non-azure models
+  implementation "org.springframework.ai:spring-ai-starter-model-chat-memory-repository-jdbc"
+  // OpenAI / OpenAI-compatible (dev, localhost:1234, etc.)
+  implementation "org.springframework.ai:spring-ai-starter-model-openai"
 }
 
 tasks.register("cleanResources", Delete) {

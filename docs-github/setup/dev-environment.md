@@ -13,6 +13,7 @@ Make sure you have the following installed:
 - **Docker** and **Docker Compose**
 - **MySQL CLI**
 - **Git**
+- **Spring AI compatible instance** (for example via LM Studio, see below)
 
 ---
 
@@ -27,7 +28,7 @@ npm install
 Make sure Docker Desktop is running, then execute:
 
 ```bash
-docker compose -f src/main/docker/services.yml up -d
+docker compose -f docker/local-setup/services.yml up -d
 ```
 
 Start the server and client development servers in two separate terminals:
@@ -39,6 +40,13 @@ Start the server and client development servers in two separate terminals:
 # Terminal 2 - Start Angular dev server
 npm run start
 ```
+
+---
+
+## Spring AI
+
+To be able to run the server you need a working Spring AI instance. You can either use a remote instance or set up a
+local one using LM Studio. Follow the instructions in the [Spring AI Setup Guide](./spring-ai.md) to get started.
 
 ---
 

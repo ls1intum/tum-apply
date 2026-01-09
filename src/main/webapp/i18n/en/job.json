@@ -145,7 +145,6 @@
       }
     },
     "imageSection": {
-      "title": "Choose a Banner Image",
       "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library. Uploaded images are shared across your research group and can be reused for multiple job postings.",
       "defaultImages": "Default Images",
       "orDivider": "or",
@@ -246,6 +245,9 @@
       "supervisor": "Supervisor",
       "startDate": "Start Date"
     },
+    "ariaLabels": {
+      "viewJobDetails": "View details for {{title}}"
+    },
     "hoursPerWeek": "{{workload}} h/week",
     "errors": {
       "loadFilter": {
@@ -261,7 +263,7 @@
   "myPositionsPage": {
     "header": {
       "title": "Manage your Doctorate Positions",
-      "createButton": "Create New Position"
+      "createButton": "Create Position"
     },
     "searchFilterSortBar": {
       "searchText": "Search Positions...",
@@ -277,6 +279,7 @@
       "created": "Created",
       "lastModified": "Last Modified"
     },
+    "noFurtherActions": "No further actions available",
     "confirmDialog": {
       "closeHeader": "Confirm Position Closure",
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",

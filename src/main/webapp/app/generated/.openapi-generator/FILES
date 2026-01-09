@@ -2,6 +2,7 @@
 README.md
 api.base.service.ts
 api.module.ts
+api/aiResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
 api/applicationResourceApi.service.ts
@@ -27,7 +28,6 @@ api/userResourceApi.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
-index.ts
 model/acceptDTO.ts
 model/addIntervieweesDTO.ts
 model/addMembersToResearchGroupDTO.ts
@@ -44,6 +44,8 @@ model/applicationEvaluationOverviewListDTO.ts
 model/applicationForApplicantDTO.ts
 model/applicationOverviewDTO.ts
 model/applicationReview.ts
+model/assignSlotRequestDTO.ts
+model/assignedIntervieweeDTO.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
 model/createSlotsDTO.ts
@@ -89,6 +91,7 @@ model/pageCreatedJobDTO.ts
 model/pageJobCardDTO.ts
 model/pageResponseDTODepartmentDTO.ts
 model/pageResponseDTOEmailTemplateOverviewDTO.ts
+model/pageResponseDTOInterviewSlotDTO.ts
 model/pageResponseDTOKeycloakUserDTO.ts
 model/pageResponseDTOResearchGroupAdminDTO.ts
 model/pageResponseDTOResearchGroupDTO.ts

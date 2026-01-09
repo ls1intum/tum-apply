@@ -4,23 +4,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
+import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.ApplicantTestData;
+import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
@@ -31,6 +41,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -50,6 +61,15 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @Autowired
     private ResearchGroupRepository researchGroupRepository;
+
+    @Autowired
+    private IntervieweeRepository intervieweeRepository;
+
+    @Autowired
+    private ApplicationRepository applicationRepository;
+
+    @Autowired
+    private ApplicantRepository applicantRepository;
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
@@ -389,16 +409,21 @@ class InterviewResourceTest extends AbstractResourceTest {
                 201
             );
 
-        // Get slots
-        List<InterviewSlotDTO> slots = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots",
-                null,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                200
-            );
+        // Get slots with pagination (add year and month to match server-side filtering)
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        String url =
+            "/api/interviews/processes/" +
+            interviewProcess.getId() +
+            "/slots?year=" +
+            tomorrow.getYear() +
+            "&month=" +
+            tomorrow.getMonthValue();
 
+        PageResponseDTO<InterviewSlotDTO> response = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(url, null, new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {}, 200);
+
+        List<InterviewSlotDTO> slots = new java.util.ArrayList<>(response.getContent());
         assertThat(slots).hasSize(2);
 
         // Verify first slot
@@ -474,5 +499,178 @@ class InterviewResourceTest extends AbstractResourceTest {
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
         assertThat(result).isNull();
+    }
+
+    // ===========================================================================================
+    // Tests for assigning Interviewee to slot
+    // ===========================================================================================
+
+    @Nested
+    class AssignSlotToInterviewee {
+
+        @Test
+        void assignSlotSuccessfullyAssignsInterviewee() {
+            // Arrange
+            InterviewSlot slot = createTestSlot();
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+
+            Interviewee interviewee = new Interviewee();
+            interviewee.setInterviewProcess(interviewProcess);
+            interviewee.setApplication(application);
+            interviewee.setLastInvited(java.time.Instant.now());
+            intervieweeRepository.save(interviewee);
+
+            AssignSlotRequestDTO requestDTO = new AssignSlotRequestDTO(application.getApplicationId());
+
+            // Act
+            InterviewSlotDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, InterviewSlotDTO.class, 200);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(slot.getId());
+            assertThat(result.isBooked()).isTrue();
+            assertThat(result.interviewee()).isNotNull();
+            assertThat(result.interviewee().applicationId()).isEqualTo(application.getApplicationId());
+        }
+
+        @Test
+        void assignSlotReturnsNotFoundForNonExistentSlot() {
+            // Arrange
+            UUID nonExistentSlotId = UUID.randomUUID();
+            AssignSlotRequestDTO requestDTO = new AssignSlotRequestDTO(UUID.randomUUID());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/slots/" + nonExistentSlotId + "/assign", requestDTO, Void.class, 404);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void assignSlotReturnsConflictWhenSlotAlreadyBooked() {
+            // Arrange
+            InterviewSlot slot = createTestSlot();
+            slot.setIsBooked(true);
+            interviewSlotRepository.save(slot);
+
+            AssignSlotRequestDTO requestDTO = new AssignSlotRequestDTO(UUID.randomUUID());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, Void.class, 409);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void assignSlotReturnsNotFoundWhenApplicantNotInProcess() {
+            // Arrange
+            InterviewSlot slot = createTestSlot();
+            UUID nonExistentApplicationId = UUID.randomUUID();
+            AssignSlotRequestDTO requestDTO = new AssignSlotRequestDTO(nonExistentApplicationId);
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, Void.class, 404);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void assignSlotReturnsBadRequestWhenIntervieweeAlreadyHasSlot() {
+            // Arrange - Create first slot and assign it
+            InterviewSlot slot1 = createTestSlot();
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+
+            Interviewee interviewee = new Interviewee();
+            interviewee.setInterviewProcess(interviewProcess);
+            interviewee.setApplication(application);
+            interviewee.setLastInvited(java.time.Instant.now());
+            interviewee = intervieweeRepository.save(interviewee);
+
+            slot1.setInterviewee(interviewee);
+            slot1.setIsBooked(true);
+            interviewSlotRepository.save(slot1);
+            interviewee.getSlots().add(slot1);
+            intervieweeRepository.save(interviewee);
+
+            // Arrange - Create second slot
+            InterviewSlot slot2 = createTestSlot();
+            AssignSlotRequestDTO requestDTO = new AssignSlotRequestDTO(application.getApplicationId());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/slots/" + slot2.getId() + "/assign", requestDTO, Void.class, 400);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void assignSlotAsEmployeeSuccessfullyAssignsInterviewee() {
+            // Arrange - Create an employee in the same research group
+            User employee = UserTestData.savedProfessorAll(
+                userRepository,
+                researchGroup,
+                null,
+                "employee@tum.de",
+                "Max",
+                "Employee",
+                "en",
+                "+49 89 9999",
+                "https://employee.tum.de",
+                null,
+                "DE",
+                null,
+                "männlich",
+                UUID.randomUUID().toString().replace("-", "").substring(0, 7)
+            );
+
+            InterviewSlot slot = createTestSlot();
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+
+            Interviewee interviewee = new Interviewee();
+            interviewee.setInterviewProcess(interviewProcess);
+            interviewee.setApplication(application);
+            interviewee.setLastInvited(java.time.Instant.now());
+            intervieweeRepository.save(interviewee);
+
+            AssignSlotRequestDTO requestDTO = new AssignSlotRequestDTO(application.getApplicationId());
+
+            // Act - Employee role should be allowed by @ProfessorOrEmployee
+            InterviewSlotDTO result = api
+                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, InterviewSlotDTO.class, 200);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(slot.getId());
+            assertThat(result.isBooked()).isTrue();
+            assertThat(result.interviewee()).isNotNull();
+            assertThat(result.interviewee().applicationId()).isEqualTo(application.getApplicationId());
+        }
+    }
+
+    // Helper method
+    private InterviewSlot createTestSlot() {
+        InterviewSlot slot = new InterviewSlot();
+        slot.setInterviewProcess(interviewProcess);
+        slot.setStartDateTime(java.time.Instant.now().plusSeconds(86400));
+        slot.setEndDateTime(java.time.Instant.now().plusSeconds(90000));
+        slot.setLocation("Room 101");
+        slot.setIsBooked(false);
+        return interviewSlotRepository.save(slot);
     }
 }
