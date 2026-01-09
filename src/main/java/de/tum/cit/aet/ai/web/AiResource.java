@@ -1,10 +1,10 @@
 package de.tum.cit.aet.ai.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.job.dto.AiResponseDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,8 +50,8 @@ public class AiResource {
      */
 
     @PostMapping(value = "generate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AiResponseDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
-        log.info("AI draft request received");
+    public ResponseEntity<AiResponseDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) throws JsonProcessingException {
+        log.info("POST /api/ai/generate - Request received");
         return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
     }
 }
