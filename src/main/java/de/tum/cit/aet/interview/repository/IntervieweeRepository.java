@@ -88,7 +88,7 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     @Query(
         """
         SELECT i FROM Interviewee i
-        LEFT JOIN FETCH i.slots
+        LEFT JOIN FETCH i.slots s WITH s.isBooked = true
         WHERE i.interviewProcess.id IN :processIds
         """
     )
