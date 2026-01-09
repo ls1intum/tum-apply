@@ -176,7 +176,8 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param processId  the ID of the interview process
      * @param monthStart the start of the month (inclusive)
      * @param monthEnd   the end of the month (exclusive)
-     * @return list of available slots ordered by start time ascending
+     * @param pageable   pagination information
+     * @return page of available slots ordered by start time ascending
      */
     @Query(
         """
@@ -188,9 +189,10 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         ORDER BY s.startDateTime ASC
         """
     )
-    List<InterviewSlot> findAvailableSlotsByProcessIdAndMonth(
+    Page<InterviewSlot> findAvailableSlotsByProcessIdAndMonth(
         @Param("processId") UUID processId,
         @Param("monthStart") Instant monthStart,
-        @Param("monthEnd") Instant monthEnd
+        @Param("monthEnd") Instant monthEnd,
+        Pageable pageable
     );
 }

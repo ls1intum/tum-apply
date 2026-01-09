@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.service;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -47,13 +50,22 @@ public class InterviewBookingService {
      * @param processId the ID of the interview process
      * @param year      optional year for month filtering (requires month)
      * @param month     optional month for filtering (1-12, requires year)
+     * @param pageDTO   pagination parameters
      * @return the booking data DTO
      * @throws EntityNotFoundException if the process doesn't exist
      * @throws AccessDeniedException   if user is not invited to this process
      */
-    public BookingDTO getBookingData(UUID processId, Integer year, Integer month) {
+    public BookingDTO getBookingData(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
         UUID userId = currentUserService.getUserId();
-        log.info("Getting booking data for process {} and user {}, year: {}, month: {}", processId, userId, year, month);
+        log.info(
+            "Getting booking data for process {} and user {}, year: {}, month: {}, page: {}, size: {}",
+            processId,
+            userId,
+            year,
+            month,
+            pageDTO.pageNumber(),
+            pageDTO.pageSize()
+        );
 
         // 1. Load interview process with job
         InterviewProcess process = interviewProcessRepository
@@ -85,7 +97,7 @@ public class InterviewBookingService {
         // 6. Get available slots (only if not already booked)
         List<InterviewSlotDTO> availableSlots = Collections.emptyList();
         if (bookedSlot == null) {
-            availableSlots = loadAvailableSlots(processId, year, month);
+            availableSlots = loadAvailableSlots(processId, year, month, pageDTO);
         }
 
         return new BookingDTO(
@@ -103,16 +115,20 @@ public class InterviewBookingService {
      * @param processId the interview process ID
      * @param year      optional year (requires month)
      * @param month     optional month 1-12 (requires year)
+     * @param pageDTO   pagination parameters
      * @return list of available slot DTOs
      */
-    private List<InterviewSlotDTO> loadAvailableSlots(UUID processId, Integer year, Integer month) {
+    private List<InterviewSlotDTO> loadAvailableSlots(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
+        Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
         List<InterviewSlot> slots;
 
         if (year != null && month != null) {
             // Filter by month
             ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
             ZonedDateTime monthEnd = monthStart.plusMonths(1);
-            slots = interviewSlotRepository.findAvailableSlotsByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant());
+            slots = interviewSlotRepository
+                .findAvailableSlotsByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable)
+                .getContent();
         } else {
             // Load all future slots
             slots = interviewSlotRepository.findAvailableSlotsByProcessId(processId, Instant.now());

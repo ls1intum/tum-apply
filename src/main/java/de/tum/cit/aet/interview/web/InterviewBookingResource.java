@@ -1,13 +1,17 @@
 package de.tum.cit.aet.interview.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.security.annotations.Applicant;
 import de.tum.cit.aet.interview.dto.BookingDTO;
 import de.tum.cit.aet.interview.service.InterviewBookingService;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +36,7 @@ public class InterviewBookingResource {
      * @param year      optional year for month-based slot filtering (requires
      *                  month)
      * @param month     optional month (1-12) for filtering slots (requires year)
+     * @param pageDTO   pagination parameters
      * @return booking page data with job info, user's booking status, and available
      *         slots
      */
@@ -40,10 +45,18 @@ public class InterviewBookingResource {
     public ResponseEntity<BookingDTO> getBookingData(
         @PathVariable UUID processId,
         @RequestParam(required = false) Integer year,
-        @RequestParam(required = false) Integer month
+        @RequestParam(required = false) Integer month,
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO
     ) {
-        log.info("REST request to get booking data for process: {}, year: {}, month: {}", processId, year, month);
-        BookingDTO data = bookingService.getBookingData(processId, year, month);
+        log.info(
+            "REST request to get booking data for process: {}, year: {}, month: {}, page: {}, size: {}",
+            processId,
+            year,
+            month,
+            pageDTO.pageNumber(),
+            pageDTO.pageSize()
+        );
+        BookingDTO data = bookingService.getBookingData(processId, year, month, pageDTO);
         return ResponseEntity.ok(data);
     }
 }
