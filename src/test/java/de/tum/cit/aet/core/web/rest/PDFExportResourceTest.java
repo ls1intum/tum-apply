@@ -252,7 +252,8 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 "Job Description",
                 null,
                 null,
-                JobState.DRAFT
+                JobState.DRAFT,
+                null
             );
             Map<String, String> labels = createCompleteLabelsMap();
             JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, labels);
