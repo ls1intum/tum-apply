@@ -28,12 +28,14 @@ public class AiService {
         ChatClient chatClient,
         ObjectMapper objectMapper,
         @Value("classpath:prompts/JobDescriptionGeneration.txt") Resource promptResource
-    ) throws IOException {
+    ) {
         this.chatClient = chatClient;
         this.objectMapper = objectMapper;
 
         try (InputStream inputStream = promptResource.getInputStream()) {
             this.jobDescriptionGenerationPrompt = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load AI prompt", e);
         }
     }
 
