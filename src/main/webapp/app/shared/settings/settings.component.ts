@@ -11,7 +11,7 @@ import { Subscription, firstValueFrom, interval } from 'rxjs';
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
 import { ButtonComponent } from '../components/atoms/button/button.component';
-import { TabViewComponent, TabItem } from '../components/molecules/tab-view/tab-view.component';
+import { TabItem, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 

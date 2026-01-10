@@ -1,5 +1,4 @@
 import { Component, computed, effect, input, output, signal } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 
 import TranslateDirective from '../../../language/translate.directive';
