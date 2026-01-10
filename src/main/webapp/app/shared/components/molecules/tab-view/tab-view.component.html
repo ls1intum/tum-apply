@@ -1,0 +1,28 @@
+<div class="tab-view-container">
+  <div class="tab-view-header" role="tablist">
+    @for (tab of tabs(); track tab.id; let idx = $index) {
+      <button
+        type="button"
+        class="tab-button"
+        role="tab"
+        [id]="'tab-' + tab.id"
+        [attr.data-tab-id]="tab.id"
+        (click)="selectTab(tab.id)"
+        [class.active]="isActive(tab.id)"
+        [attr.aria-selected]="isActive(tab.id)"
+        [attr.tabindex]="idx === 0 || isActive(tab.id) ? 0 : -1"
+        [attr.aria-controls]="'tabpanel-' + tab.id"
+      >
+        @if (tab.translationKey) {
+          <span [jhiTranslate]="tab.translationKey">{{ tab.label }}</span>
+        } @else {
+          <span>{{ tab.label }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <div class="tab-view-content" role="tabpanel" [attr.id]="'tabpanel-' + currentActiveTab()" [attr.aria-labelledby]="'tab-' + currentActiveTab()">
+    <ng-content></ng-content>
+  </div>
+</div>

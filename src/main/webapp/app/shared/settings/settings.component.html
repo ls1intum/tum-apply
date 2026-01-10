@@ -3,35 +3,10 @@
     <h1 jhiTranslate="settings.header">Settings</h1>
   </div>
 
-  <!-- Tabs -->
-  <div class="settings-tabs" role="tablist" aria-label="Settings tabs">
-    <button
-      type="button"
-      class="tab"
-      role="tab"
-      (click)="setTab('general')"
-      [class.active]="activeTab() === 'general'"
-      [attr.aria-selected]="activeTab() === 'general'"
-    >
-      <span jhiTranslate="settings.tabs.general"></span>
-    </button>
-    <button
-      type="button"
-      class="tab"
-      role="tab"
-      (click)="setTab('notifications')"
-      [class.active]="activeTab() === 'notifications'"
-      [attr.aria-selected]="activeTab() === 'notifications'"
-    >
-      <span jhiTranslate="settings.tabs.notifications"></span>
-    </button>
-  </div>
-
-  <!-- Tab Content -->
-  <div class="tab-panel" role="tabpanel">
+  <jhi-tab-view [tabs]="tabs" [activeTabId]="activeTab()" (tabChange)="onTabChange($event)">
     @switch (activeTab()) {
       @case ('notifications') {
-        <div class="notifications content-container">
+        <div class="content-container">
           <jhi-email-settings [currentRole]="role()" />
         </div>
       }
@@ -40,7 +15,7 @@
         <div class="content-container">
           <!-- Appearance block -->
           <div class="mb-4">
-            <div class="text-primary-default text-lg font-semibold mb-2">
+            <div class="text-lg font-semibold mb-2">
               <h2 jhiTranslate="settings.appearance.header"></h2>
             </div>
 
@@ -61,7 +36,7 @@
 
           <!-- Privacy block -->
           <div class="mb-4">
-            <div class="text-primary-default text-lg font-semibold mb-2">
+            <div class="text-lg font-semibold mb-2">
               <h2 jhiTranslate="settings.privacy.header"></h2>
             </div>
 
@@ -102,5 +77,5 @@
         </div>
       }
     }
-  </div>
+  </jhi-tab-view>
 </div>

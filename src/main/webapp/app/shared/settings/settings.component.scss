@@ -11,47 +11,13 @@
     color: var(--p-primary-color);
   }
 
-  /* Tabs */
-  .settings-tabs {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .settings-tabs .tab {
-    appearance: none;
-    border: 0;
-    background: transparent;
-    padding: 0.5rem 1rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-
-    color: var(--p-text-muted-color, rgba(0, 0, 0, 0.6));
-    border-bottom: 3px solid transparent;
-  }
-
-  .settings-tabs .tab.active {
-    color: var(--p-primary-color);
-    border-bottom-color: var(--p-primary-color);
-  }
-
-  .settings-tabs .tab:focus-visible {
-    outline: 2px solid var(--p-primary-color);
-    outline-offset: 2px;
-    border-radius: 0.5rem 0.5rem 0 0;
-  }
-
-  .tab-panel {
-    padding-top: 0.25rem;
-  }
-
   .content-container {
     padding: 1rem;
   }
 
   .section-divider {
     height: 0;
-    border-bottom: 1px solid var(--p-content-border-color, rgba(0, 0, 0, 0.12));
+    border-bottom: 1px solid var(--p-content-border-color);
     margin: 0 0 1rem;
   }
 }
