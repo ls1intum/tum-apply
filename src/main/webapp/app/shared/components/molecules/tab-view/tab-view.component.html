@@ -22,7 +22,12 @@
     }
   </div>
 
-  <div class="tab-view-content" role="tabpanel" [attr.id]="'tabpanel-' + currentActiveTab()" [attr.aria-labelledby]="'tab-' + currentActiveTab()">
+  <div
+    class="tab-view-content"
+    role="tabpanel"
+    [attr.id]="'tabpanel-' + currentActiveTab()"
+    [attr.aria-labelledby]="'tab-' + currentActiveTab()"
+  >
     <ng-content></ng-content>
   </div>
 </div>

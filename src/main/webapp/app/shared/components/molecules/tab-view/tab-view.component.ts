@@ -31,12 +31,12 @@ export class TabViewComponent {
     if (externalTab) {
       return externalTab;
     }
-    
+
     const internal = this.internalActiveTab();
     if (internal) {
       return internal;
     }
-    
+
     // Default to first tab if available
     const tabs = this.tabs();
     return tabs.length > 0 ? tabs[0].id : '';
@@ -48,7 +48,7 @@ export class TabViewComponent {
       const tabs = this.tabs();
       const externalTab = this.activeTabId();
       const internal = this.internalActiveTab();
-      
+
       // Set initial internal tab if not already set
       if (!internal && !externalTab && tabs.length > 0) {
         this.internalActiveTab.set(tabs[0].id);

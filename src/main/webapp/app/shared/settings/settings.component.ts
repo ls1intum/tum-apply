@@ -19,7 +19,15 @@ type SettingsTab = 'general' | 'notifications';
 const SETTINGS_TAB_STORAGE_KEY = 'settings.activeTab';
 @Component({
   selector: 'jhi-settings',
-  imports: [FontAwesomeModule, TranslateModule, TranslateDirective, EmailSettingsComponent, SelectComponent, ButtonComponent, TabViewComponent],
+  imports: [
+    FontAwesomeModule,
+    TranslateModule,
+    TranslateDirective,
+    EmailSettingsComponent,
+    SelectComponent,
+    ButtonComponent,
+    TabViewComponent,
+  ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
 })
