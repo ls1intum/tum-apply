@@ -52,7 +52,7 @@ public class AiService {
         try {
             return objectMapper.readValue(cleanedJSON, AiResponseDTO.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to parse AI response", e);
         }
     }
 
