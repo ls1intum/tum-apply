@@ -2,6 +2,7 @@ package de.tum.cit.aet.ai.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tum.cit.aet.ai.exception.AiPromptException;
 import de.tum.cit.aet.ai.exception.AiResponseException;
 import de.tum.cit.aet.job.dto.AiResponseDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -35,7 +36,7 @@ public class AiService {
         try (InputStream inputStream = promptResource.getInputStream()) {
             this.jobDescriptionGenerationPrompt = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to load AI prompt", e);
+            throw new AiPromptException(e);
         }
     }
 
