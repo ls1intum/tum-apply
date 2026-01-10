@@ -2,6 +2,7 @@ package de.tum.cit.aet.ai.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.tum.cit.aet.ai.exception.AiResponseException;
 import de.tum.cit.aet.job.dto.AiResponseDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class AiService {
         try {
             return objectMapper.readValue(cleanedJSON, AiResponseDTO.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse AI response", e);
+            throw new AiResponseException(e);
         }
     }
 
