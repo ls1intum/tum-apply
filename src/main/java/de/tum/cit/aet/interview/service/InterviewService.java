@@ -635,7 +635,7 @@ public class InterviewService {
      * @param interviewee the interviewee to calculate state for
      * @return the calculated state
      */
-    private IntervieweeState calculateIntervieweeState(Interviewee interviewee) {
+    public IntervieweeState calculateIntervieweeState(Interviewee interviewee) {
         InterviewSlot slot = interviewee.getScheduledSlot();
 
         // Has a scheduled slot

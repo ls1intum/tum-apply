@@ -992,6 +992,37 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/booking/{processId}:
+    get:
+      tags: [interview-booking-resource]
+      operationId: getBookingData
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: year
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: month
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: page
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 20}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BookingDTO'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -2079,6 +2110,16 @@ components:
       properties:
         type: {type: string}
         word: {type: string}
+    BookingDTO:
+      type: object
+      properties:
+        availableSlots:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        jobTitle: {type: string}
+        researchGroupName: {type: string}
+        supervisor: {$ref: '#/components/schemas/ProfessorDTO'}
+        userBookingInfo: {$ref: '#/components/schemas/UserBookingInfoDTO'}
     CreateSlotsDTO:
       type: object
       properties:
@@ -2847,6 +2888,11 @@ components:
         universityId: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserBookingInfoDTO:
+      type: object
+      properties:
+        bookedSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        hasBookedSlot: {type: boolean}
     UserDTO:
       type: object
       properties:
