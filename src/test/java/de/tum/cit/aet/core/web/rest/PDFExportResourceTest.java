@@ -69,9 +69,11 @@ class PDFExportResourceTest extends AbstractResourceTest {
     User professor;
     ResearchGroup group;
     Applicant applicant;
+    Applicant applicantWithWebsiteAndLinkedin;
     Job job;
     Job jobWithNulls;
     Application application;
+    Application applicationWithWebsiteAndLinkedin;
 
     @BeforeEach
     void setup() {
@@ -79,6 +81,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
         group = ResearchGroupTestData.saved(researchGroupRepository);
         professor = UserTestData.savedProfessor(userRepository, group);
         applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        applicantWithWebsiteAndLinkedin = ApplicantTestData.savedWithNewUserWithWebsiteAndLinkedin(applicantRepository);
         job = JobTestData.saved(jobRepository, professor, group, null, null, null);
         jobWithNulls = JobTestData.savedAll(
             jobRepository,
@@ -102,6 +105,16 @@ class PDFExportResourceTest extends AbstractResourceTest {
             applicationRepository,
             job,
             applicant,
+            ApplicationState.SENT,
+            LocalDate.now(),
+            "Test projects",
+            "Test skills",
+            "Test motivation"
+        );
+        applicationWithWebsiteAndLinkedin = ApplicationTestData.savedAll(
+            applicationRepository,
+            job,
+            applicantWithWebsiteAndLinkedin,
             ApplicationState.SENT,
             LocalDate.now(),
             "Test projects",
@@ -233,6 +246,20 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 );
 
             assertThat(result).isNull();
+        }
+
+        @Test
+        void shouldExportApplicationWithWebsiteAndLinkedIn() {
+            Map<String, String> labels = createCompleteLabelsMap();
+
+            byte[] result = asApplicant(applicantWithWebsiteAndLinkedin).postAndReturnBytes(
+                BASE_URL + "/application/" + applicationWithWebsiteAndLinkedin.getApplicationId() + "/pdf",
+                labels,
+                200,
+                MediaType.APPLICATION_PDF
+            );
+
+            assertThat(result).isNotEmpty();
         }
     }
 
