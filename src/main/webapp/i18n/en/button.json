@@ -1,5 +1,6 @@
 {
   "button": {
+    "actions": "Actions",
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
@@ -22,6 +23,6 @@
     "tooltip": {
       "editDisabled": "Only drafts can be edited"
     },
-    "downloadPDF": "Export PDF"
+    "downloadPDF": "Export"
   }
 }

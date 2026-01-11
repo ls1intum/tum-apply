@@ -24,6 +24,9 @@ export class InterviewProcessDetailComponent {
   jobTitle = signal<string | null>(null);
   readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
 
+  // Signal to trigger interviewee section reload
+  intervieweeRefreshKey = signal(0);
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly interviewService = inject(InterviewResourceApiService);
@@ -43,6 +46,10 @@ export class InterviewProcessDetailComponent {
       this.processId.set(id);
       void this.loadProcessDetails(id);
     }
+  }
+
+  onSlotAssigned(): void {
+    this.intervieweeRefreshKey.update(k => k + 1);
   }
 
   navigateBack(): void {

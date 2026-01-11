@@ -1,10 +1,13 @@
 package de.tum.cit.aet.interview.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
+import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
@@ -97,20 +100,32 @@ public class InterviewResource {
      * an interview process.
      *
      * Retrieves all interview slots for the specified interview process,
-     * ordered by start time (ascending).
+     * ordered by start time (ascending). Supports optional filtering by year and
+     * month.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     * @param year      optional year filter
+     * @param month     optional month filter
+     * @param page      zero-based page index (default: 0)
+     * @param size      the size of the page (default: 20)
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and page of
      *         {@link InterviewSlotDTO}
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException   if the user is not authorized
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
-    public ResponseEntity<List<InterviewSlotDTO>> getSlotsByProcessId(@PathVariable UUID processId) {
-        log.info("REST request to get all slots for interview process: {}", processId);
-        List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
-        log.info("Returning {} slots for interview process: {}", slots.size(), processId);
+    public ResponseEntity<PageResponseDTO<InterviewSlotDTO>> getSlotsByProcessId(
+        @PathVariable UUID processId,
+        @RequestParam(required = false) Integer year,
+        @RequestParam(required = false) Integer month,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        log.info("REST request to get slots for process: {}, year: {}, month: {}, page: {}", processId, year, month, page);
+        PageDTO pageDTO = new PageDTO(size, page);
+        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
+        log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
         return ResponseEntity.ok(slots);
     }
 
@@ -180,7 +195,10 @@ public class InterviewResource {
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
      *
      * @throws EntityNotFoundException if the slot is not found
-     * @throws AccessDeniedException if the user is not authorized to delete this slot
+     *
+     * @throws AccessDeniedException if the user is not authorized to delete this
+     * slot
+     *
      * @throws BadRequestException if the slot is booked
      */
     @ProfessorOrEmployee
@@ -238,5 +256,28 @@ public class InterviewResource {
         IntervieweeDetailDTO updated = interviewService.updateAssessment(processId, intervieweeId, dto);
         log.info("Successfully updated assessment for interviewee: {}", intervieweeId);
         return ResponseEntity.ok(updated);
+     * {@code POST /api/interviews/slots/{slotId}/assign} : Assign an interviewee to
+     * a slot.
+     *
+     * Assigns the applicant to the specified slot.
+     * The applicant must have been previously added to the interview process.
+     *
+     * @param slotId the ID of the slot to assign
+     * @param dto    containing the application ID
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         updated {@link InterviewSlotDTO}
+     * @throws EntityNotFoundException if the slot or interviewee is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @PostMapping("/slots/{slotId}/assign")
+    public ResponseEntity<InterviewSlotDTO> assignSlotToInterviewee(
+        @PathVariable UUID slotId,
+        @Valid @RequestBody AssignSlotRequestDTO dto
+    ) {
+        log.info("REST request to assign slot {} to application {}", slotId, dto.applicationId());
+        InterviewSlotDTO result = interviewService.assignSlotToInterviewee(slotId, dto.applicationId());
+        log.info("Successfully assigned slot {} to interviewee", slotId);
+        return ResponseEntity.ok(result);
     }
 }

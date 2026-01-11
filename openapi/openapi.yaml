@@ -4,20 +4,20 @@ servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
   /api/ai/generate:
-    get:
+    post:
       tags: [ai-resource]
-      operationId: storyWithStream
-      parameters:
-      - name: message
-        in: query
-        required: false
-        schema: {type: string, default: Tell a story in less than 100 words}
+      operationId: generateJobApplicationDraft
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JobFormDTO'}
+        required: true
       responses:
         '200':
           description: OK
           content:
-            text/event-stream:
-              schema: {type: string}
+            application/json:
+              schema: {$ref: '#/components/schemas/AiResponseDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -992,6 +992,37 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/booking/{processId}:
+    get:
+      tags: [interview-booking-resource]
+      operationId: getBookingData
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: year
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: month
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: page
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 20}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BookingDTO'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -1109,14 +1140,28 @@ paths:
         in: path
         required: true
         schema: {type: string, format: uuid}
+      - name: year
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: month
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: page
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 20}
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema:
-                type: array
-                items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+              schema: {$ref: '#/components/schemas/PageResponseDTOInterviewSlotDTO'}
   /api/interviews/processes/{processId}/slots/create:
     post:
       tags: [interview-resource]
@@ -1150,6 +1195,26 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/slots/{slotId}/assign:
+    post:
+      tags: [interview-resource]
+      operationId: assignSlotToInterviewee
+      parameters:
+      - name: slotId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/AssignSlotRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -1841,6 +1906,10 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
+    AiResponseDTO:
+      type: object
+      properties:
+        jobDescription: {type: string}
     Applicant:
       type: object
       properties:
@@ -2057,6 +2126,22 @@ components:
         reason: {type: string}
         reviewedAt: {type: string, format: date-time}
         reviewedBy: {$ref: '#/components/schemas/User'}
+    AssignSlotRequestDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+      required: [applicationId]
+    AssignedIntervieweeDTO:
+      type: object
+      properties:
+        applicationId: {type: string, format: uuid}
+        email: {type: string}
+        firstName: {type: string}
+        id: {type: string, format: uuid}
+        lastName: {type: string}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
     AuthSessionInfoDTO:
       type: object
       properties:
@@ -2068,6 +2153,16 @@ components:
       properties:
         type: {type: string}
         word: {type: string}
+    BookingDTO:
+      type: object
+      properties:
+        availableSlots:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        jobTitle: {type: string}
+        researchGroupName: {type: string}
+        supervisor: {$ref: '#/components/schemas/ProfessorDTO'}
+        userBookingInfo: {$ref: '#/components/schemas/UserBookingInfoDTO'}
     CreateSlotsDTO:
       type: object
       properties:
@@ -2291,6 +2386,7 @@ components:
         endDateTime: {type: string, format: date-time}
         id: {type: string, format: uuid}
         interviewProcessId: {type: string, format: uuid}
+        interviewee: {$ref: '#/components/schemas/AssignedIntervieweeDTO'}
         isBooked: {type: boolean}
         location: {type: string}
         startDateTime: {type: string, format: date-time}
@@ -2579,6 +2675,13 @@ components:
           type: array
           items: {$ref: '#/components/schemas/EmailTemplateOverviewDTO'}
         totalElements: {type: integer, format: int64}
+    PageResponseDTOInterviewSlotDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        totalElements: {type: integer, format: int64}
     PageResponseDTOKeycloakUserDTO:
       type: object
       properties:
@@ -2848,6 +2951,11 @@ components:
         universityId: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserBookingInfoDTO:
+      type: object
+      properties:
+        bookedSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        hasBookedSlot: {type: boolean}
     UserDTO:
       type: object
       properties:
