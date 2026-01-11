@@ -37,6 +37,7 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
     TranslateModule,
     TranslateDirective,
     ConfirmDialog,
+    ConfirmDialog,
   ],
   templateUrl: './upload-button.component.html',
   styleUrl: './upload-button.component.scss',
