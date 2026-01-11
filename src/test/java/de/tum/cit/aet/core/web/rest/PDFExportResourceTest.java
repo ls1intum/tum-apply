@@ -70,6 +70,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
     ResearchGroup group;
     Applicant applicant;
     Job job;
+    Job jobWithNulls;
     Application application;
 
     @BeforeEach
@@ -79,6 +80,24 @@ class PDFExportResourceTest extends AbstractResourceTest {
         professor = UserTestData.savedProfessor(userRepository, group);
         applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
         job = JobTestData.saved(jobRepository, professor, group, null, null, null);
+        jobWithNulls = JobTestData.savedAll(
+            jobRepository,
+            null,
+            null,
+            "CS",
+            professor,
+            group,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            JobState.PUBLISHED
+        );
         application = ApplicationTestData.savedAll(
             applicationRepository,
             job,
@@ -227,6 +246,36 @@ class PDFExportResourceTest extends AbstractResourceTest {
             byte[] result = api
                 .withoutPostProcessors()
                 .postAndReturnBytes(BASE_URL + "/job/" + job.getJobId() + "/pdf", labels, 200, MediaType.APPLICATION_PDF);
+
+            assertThat(result).isNotEmpty();
+        }
+
+        @Test
+        void shouldExportJobForEmployee() {
+            User employee = UserTestData.savedEmployee(userRepository, group);
+
+            byte[] result = api
+                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                .postAndReturnBytes(
+                    BASE_URL + "/job/" + job.getJobId() + "/pdf",
+                    createCompleteLabelsMap(),
+                    200,
+                    MediaType.APPLICATION_PDF
+                );
+
+            assertThat(result).isNotEmpty();
+        }
+
+        @Test
+        void shouldHandleJobWithNullFields() {
+            byte[] result = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(
+                    BASE_URL + "/job/" + jobWithNulls.getJobId() + "/pdf",
+                    createCompleteLabelsMap(),
+                    200,
+                    MediaType.APPLICATION_PDF
+                );
 
             assertThat(result).isNotEmpty();
         }
