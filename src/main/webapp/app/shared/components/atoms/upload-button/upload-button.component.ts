@@ -6,7 +6,7 @@ import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { DocumentInformationHolderDTO } from 'app/generated/model/documentInformationHolderDTO';
@@ -62,9 +62,6 @@ export class UploadButtonComponent {
   // Duplicate dialog state
   pendingDuplicateFile = signal<File | null>(null);
   duplicateFileName = signal<string>('');
-  duplicateMessage = computed(() =>
-    this.translateService.instant('entity.upload.duplicate.message', { filename: this.duplicateFileName() }),
-  );
 
   // Replacement dialog state (for single file mode)
   pendingReplacementFiles = signal<File[]>([]);
@@ -75,7 +72,6 @@ export class UploadButtonComponent {
   private applicationService = inject(ApplicationResourceApiService);
   private toastService = inject(ToastService);
   private elementRef = inject(ElementRef);
-  private translateService = inject(TranslateService);
 
   async onFileSelected(event: FileSelectEvent): Promise<void> {
     const files: File[] = event.currentFiles;

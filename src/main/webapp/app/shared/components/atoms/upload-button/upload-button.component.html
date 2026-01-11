@@ -111,7 +111,7 @@
 <jhi-confirm-dialog
   #duplicateConfirmDialog
   [header]="'entity.upload.duplicate.title' | translate"
-  [message]="duplicateMessage()"
+  [message]="'entity.upload.duplicate.message' | translate: { filename: duplicateFileName() }"
   [label]="'button.replace' | translate"
   severity="primary"
   [showOpenButton]="false"
