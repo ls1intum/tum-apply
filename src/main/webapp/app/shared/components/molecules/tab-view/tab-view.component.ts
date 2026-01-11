@@ -43,19 +43,17 @@ export class TabViewComponent {
     return tabs.length > 0 ? tabs[0].id : '';
   });
 
-  constructor() {
-    // Initialize internal tab when tabs are available
-    effect(() => {
-      const tabs = this.tabs();
-      const externalTab = this.activeTabId();
-      const internal = this.internalActiveTab();
+  // Initialize internal tab when tabs are available
+  readonly initializeTab = effect(() => {
+    const tabs = this.tabs();
+    const externalTab = this.activeTabId();
+    const internal = this.internalActiveTab();
 
-      // Set initial internal tab if not already set
-      if (!internal && !externalTab && tabs.length > 0) {
-        this.internalActiveTab.set(tabs[0].id);
-      }
-    });
-  }
+    // Set initial internal tab if not already set
+    if (!internal && !externalTab && tabs.length > 0) {
+      this.internalActiveTab.set(tabs[0].id);
+    }
+  });
 
   selectTab(tabId: string): void {
     this.internalActiveTab.set(tabId);
