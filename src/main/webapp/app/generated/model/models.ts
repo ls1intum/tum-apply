@@ -19,6 +19,7 @@ export * from './assignSlotRequestDTO';
 export * from './assignedIntervieweeDTO';
 export * from './authSessionInfoDTO';
 export * from './biasedWordDTO';
+export * from './bookSlotRequestDTO';
 export * from './bookingDTO';
 export * from './createSlotsDTO';
 export * from './createdJobDTO';

@@ -1023,6 +1023,26 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/BookingDTO'}
+  /api/interviews/booking/{processId}/book:
+    post:
+      tags: [interview-booking-resource]
+      operationId: bookSlot
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BookSlotRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -2110,6 +2130,11 @@ components:
       properties:
         type: {type: string}
         word: {type: string}
+    BookSlotRequestDTO:
+      type: object
+      properties:
+        slotId: {type: string, format: uuid}
+      required: [slotId]
     BookingDTO:
       type: object
       properties:
