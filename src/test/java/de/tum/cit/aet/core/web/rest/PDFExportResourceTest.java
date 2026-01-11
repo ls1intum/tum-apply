@@ -306,6 +306,33 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             assertThat(result).isNotEmpty();
         }
+
+        @Test
+        void shouldExportJobWithEmptyContactDetails() {
+            ResearchGroup groupWithNoContact = ResearchGroupTestData.newRgOptional();
+            groupWithNoContact = researchGroupRepository.save(groupWithNoContact);
+
+            User prof = UserTestData.savedProfessor(userRepository, groupWithNoContact);
+            Job jobWithEmptyContact = JobTestData.saved(
+                jobRepository,
+                prof,
+                groupWithNoContact,
+                "Test Job",
+                JobState.PUBLISHED,
+                LocalDate.now()
+            );
+
+            byte[] result = api
+                .withoutPostProcessors()
+                .postAndReturnBytes(
+                    BASE_URL + "/job/" + jobWithEmptyContact.getJobId() + "/pdf",
+                    createCompleteLabelsMap(),
+                    200,
+                    MediaType.APPLICATION_PDF
+                );
+
+            assertThat(result).isNotEmpty();
+        }
     }
 
     @Nested
