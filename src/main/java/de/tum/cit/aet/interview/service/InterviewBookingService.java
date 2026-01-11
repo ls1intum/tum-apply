@@ -2,7 +2,9 @@ package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
+import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service for applicant-facing interview booking operations.
@@ -98,6 +101,75 @@ public class InterviewBookingService {
             bookingInfo,
             availableSlots
         );
+    }
+
+    /**
+     * Books an interview slot for the current user.
+     *
+     * @param processId the ID of the interview process
+     * @param slotId    the ID of the slot to book
+     * @return the booked slot as DTO
+     * @throws EntityNotFoundException    if process or slot not found
+     * @throws AccessDeniedException      if user not invited or UNCONTACTED
+     * @throws BadRequestException        if user already has a slot or slot is in
+     *                                    the past
+     * @throws ResourceAlreadyExistsException if slot was just booked by another user
+     */
+    @Transactional
+    public InterviewSlotDTO bookSlot(UUID processId, UUID slotId) {
+        UUID userId = currentUserService.getUserId();
+
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
+
+        // 2. Find interviewee for current user
+        Interviewee interviewee = intervieweeRepository
+            .findByProcessIdAndUserId(processId, userId)
+            .orElseThrow(() -> new AccessDeniedException("You are not invited to this interview process"));
+
+        // 3. Check state - must be at least INVITED (not UNCONTACTED)
+        IntervieweeState state = interviewService.calculateIntervieweeState(interviewee);
+        if (state == IntervieweeState.UNCONTACTED) {
+            throw new AccessDeniedException("You have not yet been invited to book an interview");
+        }
+
+        // 4. Check if user already has a booked slot
+        if (interviewee.hasSlot()) {
+            throw new BadRequestException("You already have a booked interview slot");
+        }
+
+        // 5. Load the requested slot
+        InterviewSlot slot = interviewSlotRepository
+            .findById(slotId)
+            .orElseThrow(() -> EntityNotFoundException.forId("InterviewSlot", slotId));
+
+        // 6. Validate slot belongs to this process
+        if (!slot.getInterviewProcess().getId().equals(processId)) {
+            throw new EntityNotFoundException("Slot not found in this interview process");
+        }
+
+        // 7. Validate slot is in the future
+        if (slot.getStartDateTime().isBefore(Instant.now())) {
+            throw new BadRequestException("Cannot book a slot in the past");
+        }
+
+        // 8. Validate slot is not already booked (race condition check)
+        if (slot.getIsBooked()) {
+            throw new ResourceAlreadyExistsException("This slot has already been booked by another applicant");
+        }
+
+        // 9. Book the slot: establish bidirectional relationship
+        slot.setInterviewee(interviewee);
+        slot.setIsBooked(true);
+        interviewee.getSlots().add(slot);
+
+        // 10. Save entities
+        interviewSlotRepository.save(slot);
+        intervieweeRepository.save(interviewee);
+
+        return InterviewSlotDTO.fromEntity(slot);
     }
 
     /**
