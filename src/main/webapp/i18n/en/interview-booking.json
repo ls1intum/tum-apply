@@ -29,9 +29,17 @@
         "viewDetails": "View Details",
         "cancelBooking": "Cancel Booking"
       },
-      "bookedSuccessPlaceholder": {
-        "summary": "Booking Successful",
-        "detail": "This is a placeholder for the booking action."
+      "bookingSuccess": {
+        "summary": "Booking Confirmed",
+        "detail": "Your interview slot has been successfully booked."
+      },
+      "slotAlreadyBooked": {
+        "summary": "Slot No Longer Available",
+        "detail": "This slot was booked by another applicant. Please select a different slot."
+      },
+      "bookingError": {
+        "summary": "Booking Failed",
+        "detail": "An error occurred while booking the slot. Please try again."
       }
     }
   }

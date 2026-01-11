@@ -29,9 +29,17 @@
         "viewDetails": "Details anzeigen",
         "cancelBooking": "Buchung stornieren"
       },
-      "bookedSuccessPlaceholder": {
-        "summary": "Buchung erfolgreich",
-        "detail": "Dies ist ein Platzhalter für die Buchung."
+      "bookingSuccess": {
+        "summary": "Buchung bestätigt",
+        "detail": "Dein Interview Termin wurde erfolgreich gebucht."
+      },
+      "slotAlreadyBooked": {
+        "summary": "Termin nicht mehr verfügbar",
+        "detail": "Dieser Termin wurde von einem anderen Bewerber gebucht. Bitte wähle einen anderen Termin."
+      },
+      "bookingError": {
+        "summary": "Buchung fehlgeschlagen",
+        "detail": "Beim Buchen des Termins ist ein Fehler aufgetreten. Bitte versuch es erneut."
       }
     }
   }

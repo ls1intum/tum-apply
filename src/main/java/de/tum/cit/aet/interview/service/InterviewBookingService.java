@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.service;
 
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
@@ -17,6 +18,10 @@ import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ProfessorDTO;
 import java.time.Instant;
 import java.time.YearMonth;
@@ -46,6 +51,8 @@ public class InterviewBookingService {
     private final IntervieweeRepository intervieweeRepository;
     private final InterviewSlotRepository interviewSlotRepository;
     private final CurrentUserService currentUserService;
+    private final IcsCalendarService icsCalendarService;
+    private final AsyncEmailSender asyncEmailSender;
 
     /**
      * Retrieves booking page data for the current user.
@@ -63,13 +70,13 @@ public class InterviewBookingService {
 
         // 1. Load interview process with job
         InterviewProcess process = interviewProcessRepository
-            .findById(processId)
-            .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
+                .findById(processId)
+                .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
 
         // 2. Find interviewee for current user
         Interviewee interviewee = intervieweeRepository
-            .findByProcessIdAndUserId(processId, userId)
-            .orElseThrow(() -> new AccessDeniedException("You are not invited to this interview process"));
+                .findByProcessIdAndUserId(processId, userId)
+                .orElseThrow(() -> new AccessDeniedException("You are not invited to this interview process"));
 
         // 3. Check state - must be at least INVITED (not UNCONTACTED)
         IntervieweeState state = interviewService.calculateIntervieweeState(interviewee);
@@ -84,9 +91,8 @@ public class InterviewBookingService {
         // 5. Check if already booked
         InterviewSlot bookedSlot = interviewee.getScheduledSlot();
         UserBookingInfoDTO bookingInfo = new UserBookingInfoDTO(
-            bookedSlot != null,
-            bookedSlot != null ? InterviewSlotDTO.fromEntity(bookedSlot) : null
-        );
+                bookedSlot != null,
+                bookedSlot != null ? InterviewSlotDTO.fromEntity(bookedSlot) : null);
 
         // 6. Get available slots (only if not already booked)
         List<InterviewSlotDTO> availableSlots = Collections.emptyList();
@@ -95,12 +101,11 @@ public class InterviewBookingService {
         }
 
         return new BookingDTO(
-            job.getTitle(),
-            job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
-            supervisor,
-            bookingInfo,
-            availableSlots
-        );
+                job.getTitle(),
+                job.getResearchGroup() != null ? job.getResearchGroup().getName() : null,
+                supervisor,
+                bookingInfo,
+                availableSlots);
     }
 
     /**
@@ -109,11 +114,13 @@ public class InterviewBookingService {
      * @param processId the ID of the interview process
      * @param slotId    the ID of the slot to book
      * @return the booked slot as DTO
-     * @throws EntityNotFoundException    if process or slot not found
-     * @throws AccessDeniedException      if user not invited or UNCONTACTED
-     * @throws BadRequestException        if user already has a slot or slot is in
-     *                                    the past
-     * @throws ResourceAlreadyExistsException if slot was just booked by another user
+     * @throws EntityNotFoundException        if process or slot not found
+     * @throws AccessDeniedException          if user not invited or UNCONTACTED
+     * @throws BadRequestException            if user already has a slot or slot is
+     *                                        in
+     *                                        the past
+     * @throws ResourceAlreadyExistsException if slot was just booked by another
+     *                                        user
      */
     @Transactional
     public InterviewSlotDTO bookSlot(UUID processId, UUID slotId) {
@@ -121,13 +128,13 @@ public class InterviewBookingService {
 
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
-            .findById(processId)
-            .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
+                .findById(processId)
+                .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
 
         // 2. Find interviewee for current user
         Interviewee interviewee = intervieweeRepository
-            .findByProcessIdAndUserId(processId, userId)
-            .orElseThrow(() -> new AccessDeniedException("You are not invited to this interview process"));
+                .findByProcessIdAndUserId(processId, userId)
+                .orElseThrow(() -> new AccessDeniedException("You are not invited to this interview process"));
 
         // 3. Check state - must be at least INVITED (not UNCONTACTED)
         IntervieweeState state = interviewService.calculateIntervieweeState(interviewee);
@@ -142,8 +149,8 @@ public class InterviewBookingService {
 
         // 5. Load the requested slot
         InterviewSlot slot = interviewSlotRepository
-            .findById(slotId)
-            .orElseThrow(() -> EntityNotFoundException.forId("InterviewSlot", slotId));
+                .findById(slotId)
+                .orElseThrow(() -> EntityNotFoundException.forId("InterviewSlot", slotId));
 
         // 6. Validate slot belongs to this process
         if (!slot.getInterviewProcess().getId().equals(processId)) {
@@ -169,7 +176,44 @@ public class InterviewBookingService {
         interviewSlotRepository.save(slot);
         intervieweeRepository.save(interviewee);
 
+        // 11. Send confirmation emails
+        Job job = process.getJob();
+        sendBookingConfirmationEmails(slot, interviewee, job);
+
+        log.info("Slot {} booked by interviewee {} for process {}", slotId, interviewee.getId(), processId);
         return InterviewSlotDTO.fromEntity(slot);
+    }
+
+    private void sendBookingConfirmationEmails(InterviewSlot slot, Interviewee interviewee, Job job) {
+        User applicant = interviewee.getApplication().getApplicant().getUser();
+        User professor = job.getSupervisingProfessor();
+
+        String icsContent = icsCalendarService.generateIcsContent(slot, job);
+        String icsFileName = icsCalendarService.generateFileName(slot);
+
+        // Email to Applicant
+        Email applicantEmail = Email.builder()
+                .to(applicant)
+                .emailType(EmailType.INTERVIEW_BOOKED_APPLICANT)
+                .language(Language.fromCode(applicant.getSelectedLanguage()))
+                .researchGroup(job.getResearchGroup())
+                .content(slot)
+                .icsContent(icsContent)
+                .icsFileName(icsFileName)
+                .build();
+        asyncEmailSender.sendAsync(applicantEmail);
+
+        // Email to Professor
+        Email professorEmail = Email.builder()
+                .to(professor)
+                .emailType(EmailType.INTERVIEW_BOOKED_PROFESSOR)
+                .language(Language.fromCode(professor.getSelectedLanguage()))
+                .researchGroup(job.getResearchGroup())
+                .content(slot)
+                .icsContent(icsContent)
+                .icsFileName(icsFileName)
+                .build();
+        asyncEmailSender.sendAsync(professorEmail);
     }
 
     /**
@@ -189,8 +233,9 @@ public class InterviewBookingService {
             ZonedDateTime monthStart = yearMonth.atDay(1).atStartOfDay(ZoneId.systemDefault());
             ZonedDateTime monthEnd = yearMonth.plusMonths(1).atDay(1).atStartOfDay(ZoneId.systemDefault());
             slots = interviewSlotRepository
-                .findAvailableSlotsByProcessIdAndMonth(processId, Instant.now(), monthStart.toInstant(), monthEnd.toInstant(), pageable)
-                .getContent();
+                    .findAvailableSlotsByProcessIdAndMonth(processId, Instant.now(), monthStart.toInstant(),
+                            monthEnd.toInstant(), pageable)
+                    .getContent();
         } else {
             // Load all future slots
             slots = interviewSlotRepository.findAvailableSlotsByProcessId(processId, Instant.now());

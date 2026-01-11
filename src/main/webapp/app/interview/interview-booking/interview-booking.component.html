@@ -14,8 +14,8 @@
       <!-- Already Booked (Success Screen) -->
       <div class="max-w-3xl mx-auto flex flex-col items-center justify-center py-12 text-center">
         <!-- Success Icon -->
-        <div class="bg-background-surface text-positive-default rounded-full p-6 mb-6 inline-flex items-center justify-center">
-          <fa-icon icon="check" class="text-4xl" />
+        <div class="text-positive-default mb-6 inline-flex items-center justify-center">
+          <fa-icon icon="check" class="text-5xl" />
         </div>
 
         <h2 class="text-2xl font-bold mb-2 text-text-primary" jhiTranslate="interview.booking.success.title">Interview Booked!</h2>
@@ -29,13 +29,13 @@
           <div class="mb-6 border-b border-border-default pb-6">
             <div class="text-xs text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.topic">Topic</div>
             <h3 class="text-lg font-bold text-text-primary mb-2">{{ jobTitle() }}</h3>
-            <div class="flex items-center gap-2 text-text-secondary text-sm">
-              <fa-icon icon="user-tie" />
-              <span>{{ supervisorName() }}</span>
+            <div class="flex items-center gap-2 text-sm">
+              <fa-icon icon="user-tie" class="text-primary" />
+              <span class="text-text-secondary">{{ supervisorName() }}</span>
               @if (researchGroupName()) {
-                <span>•</span>
-                <fa-icon icon="building-columns" />
-                <span>{{ researchGroupName() }}</span>
+                <span class="text-text-secondary">•</span>
+                <fa-icon icon="building-columns" class="text-primary" />
+                <span class="text-text-secondary">{{ researchGroupName() }}</span>
               }
             </div>
           </div>
@@ -45,44 +45,33 @@
             <div class="text-xs text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.details">Details</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Date -->
-              <div class="flex items-start gap-3">
-                <div class="bg-background-surface p-2 rounded text-text-secondary">
-                  <fa-icon icon="calendar" class="text-lg" />
-                </div>
-                <div>
-                  <div class="text-xs text-text-secondary mb-0.5" jhiTranslate="interview.booking.date">Date</div>
-                  <div class="font-medium text-text-primary">{{ bookedSlotDate() }}</div>
+              <div>
+                <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.date">Date</div>
+                <div class="flex items-center gap-2">
+                  <fa-icon icon="calendar" class="text-sm text-primary" />
+                  <span class="text-sm font-medium text-text-primary">{{ bookedSlotDate() }}</span>
                 </div>
               </div>
 
               <!-- Time -->
-              <div class="flex items-start gap-3">
-                <div class="bg-background-surface p-2 rounded text-text-secondary">
-                  <fa-icon icon="clock" class="text-lg" />
-                </div>
-                <div>
-                  <div class="text-xs text-text-secondary mb-0.5" jhiTranslate="interview.booking.time">Time</div>
-                  <div class="font-medium text-text-primary">{{ bookedSlotTime() }}</div>
+              <div>
+                <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.time">Time</div>
+                <div class="flex items-center gap-2">
+                  <fa-icon icon="clock" class="text-sm text-primary" />
+                  <span class="text-sm font-medium text-text-primary">{{ bookedSlotTime() }}</span>
                 </div>
               </div>
 
               <!-- Location -->
-              <div class="flex items-start gap-3">
-                <div class="bg-background-surface p-2 rounded text-text-secondary">
-                  <fa-icon [icon]="isBookedVirtual() ? 'video' : 'location-dot'" class="text-lg" />
-                </div>
-                <div>
-                  <div class="text-xs text-text-secondary mb-0.5" jhiTranslate="interview.booking.location">Location</div>
-                  <div class="font-medium text-text-primary">{{ bookedSlotLocation() }}</div>
+              <div>
+                <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.location">Location</div>
+                <div class="flex items-center gap-2">
+                  <fa-icon [icon]="isBookedVirtual() ? 'video' : 'location-dot'" class="text-sm text-primary" />
+                  <span class="text-sm font-medium text-text-primary">{{ bookedSlotLocation() }}</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="mt-8 flex gap-4">
-          <jhi-button severity="primary" variant="outlined" label="interview.booking.success.viewDetails" [shouldTranslate]="true" />
         </div>
       </div>
     } @else {
