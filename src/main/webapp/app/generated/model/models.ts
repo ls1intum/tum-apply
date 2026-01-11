@@ -1,6 +1,7 @@
 export * from './acceptDTO';
 export * from './addIntervieweesDTO';
 export * from './addMembersToResearchGroupDTO';
+export * from './aiResponseDTO';
 export * from './applicant';
 export * from './applicantDTO';
 export * from './applicantForApplicationDetailDTO';
