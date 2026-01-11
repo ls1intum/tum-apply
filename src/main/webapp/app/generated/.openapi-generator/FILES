@@ -32,6 +32,7 @@ index.ts
 model/acceptDTO.ts
 model/addIntervieweesDTO.ts
 model/addMembersToResearchGroupDTO.ts
+model/aiResponseDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts

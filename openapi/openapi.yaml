@@ -4,20 +4,20 @@ servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
   /api/ai/generate:
-    get:
+    post:
       tags: [ai-resource]
-      operationId: storyWithStream
-      parameters:
-      - name: message
-        in: query
-        required: false
-        schema: {type: string, default: Tell a story in less than 100 words}
+      operationId: generateJobApplicationDraft
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/JobFormDTO'}
+        required: true
       responses:
         '200':
           description: OK
           content:
-            text/event-stream:
-              schema: {type: string}
+            application/json:
+              schema: {$ref: '#/components/schemas/AiResponseDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -1832,6 +1832,10 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
+    AiResponseDTO:
+      type: object
+      properties:
+        jobDescription: {type: string}
     Applicant:
       type: object
       properties:
