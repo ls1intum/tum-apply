@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import TranslateDirective from '../../../language/translate.directive';
@@ -41,18 +41,6 @@ export class TabViewComponent {
     // Default to first tab if available
     const tabs = this.tabs();
     return tabs.length > 0 ? tabs[0].id : '';
-  });
-
-  // Initialize internal tab when tabs are available
-  readonly initializeTab = effect(() => {
-    const tabs = this.tabs();
-    const externalTab = this.activeTabId();
-    const internal = this.internalActiveTab();
-
-    // Set initial internal tab if not already set
-    if (!internal && !externalTab && tabs.length > 0) {
-      this.internalActiveTab.set(tabs[0].id);
-    }
   });
 
   selectTab(tabId: string): void {
