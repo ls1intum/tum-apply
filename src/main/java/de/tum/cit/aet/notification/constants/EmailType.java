@@ -15,8 +15,7 @@ public enum EmailType {
      * To: Applicant whose application was accepted
      * BCC: Supervising Professor of accepted application
      */
-    APPLICATION_ACCEPTED("APPLICATION_ACCEPTED", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE),
-            true, true),
+    APPLICATION_ACCEPTED("APPLICATION_ACCEPTED", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE), true, true),
 
     /**
      * When an application was rejected
@@ -58,8 +57,7 @@ public enum EmailType {
      * Notification to professor when applicant books an interview slot
      * To: Supervising professor of the job
      */
-    INTERVIEW_BOOKED_PROFESSOR("INTERVIEW_BOOKED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false,
-            false);
+    INTERVIEW_BOOKED_PROFESSOR("INTERVIEW_BOOKED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false);
 
     private final String value;
 

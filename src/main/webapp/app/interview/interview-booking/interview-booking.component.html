@@ -27,7 +27,7 @@
         <div class="bg-background-default border border-border-default rounded-lg p-8 w-full shadow-sm text-left">
           <!-- Job Info -->
           <div class="mb-6 border-b border-border-default pb-6">
-            <div class="text-xs text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.topic">Topic</div>
+            <div class="text-sm text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.topic">Topic</div>
             <h3 class="text-lg font-bold text-text-primary mb-2">{{ jobTitle() }}</h3>
             <div class="flex items-center gap-2 text-sm">
               <fa-icon icon="user-tie" class="text-primary" />
@@ -42,11 +42,11 @@
 
           <!-- Slot Info -->
           <div>
-            <div class="text-xs text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.details">Details</div>
+            <div class="text-sm text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.details">Details</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Date -->
               <div>
-                <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.date">Date</div>
+                <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.date">Date</div>
                 <div class="flex items-center gap-2">
                   <fa-icon icon="calendar" class="text-sm text-primary" />
                   <span class="text-sm font-medium text-text-primary">{{ bookedSlotDate() }}</span>
@@ -55,7 +55,7 @@
 
               <!-- Time -->
               <div>
-                <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.time">Time</div>
+                <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.time">Time</div>
                 <div class="flex items-center gap-2">
                   <fa-icon icon="clock" class="text-sm text-primary" />
                   <span class="text-sm font-medium text-text-primary">{{ bookedSlotTime() }}</span>
@@ -64,7 +64,7 @@
 
               <!-- Location -->
               <div>
-                <div class="text-xs text-text-secondary mb-1" jhiTranslate="interview.booking.location">Location</div>
+                <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.location">Location</div>
                 <div class="flex items-center gap-2">
                   <fa-icon [icon]="isBookedVirtual() ? 'video' : 'location-dot'" class="text-sm text-primary" />
                   <span class="text-sm font-medium text-text-primary">{{ bookedSlotLocation() }}</span>
