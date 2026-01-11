@@ -1,9 +1,10 @@
 package de.tum.cit.aet.interview.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.BadRequestException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.security.annotations.Professor;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
@@ -36,13 +37,15 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/overview} : Get interview overview for all jobs with interview process.
+     * {@code GET /api/interviews/overview} : Get interview overview for all jobs
+     * with interview process.
      * <p>
      * Returns statistics about applications in different interview states
      * (completed, scheduled, invited, uncontacted) for each job that has
      * an active interview process.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewOverviewDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     *         {@link InterviewOverviewDTO}
      */
     @ProfessorOrEmployee
     @GetMapping("/overview")
@@ -54,10 +57,12 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/processes/{processId}} : Get details for a specific interview process.
+     * {@code GET /api/interviews/processes/{processId}} : Get details for a
+     * specific interview process.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the {@link InterviewOverviewDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         {@link InterviewOverviewDTO}
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}")
@@ -76,7 +81,8 @@ public class InterviewResource {
      *
      * @param processId the ID of the interview process to which the slots belong
      * @param dto       the slot definitions sent from the frontend
-     * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing the created {@link InterviewSlotDTO}s
+     * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing
+     *         the created {@link InterviewSlotDTO}s
      */
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/slots/create")
@@ -88,36 +94,53 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/processes/{processId}/slots} : Get all slots for an interview process.
+     * {@code GET /api/interviews/processes/{processId}/slots} : Get all slots for
+     * an interview process.
      *
      * Retrieves all interview slots for the specified interview process,
-     * ordered by start time (ascending).
+     * ordered by start time (ascending). Supports optional filtering by year and
+     * month.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link InterviewSlotDTO}
+     * @param year      optional year filter
+     * @param month     optional month filter
+     * @param page      zero-based page index (default: 0)
+     * @param size      the size of the page (default: 20)
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and page of
+     *         {@link InterviewSlotDTO}
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException if the user is not authorized
+     * @throws AccessDeniedException   if the user is not authorized
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
-    public ResponseEntity<List<InterviewSlotDTO>> getSlotsByProcessId(@PathVariable UUID processId) {
-        log.info("REST request to get all slots for interview process: {}", processId);
-        List<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId);
-        log.info("Returning {} slots for interview process: {}", slots.size(), processId);
+    public ResponseEntity<PageResponseDTO<InterviewSlotDTO>> getSlotsByProcessId(
+        @PathVariable UUID processId,
+        @RequestParam(required = false) Integer year,
+        @RequestParam(required = false) Integer month,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        log.info("REST request to get slots for process: {}, year: {}, month: {}, page: {}", processId, year, month, page);
+        PageDTO pageDTO = new PageDTO(size, page);
+        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
+        log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
         return ResponseEntity.ok(slots);
     }
 
     /**
-     * {@code POST /api/interviews/processes/{processId}/interviewees} : Add applicants to interview process.
+     * {@code POST /api/interviews/processes/{processId}/interviewees} : Add
+     * applicants to interview process.
      *
      * Creates Interviewee entities for the given application IDs.
      * Duplicates are silently skipped (idempotent operation).
      *
      * @param processId the ID of the interview process
-     * @param dto containing the list of application IDs to add
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and list of created {@link IntervieweeDTO}s
-     * @throws EntityNotFoundException if the process or any application is not found
-     * @throws AccessDeniedException if the user is not authorized
+     * @param dto       containing the list of application IDs to add
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and list
+     *         of created {@link IntervieweeDTO}s
+     * @throws EntityNotFoundException if the process or any application is not
+     *                                 found
+     * @throws AccessDeniedException   if the user is not authorized
      */
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/interviewees")
@@ -135,14 +158,17 @@ public class InterviewResource {
     }
 
     /**
-     * {@code GET /api/interviews/processes/{processId}/interviewees} : Get all interviewees for an interview process.
+     * {@code GET /api/interviews/processes/{processId}/interviewees} : Get all
+     * interviewees for an interview process.
      *
-     * Retrieves all interviewees for the specified interview process with their details.
+     * Retrieves all interviewees for the specified interview process with their
+     * details.
      *
      * @param processId the ID of the interview process
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of {@link IntervieweeDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     *         {@link IntervieweeDTO}
      * @throws EntityNotFoundException if the interview process is not found
-     * @throws AccessDeniedException if the user is not authorized
+     * @throws AccessDeniedException   if the user is not authorized
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/interviewees")
@@ -156,13 +182,21 @@ public class InterviewResource {
         return ResponseEntity.ok(interviewees);
     }
 
-    /* {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview slot.
-     * Deletes an unbooked interview slot. If the slot is booked, a BadRequestException is thrown.
+    /*
+     * {@code DELETE /api/interviews/slots/{slotId}} : Delete a single interview
+     * slot.
+     * Deletes an unbooked interview slot. If the slot is booked, a
+     * BadRequestException is thrown.
      *
      * @param slotId the ID of the slot to delete
+     *
      * @return the {@link ResponseEntity} with status {@code 204 (No Content)}
+     *
      * @throws EntityNotFoundException if the slot is not found
-     * @throws AccessDeniedException if the user is not authorized to delete this slot
+     *
+     * @throws AccessDeniedException if the user is not authorized to delete this
+     * slot
+     *
      * @throws BadRequestException if the slot is booked
      */
     @ProfessorOrEmployee

@@ -7,20 +7,15 @@ changelog:
 
   categories:
     - title: 🧱 Application
-      labels: ['application']
+      labels: [ 'application' ]
     - title: 🧱 Database
-      labels: ['database']
+      labels: [ 'database' ]
     - title: 🧱 Job
-      labels: ['job']
+      labels: [ 'job' ]
     - title: 🧱 User management
-      labels: ['user management']
+      labels: [ 'user management' ]
     - title: 🧱 Evaluation
-      labels: ['evaluation']
-
-    - title: 🚀 General Improvements
-      labels:
-        - 'enhancement'
-        - 'ui/ux improvement'
+      labels: [ 'evaluation' ]
 
     - title: 🐛 Bug fixes
       labels:
@@ -55,6 +50,8 @@ changelog:
         - 'docker'
         - 'keycloak'
 
-    - title: Other changes
+    - title: 🚀 General Improvements
       labels:
+        - 'enhancement'
+        - 'ui/ux improvement'
         - '*'

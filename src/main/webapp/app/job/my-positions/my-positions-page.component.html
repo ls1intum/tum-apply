@@ -1,15 +1,42 @@
+<!-- Confirm Dialogs -->
+<jhi-confirm-dialog
+  #editPublishedDialog
+  [label]="'button.edit' | translate"
+  [header]="'myPositionsPage.confirmDialog.editJobHeader' | translate"
+  [message]="'myPositionsPage.confirmDialog.editJobMessage' | translate"
+  severity="primary"
+  confirmIcon="pencil"
+  [showOpenButton]="false"
+  (confirmed)="onConfirmEdit()"
+/>
+
+<jhi-confirm-dialog
+  #deleteDialog
+  [label]="'button.delete' | translate"
+  [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
+  [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
+  severity="danger"
+  confirmIcon="trash"
+  [showOpenButton]="false"
+  (confirmed)="onConfirmDelete()"
+/>
+
+<jhi-confirm-dialog
+  #closeDialog
+  [label]="'button.close' | translate"
+  [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
+  [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
+  severity="danger"
+  confirmIcon="xmark"
+  [showOpenButton]="false"
+  (confirmed)="onConfirmClose()"
+/>
+
 <div class="page-container">
   <div class="header-container">
     <div class="page-header">
       <h1 jhiTranslate="myPositionsPage.header.title"></h1>
     </div>
-    <jhi-button
-      label="myPositionsPage.header.createButton"
-      icon="plus"
-      severity="primary"
-      (click)="onCreateJob()"
-      [shouldTranslate]="true"
-    />
   </div>
   <div class="my-positions-container">
     <div class="body">
@@ -31,7 +58,16 @@
           },
         ]"
         [sortableFields]="sortableFields"
-      />
+      >
+        <!-- Content projection: This button is projected into the search-filter-sort-bar component's ng-content slot -->
+        <jhi-button
+          label="myPositionsPage.header.createButton"
+          icon="plus"
+          severity="primary"
+          (click)="onCreateJob()"
+          [shouldTranslate]="true"
+        />
+      </jhi-search-filter-sort-bar>
       <div class="table-wrapper">
         <jhi-dynamic-table
           [columns]="columns()"
@@ -39,7 +75,7 @@
           [totalRecords]="totalRecords()"
           [page]="page()"
           [rows]="pageSize()"
-          [selectable]="true"
+          [selectable]="false"
           (lazyLoad)="loadOnTableEmit($event)"
         />
       </div>
@@ -56,69 +92,16 @@
       </ng-template>
 
       <ng-template #actionTemplate let-job>
-        <div class="flex space-x-2">
+        <div class="flex justify-end gap-1">
+          <jhi-button [tooltip]="'button.view' | translate" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
           <jhi-button
-            icon="eye"
+            [tooltip]="getMenuItems(job).length > 0 ? ('button.actions' | translate) : ('myPositionsPage.noFurtherActions' | translate)"
+            icon="ellipsis-vertical"
             variant="text"
-            [tooltip]="'button.view' | translate"
-            severity="primary"
-            data-testid="view"
-            (click)="onViewJob(job.jobId)"
-            [shouldTranslate]="true"
+            (click)="menu.toggle($event)"
+            [disabled]="getMenuItems(job).length === 0"
           />
-          @if (job.state === 'DRAFT') {
-            <jhi-button
-              icon="pencil"
-              variant="text"
-              [tooltip]="'button.edit' | translate"
-              severity="primary"
-              (click)="onEditJob(job.jobId)"
-              data-testid="edit"
-              [shouldTranslate]="true"
-            />
-          }
-          @if (job.state === 'PUBLISHED') {
-            <jhi-confirm-dialog
-              [label]="'button.edit' | translate"
-              [iconOnly]="true"
-              [tooltip]="'button.edit' | translate"
-              severity="primary"
-              [header]="'myPositionsPage.confirmDialog.editJobHeader' | translate"
-              [message]="'myPositionsPage.confirmDialog.editJobMessage' | translate"
-              (confirmed)="onEditJob(job.jobId)"
-              confirmIcon="pencil"
-              data-testid="edit"
-              [disabled]="job.state !== 'PUBLISHED'"
-            />
-          }
-          @if (job.state === 'DRAFT') {
-            <jhi-confirm-dialog
-              [label]="'button.delete' | translate"
-              [iconOnly]="true"
-              [tooltip]="'button.delete' | translate"
-              severity="danger"
-              [header]="'myPositionsPage.confirmDialog.deleteHeader' | translate"
-              [message]="'myPositionsPage.confirmDialog.deleteMessage' | translate"
-              (confirmed)="onDeleteJob(job.jobId)"
-              confirmIcon="trash"
-              data-testid="delete"
-              [disabled]="job.state !== 'DRAFT'"
-            />
-          }
-          @if (job.state === 'PUBLISHED') {
-            <jhi-confirm-dialog
-              [label]="'button.close' | translate"
-              [iconOnly]="true"
-              [tooltip]="'button.close' | translate"
-              severity="danger"
-              [header]="'myPositionsPage.confirmDialog.closeHeader' | translate"
-              [message]="'myPositionsPage.confirmDialog.closeMessage' | translate"
-              (confirmed)="onCloseJob(job.jobId)"
-              confirmIcon="xmark"
-              data-testid="delete"
-              [disabled]="job.state !== 'PUBLISHED'"
-            />
-          }
+          <jhi-menu #menu [items]="getMenuItems(job)" [shouldTranslate]="true" />
         </div>
       </ng-template>
 

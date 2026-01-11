@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
@@ -933,31 +934,45 @@ class InterviewResourceTest extends AbstractResourceTest {
                 "ACTIVE"
             );
 
-            User otherProfessor = UserTestData.savedProfessorAll(
-                userRepository,
-                otherResearchGroup,
-                null,
-                "other2.prof@tum.de",
-                "Another",
-                "Prof",
-                "en",
-                "+49 89 9999",
-                "https://another.tum.de",
-                "https://linkedin.com/in/another",
-                "DE",
-                null,
-                "männlich",
-                UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-            );
+        // Get slots with pagination (add year and month to match server-side filtering)
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        String url =
+            "/api/interviews/processes/" +
+            interviewProcess.getId() +
+            "/slots?year=" +
+            tomorrow.getYear() +
+            "&month=" +
+            tomorrow.getMonthValue();
 
-            // Act
-            Void result = api
-                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/interviewees", dto, Void.class, 403);
+        PageResponseDTO<InterviewSlotDTO> response = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead(url, null, new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {}, 200);
 
-            // Assert
-            assertThat(result).isNull();
-        }
+        List<InterviewSlotDTO> slots = new java.util.ArrayList<>(response.getContent());
+        assertThat(slots).hasSize(2);
+
+        // Verify first slot
+        InterviewSlotDTO firstSlot = slots.get(0);
+        assertThat(firstSlot.location()).isEqualTo("Room 101");
+        assertThat(firstSlot.streamLink()).isNull();
+        assertThat(firstSlot.isBooked()).isFalse();
+        LocalDateTime expectedStart1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
+        LocalDateTime expectedEnd1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+        assertThat(firstSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart1);
+        assertThat(firstSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd1);
+
+        // Verify second slot
+        InterviewSlotDTO secondSlot = slots.get(1);
+        assertThat(secondSlot.location()).isEqualTo("Room 102");
+        assertThat(secondSlot.streamLink()).isNull();
+        assertThat(secondSlot.isBooked()).isFalse();
+        LocalDateTime expectedStart2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
+        LocalDateTime expectedEnd2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(12, 0));
+        assertThat(secondSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart2);
+        assertThat(secondSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd2);
+
+        // Verify chronological ordering
+        assertThat(firstSlot.startDateTime()).isBefore(secondSlot.startDateTime());
     }
 
     // ==================== GET INTERVIEWEES BY PROCESS ID TESTS
