@@ -26,7 +26,7 @@ public record InterviewSlotDTO(
     /**
      * Converts an {@link InterviewSlot} entity into its corresponding
      * {@link InterviewSlotDTO}.
-     * Used to transfer interview slot data to the cleint without exposing the
+     * Used to transfer interview slot data to the client without exposing the
      * full entity.
      * Does not include interviewee information.
      *
