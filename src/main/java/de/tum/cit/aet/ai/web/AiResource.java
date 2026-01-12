@@ -1,13 +1,14 @@
 package de.tum.cit.aet.ai.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.job.dto.AiResponseDTO;
+import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Example REST controller for AI-related endpoints.
@@ -21,10 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("!openapi")
 public class AiResource {
 
-    private final ChatClient chatClient;
+    private final AiService aiService;
 
-    public AiResource(ChatClient chatClient) {
-        this.chatClient = chatClient;
+    public AiResource(AiService aiService) {
+        this.aiService = aiService;
     }
 
     /**
@@ -33,10 +34,24 @@ public class AiResource {
      *
      * @param message The input message to generate the story from.
      * @return The generated story content.
-     */
-    @GetMapping(value = "generate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+
+    GetMapping(value = "generate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public String storyWithStream(@RequestParam(defaultValue = "Tell a story in less than 100 words") String message) {
         log.info("Received story generation request with message: {}", message);
         return chatClient.prompt().user(message).call().content();
+    }
+    */
+
+    /**
+     * Generate a job application draft from the provided structured job form.
+     *
+     * @param jobForm the job form data used to build the AI prompt
+     * @return a ResponseEntity containing the generated draft as JSON string
+     */
+
+    @PostMapping(value = "generate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AiResponseDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
+        log.info("POST /api/ai/generate - Request received");
+        return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
     }
 }
