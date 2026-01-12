@@ -634,7 +634,7 @@ describe('JobCreationFormComponent', () => {
       dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('My Job');
       expect(dto.researchArea).toBe('AI Research');
-      expect(dto.description).toBe('Some description');
+      expect(dto.jobDescription).toBe('Some description');
     });
 
     it.each([

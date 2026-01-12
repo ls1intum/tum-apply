@@ -69,14 +69,8 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "tasks")
-    private String tasks;
-
-    @Column(name = "requirements")
-    private String requirements;
+    @Column(name = "job_description")
+    private String jobDescription;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)

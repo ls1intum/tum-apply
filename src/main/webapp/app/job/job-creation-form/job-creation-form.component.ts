@@ -31,6 +31,8 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
+import { AiService } from '../../service/ai.service';
+
 
 type JobFormMode = 'create' | 'edit';
 
@@ -78,7 +80,8 @@ export class JobCreationFormComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private autoSaveInitialized = false;
-
+  private aiService = inject(AiService);
+  isGeneratingDraft = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
   // Computed signals for translated dropdown options
@@ -551,6 +554,38 @@ export class JobCreationFormComponent {
     }
   }
 
+  async generateJobApplicationDraft(): Promise<void> {
+    // Textbox is empty check
+    const current = this.basicInfoForm.get("jobDescription")?.value;
+    if(!current || current.trim().length === 0) {
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.noDescription');
+      return;
+    }
+    //Loading state
+    this.isGeneratingDraft.set(true);
+
+    //Call backend with relevant metadata
+    const request: JobFormDTO = {
+      title: this.basicInfoForm.get('title')?.value ?? '',
+      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value.value ?? '',
+      supervisingProfessor: this.userId(),
+      location: this.basicInfoForm.get('location')?.value.value as JobFormDTO.LocationEnum,
+      jobDescription: current ?? '',
+      state: JobFormDTO.StateEnum.Draft,
+    };
+    console.log('Sending request:', request);
+    try {
+      const response = await firstValueFrom(this.aiService.generateJobApplicationDraft(request));
+      if (response?.jobDescription) {
+        this.basicInfoForm.patchValue({ jobDescription: response.jobDescription });
+      }
+    } catch (error) {
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
+    } finally {
+      this.isGeneratingDraft.set(false);
+    }
+  }
+
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
       // Basic Info Form: Currently required for saving a job
@@ -558,21 +593,19 @@ export class JobCreationFormComponent {
       researchArea: ['', [Validators.required]],
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
-      fundingType: [undefined],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-      startDate: [''],
-      applicationDeadline: [''],
-      workload: [undefined],
-      contractDuration: [undefined],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
     });
   }
 
   private createPositionDetailsForm(): FormGroup {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
-      description: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
-      tasks: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
-      requirements: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
+      fundingType: [undefined],
+      startDate: [''],
+      applicationDeadline: [''],
+      workload: [undefined],
+      contractDuration: [undefined],
     });
   }
 
@@ -599,14 +632,12 @@ export class JobCreationFormComponent {
       fieldOfStudies: basicInfoValue.fieldOfStudies?.value !== undefined ? String(basicInfoValue.fieldOfStudies.value) : '',
       supervisingProfessor: this.userId(),
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
-      startDate: basicInfoValue.startDate ?? '',
-      endDate: basicInfoValue.applicationDeadline ?? '',
-      workload: basicInfoValue.workload,
-      contractDuration: basicInfoValue.contractDuration,
-      fundingType: basicInfoValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
-      description: positionDetailsValue.description?.trim() ?? '',
-      tasks: positionDetailsValue.tasks?.trim() ?? '',
-      requirements: positionDetailsValue.requirements?.trim() ?? '',
+      jobDescription: basicInfoValue.jobDescription?.trim() ?? '',
+      startDate: positionDetailsValue.startDate ?? '',
+      endDate: positionDetailsValue.applicationDeadline ?? '',
+      workload: positionDetailsValue.workload,
+      contractDuration: positionDetailsValue.contractDuration,
+      fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       imageId: imageValue.imageId ?? null,
       state,
     };
@@ -663,17 +694,15 @@ export class JobCreationFormComponent {
       supervisingProfessor: user?.name,
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
+      jobDescription: job?.jobDescription ?? ''
+    });
+
+    this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
       applicationDeadline: job?.endDate ?? '',
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
-      fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
-    });
-
-    this.positionDetailsForm.patchValue({
-      description: job?.description ?? '',
-      tasks: job?.tasks ?? '',
-      requirements: job?.requirements ?? '',
+      fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType)
     });
 
     // Set image if available
