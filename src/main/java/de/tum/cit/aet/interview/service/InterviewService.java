@@ -647,7 +647,7 @@ public class InterviewService {
 
         for (Interviewee interviewee : interviewees) {
             try {
-                sendSelfSchedulingEmail(interviewee, job, processId);
+                sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
                 sentCount++;
@@ -662,7 +662,7 @@ public class InterviewService {
         return new SendInvitationsResultDTO(sentCount, failedEmails);
     }
 
-    private void sendSelfSchedulingEmail(Interviewee interviewee, Job job, UUID processId) {
+    private void sendSelfSchedulingEmail(Interviewee interviewee, Job job) {
         User applicant = interviewee.getApplication().getApplicant().getUser();
 
         Email email = Email.builder()
