@@ -15,13 +15,15 @@
               <jhi-info-box severity="primary" message="researchGroup.detailView.infoMessage" [shouldTranslate]="true" />
             </div>
 
-            <jhi-button
-              [label]="'button.save'"
-              icon="save"
-              [shouldTranslate]="true"
-              [disabled]="!form.valid || isSaving()"
-              (click)="onSave()"
-            />
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem">
+              <jhi-button
+                [label]="'button.save'"
+                icon="save"
+                [shouldTranslate]="true"
+                [disabled]="!form.valid || isSaving()"
+                (click)="onSave()"
+              />
+            </div>
 
             <!-- Basic information section -->
             <p-divider layout="horizontal">
