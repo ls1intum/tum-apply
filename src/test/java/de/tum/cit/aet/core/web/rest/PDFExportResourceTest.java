@@ -84,24 +84,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
         applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
         applicantWithWebsiteAndLinkedin = ApplicantTestData.savedWithNewUserWithWebsiteAndLinkedin(applicantRepository);
         job = JobTestData.saved(jobRepository, professor, group, null, null, null);
-        jobWithNulls = JobTestData.savedAll(
-            jobRepository,
-            null,
-            null,
-            "CS",
-            professor,
-            group,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            JobState.PUBLISHED
-        );
         application = ApplicationTestData.savedAll(
             applicationRepository,
             job,
@@ -325,10 +307,11 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldHandleJobWithNullFields() {
+            Job jobWithNull = JobTestData.savedNull(jobRepository, professor, group);
             byte[] result = api
                 .withoutPostProcessors()
                 .postAndReturnBytes(
-                    BASE_URL + "/job/" + jobWithNulls.getJobId() + "/pdf",
+                    BASE_URL + "/job/" + jobWithNull.getJobId() + "/pdf",
                     createCompleteLabelsMap(),
                     200,
                     MediaType.APPLICATION_PDF
