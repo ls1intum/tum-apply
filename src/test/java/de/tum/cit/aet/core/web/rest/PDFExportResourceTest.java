@@ -7,6 +7,7 @@ import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.constants.Campus;
+import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -440,11 +441,11 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 "CS",
                 userWithoutRG.getUserId(),
                 Campus.GARCHING,
+                LocalDate.now(),
+                LocalDate.now(),
                 null,
-                null,
-                20,
-                null,
-                null,
+                3,
+                FundingType.FULLY_FUNDED,
                 "Description",
                 null,
                 null,
