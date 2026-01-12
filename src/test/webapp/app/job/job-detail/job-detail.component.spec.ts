@@ -794,11 +794,15 @@ describe('JobDetailComponent', () => {
         headers: { get: vi.fn().mockReturnValue('attachment; badformat') },
         body: new Blob(['pdf content'], { type: 'application/pdf' }),
       };
+
       pdfExportService.exportJobPreviewToPDF.mockReturnValue(of(mockResponse));
 
-      const previewJob: JobFormDTO = { title: 'Preview', supervisingProfessor: 'u1' } as JobFormDTO;
-      const signalWithData = signal(previewJob);
-      vi.spyOn(component, 'previewData').mockReturnValue(signalWithData);
+      const previewJob: JobFormDTO = {
+        title: 'Preview',
+        supervisingProfessor: 'u1',
+      } as JobFormDTO;
+
+      fixture.componentRef.setInput('previewData', signal(previewJob));
 
       await component.onDownloadPDF();
 
