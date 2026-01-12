@@ -51,8 +51,7 @@ public enum EmailType {
      * Invitation to self-schedule an interview slot
      * To: Applicant
      */
-    INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true,
-            false);
+    INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true, false);
 
     private final String value;
 
