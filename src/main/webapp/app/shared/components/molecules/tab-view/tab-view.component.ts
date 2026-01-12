@@ -108,8 +108,9 @@ export class TabViewComponent implements AfterViewInit {
   }
 
   findTemplate(tabId: string): TemplateRef<unknown> | null {
-    const panel = this.tabPanels?.toArray().find(p => p.tabId() === tabId);
-    return panel?.template ?? null;
+    const panels: readonly TabPanelTemplateDirective[] = this.tabPanels?.toArray() ?? [];
+    const match = panels.find(panel => panel.tabId() === tabId);
+    return match ? match.template : null;
   }
 
   shouldRenderContent(tabId: string): boolean {
