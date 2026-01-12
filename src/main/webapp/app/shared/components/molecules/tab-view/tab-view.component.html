@@ -1,33 +1,34 @@
 <div class="tab-view-container">
-  <div class="tab-view-header" role="tablist">
-    @for (tab of tabs(); track tab.id; let idx = $index) {
-      <button
-        type="button"
-        class="tab-button"
-        role="tab"
-        [id]="'tab-' + tab.id"
-        [attr.data-tab-id]="tab.id"
-        (click)="selectTab(tab.id)"
-        [class.active]="isActive(tab.id)"
-        [attr.aria-selected]="isActive(tab.id)"
-        [attr.tabindex]="idx === 0 || isActive(tab.id) ? 0 : -1"
-        [attr.aria-controls]="'tabpanel-' + tab.id"
-      >
-        @if (tab.translationKey) {
-          <span [jhiTranslate]="tab.translationKey">{{ tab.label }}</span>
-        } @else {
-          <span>{{ tab.label }}</span>
-        }
-      </button>
-    }
-  </div>
-
-  <div
-    class="tab-view-content"
-    role="tabpanel"
-    [attr.id]="'tabpanel-' + currentActiveTab()"
-    [attr.aria-labelledby]="'tab-' + currentActiveTab()"
+  <p-tabs
+    #tabsRoot
+    [value]="currentTabValue()"
+    [lazy]="lazyLoad()"
+    [selectOnFocus]="selectOnFocus()"
+    [tabindex]="0"
+    (valueChange)="onTabChange($event)"
   >
-    <ng-content />
-  </div>
+    <p-tablist>
+      @for (tab of tabs(); track tab.id) {
+        <p-tab [value]="tab.id">
+          @if (tab.translationKey) {
+            <span [jhiTranslate]="tab.translationKey">{{ tab.label }}</span>
+          } @else {
+            <span>{{ tab.label }}</span>
+          }
+        </p-tab>
+      }
+    </p-tablist>
+
+    <p-tabpanels>
+      @for (tab of tabs(); track tab.id) {
+        <p-tabpanel [value]="tab.id">
+          @if (shouldRenderContent(tab.id)) {
+            @if (findTemplate(tab.id); as template) {
+              <ng-container *ngTemplateOutlet="template" />
+            }
+          }
+        </p-tabpanel>
+      }
+    </p-tabpanels>
+  </p-tabs>
 </div>

@@ -1,45 +1,48 @@
+:host {
+  display: block;
+}
+
 .tab-view-container {
   width: 100%;
 }
 
-.tab-view-header {
+:host ::ng-deep .p-tablist {
   display: flex;
-  gap: 0;
   border-bottom: 1px solid var(--p-content-border-color);
 }
 
-.tab-button {
-  appearance: none;
+:host ::ng-deep .p-tablist-tab-list {
+  display: flex;
+}
+
+:host ::ng-deep .p-tab {
   border: 0;
   background: transparent;
   padding: 0.5rem 1rem;
   font-size: 0.95rem;
   font-weight: 500;
-  cursor: pointer;
   color: var(--p-text-muted-color, rgba(0, 0, 0, 0.6));
   border-bottom: 2px solid transparent;
   transition: all 0.2s ease;
-  position: relative;
-  top: 1px; // To overlap with the header border
   border-radius: 0.25rem 0.25rem 0 0;
-
-  &:hover {
-    color: var(--p-primary-color);
-    background-color: var(--p-primary-hover-color-outlined);
-  }
-
-  &.active {
-    color: var(--p-primary-color);
-    border-bottom-color: var(--p-primary-color);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--p-primary-color);
-    outline-offset: 2px;
-    border-radius: 0.5rem 0.5rem 0 0;
-  }
 }
 
-.tab-view-content {
+:host ::ng-deep .p-tab:hover {
+  color: var(--p-primary-color);
+  background-color: var(--p-primary-hover-color-outlined);
+}
+
+:host ::ng-deep .p-tab[data-p-active='true'] {
+  color: var(--p-primary-color);
+  border-bottom-color: var(--p-primary-color);
+}
+
+:host ::ng-deep .p-tab:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+:host ::ng-deep .p-tabpanels {
   padding-top: 0.25rem;
+  background: transparent !important;
 }

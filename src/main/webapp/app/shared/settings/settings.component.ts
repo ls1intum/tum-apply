@@ -11,12 +11,11 @@ import { Subscription, firstValueFrom, interval } from 'rxjs';
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
 import { ButtonComponent } from '../components/atoms/button/button.component';
-import { TabItem, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
+import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 
 type SettingsTab = 'general' | 'notifications';
-const SETTINGS_TAB_STORAGE_KEY = 'settings.activeTab';
 @Component({
   selector: 'jhi-settings',
   imports: [
@@ -27,6 +26,7 @@ const SETTINGS_TAB_STORAGE_KEY = 'settings.activeTab';
     SelectComponent,
     ButtonComponent,
     TabViewComponent,
+    TabPanelTemplateDirective,
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
@@ -70,13 +70,6 @@ export class SettingsComponent {
     const authorities = this.accountService.loadedUser()?.authorities;
     this.role.set(authorities?.map(authority => authority as UserShortDTO.RolesEnum)[0]);
 
-    const saved = localStorage.getItem(SETTINGS_TAB_STORAGE_KEY);
-
-    // Ensure loaded tab stays loaded after reload
-    if (saved === 'general' || saved === 'notifications') {
-      this.activeTab.set(saved);
-    }
-
     this.destroyRef.onDestroy(() => {
       this.exportCooldownSub?.unsubscribe();
       this.exportCooldownSub = null;
@@ -97,7 +90,6 @@ export class SettingsComponent {
   onTabChange(tabId: string): void {
     if (tabId === 'general' || tabId === 'notifications') {
       this.activeTab.set(tabId);
-      localStorage.setItem(SETTINGS_TAB_STORAGE_KEY, tabId);
     }
   }
 
