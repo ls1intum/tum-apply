@@ -632,6 +632,14 @@ public class InterviewService {
             interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
         }
 
+        // Filter by explicit IDs if provided
+        if (request.intervieweeIds() != null && !request.intervieweeIds().isEmpty()) {
+            interviewees = interviewees
+                .stream()
+                .filter(i -> request.intervieweeIds().contains(i.getId()))
+                .toList();
+        }
+
         // 4. Send emails
         int sentCount = 0;
         List<String> failedEmails = new ArrayList<>();
