@@ -2221,7 +2221,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2230,7 +2231,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2239,7 +2241,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2251,7 +2254,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
