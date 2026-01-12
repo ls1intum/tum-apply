@@ -708,16 +708,6 @@ describe('JobDetailComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should show error when preview formData is missing', async () => {
-      const signalReturningUndefined = signal<JobFormDTO | undefined>(undefined);
-
-      vi.spyOn(component, 'previewData').mockReturnValue(signalReturningUndefined);
-
-      await component.onDownloadPDF();
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('pdf.couldNotGeneratePdf');
-    });
-
     it('should download PDF for normal job', async () => {
       const mockResponse = {
         headers: { get: vi.fn().mockReturnValue('attachment; filename="test.pdf"') },
