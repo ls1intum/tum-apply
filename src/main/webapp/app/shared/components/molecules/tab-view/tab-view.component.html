@@ -9,6 +9,9 @@
   <p-tablist>
     @for (tab of tabs(); track tab.id) {
       <p-tab [value]="tab.id">
+        @if (tab.icon) {
+          <fa-icon [icon]="tab.icon" class="mr-1" />
+        }
         <span [jhiTranslate]="tab.translationKey"></span>
       </p-tab>
     }

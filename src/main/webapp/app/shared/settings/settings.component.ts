@@ -5,6 +5,7 @@ import { ThemeOption, ThemeService } from 'app/service/theme.service';
 import { ToastService } from 'app/service/toast-service';
 import { UserDataExportResourceApiService } from 'app/generated';
 import { Subscription, firstValueFrom, interval } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
@@ -16,7 +17,15 @@ import { EmailSettingsComponent } from './email-settings/email-settings.componen
 type SettingsTab = 'general' | 'notifications';
 @Component({
   selector: 'jhi-settings',
-  imports: [TranslateDirective, EmailSettingsComponent, SelectComponent, ButtonComponent, TabViewComponent, TabPanelTemplateDirective],
+  imports: [
+    TranslateDirective,
+    EmailSettingsComponent,
+    SelectComponent,
+    ButtonComponent,
+    TabViewComponent,
+    TabPanelTemplateDirective,
+    FontAwesomeModule,
+  ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
 })
@@ -26,7 +35,7 @@ export class SettingsComponent {
 
   readonly tabs: TabItem[] = [
     { id: 'general', translationKey: 'settings.tabs.general' },
-    { id: 'notifications', translationKey: 'settings.tabs.notifications' },
+    { id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] },
   ];
 
   themeOptions: SelectOption[] = [

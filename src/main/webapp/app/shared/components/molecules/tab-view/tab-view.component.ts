@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ContentChildren, Directive, QueryList, TemplateRef, computed, inject, input, output } from '@angular/core';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import TranslateDirective from '../../../language/translate.directive';
 
@@ -16,11 +17,12 @@ export class TabPanelTemplateDirective {
 export interface TabItem {
   id: string;
   translationKey: string;
+  icon?: [string, string]; // FontAwesome icon tuple [prefix, iconName]
 }
 
 @Component({
   selector: 'jhi-tab-view',
-  imports: [CommonModule, Tabs, TabList, Tab, TabPanels, TabPanel, TranslateDirective],
+  imports: [CommonModule, Tabs, TabList, Tab, TabPanels, TabPanel, TranslateDirective, FontAwesomeModule],
   templateUrl: './tab-view.component.html',
   styleUrl: './tab-view.component.scss',
 })
