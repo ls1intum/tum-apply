@@ -27,7 +27,7 @@ export class TabPanelTemplateDirective {
   // Tab identifier that should match the corresponding TabItem id
   tabId = input.required<string>({ alias: 'jhiTabPanel' });
 
-  readonly template = inject(TemplateRef);
+  readonly template: TemplateRef<unknown> = inject<TemplateRef<unknown>>(TemplateRef);
 }
 
 export interface TabItem {
@@ -82,12 +82,16 @@ export class TabViewComponent implements AfterViewInit {
       if (currentId) {
         this.markTabAsLoaded(currentId);
       }
-      queueMicrotask(() => this.focusActiveTab());
+      queueMicrotask(() => {
+        this.focusActiveTab();
+      });
     });
   }
 
   ngAfterViewInit(): void {
-    queueMicrotask(() => this.focusActiveTab());
+    queueMicrotask(() => {
+      this.focusActiveTab();
+    });
   }
 
   // Helper to check if a tab is active
