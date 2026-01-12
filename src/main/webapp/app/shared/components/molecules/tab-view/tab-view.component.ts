@@ -11,7 +11,7 @@ import TranslateDirective from '../../../language/translate.directive';
 })
 export class TabPanelTemplateDirective {
   tabId = input.required<string>({ alias: 'jhiTabPanel' });
-  readonly template: TemplateRef<unknown> = inject<TemplateRef<unknown>>(TemplateRef);
+  readonly template = inject(TemplateRef<unknown>);
 }
 
 export interface TabItem {
