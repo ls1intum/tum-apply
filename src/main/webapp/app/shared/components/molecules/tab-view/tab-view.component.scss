@@ -2,17 +2,9 @@
   display: block;
 }
 
-.tab-view-container {
-  width: 100%;
-}
-
 :host ::ng-deep .p-tablist {
   display: flex;
   border-bottom: 1px solid var(--p-content-border-color);
-}
-
-:host ::ng-deep .p-tablist-tab-list {
-  display: flex;
 }
 
 :host ::ng-deep .p-tab {
@@ -44,5 +36,5 @@
 
 :host ::ng-deep .p-tabpanels {
   padding-top: 0.25rem;
-  background: transparent !important;
+  background: transparent;
 }

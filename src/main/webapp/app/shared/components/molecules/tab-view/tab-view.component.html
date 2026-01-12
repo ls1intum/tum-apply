@@ -1,34 +1,23 @@
-<div class="tab-view-container">
-  <p-tabs
-    #tabsRoot
-    [value]="currentTabValue()"
-    [lazy]="lazyLoad()"
-    [selectOnFocus]="selectOnFocus()"
-    [tabindex]="0"
-    (valueChange)="onTabChange($event)"
-  >
-    <p-tablist>
-      @for (tab of tabs(); track tab.id) {
-        <p-tab [value]="tab.id">
-          @if (tab.translationKey) {
-            <span [jhiTranslate]="tab.translationKey">{{ tab.label }}</span>
-          } @else {
-            <span>{{ tab.label }}</span>
-          }
-        </p-tab>
-      }
-    </p-tablist>
+<p-tabs
+  [value]="currentTabValue()"
+  [lazy]="lazyLoad()"
+  [selectOnFocus]="selectOnFocus()"
+  [tabindex]="0"
+  (valueChange)="onTabChange($event)"
+>
+  <p-tablist>
+    @for (tab of tabs(); track tab.id) {
+      <p-tab [value]="tab.id">
+        <span [jhiTranslate]="tab.translationKey"></span>
+      </p-tab>
+    }
+  </p-tablist>
 
-    <p-tabpanels>
-      @for (tab of tabs(); track tab.id) {
-        <p-tabpanel [value]="tab.id">
-          @if (shouldRenderContent(tab.id)) {
-            @if (findTemplate(tab.id); as template) {
-              <ng-container *ngTemplateOutlet="template" />
-            }
-          }
-        </p-tabpanel>
-      }
-    </p-tabpanels>
-  </p-tabs>
-</div>
+  <p-tabpanels>
+    @for (tab of tabs(); track tab.id) {
+      <p-tabpanel [value]="tab.id">
+        <ng-container *ngTemplateOutlet="findTemplate(tab.id)" />
+      </p-tabpanel>
+    }
+  </p-tabpanels>
+</p-tabs>

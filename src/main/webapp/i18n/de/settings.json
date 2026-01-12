@@ -2,6 +2,11 @@
   "settings": {
     "header": "Einstellungen",
 
+    "tabs": {
+      "general": "Allgemein",
+      "notifications": "Benachrichtigungen"
+    },
+
     "notifications": {
       "applicant": {
         "submission": {
@@ -56,11 +61,6 @@
           "detail": "Bitte versuche es später erneut."
         }
       }
-    },
-
-    "tabs": {
-      "general": "Allgemein",
-      "notifications": "Benachrichtigungen"
     }
   }
 }
