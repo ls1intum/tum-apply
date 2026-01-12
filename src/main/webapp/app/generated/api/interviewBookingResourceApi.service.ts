@@ -10,15 +10,13 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
-import { HttpClient,
+import { HttpClient, HttpParams,
          HttpResponse, HttpEvent, HttpContext 
         }       from '@angular/common/http';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { AiResponseDTO } from '../model/aiResponseDTO';
-// @ts-ignore
-import { JobFormDTO } from '../model/jobFormDTO';
+import { BookingDTO } from '../model/bookingDTO';
 
 // @ts-ignore
 import { BASE_PATH }                     from '../variables';
@@ -30,24 +28,38 @@ import { BaseService } from '../api.base.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AiResourceApiService extends BaseService {
+export class InterviewBookingResourceApiService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
     }
 
     /**
-     * @param jobFormDTO 
+     * @param processId 
+     * @param year 
+     * @param month 
+     * @param page 
+     * @param size 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AiResponseDTO>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AiResponseDTO>>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AiResponseDTO>>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (jobFormDTO === null || jobFormDTO === undefined) {
-            throw new Error('Required parameter jobFormDTO was null or undefined when calling generateJobApplicationDraft.');
+    public getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<BookingDTO>;
+    public getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<BookingDTO>>;
+    public getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<BookingDTO>>;
+    public getBookingData(processId: string, year?: number, month?: number, page?: number, size?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling getBookingData.');
         }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>year, 'year');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>month, 'month');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>page, 'page');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>size, 'size');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -63,15 +75,6 @@ export class AiResourceApiService extends BaseService {
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-        }
-
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -83,11 +86,11 @@ export class AiResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/ai/generate`;
-        return this.httpClient.request<AiResponseDTO>('post', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/interviews/booking/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        return this.httpClient.request<BookingDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: jobFormDTO,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
