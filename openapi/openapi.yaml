@@ -1088,6 +1088,26 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/IntervieweeDTO'}
+  /api/interviews/processes/{processId}/send-invitations:
+    post:
+      tags: [interview-resource]
+      operationId: sendInvitations
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SendInvitationsRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SendInvitationsResultDTO'}
   /api/interviews/processes/{processId}/slots:
     get:
       tags: [interview-resource]
@@ -2221,7 +2241,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, INTERVIEW_SELF_SCHEDULING_INVITATION]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2230,7 +2250,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, INTERVIEW_SELF_SCHEDULING_INVITATION]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2239,7 +2259,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, INTERVIEW_SELF_SCHEDULING_INVITATION]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2251,7 +2271,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, INTERVIEW_SELF_SCHEDULING_INVITATION]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2817,6 +2837,20 @@ components:
         email: {type: string, format: email, minLength: 1}
         registration: {type: boolean}
       required: [email]
+    SendInvitationsRequestDTO:
+      type: object
+      properties:
+        intervieweeIds:
+          type: array
+          items: {type: string, format: uuid}
+        onlyUninvited: {type: boolean}
+    SendInvitationsResultDTO:
+      type: object
+      properties:
+        failedEmails:
+          type: array
+          items: {type: string}
+        sentCount: {type: integer, format: int32}
     SlotInput:
       type: object
       properties:
