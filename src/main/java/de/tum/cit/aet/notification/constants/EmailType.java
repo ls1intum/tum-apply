@@ -45,7 +45,14 @@ public enum EmailType {
      * Interview invitation when applicant is assigned to an interview slot
      * To: Applicant who was assigned to the slot
      */
-    INTERVIEW_INVITATION("INTERVIEW_INVITATION", Set.of(UserRole.APPLICANT), true, false);
+    INTERVIEW_INVITATION("INTERVIEW_INVITATION", Set.of(UserRole.APPLICANT), true, false),
+
+    /**
+     * Invitation to self-schedule an interview slot
+     * To: Applicant
+     */
+    INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true,
+            false);
 
     private final String value;
 
