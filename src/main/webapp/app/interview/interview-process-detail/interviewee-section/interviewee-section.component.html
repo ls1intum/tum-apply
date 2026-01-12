@@ -2,9 +2,21 @@
   <!-- Actions Slot -->
   <div actions class="flex gap-2 ml-auto">
     <jhi-button
-      [label]="'interview.interviewees.add'"
-      [icon]="'plus'"
-      [severity]="'primary'"
+      (click)="sendAllInvitations()"
+      [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
+      [loading]="sendingBulk()"
+      [shouldTranslate]="true"
+      [tooltip]="allInvitedTooltip()"
+      icon="paper-plane"
+      label="interview.interviewees.sendAllInvitations"
+      severity="primary"
+      size="sm"
+      variant="outlined"
+    />
+    <jhi-button
+      icon="plus"
+      label="interview.interviewees.add"
+      severity="primary"
       size="sm"
       [shouldTranslate]="true"
       (click)="openAddModal()"
@@ -23,7 +35,11 @@
   } @else {
     <div class="flex flex-col gap-2 -ml-3">
       @for (interviewee of filteredInterviewees(); track interviewee.id) {
-        <jhi-interviewee-card [interviewee]="interviewee" />
+        <jhi-interviewee-card
+          (sendInvitation)="sendInvitation($event)"
+          [interviewee]="interviewee"
+          [sending]="sendingInvitationId() === interviewee.id"
+        />
       }
     </div>
   }
@@ -61,22 +77,22 @@
   <!-- Footer Buttons -->
   <div class="flex justify-end gap-2 pt-4 mt-4 border-t border-border-default">
     <jhi-button
-      [label]="'entity.action.cancel'"
-      [severity]="'primary'"
-      [variant]="'outlined'"
+      label="entity.action.cancel"
+      severity="primary"
+      styleClass="w-28 h-10"
       [shouldTranslate]="true"
       size="sm"
-      [styleClass]="'w-28 h-10'"
+      variant="outlined"
       (click)="closeAddModal()"
     />
     <jhi-button
-      [label]="'interview.interviewees.addSelected'"
-      [severity]="'primary'"
+      label="interview.interviewees.addSelected"
+      severity="primary"
       [disabled]="selectedCount() === 0"
       [loading]="processingAdd()"
       [shouldTranslate]="true"
       size="sm"
-      [styleClass]="'w-28 h-10'"
+      styleClass="w-28 h-10"
       (click)="addInterviewees()"
     />
   </div>

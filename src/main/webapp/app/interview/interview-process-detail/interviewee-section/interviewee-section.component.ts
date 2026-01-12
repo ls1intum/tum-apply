@@ -1,22 +1,26 @@
-import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
-import { TableLazyLoadEvent } from 'primeng/table';
-import { firstValueFrom } from 'rxjs';
-import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
-import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
-import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
-import { ToastService } from 'app/service/toast-service';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
-import { FilterTab, FilterTabsComponent } from 'app/shared/components/atoms/filter-tabs/filter-tabs.component';
-import { Section } from 'app/shared/components/atoms/section/section';
-import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import {Component, computed, effect, inject, input, signal, TemplateRef, viewChild} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {CheckboxComponent} from 'app/shared/components/atoms/checkbox/checkbox.component';
+import {TableLazyLoadEvent} from 'primeng/table';
+import {firstValueFrom} from 'rxjs';
+import {ApplicationEvaluationResourceApiService, InterviewResourceApiService} from 'app/generated';
+import {ApplicationEvaluationDetailDTO} from 'app/generated/model/applicationEvaluationDetailDTO';
+import {AddIntervieweesDTO} from 'app/generated/model/addIntervieweesDTO';
+import {IntervieweeDTO} from 'app/generated/model/intervieweeDTO';
+import {SendInvitationsResultDTO} from 'app/generated/model/sendInvitationsResultDTO';
+import {ToastService} from 'app/service/toast-service';
+import {ButtonComponent} from 'app/shared/components/atoms/button/button.component';
+import {DialogComponent} from 'app/shared/components/atoms/dialog/dialog.component';
+import {FilterTab, FilterTabsComponent} from 'app/shared/components/atoms/filter-tabs/filter-tabs.component';
+import {Section} from 'app/shared/components/atoms/section/section';
+import {
+  DynamicTableColumn,
+  DynamicTableComponent
+} from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
-import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
+import {IntervieweeCardComponent} from './interviewee-card/interviewee-card.component';
 
 // Filter key type for interviewee states
 type FilterKey = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
@@ -63,6 +67,10 @@ export class IntervieweeSectionComponent {
   loadingApplicants = signal(false);
   processingAdd = signal(false); // True while adding interviewees
 
+  // Invitation Sending State
+  sendingInvitationId = signal<string | null>(null);
+  sendingBulk = signal(false);
+
   // Pagination for Modal Table
   pageNumber = signal(0);
   pageSize = signal(10);
@@ -86,6 +94,11 @@ export class IntervieweeSectionComponent {
       { key: 'COMPLETED', labelKey: 'interview.interviewees.filter.COMPLETED', count: all.filter(i => i.state === 'COMPLETED').length },
     ];
   });
+
+  // Computed: Count of uncontacted interviewees (for bulk send button)
+  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === 'UNCONTACTED').length);
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
 
   // Computed: Filtered Interviewees
   filteredInterviewees = computed(() => {
@@ -122,6 +135,13 @@ export class IntervieweeSectionComponent {
 
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
+  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+  // Computed: Tooltip for bulk send button when all invited
+  allInvitedTooltip = computed(() =>
+    this.uncontactedCount() === 0 ? this.translateService.instant('interview.interviewees.allInvited') : '',
+  );
 
   // Effect: Auto load Interviewees when processId or refreshKey changes
   private readonly loadEffect = effect(() => {
@@ -130,11 +150,6 @@ export class IntervieweeSectionComponent {
       void this.loadInterviewees();
     }
   });
-
-  // Injected Services (private)
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
-  private readonly toastService = inject(ToastService);
 
   // Add Selected Applicants as Interviewees
   async addInterviewees(): Promise<void> {
@@ -171,6 +186,46 @@ export class IntervieweeSectionComponent {
       this.toastService.showErrorKey('interview.interviewees.error.loadFailed');
     } finally {
       this.loadingInterviewees.set(false);
+    }
+  }
+
+  // Send individual invitation
+  async sendInvitation(interviewee: IntervieweeDTO): Promise<void> {
+    const processId = this.processId();
+    if (!processId || !interviewee.id) return;
+
+    try {
+      this.sendingInvitationId.set(interviewee.id);
+      const result = await firstValueFrom(
+        this.interviewService.sendInvitations(processId, {
+          intervieweeIds: [interviewee.id],
+        }),
+      );
+      this.handleInvitationResult(result, 1);
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+    } finally {
+      this.sendingInvitationId.set(null);
+    }
+  }
+
+  // Send bulk invitations to all uncontacted
+  async sendAllInvitations(): Promise<void> {
+    const processId = this.processId();
+    if (!processId) return;
+
+    try {
+      this.sendingBulk.set(true);
+      const result = await firstValueFrom(
+        this.interviewService.sendInvitations(processId, {
+          onlyUninvited: true,
+        }),
+      );
+      this.handleInvitationResult(result, this.uncontactedCount());
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+    } finally {
+      this.sendingBulk.set(false);
     }
   }
 
@@ -235,5 +290,28 @@ export class IntervieweeSectionComponent {
   closeAddModal(): void {
     this.selectedIds.set(new Set());
     this.showAddModal.set(false);
+  }
+
+  // Handle invitation result with appropriate toast
+  private handleInvitationResult(result: SendInvitationsResultDTO, expected: number): void {
+    const sentCount = result.sentCount ?? 0;
+    if (sentCount >= expected) {
+      this.toastService.showSuccessKey('interview.interviewees.invitation.success', {
+        count: sentCount.toString(),
+      });
+    } else if (sentCount > 0) {
+      const failedList = result.failedEmails?.join(', ') ?? '';
+      this.toastService.showWarn({
+        summary: this.translateService.instant('interview.interviewees.invitation.partial.summary', {
+          sent: sentCount.toString(),
+          failed: (result.failedEmails?.length ?? 0).toString(),
+        }),
+        detail: failedList ? this.translateService.instant('interview.interviewees.invitation.partial.detail', {emails: failedList}) : '',
+        life: 10000,
+      });
+    } else {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+    }
+    void this.loadInterviewees();
   }
 }

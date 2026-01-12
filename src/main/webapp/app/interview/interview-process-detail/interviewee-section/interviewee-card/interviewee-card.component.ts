@@ -1,10 +1,10 @@
-import { Component, computed, inject, input } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import {Component, computed, inject, input, output} from '@angular/core';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {IntervieweeDTO} from 'app/generated/model/intervieweeDTO';
+import {ButtonComponent} from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { formatDate, formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
+import {formatDate, formatTimeRange, getLocale} from 'app/shared/util/date-time.util';
 
 /**
  * Card component displaying an interviewee's status and scheduled slot details.
@@ -19,6 +19,10 @@ import { formatDate, formatTimeRange, getLocale } from 'app/shared/util/date-tim
 export class IntervieweeCardComponent {
   // Inputs
   interviewee = input.required<IntervieweeDTO>();
+  sending = input<boolean>(false);
+
+  // Outputs
+  sendInvitation = output<IntervieweeDTO>();
 
   // Computed values
   scheduledDate = computed(() => {

@@ -171,7 +171,9 @@
       "title": "Interviewees",
       "add": "Add Applicant",
       "addTitle": "Add Applicant",
-      "sendInvitations": "Send invitation",
+      "sendInvitation": "Send Invitation",
+      "sendAllInvitations": "Send Invitations",
+      "allInvited": "All applicants have been invited",
       "empty": "No interviewees yet",
       "emptyHint": "Click \"Add Applicant\" to get started",
       "searchPlaceholder": "Search by name or email...",
@@ -214,6 +216,20 @@
         "addFailed": {
           "summary": "Error",
           "detail": "Failed to add applicants"
+        }
+      },
+      "invitation": {
+        "success": {
+          "summary": "Invitation Sent",
+          "detail": "{{count}} invitation(s) sent successfully"
+        },
+        "partial": {
+          "summary": "{{sent}} sent, {{failed}} failed",
+          "detail": "Failed: {{emails}}. Please try sending the invitations again."
+        },
+        "error": {
+          "summary": "Send Failed",
+          "detail": "Failed to send invitation. Please try again or contact an admin."
         }
       }
     },

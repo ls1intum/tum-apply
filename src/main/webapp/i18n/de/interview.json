@@ -171,7 +171,9 @@
       "title": "Bewerber:innen",
       "add": "Bewerber:in hinzufügen",
       "addTitle": "Bewerber:in hinzufügen",
-      "sendInvitations": "Einladung senden",
+      "sendInvitation": "Einladung senden",
+      "sendAllInvitations": "Einladungen senden",
+      "allInvited": "Alle Bewerber:innen wurden eingeladen",
       "empty": "Noch keine Bewerber:innen hinzugefügt",
       "emptyHint": "Klicke auf \"Bewerber:in hinzufügen\", um zu starten",
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
@@ -214,6 +216,20 @@
         "addFailed": {
           "summary": "Fehler",
           "detail": "Bewerber:innen konnten nicht hinzugefügt werden"
+        }
+      },
+      "invitation": {
+        "success": {
+          "summary": "Einladung gesendet",
+          "detail": "{{count}} Einladung(en) erfolgreich gesendet"
+        },
+        "partial": {
+          "summary": "{{sent}} gesendet, {{failed}} fehlgeschlagen",
+          "detail": "Fehlgeschlagen: {{emails}}. Bitte versuche erneut, die Einladungen zu senden."
+        },
+        "error": {
+          "summary": "Senden fehlgeschlagen",
+          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
         }
       }
     },

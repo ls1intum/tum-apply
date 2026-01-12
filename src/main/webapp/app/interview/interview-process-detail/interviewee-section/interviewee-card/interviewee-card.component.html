@@ -47,12 +47,14 @@
   <!-- Actions for UNCONTACTED state -->
   @if (interviewee().state === IntervieweeState.UNCONTACTED) {
     <jhi-button
-      label="interview.interviewees.sendInvitations"
+      (click)="$event.stopPropagation(); sendInvitation.emit(interviewee())"
       [shouldTranslate]="true"
       icon="paper-plane"
       variant="outlined"
       severity="primary"
-      (click)="$event.stopPropagation()"
+      [disabled]="sending()"
+      [loading]="sending()"
+      label="interview.interviewees.sendInvitation"
     />
   }
 </div>
