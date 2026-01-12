@@ -11,7 +11,9 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.EmailTemplateService;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
@@ -67,6 +69,9 @@ class ResearchGroupServiceTest {
 
     @Mock
     private AsyncEmailSender emailSender;
+
+    @Mock
+    private EmailTemplateService emailTemplateService;
 
     @InjectMocks
     private ResearchGroupService researchGroupService;
@@ -384,7 +389,10 @@ class ResearchGroupServiceTest {
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
             verify(emailSender).sendAsync(emailCaptor.capture());
             Email sent = emailCaptor.getValue();
-            assertThat(sent.getContent()).isEqualTo(testResearchGroup);
+            assertThat(sent.getContent()).isInstanceOf(ResearchGroupEmailContext.class);
+            ResearchGroupEmailContext context = (ResearchGroupEmailContext) sent.getContent();
+            assertThat(context.researchGroup()).isEqualTo(testResearchGroup);
+            assertThat(context.user().getEmail()).isEqualTo("prof@test.com");
             assertThat(sent.getTo()).anyMatch(u -> u.getEmail().equals("prof@test.com"));
         }
     }
