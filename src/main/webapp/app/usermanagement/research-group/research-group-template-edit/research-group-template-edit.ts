@@ -135,13 +135,7 @@ export class ResearchGroupTemplateEdit {
 
   readonly allowedSelectOptions = ['APPLICATION_ACCEPTED'];
 
-  readonly allSelectOptions = [
-    'APPLICATION_ACCEPTED',
-    'APPLICATION_REJECTED',
-    'APPLICATION_SENT',
-    'RESEARCH_GROUP_MEMBER_ADDED',
-    'RESEARCH_GROUP_APPROVED',
-  ];
+  readonly allSelectOptions = ['APPLICATION_ACCEPTED', 'APPLICATION_REJECTED', 'APPLICATION_SENT', 'RESEARCH_GROUP_MEMBER_ADDED'];
 
   readonly TEMPLATE_VARIABLES = [
     'APPLICANT_FIRST_NAME',
