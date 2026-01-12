@@ -30,15 +30,17 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      * @param processId the ID of the interview process
      * @return list of interviewees ordered by creation date
      */
-    @Query("""
-            SELECT i FROM Interviewee i
-            LEFT JOIN FETCH i.application a
-            LEFT JOIN FETCH a.applicant ap
-            LEFT JOIN FETCH ap.user
-            LEFT JOIN FETCH i.slots
-            WHERE i.interviewProcess.id = :processId
-            ORDER BY i.createdAt DESC
-            """)
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        LEFT JOIN FETCH i.application a
+        LEFT JOIN FETCH a.applicant ap
+        LEFT JOIN FETCH ap.user
+        LEFT JOIN FETCH i.slots
+        WHERE i.interviewProcess.id = :processId
+        ORDER BY i.createdAt DESC
+        """
+    )
     List<Interviewee> findByInterviewProcessIdWithDetails(@Param("processId") UUID processId);
 
     /**
@@ -67,12 +69,14 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      * @param userId    the ID of the user (via application.applicant.user)
      * @return Optional containing the interviewee with slots if found
      */
-    @Query("""
-            SELECT i FROM Interviewee i
-            LEFT JOIN FETCH i.slots
-            WHERE i.interviewProcess.id = :processId
-            AND i.application.applicant.user.userId = :userId
-            """)
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        LEFT JOIN FETCH i.slots
+        WHERE i.interviewProcess.id = :processId
+        AND i.application.applicant.user.userId = :userId
+        """
+    )
     Optional<Interviewee> findByProcessIdAndUserId(@Param("processId") UUID processId, @Param("userId") UUID userId);
 
     /**
@@ -82,11 +86,13 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      * @param processIds the IDs of the interview processes
      * @return list of interviewees with slot data
      */
-    @Query("""
-            SELECT i FROM Interviewee i
-            LEFT JOIN FETCH i.slots
-            WHERE i.interviewProcess.id IN :processIds
-            """)
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        LEFT JOIN FETCH i.slots
+        WHERE i.interviewProcess.id IN :processIds
+        """
+    )
     List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
 
     /**

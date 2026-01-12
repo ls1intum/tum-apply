@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
@@ -68,8 +69,10 @@ public class TemplateProcessingService {
     /**
      * Renders the HTML email body using FreeMarker and applies layout formatting.
      *
-     * @param emailTemplateTranslation the template translation containing raw HTML and language
-     * @param content                  the domain object (e.g. Application, Job) for variable binding
+     * @param emailTemplateTranslation the template translation containing raw HTML
+     *                                 and language
+     * @param content                  the domain object (e.g. Application, Job) for
+     *                                 variable binding
      * @return the fully rendered HTML email body
      * @throws TemplateProcessingException if template parsing or rendering fails
      */
@@ -167,6 +170,7 @@ public class TemplateProcessingService {
             case Job job -> addJobData(dataModel, job);
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
             case InterviewSlot slot -> addInterviewSlotData(dataModel, slot);
+            case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             default -> {
                 throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
             }
@@ -229,6 +233,22 @@ public class TemplateProcessingService {
         }
 
         addJobData(dataModel, slot.getInterviewProcess().getJob());
+    }
+
+    /**
+     * Adds interviewee-related variables to the template data model.
+     * Including the self-scheduling booking link.
+     *
+     * @param dataModel   the data model map
+     * @param interviewee the interviewee object
+     */
+    private void addIntervieweeData(Map<String, Object> dataModel, Interviewee interviewee) {
+        // Reuse application data (name, etc.)
+        addApplicationData(dataModel, interviewee.getApplication());
+
+        // Add booking link: {clientUrl}/interview-booking/{processId}
+        String bookingLink = url + "/interview-booking/" + interviewee.getInterviewProcess().getId();
+        dataModel.put(TemplateVariable.BOOKING_LINK.getValue(), bookingLink);
     }
 
     /**

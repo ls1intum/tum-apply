@@ -23,6 +23,7 @@ import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -30,6 +31,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -596,6 +598,73 @@ public class InterviewService {
             .content(slot)
             .icsContent(icsContent)
             .icsFileName(icsFileName)
+            .build();
+
+        asyncEmailSender.sendAsync(email);
+    }
+
+    /**
+     * Sends self-scheduling invitations to applicants in the interview process.
+     * Can filter to send only to uninvited applicants or re-send to all.
+     *
+     * @param processId the ID of the interview process
+     * @param request   options for sending (e.g. filter uninvited)
+     * @return summary of sent emails and failures
+     * @throws EntityNotFoundException if process not found
+     * @throws AccessDeniedException   if user has no job access
+     */
+    @Transactional
+    public SendInvitationsResultDTO sendSelfSchedulingInvitations(UUID processId, SendInvitationsRequestDTO request) {
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
+
+        // 2. Security: Verify current user has job access
+        Job job = process.getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Fetch interviewees based on filter
+        List<Interviewee> interviewees;
+        if (Boolean.TRUE.equals(request.onlyUninvited())) {
+            interviewees = intervieweeRepository.findAllByInterviewProcessIdAndLastInvitedIsNull(processId);
+        } else {
+            interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
+        }
+
+        // 4. Send emails
+        int sentCount = 0;
+        List<String> failedEmails = new ArrayList<>();
+        List<Interviewee> updatedInterviewees = new ArrayList<>();
+
+        for (Interviewee interviewee : interviewees) {
+            try {
+                sendSelfSchedulingEmail(interviewee, job, processId);
+                interviewee.setLastInvited(Instant.now());
+                updatedInterviewees.add(interviewee);
+                sentCount++;
+            } catch (Exception e) {
+                User user = interviewee.getApplication().getApplicant().getUser();
+                failedEmails.add(user.getEmail() != null ? user.getEmail() : "Unknown (" + interviewee.getId() + ")");
+                // We continue with other emails even if one fails
+            }
+        }
+
+        // 5. Save updated timestamps
+        intervieweeRepository.saveAll(updatedInterviewees);
+
+        return new SendInvitationsResultDTO(sentCount, failedEmails);
+    }
+
+    private void sendSelfSchedulingEmail(Interviewee interviewee, Job job, UUID processId) {
+        User applicant = interviewee.getApplication().getApplicant().getUser();
+
+        Email email = Email.builder()
+            .to(applicant)
+            .emailType(EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION)
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(interviewee) // Pass the interviewee object directly
             .build();
 
         asyncEmailSender.sendAsync(email);
