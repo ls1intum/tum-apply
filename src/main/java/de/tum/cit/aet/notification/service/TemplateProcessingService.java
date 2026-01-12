@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.template.Configuration;
@@ -164,9 +165,8 @@ public class TemplateProcessingService {
             case Application application -> addApplicationData(dataModel, application);
             case Job job -> addJobData(dataModel, job);
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
-            default -> {
-                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
-            }
+            case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
+            default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
         return dataModel;
     }
@@ -202,6 +202,14 @@ public class TemplateProcessingService {
     }
 
     /**
+     * Adds combined user and research group data for research-group-related emails.
+     */
+    private void addResearchGroupContextData(Map<String, Object> dataModel, ResearchGroupEmailContext context) {
+        addUserData(dataModel, context.user());
+        addResearchGroupData(dataModel, context.researchGroup());
+    }
+
+    /**
      * Adds research group-related variables to the template data model.
      *
      * @param dataModel     the data model map
@@ -209,6 +217,17 @@ public class TemplateProcessingService {
      */
     private void addResearchGroupData(Map<String, Object> dataModel, ResearchGroup researchGroup) {
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), researchGroup.getName());
+    }
+
+    /**
+     * Adds generic user data to the template data model.
+     *
+     * @param dataModel the data model map
+     * @param user      the user object
+     */
+    private void addUserData(Map<String, Object> dataModel, User user) {
+        dataModel.put(TemplateVariable.USER_FIRST_NAME.getValue(), user.getFirstName());
+        dataModel.put(TemplateVariable.USER_LAST_NAME.getValue(), user.getLastName());
     }
 
     /**
