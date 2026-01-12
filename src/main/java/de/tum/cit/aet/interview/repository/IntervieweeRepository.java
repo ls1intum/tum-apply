@@ -32,7 +32,7 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      */
     @Query(
         """
-        SELECT i FROM Interviewee i
+        SELECT DISTINCT i FROM Interviewee i
         LEFT JOIN FETCH i.application a
         LEFT JOIN FETCH a.applicant ap
         LEFT JOIN FETCH ap.user

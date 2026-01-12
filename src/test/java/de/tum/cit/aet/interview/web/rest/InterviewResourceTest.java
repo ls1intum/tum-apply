@@ -1,6 +1,10 @@
 package de.tum.cit.aet.interview.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
@@ -14,12 +18,17 @@ import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -43,7 +52,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 class InterviewResourceTest extends AbstractResourceTest {
 
@@ -77,6 +88,9 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Autowired
     private MvcTestClient api;
 
+    @MockBean
+    private AsyncEmailSender asyncEmailSender;
+
     private User professor;
     private Job job;
     private InterviewProcess interviewProcess;
@@ -87,39 +101,38 @@ class InterviewResourceTest extends AbstractResourceTest {
         databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Algorithms Group",
-            "Prof. Doe",
-            "alg@example.com",
-            "ALG",
-            "CS",
-            "We do cool stuff",
-            "alg@example.com",
-            "80333",
-            "CIT",
-            "Arcisstr. 21",
-            "https://alg.tum.de",
-            "ACTIVE"
-        );
+                researchGroupRepository,
+                "Algorithms Group",
+                "Prof. Doe",
+                "alg@example.com",
+                "ALG",
+                "CS",
+                "We do cool stuff",
+                "alg@example.com",
+                "80333",
+                "CIT",
+                "Arcisstr. 21",
+                "https://alg.tum.de",
+                "ACTIVE");
 
         professor = UserTestData.savedProfessorAll(
-            userRepository,
-            researchGroup,
-            null,
-            "prof.doe@tum.de",
-            "John",
-            "Doe",
-            "en",
-            "+49 89 1234",
-            "https://doe.tum.de",
-            "https://linkedin.com/in/doe",
-            "DE",
-            null,
-            "männlich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
+                userRepository,
+                researchGroup,
+                null,
+                "prof.doe@tum.de",
+                "John",
+                "Doe",
+                "en",
+                "+49 89 1234",
+                "https://doe.tum.de",
+                "https://linkedin.com/in/doe",
+                "DE",
+                null,
+                "männlich",
+                UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
-        job = JobTestData.saved(jobRepository, professor, researchGroup, "Software Engineer", JobState.PUBLISHED, LocalDate.now());
+        job = JobTestData.saved(jobRepository, professor, researchGroup, "Software Engineer", JobState.PUBLISHED,
+                LocalDate.now());
 
         interviewProcess = new InterviewProcess();
         interviewProcess.setJob(job);
@@ -129,8 +142,9 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Test
     void getInterviewProcessDetailsReturnsCorrectDetails() {
         InterviewOverviewDTO details = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, InterviewOverviewDTO.class, 200);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, InterviewOverviewDTO.class,
+                        200);
 
         assertThat(details.jobId()).isEqualTo(job.getJobId());
         assertThat(details.jobTitle()).isEqualTo(job.getTitle());
@@ -142,42 +156,40 @@ class InterviewResourceTest extends AbstractResourceTest {
     void getInterviewProcessDetailsForbiddenForOtherUser() {
         // Create a separate research group for the other professor
         ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Other Group",
-            "Prof. Smith",
-            "other@example.com",
-            "OTH",
-            "CS",
-            "Other research",
-            "other@example.com",
-            "80333",
-            "CIT",
-            "Other Street",
-            "https://other.tum.de",
-            "ACTIVE"
-        );
+                researchGroupRepository,
+                "Other Group",
+                "Prof. Smith",
+                "other@example.com",
+                "OTH",
+                "CS",
+                "Other research",
+                "other@example.com",
+                "80333",
+                "CIT",
+                "Other Street",
+                "https://other.tum.de",
+                "ACTIVE");
 
         // Create another professor in a DIFFERENT research group
         User otherProfessor = UserTestData.savedProfessorAll(
-            userRepository,
-            otherResearchGroup,
-            null,
-            "other.prof@tum.de",
-            "Jane",
-            "Doe",
-            "en",
-            "+49 89 5678",
-            "https://jane.tum.de",
-            "https://linkedin.com/in/jane",
-            "DE",
-            null,
-            "weiblich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
+                userRepository,
+                otherResearchGroup,
+                null,
+                "other.prof@tum.de",
+                "Jane",
+                "Doe",
+                "en",
+                "+49 89 5678",
+                "https://jane.tum.de",
+                "https://linkedin.com/in/jane",
+                "DE",
+                null,
+                "weiblich",
+                UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
         Void result = api
-            .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, Void.class, 403);
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/processes/" + interviewProcess.getId(), null, Void.class, 403);
 
         assertThat(result).isNull();
     }
@@ -185,8 +197,8 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Test
     void getInterviewProcessDetailsNotFoundForNonExistentId() {
         Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + UUID.randomUUID(), null, Void.class, 404);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/processes/" + UUID.randomUUID(), null, Void.class, 404);
 
         assertThat(result).isNull();
     }
@@ -194,8 +206,9 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Test
     void getInterviewOverviewAsProfessorReturnsOverview() {
         List<InterviewOverviewDTO> overview = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/overview", null, new TypeReference<List<InterviewOverviewDTO>>() {}, 200);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/overview", null, new TypeReference<List<InterviewOverviewDTO>>() {
+                }, 200);
 
         assertThat(overview).isNotEmpty();
         assertThat(overview.get(0).jobId()).isEqualTo(job.getJobId());
@@ -208,19 +221,21 @@ class InterviewResourceTest extends AbstractResourceTest {
         interviewProcessRepository.deleteAll();
 
         List<InterviewOverviewDTO> overview = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/overview", null, new TypeReference<List<InterviewOverviewDTO>>() {}, 200);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/overview", null, new TypeReference<List<InterviewOverviewDTO>>() {
+                }, 200);
 
         assertThat(overview).isEmpty();
     }
 
     @Test
     void getInterviewOverviewAsStudentReturnsForbidden() {
-        User student = UserTestData.createUserWithoutResearchGroup(userRepository, "student@tum.de", "Student", "One", "123456");
+        User student = UserTestData.createUserWithoutResearchGroup(userRepository, "student@tum.de", "Student", "One",
+                "123456");
 
         Void result = api
-            .with(JwtPostProcessors.jwtUser(student.getUserId(), "ROLE_STUDENT"))
-            .getAndRead("/api/interviews/overview", null, Void.class, 403);
+                .with(JwtPostProcessors.jwtUser(student.getUserId(), "ROLE_STUDENT"))
+                .getAndRead("/api/interviews/overview", null, Void.class, 403);
 
         assertThat(result).isNull();
     }
@@ -228,22 +243,21 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Test
     void createSlotsAsProfessorCreatesAndReturnsSlots() {
         CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            "http://zoom.us/j/123"
-        );
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                "http://zoom.us/j/123");
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
 
         List<InterviewSlotDTO> createdSlots = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
-            );
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                        "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                        dto,
+                        new TypeReference<List<InterviewSlotDTO>>() {
+                        },
+                        201);
 
         assertThat(createdSlots).hasSize(1);
 
@@ -258,8 +272,10 @@ class InterviewResourceTest extends AbstractResourceTest {
         // Convert to LocalDateTime and check the exact values we sent
         LocalDateTime expectedStart = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
         LocalDateTime expectedEnd = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
-        assertThat(createdSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart);
-        assertThat(createdSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd);
+        assertThat(createdSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime())
+                .isEqualTo(expectedStart);
+        assertThat(createdSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime())
+                .isEqualTo(expectedEnd);
 
         // Verify persistence
         List<InterviewSlot> savedSlots = interviewSlotRepository.findAll();
@@ -271,45 +287,45 @@ class InterviewResourceTest extends AbstractResourceTest {
     void createSlotsWithTimeConflictReturnsConflict() {
         // Create an existing slot
         CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null);
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
 
         // First creation succeeds
         api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
-            );
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                        "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                        dto,
+                        new TypeReference<List<InterviewSlotDTO>>() {
+                        },
+                        201);
 
         // Second creation with overlapping time should fail
         Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 409);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class,
+                        409);
         assertThat(result).isNull();
     }
 
     @Test
     void createSlotsWithInvalidDataReturnsBadRequest() {
         CreateSlotsDTO.SlotInput invalidInput = new CreateSlotsDTO.SlotInput(
-            null, // date is required
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
+                null, // date is required
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null);
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(invalidInput));
 
         Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 400);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class,
+                        400);
         assertThat(result).isNull();
     }
 
@@ -317,111 +333,106 @@ class InterviewResourceTest extends AbstractResourceTest {
     void createSlotsForOtherProfessorJobReturnsForbidden() {
         // Create a separate research group for the other professor
         ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Other Group",
-            "Prof. Smith",
-            "other@example.com",
-            "OTH",
-            "CS",
-            "Other research",
-            "other@example.com",
-            "80333",
-            "CIT",
-            "Other Street",
-            "https://other.tum.de",
-            "ACTIVE"
-        );
+                researchGroupRepository,
+                "Other Group",
+                "Prof. Smith",
+                "other@example.com",
+                "OTH",
+                "CS",
+                "Other research",
+                "other@example.com",
+                "80333",
+                "CIT",
+                "Other Street",
+                "https://other.tum.de",
+                "ACTIVE");
 
         // Create another professor in a DIFFERENT research group
         User otherProfessor = UserTestData.savedProfessorAll(
-            userRepository,
-            otherResearchGroup,
-            null,
-            "other.prof@tum.de",
-            "Jane",
-            "Doe",
-            "en",
-            "+49 89 5678",
-            "https://jane.tum.de",
-            "https://linkedin.com/in/jane",
-            "DE",
-            null,
-            "weiblich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
+                userRepository,
+                otherResearchGroup,
+                null,
+                "other.prof@tum.de",
+                "Jane",
+                "Doe",
+                "en",
+                "+49 89 5678",
+                "https://jane.tum.de",
+                "https://linkedin.com/in/jane",
+                "DE",
+                null,
+                "weiblich",
+                UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
         CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null);
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
 
         Void result = api
-            .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class, 403);
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots/create", dto, Void.class,
+                        403);
         assertThat(result).isNull();
     }
 
     @Test
     void createSlotsForNonExistentProcessReturnsNotFound() {
         CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null);
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
 
         Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots/create", dto, Void.class, 404);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots/create", dto, Void.class, 404);
         assertThat(result).isNull();
     }
 
     @Test
     void getSlotsByProcessIdAsProfessorReturnsSlots() {
         CreateSlotsDTO.SlotInput slotInput1 = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(10, 0),
-            LocalTime.of(11, 0),
-            "Room 101",
-            null
-        );
+                LocalDate.now().plusDays(1),
+                LocalTime.of(10, 0),
+                LocalTime.of(11, 0),
+                "Room 101",
+                null);
         CreateSlotsDTO.SlotInput slotInput2 = new CreateSlotsDTO.SlotInput(
-            LocalDate.now().plusDays(1),
-            LocalTime.of(11, 0),
-            LocalTime.of(12, 0),
-            "Room 102",
-            null
-        );
+                LocalDate.now().plusDays(1),
+                LocalTime.of(11, 0),
+                LocalTime.of(12, 0),
+                "Room 102",
+                null);
         CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput1, slotInput2));
 
         api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .postAndRead(
-                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
-                dto,
-                new TypeReference<List<InterviewSlotDTO>>() {},
-                201
-            );
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                        "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                        dto,
+                        new TypeReference<List<InterviewSlotDTO>>() {
+                        },
+                        201);
 
         // Get slots with pagination (add year and month to match server-side filtering)
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        String url =
-            "/api/interviews/processes/" +
-            interviewProcess.getId() +
-            "/slots?year=" +
-            tomorrow.getYear() +
-            "&month=" +
-            tomorrow.getMonthValue();
+        String url = "/api/interviews/processes/" +
+                interviewProcess.getId() +
+                "/slots?year=" +
+                tomorrow.getYear() +
+                "&month=" +
+                tomorrow.getMonthValue();
 
         PageResponseDTO<InterviewSlotDTO> response = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead(url, null, new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {}, 200);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead(url, null, new TypeReference<PageResponseDTO<InterviewSlotDTO>>() {
+                }, 200);
 
         List<InterviewSlotDTO> slots = new java.util.ArrayList<>(response.getContent());
         assertThat(slots).hasSize(2);
@@ -433,8 +444,10 @@ class InterviewResourceTest extends AbstractResourceTest {
         assertThat(firstSlot.isBooked()).isFalse();
         LocalDateTime expectedStart1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(10, 0));
         LocalDateTime expectedEnd1 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
-        assertThat(firstSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart1);
-        assertThat(firstSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd1);
+        assertThat(firstSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime())
+                .isEqualTo(expectedStart1);
+        assertThat(firstSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime())
+                .isEqualTo(expectedEnd1);
 
         // Verify second slot
         InterviewSlotDTO secondSlot = slots.get(1);
@@ -443,8 +456,10 @@ class InterviewResourceTest extends AbstractResourceTest {
         assertThat(secondSlot.isBooked()).isFalse();
         LocalDateTime expectedStart2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(11, 0));
         LocalDateTime expectedEnd2 = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(12, 0));
-        assertThat(secondSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedStart2);
-        assertThat(secondSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime()).isEqualTo(expectedEnd2);
+        assertThat(secondSlot.startDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime())
+                .isEqualTo(expectedStart2);
+        assertThat(secondSlot.endDateTime().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime())
+                .isEqualTo(expectedEnd2);
 
         // Verify chronological ordering
         assertThat(firstSlot.startDateTime()).isBefore(secondSlot.startDateTime());
@@ -454,50 +469,48 @@ class InterviewResourceTest extends AbstractResourceTest {
     void getSlotsByProcessIdForOtherProfessorReturnsForbidden() {
         // Create a separate research group for the other professor
         ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Other Group",
-            "Prof. Smith",
-            "other@example.com",
-            "OTH",
-            "CS",
-            "Other research",
-            "other@example.com",
-            "80333",
-            "CIT",
-            "Other Street",
-            "https://other.tum.de",
-            "ACTIVE"
-        );
+                researchGroupRepository,
+                "Other Group",
+                "Prof. Smith",
+                "other@example.com",
+                "OTH",
+                "CS",
+                "Other research",
+                "other@example.com",
+                "80333",
+                "CIT",
+                "Other Street",
+                "https://other.tum.de",
+                "ACTIVE");
 
         // Create another professor in a DIFFERENT research group
         User otherProfessor = UserTestData.savedProfessorAll(
-            userRepository,
-            otherResearchGroup,
-            null,
-            "other.prof@tum.de",
-            "Jane",
-            "Doe",
-            "en",
-            "+49 89 5678",
-            "https://jane.tum.de",
-            "https://linkedin.com/in/jane",
-            "DE",
-            null,
-            "weiblich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
+                userRepository,
+                otherResearchGroup,
+                null,
+                "other.prof@tum.de",
+                "Jane",
+                "Doe",
+                "en",
+                "+49 89 5678",
+                "https://jane.tum.de",
+                "https://linkedin.com/in/jane",
+                "DE",
+                null,
+                "weiblich",
+                UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
         Void result = api
-            .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots", null, Void.class, 403);
+                .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/slots", null, Void.class, 403);
         assertThat(result).isNull();
     }
 
     @Test
     void getSlotsByProcessIdForNonExistentProcessReturnsNotFound() {
         Void result = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .getAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/slots", null, Void.class, 404);
         assertThat(result).isNull();
     }
 
@@ -525,8 +538,9 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Act
             InterviewSlotDTO result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, InterviewSlotDTO.class, 200);
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO,
+                            InterviewSlotDTO.class, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -544,8 +558,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Act
             Void result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/interviews/slots/" + nonExistentSlotId + "/assign", requestDTO, Void.class, 404);
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead("/api/interviews/slots/" + nonExistentSlotId + "/assign", requestDTO, Void.class, 404);
 
             // Assert
             assertThat(result).isNull();
@@ -562,8 +576,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Act
             Void result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, Void.class, 409);
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, Void.class, 409);
 
             // Assert
             assertThat(result).isNull();
@@ -578,8 +592,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Act
             Void result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, Void.class, 404);
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, Void.class, 404);
 
             // Assert
             assertThat(result).isNull();
@@ -610,8 +624,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Act
             Void result = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead("/api/interviews/slots/" + slot2.getId() + "/assign", requestDTO, Void.class, 400);
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead("/api/interviews/slots/" + slot2.getId() + "/assign", requestDTO, Void.class, 400);
 
             // Assert
             assertThat(result).isNull();
@@ -621,21 +635,20 @@ class InterviewResourceTest extends AbstractResourceTest {
         void assignSlotAsEmployeeSuccessfullyAssignsInterviewee() {
             // Arrange - Create an employee in the same research group
             User employee = UserTestData.savedProfessorAll(
-                userRepository,
-                researchGroup,
-                null,
-                "employee@tum.de",
-                "Max",
-                "Employee",
-                "en",
-                "+49 89 9999",
-                "https://employee.tum.de",
-                null,
-                "DE",
-                null,
-                "männlich",
-                UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-            );
+                    userRepository,
+                    researchGroup,
+                    null,
+                    "employee@tum.de",
+                    "Max",
+                    "Employee",
+                    "en",
+                    "+49 89 9999",
+                    "https://employee.tum.de",
+                    null,
+                    "DE",
+                    null,
+                    "männlich",
+                    UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
             InterviewSlot slot = createTestSlot();
             Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
@@ -651,8 +664,9 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Act - Employee role should be allowed by @ProfessorOrEmployee
             InterviewSlotDTO result = api
-                .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
-                .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO, InterviewSlotDTO.class, 200);
+                    .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+                    .postAndRead("/api/interviews/slots/" + slot.getId() + "/assign", requestDTO,
+                            InterviewSlotDTO.class, 200);
 
             // Assert
             assertThat(result).isNotNull();
@@ -672,5 +686,162 @@ class InterviewResourceTest extends AbstractResourceTest {
         slot.setLocation("Room 101");
         slot.setIsBooked(false);
         return interviewSlotRepository.save(slot);
+    }
+
+    // ===========================================================================================
+    // Tests for sending self-scheduling invitations
+    // ===========================================================================================
+
+    @Nested
+    class SendInvitations {
+
+        @Test
+        void sendInvitationsSuccessfullySendsEmails() {
+            // Arrange
+            Applicant applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
+            Interviewee interviewee1 = new Interviewee();
+            interviewee1.setInterviewProcess(interviewProcess);
+            interviewee1.setApplication(app1);
+            intervieweeRepository.save(interviewee1);
+
+            Applicant applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
+            Interviewee interviewee2 = new Interviewee();
+            interviewee2.setInterviewProcess(interviewProcess);
+            interviewee2.setApplication(app2);
+            intervieweeRepository.save(interviewee2);
+
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, null);
+
+            // Act
+            SendInvitationsResultDTO result = api
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead(
+                            "/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations",
+                            requestDTO,
+                            SendInvitationsResultDTO.class,
+                            200);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.sentCount()).isEqualTo(2);
+            assertThat(result.failedEmails() == null || result.failedEmails().isEmpty())
+                    .as("Failed emails should be null or empty")
+                    .isTrue();
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSender, times(2)).sendAsync(emailCaptor.capture());
+
+            List<Email> sentEmails = emailCaptor.getAllValues();
+            assertThat(sentEmails).hasSize(2);
+            assertThat(sentEmails)
+                    .allMatch(email -> email.getEmailType() == EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION);
+        }
+
+        @Test
+        void sendInvitationsWithFilterReturnsCorrectResult() {
+            // Arrange
+            Applicant applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
+            Interviewee interviewee1 = new Interviewee();
+            interviewee1.setInterviewProcess(interviewProcess);
+            interviewee1.setApplication(app1);
+            interviewee1.setLastInvited(java.time.Instant.now()); // Already invited
+            intervieweeRepository.save(interviewee1);
+
+            Applicant applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
+            Interviewee interviewee2 = new Interviewee();
+            interviewee2.setInterviewProcess(interviewProcess);
+            interviewee2.setApplication(app2);
+            // Not yet invited
+            intervieweeRepository.save(interviewee2);
+
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(true, null);
+
+            // Act
+            SendInvitationsResultDTO result = api
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead(
+                            "/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations",
+                            requestDTO,
+                            SendInvitationsResultDTO.class,
+                            200);
+
+            // Assert
+            assertThat(result.sentCount()).isEqualTo(1);
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSender, times(1)).sendAsync(emailCaptor.capture());
+
+            Email sentEmail = emailCaptor.getValue();
+            assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION);
+            assertThat(sentEmail.getTo()).hasSize(1);
+            assertThat(sentEmail.getTo().iterator().next().getEmail()).isEqualTo(applicant2.getUser().getEmail());
+        }
+
+        @Test
+        void sendInvitationsIndividualSelection() {
+            // Arrange
+            Applicant applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
+            Interviewee interviewee1 = new Interviewee();
+            interviewee1.setInterviewProcess(interviewProcess);
+            interviewee1.setApplication(app1);
+            interviewee1 = intervieweeRepository.save(interviewee1);
+
+            Applicant applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            Application app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
+            Interviewee interviewee2 = new Interviewee();
+            interviewee2.setInterviewProcess(interviewProcess);
+            interviewee2.setApplication(app2);
+            intervieweeRepository.save(interviewee2);
+
+            // Select only interviewee1
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, List.of(interviewee1.getId()));
+
+            // Act
+            SendInvitationsResultDTO result = api
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead(
+                            "/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations",
+                            requestDTO,
+                            SendInvitationsResultDTO.class,
+                            200);
+
+            // Assert
+            assertThat(result.sentCount()).isEqualTo(1);
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSender, times(1)).sendAsync(emailCaptor.capture());
+
+            Email sentEmail = emailCaptor.getValue();
+            assertThat(sentEmail.getTo()).hasSize(1);
+            assertThat(sentEmail.getTo().iterator().next().getEmail()).isEqualTo(applicant1.getUser().getEmail());
+        }
+
+        @Test
+        void sendInvitationsReturnsNotFoundForNonExistentProcess() {
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, null);
+            api
+                    .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                    .postAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/send-invitations", requestDTO,
+                            Void.class, 404);
+        }
+
+        @Test
+        void sendInvitationsReturnsForbiddenForUnauthorizedUser() {
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, null);
+
+            // Create a student/random user
+            User student = UserTestData.createUserWithoutResearchGroup(userRepository, "student@tum.de", "Student",
+                    "One", "123456");
+
+            api
+                    .with(JwtPostProcessors.jwtUser(student.getUserId(), "ROLE_STUDENT"))
+                    .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations",
+                            requestDTO, Void.class, 403);
+        }
     }
 }

@@ -652,9 +652,7 @@ public class InterviewService {
                 updatedInterviewees.add(interviewee);
                 sentCount++;
             } catch (Exception e) {
-                User user = interviewee.getApplication().getApplicant().getUser();
-                failedEmails.add(user.getEmail() != null ? user.getEmail() : "Unknown (" + interviewee.getId() + ")");
-                // We continue with other emails even if one fails
+                failedEmails.add(interviewee.getApplication().getApplicant().getUser().getEmail());
             }
         }
 
