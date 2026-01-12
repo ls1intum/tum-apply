@@ -261,6 +261,35 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             assertThat(result).isNotEmpty();
         }
+
+        @Test
+        void shouldExportApplicationWithMasterDegreeNameNull() {
+            Applicant applicantWithMasterNameNull = ApplicantTestData.savedWithNewUser(applicantRepository);
+            applicantWithMasterNameNull.setMasterDegreeName(null);
+            applicantRepository.save(applicantWithMasterNameNull);
+
+            Application appWithMaster = ApplicationTestData.savedAll(
+                applicationRepository,
+                job,
+                applicantWithMasterNameNull,
+                ApplicationState.SENT,
+                LocalDate.now(),
+                "Test",
+                "Test",
+                "Test"
+            );
+
+            Map<String, String> labels = createCompleteLabelsMap();
+
+            byte[] result = asApplicant(applicantWithMasterNameNull).postAndReturnBytes(
+                BASE_URL + "/application/" + appWithMaster.getApplicationId() + "/pdf",
+                labels,
+                200,
+                MediaType.APPLICATION_PDF
+            );
+
+            assertThat(result).isNotEmpty();
+        }
     }
 
     @Nested
@@ -402,8 +431,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldHandleJobPreviewWithoutResearchGroup() {
-            // Create user without research group to trigger AccessDeniedException catch
-            // block
             User userWithoutRG = UserTestData.createUserWithoutResearchGroup(userRepository, "test@example.com", "Test", "User", "ab12xyz");
 
             JobFormDTO jobFormDTO = new JobFormDTO(
@@ -427,8 +454,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
             JobPreviewRequest request = new JobPreviewRequest(jobFormDTO, createCompleteLabelsMap());
 
-            // Note: This will likely fail with 403 since user has no professor role
-            // But it tests the AccessDeniedException catch in the service
             byte[] result = api
                 .with(JwtPostProcessors.jwtUser(userWithoutRG.getUserId(), "ROLE_PROFESSOR"))
                 .postAndReturnBytes(BASE_URL + "/job/preview/pdf", request, 200, MediaType.APPLICATION_PDF);
