@@ -31,7 +31,6 @@ export class AuthIdpButtons {
     direction: this.onlyIcons() ? 'horizontal' : 'vertical',
     fullWidth: true,
     buttons: [
-      // TODO: Enable Microsoft login when available in Production environment
       {
         label: this.onlyIcons() ? undefined : 'Apple',
         icon: 'apple',

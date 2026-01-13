@@ -72,10 +72,6 @@ public class ApplicationEntityRepositoryImpl implements ApplicationEntityReposit
                 boolean ascending = sortOrder.isAscending();
 
                 Expression<?> sortExpression = switch (property) {
-                    // TODO: add additional support to sort for more fields here, like this:
-                    // case "job.title" -> job.get(Job_.title);
-                    // case "job.researchGroup.name" -> researchGroup.get(ResearchGroup_.name);
-                    // case "state" -> application.get(Application_.state);
                     default -> application.get(Application_.createdAt);
                 };
 
