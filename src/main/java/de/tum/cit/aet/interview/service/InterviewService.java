@@ -1,6 +1,5 @@
 package de.tum.cit.aet.interview.service;
 
-import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -29,7 +28,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -704,8 +702,11 @@ public class InterviewService {
             interviewee.setAssessmentNotes(dto.notes());
         }
 
-        // 5. Save and return updated details
-        Interviewee saved = intervieweeRepository.save(interviewee);
+        // 5. Save and re-fetch with all relations for DTO mapping
+        intervieweeRepository.save(interviewee);
+        Interviewee saved = intervieweeRepository
+            .findByIdAndProcessId(intervieweeId, processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
         return mapIntervieweeToDetailDTO(saved, job);
     }
 

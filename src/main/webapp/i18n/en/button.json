@@ -23,6 +23,7 @@
     "tooltip": {
       "editDisabled": "Only drafts can be edited"
     },
+    "replace": "Replace",
     "downloadPDF": "Export"
   }
 }
