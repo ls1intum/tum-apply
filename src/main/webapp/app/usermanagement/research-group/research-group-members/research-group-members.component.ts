@@ -186,7 +186,7 @@ export class ResearchGroupMembersComponent {
   }
 
   goBack(): void {
-    void this.router.navigate(['/research-group-admin']);
+    void this.router.navigate(['/research-group/admin-view']);
   }
 
   /** Internal methods */
