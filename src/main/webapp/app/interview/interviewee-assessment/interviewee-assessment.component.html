@@ -1,0 +1,151 @@
+<!-- Page Container -->
+<div>
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex items-center justify-center h-64">
+      <p-progressSpinner styleClass="w-8 h-8" strokeWidth="4" />
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error(); as errorKey) {
+    <div class="flex items-center justify-center h-64">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <fa-icon icon="exclamation-triangle" class="text-4xl text-negative-default" />
+        <span class="text-text-secondary" [jhiTranslate]="errorKey">Error loading interviewee</span>
+        <jhi-button label="interview.assessment.back" [shouldTranslate]="true" variant="outlined" severity="primary" (click)="goBack()" />
+      </div>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!loading() && !error() && interviewee()) {
+    <div class="flex flex-col gap-6 p-6">
+      <!-- Header -->
+      <div class="flex items-center gap-4">
+        <jhi-button [shouldTranslate]="true" icon="arrow-left" variant="text" severity="secondary" (click)="goBack()" />
+        <div class="flex flex-col gap-1">
+          <h1 class="text-3xl font-bold text-text-primary" jhiTranslate="interview.assessment.title">Interview Assessment</h1>
+        </div>
+      </div>
+
+      <div class="flex flex-col xl:flex-row gap-8">
+        <!-- Left Column: Assessment Tools -->
+        <div class="flex-1 flex flex-col gap-6">
+          <!-- Rating Section (Inline) -->
+          <div class="flex items-center gap-4 h-10">
+            <div class="flex items-center gap-2">
+              <fa-icon icon="star" class="text-text-primary" />
+              <h3 class="text-lg font-bold text-text-primary mb-0" jhiTranslate="interview.assessment.rating.label">Rating</h3>
+            </div>
+            <jhi-rating [(rating)]="rating" [selectable]="true" class="flex-1 mt-1" />
+          </div>
+
+          <!-- Notes Section -->
+          <div class="flex flex-col gap-2 rounded-lg border border-border-default bg-background-default p-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h3 class="text-lg font-semibold text-text-primary" jhiTranslate="interview.assessment.notes.label">Interview Note</h3>
+              </div>
+
+              @if (!isEditingNotes()) {
+                <jhi-button label="entity.action.edit" [shouldTranslate]="true" icon="pen" variant="outlined" (click)="editNotes()" />
+              }
+            </div>
+
+            <!-- Content -->
+            <div class="mt-4">
+              @if (isEditingNotes()) {
+                <jhi-editor
+                  [control]="notesControl"
+                  [model]="notesControl.value"
+                  fieldId="assessment-notes"
+                  [characterLimit]="undefined"
+                  [showGenderDecoderButton]="false"
+                />
+
+                <!-- Buttons below editor -->
+                <div class="flex justify-end gap-2 mt-2">
+                  <jhi-button
+                    label="entity.action.cancel"
+                    [shouldTranslate]="true"
+                    variant="text"
+                    severity="secondary"
+                    (click)="cancelNotes()"
+                  />
+                  <jhi-button
+                    label="interview.assessment.notes.save"
+                    [shouldTranslate]="true"
+                    icon="save"
+                    [disabled]="saving()"
+                    (click)="saveNotes()"
+                  />
+                </div>
+              } @else {
+                <div class="min-h-[200px] rounded-md border border-border-default p-4 bg-background-default">
+                  @if (savedNotes()) {
+                    <jhi-prose [text]="savedNotes()" />
+                  } @else {
+                    <span class="text-text-secondary italic" jhiTranslate="interview.assessment.notes.empty">No notes added yet.</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Vertical Divider -->
+        <p-divider layout="vertical" class="hidden xl:block h-auto !m-0" />
+
+        <!-- Right Column: Applicant Information -->
+        <div class="w-full xl:w-[30%] flex flex-col gap-6">
+          <!-- User Information Card -->
+          <div class="flex items-center gap-4 rounded-lg border border-border-default bg-background-default p-4">
+            <div class="flex flex-col">
+              <span class="text-lg font-bold text-text-primary">{{ applicantName() }}</span>
+              <span class="text-sm text-text-secondary">{{ studyInfo() }}</span>
+            </div>
+          </div>
+
+          <!-- Motivation Section -->
+          <jhi-section titleKey="interview.application.motivation.label" icon="rocket">
+            @if (motivation()) {
+              <div class="max-h-64 overflow-y-auto">
+                <jhi-prose [text]="motivation()" />
+              </div>
+            } @else {
+              <span class="text-sm text-text-secondary italic" jhiTranslate="global.none">None</span>
+            }
+          </jhi-section>
+
+          <!-- Skills Section -->
+          <jhi-section titleKey="interview.application.specialSkills.label" icon="brain">
+            @if (skills()) {
+              <div class="max-h-64 overflow-y-auto">
+                <jhi-prose [text]="skills()" />
+              </div>
+            } @else {
+              <span class="text-sm text-text-secondary italic" jhiTranslate="global.none">None</span>
+            }
+          </jhi-section>
+
+          <!-- Interests Section -->
+          <jhi-section titleKey="interview.application.interests.label" icon="flask">
+            @if (interests()) {
+              <div class="max-h-64 overflow-y-auto">
+                <jhi-prose [text]="interests()" />
+              </div>
+            } @else {
+              <span class="text-sm text-text-secondary italic" jhiTranslate="global.none">None</span>
+            }
+          </jhi-section>
+
+          <!-- Documents Section -->
+          <jhi-section titleKey="interview.application.documents.label" icon="file-lines">
+            <jhi-document-section [idsDTO]="documentIds()" [applicationId]="applicationId()" />
+          </jhi-section>
+        </div>
+      </div>
+    </div>
+  }
+</div>

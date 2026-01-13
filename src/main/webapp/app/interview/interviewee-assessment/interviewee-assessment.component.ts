@@ -1,0 +1,237 @@
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { DividerModule } from 'primeng/divider';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { InterviewResourceApiService } from 'app/generated';
+import { IntervieweeDetailDTO } from 'app/generated/model/intervieweeDetailDTO';
+import { UpdateAssessmentDTO } from 'app/generated/model/updateAssessmentDTO';
+import { ToastService } from 'app/service/toast-service';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { Section } from 'app/shared/components/atoms/section/section';
+import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { DocumentSection } from 'app/shared/components/organisms/document-section/document-section';
+import { Prose } from 'app/shared/components/atoms/prose/prose';
+import TranslateDirective from 'app/shared/language/translate.directive';
+
+/**
+ * Assessment view for evaluating interview candidates.
+ * Supports auto-saving ratings and manual notes editing with optimistic UI updates.
+ */
+@Component({
+  selector: 'jhi-interviewee-assessment',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    TranslateModule,
+    TranslateDirective,
+    FontAwesomeModule,
+    DividerModule,
+    ProgressSpinnerModule,
+    ButtonComponent,
+    Section,
+    RatingComponent,
+    EditorComponent,
+    DocumentSection,
+    Prose,
+  ],
+  templateUrl: './interviewee-assessment.component.html',
+})
+export class IntervieweeAssessmentComponent {
+  // 1) Services
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly toastService = inject(ToastService);
+
+  // Constants
+  private readonly params = toSignal(this.route.paramMap);
+
+  // 5) Signals
+  protected readonly interviewee = signal<IntervieweeDetailDTO | undefined>(undefined);
+  protected readonly loading = signal<boolean>(true);
+  protected readonly error = signal<string | undefined>(undefined);
+
+  protected readonly rating = signal<number | undefined>(undefined);
+  protected readonly notesControl = new FormControl<string>('', { nonNullable: true });
+  protected readonly isEditingNotes = signal<boolean>(false);
+
+  protected readonly saving = signal<boolean>(false);
+
+  // Tracks server-side rating to detect local changes
+  private readonly serverRating = signal<number | undefined>(undefined);
+  // Prevents auto-save effect from firing during initial data load
+  private readonly isInitializing = signal<boolean>(true);
+
+  // Computed
+  protected readonly processId = computed(() => this.params()?.get('processId') ?? '');
+  protected readonly intervieweeId = computed(() => this.params()?.get('intervieweeId') ?? '');
+
+  // Concatenates first + last name, falls back to 'Unknown'
+  protected readonly applicantName = computed(() => {
+    const user = this.interviewee()?.user;
+    if (!user) return '';
+    const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
+    return name || 'Unknown';
+  });
+
+  // Returns "Degree - University" string, preferring Master over Bachelor
+  protected readonly studyInfo = computed(() => {
+    const applicant = this.interviewee()?.application?.applicant;
+    if (!applicant) return '';
+
+    const degree = applicant.masterDegreeName || applicant.bachelorDegreeName;
+    const university = applicant.masterUniversity || applicant.bachelorUniversity;
+
+    if (degree && university) return `${degree} - ${university}`;
+    return degree || university || '';
+  });
+
+  // Extracts motivation text from nested application DTO
+  protected readonly motivation = computed(() => this.interviewee()?.application?.motivation ?? '');
+
+  // Extracts special skills from nested application DTO
+  protected readonly skills = computed(() => this.interviewee()?.application?.specialSkills ?? '');
+
+  // Extracts projects/interests from nested application DTO
+  protected readonly interests = computed(() => this.interviewee()?.application?.projects ?? '');
+
+  // Returns document IDs for document-section component
+  protected readonly documentIds = computed(() => this.interviewee()?.documents);
+
+  // Returns persisted notes (not current editor value)
+  protected readonly savedNotes = computed(() => this.interviewee()?.assessmentNotes ?? '');
+
+  // Returns application ID as string for child components
+  protected readonly applicationId = computed(() => this.interviewee()?.applicationId?.toString());
+
+  // Returns scheduled slot info if available
+  protected readonly slotInfo = computed(() => this.interviewee()?.scheduledSlot);
+
+  // 7) Effects
+  // Triggers API fetch when route params change
+  private readonly loadEffect = effect(() => {
+    const processId = this.processId();
+    const intervieweeId = this.intervieweeId();
+
+    if (processId && intervieweeId) {
+      void this.loadInterviewee(processId, intervieweeId);
+    }
+  });
+
+  // Auto-saves rating on change (debounced by signal equality check)
+  private readonly ratingSaveEffect = effect(() => {
+    const rating = this.rating();
+    const processId = this.processId();
+    const intervieweeId = this.intervieweeId();
+
+    if (this.isInitializing()) return;
+    if (rating === this.serverRating()) return;
+    if (!processId || !intervieweeId) return;
+
+    void this.saveRating(processId, intervieweeId, rating);
+  });
+
+  async saveNotes(): Promise<void> {
+    const processId = this.processId();
+    const intervieweeId = this.intervieweeId();
+    const notes = this.notesControl.value;
+
+    if (!processId || !intervieweeId) return;
+
+    this.saving.set(true);
+
+    const dto: UpdateAssessmentDTO = { notes };
+
+    try {
+      const updated = await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
+
+      this.interviewee.set(updated);
+      this.isEditingNotes.set(false);
+    } catch (err) {
+      console.error('Failed to save notes:', err);
+      this.toastService.showErrorKey('interview.assessment.error.saveFailed');
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  // Initializes editor with current saved notes
+  editNotes(): void {
+    this.notesControl.setValue(this.savedNotes());
+    this.isEditingNotes.set(true);
+  }
+
+  // Reverts editor to saved state and exits edit mode
+  cancelNotes(): void {
+    this.isEditingNotes.set(false);
+    this.notesControl.setValue(this.savedNotes());
+  }
+
+  // Navigates to process detail or overview fallback
+  goBack(): void {
+    const processId = this.processId();
+    if (processId) {
+      void this.router.navigate(['/interviews', processId]);
+    } else {
+      void this.router.navigate(['/interviews/overview']);
+    }
+  }
+
+  // Fetches interviewee details, initializes form state
+  private async loadInterviewee(processId: string, intervieweeId: string): Promise<void> {
+    this.loading.set(true);
+    this.error.set(undefined);
+    this.isInitializing.set(true);
+
+    try {
+      const data = await firstValueFrom(this.interviewService.getIntervieweeDetails(processId, intervieweeId));
+
+      this.interviewee.set(data);
+      this.rating.set(data.rating ?? undefined);
+      this.serverRating.set(data.rating ?? undefined);
+      this.notesControl.setValue(data.assessmentNotes ?? '', { emitEvent: false });
+
+      this.isEditingNotes.set(!data.assessmentNotes);
+    } catch (err) {
+      this.handleLoadError(err);
+    } finally {
+      this.loading.set(false);
+      this.isInitializing.set(false);
+    }
+  }
+
+  // Persists rating, reverts on failure
+  private async saveRating(processId: string, intervieweeId: string, rating: number | undefined): Promise<void> {
+    const dto: UpdateAssessmentDTO = { rating: rating ?? undefined };
+
+    try {
+      await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
+      this.serverRating.set(rating);
+    } catch (err) {
+      console.error('Failed to save rating:', err);
+      this.toastService.showErrorKey('interview.assessment.error.saveFailed');
+      this.rating.set(this.serverRating());
+    }
+  }
+
+  // Maps HTTP status codes to user-facing error keys
+  private handleLoadError(err: unknown): void {
+    const httpError = err as { status?: number };
+
+    if (httpError.status === 404) {
+      this.error.set('interview.assessment.error.notFound');
+    } else if (httpError.status === 403) {
+      this.toastService.showErrorKey('interview.assessment.error.loadFailed');
+      void this.router.navigate(['/interviews/overview']);
+    } else {
+      this.error.set('interview.assessment.error.loadFailed');
+      this.toastService.showErrorKey('interview.assessment.error.loadFailed');
+    }
+  }
+}
