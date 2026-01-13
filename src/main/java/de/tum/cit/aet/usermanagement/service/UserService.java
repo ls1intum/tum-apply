@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.service;
 
+import de.tum.cit.aet.core.config.UserProperties;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
@@ -10,33 +11,43 @@ import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class UserService {
+
+    private static final int INACTIVE_DELETE_BATCH_SIZE = 100;
 
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final KeycloakUserService keycloakUserService;
+    private final UserProperties userProperties;
 
     public UserService(
         UserRepository userRepository,
         UserResearchGroupRoleRepository userResearchGroupRoleRepository,
-        KeycloakUserService keycloakUserService
+        KeycloakUserService keycloakUserService,
+        UserProperties userProperties
     ) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
         this.keycloakUserService = keycloakUserService;
+        this.userProperties = userProperties;
     }
 
     /**
@@ -91,6 +102,37 @@ public class UserService {
 
         assignApplicantRoleIfEmpty(user);
         return user;
+    }
+
+    /**
+     * Removes users that have been inactive longer than the configured retention period.
+     * Uses {@link de.tum.cit.aet.core.domain.AbstractAuditingEntity#lastModifiedAt} as activity marker.
+     * Runs nightly; batches to avoid long transactions.
+     */
+    @Transactional
+    @Scheduled(cron = "0 0 3 * * *")
+    public void deleteInactiveUsers() {
+        Integer inactiveYears = userProperties.getRetention().getInactiveYears();
+        if (inactiveYears == null || inactiveYears <= 0) {
+            return;
+        }
+
+        LocalDateTime cutoff = LocalDateTime.now(ZoneOffset.UTC).minusYears(inactiveYears);
+        int totalDeleted = 0;
+
+        while (true) {
+            Page<User> batch = userRepository.findInactiveSince(cutoff, PageRequest.of(0, INACTIVE_DELETE_BATCH_SIZE));
+            if (batch.isEmpty()) {
+                break;
+            }
+            List<User> users = batch.getContent();
+            userRepository.deleteAllInBatch(users);
+            totalDeleted += users.size();
+        }
+
+        if (totalDeleted > 0) {
+            log.info("Deleted {} inactive users last modified before {}", totalDeleted, cutoff);
+        }
     }
 
     /**

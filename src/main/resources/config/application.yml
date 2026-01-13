@@ -304,6 +304,10 @@ version: ${VERSION:1.0.1}
 # Enable or disable debug mode (true/false)
 debug: ${DEBUG:false}
 
+user:
+  retention:
+    inactive-years: ${USER_RETENTION_INACTIVE_YEARS:2}
+
 keycloak:
   url: ${KEYCLOAK_URL:http://localhost:9080}
   realm: ${KEYCLOAK_REALM:tumapply}

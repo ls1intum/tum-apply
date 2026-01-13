@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -138,6 +139,9 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
     )
     Page<UUID> findAvailableUserIdsForResearchGroup(@Param("searchQuery") String searchQuery, Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE u.lastModifiedAt < :cutoff")
+    Page<User> findInactiveSince(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
     String email(String email);
 }
