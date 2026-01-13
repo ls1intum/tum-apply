@@ -217,7 +217,8 @@ public class InterviewResource {
      *
      * @param processId     the ID of the interview process
      * @param intervieweeId the ID of the interviewee
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the {@link IntervieweeDetailDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         {@link IntervieweeDetailDTO}
      *
      * @throws EntityNotFoundException if the interviewee or process is not found
      * @throws AccessDeniedException   if the user is not authorized
@@ -239,7 +240,8 @@ public class InterviewResource {
      * @param processId     the ID of the interview process
      * @param intervieweeId the ID of the interviewee
      * @param dto           the update data containing rating and/or notes
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the updated {@link IntervieweeDetailDTO}
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         updated {@link IntervieweeDetailDTO}
      *
      * @throws EntityNotFoundException if the interviewee or process is not found
      * @throws AccessDeniedException   if the user is not authorized
@@ -256,6 +258,9 @@ public class InterviewResource {
         IntervieweeDetailDTO updated = interviewService.updateAssessment(processId, intervieweeId, dto);
         log.info("Successfully updated assessment for interviewee: {}", intervieweeId);
         return ResponseEntity.ok(updated);
+    }
+
+    /**
      * {@code POST /api/interviews/slots/{slotId}/assign} : Assign an interviewee to
      * a slot.
      *
