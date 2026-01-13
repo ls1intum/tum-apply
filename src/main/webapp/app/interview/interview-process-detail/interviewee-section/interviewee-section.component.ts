@@ -1,26 +1,23 @@
-import {Component, computed, effect, inject, input, signal, TemplateRef, viewChild} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {TranslateModule, TranslateService} from '@ngx-translate/core';
-import {CheckboxComponent} from 'app/shared/components/atoms/checkbox/checkbox.component';
-import {TableLazyLoadEvent} from 'primeng/table';
-import {firstValueFrom} from 'rxjs';
-import {ApplicationEvaluationResourceApiService, InterviewResourceApiService} from 'app/generated';
-import {ApplicationEvaluationDetailDTO} from 'app/generated/model/applicationEvaluationDetailDTO';
-import {AddIntervieweesDTO} from 'app/generated/model/addIntervieweesDTO';
-import {IntervieweeDTO} from 'app/generated/model/intervieweeDTO';
-import {SendInvitationsResultDTO} from 'app/generated/model/sendInvitationsResultDTO';
-import {ToastService} from 'app/service/toast-service';
-import {ButtonComponent} from 'app/shared/components/atoms/button/button.component';
-import {DialogComponent} from 'app/shared/components/atoms/dialog/dialog.component';
-import {FilterTab, FilterTabsComponent} from 'app/shared/components/atoms/filter-tabs/filter-tabs.component';
-import {Section} from 'app/shared/components/atoms/section/section';
-import {
-  DynamicTableColumn,
-  DynamicTableComponent
-} from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
+import { Component, computed, effect, inject, input, signal, TemplateRef, viewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
+import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
+import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
+import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
+import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { SendInvitationsResultDTO } from 'app/generated/model/sendInvitationsResultDTO';
+import { ToastService } from 'app/service/toast-service';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { FilterTab, FilterTabsComponent } from 'app/shared/components/atoms/filter-tabs/filter-tabs.component';
+import { Section } from 'app/shared/components/atoms/section/section';
+import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 
-import {IntervieweeCardComponent} from './interviewee-card/interviewee-card.component';
+import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
 // Filter key type for interviewee states
 type FilterKey = 'ALL' | 'UNCONTACTED' | 'INVITED' | 'SCHEDULED' | 'COMPLETED';
@@ -306,7 +303,7 @@ export class IntervieweeSectionComponent {
           sent: sentCount.toString(),
           failed: (result.failedEmails?.length ?? 0).toString(),
         }),
-        detail: failedList ? this.translateService.instant('interview.interviewees.invitation.partial.detail', {emails: failedList}) : '',
+        detail: failedList ? this.translateService.instant('interview.interviewees.invitation.partial.detail', { emails: failedList }) : '',
         life: 10000,
       });
     } else {
