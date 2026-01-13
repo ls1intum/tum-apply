@@ -96,6 +96,15 @@ export class JobCreationFormComponent {
     const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
     return `${base} border-border-default ${hover}`.trim();
   });
+  private fb = inject(FormBuilder);
+  private jobResourceService = inject(JobResourceApiService);
+  private imageResourceService = inject(ImageResourceApiService);
+  private accountService = inject(AccountService);
+  private translate = inject(TranslateService);
+  private router = inject(Router);
+  private location = inject(Location);
+  private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
   // Forms
   basicInfoForm = this.createBasicInfoForm();
   positionDetailsForm = this.createPositionDetailsForm();
@@ -166,12 +175,6 @@ export class JobCreationFormComponent {
     this.imageFormValueSignal();
     return this.createJobDTO('DRAFT');
   });
-  // Services
-  private fb = inject(FormBuilder);
-  private jobResourceService = inject(JobResourceApiService);
-  private imageResourceService = inject(ImageResourceApiService);
-  private accountService = inject(AccountService);
-  private translate = inject(TranslateService);
   currentLang = toSignal(this.translate.onLangChange);
   // Computed signals for translated dropdown options
   translatedFieldsOfStudies = computed(() => {
@@ -202,10 +205,6 @@ export class JobCreationFormComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
   private autoSaveTimer: number | undefined;
-  private router = inject(Router);
-  private location = inject(Location);
-  private route = inject(ActivatedRoute);
-  private toastService = inject(ToastService);
   private autoSaveInitialized = false;
   // Allowed image file types for upload
   private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
