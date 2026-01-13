@@ -9,7 +9,6 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { TooltipModule } from 'primeng/tooltip';
-import SharedModule from 'app/shared/shared.module';
 import { InterviewResourceApiService } from 'app/generated';
 import { ToastService } from 'app/service/toast-service';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
@@ -21,6 +20,7 @@ import { NumberInputComponent } from 'app/shared/components/atoms/number-input/n
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
 import { SegmentButtonComponent } from 'app/shared/components/atoms/segment-button/segment-button.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'jhi-slot-creation-form',
@@ -36,13 +36,13 @@ import { HttpErrorResponse } from '@angular/common/http';
     SelectButtonModule,
     DividerModule,
     ScrollPanelModule,
-    SharedModule,
     DateSlotCardComponent,
     ButtonComponent,
     NumberInputComponent,
     DialogComponent,
     SegmentButtonComponent,
     TooltipModule,
+    FontAwesomeModule,
   ],
   templateUrl: './slot-creation-form.component.html',
 })

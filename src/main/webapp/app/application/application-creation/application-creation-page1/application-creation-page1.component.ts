@@ -4,9 +4,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import * as postalCodes from 'postal-codes-js';
+import { TranslateDirective } from 'app/shared/language';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
@@ -84,7 +84,7 @@ export function postalCodeValidator(getCountryFn: () => string | undefined): Val
     DatePickerComponent,
     StringInputComponent,
     TranslateModule,
-    SharedModule,
+    TranslateDirective,
   ],
   templateUrl: './application-creation-page1.component.html',
   styleUrl: './application-creation-page1.component.scss',

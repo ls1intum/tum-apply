@@ -1,6 +1,5 @@
 import { Component, ElementRef, computed, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import SharedModule from 'app/shared/shared.module';
 import { ToastService } from 'app/service/toast-service';
 import { FileUpload } from 'primeng/fileupload';
 import { firstValueFrom } from 'rxjs';
@@ -31,7 +30,6 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
   imports: [
     FontAwesomeModule,
     FormsModule,
-    SharedModule,
     FileUpload,
     ButtonComponent,
     TooltipModule,

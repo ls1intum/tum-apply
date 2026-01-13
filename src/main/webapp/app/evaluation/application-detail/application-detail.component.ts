@@ -8,7 +8,7 @@ import { DividerModule } from 'primeng/divider';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
-import SharedModule from 'app/shared/shared.module';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
@@ -43,7 +43,6 @@ const CAROUSEL_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     DividerModule,
-    SharedModule,
     SearchFilterSortBar,
     TranslateModule,
     ButtonComponent,
@@ -57,6 +56,7 @@ const CAROUSEL_SIZE = 7;
     DocumentSection,
     CommentSection,
     RatingSection,
+    LocalizedDatePipe,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
