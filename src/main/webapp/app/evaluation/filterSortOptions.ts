@@ -2,7 +2,6 @@ import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
 
 import { FilterField, FilterOption } from '../shared/filter';
 
-// TODO Jobs will be replaced by dynamically loaded jobs from the server
 export const filterFields: FilterField[] = [
   new FilterField('evaluation.filterOptions.job', 'job', [], []),
   new FilterField(

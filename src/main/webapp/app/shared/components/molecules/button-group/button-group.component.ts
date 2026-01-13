@@ -1,5 +1,4 @@
 import { Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { Button, ButtonComponent } from '../../atoms/button/button.component';
 
@@ -26,7 +25,7 @@ export type ButtonGroupData = {
  */
 @Component({
   selector: 'jhi-button-group',
-  imports: [CommonModule, ButtonComponent],
+  imports: [ButtonComponent],
   templateUrl: './button-group.component.html',
   styleUrl: './button-group.component.scss',
   standalone: true,
