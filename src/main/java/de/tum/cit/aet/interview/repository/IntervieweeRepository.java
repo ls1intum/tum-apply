@@ -88,27 +88,31 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     @Query(
         """
         SELECT i FROM Interviewee i
-        JOIN FETCH i.interviewProcess ip
-        JOIN FETCH ip.job j
-        WHERE i.id = :intervieweeId
-        AND ip.id = :processId
-        """
-    )
-    Optional<Interviewee> findByIdAndProcessId(@Param("intervieweeId") UUID intervieweeId, @Param("processId") UUID processId);
-
-    /**
-     * Finds all interviewees for multiple interview processes with their slot data.
-     * Used for efficient statistics calculation across all interview processes.
-     *
-     * @param processIds the IDs of the interview processes
-     * @return list of interviewees with slot data
-     */
-    @Query(
-        """
-        SELECT i FROM Interviewee i
         LEFT JOIN FETCH i.slots
         WHERE i.interviewProcess.id IN :processIds
         """
     )
     List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
+
+    /**
+     * Finds a single interviewee by ID within a process.
+     *
+     * @param intervieweeId the ID of the interviewee
+     * @param processId     the ID of the interview process
+     * @return the interviewee or empty if not found
+     */
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        JOIN FETCH i.interviewProcess ip
+        JOIN FETCH ip.job j
+        LEFT JOIN FETCH i.application a
+        LEFT JOIN FETCH a.applicant ap
+        LEFT JOIN FETCH ap.user
+        LEFT JOIN FETCH i.slots
+        WHERE i.id = :intervieweeId
+        AND ip.id = :processId
+        """
+    )
+    Optional<Interviewee> findByIdAndProcessId(@Param("intervieweeId") UUID intervieweeId, @Param("processId") UUID processId);
 }
