@@ -51,6 +51,50 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     long countByInterviewProcessId(UUID processId);
 
     /**
+     * Finds an interviewee by application ID and interview process ID.
+     * Used when assigning an applicant to an interview slot.
+     *
+     * @param applicationId the ID of the application
+     * @param processId     the ID of the interview process
+     * @return Optional containing the interviewee if found
+     */
+    Optional<Interviewee> findByApplicationApplicationIdAndInterviewProcessId(UUID applicationId, UUID processId);
+
+    /**
+     * Finds an Interviewee by interview process ID and user ID.
+     * Fetches slots to check if user already has a booked slot.
+     *
+     * @param processId the ID of the interview process
+     * @param userId    the ID of the user (via application.applicant.user)
+     * @return Optional containing the interviewee with slots if found
+     */
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        LEFT JOIN FETCH i.slots
+        WHERE i.interviewProcess.id = :processId
+        AND i.application.applicant.user.userId = :userId
+        """
+    )
+    Optional<Interviewee> findByProcessIdAndUserId(@Param("processId") UUID processId, @Param("userId") UUID userId);
+
+    /**
+     * Finds all interviewees for multiple interview processes with their slot data.
+     * Used for efficient statistics calculation across all interview processes.
+     *
+     * @param processIds the IDs of the interview processes
+     * @return list of interviewees with slot data
+     */
+    @Query(
+        """
+        SELECT i FROM Interviewee i
+        LEFT JOIN FETCH i.slots
+        WHERE i.interviewProcess.id IN :processIds
+        """
+    )
+    List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
+
+    /**
      * Finds a single interviewee by ID within a process.
      *
      * @param intervieweeId the ID of the interviewee

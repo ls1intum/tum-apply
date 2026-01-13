@@ -1,27 +1,41 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
 import { ToastService } from 'app/service/toast-service';
 import { UserDataExportResourceApiService } from 'app/generated';
 import { Subscription, firstValueFrom, interval } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
 import { ButtonComponent } from '../components/atoms/button/button.component';
+import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 
+type SettingsTab = 'general' | 'notifications';
 @Component({
   selector: 'jhi-settings',
-  imports: [FontAwesomeModule, TranslateModule, TranslateDirective, EmailSettingsComponent, SelectComponent, ButtonComponent],
+  imports: [
+    TranslateDirective,
+    EmailSettingsComponent,
+    SelectComponent,
+    ButtonComponent,
+    TabViewComponent,
+    TabPanelTemplateDirective,
+    FontAwesomeModule,
+  ],
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.scss',
 })
 export class SettingsComponent {
+  readonly activeTab = signal<SettingsTab>('general');
   readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
+
+  readonly tabs: TabItem[] = [
+    { id: 'general', translationKey: 'settings.tabs.general' },
+    { id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] },
+  ];
 
   themeOptions: SelectOption[] = [
     { name: 'settings.appearance.options.light', value: 'light' },
@@ -67,6 +81,12 @@ export class SettingsComponent {
     } else {
       this.themeService.setSyncWithSystem(false);
       this.themeService.setTheme(value as ThemeOption);
+    }
+  }
+
+  onTabChange(tabId: string): void {
+    if (this.tabs.some(tab => tab.id === tabId)) {
+      this.activeTab.set(tabId as SettingsTab);
     }
   }
 

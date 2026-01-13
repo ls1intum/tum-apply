@@ -1,5 +1,4 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { ActivatedRoute, Params, Router, RouterModule } from '@angular/router';
@@ -23,7 +22,6 @@ import { ApplicationEvaluationOverviewDTO } from '../../generated/model/applicat
   selector: 'jhi-application-overview',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     LocalizedDatePipe,
     ButtonComponent,
@@ -63,7 +61,6 @@ export class ApplicationOverviewComponent {
         field: 'state',
         header: 'evaluation.tableHeaders.status',
         width: '10rem',
-        alignCenter: true,
         template: stateTpl,
       },
       { field: 'jobName', header: 'evaluation.tableHeaders.job', width: '26rem' },
@@ -174,7 +171,7 @@ export class ApplicationOverviewComponent {
   }
 
   navigateToDetail(application: ApplicationEvaluationOverviewDTO): void {
-    const queryParams: Record<string, any> = {
+    const queryParams: Params = {
       sortBy: this.sortBy(),
       sortDirection: this.sortDirection(),
       applicationId: application.applicationId,

@@ -4,10 +4,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TimeAgoPipe } from 'app/shared/pipes';
 
 import { ButtonComponent } from '../../atoms/button/button.component';
+import { ConfirmDialog } from '../../atoms/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'jhi-comment',
-  imports: [ButtonComponent, TextareaModule, TimeAgoPipe, TranslateModule],
+  imports: [ButtonComponent, TextareaModule, TimeAgoPipe, TranslateModule, ConfirmDialog],
   templateUrl: './comment.html',
   styleUrl: './comment.scss',
   encapsulation: ViewEncapsulation.None,

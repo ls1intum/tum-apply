@@ -99,6 +99,106 @@
 }
 
 /* --------------------------------------------------
+   Custom Global Styles for Menu Component (jhi-menu)
+
+   Styles for menu items with severity colors
+   Applied globally because popup menus are rendered
+   outside component with appendTo="body"
+--------------------------------------------------- */
+
+.p-menu-item-link {
+  &.menu-primary {
+    color: var(--p-primary-color);
+
+    .p-menu-item-icon {
+      color: var(--p-primary-color);
+    }
+
+    &:hover {
+      background-color: var(--p-primary-hover-color-outlined);
+    }
+  }
+
+  &.menu-secondary {
+    color: var(--p-secondary-color);
+
+    .p-menu-item-icon {
+      color: var(--p-secondary-color);
+    }
+
+    &:hover {
+      background-color: var(--p-secondary-hover-color-outlined);
+    }
+  }
+
+  &.menu-success {
+    color: var(--p-success-color);
+
+    .p-menu-item-icon {
+      color: var(--p-success-color);
+    }
+
+    &:hover {
+      background-color: var(--p-success-hover-color-outlined);
+    }
+  }
+
+  &.menu-warn {
+    color: var(--p-warn-color);
+
+    .p-menu-item-icon {
+      color: var(--p-warn-color);
+    }
+
+    &:hover {
+      background-color: var(--p-warn-hover-color-outlined);
+    }
+  }
+
+  &.menu-danger {
+    color: var(--p-danger-color);
+
+    .p-menu-item-icon {
+      color: var(--p-danger-color);
+    }
+
+    &:hover {
+      background-color: var(--p-danger-hover-color-outlined);
+    }
+  }
+
+  &.menu-info {
+    color: var(--p-neutral-color);
+
+    .p-menu-item-icon {
+      color: var(--p-neutral-color);
+    }
+
+    &:hover {
+      background-color: var(--p-neutral-hover-color-outlined);
+    }
+  }
+
+  &.menu-contrast {
+    color: var(--p-accent-color);
+
+    .p-menu-item-icon {
+      color: var(--p-accent-color);
+    }
+
+    &:hover {
+      background-color: var(--p-accent-hover-color-outlined);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* --------------------------------------------------
    Custom Global Styles for Atomic Editor Component
 
    fixes the issue, that the editor originally
@@ -274,6 +374,7 @@
     text-decoration: underline;
   }
 }
+
 /* Override PrimeNG Styling for search border in select component */
 .p-select-filter.p-component.p-inputtext {
   border: 0.1rem solid var(--p-border-default);
@@ -295,13 +396,6 @@
   margin-left: 2rem;
   list-style: initial;
 }
-/*
-TODO: temporarily disabled due to issues with PrimeNG Editor component converting unordered lists to ordered lists
-.description-text ol,
-.text-card ol,
-.detail-card ol {
-  list-style-type: decimal;
-}*/
 
 /* ---------------------------
  Style for file upload component
@@ -327,6 +421,7 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
     border-bottom: 0.17rem solid var(--p-primary-color);
   }
 }
+
 .basic-tab {
   background: var(--p-background-default);
 }
@@ -478,4 +573,20 @@ TODO: temporarily disabled due to issues with PrimeNG Editor component convertin
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--p-primary-color);
+}
+
+/* -------------------------------
+   Identity Provider Brand Colors
+------------------------------- */
+.fa-apple {
+  color: #000000 !important;
+  font-size: 1.25em !important; // Slightly increase size to match Google icon
+}
+
+.tum-apply-dark-mode .fa-apple {
+  color: #ffffff !important;
+}
+
+.fa-google {
+  color: #4285f4 !important;
 }

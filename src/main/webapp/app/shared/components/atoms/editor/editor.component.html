@@ -64,7 +64,7 @@
               @if (codingDisplay(); as coding) {
                 <span
                   class="px-3 py-1 rounded text-xs break-words"
-                  [ngClass]="analysisResult()?.coding === 'masculine-coded' ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"
+                  [ngClass]="analysisResult()?.coding === 'non-inclusive-coded' ? 'bg-amber-100 text-amber-900' : 'bg-blue-50 text-sky-700'"
                 >
                   {{ coding }}
                 </span>

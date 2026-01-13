@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,7 +13,7 @@ import { SlotsSectionComponent } from './slots-section/slots-section.component';
 @Component({
   selector: 'jhi-interview-process-detail',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ButtonComponent, SlotsSectionComponent, IntervieweeSectionComponent],
+  imports: [TranslateModule, ButtonComponent, SlotsSectionComponent, IntervieweeSectionComponent],
   templateUrl: './interview-process-detail.component.html',
 })
 export class InterviewProcessDetailComponent {
@@ -23,6 +22,9 @@ export class InterviewProcessDetailComponent {
   jobId = signal<string | null>(null);
   jobTitle = signal<string | null>(null);
   readonly safeJobTitle = computed(() => this.jobTitle() ?? '');
+
+  // Signal to trigger interviewee section reload
+  intervieweeRefreshKey = signal(0);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -43,6 +45,10 @@ export class InterviewProcessDetailComponent {
       this.processId.set(id);
       void this.loadProcessDetails(id);
     }
+  }
+
+  onSlotAssigned(): void {
+    this.intervieweeRefreshKey.update(k => k + 1);
   }
 
   navigateBack(): void {

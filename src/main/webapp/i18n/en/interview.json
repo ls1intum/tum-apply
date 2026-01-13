@@ -217,6 +217,31 @@
         }
       }
     },
+    "assign": {
+      "title": "Assign Applicant to Slot",
+      "selectedSlot": "Selected Slot",
+      "selectApplicant": "Select Applicant",
+      "noApplicants": "No invited applicants available",
+      "allAssigned": "All applicants in the interview process already have a Slot",
+      "success": {
+        "summary": "Assignment Successful",
+        "detail": "Applicant has been assigned to the slot."
+      },
+      "error": {
+        "notInProcess": {
+          "summary": "Invalid Applicant",
+          "detail": "Applicant is not in this interview process"
+        },
+        "failed": {
+          "summary": "Assignment Failed",
+          "detail": "An error occurred while assigning the applicant. Please try again."
+        },
+        "loadFailed": {
+          "summary": "Loading Failed",
+          "detail": "Failed to load available applicants"
+        }
+      }
+    },
     "assessment": {
       "title": "Interview Assessment",
       "headerPrefix": "Interview",

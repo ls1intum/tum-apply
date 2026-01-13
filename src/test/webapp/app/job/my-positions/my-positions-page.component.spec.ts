@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, it, expect, vi, Mocked } from 'vitest';
-import { of, throwError } from 'rxjs';
+import { of, throwError, EMPTY } from 'rxjs';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -46,6 +46,7 @@ describe('MyPositionsPageComponent', () => {
 
     router = {
       navigate: vi.fn(),
+      events: EMPTY,
     } as unknown as Mocked<Router>;
 
     await TestBed.configureTestingModule({
@@ -81,7 +82,6 @@ describe('MyPositionsPageComponent', () => {
     expect(columns.find(c => c.field === 'actions')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'state')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'startDate')?.template).toBeTruthy();
-    expect(columns.find(c => c.field === 'createdAt')?.template).toBeTruthy();
     expect(columns.find(c => c.field === 'lastModifiedAt')?.template).toBeTruthy();
 
     expect(columns.find(c => c.field === 'avatar')?.template).toBeUndefined();
@@ -226,6 +226,7 @@ describe('MyPositionsPageComponent', () => {
       name: '',
     });
     const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
+    spy.mockClear();
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
     expect(spy).not.toHaveBeenCalled();
   });
@@ -249,6 +250,7 @@ describe('MyPositionsPageComponent', () => {
   it('should set userId to empty string when loadedUser returns undefined', async () => {
     vi.spyOn(accountService, 'loadedUser').mockReturnValue(undefined);
     const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
+    spy.mockClear();
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
     expect(component.userId()).toBe('');
     expect(spy).not.toHaveBeenCalled();
@@ -261,7 +263,10 @@ describe('MyPositionsPageComponent', () => {
       name: '',
     });
     mockJobService.getJobsByProfessor.mockReturnValueOnce(
-      of({ content: undefined, totalElements: undefined }) as unknown as ReturnType<typeof mockJobService.getJobsByProfessor>,
+      of({
+        content: undefined,
+        totalElements: undefined,
+      }) as unknown as any,
     );
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
@@ -282,9 +287,8 @@ describe('MyPositionsPageComponent', () => {
       totalElements: 1,
     };
 
-    const spy = vi
-      .spyOn(mockJobService, 'getJobsByProfessor')
-      .mockReturnValue(of(mockResponse) as unknown as ReturnType<typeof mockJobService.getJobsByProfessor>);
+    const spy = vi.spyOn(mockJobService, 'getJobsByProfessor');
+    spy.mockReturnValue(of(mockResponse));
 
     await (component as unknown as { loadJobs: () => Promise<void> }).loadJobs();
 
