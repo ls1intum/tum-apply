@@ -44,7 +44,7 @@ export const sharedComponentConfig = {
             activeBackground: '{success.activeColor}',
           },
           danger: {
-            background: '{danger.color}',
+            background: '{danger.500}',
             color: '{danger.inverseColor}',
             hoverColor: '{danger.inverseColor}',
             hoverBackground: '{danger.hoverColor}',
@@ -152,9 +152,9 @@ export const sharedComponentConfig = {
             hoverBackground: '{warn.hoverColorOutlined}',
           },
           danger: {
-            hoverBackground: '{danger.50}',
-            activeBackground: '{danger.100}',
-            color: '{danger.500}',
+            hoverBackground: '{danger.100}',
+            activeBackground: '{danger.200}',
+            color: '{danger.700}',
           },
           contrast: {
             hoverBackground: '{surface.50}',
@@ -454,7 +454,7 @@ export const sharedLightColorScheme = {
     hoverColorOutlined: '{warn.100}',
   },
   danger: {
-    color: '{danger.500}',
+    color: '{danger.700}',
     inverseColor: '{text.onDanger}',
     hoverColor: '{danger.600}',
     activeColor: '{danger.700}',
