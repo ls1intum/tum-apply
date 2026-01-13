@@ -211,6 +211,56 @@ public class InterviewResource {
     }
 
     /**
+     * {@code GET
+     * /api/interviews/processes/{processId}/interviewees/{intervieweeId}} :
+     * Get detailed information for a single interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         {@link IntervieweeDetailDTO}
+     *
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/processes/{processId}/interviewees/{intervieweeId}")
+    public ResponseEntity<IntervieweeDetailDTO> getIntervieweeDetails(@PathVariable UUID processId, @PathVariable UUID intervieweeId) {
+        log.info("REST request to get interviewee details: {} in process: {}", intervieweeId, processId);
+        IntervieweeDetailDTO details = interviewService.getIntervieweeDetails(processId, intervieweeId);
+        log.info("Returning details for interviewee: {}", intervieweeId);
+        return ResponseEntity.ok(details);
+    }
+
+    /**
+     * {@code PUT
+     * /api/interviews/processes/{processId}/interviewees/{intervieweeId}/assessment}
+     * Update the assessment (rating and/or notes) for an interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @param dto           the update data containing rating and/or notes
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         updated {@link IntervieweeDetailDTO}
+     *
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws BadRequestException     if neither rating nor notes is provided
+     */
+    @ProfessorOrEmployee
+    @PutMapping("/processes/{processId}/interviewees/{intervieweeId}/assessment")
+    public ResponseEntity<IntervieweeDetailDTO> updateAssessment(
+        @PathVariable UUID processId,
+        @PathVariable UUID intervieweeId,
+        @Valid @RequestBody UpdateAssessmentDTO dto
+    ) {
+        log.info("REST request to update assessment for interviewee: {} in process: {}", intervieweeId, processId);
+        IntervieweeDetailDTO updated = interviewService.updateAssessment(processId, intervieweeId, dto);
+        log.info("Successfully updated assessment for interviewee: {}", intervieweeId);
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
      * {@code POST /api/interviews/slots/{slotId}/assign} : Assign an interviewee to
      * a slot.
      *
