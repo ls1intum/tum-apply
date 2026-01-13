@@ -30,8 +30,9 @@ import { IntervieweeDTO } from '../model/intervieweeDTO';
 // @ts-ignore
 import { IntervieweeDetailDTO } from '../model/intervieweeDetailDTO';
 // @ts-ignore
-import { UpdateAssessmentDTO } from '../model/updateAssessmentDTO';
 import { PageResponseDTOInterviewSlotDTO } from '../model/pageResponseDTOInterviewSlotDTO';
+// @ts-ignore
+import { UpdateAssessmentDTO } from '../model/updateAssessmentDTO';
 
 // @ts-ignore
 import { BASE_PATH }                     from '../variables';
