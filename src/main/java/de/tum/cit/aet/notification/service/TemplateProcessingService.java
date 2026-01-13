@@ -13,14 +13,15 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TemplateProcessingService {
@@ -48,12 +49,17 @@ public class TemplateProcessingService {
 
     /**
      * Renders a raw subject string using FreeMarker variables.
+     * If content is null, returns the subject with prefix without variable
+     * substitution.
      *
      * @param rawSubject the raw subject string
-     * @param content    the domain object for variable binding
+     * @param content    the domain object for variable binding (can be null)
      * @return the rendered and prefixed subject line
      */
     public String renderSubject(String rawSubject, Object content) {
+        if (content == null) {
+            return "TUMApply - " + rawSubject;
+        }
         try {
             Map<String, Object> dataModel = createDataModel(content);
             // Render subject through Freemarker string template
@@ -68,8 +74,10 @@ public class TemplateProcessingService {
     /**
      * Renders the HTML email body using FreeMarker and applies layout formatting.
      *
-     * @param emailTemplateTranslation the template translation containing raw HTML and language
-     * @param content                  the domain object (e.g. Application, Job) for variable binding
+     * @param emailTemplateTranslation the template translation containing raw HTML
+     *                                 and language
+     * @param content                  the domain object (e.g. Application, Job) for
+     *                                 variable binding
      * @return the fully rendered HTML email body
      * @throws TemplateProcessingException if template parsing or rendering fails
      */
