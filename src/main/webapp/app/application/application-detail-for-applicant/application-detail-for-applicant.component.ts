@@ -4,7 +4,8 @@ import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
-import { ActionButton, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -75,7 +76,7 @@ export default class ApplicationDetailForApplicantComponent {
         label: 'button.edit',
         icon: 'pencil',
         severity: 'primary',
-        command: () => {
+        onClick: () => {
           this.onUpdateApplication();
         },
       };

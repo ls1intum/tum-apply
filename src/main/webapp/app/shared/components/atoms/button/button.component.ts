@@ -26,16 +26,6 @@ export type Button = {
 
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
-export interface ActionButton {
-  label: string;
-  severity?: ButtonColor;
-  variant?: ButtonVariant;
-  icon?: string;
-  command: () => void;
-  disabled?: boolean;
-  shouldTranslate?: boolean;
-}
-
 @Component({
   selector: 'jhi-button',
   templateUrl: './button.component.html',

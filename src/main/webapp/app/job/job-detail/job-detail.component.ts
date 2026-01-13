@@ -13,7 +13,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
-import { ActionButton, ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
@@ -124,7 +125,7 @@ export class JobDetailComponent {
           return {
             label: 'button.apply',
             severity: 'primary',
-            command: () => {
+            onClick: () => {
               this.onApply();
             },
             disabled: false,
@@ -134,7 +135,7 @@ export class JobDetailComponent {
           return {
             label: 'button.edit',
             severity: 'primary',
-            command: () => {
+            onClick: () => {
               this.onEditApplication();
             },
             disabled: false,
@@ -145,7 +146,7 @@ export class JobDetailComponent {
           return {
             label: 'button.view',
             severity: 'primary',
-            command: () => {
+            onClick: () => {
               this.onViewApplication();
             },
             disabled: false,
@@ -158,7 +159,7 @@ export class JobDetailComponent {
       return {
         label: 'button.edit',
         severity: 'primary',
-        command: () => {
+        onClick: () => {
           this.onEditJob();
         },
         disabled: false,
@@ -172,7 +173,7 @@ export class JobDetailComponent {
         label: this.closeButtonLabel,
         severity: this.closeButtonSeverity,
         icon: this.closeButtonIcon,
-        command: () => {
+        onClick: () => {
           this.closeConfirmDialog()?.confirm();
         },
         disabled: false,
