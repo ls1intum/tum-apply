@@ -22,8 +22,16 @@ export default defineConfig(({ mode }) => ({
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: 'build/test-results/lcov-report',
       provider: 'v8',
-      all: false,
-      exclude: ['**/node_modules/**', '**/generated/**', '**/*.spec.ts', '**/*.test.ts', 'src/test/webapp/util/**'],
+      all: true,
+      exclude: [
+        '**/node_modules/**',
+        '**/generated/**',
+        '**/*.spec.ts',
+        '**/*.test.ts',
+        'src/test/webapp/util/**',
+        '**/*.html',
+        '**/*.scss',
+      ],
     },
   },
   define: {
