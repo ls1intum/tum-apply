@@ -1,5 +1,4 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -9,7 +8,7 @@ import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator
 
 @Component({
   selector: 'jhi-profile',
-  imports: [CommonModule, ButtonComponent, ReactiveFormsModule, TranslateModule, StringInputComponent],
+  imports: [ButtonComponent, ReactiveFormsModule, TranslateModule, StringInputComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
