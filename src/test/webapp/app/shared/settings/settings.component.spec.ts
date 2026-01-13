@@ -32,11 +32,13 @@ describe('SettingsComponent', () => {
   beforeEach(() => {
     setupWindowMatchMediaMock();
 
-    global.ResizeObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    }));
+    class ResizeObserverMock {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    }
+
+    global.ResizeObserver = ResizeObserverMock;
 
     accountServiceMock = createAccountServiceMock();
     translateMock = createTranslateServiceMock();
@@ -93,7 +95,10 @@ describe('SettingsComponent', () => {
 
   it('should download export and start cooldown on success', async () => {
     const blob = new Blob(['zip'], { type: 'application/zip' });
-    const headers = new HttpHeaders({ 'X-Export-Cooldown': '60', 'Content-Disposition': 'attachment; filename="user-data.zip"' });
+    const headers = new HttpHeaders({
+      'X-Export-Cooldown': '60',
+      'Content-Disposition': 'attachment; filename="user-data.zip"',
+    });
     const response = new (await import('@angular/common/http')).HttpResponse({ body: blob, headers });
 
     userDataExportServiceMock.exportUserData.mockReturnValue(of(response));
@@ -156,7 +161,11 @@ describe('SettingsComponent', () => {
     const originalURL = window.URL;
     const mockURL = { createObjectURL: vi.fn(), revokeObjectURL: vi.fn() };
     Object.defineProperty(window, 'URL', { value: mockURL, writable: true });
-    const createSpy = vi.spyOn(document, 'createElement').mockReturnValue({ click: vi.fn(), href: '', download: '' } as any);
+    const createSpy = vi.spyOn(document, 'createElement').mockReturnValue({
+      click: vi.fn(),
+      href: '',
+      download: '',
+    } as any);
 
     try {
       // 1. Fallback to X-Cooldown-Seconds
