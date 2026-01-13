@@ -60,20 +60,7 @@
         <span class="font-medium">{{ user()?.name }}</span>
         <fa-icon class="dropdown-icon" icon="chevron-down" />
       </div>
-      <p-menu #profileMenu [model]="profileMenuItems()" [popup]="true" [appendTo]="'body'">
-        <ng-template pTemplate="item" let-item>
-          @if (item.separator) {
-            <div class="p-menu-separator"></div>
-          } @else {
-            <a class="p-menu-item-link" (click)="item.command && item.command()">
-              @if (item.icon) {
-                <fa-icon class="p-menu-item-icon" [icon]="item.icon" />
-              }
-              <span class="p-menu-item-label">{{ item.label }}</span>
-            </a>
-          }
-        </ng-template>
-      </p-menu>
+      <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" />
     }
   </div>
 </header>

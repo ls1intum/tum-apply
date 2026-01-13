@@ -1,4 +1,14 @@
-import { Component, DestroyRef, ViewEncapsulation, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ViewEncapsulation,
+  WritableSignal,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -8,8 +18,6 @@ import { AccountService, User } from 'app/core/auth/account.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { filter, map } from 'rxjs';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
-import { Menu } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { AuthFacadeService } from 'app/core/auth/auth-facade.service';
 import { AuthDialogService } from 'app/core/auth/auth-dialog.service';
@@ -19,11 +27,12 @@ import { ThemeService } from 'app/service/theme.service';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { JhiMenuItem, MenuComponent } from '../../atoms/menu/menu.component';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective, Menu],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective, MenuComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
@@ -76,7 +85,9 @@ export class HeaderComponent {
     );
   });
 
-  profileMenuItems = computed<MenuItem[]>(() => {
+  profileMenu = viewChild.required<MenuComponent>('profileMenu');
+
+  profileMenuItems = computed<JhiMenuItem[]>(() => {
     this.currentLanguage();
     if (!this.user()) {
       return [];
@@ -84,18 +95,17 @@ export class HeaderComponent {
 
     return [
       {
-        label: this.translateService.instant('header.settings'),
+        label: 'header.settings',
         icon: 'gear',
+        severity: 'primary',
         command: () => {
           this.navigateToSettings();
         },
       },
       {
-        separator: true,
-      },
-      {
-        label: this.translateService.instant('header.logout'),
+        label: 'header.logout',
         icon: 'right-from-bracket',
+        severity: 'danger',
         command: () => {
           this.logout();
         },
