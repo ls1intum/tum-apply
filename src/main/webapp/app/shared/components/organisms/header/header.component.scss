@@ -114,27 +114,5 @@
         border-radius: 0.5rem;
       }
     }
-
-    jhi-menu {
-      :deep(.jhi-menu) {
-        .p-menu {
-          width: 11.5rem !important;
-          min-width: unset !important;
-
-          .p-menu-list {
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-
-          .p-menu-item {
-            margin: 0 !important;
-          }
-
-          .p-menu-item-content {
-            margin: 0 !important;
-          }
-        }
-      }
-    }
   }
 }
