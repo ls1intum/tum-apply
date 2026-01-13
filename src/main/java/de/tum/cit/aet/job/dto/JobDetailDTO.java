@@ -34,8 +34,6 @@ public record JobDetailDTO(
     JobState state,
     UUID applicationId,
     ApplicationState applicationState
-    // TODO: Adjust this to a List of CustomFields
-    // CustomField customFields
 ) {
     public JobDetailDTO(
         @NotNull UUID jobId,

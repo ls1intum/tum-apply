@@ -426,7 +426,8 @@ public class ApplicationService {
                 break;
             case CV:
                 uploadCV(files.getFirst(), application);
-                break; // TODO only one file allowed
+                // Only one file allowed
+                break;
             default:
                 throw new NotImplementedException(String.format("The type %s is not supported yet", documentType.name()));
         }
@@ -440,7 +441,7 @@ public class ApplicationService {
      *
      * @param applicationId the UUID of the application; must not be {@code null}
      * @return an {@link ApplicationDocumentIdsDTO} containing the categorized
-     *         document IDs for the application
+     * document IDs for the application
      * @throws IllegalArgumentException if {@code applicationId} is {@code null}
      */
     public ApplicationDocumentIdsDTO getDocumentDictionaryIdsOfApplication(UUID applicationId) {

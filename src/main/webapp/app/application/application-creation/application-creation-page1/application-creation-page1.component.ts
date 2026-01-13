@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, model, output } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
@@ -77,7 +76,6 @@ export function postalCodeValidator(getCountryFn: () => string | undefined): Val
 @Component({
   selector: 'jhi-application-creation-page1',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     DividerModule,
     SelectComponent,

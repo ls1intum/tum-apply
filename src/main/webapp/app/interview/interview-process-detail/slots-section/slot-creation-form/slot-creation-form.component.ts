@@ -1,5 +1,4 @@
 import { Component, QueryList, ViewChildren, computed, inject, input, model, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DialogModule } from 'primeng/dialog';
@@ -26,7 +25,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   selector: 'jhi-slot-creation-form',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     TranslateModule,

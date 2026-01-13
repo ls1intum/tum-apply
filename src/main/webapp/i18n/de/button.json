@@ -23,6 +23,7 @@
     "tooltip": {
       "editDisabled": "Nur Entwürfe können bearbeitet werden"
     },
+    "replace": "Ersetzen",
     "downloadPDF": "Exportieren"
   }
 }
