@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -22,16 +21,7 @@ const I18N_BASE = 'researchGroup.adminView';
 
 @Component({
   selector: 'jhi-research-group-admin-view',
-  imports: [
-    ButtonComponent,
-    CommonModule,
-    TagComponent,
-    TranslateModule,
-    TranslateDirective,
-    SearchFilterSortBar,
-    DynamicTableComponent,
-    ConfirmDialog,
-  ],
+  imports: [ButtonComponent, TagComponent, TranslateModule, TranslateDirective, SearchFilterSortBar, DynamicTableComponent, ConfirmDialog],
   templateUrl: './research-group-admin-view.component.html',
 })
 export class ResearchGroupAdminView {

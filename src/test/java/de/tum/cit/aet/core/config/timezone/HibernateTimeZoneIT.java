@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for verifying the behavior of Hibernate in the context of storing various date and time types across different databases.
  * The tests focus on ensuring that the stored values are correctly transformed and stored according to the configured timezone.
  * Timezone is environment specific, and can be adjusted according to your needs.
- *
+ * <p>
  * For more context, refer to:
  * - GitHub Issue: https://github.com/jhipster/generator-jhipster/issues/22579
  * - Pull Request: https://github.com/jhipster/generator-jhipster/pull/22946
@@ -136,7 +136,7 @@ class HibernateTimeZoneIT {
             // Convert to configured timezone
             .withOffsetSameInstant(ZoneId.of(zoneId).getRules().getOffset(Instant.now()))
             // Normalize to System TimeZone.
-            // TODO this behavior looks a bug, refer to https://github.com/jhipster/generator-jhipster/issues/22579.
+            // this behavior looks a bug, refer to https://github.com/jhipster/generator-jhipster/issues/22579.
             .withOffsetSameLocal(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneId.systemDefault()).getOffset())
             // Convert the normalized value to configured timezone
             .withOffsetSameInstant(ZoneId.of(zoneId).getRules().getOffset(Instant.EPOCH))
