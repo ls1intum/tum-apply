@@ -72,7 +72,7 @@
 
     .profile {
       display: flex;
-      padding: 0.5rem 0.75rem;
+      padding: 0.25rem 0.5rem;
       margin-right: -1rem;
       align-items: center;
       gap: 0.5rem;
@@ -117,33 +117,41 @@
   }
 }
 
-.profile-menu {
-  margin-top: 0.5rem;
-  min-width: 12rem;
+.p-menu {
+  width: 11.5rem !important;
+  min-width: unset !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
 
-  &:hover {
-    background-color: var(--p-primary-hover-color-outlined);
+  .p-menu-list {
+    padding: 0;
   }
 
-  .p-menuitem-link {
-    padding: 0.75rem 1rem;
+  .p-menu-item-link {
+    padding: 1rem 1rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
     transition: background-color 0.2s;
+    cursor: pointer;
 
     &:hover {
       background-color: var(--p-primary-hover-color-outlined);
-    } // TODO Background color funktioniert nicht richtig
-
-    .p-menuitem-icon {
-      font-size: 1rem;
-      color: var(--p-text-secondary);
     }
 
-    .p-menuitem-text {
+    .p-menu-item-icon {
+      font-size: 0.75rem;
+      color: var(--p-text-color);
+    }
+
+    .p-menu-item-label {
       font-size: 0.95rem;
       color: var(--p-text-color);
     }
+  }
+
+  .p-menu-separator {
+    display: none;
+
   }
 }

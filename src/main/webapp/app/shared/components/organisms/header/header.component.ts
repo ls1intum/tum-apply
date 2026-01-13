@@ -85,7 +85,7 @@ export class HeaderComponent {
     return [
       {
         label: this.translateService.instant('header.settings'),
-        icon: 'pi pi-cog', // TODO items anpassen
+        icon: 'gear',
         command: () => {
           this.navigateToSettings();
         },
@@ -95,7 +95,7 @@ export class HeaderComponent {
       },
       {
         label: this.translateService.instant('header.logout'),
-        icon: 'pi pi-sign-out', // TODO items anpassen
+        icon: 'right-from-bracket',
         command: () => {
           this.logout();
         },
