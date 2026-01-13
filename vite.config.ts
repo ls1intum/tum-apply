@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     reporters: ['default', 'junit'],
     outputFile: 'junit.xml',
     coverage: {
-      reporter: ['text', 'lcov', 'html'],
+      reporter: ['text', 'lcov', 'html', 'json-summary'],
       reportsDirectory: 'build/test-results/lcov-report',
       provider: 'v8',
       all: true,
