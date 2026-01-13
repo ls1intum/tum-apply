@@ -2,9 +2,12 @@
   "settings": {
     "header": "Einstellungen",
 
-    "notifications": {
-      "header": "Benachrichtigungen",
+    "tabs": {
+      "general": "Allgemein",
+      "notifications": "Benachrichtigungen"
+    },
 
+    "notifications": {
       "applicant": {
         "submission": {
           "title": "Bewerbung eingereicht",

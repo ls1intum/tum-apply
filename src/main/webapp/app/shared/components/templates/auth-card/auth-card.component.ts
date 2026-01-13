@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
@@ -10,7 +9,7 @@ import { AuthOrchestratorService } from '../../../../core/auth/auth-orchestrator
 @Component({
   selector: 'jhi-auth-card',
   standalone: true,
-  imports: [CommonModule, DividerModule, Login, Registration, ButtonComponent],
+  imports: [DividerModule, Login, Registration, ButtonComponent],
   templateUrl: './auth-card.component.html',
   styleUrls: ['./auth-card.component.scss'],
 })
