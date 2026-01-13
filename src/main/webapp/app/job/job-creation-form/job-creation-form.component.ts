@@ -96,6 +96,7 @@ export class JobCreationFormComponent {
     const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
     return `${base} border-border-default ${hover}`.trim();
   });
+
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceApiService);
   private imageResourceService = inject(ImageResourceApiService);
