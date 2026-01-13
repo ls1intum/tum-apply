@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ActionButton, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -65,7 +65,7 @@ export default class ApplicationDetailForApplicantComponent {
     return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
   });
 
-  readonly primaryActionButton = computed<JhiMenuItem | null>(() => {
+  readonly primaryActionButton = computed<ActionButton | null>(() => {
     const app = this.application();
     if (!app) return null;
 

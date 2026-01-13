@@ -60,9 +60,11 @@
             <jhi-button
               [label]="primaryActionButton.label"
               [severity]="primaryActionButton.severity ?? 'primary'"
+              [variant]="primaryActionButton.variant"
               [icon]="primaryActionButton.icon"
-              [shouldTranslate]="true"
-              (click)="primaryActionButton.command?.()"
+              [disabled]="primaryActionButton.disabled ?? false"
+              [shouldTranslate]="primaryActionButton.shouldTranslate ?? true"
+              (click)="primaryActionButton.command()"
             />
           }
         </div>

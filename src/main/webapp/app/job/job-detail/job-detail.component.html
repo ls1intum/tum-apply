@@ -83,12 +83,12 @@
           @if (primaryActionButton(); as primaryActionButton) {
             <jhi-button
               [label]="primaryActionButton.label"
-              [severity]="primaryActionButton.severity"
+              [severity]="primaryActionButton.severity ?? 'primary'"
               [variant]="primaryActionButton.variant"
               [icon]="primaryActionButton.icon"
-              [disabled]="primaryActionButton.disabled"
-              [shouldTranslate]="primaryActionButton.shouldTranslate"
-              (click)="primaryActionButton.onClick()"
+              [disabled]="primaryActionButton.disabled ?? false"
+              [shouldTranslate]="primaryActionButton.shouldTranslate ?? true"
+              (click)="primaryActionButton.command()"
             />
           }
         </div>
