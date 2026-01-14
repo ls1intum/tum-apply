@@ -1,5 +1,5 @@
 <!-- Page Container -->
-<div>
+<div class="flex flex-col min-h-screen">
   <!-- Loading State -->
   @if (loading()) {
     <div class="flex items-center justify-center h-64">
@@ -20,10 +20,9 @@
 
   <!-- Main Content -->
   @if (!loading() && !error() && interviewee()) {
-    <div class="flex flex-col gap-6 p-6">
+    <div class="flex-1 flex flex-col gap-6 p-6">
       <!-- Header -->
       <div class="flex items-center gap-4">
-        <jhi-button [shouldTranslate]="true" icon="arrow-left" variant="text" severity="secondary" (click)="goBack()" />
         <div class="flex flex-col gap-1">
           <h1 class="text-3xl font-bold text-text-primary" jhiTranslate="interview.assessment.title">Interview Assessment</h1>
         </div>
@@ -73,13 +72,7 @@
                     severity="secondary"
                     (click)="cancelNotes()"
                   />
-                  <jhi-button
-                    label="interview.assessment.notes.save"
-                    [shouldTranslate]="true"
-                    icon="save"
-                    [disabled]="saving()"
-                    (click)="saveNotes()"
-                  />
+                  <jhi-button label="entity.action.save" [shouldTranslate]="true" icon="save" [disabled]="saving()" (click)="saveNotes()" />
                 </div>
               } @else {
                 <div class="min-h-[200px] rounded-md border border-border-default p-4 bg-background-default">
@@ -100,15 +93,16 @@
         <!-- Right Column: Applicant Information -->
         <div class="w-full xl:w-[30%] flex flex-col gap-6">
           <!-- User Information Card -->
-          <div class="flex items-center gap-4 rounded-lg border border-border-default bg-background-default p-4">
-            <div class="flex flex-col">
-              <span class="text-lg font-bold text-text-primary">{{ applicantName() }}</span>
-              <span class="text-sm text-text-secondary">{{ studyInfo() }}</span>
+          <div class="flex items-center gap-4 rounded-lg border border-border-default bg-background-default p-4 overflow-hidden">
+            <div class="flex flex-col min-w-0">
+              <span class="text-lg font-bold text-text-primary truncate">{{ applicantName() }}</span>
+              <span class="text-sm text-text-secondary truncate">{{ degreeName() }}</span>
+              <span class="text-sm text-text-secondary truncate">{{ universityName() }}</span>
             </div>
           </div>
 
           <!-- Motivation Section -->
-          <jhi-section titleKey="interview.application.motivation.label" icon="rocket">
+          <jhi-section titleKey="evaluation.details.applicationMotivation" icon="rocket">
             @if (motivation()) {
               <div class="max-h-64 overflow-y-auto">
                 <jhi-prose [text]="motivation()" />
@@ -119,7 +113,7 @@
           </jhi-section>
 
           <!-- Skills Section -->
-          <jhi-section titleKey="interview.application.specialSkills.label" icon="brain">
+          <jhi-section titleKey="evaluation.details.applicationSkills" icon="brain">
             @if (skills()) {
               <div class="max-h-64 overflow-y-auto">
                 <jhi-prose [text]="skills()" />
@@ -130,7 +124,7 @@
           </jhi-section>
 
           <!-- Interests Section -->
-          <jhi-section titleKey="interview.application.interests.label" icon="flask">
+          <jhi-section titleKey="evaluation.details.applicationProjects" icon="flask">
             @if (interests()) {
               <div class="max-h-64 overflow-y-auto">
                 <jhi-prose [text]="interests()" />
@@ -141,11 +135,23 @@
           </jhi-section>
 
           <!-- Documents Section -->
-          <jhi-section titleKey="interview.application.documents.label" icon="file-lines">
+          <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
             <jhi-document-section [idsDTO]="documentIds()" [applicationId]="applicationId()" />
           </jhi-section>
         </div>
       </div>
+    </div>
+
+    <!-- Sticky Footer -->
+    <div class="sticky bottom-0 mt-auto py-3 bg-background-default border-t border-border-default px-6">
+      <jhi-button
+        [label]="'button.back'"
+        [shouldTranslate]="true"
+        icon="arrow-left"
+        variant="outlined"
+        [severity]="'info'"
+        (click)="goBack()"
+      />
     </div>
   }
 </div>

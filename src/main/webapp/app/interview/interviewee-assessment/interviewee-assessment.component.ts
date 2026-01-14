@@ -80,16 +80,18 @@ export class IntervieweeAssessmentComponent {
     return name || 'Unknown';
   });
 
-  // Returns "Degree - University" string, preferring Master over Bachelor
-  protected readonly studyInfo = computed(() => {
+  // Returns master degree name
+  protected readonly degreeName = computed(() => {
     const applicant = this.interviewee()?.application?.applicant;
     if (!applicant) return '';
+    return applicant.masterDegreeName || applicant.bachelorDegreeName || '';
+  });
 
-    const degree = applicant.masterDegreeName || applicant.bachelorDegreeName;
-    const university = applicant.masterUniversity || applicant.bachelorUniversity;
-
-    if (degree && university) return `${degree} - ${university}`;
-    return degree || university || '';
+  // Returns university name (master)
+  protected readonly universityName = computed(() => {
+    const applicant = this.interviewee()?.application?.applicant;
+    if (!applicant) return '';
+    return applicant.masterUniversity || applicant.bachelorUniversity || '';
   });
 
   // Extracts motivation text from nested application DTO

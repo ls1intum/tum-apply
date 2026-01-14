@@ -244,19 +244,12 @@
     },
     "assessment": {
       "title": "Interview Assessment",
-      "headerPrefix": "Interview",
       "back": "Back to Overview",
-      "saving": "Saving...",
-      "saved": "Saved",
-      "lastSaved": "Last saved",
       "rating": {
-        "label": "Score",
-        "empty": "Not yet assessed"
+        "label": "Score"
       },
       "notes": {
         "label": "Interview Note",
-        "placeholder": "Enter your evaluation notes...",
-        "save": "Save Note",
         "empty": "No interview notes added yet."
       },
       "error": {
@@ -272,24 +265,6 @@
           "summary": "Not Found",
           "detail": "Interviewee not found"
         }
-      }
-    },
-    "application": {
-      "title": "Application",
-      "motivation": {
-        "label": "Motivation"
-      },
-      "specialSkills": {
-        "label": "Special Skills"
-      },
-      "interests": {
-        "label": "Interests"
-      },
-      "documents": {
-        "label": "Documents"
-      },
-      "user": {
-        "label": "Applicant Information"
       }
     }
   }
