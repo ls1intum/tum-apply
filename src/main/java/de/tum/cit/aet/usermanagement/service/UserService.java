@@ -61,6 +61,7 @@ public class UserService {
      * Upserts a user in the database and assigns the APPLICANT role.
      * - Normalizes input values (never null, may be blank)
      * - Creates a new user if missing, otherwise updates changed fields only
+     * - Updates lastActivityAt if older than 24 hours
      * - Assigns the APPLICANT role when no roles are present
      * <p>
      * Note: This method does not throw if names/emails are blank; callers may validate earlier.
