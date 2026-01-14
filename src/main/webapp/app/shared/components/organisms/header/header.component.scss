@@ -73,7 +73,6 @@
     .profile {
       display: flex;
       padding: 0.25rem 0.5rem;
-      margin-right: -1rem;
       align-items: center;
       gap: 0.5rem;
       border-radius: 0.5rem;
@@ -99,6 +98,11 @@
       .dropdown-icon {
         font-size: 0.75rem;
         color: var(--p-text-color);
+        transition: transform 0.3s ease;
+
+        &.rotated {
+          transform: rotate(180deg);
+        }
       }
     }
 

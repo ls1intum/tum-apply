@@ -55,11 +55,17 @@
       }
       <jhi-button class="header-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
-      <div class="profile" (click)="profileMenu.toggle($event)">
+      <button
+        class="profile"
+        type="button"
+        (click)="toggleProfileMenu($event)"
+        [attr.aria-label]="'header.profileMenu' | translate"
+        aria-haspopup="menu"
+      >
         <fa-icon class="profile-icon" icon="user" />
         <span class="font-medium">{{ user()?.name }}</span>
-        <fa-icon class="dropdown-icon" icon="chevron-down" />
-      </div>
+        <fa-icon class="dropdown-icon" icon="chevron-down" [ngClass]="{ rotated: isProfileMenuOpen() }" />
+      </button>
       <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" />
     }
   </div>

@@ -85,7 +85,8 @@ export class HeaderComponent {
     );
   });
 
-  profileMenu = viewChild.required<MenuComponent>('profileMenu');
+  profileMenu = viewChild<MenuComponent>('profileMenu');
+  isProfileMenuOpen = signal(false);
 
   profileMenuItems = computed<JhiMenuItem[]>(() => {
     this.currentLanguage();
@@ -196,6 +197,11 @@ export class HeaderComponent {
 
   navigateToSettings(): void {
     void this.router.navigate(['/settings']);
+  }
+
+  toggleProfileMenu(event: Event): void {
+    this.isProfileMenuOpen.update(state => !state);
+    this.profileMenu()?.toggle(event);
   }
 
   private setupBannerObserver(): void {
