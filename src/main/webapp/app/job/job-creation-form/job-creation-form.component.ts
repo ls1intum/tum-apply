@@ -31,7 +31,11 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
-import { AiService } from '../../service/ai.service';
+import {AiResourceApiService} from "app/generated";
+import { ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef} from '@angular/core';
+
+
 
 
 type JobFormMode = 'create' | 'edit';
@@ -41,6 +45,7 @@ type JobFormMode = 'create' | 'edit';
   standalone: true,
   templateUrl: './job-creation-form.component.html',
   styleUrls: ['./job-creation-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     TooltipModule,
@@ -60,6 +65,7 @@ type JobFormMode = 'create' | 'edit';
     ButtonComponent,
     ProgressSpinnerModule,
     CheckboxModule,
+
   ],
   providers: [JobResourceApiService],
 })
@@ -80,7 +86,10 @@ export class JobCreationFormComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private autoSaveInitialized = false;
-  private aiService = inject(AiService);
+  private aiService = inject(AiResourceApiService);
+  private cdRef = inject(ChangeDetectorRef);
+  private jobDescriptionSignal = signal<string>('');
+
   isGeneratingDraft = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
 
@@ -118,6 +127,7 @@ export class JobCreationFormComponent {
   constructor() {
     this.init();
     this.setupAutoSave();
+
   }
 
   // State signals
@@ -567,6 +577,7 @@ export class JobCreationFormComponent {
     //Call backend with relevant metadata
     const request: JobFormDTO = {
       title: this.basicInfoForm.get('title')?.value ?? '',
+      researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
       fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value.value ?? '',
       supervisingProfessor: this.userId(),
       location: this.basicInfoForm.get('location')?.value.value as JobFormDTO.LocationEnum,
@@ -576,9 +587,11 @@ export class JobCreationFormComponent {
     console.log('Sending request:', request);
     try {
       const response = await firstValueFrom(this.aiService.generateJobApplicationDraft(request));
-      if (response?.jobDescription) {
-        this.basicInfoForm.patchValue({ jobDescription: response.jobDescription });
-      }
+        this.basicInfoForm.get('jobDescription')?.setValue(response.jobDescription);
+        this.cdRef.detectChanges();
+        //this.basicInfoForm.get('jobDescription')?.valueChanges.subscribe(value => {
+         // this.jobDescriptionSignal.set(value);
+       // })
     } catch (error) {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
     } finally {

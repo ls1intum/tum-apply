@@ -26,8 +26,6 @@ Maximum 200 words
 
 INPUT:
 Job Description: %s
-Requirements: %s
-Tasks: %s
 
 OUTPUT
 1. gender-inclusive
