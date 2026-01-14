@@ -177,6 +177,19 @@ class EmailServiceTest {
 
             verifyNoInteractions(emailTemplateService);
         }
+
+        @Test
+        void allowsCustomSubjectWithNullContent() {
+            disableEmail();
+
+            Email email = baseEmail.customSubject(CUSTOM_SUBJECT).customBody(CUSTOM_BODY).language(Language.ENGLISH).build();
+
+            when(templateProcessingService.renderSubject(eq(CUSTOM_SUBJECT), isNull())).thenReturn(CUSTOM_SUBJECT);
+            when(templateProcessingService.renderRawTemplate(eq(Language.ENGLISH), eq(CUSTOM_BODY))).thenReturn(CUSTOM_BODY);
+
+            assertThatNoException().isThrownBy(() -> emailService.send(email));
+            verify(templateProcessingService).renderSubject(eq(CUSTOM_SUBJECT), isNull());
+        }
     }
 
     @Nested

@@ -9,6 +9,7 @@ import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.template.Configuration;
@@ -37,7 +38,7 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Renders the email subject line for display in the final email.
+     * Renders the email subject line for display in the final email using the provided content for variable binding.
      *
      * @param emailTemplateTranslation the email template translation
      * @param content                  the domain object for variable binding
@@ -56,7 +57,7 @@ public class TemplateProcessingService {
      */
     public String renderSubject(String rawSubject, Object content) {
         try {
-            Map<String, Object> dataModel = createDataModel(content);
+            Map<String, Object> dataModel = content == null ? new HashMap<>() : createDataModel(content);
             // Render subject through Freemarker string template
             Template subjectTemplate = new Template("subject", new StringReader(rawSubject), freemarkerConfig);
             String renderedSubject = render(subjectTemplate, dataModel);
@@ -170,6 +171,7 @@ public class TemplateProcessingService {
             case Job job -> addJobData(dataModel, job);
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
             case InterviewSlot slot -> addInterviewSlotData(dataModel, slot);
+            case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
             case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
             default -> {
                 throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
@@ -236,6 +238,14 @@ public class TemplateProcessingService {
     }
 
     /**
+     * Adds combined user and research group data for research-group-related emails.
+     */
+    private void addResearchGroupContextData(Map<String, Object> dataModel, ResearchGroupEmailContext context) {
+        addUserData(dataModel, context.user());
+        addResearchGroupData(dataModel, context.researchGroup());
+    }
+
+    /**
      * Adds interviewee-related variables to the template data model.
      * Including the self-scheduling booking link.
      *
@@ -259,6 +269,17 @@ public class TemplateProcessingService {
      */
     private void addResearchGroupData(Map<String, Object> dataModel, ResearchGroup researchGroup) {
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), researchGroup.getName());
+    }
+
+    /**
+     * Adds generic user data to the template data model.
+     *
+     * @param dataModel the data model map
+     * @param user      the user object
+     */
+    private void addUserData(Map<String, Object> dataModel, User user) {
+        dataModel.put(TemplateVariable.USER_FIRST_NAME.getValue(), user.getFirstName());
+        dataModel.put(TemplateVariable.USER_LAST_NAME.getValue(), user.getLastName());
     }
 
     /**
