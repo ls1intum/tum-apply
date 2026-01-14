@@ -88,7 +88,7 @@
         "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung abgelehnt - Position nicht mehr aktuell",
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
         "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund",
-        "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch"
+        "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch",
         "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
         "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
       },
