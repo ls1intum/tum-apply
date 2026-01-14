@@ -172,6 +172,11 @@
       "add": "Add Applicant",
       "addTitle": "Add Applicant",
       "sendInvitation": "Send Invitation",
+      "resendInvitation": "Resend Invitation",
+      "resendConfirmation": {
+        "header": "Resend Invitation",
+        "message": "This applicant has already been invited. Do you want to send the invitation email again?"
+      },
       "sendAllInvitations": "Send Invitations",
       "allInvited": "All applicants have been invited",
       "empty": "No interviewees yet",

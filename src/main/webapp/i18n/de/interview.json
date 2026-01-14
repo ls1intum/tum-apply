@@ -172,6 +172,11 @@
       "add": "Bewerber:in hinzufügen",
       "addTitle": "Bewerber:in hinzufügen",
       "sendInvitation": "Einladung senden",
+      "resendInvitation": "Einladung erneut senden",
+      "resendConfirmation": {
+        "header": "Einladung erneut senden",
+        "message": "Dieser Bewerber hat bereits eine Einladung erhalten. Möchten Sie die Einladung erneut senden?"
+      },
       "sendAllInvitations": "Einladungen senden",
       "allInvited": "Alle Bewerber:innen wurden eingeladen",
       "empty": "Noch keine Bewerber:innen hinzugefügt",
