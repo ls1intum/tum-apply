@@ -124,12 +124,12 @@ class EmailServiceTest {
     }
 
     private void stubRenderedFromTemplate(EmailTemplateTranslation tpl, String subject, String bodyHtml) {
-        when(templateProcessingService.renderSubject(tpl)).thenReturn(subject);
+        when(templateProcessingService.renderSubject(eq(tpl), any())).thenReturn(subject);
         when(templateProcessingService.renderTemplate(eq(tpl), any())).thenReturn(bodyHtml);
     }
 
     private void stubRenderedCustom(String subject, String bodyHtml) {
-        when(templateProcessingService.renderSubject(subject)).thenReturn(subject);
+        when(templateProcessingService.renderSubject(eq(subject), any())).thenReturn(subject);
         when(templateProcessingService.renderRawTemplate(eq(Language.ENGLISH), eq(bodyHtml))).thenReturn(bodyHtml);
     }
 
@@ -169,6 +169,19 @@ class EmailServiceTest {
 
             verifyNoInteractions(emailTemplateService);
         }
+
+        @Test
+        void allowsCustomSubjectWithNullContent() {
+            disableEmail();
+
+            Email email = baseEmail.customSubject(CUSTOM_SUBJECT).customBody(CUSTOM_BODY).language(Language.ENGLISH).build();
+
+            when(templateProcessingService.renderSubject(eq(CUSTOM_SUBJECT), isNull())).thenReturn(CUSTOM_SUBJECT);
+            when(templateProcessingService.renderRawTemplate(eq(Language.ENGLISH), eq(CUSTOM_BODY))).thenReturn(CUSTOM_BODY);
+
+            assertThatNoException().isThrownBy(() -> emailService.send(email));
+            verify(templateProcessingService).renderSubject(eq(CUSTOM_SUBJECT), isNull());
+        }
     }
 
     @Nested
@@ -193,7 +206,7 @@ class EmailServiceTest {
             emailService.send(email);
 
             verify(mailSender).send(any(MimeMessage.class));
-            verify(templateProcessingService).renderSubject(tpl);
+            verify(templateProcessingService).renderSubject(eq(tpl), any());
             verify(templateProcessingService).renderTemplate(eq(tpl), any());
         }
 
