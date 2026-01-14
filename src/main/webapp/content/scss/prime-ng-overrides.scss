@@ -93,3 +93,46 @@ p-step[data-p-active='true'] .p-step-title {
     }
   }
 }
+
+/* -------------------------------
+   Custom Tab View Styles
+---------------------------------- */
+.p-tablist {
+  display: flex;
+  border-bottom: 1px solid var(--p-content-border-color);
+  background: transparent !important;
+}
+
+.p-tab {
+  border: 0 !important;
+  border-top: none !important;
+  background: transparent !important;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--p-text-muted-color, rgba(0 0 0 / 60%));
+  border-bottom: 2px solid transparent !important;
+  transition: all 0.2s ease;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.p-tab:hover {
+  color: var(--p-primary-color);
+  background-color: var(--p-primary-hover-color-outlined) !important;
+}
+
+.p-tab[data-p-active='true'] {
+  color: var(--p-primary-color);
+  border-bottom: 2px solid var(--p-primary-color) !important;
+  background: transparent !important;
+}
+
+.p-tab:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.p-tabpanels {
+  padding-top: 1rem;
+  background: transparent !important;
+}
