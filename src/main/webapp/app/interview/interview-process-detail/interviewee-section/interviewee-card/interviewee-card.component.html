@@ -44,17 +44,21 @@
     }
   </div>
 
-  <!-- Actions for UNCONTACTED state -->
-  @if (interviewee().state === IntervieweeState.UNCONTACTED) {
+  <!-- Actions for UNCONTACTED or INVITED state -->
+  @if (interviewee().state === IntervieweeState.UNCONTACTED || interviewee().state === IntervieweeState.INVITED) {
     <jhi-button
       (click)="$event.stopPropagation(); sendInvitation.emit(interviewee())"
       [shouldTranslate]="true"
-      icon="paper-plane"
-      variant="outlined"
-      severity="primary"
+      [icon]="interviewee().state === IntervieweeState.INVITED ? 'rotate-right' : 'paper-plane'"
+      [variant]="'outlined'"
+      [severity]="interviewee().state === IntervieweeState.INVITED ? 'secondary' : 'primary'"
       [disabled]="sending()"
       [loading]="sending()"
-      label="interview.interviewees.sendInvitation"
+      [label]="
+        interviewee().state === IntervieweeState.INVITED
+          ? 'interview.interviewees.resendInvitation'
+          : 'interview.interviewees.sendInvitation'
+      "
     />
   }
 </div>

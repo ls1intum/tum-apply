@@ -175,7 +175,7 @@
       "resendInvitation": "Einladung erneut senden",
       "resendConfirmation": {
         "header": "Einladung erneut senden",
-        "message": "Dieser Bewerber hat bereits eine Einladung erhalten. Möchten Sie die Einladung erneut senden?"
+        "message": "Dieser Bewerber hat bereits eine Einladung erhalten. Möchtest du die Einladung erneut senden?"
       },
       "sendAllInvitations": "Einladungen senden",
       "allInvited": "Alle Bewerber:innen wurden eingeladen",
