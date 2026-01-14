@@ -15,19 +15,14 @@
       "noSlotSelected": "Wähle einen Termin aus",
       "book": "Termin buchen",
       "alreadyBooked": "Bereits gebucht",
-      "noSlotsFormatted": "Keine Termine verfügbar",
       "noSlotsInMonth": "Keine Termine in diesem Monat",
-      "details": "Details",
       "error": {
         "title": "Buchungsdaten konnten nicht geladen werden",
-        "description": "Die Buchungsdaten konnten nicht geladen werden. Bitte aktualisiere die Seite oder versuche es erneut.",
-        "retry": "Erneut versuchen"
+        "description": "Die Buchungsdaten konnten nicht geladen werden. Bitte aktualisiere die Seite oder versuche es erneut."
       },
       "success": {
         "title": "Termin gebucht!",
-        "message": "Du hast deinen Interview-Termin erfolgreich gebucht.",
-        "viewDetails": "Details anzeigen",
-        "cancelBooking": "Buchung stornieren"
+        "message": "Du hast deinen Interview Termin erfolgreich gebucht."
       },
       "bookingSuccess": {
         "summary": "Buchung bestätigt",

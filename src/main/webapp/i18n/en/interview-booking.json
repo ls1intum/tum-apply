@@ -15,19 +15,14 @@
       "noSlotSelected": "Select a slot to continue",
       "book": "Book Slot",
       "alreadyBooked": "Already Booked",
-      "noSlotsFormatted": "No slots available",
       "noSlotsInMonth": "No slots in this month",
-      "details": "Details",
       "error": {
         "title": "Failed to load booking data",
-        "description": "The booking data could not be loaded. Please refresh the page or try again.",
-        "retry": "Retry"
+        "description": "The booking data could not be loaded. Please refresh the page or try again."
       },
       "success": {
         "title": "Interview Booked!",
-        "message": "You have successfully booked your interview slot.",
-        "viewDetails": "View Details",
-        "cancelBooking": "Cancel Booking"
+        "message": "You have successfully booked your interview slot."
       },
       "bookingSuccess": {
         "summary": "Booking Confirmed",
