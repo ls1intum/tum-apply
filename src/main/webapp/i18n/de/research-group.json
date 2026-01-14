@@ -77,7 +77,9 @@
       "messageType": {
         "APPLICATION_ACCEPTED": "Bewerbung wurde angenommen",
         "APPLICATION_SENT": "Bewerbung empfangen",
-        "APPLICATION_REJECTED": "Bewerbung abgelehnt"
+        "APPLICATION_REJECTED": "Bewerbung abgelehnt",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
+        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
       },
       "default": {
         "APPLICATION_ACCEPTED": "Bewerbung angenommen",
@@ -86,11 +88,15 @@
         "APPLICATION_REJECTED-JOB_OUTDATED": "Bewerbung abgelehnt - Position nicht mehr aktuell",
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Bewerbung abgelehnt - Anforderungen nicht erfüllt",
         "APPLICATION_REJECTED-OTHER_REASON": "Bewerbung abgelehnt - Anderer Grund",
-        "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch"
+        "INTERVIEW_INVITATION": "Einladung zum Vorstellungsgespräch",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Zur Forschungsgruppe hinzugefügt",
+        "RESEARCH_GROUP_APPROVED": "Forschungsgruppe aktiviert"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Vorname Bewerber:in",
         "APPLICANT_LAST_NAME": "Nachname Bewerber:in",
+        "USER_FIRST_NAME": "Vorname Nutzer:in",
+        "USER_LAST_NAME": "Nachname Nutzer:in",
         "SUPERVISING_PROFESSOR_FIRST_NAME": "Vorname Professor:in",
         "SUPERVISING_PROFESSOR_LAST_NAME": "Nachname Professor:in",
         "JOB_TITLE": "Stellen Titel",
@@ -205,7 +211,7 @@
       "success": {
         "approve": {
           "summary": "Erfolg",
-          "detail": "Forschungsgruppe erfolgreich genehmigt"
+          "detail": "Forschungsgruppe erfolgreich genehmigt. Die Professor:in wurde benachrichtigt."
         },
         "deny": {
           "summary": "Erfolg",

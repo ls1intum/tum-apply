@@ -14,7 +14,7 @@ export interface EmailSettingDTO {
     enabled?: boolean;
 }
 export namespace EmailSettingDTO {
-    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'INTERVIEW_INVITATION' | 'INTERVIEW_SELF_SCHEDULING_INVITATION';
+    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'INTERVIEW_INVITATION' | 'RESEARCH_GROUP_MEMBER_ADDED' | 'RESEARCH_GROUP_APPROVED' | 'INTERVIEW_SELF_SCHEDULING_INVITATION';
     export const EmailTypeEnum = {
         ApplicationAccepted: 'APPLICATION_ACCEPTED' as EmailTypeEnum,
         ApplicationRejected: 'APPLICATION_REJECTED' as EmailTypeEnum,
@@ -22,6 +22,8 @@ export namespace EmailSettingDTO {
         ApplicationSent: 'APPLICATION_SENT' as EmailTypeEnum,
         ApplicationWithdrawn: 'APPLICATION_WITHDRAWN' as EmailTypeEnum,
         InterviewInvitation: 'INTERVIEW_INVITATION' as EmailTypeEnum,
+        ResearchGroupMemberAdded: 'RESEARCH_GROUP_MEMBER_ADDED' as EmailTypeEnum,
+        ResearchGroupApproved: 'RESEARCH_GROUP_APPROVED' as EmailTypeEnum,
         InterviewSelfSchedulingInvitation: 'INTERVIEW_SELF_SCHEDULING_INVITATION' as EmailTypeEnum
     };
 }
