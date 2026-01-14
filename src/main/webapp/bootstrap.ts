@@ -1,4 +1,4 @@
-import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
+import { enableProdMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { NgbDatepickerConfig, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,7 +21,7 @@ if (!DEBUG_INFO_ENABLED) {
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
-  providers: [provideZoneChangeDetection(), ...appConfig.providers, provideAnimations(), MessageService],
+  providers: [...appConfig.providers, provideAnimations(), MessageService],
 })
   .then(app => {
     const dpConfig = app.injector.get(NgbDatepickerConfig);
