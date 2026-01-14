@@ -46,7 +46,7 @@ public enum EmailType {
      * To: Applicant who was assigned to the slot
      */
     INTERVIEW_INVITATION("INTERVIEW_INVITATION", Set.of(UserRole.APPLICANT), true, false),
-     * When a user is added to a research group
+    /** When a user is added to a research group
      * To: Newly added member
      */
     RESEARCH_GROUP_MEMBER_ADDED("RESEARCH_GROUP_MEMBER_ADDED", Set.of(UserRole.EMPLOYEE, UserRole.PROFESSOR), true, false),
