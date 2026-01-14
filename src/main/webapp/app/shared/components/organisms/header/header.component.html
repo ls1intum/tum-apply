@@ -1,32 +1,39 @@
 <header
-  class="app-header border-b transition-colors duration-300"
+  class="flex items-center justify-between px-6 py-[0.4rem] sticky top-0 z-[1000] overflow-x-auto h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
 >
-  <div (click)="navigateToHome()" class="logo-section">
-    <img alt="TUMApply Logo" class="tumapply-logo h-8" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
-    <span class="app-name">TUMApply</span>
+  <div
+    (click)="navigateToHome()"
+    class="flex items-center gap-2 text-[var(--p-primary-color)] text-base font-bold cursor-pointer flex-shrink-0"
+  >
+    <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
+    <span>TUMApply</span>
     @if (isProfessorPage()) {
-      <span class="professor" jhiTranslate="header.professorTitle"></span>
+      <span class="text-[var(--p-secondary-color)] font-light" jhiTranslate="header.professorTitle"></span>
     }
   </div>
 
-  <div class="actions-section">
-    <div class="language-switch">
+  <div class="flex items-center gap-3 flex-shrink-0">
+    <div class="flex items-center gap-1">
       @for (language of languages; track language; let isLast = $last) {
-        <button (click)="toggleLanguage(language)" [ngClass]="{ active: currentLanguage() === language }" class="language-button">
+        <button
+          (click)="toggleLanguage(language)"
+          class="text-[var(--p-primary-color)] cursor-pointer hover:underline"
+          [class.font-bold]="currentLanguage() === language"
+        >
           {{ language.toUpperCase() }}
         </button>
         @if (!isLast) {
-          <span class="divider">|</span>
+          <span class="text-[var(--p-primary-color)]">|</span>
         }
       }
     </div>
 
-    <div class="theme-switch">
+    <div class="relative">
       <jhi-button
-        class="theme-toggle-button"
+        class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-lg"
         (click)="toggleTheme()"
         [icon]="isDarkMode() ? 'moon' : 'custom-sun'"
         [tooltip]="'header.theme' | translate"
@@ -38,7 +45,7 @@
     @if (user() === undefined) {
       @if (isProfessorPage()) {
         <jhi-button
-          class="header-button"
+          class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
           (click)="redirectToApplicantLandingPage()"
           label="{{ 'header.applicant' | translate }}"
           severity="primary"
@@ -46,25 +53,38 @@
         />
       } @else {
         <jhi-button
-          class="header-button"
+          class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
           (click)="redirectToProfessorLandingPage()"
           label="{{ 'header.professor' | translate }}"
           severity="primary"
           variant="outlined"
         />
       }
-      <jhi-button class="header-button" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
+
+      <jhi-button
+        class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
+        (click)="login()"
+        label="{{ 'header.login' | translate }}"
+        severity="primary"
+      />
     } @else {
       <button
-        class="profile"
+        class="flex py-1 px-2 items-center gap-2 rounded-lg cursor-pointer bg-transparent transition-colors duration-200 hover:bg-[var(--p-primary-hover-color-outlined)]"
         type="button"
         (click)="toggleProfileMenu($event)"
         [attr.aria-label]="'header.profileMenu' | translate"
         aria-haspopup="menu"
       >
-        <fa-icon class="profile-icon" icon="user" />
+        <fa-icon
+          class="flex justify-center w-7 h-7 items-center rounded-full bg-[var(--p-primary-color)] text-[var(--p-text-on-primary)]"
+          icon="user"
+        />
         <span class="font-medium">{{ user()?.name }}</span>
-        <fa-icon class="dropdown-icon" icon="chevron-down" [ngClass]="{ rotated: isProfileMenuOpen() }" />
+        <fa-icon
+          class="text-xs text-[var(--p-text-color)] transition-transform duration-300"
+          [class.rotate-180]="isProfileMenuOpen()"
+          icon="chevron-down"
+        />
       </button>
       <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" />
     }
