@@ -11,7 +11,9 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.*;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.EmailTemplateService;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
@@ -67,6 +69,9 @@ class ResearchGroupServiceTest {
 
     @Mock
     private AsyncEmailSender emailSender;
+
+    @Mock
+    private EmailTemplateService emailTemplateService;
 
     @InjectMocks
     private ResearchGroupService researchGroupService;
@@ -361,6 +366,34 @@ class ResearchGroupServiceTest {
             assertThatThrownBy(() -> researchGroupService.activateResearchGroup(TEST_RESEARCH_GROUP_ID))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Only DRAFT or DENIED groups can be activated");
+        }
+
+        @Test
+        void sendsApprovalEmailToProfessorOnActivate() {
+            // Arrange
+            testResearchGroup.setState(ResearchGroupState.DRAFT);
+            testResearchGroup.setUniversityId("uni123");
+
+            User prof = UserTestData.newUserAll(UUID.randomUUID(), "prof@test.com", "Prof", "X");
+            prof.setUniversityId("uni123");
+
+            when(researchGroupRepository.findByIdElseThrow(TEST_RESEARCH_GROUP_ID)).thenReturn(testResearchGroup);
+            when(researchGroupRepository.save(testResearchGroup)).thenReturn(testResearchGroup);
+            when(userResearchGroupRoleRepository.findAllByResearchGroup(testResearchGroup)).thenReturn(Set.of());
+            when(userRepository.findByUniversityIdIgnoreCase("uni123")).thenReturn(Optional.of(prof));
+
+            // Act
+            researchGroupService.activateResearchGroup(TEST_RESEARCH_GROUP_ID);
+
+            // Assert
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(emailSender).sendAsync(emailCaptor.capture());
+            Email sent = emailCaptor.getValue();
+            assertThat(sent.getContent()).isInstanceOf(ResearchGroupEmailContext.class);
+            ResearchGroupEmailContext context = (ResearchGroupEmailContext) sent.getContent();
+            assertThat(context.researchGroup()).isEqualTo(testResearchGroup);
+            assertThat(context.user().getEmail()).isEqualTo("prof@test.com");
+            assertThat(sent.getTo()).anyMatch(u -> u.getEmail().equals("prof@test.com"));
         }
     }
 

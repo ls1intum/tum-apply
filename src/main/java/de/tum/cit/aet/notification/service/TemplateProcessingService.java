@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.template.Configuration;
@@ -35,17 +36,33 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Renders the email subject line for display in the final email.
+     * Renders the email subject line for display in the final email using the provided content for variable binding.
      *
      * @param emailTemplateTranslation the email template translation
+     * @param content                  the domain object for variable binding
      * @return the prefixed subject line
      */
-    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
-        return renderSubject(emailTemplateTranslation.getSubject());
+    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation, Object content) {
+        return renderSubject(emailTemplateTranslation.getSubject(), content);
     }
 
-    public String renderSubject(String subject) {
-        return "TUMApply - " + subject;
+    /**
+     * Renders a raw subject string using FreeMarker variables.
+     *
+     * @param rawSubject the raw subject string
+     * @param content    the domain object for variable binding
+     * @return the rendered and prefixed subject line
+     */
+    public String renderSubject(String rawSubject, Object content) {
+        try {
+            Map<String, Object> dataModel = content == null ? new HashMap<>() : createDataModel(content);
+            // Render subject through Freemarker string template
+            Template subjectTemplate = new Template("subject", new StringReader(rawSubject), freemarkerConfig);
+            String renderedSubject = render(subjectTemplate, dataModel);
+            return "TUMApply - " + renderedSubject;
+        } catch (IOException ex) {
+            throw new TemplateProcessingException("Failed to render subject template", ex);
+        }
     }
 
     /**
@@ -148,9 +165,8 @@ public class TemplateProcessingService {
             case Application application -> addApplicationData(dataModel, application);
             case Job job -> addJobData(dataModel, job);
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
-            default -> {
-                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
-            }
+            case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
+            default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
         return dataModel;
     }
@@ -186,6 +202,14 @@ public class TemplateProcessingService {
     }
 
     /**
+     * Adds combined user and research group data for research-group-related emails.
+     */
+    private void addResearchGroupContextData(Map<String, Object> dataModel, ResearchGroupEmailContext context) {
+        addUserData(dataModel, context.user());
+        addResearchGroupData(dataModel, context.researchGroup());
+    }
+
+    /**
      * Adds research group-related variables to the template data model.
      *
      * @param dataModel     the data model map
@@ -193,6 +217,17 @@ public class TemplateProcessingService {
      */
     private void addResearchGroupData(Map<String, Object> dataModel, ResearchGroup researchGroup) {
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), researchGroup.getName());
+    }
+
+    /**
+     * Adds generic user data to the template data model.
+     *
+     * @param dataModel the data model map
+     * @param user      the user object
+     */
+    private void addUserData(Map<String, Object> dataModel, User user) {
+        dataModel.put(TemplateVariable.USER_FIRST_NAME.getValue(), user.getFirstName());
+        dataModel.put(TemplateVariable.USER_LAST_NAME.getValue(), user.getLastName());
     }
 
     /**
