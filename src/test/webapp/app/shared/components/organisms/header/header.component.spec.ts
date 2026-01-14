@@ -7,6 +7,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { User } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
@@ -221,7 +222,7 @@ describe('HeaderComponent', () => {
     });
 
     it('should call profileMenu toggle method with event', () => {
-      accountService.user.set({ id: 1, login: 'testuser' } as any);
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       fixture.detectChanges();
 
       const mockEvent = new MouseEvent('click');
@@ -253,7 +254,7 @@ describe('HeaderComponent', () => {
     });
 
     it('should return settings and logout menu items when user is authenticated', () => {
-      accountService.user.set({ id: 1, login: 'testuser' } as any);
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       fixture.detectChanges();
 
       const menuItems = component.profileMenuItems();
@@ -272,7 +273,7 @@ describe('HeaderComponent', () => {
     });
 
     it('should trigger navigateToSettings when settings menu item command is executed', () => {
-      accountService.user.set({ id: 1, login: 'testuser' } as any);
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       const navigateSpy = vi.spyOn(component, 'navigateToSettings');
       fixture.detectChanges();
 
@@ -280,11 +281,11 @@ describe('HeaderComponent', () => {
       const settingsItem = menuItems[0];
       settingsItem?.command?.();
 
-      expect(navigateSpy).toHaveBeenCalledTimes(1);
+      expect(navigateSpy).toHaveBeenCalledOnce();
     });
 
     it('should trigger logout when logout menu item command is executed', () => {
-      accountService.user.set({ id: 1, login: 'testuser' } as any);
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       const logoutSpy = vi.spyOn(component, 'logout');
       fixture.detectChanges();
 
@@ -292,11 +293,11 @@ describe('HeaderComponent', () => {
       const logoutItem = menuItems[1];
       logoutItem?.command?.();
 
-      expect(logoutSpy).toHaveBeenCalledTimes(1);
+      expect(logoutSpy).toHaveBeenCalledOnce();
     });
 
     it('should reactively update when language changes', () => {
-      accountService.user.set({ id: 1, login: 'testuser' } as any);
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       fixture.detectChanges();
 
       const menuItemsBefore = component.profileMenuItems();
