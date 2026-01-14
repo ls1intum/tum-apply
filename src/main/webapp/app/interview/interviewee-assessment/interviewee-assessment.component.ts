@@ -43,61 +43,40 @@ import TranslateDirective from 'app/shared/language/translate.directive';
   templateUrl: './interviewee-assessment.component.html',
 })
 export class IntervieweeAssessmentComponent {
-  // 1) Services
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly toastService = inject(ToastService);
-
-  // Constants
-  private readonly params = toSignal(this.route.paramMap);
-
-  // 5) Signals
+  // Signals
   protected readonly interviewee = signal<IntervieweeDetailDTO | undefined>(undefined);
   protected readonly loading = signal<boolean>(true);
   protected readonly error = signal<string | undefined>(undefined);
-
   protected readonly rating = signal<number | undefined>(undefined);
   protected readonly notesControl = new FormControl<string>('', { nonNullable: true });
   protected readonly isEditingNotes = signal<boolean>(false);
-
   protected readonly saving = signal<boolean>(false);
-
-  // Tracks server-side rating to detect local changes
-  private readonly serverRating = signal<number | undefined>(undefined);
-  // Prevents auto-save effect from firing during initial data load
-  private readonly isInitializing = signal<boolean>(true);
+  protected readonly params = toSignal(inject(ActivatedRoute).paramMap);
 
   // Computed
   protected readonly processId = computed(() => this.params()?.get('processId') ?? '');
   protected readonly intervieweeId = computed(() => this.params()?.get('intervieweeId') ?? '');
 
-  // Concatenates first + last name, falls back to 'Unknown'
   protected readonly applicantName = computed(() => {
     const user = this.interviewee()?.user;
     if (!user) return '';
-    const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim();
-    return name || 'Unknown';
+    return `${user.firstName} ${user.lastName}`;
   });
 
-  // Returns master degree name
   protected readonly degreeName = computed(() => {
     const applicant = this.interviewee()?.application?.applicant;
     if (!applicant) return '';
-    return applicant.masterDegreeName || applicant.bachelorDegreeName || '';
+    return applicant.masterDegreeName ?? '';
   });
 
-  // Returns university name (master)
   protected readonly universityName = computed(() => {
     const applicant = this.interviewee()?.application?.applicant;
     if (!applicant) return '';
-    return applicant.masterUniversity || applicant.bachelorUniversity || '';
+    return applicant.masterUniversity ?? '';
   });
 
   // Extracts motivation text from nested application DTO
   protected readonly motivation = computed(() => this.interviewee()?.application?.motivation ?? '');
-
-  // Extracts special skills from nested application DTO
   protected readonly skills = computed(() => this.interviewee()?.application?.specialSkills ?? '');
 
   // Extracts projects/interests from nested application DTO
@@ -115,8 +94,14 @@ export class IntervieweeAssessmentComponent {
   // Returns scheduled slot info if available
   protected readonly slotInfo = computed(() => this.interviewee()?.scheduledSlot);
 
-  // 7) Effects
-  // Triggers API fetch when route params change
+  // Services
+  private readonly router = inject(Router);
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly toastService = inject(ToastService);
+  private readonly serverRating = signal<number | undefined>(undefined);
+  private readonly isInitializing = signal<boolean>(true);
+
+  // Effects
   private readonly loadEffect = effect(() => {
     const processId = this.processId();
     const intervieweeId = this.intervieweeId();
@@ -126,7 +111,6 @@ export class IntervieweeAssessmentComponent {
     }
   });
 
-  // Auto-saves rating on change (debounced by signal equality check)
   private readonly ratingSaveEffect = effect(() => {
     const rating = this.rating();
     const processId = this.processId();
@@ -199,7 +183,7 @@ export class IntervieweeAssessmentComponent {
       this.serverRating.set(data.rating ?? undefined);
       this.notesControl.setValue(data.assessmentNotes ?? '', { emitEvent: false });
 
-      this.isEditingNotes.set(!data.assessmentNotes);
+      this.isEditingNotes.set(data.assessmentNotes === '');
     } catch (err) {
       this.handleLoadError(err);
     } finally {
@@ -208,7 +192,6 @@ export class IntervieweeAssessmentComponent {
     }
   }
 
-  // Persists rating, reverts on failure
   private async saveRating(processId: string, intervieweeId: string, rating: number | undefined): Promise<void> {
     const dto: UpdateAssessmentDTO = { rating: rating ?? undefined };
 

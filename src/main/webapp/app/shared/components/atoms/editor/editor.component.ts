@@ -59,7 +59,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   // Check if error message should be displayed
   isOverCharLimit = computed(() => {
     const limit = this.characterLimit();
-    if (limit === undefined || limit === null) {
+    if (limit === undefined) {
       return false;
     }
     const count = this.characterCount();
@@ -81,7 +81,7 @@ export class EditorComponent extends BaseInputDirective<string> {
 
   charCounterColor = computed(() => {
     const limit = this.characterLimit();
-    if (limit === undefined || limit === null) {
+    if (limit === undefined) {
       return 'char-counter-normal';
     }
 
@@ -107,14 +107,14 @@ export class EditorComponent extends BaseInputDirective<string> {
   readonly codingDisplay = computed(() => {
     this.langChange();
     const result = this.analysisResult();
-    if (!result?.coding) return null;
+    if (result?.coding === undefined) return null;
 
     const coding = result.coding;
     const key = this.getCodingTranslationKey(coding);
     return this.translateService.instant(key);
   });
 
-  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
+  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.getCurrentLang() });
 
   private htmlValue = signal('');
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
@@ -144,7 +144,7 @@ export class EditorComponent extends BaseInputDirective<string> {
 
     const limit = this.characterLimit();
     // Only check limit if it is defined
-    if (limit !== undefined && limit !== null) {
+    if (limit !== undefined) {
       const maxChars = limit + STANDARD_CHARACTER_BUFFER;
       if (source !== 'user') return;
       const newTextLength = extractTextFromHtml(editor.root.innerHTML).length;

@@ -44,17 +44,13 @@ export class IntervieweeCardComponent {
     COMPLETED: 'COMPLETED',
   } as const;
 
-  // Injected Services
+  // Services
   private readonly router = inject(Router);
+  private readonly translateService = inject(TranslateService);
+  private locale = computed(() => getLocale(this.translateService));
 
-  // Navigate to assessment page
+  // Methods
   navigateToAssessment(): void {
     void this.router.navigate(['/interviews', 'process', this.processId(), 'interviewee', this.interviewee().id, 'assessment']);
   }
-
-  // Services
-  private readonly translateService = inject(TranslateService);
-
-  // Computed locale
-  private locale = computed(() => getLocale(this.translateService));
 }
