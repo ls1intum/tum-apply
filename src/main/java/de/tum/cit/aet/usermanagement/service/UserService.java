@@ -11,7 +11,8 @@ import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -89,8 +90,8 @@ public class UserService {
         updated |= setIfPresentAndChanged(user::getFirstName, user::setFirstName, normalizedFirstName);
         updated |= setIfPresentAndChanged(user::getLastName, user::setLastName, normalizedLastName);
 
-        Instant now = Instant.now();
-        Instant cutoff = now.minus(LAST_ACTIVITY_UPDATE_THRESHOLD);
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime cutoff = now.minus(LAST_ACTIVITY_UPDATE_THRESHOLD);
 
         if (user.getLastActivityAt() == null || user.getLastActivityAt().isBefore(cutoff)) {
             user.setLastActivityAt(now);

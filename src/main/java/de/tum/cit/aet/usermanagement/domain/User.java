@@ -4,8 +4,8 @@ import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import jakarta.persistence.*;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -79,7 +79,7 @@ public class User extends AbstractAuditingEntity {
     private Set<EmailSetting> emailSettings = new HashSet<>();
 
     @Column(name = "last_activity_at")
-    private Instant lastActivityAt;
+    private LocalDateTime lastActivityAt;
 
     /**
      * Ensure defaults before persisting a new user.
