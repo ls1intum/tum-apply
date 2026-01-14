@@ -1,5 +1,5 @@
 <header
-  class="flex items-center justify-between px-6 py-[0.4rem] sticky top-0 z-[1000] overflow-x-auto h-12 border-b transition-colors duration-300"
+  class="flex items-center justify-between px-6 py-1.5 sticky top-0 z-[1000] overflow-x-auto h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
@@ -31,9 +31,8 @@
       }
     </div>
 
-    <div class="relative">
+    <div>
       <jhi-button
-        class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-lg"
         (click)="toggleTheme()"
         [icon]="isDarkMode() ? 'moon' : 'custom-sun'"
         [tooltip]="'header.theme' | translate"
@@ -45,7 +44,6 @@
     @if (user() === undefined) {
       @if (isProfessorPage()) {
         <jhi-button
-          class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
           (click)="redirectToApplicantLandingPage()"
           label="{{ 'header.applicant' | translate }}"
           severity="primary"
@@ -53,7 +51,6 @@
         />
       } @else {
         <jhi-button
-          class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
           (click)="redirectToProfessorLandingPage()"
           label="{{ 'header.professor' | translate }}"
           severity="primary"
@@ -62,7 +59,6 @@
       }
 
       <jhi-button
-        class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
         (click)="login()"
         label="{{ 'header.login' | translate }}"
         severity="primary"

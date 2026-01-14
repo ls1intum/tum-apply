@@ -34,7 +34,6 @@ import { JhiMenuItem, MenuComponent } from '../../atoms/menu/menu.component';
   standalone: true,
   imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective, MenuComponent],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
