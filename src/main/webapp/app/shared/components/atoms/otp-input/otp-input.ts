@@ -56,7 +56,6 @@ export class OtpInput extends BaseInputDirective<string | undefined> {
     { initialValue: null },
   );
 
-  // TODO: show error messages from server
   private readonly registrationOverride = signal<boolean | null>(null);
   private readonly isRegistration = computed(() => {
     const registrationOverride = this.registrationOverride();

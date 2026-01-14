@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Component, TemplateRef, computed, inject, signal, viewChild } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -16,23 +15,13 @@ import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import { TranslateDirective } from 'app/shared/language';
-import { ResearchGroupDetailViewComponent } from 'app/usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component';
 import { ResearchGroupCreationFormComponent } from 'app/shared/components/molecules/research-group-creation-form/research-group-creation-form.component';
 
 const I18N_BASE = 'researchGroup.adminView';
 
 @Component({
   selector: 'jhi-research-group-admin-view',
-  imports: [
-    ButtonComponent,
-    CommonModule,
-    TagComponent,
-    TranslateModule,
-    TranslateDirective,
-    SearchFilterSortBar,
-    DynamicTableComponent,
-    ConfirmDialog,
-  ],
+  imports: [ButtonComponent, TagComponent, TranslateModule, TranslateDirective, SearchFilterSortBar, DynamicTableComponent, ConfirmDialog],
   templateUrl: './research-group-admin-view.component.html',
 })
 export class ResearchGroupAdminView {
@@ -145,15 +134,7 @@ export class ResearchGroupAdminView {
   }
 
   onViewResearchGroup(researchGroupId: string): void {
-    this.dialogService.open(ResearchGroupDetailViewComponent, {
-      header: this.translate.instant('researchGroup.detailView.title'),
-      data: { researchGroupId },
-      styleClass: 'research-group-detail-dialog',
-      style: { background: 'var(--color-background-default)', width: '60rem' },
-      closable: true,
-      draggable: false,
-      modal: true,
-    });
+    void this.router.navigate(['/research-group/detail', researchGroupId]);
   }
 
   onCreateResearchGroup(): void {
