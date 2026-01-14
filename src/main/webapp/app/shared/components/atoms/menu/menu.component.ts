@@ -1,5 +1,7 @@
-import { Component, computed, input, viewChild } from '@angular/core';
+import { Component, computed, inject, input, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NavigationStart, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MenuModule } from 'primeng/menu';
 import { Menu } from 'primeng/menu';
@@ -55,6 +57,16 @@ export class MenuComponent {
     info: 'menu-info',
   };
 
+  private router = inject(Router);
+
+  constructor() {
+    // Clean up menu overlays on navigation start
+    // This fixes PrimeNG 21 issue where popups don't close on navigation
+    this.router.events.pipe(filter(event => event instanceof NavigationStart)).subscribe(() => {
+      this.clearMenuPopups();
+    });
+  }
+
   toggle(event: Event): void {
     this.menu().toggle(event);
   }
@@ -69,7 +81,21 @@ export class MenuComponent {
 
   private handleCommand(item: JhiMenuItem): void {
     item.command?.();
-    this.hide();
+    // Clean up immediately in case navigation occurs
+    this.clearMenuPopups();
+  }
+
+  /**
+   * Manually removes menu overlay elements from the DOM.
+   * This is a workaround for PrimeNG 21 where popup menus with appendTo="body"
+   * don't automatically close when navigation occurs. (view github issue linked in PR for further details)
+   * remove once fixed
+   */
+  private clearMenuPopups(): void {
+    const menuElements = document.querySelectorAll('body > [name="p-anchored-overlay"]');
+    menuElements.forEach(node => {
+      node.remove();
+    });
   }
 
   // Build style class string for item

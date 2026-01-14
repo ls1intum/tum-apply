@@ -77,7 +77,9 @@
       "messageType": {
         "APPLICATION_ACCEPTED": "Application accepted",
         "APPLICATION_SENT": "Application received",
-        "APPLICATION_REJECTED": "Application rejected"
+        "APPLICATION_REJECTED": "Application rejected",
+        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
+        "RESEARCH_GROUP_APPROVED": "Research group activated"
       },
       "default": {
         "APPLICATION_ACCEPTED": "Application accepted",
@@ -87,10 +89,14 @@
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
         "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason",
         "INTERVIEW_INVITATION": "Interview Invitation"
+        "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
+        "RESEARCH_GROUP_APPROVED": "Research group activated"
       },
       "variables": {
         "APPLICANT_FIRST_NAME": "Applicant First Name",
         "APPLICANT_LAST_NAME": "Applicant Last Name",
+        "USER_FIRST_NAME": "User First Name",
+        "USER_LAST_NAME": "User Last Name",
         "SUPERVISING_PROFESSOR_FIRST_NAME": "Supervising Professor First Name",
         "SUPERVISING_PROFESSOR_LAST_NAME": "Supervising Professor Last Name",
         "JOB_TITLE": "Job Title",
@@ -205,7 +211,7 @@
       "success": {
         "approve": {
           "summary": "Success",
-          "detail": "Research group approved successfully"
+          "detail": "Research group approved successfully. The professor has been notified."
         },
         "deny": {
           "summary": "Success",

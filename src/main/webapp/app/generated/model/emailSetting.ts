@@ -17,7 +17,7 @@ export interface EmailSetting {
     user?: User;
 }
 export namespace EmailSetting {
-    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'INTERVIEW_INVITATION';
+    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'RESEARCH_GROUP_MEMBER_ADDED' | 'RESEARCH_GROUP_APPROVED' | 'INTERVIEW_INVITATION';
     export const EmailTypeEnum = {
         ApplicationAccepted: 'APPLICATION_ACCEPTED' as EmailTypeEnum,
         ApplicationRejected: 'APPLICATION_REJECTED' as EmailTypeEnum,
@@ -25,6 +25,8 @@ export namespace EmailSetting {
         ApplicationSent: 'APPLICATION_SENT' as EmailTypeEnum,
         ApplicationWithdrawn: 'APPLICATION_WITHDRAWN' as EmailTypeEnum,
         InterviewInvitation: 'INTERVIEW_INVITATION' as EmailTypeEnum
+        ResearchGroupMemberAdded: 'RESEARCH_GROUP_MEMBER_ADDED' as EmailTypeEnum,
+        ResearchGroupApproved: 'RESEARCH_GROUP_APPROVED' as EmailTypeEnum
     };
 }
 
