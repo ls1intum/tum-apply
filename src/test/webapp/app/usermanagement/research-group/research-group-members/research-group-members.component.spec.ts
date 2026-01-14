@@ -3,7 +3,6 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { of, throwError } from 'rxjs';
-import { Router } from '@angular/router';
 
 import { ResearchGroupMembersComponent } from 'app/usermanagement/research-group/research-group-members/research-group-members.component';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
@@ -343,6 +342,6 @@ describe('ResearchGroupMembersComponent', () => {
 
   it('should navigate back to admin view', () => {
     component.goBack();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group-admin']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/admin-view']);
   });
 });
