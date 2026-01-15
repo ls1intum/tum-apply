@@ -256,15 +256,15 @@
       "error": {
         "saveFailed": {
           "summary": "Save Failed",
-          "detail": "Failed to save assessment"
+          "detail": "Could not save the assessment. Please try again."
         },
         "loadFailed": {
           "summary": "Load Failed",
-          "detail": "Failed to load interviewee"
+          "detail": "Could not load applicant. Please reload the page."
         },
         "notFound": {
           "summary": "Not Found",
-          "detail": "Interviewee not found"
+          "detail": "This applicant does not exist or has been removed."
         }
       }
     }

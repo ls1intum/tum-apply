@@ -256,15 +256,15 @@
       "error": {
         "saveFailed": {
           "summary": "Speichern fehlgeschlagen",
-          "detail": "Bewertung konnte nicht gespeichert werden"
+          "detail": "Bewertung konnte nicht gespeichert werden. Bitte versuche es erneut."
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Bewerber:in konnte nicht geladen werden"
+          "detail": "Bewerber:in konnte nicht geladen werden. Bitte lade die Seite neu."
         },
         "notFound": {
           "summary": "Nicht gefunden",
-          "detail": "Bewerber nicht gefunden"
+          "detail": "Diese:r Bewerber:in existiert nicht oder wurde entfernt."
         }
       }
     }
