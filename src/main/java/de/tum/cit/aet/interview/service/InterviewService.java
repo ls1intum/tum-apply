@@ -652,17 +652,15 @@ public class InterviewService {
         Interviewee interviewee = intervieweeRepository
             .findByIdAndProcessId(intervieweeId, processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
-
-        // 2. Fetch Application with details separately (to avoid lazy loading issues)
+        // 2. Security: Verify current user has job access
+        Job job = interviewee.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+        // 3. Fetch Application with details separately (to avoid lazy loading issues)
         Application application = applicationRepository
             .findWithDetailsById(interviewee.getApplication().getApplicationId())
             .orElseThrow(() -> EntityNotFoundException.forId("Application", interviewee.getApplication().getApplicationId()));
 
         interviewee.setApplication(application);
-
-        // 3. Security: Verify current user has job access
-        Job job = interviewee.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
 
         // 4. Build and return detail DTO
         return mapIntervieweeToDetailDTO(interviewee, job);
