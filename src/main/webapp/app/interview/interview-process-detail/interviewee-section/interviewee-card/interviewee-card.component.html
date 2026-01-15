@@ -1,5 +1,5 @@
 <div
-  class="flex items-center justify-between p-3 bg-background-default border rounded border-border-default h-16 cursor-pointer hover:bg-primary-50 transition-colors"
+  class="flex items-center justify-between p-3 bg-background-default border rounded border-border-default h-16 cursor-pointer hover:bg-background-surface transition-colors"
   (click)="navigateToAssessment()"
 >
   <div class="flex items-center">
@@ -20,12 +20,15 @@
       ></div>
 
       <!-- Status Text -->
-      <span class="text-secondary text-sm whitespace-nowrap" [jhiTranslate]="'interview.interviewees.filter.' + interviewee().state"></span>
+      <span
+        class="text-text-secondary text-sm whitespace-nowrap"
+        [jhiTranslate]="'interview.interviewees.filter.' + interviewee().state"
+      ></span>
     </div>
 
     <!-- Schedule Details (only for SCHEDULED state) -->
     @if (interviewee().state === IntervieweeState.SCHEDULED && interviewee().scheduledSlot) {
-      <div class="flex items-center self-end gap-8 text-sm text-secondary">
+      <div class="flex items-center self-end gap-8 text-sm text-text-secondary">
         <!-- Date -->
         <div class="flex items-center gap-2">
           <fa-icon icon="calendar" class="text-xs text-icon-disabled" />
