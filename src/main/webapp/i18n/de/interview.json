@@ -224,6 +224,10 @@
         }
       },
       "invitation": {
+        "successSingle": {
+          "summary": "Einladung gesendet",
+          "detail": "Die Einladung wurde erfolgreich gesendet"
+        },
         "success": {
           "summary": "Einladung gesendet",
           "detail": "{{count}} Einladung(en) erfolgreich gesendet"

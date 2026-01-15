@@ -297,9 +297,13 @@ export class IntervieweeSectionComponent {
   private handleInvitationResult(result: SendInvitationsResultDTO, expected: number): void {
     const sentCount = result.sentCount ?? 0;
     if (sentCount >= expected) {
-      this.toastService.showSuccessKey('interview.interviewees.invitation.success', {
-        count: sentCount.toString(),
-      });
+      if (sentCount === 1) {
+        this.toastService.showSuccessKey('interview.interviewees.invitation.successSingle');
+      } else {
+        this.toastService.showSuccessKey('interview.interviewees.invitation.success', {
+          count: sentCount.toString(),
+        });
+      }
     } else if (sentCount > 0) {
       const failedList = result.failedEmails?.join(', ') ?? '';
       this.toastService.showWarn({
