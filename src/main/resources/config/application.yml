@@ -325,6 +325,15 @@ keycloak:
     # Secret for the admin client; generate in Keycloak → Clients → tumapply-otp-admin → Credentials
     client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}
 
+user:
+  retention:
+    inactive-days-before-deletion: ${USER_RETENTION_INACTIVE_DAYS_BEFORE_DELETION:365}
+    days-before-applicant-data-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
+    enabled: ${USER_RETENTION_ENABLED:false}
+    dry-run: ${USER_RETENTION_DRY_RUN:true}
+    batch-size: ${USER_RETENTION_BATCH_SIZE:300}
+    max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:10}
+
 # ===================================================================
 # OTP (One-Time Password) / Email Verification settings
 # - length: number of digits/characters for the generated OTP code

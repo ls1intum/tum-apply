@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -138,6 +139,25 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
         """
     )
     Page<UUID> findAvailableUserIdsForResearchGroup(@Param("searchQuery") String searchQuery, Pageable pageable);
+
+    /**
+     * Finds user IDs that are inactive (based on last activity or creation date) and are NOT admins.
+     */
+    @Query(
+        """
+            SELECT u.userId
+            FROM User u
+            WHERE COALESCE(u.lastActivityAt, u.createdAt) < :cutoff
+              AND NOT EXISTS (
+                SELECT 1
+                FROM UserResearchGroupRole urgr
+                WHERE urgr.user = u
+                  AND urgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
+              )
+            ORDER BY COALESCE(u.lastActivityAt, u.createdAt) ASC
+        """
+    )
+    Page<UUID> findInactiveNonAdminUserIdsForRetention(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
     String email(String email);
 }
