@@ -247,7 +247,7 @@
       "back": "Zurück zur Übersicht",
       "rating": {
         "label": "Bewertung",
-        "info": "Bewerte das Gespräch. Dies ist für den Bewerber nicht sichtbar."
+        "info": "Bewerte das Gespräch. Dies ist für Bewerber:innen nicht sichtbar."
       },
       "notes": {
         "label": "Interview Notiz",
@@ -260,7 +260,7 @@
         },
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
-          "detail": "Bewerber konnte nicht geladen werden"
+          "detail": "Bewerber:in konnte nicht geladen werden"
         },
         "notFound": {
           "summary": "Nicht gefunden",
