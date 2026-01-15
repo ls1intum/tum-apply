@@ -701,11 +701,8 @@ public class InterviewService {
             interviewee.setAssessmentNotes(dto.notes());
         }
 
-        // 5. Save and re-fetch with all relations for DTO mapping
-        intervieweeRepository.save(interviewee);
-        Interviewee saved = intervieweeRepository
-            .findByIdAndProcessId(intervieweeId, processId)
-            .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
+        // 5. Save and return DTO
+        Interviewee saved = intervieweeRepository.save(interviewee);
         return mapIntervieweeToDetailDTO(saved, job);
     }
 
