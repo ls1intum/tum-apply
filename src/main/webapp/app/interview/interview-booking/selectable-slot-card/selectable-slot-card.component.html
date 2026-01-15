@@ -7,25 +7,25 @@
   [class.hover:bg-background-surface]="!selected()"
   (click)="onSelect()"
 >
-  <div class="flex flex-col gap-1">
-    <!-- Time Range -->
-    <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
+  <!-- Time Range -->
+  <div class="text-sm font-semibold text-text">{{ timeRange() }}</div>
 
-    <!-- Meta Info Row -->
-    <div class="flex items-center justify-between text-xs text-text-secondary mt-1">
-      <div class="flex items-center gap-1">
-        <fa-icon icon="clock" class="text-[0.625rem]" />
-        <span>{{ duration() }}</span>
-      </div>
+  <!-- Meta Info Row -->
+  <div class="flex items-center text-xs text-text-secondary mt-1">
+    <!-- Duration (left) -->
+    <div class="flex items-center gap-1">
+      <fa-icon icon="clock" class="text-[0.625rem]" />
+      <span>{{ duration() }}</span>
+    </div>
 
-      <div class="flex items-center gap-1 max-w-[50%] truncate">
-        <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[0.625rem]" />
-        @if (isVirtual()) {
-          <span jhiTranslate="interview.slots.location.virtual"></span>
-        } @else {
-          <span jhiTranslate="interview.slots.location.inPerson"></span>
-        }
-      </div>
+    <div class="flex-1"></div>
+    <div class="flex items-center gap-1">
+      <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[0.625rem]" />
+      @if (isVirtual()) {
+        <span jhiTranslate="interview.slots.location.virtual"></span>
+      } @else {
+        <span jhiTranslate="interview.slots.location.inPerson"></span>
+      }
     </div>
   </div>
 </div>

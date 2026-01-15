@@ -32,6 +32,9 @@ export class BookingSummaryComponent {
   // Outputs
   book = output();
 
+  // ViewChild
+  bookingConfirmationDialog = viewChild<ConfirmDialog>('bookingConfirmationDialog');
+
   // Computed
   hasSelection = computed(() => this.selectedSlot() !== null);
   supervisorName = computed(() => {
@@ -84,18 +87,14 @@ export class BookingSummaryComponent {
   // Signals
   private readonly langChange = toSignal(this.translateService.onLangChange);
 
+  // Public Methods
+  onBook(): void {
+    this.bookingConfirmationDialog()?.confirm();
+  }
 
   /** Returns current locale based on language setting. */
   private getLocale(): string {
     this.langChange();
-    return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
-  }
-
-  // Dialogs
-  bookingConfirmationDialog = viewChild<ConfirmDialog>('bookingConfirmationDialog');
-
-  onBook(): void {
-    this.bookingConfirmationDialog()?.confirm();
+    return this.translateService.getCurrentLang() === 'de' ? 'de-DE' : 'en-US';
   }
 }
-
