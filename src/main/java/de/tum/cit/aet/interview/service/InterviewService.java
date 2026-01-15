@@ -655,14 +655,8 @@ public class InterviewService {
         // 2. Security: Verify current user has job access
         Job job = interviewee.getInterviewProcess().getJob();
         currentUserService.verifyJobAccess(job);
-        // 3. Fetch Application with details separately (to avoid lazy loading issues)
-        Application application = applicationRepository
-            .findWithDetailsById(interviewee.getApplication().getApplicationId())
-            .orElseThrow(() -> EntityNotFoundException.forId("Application", interviewee.getApplication().getApplicationId()));
 
-        interviewee.setApplication(application);
-
-        // 4. Build and return detail DTO
+        // 3. Build and return detail DTO
         return mapIntervieweeToDetailDTO(interviewee, job);
     }
 
