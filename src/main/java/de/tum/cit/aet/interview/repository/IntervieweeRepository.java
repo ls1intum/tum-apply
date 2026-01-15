@@ -103,7 +103,7 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      */
     @Query(
         """
-        SELECT i FROM Interviewee i
+        SELECT DISTINCT i FROM Interviewee i
         JOIN FETCH i.interviewProcess ip
         JOIN FETCH ip.job j
         LEFT JOIN FETCH i.application a

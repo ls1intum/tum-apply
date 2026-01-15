@@ -576,7 +576,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void getIntervieweeDetailsForOtherProfessorReturns403() {
-            User otherProfessor = createOtherProfessor();
+            User otherProfessor = UserTestData.savedOtherProfessor(userRepository, researchGroupRepository);
 
             api
                 .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
@@ -715,7 +715,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void updateAssessmentForOtherProfessorReturns403() {
-            User otherProfessor = createOtherProfessor();
+            User otherProfessor = UserTestData.savedOtherProfessor(userRepository, researchGroupRepository);
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Test notes");
 
             api
@@ -748,41 +748,6 @@ class InterviewResourceTest extends AbstractResourceTest {
         interviewee.setInterviewProcess(interviewProcess);
         interviewee.setApplication(application);
         return intervieweeRepository.save(interviewee);
-    }
-
-    private User createOtherProfessor() {
-        ResearchGroup otherResearchGroup = ResearchGroupTestData.savedAll(
-            researchGroupRepository,
-            "Other Group",
-            "Prof. Smith",
-            "other" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
-            "OTH",
-            "CS",
-            "Other research",
-            "other@example.com",
-            "80333",
-            "CIT",
-            "Other Street",
-            "https://other.tum.de",
-            "ACTIVE"
-        );
-
-        return UserTestData.savedProfessorAll(
-            userRepository,
-            otherResearchGroup,
-            null,
-            "other.prof" + UUID.randomUUID().toString().substring(0, 8) + "@tum.de",
-            "Jane",
-            "Doe",
-            "en",
-            "+49 89 5678",
-            "https://jane.tum.de",
-            "https://linkedin.com/in/jane",
-            "DE",
-            null,
-            "weiblich",
-            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
-        );
     }
 
     // ===========================================================================================
