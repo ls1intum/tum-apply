@@ -24,9 +24,14 @@
         "title": "Interview Booked!",
         "message": "You have successfully booked your interview slot. An email with the details has been sent to you."
       },
+      "confirmDialog": {
+        "header": "Confirm Booking",
+        "message": "Are you sure you want to book this interview slot?",
+        "confirm": "Book Interview"
+      },
       "bookingSuccess": {
-        "summary": "Booking Confirmed",
-        "detail": "Your interview slot has been successfully booked."
+        "summary": "Interview Slot Successfully Booked",
+        "detail": "An email with the details has been sent to you."
       },
       "slotAlreadyBooked": {
         "summary": "Slot No Longer Available",

@@ -24,9 +24,14 @@
         "title": "Termin gebucht!",
         "message": "Du hast deinen Interview Termin erfolgreich gebucht. Eine E-Mail mit den Informationen wurde an dich gesendet."
       },
+      "confirmDialog": {
+        "header": "Buchung bestätigen",
+        "message": "Möchtest du diesen Interview-Termin wirklich buchen?",
+        "confirm": "Termin buchen"
+      },
       "bookingSuccess": {
-        "summary": "Buchung bestätigt",
-        "detail": "Dein Interview Termin wurde erfolgreich gebucht."
+        "summary": "Interview Termin erfolgreich gebucht",
+        "detail": "Eine E-Mail mit den Informationen wurde an dich gesendet."
       },
       "slotAlreadyBooked": {
         "summary": "Termin nicht mehr verfügbar",
