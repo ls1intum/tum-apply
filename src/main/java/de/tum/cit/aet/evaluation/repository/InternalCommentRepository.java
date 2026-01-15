@@ -1,5 +1,6 @@
 package de.tum.cit.aet.evaluation.repository;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -12,4 +13,6 @@ public interface InternalCommentRepository extends TumApplyJpaRepository<Interna
     List<InternalComment> findAllByApplicationApplicationIdOrderByCreatedAtAsc(UUID applicationId);
 
     List<InternalComment> findAllByCreatedBy(User createdBy);
+
+    void deleteByApplication(Application application);
 }

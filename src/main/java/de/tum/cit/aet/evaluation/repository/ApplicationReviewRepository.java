@@ -1,5 +1,6 @@
 package de.tum.cit.aet.evaluation.repository;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -13,4 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ApplicationReviewRepository extends TumApplyJpaRepository<ApplicationReview, UUID> {
     List<ApplicationReview> findAllByReviewedBy(User reviewedBy);
+
+    void deleteByApplication(Application application);
 }

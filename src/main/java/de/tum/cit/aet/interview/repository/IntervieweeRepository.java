@@ -93,4 +93,6 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
         """
     )
     List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
+
+    void deleteByApplication(Application application);
 }

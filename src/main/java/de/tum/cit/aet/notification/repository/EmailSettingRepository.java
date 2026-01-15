@@ -44,4 +44,6 @@ public interface EmailSettingRepository extends TumApplyJpaRepository<EmailSetti
         """
     )
     Set<EmailType> findAvailableEmailTypesForUser(@Param("user") User user);
+
+    void deleteByUser(User user);
 }

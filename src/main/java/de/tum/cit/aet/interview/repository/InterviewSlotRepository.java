@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.repository;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
@@ -199,4 +200,6 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("monthEnd") Instant monthEnd,
         Pageable pageable
     );
+
+    void deleteByIntervieweeApplication(Application application);
 }

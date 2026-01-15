@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -86,4 +87,8 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      */
     @Query("SELECT di FROM DepartmentImage di WHERE di.department IS NULL")
     List<DepartmentImage> findOrphanedDepartmentImages();
+
+    @Modifying
+    @Query("DELETE FROM Image i WHERE i.uploadedBy.userId = :userId AND TYPE(i) = ProfileImage")
+    void deleteProfileImageByUser(@Param("userId") UUID userId);
 }
