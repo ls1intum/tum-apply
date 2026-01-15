@@ -2,6 +2,7 @@ package de.tum.cit.aet.interview.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -48,11 +49,13 @@ public class Interviewee extends AbstractAuditingEntity {
     private Instant lastInvited;
 
     /**
-     * Assessment rating from -2 to 2 (Likert scale).
+     * Assessment rating (POOR to EXCELLENT).
+     * Maps to Likert scale integers -2 to 2 in the database.
      * Null if not yet assessed.
      */
     @Column(name = "rating")
-    private Integer rating;
+    @Convert(converter = AssessmentRatingConverter.class)
+    private AssessmentRating rating;
 
     /**
      * Professor's evaluation notes for this interviewee.
@@ -78,5 +81,19 @@ public class Interviewee extends AbstractAuditingEntity {
      */
     public boolean hasSlot() {
         return !slots.isEmpty();
+    }
+
+    @Converter
+    public static class AssessmentRatingConverter implements AttributeConverter<AssessmentRating, Integer> {
+
+        @Override
+        public Integer convertToDatabaseColumn(AssessmentRating attribute) {
+            return attribute == null ? null : attribute.getValue();
+        }
+
+        @Override
+        public AssessmentRating convertToEntityAttribute(Integer dbData) {
+            return AssessmentRating.fromValue(dbData);
+        }
     }
 }

@@ -15,7 +15,9 @@ import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import de.tum.cit.aet.interview.dto.*;
+import de.tum.cit.aet.interview.dto.IntervieweeState;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
@@ -689,7 +691,7 @@ public class InterviewService {
 
         // 4. Update fields if provided
         if (dto.rating() != null) {
-            interviewee.setRating(dto.rating());
+            interviewee.setRating(AssessmentRating.fromValue(dto.rating()));
         }
         if (dto.notes() != null) {
             interviewee.setAssessmentNotes(dto.notes());
@@ -717,7 +719,7 @@ public class InterviewService {
             interviewee.getLastInvited(),
             slot != null ? InterviewSlotDTO.fromEntity(slot) : null,
             state,
-            interviewee.getRating(),
+            interviewee.getRating() != null ? interviewee.getRating().getValue() : null,
             interviewee.getAssessmentNotes(),
             ApplicationDetailDTO.getFromEntity(application, job),
             documentDictionaryService.getDocumentIdsDTO(application)

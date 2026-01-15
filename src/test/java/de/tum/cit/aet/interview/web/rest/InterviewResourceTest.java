@@ -10,6 +10,7 @@ import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
@@ -617,7 +618,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Verify persistence
             Interviewee saved = intervieweeRepository.findById(interviewee.getId()).orElseThrow();
-            assertThat(saved.getRating()).isEqualTo(2);
+            assertThat(saved.getRating()).isEqualTo(AssessmentRating.EXCELLENT);
         }
 
         @Test
