@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
@@ -11,12 +10,23 @@ import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 const I18N_BASE = 'researchGroup.members';
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
-  imports: [TranslateModule, SearchFilterSortBar, ButtonComponent, CheckboxModule, FormsModule, PaginatorModule, ConfirmDialog],
+  imports: [
+    TranslateModule,
+    SearchFilterSortBar,
+    ButtonComponent,
+    FormsModule,
+    PaginatorModule,
+    ConfirmDialog,
+    ProgressSpinnerModule,
+    CheckboxComponent,
+  ],
   templateUrl: './research-group-add-members.component.html',
 })
 export class ResearchGroupAddMembersComponent {

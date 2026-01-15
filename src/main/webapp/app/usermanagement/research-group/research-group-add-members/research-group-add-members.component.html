@@ -19,7 +19,7 @@
     >
       @if (loading()) {
         <div class="flex items-center justify-center h-full bg-background-default rounded-lg">
-          <i class="pi pi-spin pi-spinner text-4xl text-[var(--p-primary-400)]"></i>
+          <p-progressSpinner styleClass="w-10 h-10 text-text-primary" />
         </div>
       }
 
@@ -55,7 +55,7 @@
               <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
               <div class="text-sm text-text-secondary">{{ user.email }}</div>
             </div>
-            <p-checkbox [ngModel]="isUserSelected(user)" [binary]="true" (click)="$event.stopPropagation()" />
+            <jhi-checkbox [ngModel]="isUserSelected(user)" (click)="$event.stopPropagation()" />
           </div>
         }
       }
