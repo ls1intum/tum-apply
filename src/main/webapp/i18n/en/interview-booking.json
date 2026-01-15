@@ -22,7 +22,7 @@
       },
       "success": {
         "title": "Interview Booked!",
-        "message": "You have successfully booked your interview slot."
+        "message": "You have successfully booked your interview slot. An email with the details has been sent to you."
       },
       "bookingSuccess": {
         "summary": "Booking Confirmed",

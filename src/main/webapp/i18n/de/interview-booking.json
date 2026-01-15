@@ -22,7 +22,7 @@
       },
       "success": {
         "title": "Termin gebucht!",
-        "message": "Du hast deinen Interview Termin erfolgreich gebucht."
+        "message": "Du hast deinen Interview Termin erfolgreich gebucht. Eine E-Mail mit den Informationen wurde an dich gesendet."
       },
       "bookingSuccess": {
         "summary": "Buchung bestätigt",
