@@ -39,9 +39,9 @@ openApi {
   }
 }
 
-// 1. TODO Detect if any resources have changed
-// 2. TODO If so, modify the packages to scan accordingly in the task above
-// 3. TODO Replace the existing OpenAPI spec with the new part. Keep the rest as is.
+// 1. Adjust: Detect if any resources have changed
+// 2. Adjust: If so, modify the packages to scan accordingly in the task above
+// 3. Adjust: Replace the existing OpenAPI spec with the new part. Keep the rest as is.
 // 4. Run the OpenAPI generator to generate the complete TypeScript files for the Angular client
 // 5. Post-process the generated files to remove leading underscores and numeric suffixes from method names
 // 6. Remove unused imports from the generated TypeScript files to satisfy our tsconfig.
@@ -217,8 +217,8 @@ private static Map<String, Object> sortSchemaProperties(Map<String, Object> sche
   def sortedSchema = new LinkedHashMap(schema)
   if (schema.properties instanceof Map) {
     def sortedProperties = new LinkedHashMap()
-    (schema.properties as Map).entrySet().sort { it.key }.each { 
-      sortedProperties[it.key] = it.value 
+    (schema.properties as Map).entrySet().sort { it.key }.each {
+      sortedProperties[it.key] = it.value
     }
     sortedSchema.properties = sortedProperties
   }
