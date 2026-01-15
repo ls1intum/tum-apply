@@ -17,13 +17,15 @@ export interface EmailSetting {
     user?: User;
 }
 export namespace EmailSetting {
-    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN';
+    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'RESEARCH_GROUP_MEMBER_ADDED' | 'RESEARCH_GROUP_APPROVED';
     export const EmailTypeEnum = {
         ApplicationAccepted: 'APPLICATION_ACCEPTED' as EmailTypeEnum,
         ApplicationRejected: 'APPLICATION_REJECTED' as EmailTypeEnum,
         ApplicationReceived: 'APPLICATION_RECEIVED' as EmailTypeEnum,
         ApplicationSent: 'APPLICATION_SENT' as EmailTypeEnum,
-        ApplicationWithdrawn: 'APPLICATION_WITHDRAWN' as EmailTypeEnum
+        ApplicationWithdrawn: 'APPLICATION_WITHDRAWN' as EmailTypeEnum,
+        ResearchGroupMemberAdded: 'RESEARCH_GROUP_MEMBER_ADDED' as EmailTypeEnum,
+        ResearchGroupApproved: 'RESEARCH_GROUP_APPROVED' as EmailTypeEnum
     };
 }
 
