@@ -679,6 +679,7 @@ public class InterviewService {
      * @throws AccessDeniedException   if the user is not authorized
      * @throws BadRequestException     if neither rating nor notes is provided
      */
+    @Transactional
     public IntervieweeDetailDTO updateAssessment(UUID processId, UUID intervieweeId, UpdateAssessmentDTO dto) {
         // 1. Validate input
         if (!dto.hasContent()) {
