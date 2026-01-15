@@ -246,7 +246,8 @@
       "title": "Interview Bewertung",
       "back": "Zurück zur Übersicht",
       "rating": {
-        "label": "Bewertung"
+        "label": "Bewertung",
+        "info": "Bewerte das Gespräch. Dies ist für den Bewerber nicht sichtbar."
       },
       "notes": {
         "label": "Interview Notiz",

@@ -32,12 +32,23 @@
         <!-- Left Column: Assessment Tools -->
         <div class="flex-1 flex flex-col gap-6">
           <!-- Rating Section (Inline) -->
-          <div class="flex items-center gap-4 h-10">
+          <!-- Rating Section -->
+          <div class="flex flex-col gap-2">
             <div class="flex items-center gap-2">
-              <fa-icon icon="star" class="text-text-primary" />
+              <fa-icon icon="star" class="text-primary" />
               <h3 class="text-lg font-bold text-text-primary mb-0" jhiTranslate="interview.assessment.rating.label">Rating</h3>
             </div>
-            <jhi-rating [(rating)]="rating" [selectable]="true" class="flex-1 mt-1" />
+
+            <p class="text-text-secondary text-sm mb-2" jhiTranslate="interview.assessment.rating.info">
+              Rate the application. This is not visible to the applicant.
+            </p>
+
+            <div class="flex items-center gap-4 h-10">
+              <jhi-rating [(rating)]="rating" [selectable]="true" class="flex-1" />
+            </div>
+            <span class="text-text-secondary text-sm" jhiTranslate="evaluation.details.ratingYourRatingLabel"
+              >Click a box to select your rating</span
+            >
           </div>
 
           <!-- Notes Section -->
