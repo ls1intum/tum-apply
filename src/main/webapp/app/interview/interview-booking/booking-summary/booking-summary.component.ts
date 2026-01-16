@@ -62,7 +62,10 @@ export class BookingSummaryComponent {
     const end = slot?.endDateTime;
     if (start === undefined || start === '' || end === undefined || end === '') return '';
     const loc = this.locale();
-    return `${new Date(start).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
+    return `${new Date(start).toLocaleTimeString(loc, {
+      hour: '2-digit',
+      minute: '2-digit',
+    })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
   });
 
   isVirtual = computed(() => this.selectedSlot()?.location === 'virtual');
