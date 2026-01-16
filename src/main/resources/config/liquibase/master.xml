@@ -29,6 +29,7 @@
   <include file="changelog/00000000000016_create_interviewees.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000018_add_department_id_to_images.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000019_fix_bachelor_master_grade_bug.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000020_add_version_to_interview_slots.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000020_add_last_activity_at_to_users.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000020_add_version_to_interview_slots.xml" relativeToChangelogFile="true"/>
 
