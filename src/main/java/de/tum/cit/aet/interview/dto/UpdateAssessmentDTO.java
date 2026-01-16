@@ -10,11 +10,14 @@ import jakarta.validation.constraints.Min;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record UpdateAssessmentDTO(
-        @Min(value = -2, message = "Rating must be between -2 and 2") @Max(value = 2, message = "Rating must be between -2 and 2") Integer rating,
+    @Min(value = -2, message = "Rating must be between -2 and 2")
+    @Max(value = 2, message = "Rating must be between -2 and 2")
+    Integer rating,
 
-        Boolean clearRating,
+    Boolean clearRating,
 
-        String notes) {
+    String notes
+) {
     /**
      * Checks if the DTO has at least one field set.
      *
