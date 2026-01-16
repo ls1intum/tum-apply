@@ -57,7 +57,10 @@ public class EmailTemplateService {
     protected EmailTemplate get(ResearchGroup researchGroup, String templateName, EmailType emailType) {
         return emailTemplateRepository
             .findByResearchGroupAndTemplateNameAndEmailType(researchGroup, templateName, emailType)
-            .orElseThrow(() -> EntityNotFoundException.forId("EmailTemplate", researchGroup.getResearchGroupId(), templateName, emailType));
+            .orElseGet(() -> {
+                EmailTemplate newTemplate = createDefaultTemplate(researchGroup, templateName, emailType);
+                return emailTemplateRepository.save(newTemplate);
+            });
     }
 
     /**
@@ -104,6 +107,7 @@ public class EmailTemplateService {
      */
     @Transactional // for write -> read
     public PageResponseDTO<EmailTemplateOverviewDTO> getTemplates(ResearchGroup researchGroup, PageDTO pageDTO) {
+        addMissingTemplates(researchGroup);
         Pageable pageable = PageRequest.of(
             pageDTO.pageNumber(),
             pageDTO.pageSize(),
