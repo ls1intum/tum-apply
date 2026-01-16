@@ -4,14 +4,11 @@
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
 >
-  <div
-    (click)="navigateToHome()"
-    class="flex items-center gap-2 text-[var(--p-primary-color)] text-base font-bold cursor-pointer flex-shrink-0"
-  >
+  <div (click)="navigateToHome()" class="flex items-center gap-2 text-primary-default text-base font-bold cursor-pointer flex-shrink-0">
     <img alt="TUMApply Logo" class="h-6" src="content/images/tum-apply-logo/tum-apply-logo.svg" />
     <span>TUMApply</span>
     @if (isProfessorPage()) {
-      <span class="text-[var(--p-secondary-color)] font-light" jhiTranslate="header.professorTitle"></span>
+      <span class="text-secondary-default font-light" jhiTranslate="header.professorTitle"></span>
     }
   </div>
 
@@ -20,13 +17,13 @@
       @for (language of languages; track language; let isLast = $last) {
         <button
           (click)="toggleLanguage(language)"
-          class="text-[var(--p-primary-color)] cursor-pointer hover:underline"
+          class="text-primary-default cursor-pointer hover:underline"
           [class.font-bold]="currentLanguage() === language"
         >
           {{ language.toUpperCase() }}
         </button>
         @if (!isLast) {
-          <span class="text-[var(--p-primary-color)]">|</span>
+          <span class="text-primary-default">|</span>
         }
       }
     </div>
@@ -69,24 +66,24 @@
       />
     } @else {
       <button
-        class="flex py-1 px-2 items-center gap-2 rounded-lg cursor-pointer bg-transparent transition-colors duration-200 hover:bg-[var(--p-primary-hover-color-outlined)]"
+        class="flex py-1 px-2 items-center gap-2 rounded-lg cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"
         type="button"
         (click)="toggleProfileMenu($event)"
         [attr.aria-label]="'header.profileMenu' | translate"
+        [attr.aria-expanded]="isProfileMenuOpen()"
         aria-haspopup="menu"
       >
-        <fa-icon
-          class="flex justify-center w-7 h-7 items-center rounded-full bg-[var(--p-primary-color)] text-[var(--p-text-on-primary)]"
-          icon="user"
-        />
+        <fa-icon class="flex justify-center w-7 h-7 items-center rounded-full bg-primary-default text-white" icon="user" />
         <span class="font-medium">{{ user()?.name }}</span>
         <fa-icon
-          class="text-xs text-[var(--p-text-color)] transition-transform duration-300"
+          class="text-xs text-text-default transition-transform duration-300"
           [class.rotate-180]="isProfileMenuOpen()"
           icon="chevron-down"
         />
       </button>
-      <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" />
+      <div class="absolute right-0 top-full mt-1 z-[1100]">
+        <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" />
+      </div>
     }
   </div>
 </header>
