@@ -118,8 +118,8 @@
               </div>
 
               <!-- Slots Grid -->
-              <div class="flex-1 min-w-0">
-                <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr))">
+              <div class="flex-1 min-w-0 overflow-hidden">
+                <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.75rem), 1fr))">
                   @for (group of paginatedSlots(); track group.date) {
                     <div class="flex flex-col gap-3">
                       <!-- Date Header -->
