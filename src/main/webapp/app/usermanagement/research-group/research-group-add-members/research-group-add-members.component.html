@@ -55,7 +55,12 @@
               <div class="font-medium text-text-primary">{{ user.firstName }} {{ user.lastName }}</div>
               <div class="text-sm text-text-secondary">{{ user.email }}</div>
             </div>
-            <jhi-checkbox [ngModel]="isUserSelected(user)" (click)="$event.stopPropagation()" />
+            <jhi-checkbox
+              class="self-center"
+              [model]="isUserSelected(user)"
+              [errorEnabled]="false"
+              (click)="$event.stopPropagation(); toggleUserSelection(user)"
+            />
           </div>
         }
       }
