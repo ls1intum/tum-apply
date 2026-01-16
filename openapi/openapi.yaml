@@ -1016,7 +1016,7 @@ paths:
       - name: size
         in: query
         required: false
-        schema: {type: integer, format: int32, default: 20}
+        schema: {type: integer, format: int32, default: 20, minimum: 1}
       responses:
         '200':
           description: OK
