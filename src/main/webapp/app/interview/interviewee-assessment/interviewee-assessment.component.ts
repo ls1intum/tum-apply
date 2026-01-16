@@ -179,7 +179,7 @@ export class IntervieweeAssessmentComponent {
   }
 
   private async saveRating(processId: string, intervieweeId: string, rating: number | undefined): Promise<void> {
-    const dto: UpdateAssessmentDTO = { rating: rating ?? undefined };
+    const dto: UpdateAssessmentDTO = rating === undefined ? { clearRating: true } : { rating };
 
     try {
       await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
