@@ -2908,6 +2908,7 @@ components:
           uniqueItems: true
         firstName: {type: string}
         gender: {type: string}
+        lastActivityAt: {type: string, format: date-time}
         lastModifiedAt: {type: string, format: date-time}
         lastName: {type: string}
         linkedinUrl: {type: string}

@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 
 /** Selectable slot card for interview booking. Displays time, duration, and location. */
 @Component({
@@ -22,7 +23,7 @@ export class SelectableSlotCardComponent {
 
   // Computed
   /** Formats time range as "HH:MM - HH:MM". */
-  timeRange = computed(() => `${this.formatTime(this.slot().startDateTime)} - ${this.formatTime(this.slot().endDateTime)}`);
+  timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime, this.locale()));
 
   /** Calculates and formats duration in minutes. */
   duration = computed(() => {
@@ -44,17 +45,11 @@ export class SelectableSlotCardComponent {
   // Computed
   private readonly locale = computed(() => {
     this.langChange();
-    return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
+    return getLocale(this.translateService);
   });
 
   /** Emits slot selection event. */
   onSelect(): void {
     this.slotSelected.emit(this.slot());
-  }
-
-  /** Formats date string to localized time. */
-  private formatTime(date?: string): string {
-    if (date === undefined || date === '') return '';
-    return new Date(date).toLocaleTimeString(this.locale(), { hour: '2-digit', minute: '2-digit' });
   }
 }
