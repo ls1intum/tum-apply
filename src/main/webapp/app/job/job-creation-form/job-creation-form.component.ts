@@ -66,57 +66,6 @@ export class JobCreationFormComponent {
 
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
-  // Services
-  private fb = inject(FormBuilder);
-  private jobResourceService = inject(JobResourceApiService);
-  private imageResourceService = inject(ImageResourceApiService);
-  private accountService = inject(AccountService);
-  private translate = inject(TranslateService);
-  private autoSaveTimer: number | undefined;
-  private router = inject(Router);
-  private location = inject(Location);
-  private route = inject(ActivatedRoute);
-  private toastService = inject(ToastService);
-  private autoSaveInitialized = false;
-
-  currentLang = toSignal(this.translate.onLangChange);
-
-  // Computed signals for translated dropdown options
-  translatedFieldsOfStudies = computed(() => {
-    void this.currentLang();
-    return DropdownOptions.fieldsOfStudies
-      .map(option => ({
-        value: option.value,
-        name: this.translate.instant(option.name),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  });
-
-  translatedLocations = computed(() => {
-    void this.currentLang();
-    return DropdownOptions.locations
-      .map(option => ({
-        value: option.value,
-        name: this.translate.instant(option.name),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  });
-
-  translatedFundingTypes = computed(() => {
-    void this.currentLang();
-    return DropdownOptions.fundingTypes
-      .map(option => ({
-        value: option.value,
-        name: this.translate.instant(option.name),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  });
-
-  constructor() {
-    this.init();
-    this.setupAutoSave();
-  }
-
   // State signals
   mode = signal<JobFormMode>('create');
   jobId = signal<string>('');
@@ -125,7 +74,6 @@ export class JobCreationFormComponent {
   savingState = signal<SavingState>(SavingStates.SAVED);
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
   publishAttempted = signal<boolean>(false);
-
   // Image upload state
   defaultImages = signal<ImageDTO[]>([]);
   researchGroupImages = signal<ImageDTO[]>([]);
@@ -133,39 +81,36 @@ export class JobCreationFormComponent {
   isUploadingImage = signal<boolean>(false);
   pendingImageFile = signal<File | undefined>(undefined);
   pendingImagePreviewUrl = signal<string | undefined>(undefined);
-  // Allowed image file types for upload
-  private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
-  // Maximum file size for image upload
-  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
-  // Maximum image dimensions (width and height in pixels)
-  private readonly MAX_IMAGE_DIMENSION_PX = 4096;
-
-  readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
-
   hasCustomImage = computed(() => {
     const image = this.selectedImage();
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
   });
-
   uploadContainerClasses = computed(() => {
     if (this.isUploadingImage()) {
       return 'relative rounded-xl transition-all opacity-50 pointer-events-none';
     }
     return 'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
   });
-
   uploadInnerClasses = computed(() => {
     const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
     const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
     return `${base} border-border-default ${hover}`.trim();
   });
 
+  private fb = inject(FormBuilder);
+  private jobResourceService = inject(JobResourceApiService);
+  private imageResourceService = inject(ImageResourceApiService);
+  private accountService = inject(AccountService);
+  private translate = inject(TranslateService);
+  private router = inject(Router);
+  private location = inject(Location);
+  private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
   // Forms
   basicInfoForm = this.createBasicInfoForm();
   positionDetailsForm = this.createPositionDetailsForm();
   imageForm = this.createImageForm();
   additionalInfoForm = this.createAdditionalInfoForm();
-
   // Template references
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
   panel2 = viewChild<TemplateRef<HTMLDivElement>>('panel2');
@@ -173,19 +118,16 @@ export class JobCreationFormComponent {
   panel4 = viewChild<TemplateRef<HTMLDivElement>>('panel4');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
   sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
-
   // Tracks form validity
   basicInfoValid = signal(false);
   positionDetailsValid = signal(false);
   imageSelected = computed(() => this.selectedImage() !== undefined);
   allFormsValid = computed(() => this.basicInfoValid() && this.positionDetailsValid());
-
   basicInfoChanges = toSignal(this.basicInfoForm.statusChanges, { initialValue: this.basicInfoForm.status });
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
   privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
     initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
   });
-
   /** Effect that updates validity signals when form status changes */
   formValidationEffect = effect(() => {
     this.basicInfoChanges();
@@ -194,28 +136,16 @@ export class JobCreationFormComponent {
     this.basicInfoValid.set(this.basicInfoForm.valid);
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
   });
-
-  // Data computation
-  currentJobData = computed<JobFormDTO>(() => {
-    this.basicInfoFormValueSignal();
-    this.positionDetailsFormValueSignal();
-    this.imageFormValueSignal();
-    return this.createJobDTO('DRAFT');
-  });
-
   publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO('PUBLISHED') : undefined));
-
   hasUnsavedChanges = computed(() => {
     const current = this.currentJobData();
     const lastSaved = this.lastSavedData();
     return JSON.stringify(current) !== JSON.stringify(lastSaved);
   });
-
   /** Computed page title based on current mode (create/edit) */
   readonly pageTitle = computed(() =>
     this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
   );
-
   /** Computed CSS classes for saving badge based on current saving state */
   readonly savingBadgeCalculatedClass = computed(
     () =>
@@ -227,9 +157,209 @@ export class JobCreationFormComponent {
             : 'saving_color'
       }`,
   );
-
   // Step configuration
   readonly stepData = computed<StepData[]>(() => this.buildStepData());
+  DropdownOptions = DropdownOptions;
+  basicInfoFormValueSignal = toSignal(this.basicInfoForm.valueChanges, {
+    initialValue: this.basicInfoForm.getRawValue(),
+  });
+  positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
+    initialValue: this.positionDetailsForm.getRawValue(),
+  });
+  imageFormValueSignal = toSignal(this.imageForm.valueChanges, {
+    initialValue: this.imageForm.getRawValue(),
+  });
+  // Data computation
+  currentJobData = computed<JobFormDTO>(() => {
+    this.basicInfoFormValueSignal();
+    this.positionDetailsFormValueSignal();
+    this.imageFormValueSignal();
+    return this.createJobDTO('DRAFT');
+  });
+  currentLang = toSignal(this.translate.onLangChange);
+  // Computed signals for translated dropdown options
+  translatedFieldsOfStudies = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.fieldsOfStudies
+      .map(option => ({
+        value: option.value,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+  translatedLocations = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.locations
+      .map(option => ({
+        value: option.value,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+  translatedFundingTypes = computed(() => {
+    void this.currentLang();
+    return DropdownOptions.fundingTypes
+      .map(option => ({
+        value: option.value,
+        name: this.translate.instant(option.name),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+  private autoSaveTimer: number | undefined;
+  private autoSaveInitialized = false;
+  // Allowed image file types for upload
+  private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+  readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
+  // Maximum file size for image upload
+  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+  // Maximum image dimensions (width and height in pixels)
+  private readonly MAX_IMAGE_DIMENSION_PX = 4096;
+
+  constructor() {
+    this.init();
+    this.setupAutoSave();
+  }
+
+  async publishJob(): Promise<void> {
+    const jobData = this.publishableJobData();
+    this.publishAttempted.set(true);
+    if (!Boolean(this.privacyAcceptedSignal())) {
+      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
+      return;
+    }
+    if (!jobData) return;
+
+    try {
+      // Image is already uploaded and saved with the draft, no need to upload again
+      await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
+      this.toastService.showSuccessKey('toast.published');
+      void this.router.navigate(['/my-positions']);
+    } catch {
+      this.toastService.showErrorKey('toast.publishFailed');
+    }
+  }
+
+  onBack(): void {
+    this.location.back();
+  }
+
+  async onImageSelected(event: Event): Promise<void> {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+    const input = target;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    // Validate file size
+    if (file.size > this.MAX_FILE_SIZE_BYTES) {
+      console.error('File too large:', file.size);
+      this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
+      return;
+    }
+
+    // Validate file type
+    if (!this.ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
+      return;
+    }
+
+    // Validate image dimensions
+    try {
+      const dimensions = await this.getImageDimensions(file);
+      if (dimensions.width > this.MAX_IMAGE_DIMENSION_PX || dimensions.height > this.MAX_IMAGE_DIMENSION_PX) {
+        this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
+        return;
+      }
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidImage');
+      return;
+    }
+
+    this.isUploadingImage.set(true);
+
+    try {
+      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
+
+      this.selectedImage.set(uploadedImage);
+      this.imageForm.patchValue({ imageId: uploadedImage.imageId });
+
+      // Reload research group images to include the newly uploaded image
+      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+      this.researchGroupImages.set(researchGroupImages);
+
+      this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
+    } finally {
+      this.isUploadingImage.set(false);
+      input.value = '';
+    }
+  }
+
+  selectImage(image: ImageDTO): void {
+    this.selectedImage.set(image);
+    this.imageForm.patchValue({ imageId: image.imageId });
+  }
+
+  clearImageSelection(): void {
+    this.selectedImage.set(undefined);
+    this.imageForm.patchValue({ imageId: null });
+  }
+
+  async deleteImage(imageId: string | undefined): Promise<void> {
+    if (imageId === undefined) {
+      return;
+    }
+    if (imageId.length === 0) {
+      return;
+    }
+
+    try {
+      await firstValueFrom(this.imageResourceService.deleteImage(imageId));
+
+      // Clear selection if the deleted image was selected
+      if (this.selectedImage()?.imageId === imageId) {
+        this.clearImageSelection();
+      }
+
+      try {
+        const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+        this.researchGroupImages.set(researchGroupImages);
+      } catch {
+        this.researchGroupImages.set(this.researchGroupImages().filter(img => img.imageId !== imageId));
+      }
+
+      this.toastService.showSuccessKey('jobCreationForm.imageSection.deleteImageSuccess');
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.deleteImageFailed');
+    }
+  }
+
+  async deleteSelectedImage(): Promise<void> {
+    await this.deleteImage(this.selectedImage()?.imageId);
+  }
+
+  async loadImages(): Promise<void> {
+    try {
+      // Load default job banners for the current user's department
+      try {
+        const defaults = await firstValueFrom(this.imageResourceService.getMyDefaultJobBanners());
+        this.defaultImages.set(defaults);
+      } catch {
+        // If loading fails (e.g., no department assigned), show no default images
+        this.defaultImages.set([]);
+      }
+
+      // Load research group's custom images
+      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
+      this.researchGroupImages.set(researchGroupImages);
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
+    }
+  }
 
   /**
    * Builds step configuration data for the progress stepper component
@@ -381,97 +511,6 @@ export class JobCreationFormComponent {
     return steps;
   }
 
-  DropdownOptions = DropdownOptions;
-
-  basicInfoFormValueSignal = toSignal(this.basicInfoForm.valueChanges, {
-    initialValue: this.basicInfoForm.getRawValue(),
-  });
-  positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
-    initialValue: this.positionDetailsForm.getRawValue(),
-  });
-  imageFormValueSignal = toSignal(this.imageForm.valueChanges, {
-    initialValue: this.imageForm.getRawValue(),
-  });
-
-  async publishJob(): Promise<void> {
-    const jobData = this.publishableJobData();
-    this.publishAttempted.set(true);
-    if (!Boolean(this.privacyAcceptedSignal())) {
-      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
-      return;
-    }
-    if (!jobData) return;
-
-    try {
-      // Image is already uploaded and saved with the draft, no need to upload again
-      await firstValueFrom(this.jobResourceService.updateJob(this.jobId(), jobData));
-      this.toastService.showSuccessKey('toast.published');
-      void this.router.navigate(['/my-positions']);
-    } catch {
-      this.toastService.showErrorKey('toast.publishFailed');
-    }
-  }
-
-  onBack(): void {
-    this.location.back();
-  }
-
-  async onImageSelected(event: Event): Promise<void> {
-    const target = event.target;
-    if (!(target instanceof HTMLInputElement)) {
-      return;
-    }
-    const input = target;
-    if (!input.files || input.files.length === 0) return;
-
-    const file = input.files[0];
-
-    // Validate file size
-    if (file.size > this.MAX_FILE_SIZE_BYTES) {
-      console.error('File too large:', file.size);
-      this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
-      return;
-    }
-
-    // Validate file type
-    if (!this.ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
-      return;
-    }
-
-    // Validate image dimensions
-    try {
-      const dimensions = await this.getImageDimensions(file);
-      if (dimensions.width > this.MAX_IMAGE_DIMENSION_PX || dimensions.height > this.MAX_IMAGE_DIMENSION_PX) {
-        this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
-        return;
-      }
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidImage');
-      return;
-    }
-
-    this.isUploadingImage.set(true);
-
-    try {
-      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
-
-      this.selectedImage.set(uploadedImage);
-      this.imageForm.patchValue({ imageId: uploadedImage.imageId });
-
-      // Reload research group images to include the newly uploaded image
-      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
-      this.researchGroupImages.set(researchGroupImages);
-
-      this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
-    } finally {
-      this.isUploadingImage.set(false);
-      input.value = '';
-    }
-  }
-
   private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -487,68 +526,6 @@ export class JobCreationFormComponent {
       };
       img.src = objectUrl;
     });
-  }
-
-  selectImage(image: ImageDTO): void {
-    this.selectedImage.set(image);
-    this.imageForm.patchValue({ imageId: image.imageId });
-  }
-
-  clearImageSelection(): void {
-    this.selectedImage.set(undefined);
-    this.imageForm.patchValue({ imageId: null });
-  }
-
-  async deleteImage(imageId: string | undefined): Promise<void> {
-    if (imageId === undefined) {
-      return;
-    }
-    if (imageId.length === 0) {
-      return;
-    }
-
-    try {
-      await firstValueFrom(this.imageResourceService.deleteImage(imageId));
-
-      // Clear selection if the deleted image was selected
-      if (this.selectedImage()?.imageId === imageId) {
-        this.clearImageSelection();
-      }
-
-      try {
-        const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
-        this.researchGroupImages.set(researchGroupImages);
-      } catch {
-        this.researchGroupImages.set(this.researchGroupImages().filter(img => img.imageId !== imageId));
-      }
-
-      this.toastService.showSuccessKey('jobCreationForm.imageSection.deleteImageSuccess');
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.deleteImageFailed');
-    }
-  }
-
-  async deleteSelectedImage(): Promise<void> {
-    await this.deleteImage(this.selectedImage()?.imageId);
-  }
-
-  async loadImages(): Promise<void> {
-    try {
-      // Load default job banners for the current user's department
-      try {
-        const defaults = await firstValueFrom(this.imageResourceService.getMyDefaultJobBanners());
-        this.defaultImages.set(defaults);
-      } catch {
-        // If loading fails (e.g., no department assigned), show no default images
-        this.defaultImages.set([]);
-      }
-
-      // Load research group's custom images
-      const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
-      this.researchGroupImages.set(researchGroupImages);
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.loadImagesFailed');
-    }
   }
 
   private createBasicInfoForm(): FormGroup {
@@ -713,7 +690,6 @@ export class JobCreationFormComponent {
         return;
       }
 
-      // TODO: currently state changes to saving on form loading
       this.clearAutoSaveTimer();
       this.savingState.set('SAVING');
 
@@ -729,6 +705,7 @@ export class JobCreationFormComponent {
       this.autoSaveTimer = undefined;
     }
   }
+
   /**
    * Performs the actual auto-save operation by calling the appropriate API endpoint
    * Handles both create and update scenarios based on existing job ID

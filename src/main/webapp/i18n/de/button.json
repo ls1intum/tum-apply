@@ -21,6 +21,7 @@
     "chooseFile": "Datei auswählen",
     "assign": "Zuweisen",
     "noFurtherActions": "Keine weiteren Aktionen verfügbar",
+    "replace": "Ersetzen",
     "downloadPDF": "Exportieren"
   }
 }

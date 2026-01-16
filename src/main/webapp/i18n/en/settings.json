@@ -2,9 +2,12 @@
   "settings": {
     "header": "Settings",
 
-    "notifications": {
-      "header": "Notifications",
+    "tabs": {
+      "general": "General",
+      "notifications": "Notifications"
+    },
 
+    "notifications": {
       "applicant": {
         "submission": {
           "title": "Application Submission",

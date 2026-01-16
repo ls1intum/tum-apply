@@ -3,7 +3,6 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TooltipModule } from 'primeng/tooltip';
-import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import SharedModule from 'app/shared/shared.module';
 import TranslateDirective from 'app/shared/language/translate.directive';
@@ -11,7 +10,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 @Component({
   selector: 'jhi-datepicker',
   standalone: true,
-  imports: [CommonModule, DatePickerModule, FormsModule, FontAwesomeModule, TranslateDirective, SharedModule, TooltipModule],
+  imports: [DatePickerModule, FormsModule, FontAwesomeModule, TranslateDirective, SharedModule, TooltipModule],
   templateUrl: './datepicker.component.html',
   styleUrls: ['./datepicker.component.scss'],
   encapsulation: ViewEncapsulation.None,

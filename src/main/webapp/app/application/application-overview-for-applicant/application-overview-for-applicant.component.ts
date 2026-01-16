@@ -224,8 +224,6 @@ export default class ApplicationOverviewForApplicantComponent {
   }
 
   onDeleteApplication(applicationId: string): void {
-    // TODO nicer looking confirm, add dialog
-    // if (confirmDelete) {
     this.applicationService.deleteApplication(applicationId).subscribe({
       next: () => {
         this.toastService.showSuccess({ detail: 'Application successfully deleted' });

@@ -39,7 +39,19 @@ public enum EmailType {
      * Confirmation that application was successfully withdrawn
      * To: Applicant who withdrew the application
      */
-    APPLICATION_WITHDRAWN("APPLICATION_WITHDRAWN", Set.of(UserRole.APPLICANT), false, false);
+    APPLICATION_WITHDRAWN("APPLICATION_WITHDRAWN", Set.of(UserRole.APPLICANT), false, false),
+
+    /**
+     * When a user is added to a research group
+     * To: Newly added member
+     */
+    RESEARCH_GROUP_MEMBER_ADDED("RESEARCH_GROUP_MEMBER_ADDED", Set.of(UserRole.EMPLOYEE, UserRole.PROFESSOR), true, false),
+
+    /**
+     * When a research group request is approved
+     * To: Research group owner (professor)
+     */
+    RESEARCH_GROUP_APPROVED("RESEARCH_GROUP_APPROVED", Set.of(UserRole.PROFESSOR), true, false);
 
     private final String value;
 
