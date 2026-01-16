@@ -10,6 +10,7 @@
 
 
 export interface UpdateAssessmentDTO { 
+    clearRating?: boolean;
     notes?: string;
     rating?: number;
 }

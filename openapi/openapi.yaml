@@ -2911,6 +2911,7 @@ components:
     UpdateAssessmentDTO:
       type: object
       properties:
+        clearRating: {type: boolean}
         notes: {type: string}
         rating: {type: integer, format: int32, maximum: 2, minimum: -2}
     UpdatePasswordDTO:
