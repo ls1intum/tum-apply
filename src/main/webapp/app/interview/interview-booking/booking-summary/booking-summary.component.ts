@@ -6,6 +6,7 @@ import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ProfessorDTO } from 'app/generated/model/professorDTO';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { getLocale } from 'app/shared/util/date-time.util';
 
 /** Summary panel for interview booking. Displays job info, supervisor, selected slot details and book button. */
 @Component({
@@ -41,7 +42,7 @@ export class BookingSummaryComponent {
   formattedDate = computed(() => {
     const startDateTime = this.selectedSlot()?.startDateTime;
     if (startDateTime === undefined || startDateTime === '') return '';
-    return new Date(startDateTime).toLocaleDateString(this.getLocale(), {
+    return new Date(startDateTime).toLocaleDateString(this.locale(), {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
@@ -55,7 +56,7 @@ export class BookingSummaryComponent {
     const start = slot?.startDateTime;
     const end = slot?.endDateTime;
     if (start === undefined || start === '' || end === undefined || end === '') return '';
-    const loc = this.getLocale();
+    const loc = this.locale();
     return `${new Date(start).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
   });
 
@@ -82,9 +83,9 @@ export class BookingSummaryComponent {
   // Signals
   private readonly langChange = toSignal(this.translateService.onLangChange);
 
-  /** Returns current locale based on language setting. */
-  private getLocale(): string {
+  // Computed
+  private readonly locale = computed(() => {
     this.langChange();
-    return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
-  }
+    return getLocale(this.translateService);
+  });
 }
