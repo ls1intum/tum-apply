@@ -1,12 +1,11 @@
 import { Component, computed, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'jhi-segment-button',
   templateUrl: './segment-button.component.html',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [TranslateModule],
 })
 export class SegmentButtonComponent {
   label = input.required<string>();

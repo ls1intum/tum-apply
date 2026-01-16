@@ -1,6 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import { JobCardComponent } from 'app/job/job-overview/job-card/job-card.component';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
 import { JobCardDTO } from 'app/generated/model/jobCardDTO';
@@ -12,7 +11,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 @Component({
   selector: 'jhi-jobs-preview-section',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, JobCardComponent, TranslateDirective],
+  imports: [ButtonComponent, JobCardComponent, TranslateDirective],
   templateUrl: './jobs-preview-section.component.html',
 })
 export class JobsPreviewSectionComponent {

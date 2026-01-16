@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { UploadButtonComponent, DocumentType } from 'app/shared/components/atoms/upload-button/upload-button.component';
 import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
@@ -40,6 +41,7 @@ describe('UploadButtonComponent', () => {
         provideHttpClientMock(),
         provideFontAwesomeTesting(),
         provideTranslateMock(),
+        provideNoopAnimations(),
       ],
     }).compileComponents();
   });
@@ -297,8 +299,10 @@ describe('UploadButtonComponent', () => {
 
   describe('Duplicate Handling', () => {
     it('should detect duplicate filename and show dialog instead of uploading', async () => {
+      vi.useFakeTimers();
       const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
       const component = fixture.componentInstance;
+      fixture.detectChanges(); // Initialize viewChildren
 
       // 1. Simulate existing document
       component.documentIds.set([{ id: '1', name: 'existing.pdf', size: 1000 }]);
@@ -306,14 +310,19 @@ describe('UploadButtonComponent', () => {
       // 2. Select same file
       const newFile = new File(['content'], 'existing.pdf');
       const uploadSpy = vi.spyOn(component, 'onUpload');
+      const confirmDialogSpy = vi.spyOn(component.duplicateConfirmDialog()!, 'confirm');
 
       await component.onFileSelected({ currentFiles: [newFile] } as FileSelectEvent);
 
-      // 3. Expect dialog open, upload NOT started
-      expect(component.showDuplicateDialog()).toBe(true);
+      // Advance timers to execute setTimeout
+      await vi.runAllTimersAsync();
+
+      expect(confirmDialogSpy).toHaveBeenCalled();
       expect(component.pendingDuplicateFile()).toBe(newFile);
       expect(component.duplicateFileName()).toBe('existing.pdf');
       expect(uploadSpy).not.toHaveBeenCalled();
+
+      vi.useRealTimers();
     });
 
     it('should replace duplicate file: delete old then upload new', async () => {
@@ -325,7 +334,6 @@ describe('UploadButtonComponent', () => {
 
       const newFile = new File(['new content'], 'duplicate.pdf');
       component.pendingDuplicateFile.set(newFile);
-      component.showDuplicateDialog.set(true);
 
       // Mock delete and upload
       vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockImplementation((): rxjs.Observable<any> => of({}));
@@ -333,40 +341,33 @@ describe('UploadButtonComponent', () => {
         (): rxjs.Observable<any> => of([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]),
       );
 
-      await component.onDuplicateReplace();
+      await component.onConfirmDuplicate();
 
       // Expect delete then upload
       expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
       expect(applicationService.uploadDocuments).toHaveBeenCalledTimes(1);
-      expect(component.showDuplicateDialog()).toBe(false);
 
       // Check if list updated
       expect(component.documentIds()).toEqual([{ id: 'new-id', name: 'duplicate.pdf', size: 2000 }]);
     });
 
-    it('should close dialog on cancel', () => {
+    it('should handle cancel via ConfirmDialog rejection', () => {
       const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
       const component = fixture.componentInstance;
 
-      component.showDuplicateDialog.set(true);
       component.pendingDuplicateFile.set(new File([], 'test.pdf'));
 
-      component.onDuplicateCancel();
-
-      expect(component.showDuplicateDialog()).toBe(false);
-      expect(component.pendingDuplicateFile()).toBeNull();
+      expect(component.pendingDuplicateFile()).not.toBeNull();
     });
 
-    it('should close dialog if no pending file is set during replace', async () => {
+    it('should not proceed if no pending file is set during replace', async () => {
       const fixture = createUploadButtonFixture({ applicationId: '1234', documentType: 'CV' });
       const component = fixture.componentInstance;
 
-      component.showDuplicateDialog.set(true);
       component.pendingDuplicateFile.set(null);
 
-      await component.onDuplicateReplace();
+      await component.onConfirmDuplicate();
 
-      expect(component.showDuplicateDialog()).toBe(false);
       expect(applicationService.deleteDocumentFromApplication).not.toHaveBeenCalled();
     });
 
@@ -379,7 +380,6 @@ describe('UploadButtonComponent', () => {
 
       const newFile = new File(['new content'], 'duplicate.pdf');
       component.pendingDuplicateFile.set(newFile);
-      component.showDuplicateDialog.set(true);
 
       const toastSpy = vi.spyOn(toastService, 'showErrorKey');
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -388,11 +388,10 @@ describe('UploadButtonComponent', () => {
       vi.spyOn(applicationService, 'deleteDocumentFromApplication').mockReturnValue(rxjs.throwError(() => new Error('Delete failed')));
       vi.spyOn(rxjs, 'firstValueFrom').mockRejectedValue(new Error('Delete failed'));
 
-      await component.onDuplicateReplace();
+      await component.onConfirmDuplicate();
 
       expect(applicationService.deleteDocumentFromApplication).toHaveBeenCalledWith('old-id');
       expect(toastSpy).toHaveBeenCalledWith('entity.upload.error.replace_failed');
-      expect(component.showDuplicateDialog()).toBe(false);
       expect(applicationService.uploadDocuments).not.toHaveBeenCalled();
 
       consoleSpy.mockRestore();
@@ -407,7 +406,6 @@ describe('UploadButtonComponent', () => {
 
       const newFile = new File(['new content'], 'duplicate.pdf');
       component.pendingDuplicateFile.set(newFile);
-      component.showDuplicateDialog.set(true);
 
       // Subject to control when the delete completes
       const deleteSubject = new rxjs.Subject<any>();
@@ -417,7 +415,7 @@ describe('UploadButtonComponent', () => {
       vi.spyOn(applicationService, 'uploadDocuments').mockImplementation((): rxjs.Observable<any> => of([]));
 
       // Start the replace process
-      const replacePromise = component.onDuplicateReplace();
+      const replacePromise = component.onConfirmDuplicate();
 
       // Simulate race condition: documentIds cleared while delete is pending
       component.documentIds.set(undefined);

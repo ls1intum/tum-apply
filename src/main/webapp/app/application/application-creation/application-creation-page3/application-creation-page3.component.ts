@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
@@ -37,7 +36,6 @@ export const getPage3FromApplication = (application: ApplicationForApplicantDTO)
 @Component({
   selector: 'jhi-application-creation-page3',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FloatLabelModule,
     DividerModule,
@@ -64,12 +62,13 @@ export default class ApplicationCreationPage3Component {
   valid = output<boolean>();
   changed = output<boolean>();
 
+  hasInitialized = signal(false);
+  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
+
   formbuilder = inject(FormBuilder);
 
-  hasInitialized = signal(false);
-
   page3Form: FormGroup = this.formbuilder.group({
-    experiences: ['', htmlTextRequiredValidator], // TODO: tried putting htmlTextMaxLengthValidator(1000) but it created bugs such as step 3 not loading fully and auto-save breaking
+    experiences: ['', htmlTextRequiredValidator],
     motivation: ['', htmlTextRequiredValidator],
     skills: ['', htmlTextRequiredValidator],
     desiredStartDate: [''],
@@ -87,8 +86,6 @@ export default class ApplicationCreationPage3Component {
     const docInfoHolder = this.documentIdsCv();
     return docInfoHolder ? [docInfoHolder] : undefined;
   });
-
-  cvValid = signal<boolean>(this.documentIdsCv() !== undefined);
 
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,7 +6,7 @@ import { getLocale } from 'app/shared/util/date-time.util';
 @Component({
   selector: 'jhi-date-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './date-header.component.html',
 })
 export class DateHeaderComponent {

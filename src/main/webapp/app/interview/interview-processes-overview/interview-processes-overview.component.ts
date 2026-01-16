@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'jhi-interview-processes-overview',
-  imports: [CommonModule, TranslateModule, TranslateDirective, InterviewProcessCardComponent],
+  imports: [TranslateModule, TranslateDirective, InterviewProcessCardComponent],
   templateUrl: './interview-processes-overview.component.html',
 })
 export class InterviewProcessesOverviewComponent {
