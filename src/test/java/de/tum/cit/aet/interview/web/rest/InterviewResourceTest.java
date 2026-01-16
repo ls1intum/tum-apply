@@ -599,7 +599,7 @@ class InterviewResourceTest extends AbstractResourceTest {
             Applicant applicant = createApplicant();
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
-            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(2, null);
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(2, null, null);
 
             // Act
             IntervieweeDetailDTO result = api
@@ -627,7 +627,7 @@ class InterviewResourceTest extends AbstractResourceTest {
             Applicant applicant = createApplicant();
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
-            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Good candidate.");
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, null, "Good candidate.");
 
             // Act - use employee role
             IntervieweeDetailDTO result = api
@@ -651,7 +651,7 @@ class InterviewResourceTest extends AbstractResourceTest {
             Applicant applicant = createApplicant();
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
-            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, "Good candidate with strong technical skills.");
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, null, "Good candidate with strong technical skills.");
 
             // Act
             IntervieweeDetailDTO result = api
@@ -673,8 +673,38 @@ class InterviewResourceTest extends AbstractResourceTest {
         }
 
         @Test
+        void updateAssessmentWithClearRatingRemovesRating() {
+            // Arrange - create interviewee with existing rating
+            Applicant applicant = createApplicant();
+            Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+            Interviewee interviewee = createInterviewee(application);
+            interviewee.setRating(AssessmentRating.GOOD);
+            intervieweeRepository.save(interviewee);
+
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, true, null);
+
+            // Act
+            IntervieweeDetailDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .putAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/interviewees/" + interviewee.getId() + "/assessment",
+                    dto,
+                    IntervieweeDetailDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.rating()).isNull();
+
+            // Verify persistence
+            Interviewee saved = intervieweeRepository.findById(interviewee.getId()).orElseThrow();
+            assertThat(saved.getRating()).isNull();
+        }
+
+        @Test
         void updateAssessmentWithInvalidRatingReturns400() {
-            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(5, null); // Invalid: > 2
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(5, null, null); // Invalid: > 2
 
             api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -688,7 +718,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void updateAssessmentWithEmptyBodyReturns400() {
-            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, null);
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, null, null);
 
             api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -702,7 +732,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void updateAssessmentForNonExistentIntervieweeReturns404() {
-            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Test notes");
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, null, "Test notes");
 
             api
                 .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
@@ -717,7 +747,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentForOtherProfessorReturns403() {
             User otherProfessor = UserTestData.savedOtherProfessor(userRepository, researchGroupRepository);
-            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, "Test notes");
+            UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, null, "Test notes");
 
             api
                 .with(JwtPostProcessors.jwtUser(otherProfessor.getUserId(), "ROLE_PROFESSOR"))
