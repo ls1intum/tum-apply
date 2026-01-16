@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { getLocale } from 'app/shared/util/date-time.util';
 
 /** Selectable slot card for interview booking. Displays time, duration, and location. */
 @Component({
@@ -44,7 +45,7 @@ export class SelectableSlotCardComponent {
   // Computed
   private readonly locale = computed(() => {
     this.langChange();
-    return this.translateService.currentLang === 'de' ? 'de-DE' : 'en-US';
+    return getLocale(this.translateService);
   });
 
   /** Emits slot selection event. */

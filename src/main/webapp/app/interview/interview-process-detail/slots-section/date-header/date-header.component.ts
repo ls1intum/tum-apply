@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
+import { getLocale } from 'app/shared/util/date-time.util';
 
 @Component({
   selector: 'jhi-date-header',
@@ -18,9 +19,8 @@ export class DateHeaderComponent {
   private readonly currentLangEvent = toSignal(this.translateService.onLangChange);
 
   private locale = computed(() => {
-    const langEvent = this.currentLangEvent();
-    const lang = langEvent?.lang ?? this.translateService.getBrowserCultureLang() ?? 'en';
-    return lang === 'de' ? 'de-DE' : 'en-US';
+    this.currentLangEvent();
+    return getLocale(this.translateService);
   });
 
   weekday = (): string => {

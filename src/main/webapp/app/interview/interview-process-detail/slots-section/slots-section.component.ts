@@ -11,6 +11,7 @@ import { ToastService } from 'app/service/toast-service';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
+import { getLocale } from 'app/shared/util/date-time.util';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -132,8 +133,8 @@ export class SlotsSectionComponent {
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
   private locale = computed(() => {
-    const lang = this.currentLangSignal();
-    return lang === 'de' ? 'de-DE' : 'en-US';
+    this.currentLangSignal();
+    return getLocale(this.translateService);
   });
 
   // Effects
