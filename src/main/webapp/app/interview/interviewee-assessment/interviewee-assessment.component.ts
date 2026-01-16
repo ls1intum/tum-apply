@@ -49,7 +49,7 @@ export class IntervieweeAssessmentComponent {
   protected readonly error = signal<string | undefined>(undefined);
   protected readonly rating = signal<number | undefined>(undefined);
   protected readonly notesControl = new FormControl<string>('', { nonNullable: true });
-  protected readonly isEditingNotes = signal<boolean>(false);
+
   protected readonly saving = signal<boolean>(false);
   protected readonly params = toSignal(inject(ActivatedRoute).paramMap);
 
@@ -138,25 +138,13 @@ export class IntervieweeAssessmentComponent {
       const updated = await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
 
       this.interviewee.set(updated);
-      this.isEditingNotes.set(false);
+      this.toastService.showSuccessKey('interview.assessment.notes.saved');
     } catch (err) {
       console.error('Failed to save notes:', err);
       this.toastService.showErrorKey('interview.assessment.error.saveFailed');
     } finally {
       this.saving.set(false);
     }
-  }
-
-  // Initializes editor with current saved notes
-  editNotes(): void {
-    this.notesControl.setValue(this.savedNotes());
-    this.isEditingNotes.set(true);
-  }
-
-  // Reverts editor to saved state and exits edit mode
-  cancelNotes(): void {
-    this.isEditingNotes.set(false);
-    this.notesControl.setValue(this.savedNotes());
   }
 
   // Navigates to process detail or overview fallback
@@ -182,8 +170,6 @@ export class IntervieweeAssessmentComponent {
       this.rating.set(data.rating ?? undefined);
       this.serverRating.set(data.rating ?? undefined);
       this.notesControl.setValue(data.assessmentNotes ?? '', { emitEvent: false });
-
-      this.isEditingNotes.set(data.assessmentNotes === '');
     } catch (err) {
       this.handleLoadError(err);
     } finally {

@@ -52,48 +52,23 @@
           </div>
 
           <!-- Notes Section -->
-          <div class="flex flex-col gap-2 rounded-lg border border-border-default bg-background-default p-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <h3 class="text-lg font-semibold text-text-primary" jhiTranslate="interview.assessment.notes.label">Interview Note</h3>
-              </div>
-
-              @if (!isEditingNotes()) {
-                <jhi-button label="entity.action.edit" [shouldTranslate]="true" icon="pen" variant="outlined" (click)="editNotes()" />
-              }
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2">
+              <h3 class="text-lg font-semibold text-text-primary" jhiTranslate="interview.assessment.notes.label">Interview Note</h3>
             </div>
 
-            <!-- Content -->
-            <div class="mt-4">
-              @if (isEditingNotes()) {
-                <jhi-editor
-                  [control]="notesControl"
-                  [model]="notesControl.value"
-                  fieldId="assessment-notes"
-                  [characterLimit]="undefined"
-                  [showGenderDecoderButton]="false"
-                />
+            <!-- Editor-->
+            <jhi-editor
+              [control]="notesControl"
+              [model]="notesControl.value"
+              fieldId="assessment-notes"
+              [characterLimit]="undefined"
+              [showGenderDecoderButton]="false"
+            />
 
-                <!-- Buttons below editor -->
-                <div class="flex justify-end gap-2 mt-2">
-                  <jhi-button
-                    label="entity.action.cancel"
-                    [shouldTranslate]="true"
-                    variant="text"
-                    severity="secondary"
-                    (click)="cancelNotes()"
-                  />
-                  <jhi-button label="entity.action.save" [shouldTranslate]="true" icon="save" [disabled]="saving()" (click)="saveNotes()" />
-                </div>
-              } @else {
-                <div class="min-h-[200px] rounded-md border border-border-default p-4 bg-background-default">
-                  @if (savedNotes()) {
-                    <jhi-prose [text]="savedNotes()" />
-                  } @else {
-                    <span class="text-text-secondary italic" jhiTranslate="interview.assessment.notes.empty">No notes added yet.</span>
-                  }
-                </div>
-              }
+            <!-- Save button -->
+            <div class="flex justify-end">
+              <jhi-button label="entity.action.save" [shouldTranslate]="true" icon="save" [disabled]="saving()" (click)="saveNotes()" />
             </div>
           </div>
         </div>

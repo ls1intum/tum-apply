@@ -251,7 +251,11 @@
       },
       "notes": {
         "label": "Interview Notiz",
-        "empty": "Noch keine Notizen hinzugefügt."
+        "empty": "Noch keine Notizen hinzugefügt.",
+        "saved": {
+          "summary": "Gespeichert",
+          "detail": "Die Interview Notiz wurde erfolgreich gespeichert."
+        }
       },
       "error": {
         "saveFailed": {
