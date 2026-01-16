@@ -265,18 +265,23 @@ public class EmailService {
 
     /**
      * Attaches ICS calendar file to the outgoing email message.
+     * If attaching fails, the error is logged but the email is still sent without
+     * the attachment.
      *
      * @param email  the email containing ICS content
      * @param helper the message helper
-     * @throws MessagingException if attaching the calendar fails
      */
-    private void attachIcsCalendar(Email email, MimeMessageHelper helper) throws MessagingException {
+    private void attachIcsCalendar(Email email, MimeMessageHelper helper) {
         if (email.getIcsContent() == null || email.getIcsFileName() == null) {
             return;
         }
 
-        byte[] icsBytes = email.getIcsContent().getBytes(StandardCharsets.UTF_8);
-        InputStreamSource icsSource = new ByteArrayResource(icsBytes);
-        helper.addAttachment(email.getIcsFileName(), icsSource, "text/calendar");
+        try {
+            byte[] icsBytes = email.getIcsContent().getBytes(StandardCharsets.UTF_8);
+            InputStreamSource icsSource = new ByteArrayResource(icsBytes);
+            helper.addAttachment(email.getIcsFileName(), icsSource, "text/calendar");
+        } catch (MessagingException e) {
+            log.warn("Failed to attach ICS calendar file '{}' to email: {}", email.getIcsFileName(), e.getMessage());
+        }
     }
 }

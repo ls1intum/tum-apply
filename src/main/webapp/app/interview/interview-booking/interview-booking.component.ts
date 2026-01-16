@@ -11,7 +11,7 @@ import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
-import { formatTimeRange } from 'app/shared/util/date-time.util';
+import { formatTimeRange, getLocale } from 'app/shared/util/date-time.util';
 import { DateHeaderComponent } from 'app/interview/interview-process-detail/slots-section/date-header/date-header.component';
 
 import { SelectableSlotCardComponent } from './selectable-slot-card/selectable-slot-card.component';
@@ -144,8 +144,8 @@ export class InterviewBookingComponent {
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
   private locale = computed(() => {
-    const lang = this.currentLangSignal();
-    return lang === 'de' ? 'de-DE' : 'en-US';
+    this.currentLangSignal();
+    return getLocale(this.translateService);
   });
 
   // Effects
