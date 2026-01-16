@@ -10,6 +10,9 @@ import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.dto.UserShortDTO;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final KeycloakUserService keycloakUserService;
+    private static final Duration LAST_ACTIVITY_UPDATE_THRESHOLD = Duration.ofHours(24);
 
     public UserService(
         UserRepository userRepository,
@@ -58,6 +62,7 @@ public class UserService {
      * Upserts a user in the database and assigns the APPLICANT role.
      * - Normalizes input values (never null, may be blank)
      * - Creates a new user if missing, otherwise updates changed fields only
+     * - Updates lastActivityAt if older than 24 hours
      * - Assigns the APPLICANT role when no roles are present
      * <p>
      * Note: This method does not throw if names/emails are blank; callers may validate earlier.
@@ -84,6 +89,14 @@ public class UserService {
         updated |= setIfPresentAndChanged(user::getEmail, user::setEmail, normalizedEmail);
         updated |= setIfPresentAndChanged(user::getFirstName, user::setFirstName, normalizedFirstName);
         updated |= setIfPresentAndChanged(user::getLastName, user::setLastName, normalizedLastName);
+
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime cutoff = now.minus(LAST_ACTIVITY_UPDATE_THRESHOLD);
+
+        if (user.getLastActivityAt() == null || user.getLastActivityAt().isBefore(cutoff)) {
+            user.setLastActivityAt(now);
+            updated = true;
+        }
 
         if (updated) {
             user = userRepository.save(user);
