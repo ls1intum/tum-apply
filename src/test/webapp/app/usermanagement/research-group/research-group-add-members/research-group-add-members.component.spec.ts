@@ -87,6 +87,8 @@ describe('ResearchGroupAddMembersComponent', () => {
 
     fixture = TestBed.createComponent(ResearchGroupAddMembersComponent);
     component = fixture.componentInstance;
+    const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean };
+    componentWithMocks.USE_MOCK_USERS = false;
   });
 
   afterEach(() => {
@@ -321,6 +323,24 @@ describe('ResearchGroupAddMembersComponent', () => {
       await component.loadAvailableUsers('alice');
 
       expect(component.users()).toEqual([mockUsers[0]]);
+      expect(component.totalRecords()).toBe(1);
+      expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
+    });
+
+    it('should handle missing user fields when filtering mock users', async () => {
+      vi.clearAllMocks();
+      const mockUsers: KeycloakUserDTO[] = [
+        { id: 'mock-1', firstName: undefined, lastName: undefined, email: undefined } as KeycloakUserDTO,
+        { id: 'mock-2', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
+      ];
+
+      const componentWithMocks = component as unknown as { USE_MOCK_USERS: boolean; MOCK_USERS: KeycloakUserDTO[] };
+      componentWithMocks.USE_MOCK_USERS = true;
+      componentWithMocks.MOCK_USERS = mockUsers;
+
+      await component.loadAvailableUsers('alice');
+
+      expect(component.users()).toEqual([mockUsers[1]]);
       expect(component.totalRecords()).toBe(1);
       expect(mockUserService.getAvailableUsersForResearchGroup).not.toHaveBeenCalled();
     });
