@@ -2264,7 +2264,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
@@ -2274,7 +2274,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED]
         enabled: {type: boolean}
     EmailTemplateDTO:
@@ -2284,7 +2284,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
@@ -2297,7 +2297,7 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN, RESEARCH_GROUP_MEMBER_ADDED,
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED]
         firstName: {type: string}
         isDefault: {type: boolean}
@@ -2938,6 +2938,7 @@ components:
           uniqueItems: true
         firstName: {type: string}
         gender: {type: string}
+        lastActivityAt: {type: string, format: date-time}
         lastModifiedAt: {type: string, format: date-time}
         lastName: {type: string}
         linkedinUrl: {type: string}
