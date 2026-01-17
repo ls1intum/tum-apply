@@ -9,6 +9,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { TranslateDirective } from 'app/shared/language';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { DividerModule } from 'primeng/divider';
@@ -16,7 +17,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
 
-import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
 import { AccountService } from '../../core/auth/account.service';
@@ -31,7 +31,6 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
-
 type JobFormMode = 'create' | 'edit';
 
 @Component({
@@ -42,13 +41,13 @@ type JobFormMode = 'create' | 'edit';
   imports: [
     CommonModule,
     TooltipModule,
-    SharedModule,
     ReactiveFormsModule,
     FontAwesomeModule,
     DatePickerComponent,
     StringInputComponent,
     ProgressStepperComponent,
     TranslateModule,
+    TranslateDirective,
     SelectComponent,
     NumberInputComponent,
     EditorComponent,
