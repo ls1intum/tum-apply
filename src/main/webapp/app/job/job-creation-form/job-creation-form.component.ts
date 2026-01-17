@@ -16,6 +16,7 @@ import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
+import { AiResourceApiService } from 'app/generated';
 
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
@@ -31,7 +32,6 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
-import { AiResourceApiService } from 'app/generated';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -551,7 +551,7 @@ export class JobCreationFormComponent {
 
     this.isGeneratingDraft.set(true);
 
-    //Call backend with relevant metadataw
+    // Call backend with relevant metadataw
     const request: JobFormDTO = {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
@@ -572,7 +572,7 @@ export class JobCreationFormComponent {
         this.jobDescriptionEditor()?.forceUpdate(response.jobDescription);
         this.basicInfoValid.set(this.basicInfoForm.valid);
       }
-    } catch (error) {
+    } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
     } finally {
       this.isGeneratingDraft.set(false);

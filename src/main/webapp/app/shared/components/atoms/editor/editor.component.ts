@@ -180,6 +180,24 @@ export class EditorComponent extends BaseInputDirective<string> {
     this.showAnalysisModal.set(false);
   }
 
+  /**
+   * Updates the Quill editor with AI-generated content.
+   * CRITICAL: Without this, AI responses won't appear in the editor.
+   * Normal form setValue() only updates the model, not Quill's visual content.
+   *
+   * @param newValue AI-generated HTML content to display in editor
+   */
+  public forceUpdate(newValue: string): void {
+    this.htmlValue.set(newValue);
+
+    const editor = this.quillEditorComponent?.quillEditor;
+    if (!editor) return;
+
+    const content = editor.clipboard.convert({ html: newValue });
+    editor.setContents(content, 'api');
+    this.cdRef.markForCheck();
+  }
+
   private mapToLanguageCode(francCode: string): string {
     const validCodes = ['deu', 'eng', 'und'] as const;
 
@@ -212,24 +230,6 @@ export class EditorComponent extends BaseInputDirective<string> {
       default:
         return 'genderDecoder.formulationTexts.neutral';
     }
-  }
-
-  /**
-   * Updates the Quill editor with AI-generated content.
-   * CRITICAL: Without this, AI responses won't appear in the editor.
-   * Normal form setValue() only updates the model, not Quill's visual content.
-   *
-   * @param newValue AI-generated HTML content to display in editor
-   */
-  public forceUpdate(newValue: string): void {
-    this.htmlValue.set(newValue);
-
-    const editor = this.quillEditorComponent?.quillEditor;
-    if (!editor) return;
-
-    const content = editor.clipboard.convert({ html: newValue });
-    editor.setContents(content, 'api');
-    this.cdRef.markForCheck();
   }
 }
 
