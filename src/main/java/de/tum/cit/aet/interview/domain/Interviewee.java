@@ -46,6 +46,10 @@ public class Interviewee extends AbstractAuditingEntity {
     @Column(name = "last_invited")
     private Instant lastInvited;
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     /**
      * Gets the currently scheduled interview slot.
      * Currently only one slot per interviewee is supported.
