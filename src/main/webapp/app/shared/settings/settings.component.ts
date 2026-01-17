@@ -14,7 +14,7 @@ import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../compone
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 
-type SettingsTab = 'general' | 'notifications';
+type SettingsTab = 'general' | 'notifications' | 'personal-information';
 @Component({
   selector: 'jhi-settings',
   imports: [
@@ -32,10 +32,19 @@ export class SettingsComponent {
   readonly activeTab = signal<SettingsTab>('general');
   readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
 
-  readonly tabs: TabItem[] = [
-    { id: 'general', translationKey: 'settings.tabs.general' },
-    { id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] },
-  ];
+  readonly tabs = computed<TabItem[]>(() => {
+    const baseTabs: TabItem[] = [
+      { id: 'general', translationKey: 'settings.tabs.general' },
+      { id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] },
+    ];
+
+    // Add Personal Information tab only for applicants
+    if (this.role() === UserShortDTO.RolesEnum.Applicant) {
+      baseTabs.push({ id: 'personal-information', translationKey: 'settings.tabs.personalInformation' });
+    }
+
+    return baseTabs;
+  });
 
   themeOptions: SelectOption[] = [
     { name: 'settings.appearance.options.light', value: 'light' },
@@ -85,7 +94,7 @@ export class SettingsComponent {
   }
 
   onTabChange(tabId: string): void {
-    if (this.tabs.some(tab => tab.id === tabId)) {
+    if (this.tabs().some(tab => tab.id === tabId)) {
       this.activeTab.set(tabId as SettingsTab);
     }
   }

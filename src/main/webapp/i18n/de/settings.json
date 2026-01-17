@@ -4,7 +4,8 @@
 
     "tabs": {
       "general": "Allgemein",
-      "notifications": "Benachrichtigungen"
+      "notifications": "Benachrichtigungen",
+      "personalInformation": "Persönliche Informationen"
     },
 
     "notifications": {
