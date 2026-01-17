@@ -213,7 +213,7 @@ export class IntervieweeSectionComponent {
           onlyUninvited: true,
         }),
       );
-      this.handleInvitationResult(result, this.uncontactedCount());
+      this.handleInvitationResult(result);
     } catch {
       this.toastService.showErrorKey('interview.interviewees.invitation.error');
     } finally {
@@ -294,9 +294,12 @@ export class IntervieweeSectionComponent {
   }
 
   // Private Methods
-  private handleInvitationResult(result: SendInvitationsResultDTO, expected: number): void {
+  private handleInvitationResult(result: SendInvitationsResultDTO): void {
     const sentCount = result.sentCount ?? 0;
-    if (sentCount >= expected) {
+    const failedCount = result.failedEmails?.length ?? 0;
+
+    if (sentCount > 0 && failedCount === 0) {
+      // All successful
       if (sentCount === 1) {
         this.toastService.showSuccessKey('interview.interviewees.invitation.successSingle');
       } else {
@@ -304,17 +307,19 @@ export class IntervieweeSectionComponent {
           count: sentCount.toString(),
         });
       }
-    } else if (sentCount > 0) {
+    } else if (sentCount > 0 && failedCount > 0) {
+      // Partial success
       const failedList = result.failedEmails?.join(', ') ?? '';
       this.toastService.showWarn({
         summary: this.translateService.instant('interview.interviewees.invitation.partial.summary', {
           sent: sentCount.toString(),
-          failed: (result.failedEmails?.length ?? 0).toString(),
+          failed: failedCount.toString(),
         }),
         detail: failedList ? this.translateService.instant('interview.interviewees.invitation.partial.detail', { emails: failedList }) : '',
         life: 10000,
       });
     } else {
+      // All failed
       this.toastService.showErrorKey('interview.interviewees.invitation.error');
     }
     void this.loadInterviewees();
@@ -328,7 +333,7 @@ export class IntervieweeSectionComponent {
           intervieweeIds: [intervieweeId],
         }),
       );
-      this.handleInvitationResult(result, 1);
+      this.handleInvitationResult(result);
     } catch {
       this.toastService.showErrorKey('interview.interviewees.invitation.error');
     } finally {

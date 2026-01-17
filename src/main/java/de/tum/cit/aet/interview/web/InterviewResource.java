@@ -82,7 +82,7 @@ public class InterviewResource {
      * Accessible only to users with the {@code PROFESSOR} role.
      *
      * @param processId the ID of the interview process to which the slots belong
-     * @param dto       the slot definitions sent from the frontend
+     * @param dto       the slot definitions sent from client
      * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing
      *         the created {@link InterviewSlotDTO}s
      */
