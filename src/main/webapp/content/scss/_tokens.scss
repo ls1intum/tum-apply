@@ -90,6 +90,26 @@
   // ========================================================
   // Border Radius Tokens
   // ========================================================
+  //
+  // USAGE GUIDE:
+  //
+  // 1. In HTML with Tailwind classes:
+  //    <div class="rounded-sm">   → uses --border-radius-sm
+  //    <div class="rounded-md">   → uses --border-radius-md
+  //    <div class="rounded-lg">   → uses --border-radius-lg
+  //    <div class="rounded-full"> → uses --border-radius-full
+  //
+  // 2. In CSS/SCSS files:
+  //    .my-component {
+  //      border-radius: var(--border-radius-sm);
+  //    }
+  //
+  // 3. With Tailwind's @apply in SCSS:
+  //    .my-component {
+  //      @apply rounded-md;
+  //    }
+  //
+  // ========================================================
 
   // Checkboxes, Tiny badges, 0.125rem
   --border-radius-xs: var(--p-border-radius-xs);
@@ -112,6 +132,6 @@
   // Status pills, 9999px
   --border-radius-pill: var(--p-border-radius-pill);
 
-  // Avatars
+  // Avatars, Circles, 50%
   --border-radius-full: 50%;
 }
