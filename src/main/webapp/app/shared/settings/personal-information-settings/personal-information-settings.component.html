@@ -169,12 +169,6 @@
       (click)="onCancel()"
       [disabled]="!hasChanges()"
     />
-    <jhi-button
-      [label]="'entity.action.save'"
-      severity="primary"
-      [shouldTranslate]="true"
-      (click)="onSave()"
-      [disabled]="!hasChanges()"
-    />
+    <jhi-button [label]="'entity.action.save'" severity="primary" [shouldTranslate]="true" (click)="onSave()" [disabled]="!hasChanges()" />
   </div>
 </form>

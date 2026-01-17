@@ -214,9 +214,7 @@ export class PersonalInformationSettingsComponent {
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
-      const profile = await firstValueFrom(
-        this.applicationResourceService.getApplicantProfile()
-      );
+      const profile = await firstValueFrom(this.applicationResourceService.getApplicantProfile());
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {
@@ -225,7 +223,9 @@ export class PersonalInformationSettingsComponent {
         email: profile.user?.email ?? '',
         phoneNumber: profile.user?.phoneNumber ?? '',
         gender: profile.user?.gender ? { value: profile.user.gender, name: `genders.${profile.user.gender}` } : undefined,
-        nationality: profile.user?.nationality ? { value: profile.user.nationality, name: `countries.${profile.user.nationality}` } : undefined,
+        nationality: profile.user?.nationality
+          ? { value: profile.user.nationality, name: `countries.${profile.user.nationality}` }
+          : undefined,
         dateOfBirth: profile.user?.birthday ?? '',
         website: profile.user?.website ?? '',
         linkedIn: profile.user?.linkedinUrl ?? '',
