@@ -96,14 +96,15 @@
         <div class="form-row mb-6">
           <div class="form-field">
             <jhi-editor
+              #jobDescriptionEditor
               fieldId="jobDescription"
               label="jobCreationForm.positionDetailsSection.jobDescription.label"
               placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
               helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
               tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
               [required]="true"
-              [characterLimit]="1000"
-              [model]="basicInfoForm.get('jobDescription')?.value"
+              [characterLimit]="1500"
+              [model]="jobDescriptionSignal()"
               [control]="basicInfoForm.get('jobDescription') ?? undefined"
               icon="circle-info"
               [shouldTranslate]="true"

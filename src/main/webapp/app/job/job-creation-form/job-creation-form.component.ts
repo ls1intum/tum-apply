@@ -32,8 +32,6 @@ import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
 import {AiResourceApiService} from "app/generated";
-import { ChangeDetectionStrategy } from '@angular/core';
-import { ChangeDetectorRef} from '@angular/core';
 
 
 
@@ -45,7 +43,6 @@ type JobFormMode = 'create' | 'edit';
   standalone: true,
   templateUrl: './job-creation-form.component.html',
   styleUrls: ['./job-creation-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     TooltipModule,
@@ -87,8 +84,7 @@ export class JobCreationFormComponent {
   private toastService = inject(ToastService);
   private autoSaveInitialized = false;
   private aiService = inject(AiResourceApiService);
-  private cdRef = inject(ChangeDetectorRef);
-  private jobDescriptionSignal = signal<string>('');
+  jobDescriptionSignal = signal<string>('');
 
   isGeneratingDraft = signal<boolean>(false);
   currentLang = toSignal(this.translate.onLangChange);
@@ -186,6 +182,7 @@ export class JobCreationFormComponent {
   panel4 = viewChild<TemplateRef<HTMLDivElement>>('panel4');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
   sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
+  jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
 
   // Tracks form validity
   basicInfoValid = signal(false);
@@ -203,6 +200,7 @@ export class JobCreationFormComponent {
   formValidationEffect = effect(() => {
     this.basicInfoChanges();
     this.positionDetailsChanges();
+    this.jobDescriptionSignal();
 
     this.basicInfoValid.set(this.basicInfoForm.valid);
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
@@ -564,6 +562,12 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Generates an AI-enhanced job description based on current form data.
+   * Takes the existing description and enriches it with AI suggestions
+   * while preserving all metadata (title, research area, location, etc.).
+   * Updates both the form control and Quill editor in real-time.
+   */
   async generateJobApplicationDraft(): Promise<void> {
     // Textbox is empty check
     const current = this.basicInfoForm.get("jobDescription")?.value;
@@ -571,10 +575,10 @@ export class JobCreationFormComponent {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.noDescription');
       return;
     }
-    //Loading state
+
     this.isGeneratingDraft.set(true);
 
-    //Call backend with relevant metadata
+    //Call backend with relevant metadataw
     const request: JobFormDTO = {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
@@ -584,14 +588,17 @@ export class JobCreationFormComponent {
       jobDescription: current ?? '',
       state: JobFormDTO.StateEnum.Draft,
     };
-    console.log('Sending request:', request);
+
     try {
       const response = await firstValueFrom(this.aiService.generateJobApplicationDraft(request));
+      if(response.jobDescription) {
+        // Update form control
         this.basicInfoForm.get('jobDescription')?.setValue(response.jobDescription);
-        this.cdRef.detectChanges();
-        //this.basicInfoForm.get('jobDescription')?.valueChanges.subscribe(value => {
-         // this.jobDescriptionSignal.set(value);
-       // })
+        this.basicInfoForm.get('jobDescription')?.markAsDirty();
+        this.jobDescriptionSignal.set(response.jobDescription);
+        this.jobDescriptionEditor()?.forceUpdate(response.jobDescription);
+        this.basicInfoValid.set(this.basicInfoForm.valid);
+      }
     } catch (error) {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
     } finally {
@@ -752,6 +759,9 @@ export class JobCreationFormComponent {
       // Don't auto-save as soon as the form is opened
       if (!this.autoSaveInitialized) {
         this.autoSaveInitialized = true;
+        return;
+      }
+      if (this.isGeneratingDraft()) {
         return;
       }
 
