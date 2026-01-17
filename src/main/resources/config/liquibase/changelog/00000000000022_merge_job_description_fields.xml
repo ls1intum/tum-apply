@@ -4,7 +4,7 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-  <changeSet id="23-merge-job-description-fields" author="melissa">
+  <changeSet id="22-merge-job-description-fields" author="melissa">
     <addColumn tableName="jobs">
       <column name="job_description" type="TEXT"/>
     </addColumn>
