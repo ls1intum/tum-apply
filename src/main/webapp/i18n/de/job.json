@@ -145,7 +145,7 @@
       }
     },
     "imageSection": {
-      "description": "Wähle ein optionales Bannerbild aus, das in deiner Jobkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe. Hochgeladene Bilder werden innerhalb deiner Forschungsgruppe geteilt und können für mehrere Stellenausschreibungen wiederverwendet werden.",
+      "description": "Wähle ein optionales Bannerbild aus, das in deiner Jobkarte angezeigt wird. Wähle aus den Standardbildern oder nutze die Bildbibliothek deiner Forschungsgruppe.",
       "defaultImages": "Standardbilder",
       "orDivider": "oder",
       "researchGroupImages": "Forschungsgruppen-Bildbibliothek",

@@ -15,6 +15,8 @@ import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
+import { MessageModule } from 'primeng/message';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 import SharedModule from '../../shared/shared.module';
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
@@ -58,6 +60,8 @@ type JobFormMode = 'create' | 'edit';
     ButtonComponent,
     ProgressSpinnerModule,
     CheckboxModule,
+    MessageModule,
+    InfoBoxComponent,
   ],
   providers: [JobResourceApiService],
 })

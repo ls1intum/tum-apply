@@ -113,7 +113,7 @@ p-step[data-p-active='true'] .p-step-title {
   color: var(--p-text-muted-color, rgba(0 0 0 / 60%));
   border-bottom: 2px solid transparent !important;
   transition: all 0.2s ease;
-  border-radius: 0.25rem 0.25rem 0 0;
+  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
 
 .p-tab:hover {

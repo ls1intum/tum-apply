@@ -119,6 +119,7 @@ jhi-menu {
 }
 
 .p-menu-item-link {
+  border-radius: var(--border-radius-md);
   &.menu-primary {
     color: var(--p-text-primary);
 
@@ -242,6 +243,7 @@ jhi-menu {
   background: var(--p-background-default);
   color: var(--p-text-primary);
   overflow-wrap: anywhere;
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
 }
 
 .ql-editor.ql-blank {
@@ -271,6 +273,7 @@ jhi-menu {
   background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
   border: 1px solid var(--p-border-default) !important;
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0 !important;
 }
 
 /* Default text color for toolbar buttons and pickers */
@@ -351,6 +354,7 @@ jhi-menu {
   border-bottom: none !important;
   border-color: var(--p-border-default) !important;
   background: var(--p-background-default) !important;
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0 !important;
 }
 
 .p-editor-content.ql-container.ql-snow,
@@ -358,6 +362,7 @@ jhi-menu {
   background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
   border: 1px solid var(--p-border-default) !important;
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md) !important;
 
   &:focus-within {
     border-color: var(--p-primary-color) !important;
@@ -465,7 +470,7 @@ jhi-menu {
 // Base card styles - shared between all card types
 .section-card {
   border: 0.1rem solid var(--p-border-default);
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius-lg);
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -567,7 +572,7 @@ jhi-menu {
 .hero-carousel .p-carousel-indicator .p-carousel-indicator-button {
   width: 0.6rem;
   height: 0.6rem;
-  border-radius: 50%;
+  border-radius: var(--border-radius-full);
 }
 
 .hero-overlay {

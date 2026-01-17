@@ -86,4 +86,32 @@
   --color-text-on-success: var(--p-text-on-success);
   --color-text-on-warn: var(--p-text-on-warn);
   --color-text-on-danger: var(--p-text-on-danger);
+
+  // ========================================================
+  // Border Radius Tokens
+  // ========================================================
+
+  // Checkboxes, Tiny badges, 0.125rem
+  --border-radius-xs: var(--p-border-radius-xs);
+
+  // Tooltips, Popovers, 0.25rem
+  --border-radius-sm: var(--p-border-radius-sm);
+
+  // Standard, Inputs, Buttons, 0.375rem
+  --border-radius-md: var(--p-border-radius-md);
+
+  // Cards & Containers, 0.5rem
+  --border-radius-lg: var(--p-border-radius-lg);
+
+  // Modals, Dialogs, 0.75rem
+  --border-radius-xl: var(--p-border-radius-xl);
+
+  // Hero Cards, 1rem
+  --border-radius-2xl: var(--p-border-radius-2xl);
+
+  // Status pills, 9999px
+  --border-radius-pill: var(--p-border-radius-pill);
+
+  // Avatars
+  --border-radius-full: 50%;
 }
