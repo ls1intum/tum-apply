@@ -1,0 +1,105 @@
+<div class="flex-1 flex flex-col">
+  <h2 class="text-lg font-bold mb-6" jhiTranslate="interview.booking.summary">Summary</h2>
+
+  <!-- Job Info Section -->
+  <div class="border border-border-default rounded-lg p-4 mb-4">
+    <div class="text-sm text-text-secondary uppercase font-semibold mb-3" jhiTranslate="interview.booking.topic">Topic</div>
+
+    <div class="flex flex-col gap-3">
+      <!-- Title -->
+      <div>
+        <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.jobTitle">Title</div>
+        <div class="flex items-center gap-2">
+          <fa-icon icon="briefcase" class="text-primary w-4" />
+          <div class="text-sm font-medium text-text-primary">{{ jobTitle() }}</div>
+        </div>
+      </div>
+
+      <!-- Research Group -->
+      @if (researchGroupName()) {
+        <div class="flex flex-col">
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.researchGroup">Research Group</div>
+          <div class="flex items-center gap-2">
+            <fa-icon icon="research-group" class="text-primary w-4" />
+            <div class="text-sm font-medium text-text-primary">{{ researchGroupName() }}</div>
+          </div>
+        </div>
+      }
+
+      <!-- Supervisor -->
+      <div>
+        <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.supervisor">Supervisor</div>
+        <div class="flex items-center gap-2">
+          <fa-icon icon="user-tie" class="text-primary w-4" />
+          <div class="text-sm font-medium text-text-primary">{{ supervisorName() }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Slot / Booked Slot Section -->
+  <div class="border border-border-default rounded-lg p-4 mb-auto">
+    <div class="text-sm text-text-secondary uppercase font-semibold mb-3">
+      @if (alreadyBooked()) {
+        <span jhiTranslate="interview.booking.yourAppointment">Your Appointment</span>
+      } @else {
+        <span jhiTranslate="interview.booking.selectedInterview">Selected Interview</span>
+      }
+    </div>
+
+    @if (hasSelection()) {
+      <div class="flex flex-col gap-3">
+        <!-- Date -->
+        <div>
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.date">Date</div>
+          <div class="flex items-center gap-2">
+            <fa-icon icon="calendar" class="text-primary w-4" />
+            <div class="text-sm font-medium text-text-primary">{{ displayDate() }}</div>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div>
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.time">Time</div>
+          <div class="flex items-center gap-2">
+            <fa-icon icon="clock" class="text-primary w-4" />
+            <div class="text-sm font-medium text-text-primary">{{ displayTime() }}</div>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div>
+          <div class="text-sm text-text-secondary mb-1" jhiTranslate="interview.booking.location">Location</div>
+          <div class="flex items-center gap-2">
+            <fa-icon icon="location-dot" class="text-primary w-4" />
+            <div class="text-sm font-medium text-text-primary">
+              @if (displayLocation()) {
+                <span>{{ displayLocation() }}</span>
+              } @else {
+                <span [jhiTranslate]="displayLocationKey()"></span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="text-sm text-text-secondary italic" jhiTranslate="interview.booking.noSlotSelected">Select a slot to continue</div>
+    }
+  </div>
+
+  <!-- Book Button -->
+  <div class="mt-auto pt-4 w-full min-h-[2.75rem]">
+    @if (alreadyBooked()) {
+      <jhi-button [fullWidth]="true" [disabled]="true" label="interview.booking.alreadyBooked" [shouldTranslate]="true" styleClass="h-10" />
+    } @else {
+      <jhi-button
+        [fullWidth]="true"
+        [disabled]="!hasSelection()"
+        label="interview.booking.book"
+        [shouldTranslate]="true"
+        styleClass="h-10"
+        (click)="book.emit()"
+      />
+    }
+  </div>
+</div>

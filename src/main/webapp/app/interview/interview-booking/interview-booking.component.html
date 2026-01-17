@@ -1,0 +1,187 @@
+<div class="page-container flex flex-col">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 jhiTranslate="interview.booking.title">Select your Interview Slot</h1>
+  </div>
+
+  @if (error()) {
+    <div class="p-4">
+      <div class="font-bold text-negative-default mb-1" jhiTranslate="interview.booking.error.title">Error</div>
+      <div class="text-negative-default" jhiTranslate="interview.booking.error.description">Unable to load booking data.</div>
+    </div>
+  } @else if (bookingData()) {
+    @if (hasBookedSlot()) {
+      <!-- Already Booked (Success Screen) -->
+      <div class="max-w-3xl mx-auto flex flex-col items-center justify-center py-12 text-center">
+        <!-- Success Icon -->
+        <div class="bg-background-surface text-positive-default rounded-full p-6 mb-6 inline-flex items-center justify-center">
+          <fa-icon icon="check" class="text-4xl" />
+        </div>
+
+        <h2 class="text-2xl font-bold mb-2 text-text-primary" jhiTranslate="interview.booking.success.title">Interview Booked!</h2>
+        <p class="text-text-secondary mb-8" jhiTranslate="interview.booking.success.message">
+          You have successfully booked your interview slot.
+        </p>
+
+        <!-- Booking Details Card -->
+        <div class="bg-background-default border border-border-default rounded-lg p-8 w-full shadow-sm text-left">
+          <!-- Job Info -->
+          <div class="mb-6 border-b border-border-default pb-6">
+            <div class="text-xs text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.topic">Topic</div>
+            <h3 class="text-lg font-bold text-text-primary mb-2">{{ jobTitle() }}</h3>
+            <div class="flex items-center gap-2 text-text-secondary text-sm">
+              <fa-icon icon="user-tie" />
+              <span>{{ supervisorName() }}</span>
+              @if (researchGroupName()) {
+                <span>•</span>
+                <fa-icon icon="building-columns" />
+                <span>{{ researchGroupName() }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Slot Info -->
+          <div>
+            <div class="text-xs text-text-secondary uppercase font-semibold mb-4" jhiTranslate="interview.booking.details">Details</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Date -->
+              <div class="flex items-start gap-3">
+                <div class="bg-background-surface p-2 rounded text-text-secondary">
+                  <fa-icon icon="calendar" class="text-lg" />
+                </div>
+                <div>
+                  <div class="text-xs text-text-secondary mb-0.5" jhiTranslate="interview.booking.date">Date</div>
+                  <div class="font-medium text-text-primary">{{ bookedSlotDate() }}</div>
+                </div>
+              </div>
+
+              <!-- Time -->
+              <div class="flex items-start gap-3">
+                <div class="bg-background-surface p-2 rounded text-text-secondary">
+                  <fa-icon icon="clock" class="text-lg" />
+                </div>
+                <div>
+                  <div class="text-xs text-text-secondary mb-0.5" jhiTranslate="interview.booking.time">Time</div>
+                  <div class="font-medium text-text-primary">{{ bookedSlotTime() }}</div>
+                </div>
+              </div>
+
+              <!-- Location -->
+              <div class="flex items-start gap-3">
+                <div class="bg-background-surface p-2 rounded text-text-secondary">
+                  <fa-icon [icon]="isBookedVirtual() ? 'video' : 'location-dot'" class="text-lg" />
+                </div>
+                <div>
+                  <div class="text-xs text-text-secondary mb-0.5" jhiTranslate="interview.booking.location">Location</div>
+                  <div class="font-medium text-text-primary">{{ bookedSlotLocation() }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex gap-4">
+          <jhi-button severity="primary" variant="outlined" label="interview.booking.success.viewDetails" [shouldTranslate]="true" />
+        </div>
+      </div>
+    } @else {
+      <!-- Booking Selection -->
+      <div class="flex flex-col lg:flex-row gap-8 items-stretch w-full min-h-[calc(100vh-12rem)]">
+        <!-- LEFT: Slots Section -->
+        <div class="flex-1 flex flex-col min-w-0">
+          <!-- Navigation Header -->
+          <div class="flex items-center gap-8 mb-6">
+            <div class="flex items-center gap-4">
+              <jhi-button icon="chevron-left" variant="text" size="sm" (click)="previousMonth()" />
+              <span class="text-lg font-bold min-w-[10rem] text-center">
+                {{ currentMonthLabel() }}
+              </span>
+              <jhi-button icon="chevron-right" variant="text" size="sm" (click)="nextMonth()" />
+            </div>
+          </div>
+
+          <!-- Slots Columns -->
+          @if (currentMonthSlots().length === 0) {
+            <div class="flex flex-col items-center justify-center min-h-[20rem] text-text-secondary">
+              <fa-icon icon="calendar-xmark" class="text-4xl mb-4" />
+              <span jhiTranslate="interview.booking.noSlotsInMonth">No slots available this month</span>
+            </div>
+          } @else {
+            <div class="flex items-start gap-4">
+              <!-- Left Arrow -->
+              <div class="flex-shrink-0 pt-2">
+                <jhi-button icon="chevron-left" variant="text" size="sm" [disabled]="!canGoPreviousDate()" (click)="previousDatePage()" />
+              </div>
+
+              <!-- Slots Grid -->
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-row gap-4 overflow-x-auto pb-4">
+                  @for (group of paginatedSlots(); track group.date) {
+                    <div class="flex flex-col gap-3 min-w-[13.75rem] w-[13.75rem]">
+                      <!-- Date Header -->
+                      <jhi-date-header [date]="group.localDate" [slotCount]="group.slots.length" />
+
+                      <!-- Slots List -->
+                      <div class="flex flex-col gap-3">
+                        @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
+                          <jhi-selectable-slot-card
+                            [slot]="slot"
+                            [selected]="selectedSlot()?.id === slot.id"
+                            (slotSelected)="onSlotSelected($event)"
+                          />
+                        }
+
+                        @if (group.slots.length > MAX_VISIBLE_SLOTS) {
+                          <jhi-button
+                            [fullWidth]="true"
+                            variant="text"
+                            [icon]="isExpanded(group.date) ? 'chevron-up' : 'chevron-down'"
+                            [label]="
+                              isExpanded(group.date)
+                                ? 'interview.process.slots.showLess'
+                                : getShowMoreText(getRemainingCount(group.date, group.slots.length))
+                            "
+                            [shouldTranslate]="isExpanded(group.date)"
+                            styleClass="w-full py-2 border border-border-default rounded-md text-text-secondary text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-background-surface transition-all"
+                            (click)="toggleExpanded(group.date)"
+                          />
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Right Arrow -->
+              <div class="flex-shrink-0 pt-2">
+                <jhi-button icon="chevron-right" variant="text" size="sm" [disabled]="!canGoNextDate()" (click)="nextDatePage()" />
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="w-px bg-border-default self-stretch hidden lg:block"></div>
+
+        <!-- Right Sidebar: Booking Summary -->
+        <div class="w-full lg:w-[20rem] flex-shrink-0 flex flex-col">
+          <div class="flex-1 flex flex-col">
+            <jhi-booking-summary
+              [jobTitle]="jobTitle()"
+              [supervisor]="supervisor()"
+              [researchGroupName]="researchGroupName()"
+              [selectedSlot]="selectedSlot()"
+              [alreadyBooked]="hasBookedSlot()"
+              [bookedDate]="bookedSlotDate()"
+              [bookedTime]="bookedSlotTime()"
+              [bookedIsVirtual]="isBookedVirtual()"
+              [bookedLocation]="bookedSlotLocation()"
+              (book)="onBook()"
+            />
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>
