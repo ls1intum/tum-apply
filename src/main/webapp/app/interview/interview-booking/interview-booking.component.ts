@@ -171,10 +171,28 @@ export class InterviewBookingComponent {
   }
 
   /** Initiates booking for the selected slot. */
-  onBook(): void {
-    if (this.selectedSlot() === null) return;
-    // TODO: Call booking API when endpoint exists
-    this.toastService.showInfoKey('interview.booking.bookedSuccessPlaceholder');
+  async onBook(): Promise<void> {
+    const slot = this.selectedSlot();
+    if (slot?.id === undefined) return;
+
+    const processId = this.route.snapshot.paramMap.get('processId');
+    if (processId === null) return;
+
+    try {
+      await firstValueFrom(this.bookingService.bookSlot(processId, { slotId: slot.id }));
+      this.toastService.showSuccessKey('interview.booking.bookingSuccess');
+      this.selectedSlot.set(null);
+      // Reload data to show confirmation
+      await this.loadData(processId, this.currentYear(), this.currentMonthNumber());
+    } catch (error: unknown) {
+      if (error !== null && typeof error === 'object' && 'status' in error && error.status === 409) {
+        this.toastService.showErrorKey('interview.booking.slotAlreadyBooked');
+        // Reload to get updated slot availability
+        await this.loadData(processId, this.currentYear(), this.currentMonthNumber());
+      } else {
+        this.toastService.showErrorKey('interview.booking.bookingError');
+      }
+    }
   }
 
   /** Navigates to the previous month and reloads slots. */

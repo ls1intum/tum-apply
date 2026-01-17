@@ -15,23 +15,31 @@
       "noSlotSelected": "Wähle einen Termin aus",
       "book": "Termin buchen",
       "alreadyBooked": "Bereits gebucht",
-      "noSlotsFormatted": "Keine Termine verfügbar",
       "noSlotsInMonth": "Keine Termine in diesem Monat",
-      "details": "Details",
       "error": {
         "title": "Buchungsdaten konnten nicht geladen werden",
-        "description": "Die Buchungsdaten konnten nicht geladen werden. Bitte aktualisiere die Seite oder versuche es erneut.",
-        "retry": "Erneut versuchen"
+        "description": "Die Buchungsdaten konnten nicht geladen werden. Bitte aktualisiere die Seite oder versuche es erneut."
       },
       "success": {
         "title": "Termin gebucht!",
-        "message": "Du hast deinen Interview-Termin erfolgreich gebucht.",
-        "viewDetails": "Details anzeigen",
-        "cancelBooking": "Buchung stornieren"
+        "message": "Du hast deinen Interview Termin erfolgreich gebucht. Eine E-Mail mit den Informationen wurde an dich gesendet."
       },
-      "bookedSuccessPlaceholder": {
-        "summary": "Buchung erfolgreich",
-        "detail": "Dies ist ein Platzhalter für die Buchung."
+      "confirmDialog": {
+        "header": "Buchung bestätigen",
+        "message": "Möchtest du diesen Interview-Termin wirklich buchen?",
+        "confirm": "Termin buchen"
+      },
+      "bookingSuccess": {
+        "summary": "Interview Termin erfolgreich gebucht",
+        "detail": "Eine E-Mail mit den Informationen wurde an dich gesendet."
+      },
+      "slotAlreadyBooked": {
+        "summary": "Termin nicht mehr verfügbar",
+        "detail": "Dieser Termin wurde von einem anderen Bewerber gebucht. Bitte wähle einen anderen Termin."
+      },
+      "bookingError": {
+        "summary": "Buchung fehlgeschlagen",
+        "detail": "Beim Buchen des Termins ist ein Fehler aufgetreten. Bitte versuch es erneut."
       }
     }
   }
