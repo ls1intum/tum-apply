@@ -45,6 +45,8 @@ import org.springframework.test.context.ActiveProfiles;
 class PDFExportResourceTest extends AbstractResourceTest {
 
     private static final String BASE_URL = "/api/export";
+    private static final byte[] PDF_MAGIC_NUMBER = "%PDF-".getBytes();
+    private static final int MIN_PDF_SIZE = 1000;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -197,6 +199,13 @@ class PDFExportResourceTest extends AbstractResourceTest {
         labels.put("email", "Email");
     }
 
+    private void assertValidPdf(byte[] pdfBytes) {
+        assertThat(pdfBytes).isNotNull();
+        assertThat(pdfBytes).isNotEmpty();
+        assertThat(pdfBytes).startsWith(PDF_MAGIC_NUMBER);
+        assertThat(pdfBytes.length).isGreaterThan(MIN_PDF_SIZE);
+    }
+
     @Nested
     class ExportApplicationToPDF {
 
@@ -211,7 +220,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 MediaType.APPLICATION_PDF
             );
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
 
         @Test
@@ -242,7 +251,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 MediaType.APPLICATION_PDF
             );
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
 
         @Test
@@ -271,7 +280,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 MediaType.APPLICATION_PDF
             );
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
     }
 
@@ -286,7 +295,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 .withoutPostProcessors()
                 .postAndReturnBytes(BASE_URL + "/job/" + job.getJobId() + "/pdf", labels, 200, MediaType.APPLICATION_PDF);
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
 
         @Test
@@ -302,7 +311,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                     MediaType.APPLICATION_PDF
                 );
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
 
         @Test
@@ -322,7 +331,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                     MediaType.APPLICATION_PDF
                 );
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
     }
 
@@ -359,7 +368,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 MediaType.APPLICATION_PDF
             );
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
 
         @Test
@@ -420,7 +429,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(userWithoutRG.getUserId(), "ROLE_PROFESSOR"))
                 .postAndReturnBytes(BASE_URL + "/job/preview/pdf", request, 200, MediaType.APPLICATION_PDF);
 
-            assertThat(result).startsWith("%PDF-".getBytes());
+            assertValidPdf(result);
         }
     }
 
