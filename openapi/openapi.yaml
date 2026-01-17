@@ -996,6 +996,37 @@ paths:
         schema: {type: string, format: uuid}
       responses:
         '200': {description: OK}
+  /api/interviews/booking/{processId}:
+    get:
+      tags: [interview-booking-resource]
+      operationId: getBookingData
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: year
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: month
+        in: query
+        required: false
+        schema: {type: integer, format: int32}
+      - name: page
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 0}
+      - name: size
+        in: query
+        required: false
+        schema: {type: integer, format: int32, default: 20, minimum: 1}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BookingDTO'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -2392,6 +2423,16 @@ components:
       properties:
         type: {type: string}
         word: {type: string}
+    BookingDTO:
+      type: object
+      properties:
+        availableSlots:
+          type: array
+          items: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        jobTitle: {type: string}
+        researchGroupName: {type: string}
+        supervisor: {$ref: '#/components/schemas/ProfessorDTO'}
+        userBookingInfo: {$ref: '#/components/schemas/UserBookingInfoDTO'}
     CreateSlotsDTO:
       type: object
       properties:
@@ -2493,7 +2534,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2502,7 +2544,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2511,7 +2554,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2523,7 +2567,8 @@ components:
         emailType:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
-            APPLICATION_SENT, APPLICATION_WITHDRAWN]
+            APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
+            RESEARCH_GROUP_APPROVED]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -3139,6 +3184,7 @@ components:
           uniqueItems: true
         firstName: {type: string}
         gender: {type: string}
+        lastActivityAt: {type: string, format: date-time}
         lastModifiedAt: {type: string, format: date-time}
         lastName: {type: string}
         linkedinUrl: {type: string}
@@ -3157,6 +3203,11 @@ components:
         universityId: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserBookingInfoDTO:
+      type: object
+      properties:
+        bookedSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        hasBookedSlot: {type: boolean}
     UserDTO:
       type: object
       properties:

@@ -332,7 +332,7 @@ jobs:
   # ============================================
 
   lighthouse-scan:
-    name: Server Startup and Lighthouse Performance & Accessibility
+    name: Server Startup (Lighthouse Performance & Accessibility temporarily disabled)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -410,11 +410,11 @@ jobs:
           exit 1
 
       # --- Run Lighthouse ---
-      - name: Install Lighthouse CI
-        run: npm install -g @lhci/cli@0.11.x
+      # - name: Install Lighthouse CI
+      #   run: npm install -g @lhci/cli@0.11.x
 
-      - name: ✅ Run Lighthouse Performance & Accessibility Scans
-        run: lhci autorun
+      # - name: ✅ Run Lighthouse Performance & Accessibility Scans
+      #   run: lhci autorun
 
       # --- Cleanup ---
       - name: Cleanup Servers

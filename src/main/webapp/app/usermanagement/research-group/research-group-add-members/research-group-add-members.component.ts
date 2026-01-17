@@ -1,8 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
@@ -12,20 +10,22 @@ import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 const I18N_BASE = 'researchGroup.members';
 
 @Component({
   selector: 'jhi-research-group-add-members.component',
   imports: [
-    CommonModule,
     TranslateModule,
     SearchFilterSortBar,
     ButtonComponent,
-    CheckboxModule,
     FormsModule,
     PaginatorModule,
     ConfirmDialog,
+    ProgressSpinnerModule,
+    CheckboxComponent,
   ],
   templateUrl: './research-group-add-members.component.html',
 })
@@ -53,6 +53,23 @@ export class ResearchGroupAddMembersComponent {
   // Delay before showing the loading spinner to avoid flickering on fast queries
   private readonly LOADER_DELAY_MS = 250;
   private loaderTimeout: number | null = null;
+
+  // Local mock users for UI testing without Keycloak/backend
+  private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
+  private readonly MOCK_USERS: KeycloakUserDTO[] = [
+    { id: 'mock-1', firstName: 'Aniruddh', lastName: 'Zaveri', email: 'aniruddh.zaveri@tum.de' },
+    { id: 'mock-2', firstName: 'Aniruddh', lastName: 'Pawar', email: 'ge69hug@mytum.de' },
+    { id: 'mock-3', firstName: 'Alice', lastName: 'Curie', email: 'alice.curie@tum.de' },
+    { id: 'mock-4', firstName: 'Ben', lastName: 'Schmidt', email: 'ben.schmidt@mytum.de' },
+    { id: 'mock-5', firstName: 'Carla', lastName: 'Nguyen', email: 'carla.nguyen@tum.de' },
+    { id: 'mock-6', firstName: 'David', lastName: 'Ibrahim', email: 'david.ibrahim@mytum.de' },
+    { id: 'mock-7', firstName: 'Elena', lastName: 'Rossi', email: 'elena.rossi@tum.de' },
+    { id: 'mock-8', firstName: 'Farid', lastName: 'Khan', email: 'farid.khan@mytum.de' },
+    { id: 'mock-9', firstName: 'Greta', lastName: 'Meyer', email: 'greta.meyer@tum.de' },
+    { id: 'mock-10', firstName: 'Hugo', lastName: 'Weiss', email: 'hugo.weiss@mytum.de' },
+    { id: 'mock-11', firstName: 'Isabella', lastName: 'Fischer', email: 'isabella.fischer@tum.de' },
+    { id: 'mock-12', firstName: 'Jonas', lastName: 'Bauer', email: 'jonas.bauer@mytum.de' },
+  ];
 
   private latestRequestId = 0;
   private selectedUsers = signal<Map<string, KeycloakUserDTO>>(new Map());
@@ -94,6 +111,21 @@ export class ResearchGroupAddMembersComponent {
     }
 
     if (query !== '' && query.length < this.MIN_SEARCH_LENGTH) {
+      return;
+    }
+
+    if (this.USE_MOCK_USERS) {
+      const normalizedQuery = query.toLowerCase();
+      const filteredUsers = normalizedQuery
+        ? this.MOCK_USERS.filter(user =>
+            `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
+          )
+        : this.MOCK_USERS;
+
+      const startIndex = this.page() * this.pageSize();
+      const endIndex = startIndex + this.pageSize();
+      this.totalRecords.set(filteredUsers.length);
+      this.users.set(filteredUsers.slice(startIndex, endIndex));
       return;
     }
 

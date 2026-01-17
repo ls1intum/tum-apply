@@ -11,6 +11,7 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -110,9 +111,9 @@ public class EmailService {
      */
     private String renderSubject(Email email, EmailTemplateTranslation emailTemplateTranslation) {
         if (StringUtils.isNotEmpty(email.getCustomSubject()) || emailTemplateTranslation == null) {
-            return templateProcessingService.renderSubject(email.getCustomSubject());
+            return templateProcessingService.renderSubject(email.getCustomSubject(), email.getContent());
         }
-        return templateProcessingService.renderSubject(emailTemplateTranslation);
+        return templateProcessingService.renderSubject(emailTemplateTranslation, email.getContent());
     }
 
     /**
@@ -132,7 +133,8 @@ public class EmailService {
     }
 
     /**
-     * Logs the email instead of sending it. Used for local testing or when sending is disabled.
+     * Logs the email instead of sending it. Used for local testing or when sending
+     * is disabled.
      *
      * @param email   the email
      * @param subject the rendered subject
@@ -189,6 +191,7 @@ public class EmailService {
             helper.setText(body, true);
 
             attachDocuments(email, helper);
+            attachIcsCalendar(email, helper);
 
             mailSender.send(message);
         } catch (MailException | IOException | MessagingException e) {
@@ -216,7 +219,8 @@ public class EmailService {
     }
 
     /**
-     * Filters a list of users to those who have notification enabled for a given email type.
+     * Filters a list of users to those who have notification enabled for a given
+     * email type.
      *
      * @param users the users to filter
      * @param email the email context
@@ -256,6 +260,28 @@ public class EmailService {
             InputStreamSource attachment = new ByteArrayResource(content.getContentAsByteArray());
             helper.addAttachment("document_" + count, attachment);
             count++;
+        }
+    }
+
+    /**
+     * Attaches ICS calendar file to the outgoing email message.
+     * If attaching fails, the error is logged but the email is still sent without
+     * the attachment.
+     *
+     * @param email  the email containing ICS content
+     * @param helper the message helper
+     */
+    private void attachIcsCalendar(Email email, MimeMessageHelper helper) {
+        if (email.getIcsContent() == null || email.getIcsFileName() == null) {
+            return;
+        }
+
+        try {
+            byte[] icsBytes = email.getIcsContent().getBytes(StandardCharsets.UTF_8);
+            InputStreamSource icsSource = new ByteArrayResource(icsBytes);
+            helper.addAttachment(email.getIcsFileName(), icsSource, "text/calendar");
+        } catch (MessagingException e) {
+            log.warn("Failed to attach ICS calendar file '{}' to email: {}", email.getIcsFileName(), e.getMessage());
         }
     }
 }

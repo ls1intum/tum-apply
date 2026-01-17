@@ -137,7 +137,8 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Development"
+      "dev": "Development",
+      "test": "Development"
     },
     "item-count": "Showing {{first}} - {{second}} of {{total}} items."
   },
@@ -250,6 +251,11 @@
       "duplicate": {
         "title": "Document already exists",
         "message": "A document with the name \"{{filename}}\" already exists. Do you want to replace it?",
+        "replace": "Replace"
+      },
+      "replacement": {
+        "title": "Replace existing file",
+        "message": "You have already uploaded a file. Do you want to replace it with the new file?",
         "replace": "Replace"
       },
       "error": {

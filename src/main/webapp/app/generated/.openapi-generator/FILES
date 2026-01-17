@@ -16,6 +16,7 @@ api/emailVerificationResourceApi.service.ts
 api/genderBiasAnalysisResourceApi.service.ts
 api/imageResourceApi.service.ts
 api/internalCommentResourceApi.service.ts
+api/interviewBookingResourceApi.service.ts
 api/interviewResourceApi.service.ts
 api/jobResourceApi.service.ts
 api/pdfExportResourceApi.service.ts
@@ -51,6 +52,7 @@ model/assignSlotRequestDTO.ts
 model/assignedIntervieweeDTO.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
+model/bookingDTO.ts
 model/createSlotsDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
@@ -124,6 +126,7 @@ model/updatePasswordDTO.ts
 model/updateUserNameDTO.ts
 model/uploadDocumentsRequest.ts
 model/user.ts
+model/userBookingInfoDTO.ts
 model/userDTO.ts
 model/userForApplicationDetailDTO.ts
 model/userProfileDTO.ts

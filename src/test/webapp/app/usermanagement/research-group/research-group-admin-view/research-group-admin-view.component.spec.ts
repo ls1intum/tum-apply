@@ -366,17 +366,11 @@ describe('ResearchGroupAdminView', () => {
   });
 
   describe('Opening and closing dialogs', () => {
-    it('should open detail view dialog', () => {
+    it('should navigate to detail page', () => {
+      const router = TestBed.inject(Router);
       component.onViewResearchGroup('rg-123');
 
-      expect(mockDialogService.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          header: 'researchGroup.detailView.title',
-          data: { researchGroupId: 'rg-123' },
-        }),
-      );
-      expect(mockTranslateService.instant).toHaveBeenCalledWith('researchGroup.detailView.title');
+      expect(router.navigate).toHaveBeenCalledWith(['/research-group/detail', 'rg-123']);
     });
 
     it('should open create dialog and reload on success', async () => {

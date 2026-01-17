@@ -176,6 +176,16 @@ const routes: Routes = [
     title: 'global.routes.researchGroup.adminView',
   },
   {
+    path: 'research-group/detail/:researchGroupId',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Admin] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-admin-view/research-group-detail-view/research-group-detail-view.component').then(
+        m => m.ResearchGroupDetailViewComponent,
+      ),
+    title: 'researchGroup.detailView.title',
+  },
+  {
     path: 'research-group/departments',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Admin] },
@@ -276,6 +286,13 @@ const routes: Routes = [
         title: 'global.routes.interview.detail',
       },
     ],
+  },
+  {
+    path: 'interview-booking/:processId',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./interview/interview-booking/interview-booking.component').then(m => m.InterviewBookingComponent),
+    title: 'interview.booking.title',
   },
 
   // ======================================================================================

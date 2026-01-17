@@ -4,9 +4,11 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
+import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
+import de.tum.cit.aet.notification.dto.ResearchGroupEmailContext;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import freemarker.template.Configuration;
@@ -35,24 +37,42 @@ public class TemplateProcessingService {
     }
 
     /**
-     * Renders the email subject line for display in the final email.
+     * Renders the email subject line for display in the final email using the provided content for variable binding.
      *
      * @param emailTemplateTranslation the email template translation
+     * @param content                  the domain object for variable binding
      * @return the prefixed subject line
      */
-    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation) {
-        return renderSubject(emailTemplateTranslation.getSubject());
+    public String renderSubject(EmailTemplateTranslation emailTemplateTranslation, Object content) {
+        return renderSubject(emailTemplateTranslation.getSubject(), content);
     }
 
-    public String renderSubject(String subject) {
-        return "TUMApply - " + subject;
+    /**
+     * Renders a raw subject string using FreeMarker variables.
+     *
+     * @param rawSubject the raw subject string
+     * @param content    the domain object for variable binding
+     * @return the rendered and prefixed subject line
+     */
+    public String renderSubject(String rawSubject, Object content) {
+        try {
+            Map<String, Object> dataModel = content == null ? new HashMap<>() : createDataModel(content);
+            // Render subject through Freemarker string template
+            Template subjectTemplate = new Template("subject", new StringReader(rawSubject), freemarkerConfig);
+            String renderedSubject = render(subjectTemplate, dataModel);
+            return "TUMApply - " + renderedSubject;
+        } catch (IOException ex) {
+            throw new TemplateProcessingException("Failed to render subject template", ex);
+        }
     }
 
     /**
      * Renders the HTML email body using FreeMarker and applies layout formatting.
      *
-     * @param emailTemplateTranslation the template translation containing raw HTML and language
-     * @param content                  the domain object (e.g. Application, Job) for variable binding
+     * @param emailTemplateTranslation the template translation containing raw HTML
+     *                                 and language
+     * @param content                  the domain object (e.g. Application, Job) for
+     *                                 variable binding
      * @return the fully rendered HTML email body
      * @throws TemplateProcessingException if template parsing or rendering fails
      */
@@ -138,7 +158,8 @@ public class TemplateProcessingService {
     /**
      * Builds the data model used in templates from the provided domain object.
      *
-     * @param content the object to extract data from (Application, Job, or ResearchGroup)
+     * @param content the object to extract data from (Application, Job, or
+     *                ResearchGroup)
      * @return a data model for template binding
      * @throws TemplateProcessingException if the content type is unsupported
      */
@@ -148,9 +169,9 @@ public class TemplateProcessingService {
             case Application application -> addApplicationData(dataModel, application);
             case Job job -> addJobData(dataModel, job);
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
-            default -> {
-                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
-            }
+            case InterviewSlot slot -> addInterviewSlotData(dataModel, slot);
+            case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
+            default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
         }
         return dataModel;
     }
@@ -181,8 +202,43 @@ public class TemplateProcessingService {
         User supervisingProfessor = job.getSupervisingProfessor();
         dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_FIRST_NAME.getValue(), supervisingProfessor.getFirstName());
         dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_LAST_NAME.getValue(), supervisingProfessor.getLastName());
+        dataModel.put(TemplateVariable.SUPERVISING_PROFESSOR_EMAIL.getValue(), supervisingProfessor.getEmail());
 
         addResearchGroupData(dataModel, job.getResearchGroup());
+    }
+
+    private static final java.time.ZoneId CET_TIMEZONE = java.time.ZoneId.of("Europe/Berlin");
+    private static final java.time.format.DateTimeFormatter DATE_FORMATTER = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final java.time.format.DateTimeFormatter TIME_FORMATTER = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+
+    private void addInterviewSlotData(Map<String, Object> dataModel, InterviewSlot slot) {
+        java.time.ZonedDateTime startTime = slot.getStartDateTime().atZone(CET_TIMEZONE);
+        java.time.ZonedDateTime endTime = slot.getEndDateTime().atZone(CET_TIMEZONE);
+
+        dataModel.put(TemplateVariable.INTERVIEW_DATE.getValue(), startTime.format(DATE_FORMATTER));
+        dataModel.put(TemplateVariable.INTERVIEW_START_TIME.getValue(), startTime.format(TIME_FORMATTER));
+        dataModel.put(TemplateVariable.INTERVIEW_END_TIME.getValue(), endTime.format(TIME_FORMATTER));
+        dataModel.put(TemplateVariable.INTERVIEW_LOCATION.getValue(), slot.getLocation());
+        dataModel.put(TemplateVariable.INTERVIEW_STREAM_LINK.getValue(), slot.getStreamLink());
+
+        // Add applicant data from interviewee
+        if (slot.getInterviewee() != null && slot.getInterviewee().getApplication() != null) {
+            Application application = slot.getInterviewee().getApplication();
+            User applicant = application.getApplicant().getUser();
+            dataModel.put(TemplateVariable.APPLICANT_FIRST_NAME.getValue(), applicant.getFirstName());
+            dataModel.put(TemplateVariable.APPLICANT_LAST_NAME.getValue(), applicant.getLastName());
+            dataModel.put(TemplateVariable.APPLICANT_GENDER.getValue(), application.getApplicantGender());
+        }
+
+        addJobData(dataModel, slot.getInterviewProcess().getJob());
+    }
+
+    /**
+     * Adds combined user and research group data for research-group-related emails.
+     */
+    private void addResearchGroupContextData(Map<String, Object> dataModel, ResearchGroupEmailContext context) {
+        addUserData(dataModel, context.user());
+        addResearchGroupData(dataModel, context.researchGroup());
     }
 
     /**
@@ -193,6 +249,17 @@ public class TemplateProcessingService {
      */
     private void addResearchGroupData(Map<String, Object> dataModel, ResearchGroup researchGroup) {
         dataModel.put(TemplateVariable.RESEARCH_GROUP_NAME.getValue(), researchGroup.getName());
+    }
+
+    /**
+     * Adds generic user data to the template data model.
+     *
+     * @param dataModel the data model map
+     * @param user      the user object
+     */
+    private void addUserData(Map<String, Object> dataModel, User user) {
+        dataModel.put(TemplateVariable.USER_FIRST_NAME.getValue(), user.getFirstName());
+        dataModel.put(TemplateVariable.USER_LAST_NAME.getValue(), user.getLastName());
     }
 
     /**

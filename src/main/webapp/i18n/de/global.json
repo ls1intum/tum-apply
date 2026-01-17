@@ -137,7 +137,8 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Entwicklung"
+      "dev": "Entwicklung",
+      "test": "Entwicklung"
     },
     "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
   },
@@ -250,6 +251,11 @@
       "duplicate": {
         "title": "Dokument bereits vorhanden",
         "message": "Ein Dokument mit dem Namen \"{{filename}}\" existiert bereits. Möchtest du es ersetzen?",
+        "replace": "Ersetzen"
+      },
+      "replacement": {
+        "title": "Vorhandene Datei ersetzen",
+        "message": "Du hast bereits eine Datei hochgeladen. Möchtest du sie durch die neue Datei ersetzen?",
         "replace": "Ersetzen"
       },
       "error": {
