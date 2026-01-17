@@ -551,7 +551,7 @@ export class JobCreationFormComponent {
 
     this.isGeneratingDraft.set(true);
 
-    // Call backend with relevant metadataw
+    // Call server with relevant metadata
     const request: JobFormDTO = {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',

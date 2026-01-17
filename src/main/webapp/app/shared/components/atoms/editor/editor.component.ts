@@ -13,7 +13,7 @@ import { map, switchMap } from 'rxjs';
 import { franc } from 'franc-min';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
 import { ChangeDetectorRef } from '@angular/core';
-import { ViewChild } from '@angular/core';
+import { viewChild } from '@angular/core';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
@@ -42,7 +42,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   showGenderDecoderButton = input<boolean>(false);
   genderDecoderClick = output<string>();
   openAnalysisDialog = output<GenderBiasAnalysisResponse>();
-  @ViewChild(QuillEditorComponent) quillEditorComponent?: QuillEditorComponent;
+  quillEditorComponent= viewChild(QuillEditorComponent);
 
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);
@@ -181,16 +181,17 @@ export class EditorComponent extends BaseInputDirective<string> {
   }
 
   /**
-   * Updates the Quill editor with AI-generated content.
-   * CRITICAL: Without this, AI responses won't appear in the editor.
-   * Normal form setValue() only updates the model, not Quill's visual content.
+   * Forces the editor to display new HTML content.
    *
-   * @param newValue AI-generated HTML content to display in editor
+   * Quill doesn't update when you change the form value directly,
+   * so this method manually converts the HTML and pushes it into the editor.
+   *
+   * @param newValue The HTML content to display in editor
    */
   public forceUpdate(newValue: string): void {
     this.htmlValue.set(newValue);
 
-    const editor = this.quillEditorComponent?.quillEditor;
+    const editor = this.quillEditorComponent()?.quillEditor;
     if (!editor) return;
 
     const content = editor.clipboard.convert({ html: newValue });
