@@ -658,7 +658,7 @@ describe('JobCreationFormComponent', () => {
       expect(dto.researchArea).toBe('');
       expect(dto.jobDescription).toBe('');
 
-      component.basicInfoForm.patchValue({ title: 'My Job', researchArea: '  AI Research  ',jobDescription: '  Some description  '});
+      component.basicInfoForm.patchValue({ title: 'My Job', researchArea: '  AI Research  ', jobDescription: '  Some description  ' });
       dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('My Job');
       expect(dto.researchArea).toBe('AI Research');
