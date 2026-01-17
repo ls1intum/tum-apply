@@ -39,6 +39,7 @@ function fillValidJobForm(component: JobCreationFormComponent) {
     fieldOfStudies: { value: 'CS' },
     location: { value: 'MUNICH' },
     supervisingProfessor: 'Prof',
+    jobDescription: 'This is a job description.',
   });
   component.positionDetailsForm.patchValue({
     startDate: '2025-02-25',
@@ -652,13 +653,12 @@ describe('JobCreationFormComponent', () => {
 
     it('should handle empty and whitespace values correctly', () => {
       component.basicInfoForm.reset();
-      component.positionDetailsForm.reset();
       let dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('');
       expect(dto.researchArea).toBe('');
+      expect(dto.jobDescription).toBe('');
 
-      component.basicInfoForm.patchValue({ title: 'My Job', researchArea: '  AI Research  ' });
-      component.positionDetailsForm.patchValue({ jobDescription: '  Some description  ' });
+      component.basicInfoForm.patchValue({ title: 'My Job', researchArea: '  AI Research  ',jobDescription: '  Some description  '});
       dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('My Job');
       expect(dto.researchArea).toBe('AI Research');
