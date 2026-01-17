@@ -41,9 +41,11 @@ function fillValidJobForm(component: JobCreationFormComponent) {
     supervisingProfessor: 'Prof',
   });
   component.positionDetailsForm.patchValue({
-    description: 'desc',
-    tasks: 'tasks',
-    requirements: 'reqs',
+    startDate: '2025-02-25',
+    applicationDeadline: '2025-01-01',
+    workload: 20,
+    contractDuration: 3,
+    fundingType: { value: 'FULLY_FUNDED', name: 'Fully Funded' },
   });
   component.additionalInfoForm.patchValue({ privacyAccepted: true });
 
@@ -398,7 +400,7 @@ describe('JobCreationFormComponent', () => {
         fundingType: DropdownOptions.fundingTypes[0].value,
       } as JobDTO;
       getPrivate(component).populateForm(job);
-      expect(component.basicInfoForm.get('fundingType')?.value).toEqual(DropdownOptions.fundingTypes[0]);
+      expect(component.positionDetailsForm.get('fundingType')?.value).toEqual(DropdownOptions.fundingTypes[0]);
     });
 
     it('should populate form with job image correctly', () => {
@@ -656,7 +658,7 @@ describe('JobCreationFormComponent', () => {
       expect(dto.researchArea).toBe('');
 
       component.basicInfoForm.patchValue({ title: 'My Job', researchArea: '  AI Research  ' });
-      component.positionDetailsForm.patchValue({ description: '  Some description  ' });
+      component.positionDetailsForm.patchValue({ jobDescription: '  Some description  ' });
       dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('My Job');
       expect(dto.researchArea).toBe('AI Research');
@@ -684,7 +686,7 @@ describe('JobCreationFormComponent', () => {
     it('should validate individual forms and their signals', () => {
       // Test invalid state
       expect(component.basicInfoForm.valid).toBe(false);
-      expect(component.positionDetailsForm.valid).toBe(false);
+      expect(component.positionDetailsForm.valid).toBe(true);
       expect(component.allFormsValid()).toBe(false);
 
       // Test basicInfoForm
@@ -694,18 +696,12 @@ describe('JobCreationFormComponent', () => {
         fieldOfStudies: { value: 'CS' },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
+        jobDescription: '<p>Description</p>',
       });
       fixture.detectChanges();
       expect(component.basicInfoForm.valid).toBe(true);
       expect(component.basicInfoValid()).toBe(true);
 
-      // Test positionDetailsForm
-      component.positionDetailsForm.patchValue({
-        description: '<p>Description</p>',
-        tasks: '<p>Tasks</p>',
-        requirements: '<p>Requirements</p>',
-      });
-      fixture.detectChanges();
       expect(component.positionDetailsForm.valid).toBe(true);
       expect(component.positionDetailsValid()).toBe(true);
 
