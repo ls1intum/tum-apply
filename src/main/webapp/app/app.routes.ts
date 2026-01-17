@@ -287,6 +287,13 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'interview-booking/:processId',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./interview/interview-booking/interview-booking.component').then(m => m.InterviewBookingComponent),
+    title: 'interview.booking.title',
+  },
 
   // ======================================================================================
   // Error Handling

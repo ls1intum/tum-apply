@@ -8,7 +8,9 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.dto.BookSlotRequestDTO;
 import de.tum.cit.aet.interview.dto.BookingDTO;
+import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
@@ -219,6 +221,191 @@ class InterviewBookingResourceTest extends AbstractResourceTest {
             // Assert: Only 2 future unbooked slots
             assertThat(result.availableSlots()).hasSize(2);
             assertThat(result.userBookingInfo().hasBookedSlot()).isFalse();
+        }
+    }
+
+    @Nested
+    class BookSlot {
+
+        @Test
+        void bookSlotSuccessfullyReturnsBookedSlot() {
+            // Arrange
+            createInvitedInterviewee();
+            InterviewSlot slot = createFutureUnbookedSlot();
+            BookSlotRequestDTO request = new BookSlotRequestDTO(slot.getId());
+
+            // Act
+            InterviewSlotDTO result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, InterviewSlotDTO.class, 200);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(slot.getId());
+            assertThat(result.location()).isEqualTo("Room 101");
+
+            // Verify slot is now booked in database
+            InterviewSlot updatedSlot = interviewSlotRepository.findById(slot.getId()).orElseThrow();
+            assertThat(updatedSlot.getIsBooked()).isTrue();
+            assertThat(updatedSlot.getInterviewee()).isNotNull();
+        }
+
+        @Test
+        void bookSlotReturns403WhenNotInProcess() {
+            // Arrange: No interviewee entry for this user
+            InterviewSlot slot = createFutureUnbookedSlot();
+            BookSlotRequestDTO request = new BookSlotRequestDTO(slot.getId());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, Void.class, 403);
+
+            // Assert
+            assertThat(result).isNull();
+
+            // Verify slot is still unbooked
+            InterviewSlot unchangedSlot = interviewSlotRepository.findById(slot.getId()).orElseThrow();
+            assertThat(unchangedSlot.getIsBooked()).isFalse();
+        }
+
+        @Test
+        void bookSlotReturns403WhenUncontacted() {
+            // Arrange: Create interviewee WITHOUT lastInvited (UNCONTACTED state)
+            Interviewee interviewee = new Interviewee();
+            interviewee.setInterviewProcess(interviewProcess);
+            interviewee.setApplication(application);
+            interviewee.setLastInvited(null);
+            intervieweeRepository.save(interviewee);
+
+            InterviewSlot slot = createFutureUnbookedSlot();
+            BookSlotRequestDTO request = new BookSlotRequestDTO(slot.getId());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, Void.class, 403);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void bookSlotReturns400WhenAlreadyHasBookedSlot() {
+            // Arrange
+            Interviewee interviewee = createInvitedInterviewee();
+
+            // Create and book a slot for this interviewee
+            InterviewSlot existingSlot = createFutureUnbookedSlot();
+            existingSlot.setIsBooked(true);
+            existingSlot.setInterviewee(interviewee);
+            interviewSlotRepository.save(existingSlot);
+
+            // Try to book another slot
+            InterviewSlot newSlot = createFutureUnbookedSlot();
+            BookSlotRequestDTO request = new BookSlotRequestDTO(newSlot.getId());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, Void.class, 400);
+
+            // Assert
+            assertThat(result).isNull();
+
+            // Verify new slot is still unbooked
+            InterviewSlot unchangedSlot = interviewSlotRepository.findById(newSlot.getId()).orElseThrow();
+            assertThat(unchangedSlot.getIsBooked()).isFalse();
+        }
+
+        @Test
+        void bookSlotReturns404WhenSlotNotFound() {
+            // Arrange
+            createInvitedInterviewee();
+            BookSlotRequestDTO request = new BookSlotRequestDTO(UUID.randomUUID());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, Void.class, 404);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void bookSlotReturns404WhenSlotBelongsToDifferentProcess() {
+            // Arrange
+            createInvitedInterviewee();
+
+            // Create a different interview process
+            Job job2 = JobTestData.saved(
+                jobRepository,
+                interviewProcess.getJob().getSupervisingProfessor(),
+                interviewProcess.getJob().getResearchGroup(),
+                "Another Job",
+                JobState.PUBLISHED,
+                LocalDate.now()
+            );
+            InterviewProcess otherProcess = new InterviewProcess();
+            otherProcess.setJob(job2);
+            otherProcess = interviewProcessRepository.save(otherProcess);
+
+            // Create slot in other process
+            InterviewSlot slotInOtherProcess = new InterviewSlot();
+            slotInOtherProcess.setInterviewProcess(otherProcess);
+            slotInOtherProcess.setStartDateTime(Instant.now().plusSeconds(86400));
+            slotInOtherProcess.setEndDateTime(Instant.now().plusSeconds(90000));
+            slotInOtherProcess.setLocation("Room 999");
+            slotInOtherProcess.setIsBooked(false);
+            slotInOtherProcess = interviewSlotRepository.save(slotInOtherProcess);
+
+            BookSlotRequestDTO request = new BookSlotRequestDTO(slotInOtherProcess.getId());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, Void.class, 404);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void bookSlotReturns409WhenSlotAlreadyBooked() {
+            // Arrange
+            createInvitedInterviewee();
+
+            // Create a slot that is already booked by someone else
+            InterviewSlot bookedSlot = createFutureUnbookedSlot();
+            bookedSlot.setIsBooked(true);
+            interviewSlotRepository.save(bookedSlot);
+
+            BookSlotRequestDTO request = new BookSlotRequestDTO(bookedSlot.getId());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, Void.class, 409);
+
+            // Assert
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void bookSlotReturns400WhenSlotIsInPast() {
+            // Arrange
+            createInvitedInterviewee();
+            InterviewSlot pastSlot = createPastSlot();
+            BookSlotRequestDTO request = new BookSlotRequestDTO(pastSlot.getId());
+
+            // Act
+            Void result = api
+                .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead(API_BASE_PATH + interviewProcess.getId() + "/book", request, Void.class, 400);
+
+            // Assert
+            assertThat(result).isNull();
         }
     }
 
