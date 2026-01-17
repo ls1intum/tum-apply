@@ -705,7 +705,7 @@ describe('JobDetailComponent', () => {
 
       pdfItem!.command?.();
 
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledOnce();
     });
 
     it('should download PDF for normal job', async () => {
@@ -773,7 +773,7 @@ describe('JobDetailComponent', () => {
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalled();
+      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledOnce();
     });
 
     it('should use default filename when regex does not match Content-Disposition', async () => {
@@ -786,7 +786,7 @@ describe('JobDetailComponent', () => {
       component.jobId.set('job123');
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobToPDF).toHaveBeenCalled();
+      expect(pdfExportService.exportJobToPDF).toHaveBeenCalledOnce();
     });
 
     it('should use default filename when regex does not match in preview mode', async () => {
@@ -806,7 +806,7 @@ describe('JobDetailComponent', () => {
 
       await component.onDownloadPDF();
 
-      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalled();
+      expect(pdfExportService.exportJobPreviewToPDF).toHaveBeenCalledOnce();
     });
   });
 });
