@@ -12,11 +12,10 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs';
 import { franc } from 'franc-min';
 import { GenderBiasAnalysisDialogComponent } from 'app/shared/gender-bias-analysis/gender-bias-analysis-dialog/gender-bias-analysis-dialog';
-import { ChangeDetectorRef} from '@angular/core';
+import { ChangeDetectorRef } from '@angular/core';
 import { ViewChild } from '@angular/core';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
-
 
 const STANDARD_CHARACTER_LIMIT = 500;
 const STANDARD_CHARACTER_BUFFER = 50;
@@ -226,9 +225,9 @@ export class EditorComponent extends BaseInputDirective<string> {
     this.htmlValue.set(newValue);
 
     const editor = this.quillEditorComponent?.quillEditor;
-    if(!editor) return;
+    if (!editor) return;
 
-    const content = editor.clipboard.convert({html: newValue});
+    const content = editor.clipboard.convert({ html: newValue });
     editor.setContents(content, 'api');
     this.cdRef.markForCheck();
   }

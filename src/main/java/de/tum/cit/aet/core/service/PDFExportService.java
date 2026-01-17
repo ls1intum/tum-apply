@@ -257,15 +257,10 @@ public class PDFExportService {
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
 
-    private void addJobDetailsSection(
-        PDFBuilder builder,
-        Map<String, String> labels,
-        String jobDescription
-    ) {
+    private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {
         builder.startSectionGroup(labels.get("jobDetails"));
 
         builder.startInfoSection(labels.get("description")).addSectionContent(getValue(jobDescription));
-
     }
 
     private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {

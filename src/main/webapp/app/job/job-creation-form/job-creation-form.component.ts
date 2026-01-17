@@ -31,7 +31,7 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
-import {AiResourceApiService} from "app/generated";
+import { AiResourceApiService } from 'app/generated';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -543,8 +543,8 @@ export class JobCreationFormComponent {
    */
   async generateJobApplicationDraft(): Promise<void> {
     // Textbox is empty check
-    const current = this.basicInfoForm.get("jobDescription")?.value;
-    if(!current || current.trim().length === 0) {
+    const current = this.basicInfoForm.get('jobDescription')?.value;
+    if (!current || current.trim().length === 0) {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.noDescription');
       return;
     }
@@ -564,7 +564,7 @@ export class JobCreationFormComponent {
 
     try {
       const response = await firstValueFrom(this.aiService.generateJobApplicationDraft(request));
-      if(response.jobDescription) {
+      if (response.jobDescription) {
         // Update form control
         this.basicInfoForm.get('jobDescription')?.setValue(response.jobDescription);
         this.basicInfoForm.get('jobDescription')?.markAsDirty();
@@ -687,7 +687,7 @@ export class JobCreationFormComponent {
       supervisingProfessor: user?.name,
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
-      jobDescription: job?.jobDescription ?? ''
+      jobDescription: job?.jobDescription ?? '',
     });
 
     this.positionDetailsForm.patchValue({
@@ -695,7 +695,7 @@ export class JobCreationFormComponent {
       applicationDeadline: job?.endDate ?? '',
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
-      fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType)
+      fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
     });
 
     // Set image if available
