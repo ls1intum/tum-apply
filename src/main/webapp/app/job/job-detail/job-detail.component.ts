@@ -7,7 +7,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { HttpErrorResponse } from '@angular/common/http';
-import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
@@ -26,11 +25,11 @@ import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResource
 import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 import * as DropDownOptions from '../dropdown-options';
 
 import ApplicationStateEnum = ApplicationForApplicantDTO.ApplicationStateEnum;
-
 export interface JobDetails {
   supervisingProfessor: string;
   researchGroup: string;
@@ -68,13 +67,13 @@ export interface JobDetails {
   imports: [
     ButtonComponent,
     FontAwesomeModule,
-    SharedModule,
     TranslateModule,
     TranslateDirective,
     TagComponent,
     ConfirmDialog,
     TooltipModule,
     MenuComponent,
+    LocalizedDatePipe,
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
