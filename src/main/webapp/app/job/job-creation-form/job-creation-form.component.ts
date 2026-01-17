@@ -90,12 +90,12 @@ export class JobCreationFormComponent {
   });
   uploadContainerClasses = computed(() => {
     if (this.isUploadingImage()) {
-      return 'relative rounded-xl transition-all opacity-50 pointer-events-none';
+      return 'relative rounded-lg transition-all opacity-50 pointer-events-none';
     }
-    return 'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
+    return 'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
   });
   uploadInnerClasses = computed(() => {
-    const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
+    const base = 'aspect-video border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-all';
     const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
     return `${base} border-border-default ${hover}`.trim();
   });

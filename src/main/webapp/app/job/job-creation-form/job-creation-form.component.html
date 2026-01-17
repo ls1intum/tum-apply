@@ -234,11 +234,11 @@
   <!-- Reusable Image Card Template -->
   <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage" let-isSelected="isSelected">
     <div
-      [class]="'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
+      [class]="'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
       (click)="isNoImage ? clearImageSelection() : selectImage(image)"
     >
       <div
-        class="relative rounded-xl overflow-hidden border-[0.2rem] transition-colors aspect-video"
+        class="relative rounded-lg overflow-hidden border-[0.2rem] transition-colors aspect-video"
         [style.border-color]="isSelected ? 'var(--p-primary-color)' : 'transparent'"
       >
         @if (isNoImage) {
