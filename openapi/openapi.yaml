@@ -103,6 +103,30 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageApplicationOverviewDTO'}
+  /api/applications/profile:
+    get:
+      tags: [application-resource]
+      operationId: getApplicantProfile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+    put:
+      tags: [application-resource]
+      operationId: updateApplicantProfile
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applications/rename-document/{documentDictionaryId}:
     put:
       tags: [application-resource]

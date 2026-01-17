@@ -8,6 +8,21 @@
       "personalInformation": "Personal Information"
     },
 
+    "personalInformation": {
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load personal information. Please try again."
+      },
+      "saved": {
+        "summary": "Saved",
+        "detail": "Personal information saved successfully. Changes will be applied to your next application."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to save personal information. Please try again."
+      }
+    },
+
     "notifications": {
       "applicant": {
         "submission": {

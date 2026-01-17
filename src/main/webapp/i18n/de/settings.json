@@ -8,6 +8,21 @@
       "personalInformation": "Persönliche Informationen"
     },
 
+    "personalInformation": {
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuchen Sie es erneut."
+      },
+      "saved": {
+        "summary": "Gespeichert",
+        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf Ihre nächste Bewerbung angewendet."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuchen Sie es erneut."
+      }
+    },
+
     "notifications": {
       "applicant": {
         "submission": {

@@ -35,6 +35,33 @@ public class ApplicationResource {
     }
 
     /**
+     * Retrieves the current user's applicant profile with personal information.
+     *
+     * @return ApplicantDTO with current user and applicant data
+     */
+    @ApplicantOrAdmin
+    @GetMapping("/profile")
+    public ResponseEntity<de.tum.cit.aet.usermanagement.dto.ApplicantDTO> getApplicantProfile() {
+        de.tum.cit.aet.usermanagement.dto.ApplicantDTO profile = applicationService.getApplicantProfile();
+        return ResponseEntity.ok(profile);
+    }
+
+    /**
+     * Updates the current user's applicant profile with personal information.
+     *
+     * @param applicantDTO the updated applicant data
+     * @return ApplicantDTO with updated user and applicant data
+     */
+    @ApplicantOrAdmin
+    @PutMapping("/profile")
+    public ResponseEntity<de.tum.cit.aet.usermanagement.dto.ApplicantDTO> updateApplicantProfile(
+        @RequestBody de.tum.cit.aet.usermanagement.dto.ApplicantDTO applicantDTO
+    ) {
+        de.tum.cit.aet.usermanagement.dto.ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
+        return ResponseEntity.ok(updatedProfile);
+    }
+
+    /**
      * @param jobId The UUID of the Job
      * @return ApplicationForApplicantDTO as ResponseEntity, or 400 Bad Request if
      *         the createApplicationDTO is invalid

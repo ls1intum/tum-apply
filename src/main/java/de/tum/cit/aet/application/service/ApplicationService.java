@@ -474,6 +474,83 @@ public class ApplicationService {
     }
 
     /**
+     * Retrieves the current user's applicant profile with all personal information.
+     * Creates an empty applicant profile if none exists yet.
+     *
+     * @return the ApplicantDTO with current user and applicant data
+     */
+    public ApplicantDTO getApplicantProfile() {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("User must be authenticated to retrieve applicant profile.");
+        }
+
+        Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
+        Applicant applicant;
+        if (applicantOptional.isEmpty()) {
+            applicant = createApplicant(userId);
+        } else {
+            applicant = applicantOptional.get();
+        }
+
+        return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
+     * Updates the current user's applicant profile with personal information.
+     * Writes directly to `User` and `Applicant` entities.
+     *
+     * @param dto the updated applicant data
+     * @return the updated ApplicantDTO
+     */
+    @Transactional
+    public ApplicantDTO updateApplicantProfile(ApplicantDTO dto) {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("User must be authenticated to update applicant profile.");
+        }
+
+        // Update User entity
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        if (dto.user() != null) {
+            // Optional: allow updating name/email if present
+            if (dto.user().firstName() != null) user.setFirstName(dto.user().firstName());
+            if (dto.user().lastName() != null) user.setLastName(dto.user().lastName());
+            if (dto.user().email() != null) user.setEmail(dto.user().email());
+            user.setGender(dto.user().gender());
+            user.setNationality(dto.user().nationality());
+            user.setBirthday(dto.user().birthday());
+            user.setPhoneNumber(dto.user().phoneNumber());
+            user.setWebsite(dto.user().website());
+            user.setLinkedinUrl(dto.user().linkedinUrl());
+        }
+        userRepository.save(user);
+
+        // Update or create Applicant entity
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+        applicant.setStreet(dto.street());
+        applicant.setPostalCode(dto.postalCode());
+        applicant.setCity(dto.city());
+        applicant.setCountry(dto.country());
+
+        applicant.setBachelorDegreeName(dto.bachelorDegreeName());
+        applicant.setBachelorGradeUpperLimit(dto.bachelorGradeUpperLimit());
+        applicant.setBachelorGradeLowerLimit(dto.bachelorGradeLowerLimit());
+        applicant.setBachelorGrade(dto.bachelorGrade());
+        applicant.setBachelorUniversity(dto.bachelorUniversity());
+
+        applicant.setMasterDegreeName(dto.masterDegreeName());
+        applicant.setMasterGradeUpperLimit(dto.masterGradeUpperLimit());
+        applicant.setMasterGradeLowerLimit(dto.masterGradeLowerLimit());
+        applicant.setMasterGrade(dto.masterGrade());
+        applicant.setMasterUniversity(dto.masterUniversity());
+
+        applicantRepository.save(applicant);
+
+        return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
      * Creates an Applicant for the given userId
      *
      * @param userId The id of the User

@@ -13,6 +13,7 @@ import { ButtonComponent } from '../components/atoms/button/button.component';
 import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
+import { PersonalInformationSettingsComponent } from './personal-information-settings';
 
 type SettingsTab = 'general' | 'notifications' | 'personal-information';
 @Component({
@@ -20,6 +21,7 @@ type SettingsTab = 'general' | 'notifications' | 'personal-information';
   imports: [
     TranslateDirective,
     EmailSettingsComponent,
+    PersonalInformationSettingsComponent,
     SelectComponent,
     ButtonComponent,
     TabViewComponent,

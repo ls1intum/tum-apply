@@ -12,8 +12,8 @@ import { DatePickerComponent } from '../../../shared/components/atoms/datepicker
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 
-import { selectCountries } from './countries';
-import { selectNationality } from './nationalities';
+import { selectCountries } from 'app/shared/language/countries';
+import { selectNationality } from 'app/shared/language/nationalities';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
