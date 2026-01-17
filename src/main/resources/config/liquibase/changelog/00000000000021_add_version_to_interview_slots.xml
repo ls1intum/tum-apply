@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="00000000000020-1" author="tum-apply">
+    <changeSet id="00000000000021" author="tum-apply">
         <comment>Add version column to interview_slots for optimistic locking</comment>
         <addColumn tableName="interview_slots">
             <column name="version" type="bigint" defaultValueNumeric="0">
@@ -12,14 +12,4 @@
             </column>
         </addColumn>
     </changeSet>
-
-    <changeSet id="00000000000020-2" author="tum-apply">
-        <comment>Add version column to interviewees for optimistic locking</comment>
-        <addColumn tableName="interviewees">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
-
 </databaseChangeLog>
