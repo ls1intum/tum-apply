@@ -184,7 +184,6 @@ export class IntervieweeAssessmentComponent {
       await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
       this.serverRating.set(rating);
     } catch (err) {
-      console.error('Failed to save rating:', err);
       this.toastService.showErrorKey('interview.assessment.error.saveFailed');
       this.rating.set(this.serverRating());
     }
