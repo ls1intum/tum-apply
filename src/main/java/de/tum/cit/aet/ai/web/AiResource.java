@@ -53,6 +53,5 @@ public class AiResource {
     public ResponseEntity<AIJobDescriptionTranslationDTO> translateText(@RequestBody String text) {
         log.info("POST /api/ai/translateJobDescription - Request received");
         return ResponseEntity.ok(aiService.translateText(text));
-
     }
 }
