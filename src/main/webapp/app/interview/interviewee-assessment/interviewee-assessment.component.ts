@@ -140,7 +140,6 @@ export class IntervieweeAssessmentComponent {
       this.interviewee.set(updated);
       this.toastService.showSuccessKey('interview.assessment.notes.saved');
     } catch (err) {
-      console.error('Failed to save notes:', err);
       this.toastService.showErrorKey('interview.assessment.error.saveFailed');
     } finally {
       this.saving.set(false);
