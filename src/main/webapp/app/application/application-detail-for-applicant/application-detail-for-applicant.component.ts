@@ -97,7 +97,7 @@ export default class ApplicationDetailForApplicantComponent {
     items.push({
       label: 'button.downloadPDF',
       icon: 'file-pdf',
-      severity: 'secondary',
+      severity: 'primary',
       command: () => {
         this.onDownloadPDF();
       },
