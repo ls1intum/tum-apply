@@ -1112,10 +1112,6 @@ paths:
     get:
       tags: [interview-resource]
       operationId: getIntervieweeDetails
-  /api/interviews/processes/{processId}/send-invitations:
-    post:
-      tags: [interview-resource]
-      operationId: sendInvitations
       parameters:
       - name: processId
         in: path
@@ -1148,6 +1144,22 @@ paths:
         content:
           application/json:
             schema: {$ref: '#/components/schemas/UpdateAssessmentDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
+  /api/interviews/processes/{processId}/send-invitations:
+    post:
+      tags: [interview-resource]
+      operationId: sendInvitations
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
@@ -1158,7 +1170,6 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
               schema: {$ref: '#/components/schemas/SendInvitationsResultDTO'}
   /api/interviews/processes/{processId}/slots:
     get:
