@@ -50,7 +50,7 @@ public class AiService {
      */
 
     public AiResponseDTO generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) {
-        String prompt = jobDescriptionGenerationPrompt.formatted(jobFormDTO.description(), jobFormDTO.requirements(), jobFormDTO.tasks());
+        String prompt = jobDescriptionGenerationPrompt.formatted(jobFormDTO.jobDescription());
         String raw = chatClient.prompt().user(prompt).call().content();
         String cleanedJSON = cleanupJSON(raw);
         try {
