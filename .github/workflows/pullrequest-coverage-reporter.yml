@@ -2,7 +2,7 @@ name: PR Coverage Reporter
 
 on:
   pull_request:
-    types: [opened, synchronize, ready_for_review]
+    types: [ opened, synchronize, ready_for_review ]
 
 # Only one coverage run per PR at a time
 concurrency:
@@ -60,10 +60,10 @@ jobs:
           SERVER_MODULES=""
           HAS_SERVER_CHANGES="false"
           for file in $CHANGED_FILES; do
-            if [[ "$file" == src/main/java/de/tum/cit/aet/artemis/*.java ]]; then
+            if [[ "$file" == src/main/java/de/tum/cit/aet/*.java ]]; then
               HAS_SERVER_CHANGES="true"
-              # Extract module name (first directory after artemis/)
-              MODULE=$(echo "$file" | sed -n 's|^src/main/java/de/tum/cit/aet/artemis/\([^/]*\)/.*|\1|p')
+              # Extract module name (first directory after aet/)
+              MODULE=$(echo "$file" | sed -n 's|^src/main/java/de/tum/cit/aet/\([^/]*\)/.*|\1|p')
               if [ -n "$MODULE" ] && [[ ! "$SERVER_MODULES" =~ (^|,)$MODULE(,|$) ]]; then
                 if [ -z "$SERVER_MODULES" ]; then
                   SERVER_MODULES="$MODULE"
@@ -293,7 +293,7 @@ jobs:
           if-no-files-found: ignore
 
   update-pr-coverage:
-    needs: [detect-changes, client-coverage, server-coverage]
+    needs: [ detect-changes, client-coverage, server-coverage ]
     if: always() && (needs.detect-changes.outputs.has_client_changes == 'true' || needs.detect-changes.outputs.has_server_changes == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 5
