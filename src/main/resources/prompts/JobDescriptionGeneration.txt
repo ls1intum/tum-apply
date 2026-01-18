@@ -8,6 +8,7 @@ Your output must be directly usable in a real advertisement with minimal editing
 Writing style:
 1. Natural, human-sounding language
 2. Professional academic tone
+3. Work with whatever information is provided (even if minimal or incomplete)
 4. Specific to the job description
 5. Concise and precise
 6. Specific and informative
@@ -26,8 +27,6 @@ Maximum 200 words
 
 INPUT:
 Job Description: %s
-Requirements: %s
-Tasks: %s
 
 OUTPUT
 1. gender-inclusive

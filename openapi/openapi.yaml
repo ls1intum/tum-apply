@@ -1108,6 +1108,26 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/IntervieweeDTO'}
+  /api/interviews/processes/{processId}/send-invitations:
+    post:
+      tags: [interview-resource]
+      operationId: sendInvitations
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SendInvitationsRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SendInvitationsResultDTO'}
   /api/interviews/processes/{processId}/slots:
     get:
       tags: [interview-resource]
@@ -2247,7 +2267,8 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_SELF_SCHEDULING_INVITATION]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2257,7 +2278,8 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_SELF_SCHEDULING_INVITATION]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2267,7 +2289,8 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_SELF_SCHEDULING_INVITATION]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2280,7 +2303,8 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
+            INTERVIEW_SELF_SCHEDULING_INVITATION]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2407,7 +2431,6 @@ components:
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomField'}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2415,13 +2438,13 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         image: {$ref: '#/components/schemas/Image'}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
@@ -2429,7 +2452,6 @@ components:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {$ref: '#/components/schemas/User'}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
     JobCardDTO:
@@ -2456,7 +2478,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2465,19 +2486,18 @@ components:
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         imageUrl: {type: string}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [jobId, state, supervisingProfessor, title]
@@ -2491,14 +2511,13 @@ components:
             INVITED, SCHEDULED, COMPLETED]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location: {type: string}
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
@@ -2506,7 +2525,6 @@ components:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessorName: {type: string}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
@@ -2524,7 +2542,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2532,19 +2549,18 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [fieldOfStudies, location, state, supervisingProfessor, title]
@@ -2846,6 +2862,20 @@ components:
         email: {type: string, format: email, minLength: 1}
         registration: {type: boolean}
       required: [email]
+    SendInvitationsRequestDTO:
+      type: object
+      properties:
+        intervieweeIds:
+          type: array
+          items: {type: string, format: uuid}
+        onlyUninvited: {type: boolean}
+    SendInvitationsResultDTO:
+      type: object
+      properties:
+        failedEmails:
+          type: array
+          items: {type: string}
+        sentCount: {type: integer, format: int32}
     SlotInput:
       type: object
       properties:

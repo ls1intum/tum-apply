@@ -127,21 +127,13 @@
       "description": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
       "jobDescription": {
         "label": "Job Description",
-        "placeholder": "Describe the scope and focus of the position...",
-        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. Keep it concise but informative.",
-        "toolTipText": "Help the applicant understand the research focus and goals of the position."
-      },
-      "tasks": {
-        "label": "Tasks & Responsibilities",
-        "placeholder": "List the main responsibilities...",
-        "descriptionHelper": "List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.",
-        "toolTipText": "Provide a clear picture of the position’s responsibilities and activities."
-      },
-      "requirements": {
-        "label": "Eligibility Criteria",
-        "placeholder": "List the minimum requirements for applicants...",
-        "descriptionHelper": "Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.",
-        "toolTipText": "Ensure the applicant knows what qualifications are expected."
+        "placeholder": "Describe the scope, tasks, and requirements of the position...",
+        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. List the main tasks and responsibilities. Specify the minimum requirements (e.g., degree, grades, language skills).",
+        "toolTipText": "Help applicants understand the research focus, tasks, and expected qualifications.",
+        "aiHeaderText": "Let AI Rewrite It",
+        "aiButton": "Write With AI",
+        "aiHelperText": "AI Assistant can draft a job post that avoids harmful language",
+        "aiConsentText": "I consent to the AI using my current job data (title, research area, etc.) to generate a text draft."
       }
     },
     "imageSection": {
@@ -216,6 +208,16 @@
     "reviewPageSection": {
       "title": "Overview",
       "message": "Please review your entries before publishing the doctorate position."
+    },
+    "toastMessages": {
+      "noDescription": {
+        "summary": "No Job Description",
+        "detail": "Please add a job description or bullet points before publishing."
+      },
+      "saveFailed": {
+        "summary": "Save Failed",
+        "detail": "Could not save changes. Please check your connection and try again."
+      }
     }
   },
   "jobOverviewPage": {

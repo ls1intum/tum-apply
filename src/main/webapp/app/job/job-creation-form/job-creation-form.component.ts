@@ -16,6 +16,7 @@ import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
+import { AiResourceApiService } from 'app/generated';
 import { MessageModule } from 'primeng/message';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
@@ -33,6 +34,7 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
+
 type JobFormMode = 'create' | 'edit';
 
 @Component({
@@ -77,6 +79,8 @@ export class JobCreationFormComponent {
   savingState = signal<SavingState>(SavingStates.SAVED);
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
   publishAttempted = signal<boolean>(false);
+  jobDescriptionSignal = signal<string>('');
+  isGeneratingDraft = signal<boolean>(false);
   // Image upload state
   defaultImages = signal<ImageDTO[]>([]);
   researchGroupImages = signal<ImageDTO[]>([]);
@@ -109,6 +113,7 @@ export class JobCreationFormComponent {
   private location = inject(Location);
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
+  private aiService = inject(AiResourceApiService);
   // Forms
   basicInfoForm = this.createBasicInfoForm();
   positionDetailsForm = this.createPositionDetailsForm();
@@ -121,6 +126,8 @@ export class JobCreationFormComponent {
   panel4 = viewChild<TemplateRef<HTMLDivElement>>('panel4');
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
   sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
+  jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
+
   // Tracks form validity
   basicInfoValid = signal(false);
   positionDetailsValid = signal(false);
@@ -135,6 +142,7 @@ export class JobCreationFormComponent {
   formValidationEffect = effect(() => {
     this.basicInfoChanges();
     this.positionDetailsChanges();
+    this.jobDescriptionSignal();
 
     this.basicInfoValid.set(this.basicInfoForm.valid);
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
@@ -531,6 +539,50 @@ export class JobCreationFormComponent {
     });
   }
 
+  /**
+   * Generates an AI-enhanced job description based on current form data.
+   * Takes the existing description and enriches it with AI suggestions
+   * while preserving all metadata (title, research area, location, etc.).
+   * Updates both the form control and Quill editor in real-time.
+   */
+  async generateJobApplicationDraft(): Promise<void> {
+    // Textbox is empty check
+    const current = this.basicInfoForm.get('jobDescription')?.value;
+    if (!current || current.trim().length === 0) {
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.noDescription');
+      return;
+    }
+
+    this.isGeneratingDraft.set(true);
+
+    // Call server with relevant metadata
+    const request: JobFormDTO = {
+      title: this.basicInfoForm.get('title')?.value ?? '',
+      researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
+      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
+      supervisingProfessor: this.userId(),
+      location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
+      jobDescription: current ?? '',
+      state: JobFormDTO.StateEnum.Draft,
+    };
+
+    try {
+      const response = await firstValueFrom(this.aiService.generateJobApplicationDraft(request));
+      if (response.jobDescription) {
+        // Update form control
+        this.basicInfoForm.get('jobDescription')?.setValue(response.jobDescription);
+        this.basicInfoForm.get('jobDescription')?.markAsDirty();
+        this.jobDescriptionSignal.set(response.jobDescription);
+        this.jobDescriptionEditor()?.forceUpdate(response.jobDescription);
+        this.basicInfoValid.set(this.basicInfoForm.valid);
+      }
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
+    } finally {
+      this.isGeneratingDraft.set(false);
+    }
+  }
+
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
       // Basic Info Form: Currently required for saving a job
@@ -538,21 +590,19 @@ export class JobCreationFormComponent {
       researchArea: ['', [Validators.required]],
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
-      fundingType: [undefined],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-      startDate: [''],
-      applicationDeadline: [''],
-      workload: [undefined],
-      contractDuration: [undefined],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
     });
   }
 
   private createPositionDetailsForm(): FormGroup {
     return this.fb.group({
       // Position Details Form: Currently required for publishing a job
-      description: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
-      tasks: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
-      requirements: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
+      fundingType: [undefined],
+      startDate: [''],
+      applicationDeadline: [''],
+      workload: [undefined],
+      contractDuration: [undefined],
     });
   }
 
@@ -579,14 +629,12 @@ export class JobCreationFormComponent {
       fieldOfStudies: basicInfoValue.fieldOfStudies?.value !== undefined ? String(basicInfoValue.fieldOfStudies.value) : '',
       supervisingProfessor: this.userId(),
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
-      startDate: basicInfoValue.startDate ?? '',
-      endDate: basicInfoValue.applicationDeadline ?? '',
-      workload: basicInfoValue.workload,
-      contractDuration: basicInfoValue.contractDuration,
-      fundingType: basicInfoValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
-      description: positionDetailsValue.description?.trim() ?? '',
-      tasks: positionDetailsValue.tasks?.trim() ?? '',
-      requirements: positionDetailsValue.requirements?.trim() ?? '',
+      jobDescription: basicInfoValue.jobDescription?.trim() ?? '',
+      startDate: positionDetailsValue.startDate ?? '',
+      endDate: positionDetailsValue.applicationDeadline ?? '',
+      workload: positionDetailsValue.workload,
+      contractDuration: positionDetailsValue.contractDuration,
+      fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       imageId: imageValue.imageId ?? null,
       state,
     };
@@ -643,17 +691,16 @@ export class JobCreationFormComponent {
       supervisingProfessor: user?.name,
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
+      jobDescription: job?.jobDescription ?? '',
+    });
+    this.jobDescriptionSignal.set(job?.jobDescription ?? '');
+
+    this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
       applicationDeadline: job?.endDate ?? '',
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
-    });
-
-    this.positionDetailsForm.patchValue({
-      description: job?.description ?? '',
-      tasks: job?.tasks ?? '',
-      requirements: job?.requirements ?? '',
     });
 
     // Set image if available
@@ -690,6 +737,9 @@ export class JobCreationFormComponent {
       // Don't auto-save as soon as the form is opened
       if (!this.autoSaveInitialized) {
         this.autoSaveInitialized = true;
+        return;
+      }
+      if (this.isGeneratingDraft()) {
         return;
       }
 

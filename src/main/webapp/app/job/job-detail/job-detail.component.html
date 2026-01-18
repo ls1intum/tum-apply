@@ -101,17 +101,7 @@
       <div class="flex flex-col gap-6">
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.description || '-'"></div>
-        </section>
-
-        <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.tasksResponsibilities"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.tasks || '-'"></div>
-        </section>
-
-        <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.eligibilityCriteria"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.requirements || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescription || '-'"></div>
         </section>
       </div>
 
