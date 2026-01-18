@@ -44,9 +44,7 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
+        String jobDescription,
         JobState state
     ) {
         Job j = newJob(supervisingProfessor, researchGroup, title, state, startDate);
@@ -57,9 +55,7 @@ public final class JobTestData {
         if (workload != null) j.setWorkload(workload);
         if (contractDuration != null) j.setContractDuration(contractDuration);
         if (fundingType != null) j.setFundingType(fundingType);
-        if (description != null) j.setDescription(description);
-        if (tasks != null) j.setTasks(tasks);
-        if (requirements != null) j.setRequirements(requirements);
+        if (jobDescription != null) j.setJobDescription(jobDescription);
         return j;
     }
 
@@ -81,9 +77,7 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
+        String jobDescription,
         JobState state
     ) {
         return repo.save(
@@ -99,9 +93,7 @@ public final class JobTestData {
                 workload,
                 contractDuration,
                 fundingType,
-                description,
-                tasks,
-                requirements,
+                jobDescription,
                 state
             )
         );

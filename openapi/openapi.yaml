@@ -2407,7 +2407,6 @@ components:
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomField'}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2415,13 +2414,13 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         image: {$ref: '#/components/schemas/Image'}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
@@ -2429,7 +2428,6 @@ components:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {$ref: '#/components/schemas/User'}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
     JobCardDTO:
@@ -2456,7 +2454,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2465,19 +2462,18 @@ components:
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         imageUrl: {type: string}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [jobId, state, supervisingProfessor, title]
@@ -2491,14 +2487,13 @@ components:
             INVITED, SCHEDULED, COMPLETED]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location: {type: string}
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
@@ -2506,7 +2501,6 @@ components:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessorName: {type: string}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
@@ -2524,7 +2518,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2532,19 +2525,18 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
+        jobDescription: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [fieldOfStudies, location, state, supervisingProfessor, title]
