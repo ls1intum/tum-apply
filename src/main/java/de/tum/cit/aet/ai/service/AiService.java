@@ -39,7 +39,7 @@ public class AiService {
 
     public AIJobDescriptionDTO generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) {
         String promptTemplate = promptLoader.getPrompt(JOB_DESCRIPTION_PROMPT);
-        String prompt = promptTemplate.formatted(jobFormDTO.description(), jobFormDTO.requirements(), jobFormDTO.tasks());
+        String prompt = promptTemplate.formatted(jobFormDTO.jobDescription());
         String raw = chatClient.prompt().user(prompt).call().content();
         String cleanedJSON = cleanupJSON(raw);
         try {
