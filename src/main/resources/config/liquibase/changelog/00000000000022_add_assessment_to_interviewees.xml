@@ -10,7 +10,7 @@
       - rating: Integer score from -2 to 2 (Likert scale)
       - assessment_notes: Text field for professor's evaluation notes
   -->
-  <changeSet id="019-add-assessment-to-interviewees" author="abinayasivaguru">
+  <changeSet id="022-add-assessment-to-interviewees" author="abinayasivaguru">
     <addColumn tableName="interviewees">
       <column name="rating" type="integer">
         <constraints nullable="true"/>

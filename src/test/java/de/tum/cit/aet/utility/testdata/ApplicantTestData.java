@@ -69,10 +69,11 @@ public final class ApplicantTestData {
     private static User newApplicantUser() {
         User applicantUser = new User();
         applicantUser.setUserId(UUID.randomUUID());
-        applicantUser.setEmail("ada@example.com");
+        applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
         applicantUser.setSelectedLanguage(Language.ENGLISH.getCode());
         applicantUser.setFirstName("Ada");
         applicantUser.setLastName("Lovelace");
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
         attachApplicantRole(applicantUser);
 

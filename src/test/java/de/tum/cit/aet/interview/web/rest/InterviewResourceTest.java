@@ -1029,16 +1029,16 @@ class InterviewResourceTest extends AbstractResourceTest {
 
             // Assert
             assertThat(result).isNotNull();
-            assertThat(result.sentCount()).isEqualTo(2);
+            assertThat(result.sentCount()).isEqualTo(3);
             assertThat(result.failedEmails() == null || result.failedEmails().isEmpty())
                 .as("Failed emails should be null or empty")
                 .isTrue();
 
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
-            verify(asyncEmailSenderMock, times(2)).sendAsync(emailCaptor.capture());
+            verify(asyncEmailSenderMock, times(3)).sendAsync(emailCaptor.capture());
 
             List<Email> sentEmails = emailCaptor.getAllValues();
-            assertThat(sentEmails).hasSize(2);
+            assertThat(sentEmails).hasSize(3);
             assertThat(sentEmails).allMatch(email -> email.getEmailType() == EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION);
         }
 
@@ -1061,10 +1061,10 @@ class InterviewResourceTest extends AbstractResourceTest {
                 );
 
             // Assert
-            assertThat(result.sentCount()).isEqualTo(1);
+            assertThat(result.sentCount()).isEqualTo(2);
 
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
-            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
+            verify(asyncEmailSenderMock, times(2)).sendAsync(emailCaptor.capture());
 
             Email sentEmail = emailCaptor.getValue();
             assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION);
