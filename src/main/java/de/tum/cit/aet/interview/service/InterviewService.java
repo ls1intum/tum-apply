@@ -40,12 +40,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class InterviewService {
@@ -601,6 +603,82 @@ public class InterviewService {
             .content(slot)
             .icsContent(icsContent)
             .icsFileName(icsFileName)
+            .build();
+
+        asyncEmailSender.sendAsync(email);
+    }
+
+    /**
+     * Sends self-scheduling invitations to applicants in the interview process.
+     * Can filter to send only to uninvited applicants or re-send to all.
+     *
+     * @param processId the ID of the interview process
+     * @param request   options for sending (e.g. filter uninvited)
+     * @return summary of sent emails and failures
+     * @throws EntityNotFoundException if process not found
+     * @throws AccessDeniedException   if user has no job access
+     */
+
+    public SendInvitationsResultDTO sendSelfSchedulingInvitations(UUID processId, SendInvitationsRequestDTO request) {
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
+
+        // 2. Security: Verify current user has job access
+        Job job = process.getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Fetch interviewees based on filter
+        List<Interviewee> interviewees;
+        if (Boolean.TRUE.equals(request.onlyUninvited())) {
+            interviewees = intervieweeRepository.findAllByInterviewProcessIdAndLastInvitedIsNull(processId);
+        } else {
+            interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
+        }
+
+        // Filter by explicit IDs if provided
+        if (request.intervieweeIds() != null && !request.intervieweeIds().isEmpty()) {
+            interviewees = interviewees
+                .stream()
+                .filter(i -> request.intervieweeIds().contains(i.getId()))
+                .toList();
+        }
+
+        // 4. Send emails
+        List<String> failedEmails = new ArrayList<>();
+        List<Interviewee> updatedInterviewees = new ArrayList<>();
+
+        for (Interviewee interviewee : interviewees) {
+            try {
+                sendSelfSchedulingEmail(interviewee, job);
+                interviewee.setLastInvited(Instant.now());
+                updatedInterviewees.add(interviewee);
+            } catch (Exception e) {
+                log.debug(
+                    "Failed to send invitation email to {}: {}",
+                    interviewee.getApplication().getApplicant().getUser().getEmail(),
+                    e.getMessage()
+                );
+                failedEmails.add(interviewee.getApplication().getApplicant().getUser().getEmail());
+            }
+        }
+
+        // 5. Save updated timestamps
+        intervieweeRepository.saveAll(updatedInterviewees);
+
+        return new SendInvitationsResultDTO(updatedInterviewees.size(), failedEmails);
+    }
+
+    private void sendSelfSchedulingEmail(Interviewee interviewee, Job job) {
+        User applicant = interviewee.getApplication().getApplicant().getUser();
+
+        Email email = Email.builder()
+            .to(applicant)
+            .emailType(EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION)
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(interviewee) // Pass the interviewee object directly
             .build();
 
         asyncEmailSender.sendAsync(email);

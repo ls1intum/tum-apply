@@ -33,6 +33,9 @@ import { IntervieweeDetailDTO } from '../model/intervieweeDetailDTO';
 import { PageResponseDTOInterviewSlotDTO } from '../model/pageResponseDTOInterviewSlotDTO';
 // @ts-ignore
 import { UpdateAssessmentDTO } from '../model/updateAssessmentDTO';
+import { SendInvitationsRequestDTO } from '../model/sendInvitationsRequestDTO';
+// @ts-ignore
+import { SendInvitationsResultDTO } from '../model/sendInvitationsResultDTO';
 
 // @ts-ignore
 import { BASE_PATH }                     from '../variables';
@@ -593,6 +596,19 @@ export class InterviewResourceApiService extends BaseService {
         }
         if (updateAssessmentDTO === null || updateAssessmentDTO === undefined) {
             throw new Error('Required parameter updateAssessmentDTO was null or undefined when calling updateAssessment.');
+     * @param sendInvitationsRequestDTO 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SendInvitationsResultDTO>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SendInvitationsResultDTO>>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SendInvitationsResultDTO>>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling sendInvitations.');
+        }
+        if (sendInvitationsRequestDTO === null || sendInvitationsRequestDTO === undefined) {
+            throw new Error('Required parameter sendInvitationsRequestDTO was null or undefined when calling sendInvitations.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -634,6 +650,11 @@ export class InterviewResourceApiService extends BaseService {
             {
                 context: localVarHttpContext,
                 body: updateAssessmentDTO,
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/send-invitations`;
+        return this.httpClient.request<SendInvitationsResultDTO>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: sendInvitationsRequestDTO,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

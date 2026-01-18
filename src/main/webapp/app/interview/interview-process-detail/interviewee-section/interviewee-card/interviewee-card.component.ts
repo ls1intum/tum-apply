@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -21,6 +21,10 @@ export class IntervieweeCardComponent {
   // Inputs
   interviewee = input.required<IntervieweeDTO>();
   processId = input.required<string>();
+  sending = input<boolean>(false);
+
+  // Outputs
+  sendInvitation = output<IntervieweeDTO>();
 
   // Computed values
   scheduledDate = computed(() => {

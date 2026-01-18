@@ -14,6 +14,8 @@ import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -82,7 +84,7 @@ public class InterviewResource {
      * Accessible only to users with the {@code PROFESSOR} role.
      *
      * @param processId the ID of the interview process to which the slots belong
-     * @param dto       the slot definitions sent from the frontend
+     * @param dto       the slot definitions sent from client
      * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing
      *         the created {@link InterviewSlotDTO}s
      */
@@ -283,6 +285,31 @@ public class InterviewResource {
         log.info("REST request to assign slot {} to application {}", slotId, dto.applicationId());
         InterviewSlotDTO result = interviewService.assignSlotToInterviewee(slotId, dto.applicationId());
         log.info("Successfully assigned slot {} to interviewee", slotId);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * {@code POST /api/interviews/processes/{processId}/send-invitations} : Send
+     * self-scheduling invitations.
+     *
+     * Triggers email sending for applicants in the interview process.
+     * Can filter to send only to those not yet invited.
+     *
+     * @param processId the ID of the interview process
+     * @param dto       options for sending invitations
+     * @return summary of sent emails and failures
+     * @throws EntityNotFoundException if the process is not found
+     * @throws AccessDeniedException   if user has no job access
+     */
+    @ProfessorOrEmployee
+    @PostMapping("/processes/{processId}/send-invitations")
+    public ResponseEntity<SendInvitationsResultDTO> sendInvitations(
+        @PathVariable UUID processId,
+        @RequestBody SendInvitationsRequestDTO dto
+    ) {
+        log.info("REST request to send invitations for process: {}", processId);
+        SendInvitationsResultDTO result = interviewService.sendSelfSchedulingInvitations(processId, dto);
+        log.info("Sent {} invitations for process: {}", result.sentCount(), processId);
         return ResponseEntity.ok(result);
     }
 }

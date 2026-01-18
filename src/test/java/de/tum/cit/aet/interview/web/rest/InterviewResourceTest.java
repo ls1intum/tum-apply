@@ -1,6 +1,8 @@
 package de.tum.cit.aet.interview.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
@@ -17,12 +19,19 @@ import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.interview.service.InterviewService;
+import de.tum.cit.aet.interview.web.InterviewResource;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -46,7 +55,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class InterviewResourceTest extends AbstractResourceTest {
 
@@ -80,6 +92,14 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Autowired
     private MvcTestClient api;
 
+    @Autowired
+    private InterviewResource interviewResource;
+
+    @Autowired
+    private InterviewService interviewService;
+
+    private AsyncEmailSender asyncEmailSenderMock;
+
     private User professor;
     private User employee;
     private Job job;
@@ -91,6 +111,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     void setup() {
+        asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(interviewService, "asyncEmailSender", asyncEmailSenderMock);
         databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.savedAll(
@@ -957,5 +979,143 @@ class InterviewResourceTest extends AbstractResourceTest {
         slot.setLocation("Room 101");
         slot.setIsBooked(false);
         return interviewSlotRepository.save(slot);
+    }
+
+    // ===========================================================================================
+    // Tests for sending self-scheduling invitations
+    // ===========================================================================================
+
+    @Nested
+    class SendInvitations {
+
+        private Applicant applicant1;
+        private Applicant applicant2;
+        private Application app1;
+        private Application app2;
+        private Interviewee interviewee1;
+        private Interviewee interviewee2;
+
+        @BeforeEach
+        void setupInterviewees() {
+            applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
+            interviewee1 = new Interviewee();
+            interviewee1.setInterviewProcess(interviewProcess);
+            interviewee1.setApplication(app1);
+            interviewee1 = intervieweeRepository.save(interviewee1);
+
+            applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
+            interviewee2 = new Interviewee();
+            interviewee2.setInterviewProcess(interviewProcess);
+            interviewee2.setApplication(app2);
+            interviewee2 = intervieweeRepository.save(interviewee2);
+        }
+
+        @Test
+        void sendInvitationsSuccessfullySendsEmails() {
+            // Arrange
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, null);
+
+            // Act
+            SendInvitationsResultDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations",
+                    requestDTO,
+                    SendInvitationsResultDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.sentCount()).isEqualTo(2);
+            assertThat(result.failedEmails() == null || result.failedEmails().isEmpty())
+                .as("Failed emails should be null or empty")
+                .isTrue();
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(2)).sendAsync(emailCaptor.capture());
+
+            List<Email> sentEmails = emailCaptor.getAllValues();
+            assertThat(sentEmails).hasSize(2);
+            assertThat(sentEmails).allMatch(email -> email.getEmailType() == EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION);
+        }
+
+        @Test
+        void sendInvitationsWithFilterReturnsCorrectResult() {
+            // Arrange: Mark interviewee1 as already invited
+            interviewee1.setLastInvited(java.time.Instant.now());
+            intervieweeRepository.save(interviewee1);
+
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(true, null);
+
+            // Act
+            SendInvitationsResultDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations",
+                    requestDTO,
+                    SendInvitationsResultDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result.sentCount()).isEqualTo(1);
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
+
+            Email sentEmail = emailCaptor.getValue();
+            assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION);
+            assertThat(sentEmail.getTo()).hasSize(1);
+            assertThat(sentEmail.getTo().iterator().next().getEmail()).isEqualTo(applicant2.getUser().getEmail());
+        }
+
+        @Test
+        void sendInvitationsIndividualSelection() {
+            // Arrange: Select only interviewee1
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, List.of(interviewee1.getId()));
+
+            // Act
+            SendInvitationsResultDTO result = api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead(
+                    "/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations",
+                    requestDTO,
+                    SendInvitationsResultDTO.class,
+                    200
+                );
+
+            // Assert
+            assertThat(result.sentCount()).isEqualTo(1);
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
+
+            Email sentEmail = emailCaptor.getValue();
+            assertThat(sentEmail.getTo()).hasSize(1);
+            assertThat(sentEmail.getTo().iterator().next().getEmail()).isEqualTo(applicant1.getUser().getEmail());
+        }
+
+        @Test
+        void sendInvitationsReturnsNotFoundForNonExistentProcess() {
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, null);
+            api
+                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+                .postAndRead("/api/interviews/processes/" + UUID.randomUUID() + "/send-invitations", requestDTO, Void.class, 404);
+        }
+
+        @Test
+        void sendInvitationsReturnsForbiddenForUnauthorizedUser() {
+            SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, null);
+
+            // Create a student/random user
+            User student = UserTestData.createUserWithoutResearchGroup(userRepository, "student@tum.de", "Student", "One", "123456");
+
+            api
+                .with(JwtPostProcessors.jwtUser(student.getUserId(), "ROLE_STUDENT"))
+                .postAndRead("/api/interviews/processes/" + interviewProcess.getId() + "/send-invitations", requestDTO, Void.class, 403);
+        }
     }
 }
