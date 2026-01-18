@@ -102,13 +102,6 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      * @param processId the ID of the interview process
      * @return list of uninvited interviewees with user details
      */
-    /**
-     * Finds all uninvited interviewees for a given interview process.
-     * Fetches application and user details to avoid N+1 issues when sending emails.
-     *
-     * @param processId the ID of the interview process
-     * @return list of uninvited interviewees with user details
-     */
     @EntityGraph(attributePaths = { "application.applicant.user" })
     List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
 }
