@@ -3,6 +3,7 @@ package de.tum.cit.aet.ai.web;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionDTO;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -32,6 +33,7 @@ public class AiResource {
      * @param jobForm the job form data used to build the AI prompt
      * @return a ResponseEntity containing the generated draft as JSON string
      */
+    @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "generateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AIJobDescriptionDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
         log.info("POST /api/ai/generateJobDescription - Request received");
@@ -46,6 +48,7 @@ public class AiResource {
      * @param text the text to translate (German or English)
      * @return a ResponseEntity containing the translated text with language info
      */
+    @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "translateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AIJobDescriptionTranslationDTO> translateText(@RequestBody String text) {
         log.info("POST /api/ai/translateJobDescription - Request received");
