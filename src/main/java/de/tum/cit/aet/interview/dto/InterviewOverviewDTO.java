@@ -5,7 +5,7 @@ import java.util.UUID;
 
 /**
  * DTO used to provide summary information about interview processes
- * for a given job, including counts by interview state for overview displays in the frontend.
+ * for a given job, including counts by interview state for overview displays on the client side.
  */
 public record InterviewOverviewDTO(
     @NotNull UUID jobId,

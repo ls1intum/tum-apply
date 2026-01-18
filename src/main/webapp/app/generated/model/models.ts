@@ -85,6 +85,8 @@ export * from './schoolCreationDTO';
 export * from './schoolDTO';
 export * from './schoolShortDTO';
 export * from './sendCodeRequest';
+export * from './sendInvitationsRequestDTO';
+export * from './sendInvitationsResultDTO';
 export * from './slotInput';
 export * from './sortObject';
 export * from './updateApplicationDTO';
