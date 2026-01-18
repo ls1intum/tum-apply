@@ -135,7 +135,8 @@
         "aiButton1": "Write With AI",
         "aiButton2": "Rewrite With AI",
         "aiHelperText": "Improve wording and reduce biased language.",
-        "aiFillerText": "Generating..."
+        "aiFillerText": "Generating...",
+        "aiToggle": "Enable AI"
       }
     },
     "imageSection": {

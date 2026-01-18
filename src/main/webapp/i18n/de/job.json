@@ -132,9 +132,11 @@
         "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt, die Aufgaben und die erwarteten Qualifikationen und Ziele der Position zu verstehen.",
         "template": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreiben Sie den Forschungskontext, Ziele und Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Listen Sie die Hauptverantwortlichkeiten des Kandidaten auf.</p><br><p><strong>Qualifikationskriterien</strong></p><p>TODO: Geben Sie die Mindestanforderungen an (Abschluss, Fähigkeiten, Sprache, etc.)</p>",
         "aiHeaderText": "KI Assistent",
-        "aiButton": "Mit KI schreiben",
+        "aiButton1": "Mit KI schreiben",
+        "aiButton2": "Mit KI umschreiben",
         "aiHelperText": "Formulierungen verbessern und Voreingenommenheit reduzieren.",
-        "aiFillerText": "Generiert..."
+        "aiFillerText": "Generiert...",
+        "aiToggle": "KI aktivieren"
       }
     },
     "imageSection": {
