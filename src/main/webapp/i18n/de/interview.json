@@ -52,6 +52,7 @@
       "slotsCountPlural": "Termine",
       "showMoreSingular": "weiteren Termin",
       "showMorePlural": "weitere Termine",
+      "showLess": "Weniger anzeigen",
       "error": {
         "loadFailed": {
           "summary": "Interview Termine konnten nicht geladen werden",

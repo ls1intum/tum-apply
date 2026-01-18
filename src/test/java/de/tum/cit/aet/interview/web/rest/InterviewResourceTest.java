@@ -695,23 +695,33 @@ class InterviewResourceTest extends AbstractResourceTest {
     @Nested
     class SendInvitations {
 
+        private Applicant applicant1;
+        private Applicant applicant2;
+        private Application app1;
+        private Application app2;
+        private Interviewee interviewee1;
+        private Interviewee interviewee2;
+
+        @BeforeEach
+        void setupInterviewees() {
+            applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
+            interviewee1 = new Interviewee();
+            interviewee1.setInterviewProcess(interviewProcess);
+            interviewee1.setApplication(app1);
+            interviewee1 = intervieweeRepository.save(interviewee1);
+
+            applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
+            app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
+            interviewee2 = new Interviewee();
+            interviewee2.setInterviewProcess(interviewProcess);
+            interviewee2.setApplication(app2);
+            interviewee2 = intervieweeRepository.save(interviewee2);
+        }
+
         @Test
         void sendInvitationsSuccessfullySendsEmails() {
             // Arrange
-            Applicant applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
-            Application app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
-            Interviewee interviewee1 = new Interviewee();
-            interviewee1.setInterviewProcess(interviewProcess);
-            interviewee1.setApplication(app1);
-            intervieweeRepository.save(interviewee1);
-
-            Applicant applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
-            Application app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
-            Interviewee interviewee2 = new Interviewee();
-            interviewee2.setInterviewProcess(interviewProcess);
-            interviewee2.setApplication(app2);
-            intervieweeRepository.save(interviewee2);
-
             SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, null);
 
             // Act
@@ -741,22 +751,9 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void sendInvitationsWithFilterReturnsCorrectResult() {
-            // Arrange
-            Applicant applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
-            Application app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
-            Interviewee interviewee1 = new Interviewee();
-            interviewee1.setInterviewProcess(interviewProcess);
-            interviewee1.setApplication(app1);
-            interviewee1.setLastInvited(java.time.Instant.now()); // Already invited
+            // Arrange: Mark interviewee1 as already invited
+            interviewee1.setLastInvited(java.time.Instant.now());
             intervieweeRepository.save(interviewee1);
-
-            Applicant applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
-            Application app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
-            Interviewee interviewee2 = new Interviewee();
-            interviewee2.setInterviewProcess(interviewProcess);
-            interviewee2.setApplication(app2);
-            // Not yet invited
-            intervieweeRepository.save(interviewee2);
 
             SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(true, null);
 
@@ -784,22 +781,7 @@ class InterviewResourceTest extends AbstractResourceTest {
 
         @Test
         void sendInvitationsIndividualSelection() {
-            // Arrange
-            Applicant applicant1 = ApplicantTestData.savedWithNewUser(applicantRepository);
-            Application app1 = ApplicationTestData.savedSent(applicationRepository, job, applicant1);
-            Interviewee interviewee1 = new Interviewee();
-            interviewee1.setInterviewProcess(interviewProcess);
-            interviewee1.setApplication(app1);
-            interviewee1 = intervieweeRepository.save(interviewee1);
-
-            Applicant applicant2 = ApplicantTestData.savedWithNewUser(applicantRepository);
-            Application app2 = ApplicationTestData.savedSent(applicationRepository, job, applicant2);
-            Interviewee interviewee2 = new Interviewee();
-            interviewee2.setInterviewProcess(interviewProcess);
-            interviewee2.setApplication(app2);
-            intervieweeRepository.save(interviewee2);
-
-            // Select only interviewee1
+            // Arrange: Select only interviewee1
             SendInvitationsRequestDTO requestDTO = new SendInvitationsRequestDTO(false, List.of(interviewee1.getId()));
 
             // Act

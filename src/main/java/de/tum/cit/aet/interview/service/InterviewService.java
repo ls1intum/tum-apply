@@ -36,12 +36,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class InterviewService {
@@ -639,7 +641,6 @@ public class InterviewService {
         }
 
         // 4. Send emails
-        int sentCount = 0;
         List<String> failedEmails = new ArrayList<>();
         List<Interviewee> updatedInterviewees = new ArrayList<>();
 
@@ -648,8 +649,12 @@ public class InterviewService {
                 sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
-                sentCount++;
             } catch (Exception e) {
+                log.debug(
+                    "Failed to send invitation email to {}: {}",
+                    interviewee.getApplication().getApplicant().getUser().getEmail(),
+                    e.getMessage()
+                );
                 failedEmails.add(interviewee.getApplication().getApplicant().getUser().getEmail());
             }
         }
@@ -657,7 +662,7 @@ public class InterviewService {
         // 5. Save updated timestamps
         intervieweeRepository.saveAll(updatedInterviewees);
 
-        return new SendInvitationsResultDTO(sentCount, failedEmails);
+        return new SendInvitationsResultDTO(updatedInterviewees.size(), failedEmails);
     }
 
     private void sendSelfSchedulingEmail(Interviewee interviewee, Job job) {
