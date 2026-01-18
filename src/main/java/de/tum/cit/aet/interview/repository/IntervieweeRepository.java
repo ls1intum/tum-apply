@@ -116,7 +116,8 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
         """
     )
     Optional<Interviewee> findByIdAndProcessId(@Param("intervieweeId") UUID intervieweeId, @Param("processId") UUID processId);
-     * Finds all uninvited interviewees for a given interview process.
+
+    /* Finds all uninvited interviewees for a given interview process.
      * Fetches application and user details to avoid N+1 issues when sending emails.
      *
      * @param processId the ID of the interview process

@@ -1,5 +1,5 @@
 <!-- Page Container -->
-<div class="page-container">
+<div class="page-container min-h-screen flex flex-col">
   <!-- Loading State -->
   @if (loading()) {
     <div class="flex items-center justify-center h-64">
@@ -129,7 +129,9 @@
     </div>
 
     <!-- Sticky Footer -->
-    <div class="sticky bottom-0 mt-auto py-3 bg-background-default border-t border-border-default px-6">
+    <div
+      class="sticky-footer sticky bottom-0 mt-auto py-3 bg-background-default transition-all duration-300 z-[1000] ease-in-out -mx-4 px-4 w-[calc(100%+2rem)] md:-mx-16 md:px-16 md:w-[calc(100%+8rem)] border-t border-border-default"
+    >
       <jhi-button
         [label]="'button.back'"
         [shouldTranslate]="true"
