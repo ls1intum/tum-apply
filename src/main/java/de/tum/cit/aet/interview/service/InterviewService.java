@@ -40,12 +40,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class InterviewService {
@@ -702,7 +704,7 @@ public class InterviewService {
      * @throws AccessDeniedException   if the user is not authorized
      * @throws BadRequestException     if neither rating nor notes is provided
      */
-    @Transactional
+
     public IntervieweeDetailDTO updateAssessment(UUID processId, UUID intervieweeId, UpdateAssessmentDTO dto) {
         // 1. Validate input
         if (!dto.hasContent()) {
@@ -729,8 +731,8 @@ public class InterviewService {
         }
 
         // 5. Save and return DTO
-        Interviewee saved = intervieweeRepository.save(interviewee);
-        return mapIntervieweeToDetailDTO(saved, job);
+        intervieweeRepository.save(interviewee);
+        return mapIntervieweeToDetailDTO(interviewee, job);
     }
 
     /**
