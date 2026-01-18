@@ -6,7 +6,7 @@
       [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
       [loading]="sendingBulk()"
       [shouldTranslate]="true"
-      [tooltip]="allInvitedTooltip()"
+      [tooltip]="uncontactedCount() === 0 ? ('interview.interviewees.allInvited' | translate) : ''"
       icon="paper-plane"
       label="interview.interviewees.sendAllInvitations"
       severity="primary"

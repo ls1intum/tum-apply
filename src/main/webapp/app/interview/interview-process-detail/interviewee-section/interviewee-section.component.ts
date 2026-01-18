@@ -133,10 +133,6 @@ export class IntervieweeSectionComponent {
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
 
-  allInvitedTooltip = computed(() =>
-    this.uncontactedCount() === 0 ? this.translateService.instant('interview.interviewees.allInvited') : '',
-  );
-
   // Services
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
