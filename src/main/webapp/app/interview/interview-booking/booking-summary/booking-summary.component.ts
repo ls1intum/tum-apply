@@ -1,9 +1,10 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { ProfessorDTO } from 'app/generated/model/professorDTO';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { getLocale } from 'app/shared/util/date-time.util';
@@ -12,13 +13,14 @@ import { getLocale } from 'app/shared/util/date-time.util';
 @Component({
   selector: 'jhi-booking-summary',
   standalone: true,
-  imports: [FontAwesomeModule, TranslateModule, TranslateDirective, ButtonComponent],
+  imports: [FontAwesomeModule, TranslateModule, TranslateDirective, ButtonComponent, ConfirmDialog],
   templateUrl: './booking-summary.component.html',
   host: { class: 'flex flex-col h-full' },
 })
 export class BookingSummaryComponent {
   // Inputs
   jobTitle = input.required<string>();
+
   researchGroupName = input<string>();
   supervisor = input<ProfessorDTO>();
   selectedSlot = input<InterviewSlotDTO | null>(null);
@@ -30,6 +32,9 @@ export class BookingSummaryComponent {
 
   // Outputs
   book = output();
+
+  // ViewChild
+  bookingConfirmationDialog = viewChild<ConfirmDialog>('bookingConfirmationDialog');
 
   // Computed
   hasSelection = computed(() => this.selectedSlot() !== null);
@@ -57,7 +62,10 @@ export class BookingSummaryComponent {
     const end = slot?.endDateTime;
     if (start === undefined || start === '' || end === undefined || end === '') return '';
     const loc = this.locale();
-    return `${new Date(start).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
+    return `${new Date(start).toLocaleTimeString(loc, {
+      hour: '2-digit',
+      minute: '2-digit',
+    })} - ${new Date(end).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' })}`;
   });
 
   isVirtual = computed(() => this.selectedSlot()?.location === 'virtual');
@@ -88,4 +96,8 @@ export class BookingSummaryComponent {
     this.langChange();
     return getLocale(this.translateService);
   });
+
+  onBook(): void {
+    this.bookingConfirmationDialog()?.confirm();
+  }
 }

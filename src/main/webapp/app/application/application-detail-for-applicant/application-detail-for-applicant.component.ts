@@ -2,7 +2,6 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
-import SharedModule from 'app/shared/shared.module';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -12,17 +11,18 @@ import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confir
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
+import { TranslateDirective } from 'app/shared/language';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
 import { ApplicationDetailDTO } from '../../generated/model/applicationDetailDTO';
 import { ApplicationDocumentIdsDTO } from '../../generated/model/applicationDocumentIdsDTO';
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
+import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
 
 @Component({
   selector: 'jhi-application-detail-for-applicant',
   imports: [
-    SharedModule,
     ButtonComponent,
     FontAwesomeModule,
     ApplicationStateForApplicantsComponent,
@@ -30,6 +30,8 @@ import { ApplicationStateForApplicantsComponent } from '../application-state-for
     ConfirmDialogModule,
     ConfirmDialog,
     TranslateModule,
+    TranslateDirective,
+    LocalizedDatePipe,
   ],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',

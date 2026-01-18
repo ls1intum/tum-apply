@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
 import { firstValueFrom, map } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
@@ -10,8 +10,8 @@ import { ToastService } from 'app/service/toast-service';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { emptyToUndef } from 'app/core/util/array-util.service';
+import { TranslateDirective } from 'app/shared/language';
 
-import SharedModule from '../../../shared/shared.module';
 import { ApplicationStatusExtended, JobCardComponent } from '../job-card/job-card.component';
 import { JobCardDTO } from '../../../generated/model/jobCardDTO';
 import { JobResourceApiService } from '../../../generated/api/jobResourceApi.service';
@@ -20,7 +20,7 @@ import * as DropdownOptions from '../.././dropdown-options';
 @Component({
   selector: 'jhi-job-card-list',
   standalone: true,
-  imports: [TableModule, JobCardComponent, PaginatorModule, SharedModule, SearchFilterSortBar],
+  imports: [TableModule, JobCardComponent, PaginatorModule, SearchFilterSortBar, TranslateModule, TranslateDirective],
   templateUrl: './job-card-list.component.html',
 })
 export class JobCardListComponent {

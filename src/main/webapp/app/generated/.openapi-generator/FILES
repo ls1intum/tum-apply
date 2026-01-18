@@ -51,6 +51,7 @@ model/assignSlotRequestDTO.ts
 model/assignedIntervieweeDTO.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
+model/bookSlotRequestDTO.ts
 model/bookingDTO.ts
 model/createSlotsDTO.ts
 model/createdJobDTO.ts

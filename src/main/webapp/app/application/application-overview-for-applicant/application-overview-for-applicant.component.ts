@@ -6,13 +6,13 @@ import { ToastService } from 'app/service/toast-service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
 import { BadgeModule } from 'primeng/badge';
-import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { TimeAgoPipe } from 'app/shared/pipes/time-ago.pipe';
 import { SortOption } from 'app/shared/components/atoms/sorting/sorting';
+import { TranslateDirective } from 'app/shared/language';
 
 import { ApplicationStateForApplicantsComponent } from '../application-state-for-applicants/application-state-for-applicants.component';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -24,8 +24,8 @@ import { ApplicationOverviewDTO } from '../../generated/model/applicationOvervie
     DynamicTableComponent,
     ButtonComponent,
     BadgeModule,
-    SharedModule,
     TranslateModule,
+    TranslateDirective,
     ApplicationStateForApplicantsComponent,
     RouterModule,
     ConfirmDialogModule,
