@@ -139,7 +139,7 @@ export class IntervieweeAssessmentComponent {
 
       this.interviewee.set(updated);
       this.toastService.showSuccessKey('interview.assessment.notes.saved');
-    } catch (err) {
+    } catch {
       this.toastService.showErrorKey('interview.assessment.error.saveFailed');
     } finally {
       this.saving.set(false);
@@ -183,7 +183,7 @@ export class IntervieweeAssessmentComponent {
     try {
       await firstValueFrom(this.interviewService.updateAssessment(processId, intervieweeId, dto));
       this.serverRating.set(rating);
-    } catch (err) {
+    } catch {
       this.toastService.showErrorKey('interview.assessment.error.saveFailed');
       this.rating.set(this.serverRating());
     }
