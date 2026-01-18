@@ -164,7 +164,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         interviewProcess = interviewProcessRepository.save(interviewProcess);
 
         // Shared test applicant and interviewee
-        testApplicant = createApplicant();
+        testApplicant = ApplicantTestData.savedWithNewUser(applicantRepository);
         testApplication = ApplicationTestData.savedSent(applicationRepository, job, testApplicant);
         testInterviewee = createInterviewee(testApplication);
     }
@@ -623,7 +623,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentWithRatingOnlyAsProfessorReturnsUpdatedDetails() {
             // Arrange - create new interviewee since we modify it
-            Applicant applicant = createApplicant();
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(2, null, null);
@@ -651,7 +651,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentAsEmployeeReturnsUpdatedDetails() {
             // Arrange
-            Applicant applicant = createApplicant();
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(1, null, "Good candidate.");
@@ -675,7 +675,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentWithNotesOnlyReturnsUpdatedDetails() {
             // Arrange
-            Applicant applicant = createApplicant();
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             UpdateAssessmentDTO dto = new UpdateAssessmentDTO(null, null, "Good candidate with strong technical skills.");
@@ -702,7 +702,7 @@ class InterviewResourceTest extends AbstractResourceTest {
         @Test
         void updateAssessmentWithClearRatingRemovesRating() {
             // Arrange - create interviewee with existing rating
-            Applicant applicant = createApplicant();
+            Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
             Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
             Interviewee interviewee = createInterviewee(application);
             interviewee.setRating(AssessmentRating.GOOD);
@@ -788,19 +788,6 @@ class InterviewResourceTest extends AbstractResourceTest {
     }
 
     // --- Helper methods ---
-
-    private Applicant createApplicant() {
-        // Create UNSAVED user
-        User applicantUser = new User();
-        applicantUser.setUserId(UUID.randomUUID());
-        applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
-        applicantUser.setFirstName("Test");
-        applicantUser.setLastName("Applicant");
-        applicantUser.setSelectedLanguage("en");
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        return ApplicantTestData.saved(applicantRepository, applicantUser);
-    }
-
     private Interviewee createInterviewee(Application application) {
         Interviewee interviewee = new Interviewee();
         interviewee.setInterviewProcess(interviewProcess);
