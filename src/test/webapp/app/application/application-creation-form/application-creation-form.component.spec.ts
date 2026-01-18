@@ -684,7 +684,7 @@ describe('ApplicationForm', () => {
       expect(result).toBe(true);
     });
 
-    it('should call accountService.loadUser when state is SENT', async () => {
+    it('should call accountService.loadUser once when state is SENT', async () => {
       comp.applicationId.set('app-123');
       comp.useLocalStorage.set(false);
 
@@ -707,7 +707,7 @@ describe('ApplicationForm', () => {
 
       const result = await comp.sendCreateApplicationData('SENT', false);
 
-      expect(accountService.loadUser).toHaveBeenCalled();
+      expect(accountService.loadUser).toHaveBeenCalledOnce();
       expect(result).toBe(true);
     });
 
