@@ -1,5 +1,5 @@
 <header
-  class="flex items-center justify-between px-6 py-[0.4rem] sticky top-0 z-[1000] overflow-x-auto h-12 border-b transition-colors duration-300"
+  class="flex items-center justify-between px-6 py-[0.4rem] sticky top-0 z-20 overflow-x-auto h-12 border-b transition-colors duration-300"
   [class.border-border-default]="showBorder()"
   [class.border-transparent]="!showBorder()"
   [class.shadow-sm]="showBorder()"
@@ -81,7 +81,7 @@
           icon="chevron-down"
         />
       </button>
-      <div class="absolute right-0 top-full mt-1 z-[1100]">
+      <div class="absolute right-0 top-full mt-1 z-30">
         <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" />
       </div>
     }
