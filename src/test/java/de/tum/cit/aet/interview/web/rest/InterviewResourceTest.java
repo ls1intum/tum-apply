@@ -21,6 +21,8 @@ import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.interview.service.InterviewService;
+import de.tum.cit.aet.interview.web.InterviewResource;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -34,7 +36,6 @@ import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
-import de.tum.cit.aet.utility.EmailMockConfiguration;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
@@ -54,10 +55,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.util.AopTestUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
-@Import(EmailMockConfiguration.class)
 class InterviewResourceTest extends AbstractResourceTest {
 
     @Autowired
@@ -91,11 +90,12 @@ class InterviewResourceTest extends AbstractResourceTest {
     private MvcTestClient api;
 
     @Autowired
-    private AsyncEmailSender asyncEmailSender;
+    private InterviewResource interviewResource;
 
-    private AsyncEmailSender getMock() {
-        return AopTestUtils.getUltimateTargetObject(asyncEmailSender);
-    }
+    @Autowired
+    private InterviewService interviewService;
+
+    private AsyncEmailSender asyncEmailSenderMock;
 
     private User professor;
     private Job job;
@@ -104,7 +104,8 @@ class InterviewResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     void setup() {
-        Mockito.reset(getMock());
+        asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(interviewService, "asyncEmailSender", asyncEmailSenderMock);
         databaseCleaner.clean();
 
         researchGroup = ResearchGroupTestData.savedAll(
@@ -749,7 +750,7 @@ class InterviewResourceTest extends AbstractResourceTest {
                 .isTrue();
 
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
-            verify(getMock(), times(2)).sendAsync(emailCaptor.capture());
+            verify(asyncEmailSenderMock, times(2)).sendAsync(emailCaptor.capture());
 
             List<Email> sentEmails = emailCaptor.getAllValues();
             assertThat(sentEmails).hasSize(2);
@@ -778,7 +779,7 @@ class InterviewResourceTest extends AbstractResourceTest {
             assertThat(result.sentCount()).isEqualTo(1);
 
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
-            verify(getMock(), times(1)).sendAsync(emailCaptor.capture());
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
 
             Email sentEmail = emailCaptor.getValue();
             assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION);
@@ -805,7 +806,7 @@ class InterviewResourceTest extends AbstractResourceTest {
             assertThat(result.sentCount()).isEqualTo(1);
 
             ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
-            verify(getMock(), times(1)).sendAsync(emailCaptor.capture());
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
 
             Email sentEmail = emailCaptor.getValue();
             assertThat(sentEmail.getTo()).hasSize(1);
