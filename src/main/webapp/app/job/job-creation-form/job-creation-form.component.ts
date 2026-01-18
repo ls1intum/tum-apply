@@ -587,7 +587,7 @@ export class JobCreationFormComponent {
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
     });
   }
 
@@ -689,6 +689,7 @@ export class JobCreationFormComponent {
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: job?.jobDescription ?? '',
     });
+    this.jobDescriptionSignal.set(job?.jobDescription ?? '');
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
