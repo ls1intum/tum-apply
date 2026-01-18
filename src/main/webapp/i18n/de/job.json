@@ -125,6 +125,7 @@
     },
     "positionDetailsSection": {
       "description": "Beschreibe den Forschungsschwerpunkt, die Hauptaufgaben und die Erwartungen an die Bewerber. Definiere die Mindestanforderungen und gegebenenfalls wünschenswerte Qualifikationen.",
+      "languageInfo": "Bitte verfasse die Beschreibung entweder auf Deutsch oder Englisch. Sobald du die Eingabesprache wechselst, erscheint automatisch eine KI-generierte Übersetzung, die du überprüfen und bei Bedarf bearbeiten kannst.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "placeholder": "Beschreibe den Umfang, die Aufgaben und Anforderungen der Position...",
@@ -133,7 +134,9 @@
         "aiHeaderText": "Lass AI deine Stellenbeschreibung erstellen",
         "aiButton": "Mit KI schreiben",
         "aiHelperText": "Die KI erstellt aus Ihren Stichpunkten eine AGG-konforme, professionelle Stellenbeschreibung",
-        "aiConsentText": "Ich willige ein, dass die KI meine aktuellen Stellendaten (Titel, Forschungsbereich, etc.) zur Erstellung eines Textentwurfs verwendet."
+        "aiConsentText": "Ich willige ein, dass die KI meine aktuellen Stellendaten (Titel, Forschungsbereich, etc.) zur Erstellung eines Textentwurfs verwendet.",
+        "languageEnglish": "Englisch",
+        "languageGerman": "Deutsch"
       }
     },
     "imageSection": {

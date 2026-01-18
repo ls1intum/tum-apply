@@ -125,6 +125,7 @@
     },
     "positionDetailsSection": {
       "description": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
+      "languageInfo": " Please draft the description in either German or English. Once you switch the input language, an AI-generated translation will appear automatically for you to review and edit as needed.",
       "jobDescription": {
         "label": "Job Description",
         "placeholder": "Describe the scope, tasks, and requirements of the position...",
@@ -133,7 +134,9 @@
         "aiHeaderText": "Let AI Rewrite It",
         "aiButton": "Write With AI",
         "aiHelperText": "AI Assistant can draft a job post that avoids harmful language",
-        "aiConsentText": "I consent to the AI using my current job data (title, research area, etc.) to generate a text draft."
+        "aiConsentText": "I consent to the AI using my current job data (title, research area, etc.) to generate a text draft.",
+        "languageEnglish": "English",
+        "languageGerman": "German"
       }
     },
     "imageSection": {

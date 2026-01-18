@@ -17,6 +17,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
 import { AiResourceApiService } from 'app/generated';
+import { LanguageSwitcherComponent } from 'app/shared/components/atoms/language-switcher/language-switcher.component';
 
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
@@ -59,6 +60,7 @@ type JobFormMode = 'create' | 'edit';
     ButtonComponent,
     ProgressSpinnerModule,
     CheckboxModule,
+    LanguageSwitcherComponent,
   ],
   providers: [JobResourceApiService],
 })
