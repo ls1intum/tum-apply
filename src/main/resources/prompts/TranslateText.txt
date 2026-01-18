@@ -12,13 +12,6 @@ Rules:
 4. Preserve all numbers, dates, and special characters
 5. Maintain the original formatting (paragraphs, bullet points, etc.)
 6. If a word has multiple meanings, choose the most contextually appropriate translation
-7. If the text is in German, translate to English. If the text is in English, translate to German.
 
 Text to translate:
-%s
-
-OUTPUT:
-You MUST return ONLY a valid JSON object with exactly this structure:
-{
-  "translatedText": "your translated text here"
-}
+{text}
