@@ -88,6 +88,7 @@
         "APPLICATION_REJECTED-JOB_OUTDATED": "Application rejected - Job outdated",
         "APPLICATION_REJECTED-FAILED_REQUIREMENTS": "Application rejected - Failed requirements",
         "APPLICATION_REJECTED-OTHER_REASON": "Application rejected - Other reason",
+        "INTERVIEW_INVITATION": "Interview Invitation",
         "RESEARCH_GROUP_MEMBER_ADDED": "Added to research group",
         "RESEARCH_GROUP_APPROVED": "Research group activated"
       },
@@ -99,10 +100,13 @@
         "SUPERVISING_PROFESSOR_FIRST_NAME": "Supervising Professor First Name",
         "SUPERVISING_PROFESSOR_LAST_NAME": "Supervising Professor Last Name",
         "JOB_TITLE": "Job Title",
-        "RESEARCH_GROUP_NAME": "Research Group Name"
+        "RESEARCH_GROUP_NAME": "Research Group Name",
+        "INTERVIEW_DATE": "Date",
+        "INTERVIEW_START_TIME": "Start Time",
+        "INTERVIEW_END_TIME": "End Time",
+        "INTERVIEW_LOCATION": "Location"
       }
     },
-
     "members": {
       "loading": "Loading members...",
       "retry": "Retry",
@@ -163,12 +167,10 @@
           "detail": "Failed to remove. Please try again or contact an admin."
         }
       },
-
       "confirmDialog": {
         "header": "Add Members",
         "message": "Are you sure you want to add the selected members to the research group? They will be notified via email."
       },
-
       "noRole": "No Role"
     },
     "adminView": {
