@@ -9,17 +9,22 @@ import static org.mockito.Mockito.*;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
+import de.tum.cit.aet.interview.domain.InterviewProcess;
+import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.utility.testdata.JobTestData;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -96,6 +101,33 @@ class TemplateProcessingServiceTest {
             String result = service.renderTemplate(translation, group);
 
             assertThat(result).contains("RG");
+        }
+
+        @Test
+        void withInterviewSlotInjectsSlotAndJobVariables() throws Exception {
+            // Arrange
+            EmailTemplateTranslation translation = translation("${INTERVIEW_LOCATION} - ${JOB_TITLE}", Language.ENGLISH, "interview");
+            Template layout = mockTemplate("${bodyHtml}");
+            doReturn(layout).when(freemarkerConfig).getTemplate(BASE_TEMPLATE);
+
+            Job job = JobTestData.newJob(null, null, "JobTitle", null, null);
+            job.setSupervisingProfessor(mock(User.class));
+            job.setResearchGroup(mock(ResearchGroup.class));
+
+            InterviewProcess process = new InterviewProcess();
+            process.setJob(job);
+
+            InterviewSlot slot = new InterviewSlot();
+            slot.setInterviewProcess(process);
+            slot.setStartDateTime(Instant.now());
+            slot.setEndDateTime(Instant.now().plus(1, ChronoUnit.HOURS));
+            slot.setLocation("Room 101");
+
+            // Act
+            String result = service.renderTemplate(translation, slot);
+
+            // Assert
+            assertThat(result).contains("Room 101", "JobTitle");
         }
 
         @Test

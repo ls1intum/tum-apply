@@ -2,15 +2,22 @@ package de.tum.cit.aet.interview.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.security.annotations.Applicant;
+import de.tum.cit.aet.interview.dto.BookSlotRequestDTO;
 import de.tum.cit.aet.interview.dto.BookingDTO;
+import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.service.InterviewBookingService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import java.time.YearMonth;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/interviews/booking")
 @RequiredArgsConstructor
+@Validated
 public class InterviewBookingResource {
 
     private final InterviewBookingService bookingService;
@@ -46,7 +54,7 @@ public class InterviewBookingResource {
         @RequestParam(required = false) Integer year,
         @RequestParam(required = false) Integer month,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size
+        @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
         // Convert separate year/month to YearMonth (null if either is missing)
         YearMonth yearMonth = (year != null && month != null) ? YearMonth.of(year, month) : null;
@@ -54,5 +62,20 @@ public class InterviewBookingResource {
 
         BookingDTO data = bookingService.getBookingData(processId, yearMonth, pageDTO);
         return ResponseEntity.ok(data);
+    }
+
+    /**
+     * {@code POST /api/interviews/booking/{processId}/book} :
+     * Book an interview slot for the current applicant.
+     *
+     * @param processId the ID of the interview process
+     * @param request   the booking request containing the slot ID
+     * @return the booked slot details
+     */
+    @Applicant
+    @PostMapping("/{processId}/book")
+    public ResponseEntity<InterviewSlotDTO> bookSlot(@PathVariable UUID processId, @RequestBody @Valid BookSlotRequestDTO request) {
+        InterviewSlotDTO bookedSlot = bookingService.bookSlot(processId, request.slotId());
+        return ResponseEntity.ok(bookedSlot);
     }
 }

@@ -52,6 +52,7 @@
       "slotsCountPlural": "slots",
       "showMoreSingular": "more slot",
       "showMorePlural": "more slots",
+      "showLess": "Show less",
       "error": {
         "loadFailed": {
           "summary": "Failed to load interview slots",

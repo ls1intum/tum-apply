@@ -48,6 +48,10 @@ public class Interviewee extends AbstractAuditingEntity {
     @Column(name = "last_invited")
     private Instant lastInvited;
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     /**
      * Assessment rating (POOR to EXCELLENT).
      * Maps to Likert scale integers -2 to 2 in the database.

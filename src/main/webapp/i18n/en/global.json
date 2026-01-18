@@ -138,7 +138,8 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Development"
+      "dev": "Development",
+      "test": "Development"
     },
     "item-count": "Showing {{first}} - {{second}} of {{total}} items."
   },

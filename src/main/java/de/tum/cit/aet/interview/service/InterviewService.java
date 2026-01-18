@@ -3,6 +3,7 @@ package de.tum.cit.aet.interview.service;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
@@ -23,6 +24,9 @@ import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -52,6 +56,8 @@ public class InterviewService {
     private final ApplicationRepository applicationRepository;
     private final CurrentUserService currentUserService;
     private final JobRepository jobRepository;
+    private final AsyncEmailSender asyncEmailSender;
+    private final IcsCalendarService icsCalendarService;
     private final DocumentDictionaryService documentDictionaryService;
     private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
@@ -571,10 +577,33 @@ public class InterviewService {
         interviewSlotRepository.save(slot);
         intervieweeRepository.save(interviewee);
 
-        // 8. Build response with interviewee details
+        // 8. Send interview invitation email
+        sendInterviewInvitationEmail(slot, interviewee, job);
+
+        // 9. Build response with interviewee details
         IntervieweeState state = calculateIntervieweeState(interviewee);
         AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
         return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
+    }
+
+    private void sendInterviewInvitationEmail(InterviewSlot slot, Interviewee interviewee, Job job) {
+        Application application = interviewee.getApplication();
+        User applicant = application.getApplicant().getUser();
+
+        String icsContent = icsCalendarService.generateIcsContent(slot, job);
+        String icsFileName = icsCalendarService.generateFileName(slot);
+
+        Email email = Email.builder()
+            .to(applicant)
+            .emailType(EmailType.INTERVIEW_INVITATION)
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(slot)
+            .icsContent(icsContent)
+            .icsFileName(icsFileName)
+            .build();
+
+        asyncEmailSender.sendAsync(email);
     }
 
     /**
