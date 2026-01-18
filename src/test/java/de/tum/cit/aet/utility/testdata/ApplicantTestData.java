@@ -105,6 +105,10 @@ public final class ApplicantTestData {
         return saved(repo, newApplicantUser());
     }
 
+    public static Applicant savedWithNewUserWithWebsiteAndLinkedin(ApplicantRepository repo) {
+        return saved(repo, newApplicantUserWithWebsiteAndLinkedin());
+    }
+
     /**
      * Saves an Applicant for a User that was already saved (with role attached).
      * Does NOT call newApplicant to avoid re-attaching the APPLICANT role.
@@ -147,25 +151,7 @@ public final class ApplicantTestData {
         attachApplicantRole(applicantUser);
         User savedUser = userRepo.save(applicantUser);
 
-        // Create applicant directly without calling newApplicant to avoid re-attaching
-        // role
-        Applicant a = new Applicant();
-        a.setUser(savedUser);
-        a.setStreet("Teststr. 1");
-        a.setPostalCode("12345");
-        a.setCity("Munich");
-        a.setCountry("de");
-        a.setBachelorDegreeName("B.Sc. Computer Science");
-        a.setBachelorGradeUpperLimit("1.0");
-        a.setBachelorGradeLowerLimit("4.0");
-        a.setBachelorGrade("1.7");
-        a.setBachelorUniversity("TUM");
-        a.setMasterDegreeName("M.Sc. Informatics");
-        a.setMasterGradeUpperLimit("1.0");
-        a.setMasterGradeLowerLimit("4.0");
-        a.setMasterGrade("1.3");
-        a.setMasterUniversity("TUM");
-        return repo.save(a);
+        return savedWithExistingUser(repo, savedUser);
     }
 
     // --- Attach roles---------------------------------------------------------------------------
