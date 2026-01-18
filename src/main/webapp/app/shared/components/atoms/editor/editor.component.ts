@@ -42,7 +42,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   showGenderDecoderButton = input<boolean>(false);
   genderDecoderClick = output<string>();
   openAnalysisDialog = output<GenderBiasAnalysisResponse>();
-  quillEditorComponent= viewChild(QuillEditorComponent);
+  quillEditorComponent = viewChild(QuillEditorComponent);
 
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);

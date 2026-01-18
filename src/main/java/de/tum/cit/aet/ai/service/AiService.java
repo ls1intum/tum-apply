@@ -34,9 +34,9 @@ public class AiService {
      * @return The generated job posting content
      */
     public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO) {
-        return chatClient.prompt()
-            .user(u -> u.text(jobGenerationResource)
-                .param("jobDescription", jobFormDTO.jobDescription()))
+        return chatClient
+            .prompt()
+            .user(u -> u.text(jobGenerationResource).param("jobDescription", jobFormDTO.jobDescription()))
             .call()
             .entity(AIJobDescriptionDTO.class);
     }
@@ -50,9 +50,9 @@ public class AiService {
      * @return The translated text response with detected and target language info
      */
     public AIJobDescriptionTranslationDTO translateText(String text) {
-        return chatClient.prompt()
-            .user(u -> u.text(translationResource)
-                .param("text", text))
+        return chatClient
+            .prompt()
+            .user(u -> u.text(translationResource).param("text", text))
             .call()
             .entity(AIJobDescriptionTranslationDTO.class);
     }
