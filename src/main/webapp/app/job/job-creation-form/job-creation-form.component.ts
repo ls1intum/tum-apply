@@ -555,9 +555,9 @@ export class JobCreationFormComponent {
     const request: JobFormDTO = {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value.value ?? '',
+      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
       supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.get('location')?.value.value as JobFormDTO.LocationEnum,
+      location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
       jobDescription: current ?? '',
       state: JobFormDTO.StateEnum.Draft,
     };
