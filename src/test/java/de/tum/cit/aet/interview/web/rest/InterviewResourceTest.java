@@ -561,6 +561,11 @@ class InterviewResourceTest extends AbstractResourceTest {
             // Assert
             assertThat(result).isNotNull();
             assertThat(result.id()).isEqualTo(testInterviewee.getId());
+            assertThat(result.applicationId()).isEqualTo(testApplication.getApplicationId());
+            assertThat(result.user()).isNotNull();
+            assertThat(result.user().email()).isEqualTo(testApplicant.getUser().getEmail());
+            assertThat(result.application()).isNotNull();
+            assertThat(result.application().motivation()).isEqualTo(testApplication.getMotivation());
         }
 
         @Test
