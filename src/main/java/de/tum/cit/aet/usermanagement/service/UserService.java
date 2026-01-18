@@ -123,8 +123,12 @@ public class UserService {
         String normalizedFirstName = StringUtil.normalize(firstName, false);
         String normalizedLastName = StringUtil.normalize(lastName, false);
 
-        user.setFirstName(normalizedFirstName);
-        user.setLastName(normalizedLastName);
+        if (normalizedFirstName != null && !normalizedFirstName.isBlank()) {
+            user.setFirstName(normalizedFirstName);
+        }
+        if (normalizedLastName != null && !normalizedLastName.isBlank()) {
+            user.setLastName(normalizedLastName);
+        }
 
         userRepository.save(user);
     }
