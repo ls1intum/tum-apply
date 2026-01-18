@@ -65,7 +65,7 @@ spring:
         endpoint: ${SPRING_AI_AZURE_ENDPOINT}
         chat:
           options:
-            deployment-name: gpt-5-mini
+            deployment-name: gpt-5
             temperature: 0.5
 
 # ===================================================================
