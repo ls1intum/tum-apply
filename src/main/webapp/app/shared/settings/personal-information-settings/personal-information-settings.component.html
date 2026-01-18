@@ -164,11 +164,17 @@
   <div class="form-actions">
     <jhi-button
       [label]="'entity.action.cancel'"
-      severity="secondary"
+      variant="outlined"
       [shouldTranslate]="true"
       (click)="onCancel()"
       [disabled]="!hasChanges()"
     />
-    <jhi-button [label]="'entity.action.save'" severity="primary" [shouldTranslate]="true" (click)="onSave()" [disabled]="!hasChanges()" />
+    <jhi-button
+      [label]="'entity.action.save'"
+      severity="primary"
+      [shouldTranslate]="true"
+      (click)="onSave()"
+      [disabled]="!hasChanges() || !isValid()"
+    />
   </div>
 </form>

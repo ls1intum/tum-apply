@@ -1,23 +1,22 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import * as postalCodes from 'postal-codes-js';
+import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
+import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { ApplicantDTO } from 'app/generated/model/applicantDTO';
+import { selectCountries } from 'app/shared/language/countries';
+import { selectNationality } from 'app/shared/language/nationalities';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../components/atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../components/atoms/button/button.component';
-import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
-import { ApplicantDTO } from 'app/generated/model/applicantDTO';
-
-import { selectCountries } from 'app/shared/language/countries';
-import { selectNationality } from 'app/shared/language/nationalities';
-import { firstValueFrom } from 'rxjs';
 
 export type PersonalInformationData = {
   firstName: string;
@@ -142,7 +141,7 @@ export class PersonalInformationSettingsComponent {
       street: [currentData.street],
       city: [currentData.city],
       country: [currentData.country],
-      postcode: [currentData.postcode, postalCodeValidator(() => this.data().country?.value as string)],
+      postcode: [currentData.postcode, [Validators.required, postalCodeValidator(() => this.data().country?.value as string)]],
 
       // Optional fields
       gender: [currentData.gender ?? null],
@@ -155,12 +154,12 @@ export class PersonalInformationSettingsComponent {
 
   constructor() {
     // Load initial data from backend API
-    this.loadPersonalInformation();
+    void this.loadPersonalInformation();
 
-    effect(onCleanup => {
+    void effect(onCleanup => {
       const form = this.personalInfoForm();
       const data = this.data();
-      const valueSubscription = form.valueChanges.subscribe((value: any) => {
+      const valueSubscription = form.valueChanges.subscribe((value: Record<string, unknown>) => {
         const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
         const selectFields = {
           gender: data.gender,
@@ -190,27 +189,6 @@ export class PersonalInformationSettingsComponent {
     });
   }
 
-  private createForm(currentData: PersonalInformationData): FormGroup {
-    return this.formbuilder.group({
-      firstName: [currentData.firstName],
-      lastName: [currentData.lastName],
-      email: [{ value: currentData.email, disabled: this.disabledEmail() }, Validators.email],
-      phoneNumber: [currentData.phoneNumber],
-
-      street: [currentData.street],
-      city: [currentData.city],
-      country: [currentData.country],
-      postcode: [currentData.postcode, postalCodeValidator(() => this.data().country?.value as string)],
-
-      // Optional fields
-      gender: [currentData.gender ?? null],
-      nationality: [currentData.nationality ?? null],
-      dateOfBirth: [currentData.dateOfBirth],
-      website: [currentData.website],
-      linkedIn: [currentData.linkedIn],
-    });
-  }
-
   async loadPersonalInformation(): Promise<void> {
     try {
       // Load current applicant profile directly from database (like createApplication does)
@@ -218,20 +196,19 @@ export class PersonalInformationSettingsComponent {
 
       // Map ApplicantDTO to PersonalInformationData
       const personalInfo: PersonalInformationData = {
-        firstName: profile.user?.firstName ?? '',
-        lastName: profile.user?.lastName ?? '',
-        email: profile.user?.email ?? '',
-        phoneNumber: profile.user?.phoneNumber ?? '',
-        gender: profile.user?.gender ? { value: profile.user.gender, name: `genders.${profile.user.gender}` } : undefined,
-        nationality: profile.user?.nationality
-          ? { value: profile.user.nationality, name: `countries.${profile.user.nationality}` }
-          : undefined,
-        dateOfBirth: profile.user?.birthday ?? '',
-        website: profile.user?.website ?? '',
-        linkedIn: profile.user?.linkedinUrl ?? '',
+        firstName: profile.user.firstName ?? '',
+        lastName: profile.user.lastName ?? '',
+        email: profile.user.email ?? '',
+        phoneNumber: profile.user.phoneNumber ?? '',
+        gender: profile.user.gender != null ? { value: profile.user.gender, name: `genders.${profile.user.gender}` } : undefined,
+        nationality:
+          profile.user.nationality != null ? { value: profile.user.nationality, name: `countries.${profile.user.nationality}` } : undefined,
+        dateOfBirth: profile.user.birthday ?? '',
+        website: profile.user.website ?? '',
+        linkedIn: profile.user.linkedinUrl ?? '',
         street: profile.street ?? '',
         city: profile.city ?? '',
-        country: profile.country ? { value: profile.country, name: `countries.${profile.country}` } : undefined,
+        country: profile.country != null ? { value: profile.country, name: `countries.${profile.country}` } : undefined,
         postcode: profile.postalCode ?? '',
       };
 
@@ -301,9 +278,8 @@ export class PersonalInformationSettingsComponent {
     }
   }
 
-  onCancel(): void {
-    // Reload original data
-    this.loadPersonalInformation();
+  async onCancel(): Promise<void> {
+    await this.loadPersonalInformation();
     this.hasChanges.set(false);
   }
 }
