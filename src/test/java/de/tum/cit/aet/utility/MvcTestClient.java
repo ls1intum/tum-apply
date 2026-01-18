@@ -152,7 +152,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a GET and asserts the given status, then returns the raw response body as bytes.
+     * Performs a GET and asserts the given status, then returns the raw response
+     * body as bytes.
      * Useful for binary downloads (e.g. ZIP, PDF).
      */
     public byte[] getAndReturnBytes(String url, Map<String, String> params, int expectedStatus, MediaType... accepts) {
@@ -185,7 +186,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a GET and asserts the given status, then returns the full servlet response.
+     * Performs a GET and asserts the given status, then returns the full servlet
+     * response.
      * Useful for asserting headers/content-type for downloads.
      */
     public MockHttpServletResponse getAndReturnResponse(String url, Map<String, String> params, int expectedStatus, MediaType... accepts) {
@@ -215,7 +217,38 @@ public class MvcTestClient {
     }
 
     /**
-     * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the given class.
+     * Performs a POST with a JSON body and asserts the given status, then returns
+     * the raw response
+     * body as bytes.
+     * Useful for binary downloads (e.g. PDF) returned from POST requests.
+     */
+    public byte[] postAndReturnBytes(String url, Object body, int expectedStatus, MediaType... accepts) {
+        try {
+            ResultActions action = mockMvc.perform(
+                applyDefaults(post(url), accepts).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(body))
+            );
+
+            MockHttpServletResponse response;
+            switch (expectedStatus) {
+                case 200 -> response = action.andExpect(status().isOk()).andReturn().getResponse();
+                case 204 -> response = action.andExpect(status().isNoContent()).andReturn().getResponse();
+                case 400 -> response = action.andExpect(status().isBadRequest()).andReturn().getResponse();
+                case 401 -> response = action.andExpect(status().isUnauthorized()).andReturn().getResponse();
+                case 403 -> response = action.andExpect(status().isForbidden()).andReturn().getResponse();
+                case 404 -> response = action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 500 -> response = action.andExpect(status().isInternalServerError()).andReturn().getResponse();
+                default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
+            }
+
+            return response.getContentAsByteArray();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed with status " + expectedStatus, e);
+        }
+    }
+
+    /**
+     * Performs a POST with a JSON body and asserts 200 OK, then deserializes to the
+     * given class.
      * If type is Void, only the assertion is performed.
      */
     public <T> T postAndRead(String url, Object body, Class<T> type, int expectedStatus, MediaType... accepts) {
@@ -506,7 +539,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Low-level POST that asserts 500 Internal Server Error and returns the MvcResult.
+     * Low-level POST that asserts 500 Internal Server Error and returns the
+     * MvcResult.
      */
     private MvcResult postInternalServerError(String url, Object body, MediaType... accepts) {
         try {
@@ -661,7 +695,8 @@ public class MvcTestClient {
     }
 
     /**
-     * Low-level DELETE that asserts 500 Internal Server Error and returns the MvcResult.
+     * Low-level DELETE that asserts 500 Internal Server Error and returns the
+     * MvcResult.
      */
     private MvcResult deleteInternalServerError(String url, Object body, MediaType... accepts) {
         try {
