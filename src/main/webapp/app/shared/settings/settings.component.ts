@@ -35,10 +35,12 @@ export class SettingsComponent {
   readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
 
   readonly tabs = computed<TabItem[]>(() => {
-    const baseTabs: TabItem[] = [
-      { id: 'general', translationKey: 'settings.tabs.general' },
-      { id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] },
-    ];
+    const baseTabs: TabItem[] = [{ id: 'general', translationKey: 'settings.tabs.general' }];
+
+    // Hide notifications tab for admins
+    if (this.role() !== UserShortDTO.RolesEnum.Admin) {
+      baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] });
+    }
 
     // Add Personal Information tab only for applicants
     if (this.role() === UserShortDTO.RolesEnum.Applicant) {

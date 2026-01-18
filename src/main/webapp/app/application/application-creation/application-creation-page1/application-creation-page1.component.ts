@@ -6,14 +6,13 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import * as postalCodes from 'postal-codes-js';
 import { TranslateDirective } from 'app/shared/language';
+import { selectCountries } from 'app/shared/language/countries';
+import { selectNationality } from 'app/shared/language/nationalities';
 
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-
-import { selectCountries } from 'app/shared/language/countries';
-import { selectNationality } from 'app/shared/language/nationalities';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
