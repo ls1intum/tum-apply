@@ -25,7 +25,7 @@
     <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="basicInfoForm" class="w-full">
         <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span></p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
         <div class="form-field">
           <jhi-string-input
             [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
@@ -90,7 +90,7 @@
           </div>
         </div>
 
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span></p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <br />
         <div class="form-row mb-6">
@@ -123,6 +123,7 @@
                 severity="primary"
                 class="mt-2"
                 (click)="generateJobApplicationDraft()"
+                [loading]="isGeneratingDraft()"
               />
             </div>
           </div>
@@ -135,7 +136,7 @@
   <ng-template #panel2>
     <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="positionDetailsForm" class="w-full">
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span></p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
         <div class="form-row mb-6">
           <div class="form-field">
             <jhi-datepicker
