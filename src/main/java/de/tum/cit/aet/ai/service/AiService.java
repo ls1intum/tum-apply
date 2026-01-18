@@ -5,22 +5,24 @@ import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class AiService {
 
-    private static final String JOB_DESCRIPTION_PROMPT = "JobDescriptionGeneration";
-    private static final String TRANSLATE_TEXT_PROMPT = "TranslateText";
+    @Value("classpath:prompts/JobDescriptionGeneration.st")
+    private Resource jobGenerationResource;
+
+    @Value("classpath:prompts/TranslateText.st")
+    private Resource translationResource;
 
     private final ChatClient chatClient;
-    private final PromptLoader promptLoader;
 
-    public AiService(ChatClient chatClient, PromptLoader promptLoader) {
-        this.chatClient = chatClient;
-        this.promptLoader = promptLoader;
+    public AiService(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder.build();
     }
 
     /**
@@ -31,15 +33,12 @@ public class AiService {
      * @param jobFormDTO the job form data containing description, requirements, and tasks
      * @return The generated job posting content
      */
-
     public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO) {
-        var converter = new BeanOutputConverter<>(AIJobDescriptionDTO.class);
-
         return chatClient.prompt()
-            .user(u -> u.text(promptLoader.getPrompt(JOB_DESCRIPTION_PROMPT))
+            .user(u -> u.text(jobGenerationResource)
                 .param("jobDescription", jobFormDTO.jobDescription()))
             .call()
-            .entity(converter);
+            .entity(AIJobDescriptionDTO.class);
     }
 
     /**
@@ -52,7 +51,7 @@ public class AiService {
      */
     public AIJobDescriptionTranslationDTO translateText(String text) {
         return chatClient.prompt()
-            .user(u -> u.text(promptLoader.getPrompt(TRANSLATE_TEXT_PROMPT))
+            .user(u -> u.text(translationResource)
                 .param("text", text))
             .call()
             .entity(AIJobDescriptionTranslationDTO.class);
