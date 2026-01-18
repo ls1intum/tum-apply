@@ -641,7 +641,6 @@ public class InterviewService {
         }
 
         // 4. Send emails
-        int sentCount = 0;
         List<String> failedEmails = new ArrayList<>();
         List<Interviewee> updatedInterviewees = new ArrayList<>();
 
@@ -650,7 +649,6 @@ public class InterviewService {
                 sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
-                sentCount++;
             } catch (Exception e) {
                 log.debug(
                     "Failed to send invitation email to {}: {}",
@@ -664,7 +662,7 @@ public class InterviewService {
         // 5. Save updated timestamps
         intervieweeRepository.saveAll(updatedInterviewees);
 
-        return new SendInvitationsResultDTO(sentCount, failedEmails);
+        return new SendInvitationsResultDTO(updatedInterviewees.size(), failedEmails);
     }
 
     private void sendSelfSchedulingEmail(Interviewee interviewee, Job job) {
