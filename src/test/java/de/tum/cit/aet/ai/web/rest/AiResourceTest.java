@@ -1,5 +1,9 @@
 package de.tum.cit.aet.ai.web.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.exception.AiResponseException;
@@ -7,12 +11,8 @@ import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.utility.MvcTestClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class AiResourceTest extends AbstractResourceTest {
 
@@ -30,15 +30,9 @@ class AiResourceTest extends AbstractResourceTest {
         String input = "Hello World";
         String mockTranslation = "Hallo Welt";
 
-        given(aiService.translateText(anyString()))
-            .willReturn(new AIJobDescriptionTranslationDTO(mockTranslation));
+        given(aiService.translateText(anyString())).willReturn(new AIJobDescriptionTranslationDTO(mockTranslation));
 
-        AIJobDescriptionTranslationDTO response = api.putAndRead(
-            TRANSLATE_URL,
-            input,
-            AIJobDescriptionTranslationDTO.class,
-            200
-        );
+        AIJobDescriptionTranslationDTO response = api.putAndRead(TRANSLATE_URL, input, AIJobDescriptionTranslationDTO.class, 200);
 
         assertThat(response).isNotNull();
         assertThat(response.translatedText()).isEqualTo(mockTranslation);
@@ -60,14 +54,8 @@ class AiResourceTest extends AbstractResourceTest {
     @Test
     @WithMockUser(roles = "PROFESSOR")
     void translateJobDescriptionThrowsException() {
-        given(aiService.translateText(anyString()))
-            .willThrow(new AiResponseException(new RuntimeException()));
+        given(aiService.translateText(anyString())).willThrow(new AiResponseException(new RuntimeException()));
 
-        api.putAndRead(
-            "/api/ai/translateJobDescription",
-            "Some text",
-            Void.class,
-            500
-        );
+        api.putAndRead("/api/ai/translateJobDescription", "Some text", Void.class, 500);
     }
 }

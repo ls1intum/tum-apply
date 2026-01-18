@@ -6,7 +6,6 @@ import de.tum.cit.aet.ai.dto.AIJobDescriptionDTO;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.exception.AiResponseException;
 import de.tum.cit.aet.job.dto.JobFormDTO;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -23,11 +22,7 @@ public class AiService {
     private final ObjectMapper objectMapper;
     private final PromptLoader promptLoader;
 
-    public AiService(
-        ChatClient chatClient,
-        ObjectMapper objectMapper,
-        PromptLoader promptLoader
-    ) {
+    public AiService(ChatClient chatClient, ObjectMapper objectMapper, PromptLoader promptLoader) {
         this.chatClient = chatClient;
         this.objectMapper = objectMapper;
         this.promptLoader = promptLoader;

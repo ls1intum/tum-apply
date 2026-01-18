@@ -1,11 +1,11 @@
 package de.tum.cit.aet.ai.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import de.tum.cit.aet.ai.exception.AiPromptException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PromptLoaderTest {
 
@@ -21,9 +21,7 @@ class PromptLoaderTest {
         String promptName = "test-prompt";
         String content = promptLoader.getPrompt(promptName);
 
-        assertThat(content)
-            .isNotNull()
-            .contains("This is a test prompt");
+        assertThat(content).isNotNull().contains("This is a test prompt");
     }
 
     @Test
@@ -41,7 +39,6 @@ class PromptLoaderTest {
     void getPromptThrowsExceptionIfFileNotFound() {
         String invalidName = "non_existent_file";
 
-        assertThatThrownBy(() -> promptLoader.getPrompt(invalidName))
-            .isInstanceOf(AiPromptException.class);
+        assertThatThrownBy(() -> promptLoader.getPrompt(invalidName)).isInstanceOf(AiPromptException.class);
     }
 }

@@ -1,15 +1,14 @@
 package de.tum.cit.aet.ai.service;
 
 import de.tum.cit.aet.ai.exception.AiPromptException;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
 /**
  * Utility component for loading and caching prompt templates from classpath resources.
