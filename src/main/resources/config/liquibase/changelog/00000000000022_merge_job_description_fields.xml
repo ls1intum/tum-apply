@@ -11,13 +11,29 @@
 
     <sql dbms="postgresql">
       UPDATE jobs
-      SET job_description = CONCAT_WS(E'\n\n', COALESCE(description, ''), COALESCE(tasks, ''), COALESCE(requirements, ''))
-      WHERE description IS NOT NULL OR tasks IS NOT NULL OR requirements IS NOT NULL;
+      SET job_description = CONCAT_WS(E '\n\n', COALESCE(description, ''), COALESCE(tasks, ''),
+                                      COALESCE(requirements, ''))
+      WHERE description IS NOT NULL
+         OR tasks IS NOT NULL
+         OR requirements IS NOT NULL;
     </sql>
 
     <dropColumn tableName="jobs" columnName="description"/>
     <dropColumn tableName="jobs" columnName="tasks"/>
     <dropColumn tableName="jobs" columnName="requirements"/>
+  </changeSet>
+
+  <changeSet id="023-add-localized-description-columns" author="Cathy">
+    <addColumn tableName="jobs">
+      <column name="job_description_en" type="TEXT">
+      </column>
+
+      <column name="job_description_de" type="TEXT">
+      </column>
+
+      <column name="description_language" type="VARCHAR(2)" defaultValue="en">
+      </column>
+    </addColumn>
   </changeSet>
 
 </databaseChangeLog>

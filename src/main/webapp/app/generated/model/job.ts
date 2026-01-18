@@ -24,6 +24,8 @@ export interface Job {
     fundingType?: Job.FundingTypeEnum;
     image?: Image;
     jobDescription?: string;
+    jobDescriptionDE?: string;
+    jobDescriptionEN?: string;
     jobId?: string;
     lastModifiedAt?: string;
     location?: Job.LocationEnum;

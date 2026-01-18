@@ -93,9 +93,22 @@
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
-        <div class="my-2">
-          <jhi-language-switcher />
-        </div>
+        <jhi-language-switcher
+          [currentLang]="currentDescriptionLanguage()"
+          [disabled]="isTranslating() || savingState() === 'SAVING'"
+          (languageChange)="changeDescriptionLanguage($event)"
+        />
+
+        <!-- Show translation indicator -->
+        @if (isTranslating()) {
+          <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+            <p-progressSpinner styleClass="w-5 h-5" strokeWidth="4" />
+            <span
+              class="text-sm text-blue-700 font-medium"
+              jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"
+            ></span>
+          </div>
+        }
         <br />
         <div class="form-row mb-6">
           <div class="form-field">

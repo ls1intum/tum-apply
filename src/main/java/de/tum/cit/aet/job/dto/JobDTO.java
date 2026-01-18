@@ -22,6 +22,8 @@ public record JobDTO(
     Integer contractDuration,
     FundingType fundingType,
     String jobDescription,
+    String jobDescriptionDE,
+    String jobDescriptionEN,
     @NotNull JobState state,
     UUID imageId,
     String imageUrl

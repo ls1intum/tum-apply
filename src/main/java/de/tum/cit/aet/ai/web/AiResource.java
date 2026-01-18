@@ -1,6 +1,6 @@
 package de.tum.cit.aet.ai.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.service.AiService;
 import de.tum.cit.aet.job.dto.AiResponseDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
@@ -37,10 +37,10 @@ public class AiResource {
 
     GetMapping(value = "generate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public String storyWithStream(@RequestParam(defaultValue = "Tell a story in less than 100 words") String message) {
-        log.info("Received story generation request with message: {}", message);
-        return chatClient.prompt().user(message).call().content();
+    log.info("Received story generation request with message: {}", message);
+    return chatClient.prompt().user(message).call().content();
     }
-    */
+     */
 
     /**
      * Generate a job application draft from the provided structured job form.
@@ -53,5 +53,11 @@ public class AiResource {
     public ResponseEntity<AiResponseDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
         log.info("POST /api/ai/generate - Request received");
         return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
+    }
+
+    @PutMapping(value = "translateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AIJobDescriptionTranslationDTO> translateText(@RequestBody String text) {
+        log.info("POST /api/ai/translateJobDescription - Request received");
+        return ResponseEntity.ok(new AIJobDescriptionTranslationDTO("Translated text placeholder"));
     }
 }

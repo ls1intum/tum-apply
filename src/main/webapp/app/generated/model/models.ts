@@ -1,3 +1,4 @@
+export * from './aIJobDescriptionTranslationDTO';
 export * from './acceptDTO';
 export * from './addIntervieweesDTO';
 export * from './addMembersToResearchGroupDTO';

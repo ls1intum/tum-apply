@@ -1,38 +1,33 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule, Location } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { TranslateDirective } from 'app/shared/language';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
-import { AiResourceApiService } from 'app/generated';
-import { LanguageSwitcherComponent } from 'app/shared/components/atoms/language-switcher/language-switcher.component';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { AccountService } from 'app/core/auth/account.service';
+import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { TranslateDirective } from 'app/shared/language';
+import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { Language, LanguageSwitcherComponent } from 'app/shared/components/atoms/language-switcher/language-switcher.component';
+import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
+import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
+import { ToastService } from 'app/service/toast-service';
+import { AiResourceApiService, ImageDTO, ImageResourceApiService, JobDTO, JobFormDTO, JobResourceApiService } from 'app/generated';
 
-import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
-import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
-import { AccountService } from '../../core/auth/account.service';
-import * as DropdownOptions from '.././dropdown-options';
-import { SelectComponent } from '../../shared/components/atoms/select/select.component';
-import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
-import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
-import { ToastService } from '../../service/toast-service';
 import { JobDetailComponent } from '../job-detail/job-detail.component';
-import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
-import { JobFormDTO } from '../../generated/model/jobFormDTO';
-import { JobDTO } from '../../generated/model/jobDTO';
-import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
-import { ImageDTO } from '../../generated/model/imageDTO';
+import * as DropdownOptions from '.././dropdown-options';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -125,6 +120,101 @@ export class JobCreationFormComponent {
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
   sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
   jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
+
+  currentDescriptionLanguage = signal<Language>('en');
+  isTranslating = signal<boolean>(false);
+  jobDescriptionDE = signal<string>('');
+  jobDescriptionEN = signal<string>('');
+  lastTranslatedEN = signal<string>('');
+  lastTranslatedDE = signal<string>('');
+
+  async changeDescriptionLanguage(newLang: Language): Promise<void> {
+    const currentLang = this.currentDescriptionLanguage();
+    if (newLang === currentLang || this.isTranslating()) return;
+
+    // 1. Force an immediate save if changes are pending
+    if (this.autoSaveTimer !== undefined) {
+      this.clearAutoSaveTimer();
+
+      const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
+      if (currentLang === 'en') {
+        this.jobDescriptionEN.set(description);
+      } else {
+        this.jobDescriptionDE.set(description);
+      }
+
+      // This waits for the DB save and triggers the translation process [cite: 204, 343]
+      await this.performAutoSave();
+    }
+
+    // 2. WAIT for the translation to finish if one was started
+    if (this.isTranslating()) {
+      await new Promise<void>(resolve => {
+        const interval = setInterval(() => {
+          if (!this.isTranslating()) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100);
+      });
+    }
+
+    // 3. ONLY NOW switch the language signal [cite: 208]
+    // This ensures the effect (Line 217) sees the fresh translation
+    this.currentDescriptionLanguage.set(newLang);
+  }
+
+  private async translateJobDescription(text: string, fromLang: Language, toLang: Language): Promise<void> {
+    if (!text || text.trim().length === 0) return;
+
+    this.isTranslating.set(true);
+    try {
+      const response = await firstValueFrom(this.aiService.translateText(text));
+      const translatedText = response.translatedText ?? '';
+
+      if (translatedText) {
+        // 1. Always update the background signals and baselines [cite: 196, 197, 199]
+        if (toLang === 'en') {
+          this.jobDescriptionEN.set(translatedText);
+          this.lastTranslatedEN.set(translatedText);
+          this.lastTranslatedDE.set(text); // Mark the source as "synced"
+        } else {
+          this.jobDescriptionDE.set(translatedText);
+          this.lastTranslatedDE.set(translatedText);
+          this.lastTranslatedEN.set(text); // Mark the source as "synced"
+        }
+
+        // 2. CRITICAL: Only update the Editor UI if the user IS NOT currently
+        // typing in this language. If they ARE in this language,
+        // do NOT call setValue or forceUpdate as it breaks the cursor. [cite: 200, 201]
+        if (this.currentDescriptionLanguage() === toLang) {
+          this.basicInfoForm.get('jobDescription')?.setValue(translatedText, { emitEvent: false });
+          this.jobDescriptionSignal.set(translatedText);
+          this.jobDescriptionEditor()?.forceUpdate(translatedText);
+        }
+      }
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.translationFailed');
+    } finally {
+      this.isTranslating.set(false);
+    }
+  }
+
+  /**
+   * Effect that watches for language changes and handles translation
+   */
+  languageChangeEffect = effect(() => {
+    const newLanguage = this.currentDescriptionLanguage();
+    if (!this.autoSaveInitialized) return;
+
+    // Retrieve the existing content for the language we are entering [cite: 36]
+    const targetContent = newLanguage === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
+
+    // Update the UI without triggering form change events [cite: 37]
+    this.basicInfoForm.get('jobDescription')?.setValue(targetContent, { emitEvent: false });
+    this.jobDescriptionSignal.set(targetContent);
+    this.jobDescriptionEditor()?.forceUpdate(targetContent);
+  });
 
   // Tracks form validity
   basicInfoValid = signal(false);
@@ -628,6 +718,8 @@ export class JobCreationFormComponent {
       supervisingProfessor: this.userId(),
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
       jobDescription: basicInfoValue.jobDescription?.trim() ?? '',
+      jobDescriptionDE: this.jobDescriptionDE() || undefined,
+      jobDescriptionEN: this.jobDescriptionEN() || undefined,
       startDate: positionDetailsValue.startDate ?? '',
       endDate: positionDetailsValue.applicationDeadline ?? '',
       workload: positionDetailsValue.workload,
@@ -692,6 +784,13 @@ export class JobCreationFormComponent {
       jobDescription: job?.jobDescription ?? '',
     });
 
+    if (Boolean(job?.jobDescriptionEN)) {
+      this.jobDescriptionEN.set(job?.jobDescriptionEN ?? '');
+    }
+    if (Boolean(job?.jobDescriptionDE)) {
+      this.jobDescriptionDE.set(job?.jobDescriptionDE ?? '');
+    }
+
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',
       applicationDeadline: job?.endDate ?? '',
@@ -727,6 +826,7 @@ export class JobCreationFormComponent {
    */
   private setupAutoSave(): void {
     effect(() => {
+      const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
       this.basicInfoFormValueSignal();
       this.positionDetailsFormValueSignal();
       this.imageFormValueSignal();
@@ -740,10 +840,25 @@ export class JobCreationFormComponent {
         return;
       }
 
+      this.jobDescriptionSignal.set(description);
+
+      this.clearAutoSaveTimer();
+      this.savingState.set('SAVING');
+
+      this.jobDescriptionSignal.set(description);
+
       this.clearAutoSaveTimer();
       this.savingState.set('SAVING');
 
       this.autoSaveTimer = window.setTimeout(() => {
+        // Sync language-specific signals right before saving [cite: 152, 153]
+        const lang = this.currentDescriptionLanguage();
+        if (lang === 'en') {
+          this.jobDescriptionEN.set(description);
+        } else {
+          this.jobDescriptionDE.set(description);
+        }
+
         void this.performAutoSave();
       }, 3000);
     });
@@ -762,6 +877,8 @@ export class JobCreationFormComponent {
    */
   private async performAutoSave(): Promise<void> {
     const currentData = this.createJobDTO('DRAFT');
+    const currentLang = this.currentDescriptionLanguage();
+    const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
 
     try {
       if (this.jobId()) {
@@ -773,6 +890,16 @@ export class JobCreationFormComponent {
 
       this.lastSavedData.set(currentData);
       this.savingState.set('SAVED');
+
+      // Only trigger if text is different from the last time we translated
+      const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
+
+      if (description.trim() && description !== lastBaseline) {
+        const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
+        // Use await here so the caller of performAutoSave (like changeDescriptionLanguage)
+        // knows when the translation is actually finished
+        await this.translateJobDescription(description, currentLang, targetLang);
+      }
     } catch {
       this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');

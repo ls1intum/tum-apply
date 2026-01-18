@@ -170,6 +170,8 @@ public class JobService {
             job.getContractDuration(),
             job.getFundingType(),
             job.getJobDescription(),
+            job.getJobDescriptionDE(),
+            job.getJobDescriptionEN(),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null
@@ -275,7 +277,7 @@ public class JobService {
      * current filters.
      *
      * @return a list of all unique fields of study sorted
-     *         alphabetically
+     * alphabetically
      */
     public List<String> getAllFieldOfStudies() {
         return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
@@ -287,7 +289,7 @@ public class JobService {
      * current filters.
      *
      * @return a list of all unique supervisor names sorted
-     *         alphabetically
+     * alphabetically
      */
     public List<String> getAllSupervisorNames() {
         return jobRepository.findAllUniqueSupervisorNames(JobState.PUBLISHED);

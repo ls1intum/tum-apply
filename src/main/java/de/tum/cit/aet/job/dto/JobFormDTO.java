@@ -24,6 +24,8 @@ public record JobFormDTO(
     Integer contractDuration,
     FundingType fundingType,
     String jobDescription,
+    String jobDescriptionDE,
+    String jobDescriptionEN,
     @NotNull JobState state,
     UUID imageId // Optional job banner image
 ) {
@@ -49,6 +51,8 @@ public record JobFormDTO(
             job.getContractDuration(),
             job.getFundingType(),
             job.getJobDescription(),
+            job.getJobDescriptionDE(),
+            job.getJobDescriptionEN(),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null
         );
