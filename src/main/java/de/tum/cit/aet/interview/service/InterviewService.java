@@ -613,7 +613,7 @@ public class InterviewService {
      * @throws EntityNotFoundException if process not found
      * @throws AccessDeniedException   if user has no job access
      */
-    @Transactional
+
     public SendInvitationsResultDTO sendSelfSchedulingInvitations(UUID processId, SendInvitationsRequestDTO request) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
