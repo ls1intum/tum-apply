@@ -208,33 +208,7 @@ public class ApplicationService {
         Applicant applicant = application.getApplicant();
         User user = applicant.getUser();
 
-        // Update user data
-        user.setFirstName(application.getApplicantFirstName());
-        user.setLastName(application.getApplicantLastName());
-        user.setGender(application.getApplicantGender());
-        user.setNationality(application.getApplicantNationality());
-        user.setBirthday(application.getApplicantBirthday());
-        user.setPhoneNumber(application.getApplicantPhoneNumber());
-        user.setWebsite(application.getApplicantWebsite());
-        user.setLinkedinUrl(application.getApplicantLinkedinUrl());
-        userRepository.save(user);
-
-        // Update applicant data
-        applicant.setStreet(application.getApplicantStreet());
-        applicant.setPostalCode(application.getApplicantPostalCode());
-        applicant.setCity(application.getApplicantCity());
-        applicant.setCountry(application.getApplicantCountry());
-        applicant.setBachelorDegreeName(application.getApplicantBachelorDegreeName());
-        applicant.setBachelorGradeUpperLimit(application.getApplicantBachelorGradeUpperLimit());
-        applicant.setBachelorGradeLowerLimit(application.getApplicantBachelorGradeLowerLimit());
-        applicant.setBachelorGrade(application.getApplicantBachelorGrade());
-        applicant.setBachelorUniversity(application.getApplicantBachelorUniversity());
-        applicant.setMasterDegreeName(application.getApplicantMasterDegreeName());
-        applicant.setMasterGradeUpperLimit(application.getApplicantMasterGradeUpperLimit());
-        applicant.setMasterGradeLowerLimit(application.getApplicantMasterGradeLowerLimit());
-        applicant.setMasterGrade(application.getApplicantMasterGrade());
-        applicant.setMasterUniversity(application.getApplicantMasterUniversity());
-        applicantRepository.save(applicant);
+        applyApplicantData(user, applicant, ApplicantDTO.getFromApplicationSnapshot(application));
     }
 
     private void confirmApplicationToApplicant(Application application) {
@@ -510,10 +484,32 @@ public class ApplicationService {
             throw new InvalidParameterException("User must be authenticated to update applicant profile.");
         }
 
-        // Update User entity
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+
+        applyApplicantData(user, applicant, dto);
+
+        return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
+     * Creates an Applicant for the given userId
+     *
+     * @param userId The id of the User
+     * @return the created Applicant
+     */
+    private Applicant createApplicant(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        Applicant applicant = new Applicant();
+        applicant.setUser(user);
+        return applicantRepository.save(applicant);
+    }
+
+    /**
+     * Applies applicant and user data from a DTO and persists both entities.
+     */
+    private void applyApplicantData(User user, Applicant applicant, ApplicantDTO dto) {
         if (dto.user() != null) {
-            // Optional: allow updating name/email if present
             if (dto.user().firstName() != null) user.setFirstName(dto.user().firstName());
             if (dto.user().lastName() != null) user.setLastName(dto.user().lastName());
             if (dto.user().email() != null) user.setEmail(dto.user().email());
@@ -524,10 +520,7 @@ public class ApplicationService {
             user.setWebsite(dto.user().website());
             user.setLinkedinUrl(dto.user().linkedinUrl());
         }
-        userRepository.save(user);
 
-        // Update or create Applicant entity
-        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
         applicant.setStreet(dto.street());
         applicant.setPostalCode(dto.postalCode());
         applicant.setCity(dto.city());
@@ -545,22 +538,8 @@ public class ApplicationService {
         applicant.setMasterGrade(dto.masterGrade());
         applicant.setMasterUniversity(dto.masterUniversity());
 
+        userRepository.save(user);
         applicantRepository.save(applicant);
-
-        return ApplicantDTO.getFromEntity(applicant);
-    }
-
-    /**
-     * Creates an Applicant for the given userId
-     *
-     * @param userId The id of the User
-     * @return the created Applicant
-     */
-    private Applicant createApplicant(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        Applicant applicant = new Applicant();
-        applicant.setUser(user);
-        return applicantRepository.save(applicant);
     }
 
     /**
