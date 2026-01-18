@@ -555,9 +555,9 @@ export class JobCreationFormComponent {
     const request: JobFormDTO = {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value.value ?? '',
+      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
       supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.get('location')?.value.value as JobFormDTO.LocationEnum,
+      location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
       jobDescription: current ?? '',
       state: JobFormDTO.StateEnum.Draft,
     };
@@ -587,7 +587,7 @@ export class JobCreationFormComponent {
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
     });
   }
 
@@ -689,6 +689,7 @@ export class JobCreationFormComponent {
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: job?.jobDescription ?? '',
     });
+    this.jobDescriptionSignal.set(job?.jobDescription ?? '');
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',

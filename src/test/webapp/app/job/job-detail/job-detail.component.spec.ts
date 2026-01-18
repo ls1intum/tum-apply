@@ -371,11 +371,11 @@ describe('JobDetailComponent', () => {
         mapToJobDetails: (
           d: JobFormDTO,
           u?: ReturnType<typeof mockAccountService.loadedUser>,
-          rg?: { description?: string },
+          rg?: { jobDescription?: string },
           f?: boolean,
         ) => JobDetails;
       }
-    ).mapToJobDetails(form, user, { description: 'RG D' }, true);
+    ).mapToJobDetails(form, user, { jobDescription: 'RG D' }, true);
 
     expect(result.title).toBe('Form Job');
     expect(result.jobState).toBe('DRAFT');
@@ -508,9 +508,7 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: new Date().toISOString(),
       startDate: undefined,
       endDate: undefined,
-      description: undefined,
-      tasks: undefined,
-      requirements: undefined,
+      jobDescription: undefined,
       workload: undefined,
       contractDuration: undefined,
     } as unknown as JobDetailDTO;

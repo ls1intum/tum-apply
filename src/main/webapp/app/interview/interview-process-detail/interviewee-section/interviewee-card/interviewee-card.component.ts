@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
@@ -19,6 +19,10 @@ import { formatDate, formatTimeRange, getLocale } from 'app/shared/util/date-tim
 export class IntervieweeCardComponent {
   // Inputs
   interviewee = input.required<IntervieweeDTO>();
+  sending = input<boolean>(false);
+
+  // Outputs
+  sendInvitation = output<IntervieweeDTO>();
 
   // Computed values
   scheduledDate = computed(() => {

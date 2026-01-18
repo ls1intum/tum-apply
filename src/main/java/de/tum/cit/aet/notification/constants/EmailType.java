@@ -66,7 +66,13 @@ public enum EmailType {
      * Notification to professor when applicant books an interview slot
      * To: Supervising professor of the job
      */
-    INTERVIEW_BOOKED_PROFESSOR("INTERVIEW_BOOKED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false);
+    INTERVIEW_BOOKED_PROFESSOR("INTERVIEW_BOOKED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
+
+    /**
+     * Invitation to self-schedule an interview slot
+     * To: Applicant
+     */
+    INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true, false);
 
     private final String value;
 
