@@ -4,8 +4,8 @@
   [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
   [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
   [label]="'button.withdraw' | translate"
-  [severity]="'danger'"
-  [confirmIcon]="'withdraw'"
+  severity="danger"
+  confirmIcon="withdraw"
   [showOpenButton]="false"
   (confirmed)="onWithdrawApplication()"
 />
@@ -15,8 +15,8 @@
   [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
   [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
   [label]="'button.delete' | translate"
-  [severity]="'danger'"
-  [confirmIcon]="'trash'"
+  severity="danger"
+  confirmIcon="trash"
   [showOpenButton]="false"
   (confirmed)="onDeleteApplication()"
 />
@@ -38,7 +38,7 @@
           @for (item of individualActionButtons(); track item.label) {
             <jhi-button
               [label]="item.label"
-              [severity]="item.severity ?? 'secondary'"
+              [severity]="item.severity ?? 'primary'"
               [variant]="item.severity === 'danger' ? undefined : 'outlined'"
               [icon]="item.icon"
               [shouldTranslate]="true"
@@ -47,7 +47,7 @@
           }
           @if (shouldShowKebabMenu()) {
             <jhi-button
-              severity="secondary"
+              severity="primary"
               variant="outlined"
               icon="ellipsis-vertical"
               label="button.actions"
@@ -344,14 +344,7 @@
 
     @if (!previewDetailData()) {
       <section class="mt-8 pt-8 border-t border-divider-default">
-        <jhi-button
-          icon="arrow-left"
-          [label]="'button.back'"
-          [shouldTranslate]="true"
-          severity="info"
-          variant="outlined"
-          (click)="onBack()"
-        />
+        <jhi-button icon="arrow-left" label="button.back" [shouldTranslate]="true" severity="info" variant="outlined" (click)="onBack()" />
       </section>
     }
   } @else {
