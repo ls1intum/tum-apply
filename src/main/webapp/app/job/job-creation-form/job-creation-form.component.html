@@ -93,58 +93,68 @@
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span></p-divider>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <br />
-        <div class="form-row mb-6">
-          <div class="form-field relative">
-            <!-- Toggle -->
-            <div class="absolute -top-2 right-0 flex items-center gap-2 p-2">
-              <p-toggleSwitch [(ngModel)]="aiToggleSignal" [ngModelOptions]="{ standalone: true }" />
-              <label class="text-sm" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"></label>
-            </div>
-            <jhi-editor
-              #jobDescriptionEditor
-              fieldId="jobDescription"
-              label="jobCreationForm.positionDetailsSection.jobDescription.label"
-              placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
-              helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
-              tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
-              [required]="true"
-              [characterLimit]="1500"
-              [model]="jobDescriptionSignal()"
-              [control]="basicInfoForm.get('jobDescription') ?? undefined"
-              icon="circle-info"
-              [shouldTranslate]="true"
-              [showGenderDecoderButton]="true"
-            />
+        <div class="form-row mb-6 flex flex-col gap-2">
+          <!-- Toggle row -->
+          <div class="flex items-center justify-end gap-2">
+            <jhi-toggle-switch [(model)]="aiToggleSignal" />
+            <label class="text-sm whitespace-nowrap" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"></label>
           </div>
-          @if (showAiPanel()) {
-            <div class="vertical-divider"></div>
-            <p-divider layout="vertical" styleClass="mx-4" />
-            <div class="ai-panel mt-4 max-w-[200px]">
-              <h3 class="mb-3 font-bold" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
-              <h4 class="mb-4 text-base gap-4" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"></h4>
-              <div class="flex justify-center">
-                @if (isGeneratingDraft()) {
-                  <!-- Loading Spinner -->
-                  <div class="flex flex-col items-center gap-2 mt-2">
-                    <p-progressSpinner styleClass="w-10 h-10 text-primary-default" />
-                  </div>
-                } @else {
-                  <jhi-button
-                    type="button"
-                    [label]="
-                      rewriteButtonSignal()
-                        ? 'jobCreationForm.positionDetailsSection.jobDescription.aiButton2'
-                        : 'jobCreationForm.positionDetailsSection.jobDescription.aiButton1'
-                    "
-                    [shouldTranslate]="true"
-                    severity="primary"
-                    class="w-full"
-                    (click)="generateJobApplicationDraft()"
-                  />
-                }
-              </div>
+
+          <!-- Content row -->
+          <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="showAiPanel()">
+            <!-- Editor -->
+            <div class="form-field">
+              <jhi-editor
+                #jobDescriptionEditor
+                fieldId="jobDescription"
+                label="jobCreationForm.positionDetailsSection.jobDescription.label"
+                placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
+                helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
+                tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
+                [required]="true"
+                [characterLimit]="1500"
+                [model]="jobDescriptionSignal()"
+                [control]="basicInfoForm.get('jobDescription') ?? undefined"
+                icon="circle-info"
+                [shouldTranslate]="true"
+                [showGenderDecoderButton]="true"
+              />
             </div>
-          }
+
+            @if (showAiPanel()) {
+              <!-- Divider -->
+              <p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
+
+              <!-- AI Panel -->
+              <div class="mt-0 max-w-[220px]">
+                <h3 class="mb-3 font-bold" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
+                <h4 class="mb-4 text-base gap-4" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"></h4>
+
+                <div class="flex justify-center">
+                  @if (isGeneratingDraft()) {
+                    <div class="flex items-center justify-center w-full py-2">
+                      <jhi-progress-spinner styleClass="w-10 h-10 text-primary-default" />
+                    </div>
+                  } @else {
+                    <div class="w-full flex justify-center">
+                      <jhi-button
+                        type="button"
+                        [label]="
+                          rewriteButtonSignal()
+                            ? 'jobCreationForm.positionDetailsSection.jobDescription.aiButton2'
+                            : 'jobCreationForm.positionDetailsSection.jobDescription.aiButton1'
+                        "
+                        [shouldTranslate]="true"
+                        severity="primary"
+                        class="w-auto min-w-[160px]"
+                        (click)="generateJobApplicationDraft()"
+                      />
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
         </div>
       </form>
     </div>
@@ -331,7 +341,7 @@
               <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput class="hidden" />
               <div [class]="uploadInnerClasses()">
                 @if (isUploadingImage()) {
-                  <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4" />
+                  <jhi-progress-spinner styleClass="w-12 h-12" strokeWidth="4" />
                 } @else {
                   <fa-icon [icon]="['fas', 'plus']" [size]="'3x'" class="text-primary" />
                 }
