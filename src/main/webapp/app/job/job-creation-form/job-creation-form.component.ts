@@ -28,16 +28,16 @@ import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/compo
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApiService } from 'app/generated';
+import { AccountService } from 'app/core/auth/account.service';
+import { ToastService } from 'app/service/toast-service';
+import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { JobDTO } from 'app/generated/model/jobDTO';
+import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
+import { ImageDTO } from 'app/generated/model/imageDTO';
 
-import { AccountService } from '../../core/auth/account.service';
-import { ToastService } from '../../service/toast-service';
-import * as DropdownOptions from '.././dropdown-options';
 import { JobDetailComponent } from '../job-detail/job-detail.component';
-import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
-import { JobFormDTO } from '../../generated/model/jobFormDTO';
-import { JobDTO } from '../../generated/model/jobDTO';
-import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
-import { ImageDTO } from '../../generated/model/imageDTO';
+import * as DropdownOptions from '.././dropdown-options';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -839,7 +839,7 @@ export class JobCreationFormComponent {
       // Trigger translation only if changed since last baseline
       const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
 
-      if (description.trim() && description !== lastBaseline) {
+      if (Boolean(description.trim()) && description !== lastBaseline) {
         const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
         await this.translateJobDescription(description, currentLang, targetLang);
       }
