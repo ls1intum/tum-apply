@@ -24,8 +24,8 @@ public class UserRetentionJob {
     private final UserRepository userRepository;
     private final UserRetentionService userRetentionService;
 
-    // Runs daily at 03:17 UTC
-    @Scheduled(cron = "0 17 3 * * *", zone = "UTC")
+    // Runs daily at 03:17 UTC (override with user.retention.cron)
+    @Scheduled(cron = "${user.retention.cron:0 17 3 * * *}", zone = "UTC")
     public void deleteUserData() {
         if (!Boolean.TRUE.equals(properties.getEnabled())) {
             return;
@@ -56,8 +56,10 @@ public class UserRetentionJob {
         boolean dryRun = Boolean.TRUE.equals(properties.getDryRun());
 
         long totalCandidatesSeen = 0;
+        int pageNumber = 0;
         while (Instant.now().isBefore(deadline)) {
-            Page<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForRetention(cutoff, PageRequest.of(0, batchSize));
+            PageRequest pageRequest = dryRun ? PageRequest.of(pageNumber, batchSize) : PageRequest.of(0, batchSize);
+            Page<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForRetention(cutoff, pageRequest);
             List<UUID> ids = userIds.getContent();
 
             if (ids.isEmpty()) {
@@ -67,6 +69,13 @@ public class UserRetentionJob {
             totalCandidatesSeen += ids.size();
 
             userRetentionService.processUserIdsList(ids, cutoff, dryRun);
+
+            if (dryRun) {
+                if (!userIds.hasNext()) {
+                    break;
+                }
+                pageNumber++;
+            }
         }
 
         Duration runtime = Duration.between(start, Instant.now());

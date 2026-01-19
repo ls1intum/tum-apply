@@ -18,6 +18,8 @@ public class UserRetentionProperties {
 
     private Integer maxRuntimeMinutes;
 
+    private String cron;
+
     private UUID deletedUserId;
 
     private String deletedUserEmail;
@@ -74,6 +76,14 @@ public class UserRetentionProperties {
 
     public void setMaxRuntimeMinutes(Integer maxRuntimeMinutes) {
         this.maxRuntimeMinutes = maxRuntimeMinutes;
+    }
+
+    public String getCron() {
+        return cron;
+    }
+
+    public void setCron(String cron) {
+        this.cron = cron;
     }
 
     public UUID getDeletedUserId() {
