@@ -99,7 +99,9 @@
         }
       </div>
       <!-- Character Count Display -->
-      <div [ngClass]="charCounterColor()">{{ characterCount() }}/{{ characterLimit() }}</div>
+      @if (characterLimit() !== undefined && characterLimit() !== null) {
+        <div [ngClass]="charCounterColor()">{{ characterCount() }}/{{ characterLimit() }}</div>
+      }
     </div>
   </div>
 </div>

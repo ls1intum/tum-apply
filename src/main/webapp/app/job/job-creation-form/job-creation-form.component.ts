@@ -19,6 +19,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { AiResourceApiService } from 'app/generated';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
+import { ToggleSwitchComponent } from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
+import { Language, LanguageSwitcherComponent } from 'app/shared/components/atoms/language-switcher/language-switcher.component';
 
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
@@ -34,8 +37,6 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
-
-import { Language, LanguageSwitcherComponent } from 'app/shared/components/atoms/language-switcher/language-switcher.component';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -65,6 +66,8 @@ type JobFormMode = 'create' | 'edit';
     CheckboxModule,
     ToggleSwitchModule,
     FormsModule,
+    ProgressSpinnerComponent,
+    ToggleSwitchComponent,
     LanguageSwitcherComponent,
   ],
   providers: [JobResourceApiService],
@@ -319,6 +322,27 @@ export class JobCreationFormComponent {
   // Toggle for AI assistant
   showAiPanel = computed(() => this.aiToggleSignal());
   templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
+  // Als Class Field deklarieren (neben den anderen Effects)
+  private aiToggleEffect = effect(() => {
+    const aiEnabled = this.aiToggleSignal();
+    const ctrl = this.basicInfoForm.get('jobDescription');
+    const current = (ctrl?.value ?? '') as string;
+    const template = this.templateText();
+
+    const isEmpty = !current || current.trim() === '' || current.trim() === '<p><br></p>';
+
+    // AI OFF -> set template as editable content (nur wenn leer)
+    if (!aiEnabled && isEmpty) {
+      ctrl?.setValue(template);
+      this.jobDescriptionEditor()?.forceUpdate(template);
+    }
+
+    // AI ON -> empty field to show placeholder (nur wenn template drin ist)
+    if (aiEnabled && current === template) {
+      ctrl?.setValue('');
+      this.jobDescriptionEditor()?.forceUpdate('');
+    }
+  });
 
   private autoSaveTimer: number | undefined;
   private autoSaveInitialized = false;
@@ -333,21 +357,6 @@ export class JobCreationFormComponent {
   constructor() {
     this.init();
     this.setupAutoSave();
-
-    effect(() => {
-      const aiEnabled = this.aiToggleSignal();
-      const current = this.basicInfoForm.get('jobDescription')?.value;
-      // AI-Toggle OFF -> set template as editable content
-      if (!aiEnabled && !current) {
-        this.basicInfoForm.get('jobDescription')?.setValue(this.templateText);
-        this.jobDescriptionEditor()?.forceUpdate(this.templateText());
-      }
-      // AI-Toggle ON -> empty field to show placeholder
-      if (aiEnabled && current === this.templateText) {
-        this.basicInfoForm.get('jobDescription')?.setValue('');
-        this.jobDescriptionEditor()?.forceUpdate('');
-      }
-    });
   }
 
   async publishJob(): Promise<void> {
@@ -712,7 +721,7 @@ export class JobCreationFormComponent {
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(2000)]],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
     });
   }
 
@@ -873,11 +882,6 @@ export class JobCreationFormComponent {
       if (this.isGeneratingDraft()) {
         return;
       }
-
-      this.jobDescriptionSignal.set(description);
-
-      this.clearAutoSaveTimer();
-      this.savingState.set('SAVING');
 
       this.jobDescriptionSignal.set(description);
 

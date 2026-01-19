@@ -1123,6 +1123,49 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/IntervieweeDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}:
+    get:
+      tags: [interview-resource]
+      operationId: getIntervieweeDetails
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}/assessment:
+    put:
+      tags: [interview-resource]
+      operationId: updateAssessment
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateAssessmentDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
   /api/interviews/processes/{processId}/send-invitations:
     post:
       tags: [interview-resource]
@@ -2431,6 +2474,21 @@ components:
           type: string
           enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
         user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
+    IntervieweeDetailDTO:
+      type: object
+      properties:
+        application: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+        applicationId: {type: string, format: uuid}
+        assessmentNotes: {type: string}
+        documents: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
+        id: {type: string, format: uuid}
+        lastInvited: {type: string, format: date-time}
+        rating: {type: integer, format: int32}
+        scheduledSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
+        user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
     IntervieweeUserDTO:
       type: object
       properties:
@@ -2930,6 +2988,12 @@ components:
         projects: {type: string}
         specialSkills: {type: string}
       required: [applicant, applicationId, applicationState]
+    UpdateAssessmentDTO:
+      type: object
+      properties:
+        clearRating: {type: boolean}
+        notes: {type: string}
+        rating: {type: integer, format: int32, maximum: 2, minimum: -2}
     UpdatePasswordDTO:
       type: object
       properties:

@@ -80,6 +80,7 @@ model/internalCommentUpdateDTO.ts
 model/interviewOverviewDTO.ts
 model/interviewSlotDTO.ts
 model/intervieweeDTO.ts
+model/intervieweeDetailDTO.ts
 model/intervieweeUserDTO.ts
 model/job.ts
 model/jobCardDTO.ts
@@ -124,6 +125,7 @@ model/sendInvitationsResultDTO.ts
 model/slotInput.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
+model/updateAssessmentDTO.ts
 model/updatePasswordDTO.ts
 model/updateUserNameDTO.ts
 model/uploadDocumentsRequest.ts
