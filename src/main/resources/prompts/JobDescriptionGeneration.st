@@ -30,7 +30,7 @@ INPUT TEXT:
 {jobDescription}
 
 OUTPUT FORMAT - CRITICAL:
-1. ALWAYS generate gender-neutral, non biased language from provided gender decoder
+1. ALWAYS generate gender-neutral, gender-inclusive language from provided gender decoder
 2. AGG-compliant
 3. Do not explain your reasoning or mention guidelines
 4. Match requirements to position level, don't overload

@@ -34,11 +34,27 @@ public class AiService {
      * @return The generated job posting content
      */
     public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO) {
-        return chatClient
+        var userSpec = chatClient
             .prompt()
-            .user(u -> u.text(jobGenerationResource).param("jobDescription", jobFormDTO.jobDescription()))
-            .call()
-            .entity(AIJobDescriptionDTO.class);
+            .user(u -> {
+                u.text(jobGenerationResource);
+                u.param("jobDescription", jobFormDTO.jobDescription());
+                //optional metadata
+                if (jobFormDTO.title() != null) {
+                    u.param("title", jobFormDTO.title());
+                }
+                if (jobFormDTO.researchArea() != null) {
+                    u.param("researchArea", jobFormDTO.researchArea());
+                }
+                if (jobFormDTO.fieldOfStudies() != null) {
+                    u.param("fieldOfStudies", jobFormDTO.fieldOfStudies());
+                }
+                if (jobFormDTO.location() != null) {
+                    u.param("location", jobFormDTO.location());
+                }
+            });
+
+        return userSpec.call().entity(AIJobDescriptionDTO.class);
     }
 
     /**
