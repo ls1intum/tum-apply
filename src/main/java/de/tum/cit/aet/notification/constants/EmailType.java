@@ -55,7 +55,24 @@ public enum EmailType {
      * When a research group request is approved
      * To: Research group owner (professor)
      */
-    RESEARCH_GROUP_APPROVED("RESEARCH_GROUP_APPROVED", Set.of(UserRole.PROFESSOR), true, false);
+    RESEARCH_GROUP_APPROVED("RESEARCH_GROUP_APPROVED", Set.of(UserRole.PROFESSOR), true, false),
+    /**
+     * Confirmation when applicant books their own interview slot
+     * To: Applicant who booked the slot
+     */
+    INTERVIEW_BOOKED_APPLICANT("INTERVIEW_BOOKED_APPLICANT", Set.of(UserRole.APPLICANT), false, false),
+
+    /**
+     * Notification to professor when applicant books an interview slot
+     * To: Supervising professor of the job
+     */
+    INTERVIEW_BOOKED_PROFESSOR("INTERVIEW_BOOKED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
+
+    /**
+     * Invitation to self-schedule an interview slot
+     * To: Applicant
+     */
+    INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true, false);
 
     private final String value;
 

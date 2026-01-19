@@ -39,6 +39,20 @@ public final class UserTestData {
         return u;
     }
 
+    /** Unsaved employee with defaults. */
+    public static User newEmployee(ResearchGroup rg) {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setFirstName("Bob");
+        u.setLastName("Spencer");
+        u.setEmail("bob.spencer@example.com");
+        u.setSelectedLanguage("en");
+        u.setResearchGroup(rg);
+        u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        attachEmployeeRole(u, rg);
+        return u;
+    }
+
     /** Unsaved user; all fields optional (null = keep default). */
     public static User newUserAll(UUID userId, String email, String firstName, String lastName) {
         User u = newUser();
@@ -96,6 +110,10 @@ public final class UserTestData {
 
     public static User savedProfessor(UserRepository repo, ResearchGroup rg) {
         return repo.save(newProfessor(rg));
+    }
+
+    public static User savedEmployee(UserRepository repo, ResearchGroup rg) {
+        return repo.save(newEmployee(rg));
     }
 
     public static User savedProfessorAll(
@@ -187,6 +205,16 @@ public final class UserTestData {
         link.setUser(user);
         link.setResearchGroup(rg);
         link.setRole(UserRole.PROFESSOR);
+
+        user.getResearchGroupRoles().add(link);
+        rg.getUserRoles().add(link);
+    }
+
+    private static void attachEmployeeRole(User user, ResearchGroup rg) {
+        UserResearchGroupRole link = new UserResearchGroupRole();
+        link.setUser(user);
+        link.setResearchGroup(rg);
+        link.setRole(UserRole.EMPLOYEE);
 
         user.getResearchGroupRoles().add(link);
         rg.getUserRoles().add(link);

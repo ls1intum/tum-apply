@@ -52,6 +52,7 @@
       "slotsCountPlural": "slots",
       "showMoreSingular": "more slot",
       "showMorePlural": "more slots",
+      "showLess": "Show less",
       "error": {
         "loadFailed": {
           "summary": "Failed to load interview slots",
@@ -171,7 +172,14 @@
       "title": "Interviewees",
       "add": "Add Applicant",
       "addTitle": "Add Applicant",
-      "sendInvitations": "Send invitation",
+      "sendInvitation": "Send Invitation",
+      "resendInvitation": "Resend Invitation",
+      "resendConfirmation": {
+        "header": "Resend Invitation",
+        "message": "This applicant has already been invited. Do you want to send the invitation email again?"
+      },
+      "sendAllInvitations": "Send Invitations",
+      "allInvited": "All applicants have been invited",
       "empty": "No interviewees yet",
       "emptyHint": "Click \"Add Applicant\" to get started",
       "searchPlaceholder": "Search by name or email...",
@@ -214,6 +222,24 @@
         "addFailed": {
           "summary": "Error",
           "detail": "Failed to add applicants"
+        }
+      },
+      "invitation": {
+        "successSingle": {
+          "summary": "Invitation Sent",
+          "detail": "Invitation successfully sent"
+        },
+        "success": {
+          "summary": "Invitation Sent",
+          "detail": "{{count}} invitation(s) sent successfully"
+        },
+        "partial": {
+          "summary": "{{sent}} sent, {{failed}} failed",
+          "detail": "Failed: {{emails}}. Please try sending the invitations again."
+        },
+        "error": {
+          "summary": "Send Failed",
+          "detail": "Failed to send invitation. Please try again or contact an admin."
         }
       }
     },

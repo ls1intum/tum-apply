@@ -1,33 +1,39 @@
 import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CommonModule, Location } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
-import { DividerModule } from 'primeng/divider';
-import { CheckboxModule } from 'primeng/checkbox';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { AccountService } from 'app/core/auth/account.service';
-import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
-import { TranslateDirective } from 'app/shared/language';
-import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
-import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { Language, LanguageSwitcherComponent } from 'app/shared/components/atoms/language-switcher/language-switcher.component';
-import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
-import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
-import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
-import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import { ToastService } from 'app/service/toast-service';
-import { AiResourceApiService, ImageDTO, ImageResourceApiService, JobDTO, JobFormDTO, JobResourceApiService } from 'app/generated';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { TranslateDirective } from 'app/shared/language';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { DividerModule } from 'primeng/divider';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { CheckboxModule } from 'primeng/checkbox';
+import { AiResourceApiService } from 'app/generated';
 
-import { JobDetailComponent } from '../job-detail/job-detail.component';
+import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
+import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
+import { AccountService } from '../../core/auth/account.service';
 import * as DropdownOptions from '.././dropdown-options';
+import { SelectComponent } from '../../shared/components/atoms/select/select.component';
+import { NumberInputComponent } from '../../shared/components/atoms/number-input/number-input.component';
+import { EditorComponent } from '../../shared/components/atoms/editor/editor.component';
+import { ToastService } from '../../service/toast-service';
+import { JobDetailComponent } from '../job-detail/job-detail.component';
+import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
+import { JobFormDTO } from '../../generated/model/jobFormDTO';
+import { JobDTO } from '../../generated/model/jobDTO';
+import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
+import { ImageDTO } from '../../generated/model/imageDTO';
+
+import { Language, LanguageSwitcherComponent } from 'app/shared/components/atoms/language-switcher/language-switcher.component';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -647,9 +653,9 @@ export class JobCreationFormComponent {
     const request: JobFormDTO = {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value.value ?? '',
+      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
       supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.get('location')?.value.value as JobFormDTO.LocationEnum,
+      location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
       jobDescription: current ?? '',
       state: JobFormDTO.StateEnum.Draft,
     };
@@ -679,7 +685,7 @@ export class JobCreationFormComponent {
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1000)]],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
     });
   }
 
@@ -783,6 +789,7 @@ export class JobCreationFormComponent {
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: job?.jobDescription ?? '',
     });
+    this.jobDescriptionSignal.set(job?.jobDescription ?? '');
 
     if (Boolean(job?.jobDescriptionEN)) {
       this.jobDescriptionEN.set(job?.jobDescriptionEN ?? '');

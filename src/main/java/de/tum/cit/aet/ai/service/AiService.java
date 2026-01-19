@@ -1,43 +1,28 @@
 package de.tum.cit.aet.ai.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.tum.cit.aet.ai.exception.AiPromptException;
-import de.tum.cit.aet.ai.exception.AiResponseException;
-import de.tum.cit.aet.job.dto.AiResponseDTO;
+import de.tum.cit.aet.ai.dto.AIJobDescriptionDTO;
+import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @Slf4j
 public class AiService {
 
+    @Value("classpath:prompts/JobDescriptionGeneration.st")
+    private Resource jobGenerationResource;
+
+    @Value("classpath:prompts/TranslateText.st")
+    private Resource translationResource;
+
     private final ChatClient chatClient;
-    private final ObjectMapper objectMapper;
-    private final String jobDescriptionGenerationPrompt;
 
-    public AiService(
-        ChatClient chatClient,
-        ObjectMapper objectMapper,
-        @Value("classpath:prompts/JobDescriptionGeneration.txt") Resource promptResource
-    ) {
-        this.chatClient = chatClient;
-        this.objectMapper = objectMapper;
-
-        try (InputStream inputStream = promptResource.getInputStream()) {
-            this.jobDescriptionGenerationPrompt = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new AiPromptException(e);
-        }
+    public AiService(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder.build();
     }
 
     /**
@@ -48,38 +33,27 @@ public class AiService {
      * @param jobFormDTO the job form data containing description, requirements, and tasks
      * @return The generated job posting content
      */
-
-    public AiResponseDTO generateJobApplicationDraft(@RequestBody JobFormDTO jobFormDTO) {
-        String prompt = jobDescriptionGenerationPrompt.formatted(jobFormDTO.jobDescription());
-        String raw = chatClient.prompt().user(prompt).call().content();
-        String cleanedJSON = cleanupJSON(raw);
-        try {
-            return objectMapper.readValue(cleanedJSON, AiResponseDTO.class);
-        } catch (JsonProcessingException e) {
-            throw new AiResponseException(e);
-        }
+    public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO) {
+        return chatClient
+            .prompt()
+            .user(u -> u.text(jobGenerationResource).param("jobDescription", jobFormDTO.jobDescription()))
+            .call()
+            .entity(AIJobDescriptionDTO.class);
     }
 
     /**
-     * Sanitizes raw AI output and extracts the substring between the first '{' and the last '}'
+     * Translates the provided text between German and English.
+     * Automatically detects the source language and translates to the other language.
+     * The translation preserves the original text structure and formatting.
      *
-     * @param aiResponse the raw response from the ChatClient
-     * @return cleaned JSON string or "{}" if input is null or empty
+     * @param text the text to translate (German or English)
+     * @return The translated text response with detected and target language info
      */
-
-    private String cleanupJSON(String aiResponse) {
-        if (aiResponse == null) return "{}";
-        // removes markdown code fences
-        String result = aiResponse.replace("```json", "").replace("```", "").trim();
-
-        result = result.replace(", }", "}").replace(",}", "}").replace(", ]", "]").replace(",]", "]");
-
-        int start = result.indexOf('{');
-        int end = result.lastIndexOf('}');
-
-        if (start >= 0 && end > start) {
-            result = result.substring(start, end + 1);
-        }
-        return result;
+    public AIJobDescriptionTranslationDTO translateText(String text) {
+        return chatClient
+            .prompt()
+            .user(u -> u.text(translationResource).param("text", text))
+            .call()
+            .entity(AIJobDescriptionTranslationDTO.class);
     }
 }
