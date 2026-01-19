@@ -3,6 +3,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.firstName'"
         id="firstName"
         [(model)]="data().firstName"
@@ -12,6 +13,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.lastName'"
         id="lastName"
         [(model)]="data().lastName"
@@ -24,6 +26,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.email'"
         [disabled]="disabledEmail()"
         id="email"
@@ -34,6 +37,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.phoneNumber'"
         id="phoneNumber"
         [(model)]="data().phoneNumber"
@@ -76,6 +80,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.website'"
         id="website"
         [(model)]="data().website"
@@ -85,6 +90,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.linkedIn'"
         id="linkedIn"
         [(model)]="data().linkedIn"
@@ -115,6 +121,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.street'"
         id="street"
         [(model)]="data().street"
@@ -127,6 +134,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.city'"
         id="city"
         [(model)]="data().city"
@@ -161,7 +169,7 @@
     </div>
   </div>
 
-  <div class="form-actions">
+  <div class="flex justify-end gap-4 mt-6">
     <jhi-button
       [label]="'entity.action.cancel'"
       variant="outlined"
