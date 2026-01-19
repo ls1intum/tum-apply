@@ -6,13 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Language, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-
 import { TooltipModule } from 'primeng/tooltip';
 import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-
 import { TranslateDirective } from 'app/shared/language';
 import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -26,24 +24,20 @@ import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-s
 import { ToggleSwitchComponent } from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
-import { SegmentedToggleValue, SegmentedToggleComponent } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
-
+import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { AiResourceApiService } from 'app/generated';
 
 import { AccountService } from '../../core/auth/account.service';
 import { ToastService } from '../../service/toast-service';
 import * as DropdownOptions from '.././dropdown-options';
-
 import { JobDetailComponent } from '../job-detail/job-detail.component';
-
 import { JobResourceApiService } from '../../generated/api/jobResourceApi.service';
 import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
-
-import { AiResourceApiService } from 'app/generated';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -653,8 +647,8 @@ export class JobCreationFormComponent {
       supervisingProfessor: this.userId(),
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
-      jobDescriptionEN: jobDescriptionEN || undefined,
-      jobDescriptionDE: jobDescriptionDE || undefined,
+      jobDescriptionEN: jobDescriptionEN ?? undefined,
+      jobDescriptionDE: jobDescriptionDE ?? undefined,
 
       startDate: positionDetailsValue.startDate ?? '',
       endDate: positionDetailsValue.applicationDeadline ?? '',
