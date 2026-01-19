@@ -3,8 +3,8 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/ai/generate:
-    post:
+  /api/ai/generateJobDescription:
+    put:
       tags: [ai-resource]
       operationId: generateJobApplicationDraft
       requestBody:
@@ -17,7 +17,22 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/AiResponseDTO'}
+              schema: {$ref: '#/components/schemas/AIJobDescriptionDTO'}
+  /api/ai/translateJobDescription:
+    put:
+      tags: [ai-resource]
+      operationId: translateText
+      requestBody:
+        content:
+          application/json:
+            schema: {type: string}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -1881,6 +1896,14 @@ paths:
         '200': {description: OK}
 components:
   schemas:
+    AIJobDescriptionDTO:
+      type: object
+      properties:
+        jobDescription: {type: string}
+    AIJobDescriptionTranslationDTO:
+      type: object
+      properties:
+        translatedText: {type: string}
     AcceptDTO:
       type: object
       properties:
@@ -1903,10 +1926,6 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
-    AiResponseDTO:
-      type: object
-      properties:
-        jobDescription: {type: string}
     Applicant:
       type: object
       properties:
