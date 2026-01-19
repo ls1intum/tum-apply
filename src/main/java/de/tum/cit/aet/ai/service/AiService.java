@@ -33,10 +33,12 @@ public class AiService {
      * @param jobFormDTO the job form data containing description, requirements, and tasks
      * @return The generated job posting content
      */
-    public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO) {
+    public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO, String descriptionLanguage) {
+        String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
+
         return chatClient
             .prompt()
-            .user(u -> u.text(jobGenerationResource).param("jobDescription", jobFormDTO.jobDescription()))
+            .user(u -> u.text(jobGenerationResource).param("jobDescription", input))
             .call()
             .entity(AIJobDescriptionDTO.class);
     }

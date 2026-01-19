@@ -35,9 +35,12 @@ public class AiResource {
      */
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "generateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AIJobDescriptionDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
-        log.info("PUT /api/ai/generateJobDescription - Request received");
-        return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
+    public ResponseEntity<AIJobDescriptionDTO> generateJobApplicationDraft(
+        @RequestBody JobFormDTO jobForm,
+        @RequestParam("lang") String descriptionLanguage
+    ) {
+        log.info("PUT /api/ai/generateJobDescription - Request received (lang={})", descriptionLanguage);
+        return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm, descriptionLanguage));
     }
 
     /**
