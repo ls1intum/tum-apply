@@ -197,9 +197,8 @@ export class PersonalInformationSettingsComponent {
       };
 
       this.data.set(personalInfo);
-    } catch (error) {
+    } catch {
       this.toastService.showErrorKey('settings.personalInformation.loadFailed');
-      console.error('Failed to load personal information:', error);
     }
   }
 
@@ -224,7 +223,6 @@ export class PersonalInformationSettingsComponent {
       const loadedUser = this.accountService.loadedUser();
       if (loadedUser?.id == null) {
         this.toastService.showErrorKey('settings.personalInformation.saveFailed');
-        console.error('Cannot save personal information: loaded user or user ID is missing.');
         return;
       }
 
@@ -263,9 +261,8 @@ export class PersonalInformationSettingsComponent {
       await firstValueFrom(this.applicationResourceService.updateApplicantProfile(applicantDTO));
       this.toastService.showSuccessKey('settings.personalInformation.saved');
       this.hasChanges.set(false);
-    } catch (error) {
+    } catch {
       this.toastService.showErrorKey('settings.personalInformation.saveFailed');
-      console.error('Failed to save personal information:', error);
     }
   }
 

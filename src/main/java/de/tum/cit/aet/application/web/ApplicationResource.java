@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,8 +42,8 @@ public class ApplicationResource {
      */
     @ApplicantOrAdmin
     @GetMapping("/profile")
-    public ResponseEntity<de.tum.cit.aet.usermanagement.dto.ApplicantDTO> getApplicantProfile() {
-        de.tum.cit.aet.usermanagement.dto.ApplicantDTO profile = applicationService.getApplicantProfile();
+    public ResponseEntity<ApplicantDTO> getApplicantProfile() {
+        ApplicantDTO profile = applicationService.getApplicantProfile();
         return ResponseEntity.ok(profile);
     }
 
@@ -54,10 +55,8 @@ public class ApplicationResource {
      */
     @ApplicantOrAdmin
     @PutMapping("/profile")
-    public ResponseEntity<de.tum.cit.aet.usermanagement.dto.ApplicantDTO> updateApplicantProfile(
-        @Valid @RequestBody de.tum.cit.aet.usermanagement.dto.ApplicantDTO applicantDTO
-    ) {
-        de.tum.cit.aet.usermanagement.dto.ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
+    public ResponseEntity<ApplicantDTO> updateApplicantProfile(@Valid @RequestBody ApplicantDTO applicantDTO) {
+        ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
         return ResponseEntity.ok(updatedProfile);
     }
 

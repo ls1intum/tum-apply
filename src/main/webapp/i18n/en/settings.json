@@ -14,7 +14,7 @@
         "detail": "Failed to load personal information. Please try again."
       },
       "saved": {
-        "summary": "Saved",
+        "summary": "Successfully saved",
         "detail": "Personal information saved successfully. Changes will be applied to your next application."
       },
       "saveFailed": {
