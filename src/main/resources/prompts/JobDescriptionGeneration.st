@@ -64,9 +64,6 @@ OUTPUT
 5. Use <br> for spacing between sections
 
 You MUST return ONLY a valid JSON object with exactly this structure:
-{
-  "jobDescription": "<p><strong>Description</strong></p>\n<p>Your description text here...
-  </p>\n<br>\n<p><strong>Tasks & Responsibilities</strong></p>\n<p>Your tasks text here...
-  </p>\n<br>\n<p><strong>Eligibility Criteria</strong></p>\n<p>Your criteria text here...</p>"
-}
-""";
+\{
+  "jobDescription": "<p><strong>Description</strong></p>\n<p>Your description text here...</p>\n<br>\n<p><strong>Tasks & Responsibilities</strong></p>\n<p>Your tasks text here...</p>\n<br>\n<p><strong>Eligibility Criteria</strong></p>\n<p>Your criteria text here...</p>"
+\}
