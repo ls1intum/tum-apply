@@ -7,14 +7,14 @@
       },
       "steps": {
         "basicInfo": "Basic Information",
-        "positionDetails": "Position Details",
+        "positionDetails": "Employment Terms",
         "imageSelection": "Job Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
       },
       "basicInfo": {
         "section1": "Overview",
-        "section2": "Employment Terms"
+        "section2": "Position Details"
       }
     },
     "basicInformationSection": {
@@ -127,13 +127,16 @@
       "description": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
       "jobDescription": {
         "label": "Job Description",
-        "placeholder": "Describe the scope, tasks, and requirements of the position...",
-        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. List the main tasks and responsibilities. Specify the minimum requirements (e.g., degree, grades, language skills).",
+        "placeholder": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
+        "descriptionHelper": "Use the template above to structure your job description clearly for applicants.",
         "toolTipText": "Help applicants understand the research focus, tasks, and expected qualifications.",
-        "aiHeaderText": "Let AI Rewrite It",
-        "aiButton": "Write With AI",
-        "aiHelperText": "AI Assistant can draft a job post that avoids harmful language",
-        "aiConsentText": "I consent to the AI using my current job data (title, research area, etc.) to generate a text draft."
+        "template": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
+        "aiHeaderText": "AI Assistant",
+        "aiButton1": "Write With AI",
+        "aiButton2": "Rewrite With AI",
+        "aiHelperText": "Improve wording and reduce biased language.",
+        "aiFillerText": "Generating...",
+        "aiToggle": "Enable AI"
       }
     },
     "imageSection": {
