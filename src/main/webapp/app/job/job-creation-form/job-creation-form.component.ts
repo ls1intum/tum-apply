@@ -17,6 +17,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
 import { AiResourceApiService } from 'app/generated';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { FormsModule } from '@angular/forms';
 
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
@@ -32,8 +34,6 @@ import { JobFormDTO } from '../../generated/model/jobFormDTO';
 import { JobDTO } from '../../generated/model/jobDTO';
 import { ImageResourceApiService } from '../../generated/api/imageResourceApi.service';
 import { ImageDTO } from '../../generated/model/imageDTO';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { FormsModule } from '@angular/forms';
 
 type JobFormMode = 'create' | 'edit';
 
@@ -567,14 +567,15 @@ export class JobCreationFormComponent {
    * Updates both the form control and Quill editor in real-time.
    */
   async generateJobApplicationDraft(): Promise<void> {
-
     const current = this.basicInfoForm.get('jobDescription');
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
     // Loading state
     const originalContent = current?.value;
-    this.jobDescriptionEditor()?.forceUpdate('<p><em>' + this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') + '</em></p>');
+    this.jobDescriptionEditor()?.forceUpdate(
+      `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
+    );
 
     try {
       // Call server with relevant metadata
@@ -715,6 +716,7 @@ export class JobCreationFormComponent {
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: job?.jobDescription ?? '',
     });
+    this.jobDescriptionSignal.set(job?.jobDescription ?? '');
 
     this.positionDetailsForm.patchValue({
       startDate: job?.startDate ?? '',

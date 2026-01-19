@@ -20,9 +20,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PDFExportService {
@@ -152,7 +154,9 @@ public class PDFExportService {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.debug("User not needed to see job status in PDF export as it's always published for them.");
+        }
 
         // Overview Section
         addJobOverview(
@@ -235,7 +239,7 @@ public class PDFExportService {
             ResearchGroup group = currentUserService.getResearchGroupIfProfessor();
             addResearchGroupSection(builder, group, labels);
         } catch (AccessDeniedException ignored) {
-            // no research group → nothing added
+            log.debug("Nothing is added if there is no research group information.");
         }
 
         return builder.build();
@@ -365,7 +369,7 @@ public class PDFExportService {
         return (value != null && !value.isEmpty()) ? value : "-";
     }
 
-    private String formatDate(Object date) {
+    String formatDate(Object date) {
         if (date == null) {
             return "-";
         }

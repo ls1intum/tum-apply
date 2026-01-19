@@ -9,9 +9,21 @@
       <column name="job_description" type="TEXT"/>
     </addColumn>
 
-    <sql dbms="postgresql">
+    <sql dbms="mysql">
       UPDATE jobs
-      SET job_description = CONCAT_WS(E'\n\n', COALESCE(description, ''), COALESCE(tasks, ''), COALESCE(requirements, ''))
+      SET job_description =
+            CONCAT(
+              COALESCE(description, ''),
+              CASE
+                WHEN description IS NOT NULL AND description &lt;&gt; ''
+                  AND ((tasks IS NOT NULL AND tasks &lt;&gt; '') OR (requirements IS NOT NULL AND requirements &lt;&gt; ''))
+                  THEN '\n\n' ELSE '' END,
+              COALESCE(tasks, ''),
+              CASE
+                WHEN tasks IS NOT NULL AND tasks &lt;&gt; '' AND requirements IS NOT NULL AND requirements &lt;&gt; ''
+                  THEN '\n\n' ELSE '' END,
+              COALESCE(requirements, '')
+            )
       WHERE description IS NOT NULL OR tasks IS NOT NULL OR requirements IS NOT NULL;
     </sql>
 

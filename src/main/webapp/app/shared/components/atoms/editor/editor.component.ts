@@ -42,7 +42,7 @@ export class EditorComponent extends BaseInputDirective<string> {
   showGenderDecoderButton = input<boolean>(false);
   genderDecoderClick = output<string>();
   openAnalysisDialog = output<GenderBiasAnalysisResponse>();
-  quillEditorComponent= viewChild(QuillEditorComponent);
+  quillEditorComponent = viewChild(QuillEditorComponent);
 
   readonly genderBiasService = inject(GenderBiasAnalysisService);
   readonly translateService = inject(TranslateService);
@@ -112,7 +112,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     return this.translateService.instant(key);
   });
 
-  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
+  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.getCurrentLang() });
 
   private htmlValue = signal('');
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions

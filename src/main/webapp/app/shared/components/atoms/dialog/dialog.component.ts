@@ -30,10 +30,11 @@ export class DialogComponent {
   visibleChange = output<boolean>();
 
   mergedStyle = computed(() => {
-    const baseStyle = {
+    const baseStyle: Record<string, string> = {
       width: this.width(),
       maxWidth: this.maxWidth(),
       height: this.height(),
+      background: 'var(--p-background-default)',
     };
     return Object.assign({}, baseStyle, this.style());
   });
