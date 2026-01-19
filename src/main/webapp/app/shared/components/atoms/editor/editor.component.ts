@@ -112,7 +112,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     return this.translateService.instant(key);
   });
 
-  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.currentLang });
+  protected currentLang = toSignal(this.translate.onLangChange.pipe(map(e => e.lang)), { initialValue: this.translate.getCurrentLang() });
 
   private htmlValue = signal('');
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
