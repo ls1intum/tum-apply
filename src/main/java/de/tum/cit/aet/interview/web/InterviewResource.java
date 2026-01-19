@@ -12,6 +12,10 @@ import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDTO;
+import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
+import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
+import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -80,7 +84,7 @@ public class InterviewResource {
      * Accessible only to users with the {@code PROFESSOR} role.
      *
      * @param processId the ID of the interview process to which the slots belong
-     * @param dto       the slot definitions sent from the frontend
+     * @param dto       the slot definitions sent from client
      * @return a {@link ResponseEntity} with status {@code 201 (Created)} containing
      *         the created {@link InterviewSlotDTO}s
      */
@@ -209,6 +213,56 @@ public class InterviewResource {
     }
 
     /**
+     * {@code GET
+     * /api/interviews/processes/{processId}/interviewees/{intervieweeId}} :
+     * Get detailed information for a single interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         {@link IntervieweeDetailDTO}
+     *
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/processes/{processId}/interviewees/{intervieweeId}")
+    public ResponseEntity<IntervieweeDetailDTO> getIntervieweeDetails(@PathVariable UUID processId, @PathVariable UUID intervieweeId) {
+        log.info("REST request to get interviewee details: {} in process: {}", intervieweeId, processId);
+        IntervieweeDetailDTO details = interviewService.getIntervieweeDetails(processId, intervieweeId);
+        log.info("Returning details for interviewee: {}", intervieweeId);
+        return ResponseEntity.ok(details);
+    }
+
+    /**
+     * {@code PUT
+     * /api/interviews/processes/{processId}/interviewees/{intervieweeId}/assessment}
+     * Update the assessment (rating and/or notes) for an interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @param dto           the update data containing rating and/or notes
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     *         updated {@link IntervieweeDetailDTO}
+     *
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws BadRequestException     if neither rating nor notes is provided
+     */
+    @ProfessorOrEmployee
+    @PutMapping("/processes/{processId}/interviewees/{intervieweeId}/assessment")
+    public ResponseEntity<IntervieweeDetailDTO> updateAssessment(
+        @PathVariable UUID processId,
+        @PathVariable UUID intervieweeId,
+        @Valid @RequestBody UpdateAssessmentDTO dto
+    ) {
+        log.info("REST request to update assessment for interviewee: {} in process: {}", intervieweeId, processId);
+        IntervieweeDetailDTO updated = interviewService.updateAssessment(processId, intervieweeId, dto);
+        log.info("Successfully updated assessment for interviewee: {}", intervieweeId);
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
      * {@code POST /api/interviews/slots/{slotId}/assign} : Assign an interviewee to
      * a slot.
      *
@@ -231,6 +285,31 @@ public class InterviewResource {
         log.info("REST request to assign slot {} to application {}", slotId, dto.applicationId());
         InterviewSlotDTO result = interviewService.assignSlotToInterviewee(slotId, dto.applicationId());
         log.info("Successfully assigned slot {} to interviewee", slotId);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * {@code POST /api/interviews/processes/{processId}/send-invitations} : Send
+     * self-scheduling invitations.
+     *
+     * Triggers email sending for applicants in the interview process.
+     * Can filter to send only to those not yet invited.
+     *
+     * @param processId the ID of the interview process
+     * @param dto       options for sending invitations
+     * @return summary of sent emails and failures
+     * @throws EntityNotFoundException if the process is not found
+     * @throws AccessDeniedException   if user has no job access
+     */
+    @ProfessorOrEmployee
+    @PostMapping("/processes/{processId}/send-invitations")
+    public ResponseEntity<SendInvitationsResultDTO> sendInvitations(
+        @PathVariable UUID processId,
+        @RequestBody SendInvitationsRequestDTO dto
+    ) {
+        log.info("REST request to send invitations for process: {}", processId);
+        SendInvitationsResultDTO result = interviewService.sendSelfSchedulingInvitations(processId, dto);
+        log.info("Sent {} invitations for process: {}", result.sentCount(), processId);
         return ResponseEntity.ok(result);
     }
 }

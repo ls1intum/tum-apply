@@ -169,9 +169,7 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getDescription(),
-            job.getTasks(),
-            job.getRequirements(),
+            job.getJobDescription(),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null
@@ -209,9 +207,7 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getDescription(),
-            job.getTasks(),
-            job.getRequirements(),
+            job.getJobDescription(),
             job.getStartDate(),
             job.getEndDate(),
             job.getCreatedAt(),
@@ -342,9 +338,7 @@ public class JobService {
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
-        job.setDescription(dto.description());
-        job.setTasks(dto.tasks());
-        job.setRequirements(dto.requirements());
+        job.setJobDescription(dto.jobDescription());
         job.setState(dto.state());
 
         // Handle image update (replace old image if changed)

@@ -172,7 +172,14 @@
       "title": "Bewerber:innen",
       "add": "Bewerber:in hinzufügen",
       "addTitle": "Bewerber:in hinzufügen",
-      "sendInvitations": "Einladung senden",
+      "sendInvitation": "Einladung senden",
+      "resendInvitation": "Einladung erneut senden",
+      "resendConfirmation": {
+        "header": "Einladung erneut senden",
+        "message": "Diese:r Bewerber:in hat bereits eine Einladung erhalten. Möchtest du sie erneut senden?"
+      },
+      "sendAllInvitations": "Einladungen senden",
+      "allInvited": "Alle Bewerber:innen wurden eingeladen",
       "empty": "Noch keine Bewerber:innen hinzugefügt",
       "emptyHint": "Klicke auf \"Bewerber:in hinzufügen\", um zu starten",
       "searchPlaceholder": "Nach Name oder E-Mail suchen...",
@@ -216,6 +223,24 @@
           "summary": "Fehler",
           "detail": "Bewerber:innen konnten nicht hinzugefügt werden"
         }
+      },
+      "invitation": {
+        "successSingle": {
+          "summary": "Einladung gesendet",
+          "detail": "Die Einladung wurde erfolgreich gesendet"
+        },
+        "success": {
+          "summary": "Einladung gesendet",
+          "detail": "{{count}} Einladung(en) erfolgreich gesendet"
+        },
+        "partial": {
+          "summary": "{{sent}} gesendet, {{failed}} fehlgeschlagen",
+          "detail": "Fehlgeschlagen: {{emails}}. Bitte versuche erneut, die Einladungen zu senden."
+        },
+        "error": {
+          "summary": "Senden fehlgeschlagen",
+          "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        }
       }
     },
     "assign": {
@@ -240,6 +265,36 @@
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
           "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+        }
+      }
+    },
+    "assessment": {
+      "title": "Interview Bewertung",
+      "back": "Zurück zur Übersicht",
+      "rating": {
+        "label": "Bewertung",
+        "info": "Bewerte das Gespräch. Dies ist für Bewerber:innen nicht sichtbar."
+      },
+      "notes": {
+        "label": "Interview Notiz",
+        "empty": "Noch keine Notizen hinzugefügt.",
+        "saved": {
+          "summary": "Gespeichert",
+          "detail": "Die Interview Notiz wurde erfolgreich gespeichert."
+        }
+      },
+      "error": {
+        "saveFailed": {
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Bewertung konnte nicht gespeichert werden. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bewerber:in konnte nicht geladen werden. Bitte lade die Seite neu."
+        },
+        "notFound": {
+          "summary": "Nicht gefunden",
+          "detail": "Diese:r Bewerber:in existiert nicht oder wurde entfernt."
         }
       }
     }

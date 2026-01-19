@@ -2,6 +2,7 @@ package de.tum.cit.aet.interview.domain;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ import lombok.Setter;
 
 /**
  * Entity representing an applicant who has been added to an interview process.
- * Links an Application to an InterviewProcess and tracks interview related state.
+ * Links an Application to an InterviewProcess and tracks interview related
+ * state.
  */
 @Entity
 @Table(
@@ -51,6 +53,22 @@ public class Interviewee extends AbstractAuditingEntity {
     private Long version;
 
     /**
+     * Assessment rating (POOR to EXCELLENT).
+     * Maps to Likert scale integers -2 to 2 in the database.
+     * Null if not yet assessed.
+     */
+    @Column(name = "rating")
+    @Convert(converter = AssessmentRatingConverter.class)
+    private AssessmentRating rating;
+
+    /**
+     * Professor's evaluation notes for this interviewee.
+     * Null if no notes have been entered.
+     */
+    @Column(name = "assessment_notes", columnDefinition = "TEXT")
+    private String assessmentNotes;
+
+    /**
      * Gets the currently scheduled interview slot.
      * Currently only one slot per interviewee is supported.
      *
@@ -67,5 +85,19 @@ public class Interviewee extends AbstractAuditingEntity {
      */
     public boolean hasSlot() {
         return !slots.isEmpty();
+    }
+
+    @Converter
+    public static class AssessmentRatingConverter implements AttributeConverter<AssessmentRating, Integer> {
+
+        @Override
+        public Integer convertToDatabaseColumn(AssessmentRating attribute) {
+            return attribute == null ? null : attribute.getValue();
+        }
+
+        @Override
+        public AssessmentRating convertToEntityAttribute(Integer dbData) {
+            return AssessmentRating.fromValue(dbData);
+        }
     }
 }

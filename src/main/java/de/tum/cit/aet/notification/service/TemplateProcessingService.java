@@ -5,6 +5,7 @@ import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.exception.TemplateProcessingException;
 import de.tum.cit.aet.core.util.HtmlSanitizer;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.constants.TemplateVariable;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
@@ -171,7 +172,10 @@ public class TemplateProcessingService {
             case ResearchGroup researchGroup -> addResearchGroupData(dataModel, researchGroup);
             case InterviewSlot slot -> addInterviewSlotData(dataModel, slot);
             case ResearchGroupEmailContext ctx -> addResearchGroupContextData(dataModel, ctx);
-            default -> throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
+            case Interviewee interviewee -> addIntervieweeData(dataModel, interviewee);
+            default -> {
+                throw new TemplateProcessingException("Unsupported content type: " + content.getClass().getName());
+            }
         }
         return dataModel;
     }
@@ -239,6 +243,22 @@ public class TemplateProcessingService {
     private void addResearchGroupContextData(Map<String, Object> dataModel, ResearchGroupEmailContext context) {
         addUserData(dataModel, context.user());
         addResearchGroupData(dataModel, context.researchGroup());
+    }
+
+    /**
+     * Adds interviewee-related variables to the template data model.
+     * Including the self-scheduling booking link.
+     *
+     * @param dataModel   the data model map
+     * @param interviewee the interviewee object
+     */
+    private void addIntervieweeData(Map<String, Object> dataModel, Interviewee interviewee) {
+        // Reuse application data (name, etc.)
+        addApplicationData(dataModel, interviewee.getApplication());
+
+        // Add booking link: {clientUrl}/interview-booking/{processId}
+        String bookingLink = url + "/interview-booking/" + interviewee.getInterviewProcess().getId();
+        dataModel.put(TemplateVariable.BOOKING_LINK.getValue(), bookingLink);
     }
 
     /**

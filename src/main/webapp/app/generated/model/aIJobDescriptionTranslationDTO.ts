@@ -9,7 +9,7 @@
  */
 
 
-export interface AiResponseDTO { 
-    jobDescription?: string;
+export interface AIJobDescriptionTranslationDTO { 
+    translatedText?: string;
 }
 
