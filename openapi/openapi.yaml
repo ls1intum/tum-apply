@@ -3,8 +3,8 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/ai/generate:
-    post:
+  /api/ai/generateJobDescription:
+    put:
       tags: [ai-resource]
       operationId: generateJobApplicationDraft
       requestBody:
@@ -17,7 +17,22 @@ paths:
           description: OK
           content:
             application/json:
-              schema: {$ref: '#/components/schemas/AiResponseDTO'}
+              schema: {$ref: '#/components/schemas/AIJobDescriptionDTO'}
+  /api/ai/translateJobDescription:
+    put:
+      tags: [ai-resource]
+      operationId: translateText
+      requestBody:
+        content:
+          application/json:
+            schema: {type: string}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -1108,6 +1123,49 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/IntervieweeDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}:
+    get:
+      tags: [interview-resource]
+      operationId: getIntervieweeDetails
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}/assessment:
+    put:
+      tags: [interview-resource]
+      operationId: updateAssessment
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateAssessmentDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
   /api/interviews/processes/{processId}/send-invitations:
     post:
       tags: [interview-resource]
@@ -1881,6 +1939,14 @@ paths:
         '200': {description: OK}
 components:
   schemas:
+    AIJobDescriptionDTO:
+      type: object
+      properties:
+        jobDescription: {type: string}
+    AIJobDescriptionTranslationDTO:
+      type: object
+      properties:
+        translatedText: {type: string}
     AcceptDTO:
       type: object
       properties:
@@ -1903,10 +1969,6 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
-    AiResponseDTO:
-      type: object
-      properties:
-        jobDescription: {type: string}
     Applicant:
       type: object
       properties:
@@ -2412,6 +2474,21 @@ components:
           type: string
           enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
         user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
+    IntervieweeDetailDTO:
+      type: object
+      properties:
+        application: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+        applicationId: {type: string, format: uuid}
+        assessmentNotes: {type: string}
+        documents: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
+        id: {type: string, format: uuid}
+        lastInvited: {type: string, format: date-time}
+        rating: {type: integer, format: int32}
+        scheduledSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
+        user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
     IntervieweeUserDTO:
       type: object
       properties:
@@ -2905,6 +2982,12 @@ components:
         projects: {type: string}
         specialSkills: {type: string}
       required: [applicant, applicationId, applicationState]
+    UpdateAssessmentDTO:
+      type: object
+      properties:
+        clearRating: {type: boolean}
+        notes: {type: string}
+        rating: {type: integer, format: int32, maximum: 2, minimum: -2}
     UpdatePasswordDTO:
       type: object
       properties:

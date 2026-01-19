@@ -1,27 +1,15 @@
-<div class="page-container flex flex-col min-h-screen">
+<div class="page-container">
   <!-- Page Header -->
   <div class="page-header">
-    <h1 jhiTranslate="interview.overview.title">Interviews</h1>
+    <h1 class="block -mt-3" jhiTranslate="interview.overview.title">Interviews</h1>
   </div>
 
   <!-- Two-column Layout -->
-  <div class="flex gap-4 items-start flex-1">
+  <div class="flex gap-4 items-start">
     <!-- Left Section -->
     <div class="flex-[0_0_68%] flex flex-col">
       <div class="flex justify-between items-center mb-4 h-10">
         <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.positions.title">Positions</h2>
-
-        <!--
-  TODO: Re-enable this button once the create interview process functionality is implemented
-  <jhi-button
-    [label]="'interview.overview.actions.newProcess'"
-    [shouldTranslate]="true"
-    [icon]="'plus'"
-    [severity]="'primary'"
-    [size]="'sm'"
-    (click)="createNewInterviewProcess()"
-  />
--->
       </div>
 
       @if (error()) {
