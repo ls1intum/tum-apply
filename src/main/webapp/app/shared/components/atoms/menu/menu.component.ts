@@ -26,9 +26,24 @@ export interface JhiMenuItem {
   imports: [CommonModule, MenuModule, FontAwesomeModule, TranslateDirective],
 })
 export class MenuComponent {
+  /**
+   * The menu items to display.
+   */
   items = input.required<JhiMenuItem[]>();
+
+  /**
+   * Whether the menu is displayed as a popup overlay.
+   */
   popup = input<boolean>(true);
+
+  /**
+   * Element or selector where the menu overlay should be appended.
+   */
   appendTo = input<HTMLElement | string>('body');
+
+  /**
+   * Whether to translate the menu item labels.
+   */
   shouldTranslate = input<boolean>(false);
 
   menu = viewChild.required<Menu>('menu');

@@ -21,6 +21,8 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
 import { ToggleSwitchComponent } from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 
 import { DatePickerComponent } from '../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../shared/components/atoms/string-input/string-input.component';
@@ -67,6 +69,8 @@ type JobFormMode = 'create' | 'edit';
     FormsModule,
     ProgressSpinnerComponent,
     ToggleSwitchComponent,
+    InfoBoxComponent,
+    MessageComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -100,12 +104,12 @@ export class JobCreationFormComponent {
   });
   uploadContainerClasses = computed(() => {
     if (this.isUploadingImage()) {
-      return 'relative rounded-xl transition-all opacity-50 pointer-events-none';
+      return 'relative rounded-lg transition-all opacity-50 pointer-events-none';
     }
-    return 'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
+    return 'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
   });
   uploadInnerClasses = computed(() => {
-    const base = 'aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all';
+    const base = 'aspect-video border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-all';
     const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
     return `${base} border-border-default ${hover}`.trim();
   });

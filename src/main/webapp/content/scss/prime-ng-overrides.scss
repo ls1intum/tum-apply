@@ -113,7 +113,7 @@ p-step[data-p-active='true'] .p-step-title {
   color: var(--p-text-muted-color, rgba(0 0 0 / 60%));
   border-bottom: 2px solid transparent !important;
   transition: all 0.2s ease;
-  border-radius: 0.25rem 0.25rem 0 0;
+  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
 
 .p-tab:hover {
@@ -135,4 +135,21 @@ p-step[data-p-active='true'] .p-step-title {
 .p-tabpanels {
   padding-top: 1rem;
   background: transparent !important;
+}
+
+/* -------------------------------
+   Custom Dialog Styles
+---------------------------------- */
+.p-dialog {
+  border-radius: var(--border-radius-xl) !important;
+}
+
+// Round the header separately for visual consistency
+.p-dialog-header {
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0 !important;
+}
+
+// Round the content area
+.p-dialog-content {
+  border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl) !important;
 }
