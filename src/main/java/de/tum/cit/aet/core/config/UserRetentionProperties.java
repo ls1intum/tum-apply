@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.config;
 
+import java.util.UUID;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "user.retention", ignoreUnknownFields = false)
@@ -16,6 +17,16 @@ public class UserRetentionProperties {
     private Integer batchSize;
 
     private Integer maxRuntimeMinutes;
+
+    private UUID deletedUserId;
+
+    private String deletedUserEmail;
+
+    private String deletedUserFirstName;
+
+    private String deletedUserLastName;
+
+    private String deletedUserLanguage;
 
     public Integer getBatchSize() {
         return batchSize;
@@ -63,5 +74,45 @@ public class UserRetentionProperties {
 
     public void setMaxRuntimeMinutes(Integer maxRuntimeMinutes) {
         this.maxRuntimeMinutes = maxRuntimeMinutes;
+    }
+
+    public UUID getDeletedUserId() {
+        return deletedUserId;
+    }
+
+    public void setDeletedUserId(UUID deletedUserId) {
+        this.deletedUserId = deletedUserId;
+    }
+
+    public String getDeletedUserEmail() {
+        return deletedUserEmail;
+    }
+
+    public void setDeletedUserEmail(String deletedUserEmail) {
+        this.deletedUserEmail = deletedUserEmail;
+    }
+
+    public String getDeletedUserFirstName() {
+        return deletedUserFirstName;
+    }
+
+    public void setDeletedUserFirstName(String deletedUserFirstName) {
+        this.deletedUserFirstName = deletedUserFirstName;
+    }
+
+    public String getDeletedUserLastName() {
+        return deletedUserLastName;
+    }
+
+    public void setDeletedUserLastName(String deletedUserLastName) {
+        this.deletedUserLastName = deletedUserLastName;
+    }
+
+    public String getDeletedUserLanguage() {
+        return deletedUserLanguage;
+    }
+
+    public void setDeletedUserLanguage(String deletedUserLanguage) {
+        this.deletedUserLanguage = deletedUserLanguage;
     }
 }

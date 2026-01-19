@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.repository;
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
@@ -88,7 +89,23 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
     @Query("SELECT di FROM DepartmentImage di WHERE di.department IS NULL")
     List<DepartmentImage> findOrphanedDepartmentImages();
 
+    /**
+     * Deletes the profile image associated with the given user.
+     *
+     * @param userId the ID of the user whose profile image should be deleted
+     */
     @Modifying
     @Query("DELETE FROM Image i WHERE i.uploadedBy.userId = :userId AND TYPE(i) = ProfileImage")
     void deleteProfileImageByUser(@Param("userId") UUID userId);
+
+    /**
+     * Updates all {@link Image} records uploaded by the given {@code user} to associate them with the
+     * provided {@code deletedUserId} instead of the original user.
+     *
+     * @param user the user whose uploaded images should be dissociated
+     * @param deletedUserId the UUID to set as the uploader's userId
+     */
+    @Modifying
+    @Query("UPDATE Image i SET i.uploadedBy.userId = :deletedUserId WHERE i.uploadedBy = :user")
+    void dissociateImagesFromUser(@Param("user") User user, @Param("deletedUserId") UUID deletedUserId);
 }

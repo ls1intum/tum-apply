@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.retention;
 
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.config.UserRetentionProperties;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -9,7 +10,10 @@ import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.job.constants.JobState;
+import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
+import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
@@ -31,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserRetentionService {
 
+    private final UserRetentionProperties userRetentionProperties = new UserRetentionProperties();
+
     private final UserRepository userRepository;
 
     private final ApplicantRepository applicantRepository;
@@ -39,10 +45,12 @@ public class UserRetentionService {
     private final DocumentRepository documentRepository;
     private final DocumentDictionaryRepository documentDictionaryRepository;
     private final EmailSettingRepository emailSettingRepository;
+    private final EmailTemplateRepository emailTemplateRepository;
     private final ImageRepository imageRepository;
     private final InternalCommentRepository internalCommentRepository;
     private final InterviewSlotRepository interviewSlotRepository;
     private final IntervieweeRepository intervieweeRepository;
+    private final JobRepository jobRepository;
     private final RatingRepository ratingRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final UserSettingRepository userSettingRepository;
@@ -81,10 +89,16 @@ public class UserRetentionService {
                 continue;
             }
 
-            // Next step: build a concrete RetentionPlan per category and execute it when dryRun=false.
-            handleApplicant(user, cutoff, dryRun);
-            handleProfessorOrEmployee(user, cutoff, dryRun);
-            handleUnknown(user, cutoff, dryRun);
+            if (category == RetentionCategory.APPLICANT) {
+                handleApplicant(user, cutoff, dryRun);
+            } else if (category == RetentionCategory.PROFESSOR_OR_EMPLOYEE) {
+                handleProfessorOrEmployee(user, cutoff, dryRun);
+            } else if (category == RetentionCategory.UNKNOWN) {
+                log.info("User retention: processing UNKNOWN userId={}", user.getUserId());
+                log.info("No specific handling for UNKNOWN users.");
+                continue;
+            }
+            handleGeneralData(user, cutoff, dryRun);
         }
     }
 
@@ -145,9 +159,6 @@ public class UserRetentionService {
         emailSettingRepository.deleteByUser(user);
         imageRepository.deleteProfileImageByUser(user.getUserId());
         userResearchGroupRoleRepository.deleteByUser(user);
-
-        // 4. Delete user
-        userRepository.delete(user);
     }
 
     private void handleProfessorOrEmployee(User user, LocalDateTime cutoff, boolean dryRun) {
@@ -157,16 +168,25 @@ public class UserRetentionService {
         }
         log.info("User retention: processing PROFESSOR_OR_EMPLOYEE userId={}", user.getUserId());
 
-        // TODO: Implement actual data deletion/anonymization logic for PROFESSOR_OR_EMPLOYEE users here.
+        UUID deletedUserId = userRetentionProperties.getDeletedUserId();
+        imageRepository.dissociateImagesFromUser(user, deletedUserId);
+        jobRepository.anonymiseJobByUserId(user, deletedUserId, JobState.CLOSED);
+        internalCommentRepository.anonymiseByCreatedBy(user, deletedUserId);
+        emailTemplateRepository.anonymiseByCreatedBy(user, deletedUserId);
     }
 
-    private void handleUnknown(User user, LocalDateTime cutoff, boolean dryRun) {
+    private void handleGeneralData(User user, LocalDateTime cutoff, boolean dryRun) {
         if (dryRun) {
-            log.info("User retention (dry-run): would process UNKNOWN userId={}", user.getUserId());
+            log.info("User retention (dry-run): would process general data for userId={}", user.getUserId());
             return;
         }
-        log.info("User retention: processing UNKNOWN userId={}", user.getUserId());
+        log.info("User retention: processing general data for userId={}", user.getUserId());
 
-        // TODO: Implement handling UNKNOWN users here.
+        // Common data deletion/anonymization for all users
+        emailSettingRepository.deleteByUser(user);
+        imageRepository.deleteProfileImageByUser(user.getUserId());
+        userSettingRepository.deleteByUser(user);
+        userResearchGroupRoleRepository.deleteByUser(user);
+        userRepository.delete(user);
     }
 }
