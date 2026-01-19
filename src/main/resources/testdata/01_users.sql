@@ -28,7 +28,6 @@ REPLACE INTO users (
         university_id
 )
 VALUES
-        ('00000000-0000-0000-0000-000000000100', NULL, 'deleted@user', NULL, 'Deleted', 'User', NULL, NULL, NULL, NULL, NULL, NULL, 'en', 'abcd999'),
         ('00000000-0000-0000-0000-000000000101', NULL, 'admin1@tumapply.local', NULL, 'System', 'Admin', NULL, 'de', NULL, NULL, NULL, NULL, 'en','abcd000'),
         ('00000000-0000-0000-0000-000000000102', NULL, 'professor1@tumapply.local', NULL, 'Anna', 'Professorin', 'female', 'de', '1990-01-01', '+49123456789', 'https://ai.tum.de', NULL, 'de','abcd001'),
         ('00000000-0000-0000-0000-000000000103', NULL, 'applicant1@tumapply.local', NULL, 'Max', 'Applicant', 'male', 'de', '1999-05-26', '+49123456789', NULL, 'https://linkedin.com/in/max', 'de','abcd002'),
