@@ -173,6 +173,14 @@ export default class ApplicationOverviewForApplicantComponent {
     return menuMap;
   });
 
+  readonly getMenuItems = computed(() => {
+    const menuMap = this.applicationMenuItems();
+    return (application: ApplicationOverviewDTO): JhiMenuItem[] => {
+      if (application.applicationId === undefined) return [];
+      return menuMap.get(application.applicationId) ?? [];
+    };
+  });
+
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
 
@@ -204,11 +212,6 @@ export default class ApplicationOverviewForApplicantComponent {
     } finally {
       this.loading.set(false);
     }
-  }
-
-  getMenuItems(application: ApplicationOverviewDTO): JhiMenuItem[] {
-    if (application.applicationId === undefined) return [];
-    return this.applicationMenuItems().get(application.applicationId) ?? [];
   }
 
   onViewApplication(applicationId: string): void {

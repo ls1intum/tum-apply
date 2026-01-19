@@ -175,6 +175,13 @@ export class MyPositionsPageComponent {
     return menuMap;
   });
 
+  readonly getMenuItems = computed(() => {
+    const menuMap = this.jobMenuItems();
+    return (job: CreatedJobDTO): JhiMenuItem[] => {
+      return menuMap.get(job.jobId) ?? [];
+    };
+  });
+
   private jobService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
   private router = inject(Router);
@@ -259,10 +266,6 @@ export class MyPositionsPageComponent {
         this.toastService.showErrorKey(`${this.translationKey}.toastMessages.closeJobFailed`, { detail: error.message });
       }
     }
-  }
-
-  getMenuItems(job: CreatedJobDTO): JhiMenuItem[] {
-    return this.jobMenuItems().get(job.jobId) ?? [];
   }
 
   onConfirmEdit(): void {
