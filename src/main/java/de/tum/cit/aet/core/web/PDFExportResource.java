@@ -8,6 +8,7 @@ import de.tum.cit.aet.job.dto.JobPreviewRequest;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for exporting job and application details as PDF
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/export")
@@ -34,6 +36,7 @@ public class PDFExportResource {
     @Authenticated
     @PostMapping(value = "/application/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportApplicationToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
+        log.info("POST /api/export/application/{}/pdf", id);
         Resource pdf = pdfExportService.exportApplicationToPDF(id, labels);
         String filename = pdfExportService.generateApplicationFilename(id, labels.get("application"));
 
@@ -53,6 +56,7 @@ public class PDFExportResource {
     @Public
     @PostMapping(value = "/job/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportJobToPDF(@PathVariable UUID id, @RequestBody Map<String, String> labels) {
+        log.info("POST /api/export/job/{}/pdf", id);
         Resource pdf = pdfExportService.exportJobToPDF(id, labels);
         String filename = pdfExportService.generateJobFilename(id, labels.get("jobPdfEnding"));
 
@@ -72,6 +76,7 @@ public class PDFExportResource {
     @ProfessorOrEmployee
     @PostMapping(value = "/job/preview/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<Resource> exportJobPreviewToPDF(@RequestBody JobPreviewRequest request) {
+        log.info("POST /api/export/job/preview/pdf");
         Resource pdf = pdfExportService.exportJobPreviewToPDF(request.job(), request.labels());
         String filename = pdfExportService.generateJobFilenameForPreview(request.job(), request.labels().get("jobPdfEnding"));
 

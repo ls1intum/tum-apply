@@ -1047,6 +1047,26 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/BookingDTO'}
+  /api/interviews/booking/{processId}/book:
+    post:
+      tags: [interview-booking-resource]
+      operationId: bookSlot
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BookSlotRequestDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
   /api/interviews/overview:
     get:
       tags: [interview-resource]
@@ -2134,6 +2154,11 @@ components:
       properties:
         type: {type: string}
         word: {type: string}
+    BookSlotRequestDTO:
+      type: object
+      properties:
+        slotId: {type: string, format: uuid}
+      required: [slotId]
     BookingDTO:
       type: object
       properties:
@@ -2246,7 +2271,7 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2256,7 +2281,7 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2266,7 +2291,7 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2279,7 +2304,7 @@ components:
           type: string
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
-            RESEARCH_GROUP_APPROVED]
+            RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
