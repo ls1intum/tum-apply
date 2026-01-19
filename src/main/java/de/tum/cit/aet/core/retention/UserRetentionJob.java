@@ -31,35 +31,62 @@ public class UserRetentionJob {
             return;
         }
 
-        Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
-        Integer batchSize = properties.getBatchSize();
-        Integer maxRuntimeMinutes = properties.getMaxRuntimeMinutes();
-        if (inactiveDays == null || inactiveDays <= 0) {
-            log.warn("User retention enabled, but inactiveDaysBeforeDeletion is not configured (value={})", inactiveDays);
-            return;
-        }
-        if (batchSize == null || batchSize <= 0) {
-            log.warn("User retention enabled, but batchSize is not configured (value={})", batchSize);
-            return;
-        }
-        if (maxRuntimeMinutes == null || maxRuntimeMinutes <= 0) {
-            log.warn("User retention enabled, but maxRuntimeMinutes is not configured (value={})", maxRuntimeMinutes);
+        RetentionRunConfig config = buildRunConfig();
+        if (config == null) {
             return;
         }
 
         Instant start = Instant.now();
-        Instant deadline = start.plus(Duration.ofMinutes(maxRuntimeMinutes));
+        Instant deadline = start.plus(Duration.ofMinutes(config.maxRuntimeMinutes()));
+
+        RetentionRunResult result = processCandidates(config, deadline);
+
+        Duration runtime = Duration.between(start, Instant.now());
+        log.info(
+            "User retention run finished: enabled=true dryRun={} cutoff={} candidatesSeen={} runtimeMs={} maxRuntimeMinutes={}",
+            config.dryRun(),
+            config.cutoff(),
+            result.totalCandidatesSeen(),
+            runtime.toMillis(),
+            config.maxRuntimeMinutes()
+        );
+    }
+
+    private RetentionRunConfig buildRunConfig() {
+        Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
+        Integer batchSize = properties.getBatchSize();
+        Integer maxRuntimeMinutes = properties.getMaxRuntimeMinutes();
+
+        if (inactiveDays == null || inactiveDays <= 0) {
+            log.warn("User retention enabled, but inactiveDaysBeforeDeletion is not configured (value={})", inactiveDays);
+            return null;
+        }
+        if (batchSize == null || batchSize <= 0) {
+            log.warn("User retention enabled, but batchSize is not configured (value={})", batchSize);
+            return null;
+        }
+        if (maxRuntimeMinutes == null || maxRuntimeMinutes <= 0) {
+            log.warn("User retention enabled, but maxRuntimeMinutes is not configured (value={})", maxRuntimeMinutes);
+            return null;
+        }
 
         LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
         LocalDateTime cutoff = nowUtc.minusDays(inactiveDays);
-
         boolean dryRun = Boolean.TRUE.equals(properties.getDryRun());
 
+        return new RetentionRunConfig(inactiveDays, batchSize, maxRuntimeMinutes, cutoff, dryRun);
+    }
+
+    private RetentionRunResult processCandidates(RetentionRunConfig config, Instant deadline) {
         long totalCandidatesSeen = 0;
         int pageNumber = 0;
+
         while (Instant.now().isBefore(deadline)) {
-            PageRequest pageRequest = dryRun ? PageRequest.of(pageNumber, batchSize) : PageRequest.of(0, batchSize);
-            Page<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForRetention(cutoff, pageRequest);
+            PageRequest pageRequest = config.dryRun()
+                ? PageRequest.of(pageNumber, config.batchSize())
+                : PageRequest.of(0, config.batchSize());
+
+            Page<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForRetention(config.cutoff(), pageRequest);
             List<UUID> ids = userIds.getContent();
 
             if (ids.isEmpty()) {
@@ -68,9 +95,9 @@ public class UserRetentionJob {
 
             totalCandidatesSeen += ids.size();
 
-            userRetentionService.processUserIdsList(ids, cutoff, dryRun);
+            userRetentionService.processUserIdsList(ids, config.cutoff(), config.dryRun());
 
-            if (dryRun) {
+            if (config.dryRun()) {
                 if (!userIds.hasNext()) {
                     break;
                 }
@@ -78,14 +105,16 @@ public class UserRetentionJob {
             }
         }
 
-        Duration runtime = Duration.between(start, Instant.now());
-        log.info(
-            "User retention run finished: enabled=true dryRun={} cutoff={} candidatesSeen={} runtimeMs={} maxRuntimeMinutes={}",
-            dryRun,
-            cutoff,
-            totalCandidatesSeen,
-            runtime.toMillis(),
-            maxRuntimeMinutes
-        );
+        return new RetentionRunResult(totalCandidatesSeen);
     }
+
+    private record RetentionRunConfig(
+        Integer inactiveDays,
+        Integer batchSize,
+        Integer maxRuntimeMinutes,
+        LocalDateTime cutoff,
+        boolean dryRun
+    ) {}
+
+    private record RetentionRunResult(long totalCandidatesSeen) {}
 }

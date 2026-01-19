@@ -92,15 +92,15 @@ public class UserRetentionService {
             }
 
             if (category == RetentionCategory.PROFESSOR_OR_EMPLOYEE) {
-                handleProfessorOrEmployee(user, cutoff, dryRun);
+                handleProfessorOrEmployee(user, dryRun);
             } else if (category == RetentionCategory.APPLICANT) {
-                handleApplicant(user, cutoff, dryRun);
+                handleApplicant(user, dryRun);
             } else if (category == RetentionCategory.UNKNOWN) {
                 log.info("User retention: processing UNKNOWN userId={}", resolvedUserId);
                 log.info("No specific handling for UNKNOWN users.");
                 continue;
             }
-            handleGeneralData(user, cutoff, dryRun);
+            handleGeneralData(user, dryRun);
         }
     }
 
@@ -129,7 +129,7 @@ public class UserRetentionService {
         return RetentionCategory.UNKNOWN;
     }
 
-    private void handleApplicant(User user, LocalDateTime cutoff, boolean dryRun) {
+    private void handleApplicant(User user, boolean dryRun) {
         if (dryRun) {
             log.info("User retention (dry-run): would process APPLICANT userId={}", user.getUserId());
             return;
@@ -156,7 +156,7 @@ public class UserRetentionService {
         applicantRepository.deleteById(user.getUserId());
     }
 
-    private void handleProfessorOrEmployee(User user, LocalDateTime cutoff, boolean dryRun) {
+    private void handleProfessorOrEmployee(User user, boolean dryRun) {
         if (dryRun) {
             log.info("User retention (dry-run): would process PROFESSOR_OR_EMPLOYEE userId={}", user.getUserId());
             return;
@@ -175,7 +175,7 @@ public class UserRetentionService {
         emailTemplateRepository.anonymiseByCreatedBy(user, deletedUser);
     }
 
-    private void handleGeneralData(User user, LocalDateTime cutoff, boolean dryRun) {
+    private void handleGeneralData(User user, boolean dryRun) {
         if (dryRun) {
             log.info("User retention (dry-run): would process general data for userId={}", user.getUserId());
             return;
