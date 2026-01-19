@@ -1,3 +1,4 @@
+import lombok.extern.slf4j.Slf4j;
 package de.tum.cit.aet.application.web;
 
 import de.tum.cit.aet.application.domain.dto.*;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/applications")
 public class ApplicationResource {
@@ -43,6 +45,7 @@ public class ApplicationResource {
     @ApplicantOrAdmin
     @GetMapping("/profile")
     public ResponseEntity<ApplicantDTO> getApplicantProfile() {
+        log.info("GET /api/applications/profile - Retrieving applicant profile for current user");
         ApplicantDTO profile = applicationService.getApplicantProfile();
         return ResponseEntity.ok(profile);
     }
@@ -56,6 +59,7 @@ public class ApplicationResource {
     @ApplicantOrAdmin
     @PutMapping("/profile")
     public ResponseEntity<ApplicantDTO> updateApplicantProfile(@Valid @RequestBody ApplicantDTO applicantDTO) {
+        log.info("PUT /api/applications/profile - Updating applicant profile for current user");
         ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
         return ResponseEntity.ok(updatedProfile);
     }

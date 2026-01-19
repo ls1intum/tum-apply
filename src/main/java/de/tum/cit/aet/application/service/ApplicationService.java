@@ -13,7 +13,7 @@ import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
-import de.tum.cit.aet.core.exception.InvalidParameterException;
+import org.springframework.security.access.AccessDeniedException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
@@ -456,7 +456,7 @@ public class ApplicationService {
     public ApplicantDTO getApplicantProfile() {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
-            throw new InvalidParameterException("User must be authenticated to retrieve applicant profile.");
+            throw new AccessDeniedException("User must be authenticated to retrieve applicant profile.");
         }
 
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
@@ -481,13 +481,15 @@ public class ApplicationService {
     public ApplicantDTO updateApplicantProfile(ApplicantDTO dto) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
-            throw new InvalidParameterException("User must be authenticated to update applicant profile.");
+            throw new AccessDeniedException("User must be authenticated to update applicant profile.");
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
         Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
 
         applyApplicantData(user, applicant, dto);
+        userRepository.save(user);
+        applicantRepository.save(applicant);
 
         return ApplicantDTO.getFromEntity(applicant);
     }
@@ -538,8 +540,7 @@ public class ApplicationService {
         applicant.setMasterGrade(dto.masterGrade());
         applicant.setMasterUniversity(dto.masterUniversity());
 
-        userRepository.save(user);
-        applicantRepository.save(applicant);
+        // Save operations moved to updateApplicantProfile
     }
 
     /**
