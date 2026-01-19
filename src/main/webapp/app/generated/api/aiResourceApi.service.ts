@@ -10,7 +10,7 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
-import { HttpClient,
+import { HttpClient, HttpParams,
          HttpResponse, HttpEvent, HttpContext 
         }       from '@angular/common/http';
 import { Observable }                                        from 'rxjs';
@@ -39,17 +39,25 @@ export class AiResourceApiService extends BaseService {
     }
 
     /**
+     * @param lang 
      * @param jobFormDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AIJobDescriptionDTO>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AIJobDescriptionDTO>>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AIJobDescriptionDTO>>;
-    public generateJobApplicationDraft(jobFormDTO: JobFormDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AIJobDescriptionDTO>;
+    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AIJobDescriptionDTO>>;
+    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AIJobDescriptionDTO>>;
+    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (lang === null || lang === undefined) {
+            throw new Error('Required parameter lang was null or undefined when calling generateJobApplicationDraft.');
+        }
         if (jobFormDTO === null || jobFormDTO === undefined) {
             throw new Error('Required parameter jobFormDTO was null or undefined when calling generateJobApplicationDraft.');
         }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>lang, 'lang');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -90,6 +98,7 @@ export class AiResourceApiService extends BaseService {
             {
                 context: localVarHttpContext,
                 body: jobFormDTO,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

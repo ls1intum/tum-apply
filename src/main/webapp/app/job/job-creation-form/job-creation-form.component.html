@@ -10,6 +10,7 @@
   (confirmed)="publishJob()"
   [dialogStyleClass]="'confirm-dialog-lg'"
 />
+
 @if (!isLoading()) {
   <div class="page-container">
     <div class="page-header">
@@ -25,7 +26,9 @@
     <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="basicInfoForm" class="w-full">
         <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span>
+        </p-divider>
+
         <div class="form-field">
           <jhi-string-input
             [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
@@ -66,12 +69,14 @@
 
         <div class="form-row">
           <div class="form-field input-with-icon">
-            <label for="supervisingProfessor" jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
+            <label for="supervisingProfessor"
+                   jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
               <span class="required">*</span>
             </label>
             <div class="icon-input-wrapper mb-6">
               <fa-icon [icon]="['fas', 'user-tie']" class="input-icon" />
-              <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
+              <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value"
+                     id="supervisingProfessor" type="text" />
             </div>
           </div>
 
@@ -90,37 +95,42 @@
           </div>
         </div>
 
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span></p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span>
+        </p-divider>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
-        <jhi-language-switcher
-          [currentLang]="currentDescriptionLanguage()"
-          [disabled]="isTranslating() || savingState() === 'SAVING'"
-          (languageChange)="changeDescriptionLanguage($event)"
-        />
 
-        <!-- Show translation indicator -->
+        <!-- Header row: Language switcher (left) + AI toggle (right) -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3 mb-3">
+          <jhi-segmented-toggle
+            [value]="segmentValueForLang(currentDescriptionLanguage())"
+            [disabled]="isTranslating() || savingState() === 'SAVING'"
+            [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageEnglish'"
+            [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageGerman'"
+            [translateLabels]="true"
+            (valueChange)="changeDescriptionLanguage(langForSegmentValue($event))"
+          />
+
+          <div class="flex items-center gap-2 sm:justify-end">
+            <jhi-toggle-switch [(model)]="aiToggleSignal" />
+            <label class="text-sm whitespace-nowrap"
+                   jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"></label>
+          </div>
+        </div>
+
+        <!-- Translation indicator -->
         @if (isTranslating()) {
           <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
-            <p-progressSpinner styleClass="w-5 h-5" strokeWidth="4" />
-            <span
-              class="text-sm text-blue-700 font-medium"
-              jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"
-            ></span>
+            <jhi-progress-spinner styleClass="w-5 h-5" strokeWidth="4" />
+            <span class="text-sm text-blue-700 font-medium"
+                  jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"></span>
           </div>
         }
-        <br />
-        <div class="form-row mb-6 flex flex-col gap-2">
-          <!-- Toggle row -->
-          <div class="flex items-center justify-end gap-2">
-            <jhi-toggle-switch [(model)]="aiToggleSignal" />
-            <label class="text-sm whitespace-nowrap" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"></label>
-          </div>
 
-          <!-- Content row -->
+        <div class="form-row mb-6 flex flex-col gap-2">
           <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="showAiPanel()">
             <!-- Editor -->
-            <div class="form-field">
+            <div class="form-field min-h-[320px]">
               <jhi-editor
                 #jobDescriptionEditor
                 fieldId="jobDescription"
@@ -139,13 +149,13 @@
             </div>
 
             @if (showAiPanel()) {
-              <!-- Divider -->
               <p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
 
-              <!-- AI Panel -->
               <div class="mt-0 max-w-[220px]">
-                <h3 class="mb-3 font-bold" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
-                <h4 class="mb-4 text-base gap-4" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"></h4>
+                <h3 class="mb-3 font-bold"
+                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
+                <h4 class="mb-4 text-base gap-4"
+                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"></h4>
 
                 <div class="flex justify-center">
                   @if (isGeneratingDraft()) {
@@ -177,11 +187,13 @@
     </div>
   </ng-template>
 
-  <!-- Step 2: Position Details -->
+  <!-- Step 2 -->
   <ng-template #panel2>
     <div class="h-full min-h-[calc(100vh-300px)] flex flex-column px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="positionDetailsForm" class="w-full">
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span></p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span>
+        </p-divider>
+
         <div class="form-row mb-6">
           <div class="form-field">
             <jhi-datepicker
@@ -195,6 +207,7 @@
               [width]="'100%'"
             />
           </div>
+
           <div class="form-field">
             <jhi-datepicker
               [selectedDate]="positionDetailsForm.get('startDate')?.value"
@@ -224,6 +237,7 @@
               [tooltipText]="'jobCreationForm.basicInformationSection.workload.toolTipText' | translate"
             />
           </div>
+
           <div class="form-field">
             <jhi-number-input
               [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
@@ -239,6 +253,7 @@
             />
           </div>
         </div>
+
         <div class="form-field">
           <jhi-select
             [selected]="positionDetailsForm.get('fundingType')?.value"
@@ -257,7 +272,8 @@
   </ng-template>
 
   <!-- Reusable Image Card Template -->
-  <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage" let-isSelected="isSelected">
+  <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage"
+               let-isSelected="isSelected">
     <div
       [class]="'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
       (click)="isNoImage ? clearImageSelection() : selectImage(image)"
@@ -280,6 +296,7 @@
           </div>
         }
       </div>
+
       @if (showDelete) {
         <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
           <jhi-confirm-dialog
@@ -299,13 +316,12 @@
     </div>
   </ng-template>
 
-  <!-- Step 3: Image Selection/Upload -->
+  <!-- Step 3 -->
   <ng-template #panel3>
     <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
       <div class="w-full">
         <p class="mb-4" jhiTranslate="jobCreationForm.imageSection.description"></p>
 
-        <!-- Default Image Section -->
         <div class="mb-4">
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
           @if (defaultImages().length === 0) {
@@ -314,7 +330,6 @@
             </div>
           }
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-            <!-- No Image Option -->
             <ng-container
               *ngTemplateOutlet="
                 imageCard;
@@ -322,7 +337,6 @@
               "
             />
 
-            <!-- Default Images -->
             @for (image of defaultImages(); track image.imageId) {
               <ng-container
                 *ngTemplateOutlet="
@@ -336,12 +350,11 @@
 
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.imageSection.orDivider"></span></p-divider>
 
-        <!-- Research Group Image Section -->
         <div class="mb-8">
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
-          <p class="text-text-secondary mb-4" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
+          <p class="text-text-secondary mb-4"
+             jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
 
-          <!-- Grid of research group images + upload button -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
             @for (image of researchGroupImages(); track image.imageId) {
               <ng-container
@@ -352,9 +365,9 @@
               />
             }
 
-            <!-- Upload New Image Button -->
             <div [class]="uploadContainerClasses()" (click)="fileInput.click()">
-              <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput class="hidden" />
+              <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput
+                     class="hidden" />
               <div [class]="uploadInnerClasses()">
                 @if (isUploadingImage()) {
                   <jhi-progress-spinner styleClass="w-12 h-12" strokeWidth="4" />
@@ -369,13 +382,16 @@
     </div>
   </ng-template>
 
-  <!-- Step 4: Review Page (formerly panel4, now actually panel4 but step 4) -->
+  <!-- Step 4 -->
   <ng-template #panel4>
-    <jhi-message severity="warn" styleClass="mb-3" message="jobCreationForm.reviewPageSection.message" [shouldTranslate]="true" />
+    <jhi-message severity="warn" styleClass="mb-3" message="jobCreationForm.reviewPageSection.message"
+                 [shouldTranslate]="true" />
     <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
+
     <div class="data-privacy-notice">
       <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
     </div>
+
     <div [formGroup]="additionalInfoForm">
       <div class="flex align-items-start">
         <div class="relative mr-2">
@@ -391,7 +407,6 @@
     </div>
   </ng-template>
 
-  <!-- Saving State Panel -->
   <ng-template #savingStatePanel>
     <div [className]="savingBadgeCalculatedClass()">
       <fa-icon [icon]="['fas', 'save']" />

@@ -506,7 +506,7 @@ export class JobDetailComponent {
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
       fundingType: data.fundingType ?? '',
-      jobDescription: data.jobDescription ?? '',
+      jobDescription: data.jobDescriptionEN ?? '',
       startDate,
       endDate,
       createdAt,
