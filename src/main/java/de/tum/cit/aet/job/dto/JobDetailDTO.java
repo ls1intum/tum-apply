@@ -8,6 +8,7 @@ import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,7 +25,8 @@ public record JobDetailDTO(
     Integer workload,
     Integer contractDuration,
     String fundingType,
-    String jobDescription,
+    String jobDescriptionEN,
+    String jobDescriptionDE,
     LocalDate startDate,
     LocalDate endDate,
     @NotNull LocalDateTime createdAt,
@@ -44,7 +46,8 @@ public record JobDetailDTO(
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String jobDescription,
+        String jobDescriptionEN,
+        String jobDescriptionDE,
         LocalDate startDate,
         LocalDate endDate,
         @NotNull LocalDateTime createdAt,
@@ -64,7 +67,8 @@ public record JobDetailDTO(
             workload,
             contractDuration,
             UiTextFormatter.formatEnumValue(fundingType),
-            jobDescription,
+            jobDescriptionEN,
+            jobDescriptionDE,
             startDate,
             endDate,
             createdAt,

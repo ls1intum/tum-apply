@@ -24,10 +24,12 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -143,7 +145,8 @@ public class JobService {
         if (job.getImage() != null && !(job.getImage() instanceof DepartmentImage)) {
             try {
                 imageService.deleteWithoutChecks(job.getImage().getImageId());
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
         jobRepository.deleteById(jobId);
@@ -169,9 +172,8 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescription(),
-            job.getJobDescriptionDE(),
             job.getJobDescriptionEN(),
+            job.getJobDescriptionDE(),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
             job.getImage() != null ? job.getImage().getUrl() : null
@@ -209,7 +211,8 @@ public class JobService {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescription(),
+            job.getJobDescriptionEN(),
+            job.getJobDescriptionDE(),
             job.getStartDate(),
             job.getEndDate(),
             job.getCreatedAt(),
@@ -277,7 +280,7 @@ public class JobService {
      * current filters.
      *
      * @return a list of all unique fields of study sorted
-     *         alphabetically
+     * alphabetically
      */
     public List<String> getAllFieldOfStudies() {
         return jobRepository.findAllUniqueFieldOfStudies(JobState.PUBLISHED);
@@ -289,7 +292,7 @@ public class JobService {
      * current filters.
      *
      * @return a list of all unique supervisor names sorted
-     *         alphabetically
+     * alphabetically
      */
     public List<String> getAllSupervisorNames() {
         return jobRepository.findAllUniqueSupervisorNames(JobState.PUBLISHED);
@@ -340,7 +343,8 @@ public class JobService {
         job.setWorkload(dto.workload());
         job.setContractDuration(dto.contractDuration());
         job.setFundingType(dto.fundingType());
-        job.setJobDescription(dto.jobDescription());
+        job.setJobDescriptionEN(dto.jobDescriptionEN());
+        job.setJobDescriptionDE(dto.jobDescriptionDE());
         job.setState(dto.state());
 
         // Handle image update (replace old image if changed)

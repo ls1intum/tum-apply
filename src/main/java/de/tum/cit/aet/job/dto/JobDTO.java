@@ -5,6 +5,7 @@ import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -21,10 +22,10 @@ public record JobDTO(
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,
-    String jobDescription,
-    String jobDescriptionDE,
     String jobDescriptionEN,
+    String jobDescriptionDE,
     @NotNull JobState state,
     UUID imageId,
     String imageUrl
-) {}
+) {
+}

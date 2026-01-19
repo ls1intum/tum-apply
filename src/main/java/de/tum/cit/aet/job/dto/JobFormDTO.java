@@ -7,6 +7,7 @@ import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -23,9 +24,8 @@ public record JobFormDTO(
     Integer workload,
     Integer contractDuration,
     FundingType fundingType,
-    String jobDescription,
-    String jobDescriptionDE,
     String jobDescriptionEN,
+    String jobDescriptionDE,
     @NotNull JobState state,
     UUID imageId // Optional job banner image
 ) {
@@ -50,9 +50,8 @@ public record JobFormDTO(
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescription(),
-            job.getJobDescriptionDE(),
             job.getJobDescriptionEN(),
+            job.getJobDescriptionDE(),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null
         );

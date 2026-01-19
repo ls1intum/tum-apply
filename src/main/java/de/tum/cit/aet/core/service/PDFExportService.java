@@ -11,6 +11,7 @@ import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -79,7 +81,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
             .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
             .setOverviewDescriptionTitle(labels.get("jobDescription"))
-            .setOverviewDescription(job.jobDescription());
+            .setOverviewDescription(job.jobDescriptionEN());
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -176,7 +178,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, job.jobDescription());
+        addJobDetailsSection(builder, labels, job.jobDescriptionEN());
 
         // Research Group Section
         addResearchGroupSection(builder, job.researchGroup(), labels);
@@ -228,7 +230,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, jobFormDTO.jobDescription());
+        addJobDetailsSection(builder, labels, jobFormDTO.jobDescriptionEN());
 
         // Metadata
         builder.setMetadata(buildMetadataText(labels));

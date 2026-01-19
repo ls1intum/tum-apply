@@ -9,10 +9,12 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -68,14 +70,11 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "job_description")
-    private String jobDescription;
+    @Column(name = "job_description_en")
+    private String jobDescriptionEN;
 
     @Column(name = "job_description_de")
     private String jobDescriptionDE;
-
-    @Column(name = "job_description_en")
-    private String jobDescriptionEN;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
