@@ -8,21 +8,32 @@ import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.exception.AiResponseException;
 import de.tum.cit.aet.ai.service.AiService;
+import de.tum.cit.aet.ai.web.AiResource;
 import de.tum.cit.aet.utility.MvcTestClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class AiResourceTest extends AbstractResourceTest {
 
     @Autowired
     private MvcTestClient api;
 
-    @MockitoBean
+    @Autowired
+    private AiResource aiResource;
+
     private AiService aiService;
 
     private final String TRANSLATE_URL = "/api/ai/translateJobDescription";
+
+    @BeforeEach
+    void setUp() {
+        aiService = Mockito.mock(AiService.class);
+        ReflectionTestUtils.setField(aiResource, "aiService", aiService);
+    }
 
     @Test
     @WithMockUser(roles = "PROFESSOR")

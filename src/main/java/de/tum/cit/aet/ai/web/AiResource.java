@@ -36,7 +36,7 @@ public class AiResource {
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "generateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AIJobDescriptionDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
-        log.info("POST /api/ai/generateJobDescription - Request received");
+        log.info("PUT /api/ai/generateJobDescription - Request received");
         return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
     }
 
@@ -51,7 +51,7 @@ public class AiResource {
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "translateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AIJobDescriptionTranslationDTO> translateText(@RequestBody String text) {
-        log.info("POST /api/ai/translateJobDescription - Request received");
+        log.info("PUT /api/ai/translateJobDescription - Request received");
         return ResponseEntity.ok(aiService.translateText(text));
     }
 }
