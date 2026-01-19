@@ -24,7 +24,7 @@ body {
     .step-number {
       width: 1.875rem;
       height: 1.875rem;
-      border-radius: 50%;
+      border-radius: var(--border-radius-full);
       background-color: var(--p-background-disabled);
       color: var(--p-text-disabled);
       display: flex;
@@ -87,7 +87,7 @@ body {
     width: 100%;
     padding: 0.625rem 0.75rem;
     border: 0.1rem solid var(--p-border-default);
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-md);
     font-size: 1rem;
 
     &:focus {
@@ -148,7 +148,7 @@ body {
 .data-privacy-notice {
   margin-top: 1.25rem;
   padding: 0.9375rem;
-  border-radius: 0.25rem;
+  border-radius: var(--border-radius-sm);
   font-size: 1rem;
 
   p {

@@ -259,11 +259,11 @@
   <!-- Reusable Image Card Template -->
   <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage" let-isSelected="isSelected">
     <div
-      [class]="'relative rounded-xl transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
+      [class]="'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
       (click)="isNoImage ? clearImageSelection() : selectImage(image)"
     >
       <div
-        class="relative rounded-xl overflow-hidden border-[0.2rem] transition-colors aspect-video"
+        class="relative rounded-lg overflow-hidden border-[0.2rem] transition-colors aspect-video"
         [style.border-color]="isSelected ? 'var(--p-primary-color)' : 'transparent'"
       >
         @if (isNoImage) {
@@ -309,9 +309,8 @@
         <div class="mb-4">
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.defaultImages"></h3>
           @if (defaultImages().length === 0) {
-            <div class="p-3 mb-4 border border-border-default rounded-lg bg-background-surface-alt flex items-center gap-2">
-              <fa-icon [icon]="['fas', 'circle-info']" class="text-primary" />
-              <p class="text-sm" jhiTranslate="jobCreationForm.imageSection.noDefaultImages"></p>
+            <div class="mb-4">
+              <jhi-info-box [message]="'jobCreationForm.imageSection.noDefaultImages' | translate" />
             </div>
           }
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -340,7 +339,7 @@
         <!-- Research Group Image Section -->
         <div class="mb-8">
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
-          <p class="text-text-secondary mb-4 text-sm" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
+          <p class="text-text-secondary mb-4" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
 
           <!-- Grid of research group images + upload button -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -372,28 +371,23 @@
 
   <!-- Step 4: Review Page (formerly panel4, now actually panel4 but step 4) -->
   <ng-template #panel4>
-    <div class="w-full">
-      <div class="extras-section">
-        <p jhiTranslate="jobCreationForm.reviewPageSection.message"></p>
-        <br />
-      </div>
-      <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
-      <div class="data-privacy-notice">
-        <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-      </div>
-      <div [formGroup]="additionalInfoForm">
-        <div class="flex align-items-start">
-          <div class="relative mr-2">
-            <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
-            <span class="required">*</span>
-          </div>
-          <label jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></label>
+    <jhi-message severity="warn" styleClass="mb-3" message="jobCreationForm.reviewPageSection.message" [shouldTranslate]="true" />
+    <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
+    <div class="data-privacy-notice">
+      <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
+    </div>
+    <div [formGroup]="additionalInfoForm">
+      <div class="flex align-items-start">
+        <div class="relative mr-2">
+          <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
+          <span class="required">*</span>
         </div>
-
-        @if (privacyAcceptedSignal() === false && publishAttempted()) {
-          <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
-        }
+        <label jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></label>
       </div>
+
+      @if (privacyAcceptedSignal() === false && publishAttempted()) {
+        <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
+      }
     </div>
   </ng-template>
 

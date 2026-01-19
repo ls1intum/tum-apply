@@ -1,4 +1,4 @@
-<div class="rounded-md border border-border-default bg-background-default mb-4">
+<div class="rounded-lg border border-border-default bg-background-default mb-4">
   <!-- Header -->
   <div class="flex w-full items-center justify-between p-3 border-b border-border-default">
     <!-- Left: Toggle + Date -->
@@ -168,7 +168,7 @@
                       <div class="flex flex-col gap-2 pt-2">
                         @for (slot of range.slots; track $index; let slotIndex = $index) {
                           <div
-                            class="flex flex-col gap-1 rounded-md border border-border-default bg-background-default px-3 py-2"
+                            class="flex flex-col gap-1 rounded-lg border border-border-default bg-background-default px-3 py-2"
                             [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)"
                           >
                             <div class="flex items-center justify-between">
