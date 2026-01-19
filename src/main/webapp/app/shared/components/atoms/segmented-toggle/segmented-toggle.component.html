@@ -1,0 +1,36 @@
+<div class="segmented-toggle-wrapper">
+  <div class="segmented-container">
+    <!-- Sliding background -->
+    <div class="active-bg" [class.shift-right]="value() === 'right'"></div>
+
+    <!-- Left -->
+    <button
+      type="button"
+      class="segmented-option"
+      [class.text-active]="value() === 'left'"
+      [disabled]="disabled()"
+      (click)="setValue('left')"
+    >
+      @if (translateLabels()) {
+        <span jhiTranslate="{{ leftLabel() }}"></span>
+      } @else {
+        <span>{{ leftLabel() }}</span>
+      }
+    </button>
+
+    <!-- Right -->
+    <button
+      type="button"
+      class="segmented-option"
+      [class.text-active]="value() === 'right'"
+      [disabled]="disabled()"
+      (click)="setValue('right')"
+    >
+      @if (translateLabels()) {
+        <span jhiTranslate="{{ rightLabel() }}"></span>
+      } @else {
+        <span>{{ rightLabel() }}</span>
+      }
+    </button>
+  </div>
+</div>

@@ -1,27 +1,27 @@
-.lang-switcher-wrapper {
+.segmented-toggle-wrapper {
   display: inline-block;
 }
 
-.lang-container {
-  position: relative; // Needed for the absolute-positioned slider
+.segmented-toggle {
+  position: relative;
   display: flex;
   align-items: center;
   background-color: #f1f4f9;
-  padding: 3px; // Thinner padding around the edge
+  padding: 3px;
   border-radius: 8px;
-  gap: 0; // Gap 0 because the slider handles the spacing
+  gap: 0;
 }
 
-.active-bg {
+.segmented-active-bg {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: calc(50% - 3px); // Covers half the container
-  height: calc(100% - 6px); // Fits inside the padding
+  width: calc(50% - 3px);
+  height: calc(100% - 6px);
   background-color: #ffffff;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); // Smooth slide effect
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
 
   &.shift-right {
@@ -29,15 +29,15 @@
   }
 }
 
-.lang-option {
+.segmented-option {
   position: relative;
-  z-index: 2; // Sits above the sliding background
+  z-index: 2;
   flex: 1;
   border: none;
   background: transparent;
-  padding: 4px 16px; // Reduced height (4px vertical padding)
+  padding: 4px 16px;
   border-radius: 6px;
-  font-size: 13px; // Slightly smaller font for a "thinner" look
+  font-size: 13px;
   font-weight: 600;
   color: #64748b;
   cursor: pointer;
@@ -59,8 +59,7 @@
   }
 }
 
-// Optional: Add a disabled state for the entire container
-.lang-container:has(.lang-option:disabled) {
+.segmented-toggle:has(.segmented-option:disabled) {
   opacity: 0.7;
   pointer-events: none;
 }

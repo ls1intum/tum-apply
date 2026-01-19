@@ -7,6 +7,11 @@ paths:
     put:
       tags: [ai-resource]
       operationId: generateJobApplicationDraft
+      parameters:
+      - name: lang
+        in: query
+        required: true
+        schema: {type: string}
       requestBody:
         content:
           application/json:
@@ -2515,7 +2520,6 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         image: {$ref: '#/components/schemas/Image'}
-        jobDescription: {type: string}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
@@ -2565,7 +2569,6 @@ components:
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         imageUrl: {type: string}
-        jobDescription: {type: string}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
@@ -2595,7 +2598,8 @@ components:
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
-        jobDescription: {type: string}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location: {type: string}
@@ -2630,7 +2634,6 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
-        jobDescription: {type: string}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
