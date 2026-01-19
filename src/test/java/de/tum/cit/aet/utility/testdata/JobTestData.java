@@ -16,7 +16,10 @@ public final class JobTestData {
 
     private JobTestData() {}
 
-    /** Creates an unsaved Job with common default values. Title, state, and startDate can be overridden (null = default). */
+    /**
+     * Creates an unsaved Job with common default values. Title, state, and
+     * startDate can be overridden (null = default).
+     */
     public static Job newJob(User prof, ResearchGroup rg, String title, JobState state, LocalDate startDate) {
         Job j = new Job();
         j.setTitle(title != null ? title : "Default Title");
@@ -24,8 +27,27 @@ public final class JobTestData {
         j.setFieldOfStudies("CS");
         j.setLocation(Campus.GARCHING);
         j.setWorkload(20);
+        j.setContractDuration(3);
         j.setStartDate(startDate != null ? startDate : LocalDate.now());
         j.setState(state != null ? state : JobState.DRAFT);
+        j.setSupervisingProfessor(prof);
+        j.setResearchGroup(rg);
+        return j;
+    }
+
+    /**
+     * Creates an unsaved Job with only necessary values.
+     */
+    public static Job newJobNull(User prof, ResearchGroup rg) {
+        Job j = new Job();
+        j.setTitle("Default Title");
+        j.setResearchArea(null);
+        j.setFieldOfStudies(null);
+        j.setLocation(null);
+        j.setWorkload(null);
+        j.setContractDuration(null);
+        j.setStartDate(null);
+        j.setState(JobState.DRAFT);
         j.setSupervisingProfessor(prof);
         j.setResearchGroup(rg);
         return j;
@@ -44,9 +66,7 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
+        String jobDescription,
         JobState state
     ) {
         Job j = newJob(supervisingProfessor, researchGroup, title, state, startDate);
@@ -57,15 +77,18 @@ public final class JobTestData {
         if (workload != null) j.setWorkload(workload);
         if (contractDuration != null) j.setContractDuration(contractDuration);
         if (fundingType != null) j.setFundingType(fundingType);
-        if (description != null) j.setDescription(description);
-        if (tasks != null) j.setTasks(tasks);
-        if (requirements != null) j.setRequirements(requirements);
+        if (jobDescription != null) j.setJobDescription(jobDescription);
         return j;
     }
 
-    // --- Saved variants -------------------------------------------------------------------------
+    // --- Saved variants
+    // -------------------------------------------------------------------------
     public static Job saved(JobRepository repo, User prof, ResearchGroup rg, String title, JobState state, LocalDate startDate) {
         return repo.save(newJob(prof, rg, title, state, startDate));
+    }
+
+    public static Job savedNull(JobRepository repo, User prof, ResearchGroup rg) {
+        return repo.save(newJobNull(prof, rg));
     }
 
     public static Job savedAll(
@@ -81,9 +104,7 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
+        String jobDescription,
         JobState state
     ) {
         return repo.save(
@@ -99,9 +120,7 @@ public final class JobTestData {
                 workload,
                 contractDuration,
                 fundingType,
-                description,
-                tasks,
-                requirements,
+                jobDescription,
                 state
             )
         );

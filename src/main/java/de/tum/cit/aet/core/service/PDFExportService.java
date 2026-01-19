@@ -20,9 +20,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PDFExportService {
@@ -77,7 +79,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
             .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
             .setOverviewDescriptionTitle(labels.get("jobDescription"))
-            .setOverviewDescription(job.description());
+            .setOverviewDescription(job.jobDescription());
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -152,7 +154,9 @@ public class PDFExportService {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
                 builder.addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(job.state()));
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.debug("User not needed to see job status in PDF export as it's always published for them.");
+        }
 
         // Overview Section
         addJobOverview(
@@ -172,7 +176,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, job.description(), job.tasks(), job.requirements());
+        addJobDetailsSection(builder, labels, job.jobDescription());
 
         // Research Group Section
         addResearchGroupSection(builder, job.researchGroup(), labels);
@@ -224,7 +228,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, jobFormDTO.description(), jobFormDTO.tasks(), jobFormDTO.requirements());
+        addJobDetailsSection(builder, labels, jobFormDTO.jobDescription());
 
         // Metadata
         builder.setMetadata(buildMetadataText(labels));
@@ -235,7 +239,7 @@ public class PDFExportService {
             ResearchGroup group = currentUserService.getResearchGroupIfProfessor();
             addResearchGroupSection(builder, group, labels);
         } catch (AccessDeniedException ignored) {
-            // no research group → nothing added
+            log.debug("Nothing is added if there is no research group information.");
         }
 
         return builder.build();
@@ -257,20 +261,10 @@ public class PDFExportService {
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
 
-    private void addJobDetailsSection(
-        PDFBuilder builder,
-        Map<String, String> labels,
-        String description,
-        String tasks,
-        String requirements
-    ) {
+    private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {
         builder.startSectionGroup(labels.get("jobDetails"));
 
-        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(description));
-
-        builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(getValue(tasks));
-
-        builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(getValue(requirements));
+        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(jobDescription));
     }
 
     private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {
@@ -375,7 +369,7 @@ public class PDFExportService {
         return (value != null && !value.isEmpty()) ? value : "-";
     }
 
-    private String formatDate(Object date) {
+    String formatDate(Object date) {
         if (date == null) {
             return "-";
         }

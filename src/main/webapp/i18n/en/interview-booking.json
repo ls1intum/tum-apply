@@ -1,0 +1,46 @@
+{
+  "interview": {
+    "booking": {
+      "title": "Interview Appointment Booking",
+      "summary": "Summary",
+      "topic": "Position",
+      "jobTitle": "Title",
+      "researchGroup": "Research Group",
+      "supervisor": "Supervisor",
+      "selectedInterview": "Selected Appointment",
+      "yourAppointment": "Your Appointment",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "noSlotSelected": "Select a slot to continue",
+      "book": "Book Slot",
+      "alreadyBooked": "Already Booked",
+      "noSlotsInMonth": "No slots in this month",
+      "error": {
+        "title": "Failed to load booking data",
+        "description": "The booking data could not be loaded. Please refresh the page or try again."
+      },
+      "success": {
+        "title": "Interview Booked!",
+        "message": "You have successfully booked your interview slot. An email with the details has been sent to you."
+      },
+      "confirmDialog": {
+        "header": "Confirm Booking",
+        "message": "Are you sure you want to book this interview slot?",
+        "confirm": "Book Interview"
+      },
+      "bookingSuccess": {
+        "summary": "Interview Slot Successfully Booked",
+        "detail": "An email with the details has been sent to you."
+      },
+      "slotAlreadyBooked": {
+        "summary": "Slot No Longer Available",
+        "detail": "This slot was booked by another applicant. Please select a different slot."
+      },
+      "bookingError": {
+        "summary": "Booking Failed",
+        "detail": "An error occurred while booking the slot. Please try again."
+      }
+    }
+  }
+}

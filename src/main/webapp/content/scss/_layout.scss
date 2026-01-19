@@ -24,7 +24,7 @@
   align-self: stretch;
   font-weight: 700;
   font-size: 2rem;
-  border-radius: 0.75rem 0.75rem 0 0;
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 }
 
 @mixin section-col {

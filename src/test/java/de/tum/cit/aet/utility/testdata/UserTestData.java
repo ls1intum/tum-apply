@@ -39,6 +39,20 @@ public final class UserTestData {
         return u;
     }
 
+    /** Unsaved employee with defaults. */
+    public static User newEmployee(ResearchGroup rg) {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setFirstName("Bob");
+        u.setLastName("Spencer");
+        u.setEmail("bob.spencer@example.com");
+        u.setSelectedLanguage("en");
+        u.setResearchGroup(rg);
+        u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        attachEmployeeRole(u, rg);
+        return u;
+    }
+
     /** Unsaved user; all fields optional (null = keep default). */
     public static User newUserAll(UUID userId, String email, String firstName, String lastName) {
         User u = newUser();
@@ -85,7 +99,8 @@ public final class UserTestData {
         return u;
     }
 
-    // --- Saved variants -------------------------------------------------------------------------
+    // --- Saved variants
+    // -------------------------------------------------------------------------
     public static User savedUser(UserRepository repo) {
         return repo.save(newUser());
     }
@@ -96,6 +111,10 @@ public final class UserTestData {
 
     public static User savedProfessor(UserRepository repo, ResearchGroup rg) {
         return repo.save(newProfessor(rg));
+    }
+
+    public static User savedEmployee(UserRepository repo, ResearchGroup rg) {
+        return repo.save(newEmployee(rg));
     }
 
     public static User savedProfessorAll(
@@ -130,6 +149,73 @@ public final class UserTestData {
                 gender,
                 universityId
             )
+        );
+    }
+
+    /**
+     * Saved employee with essential fields only.
+     * Use this method to avoid long parameter lists.
+     */
+    public static User savedEmployee(
+        UserRepository repo,
+        ResearchGroup researchGroup,
+        String email,
+        String firstName,
+        String lastName,
+        String universityId
+    ) {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setEmail(email);
+        u.setFirstName(firstName);
+        u.setLastName(lastName);
+        u.setSelectedLanguage("en");
+        u.setResearchGroup(researchGroup);
+        u.setUniversityId(universityId != null ? universityId : UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        attachEmployeeRole(u, researchGroup);
+        return repo.save(u);
+    }
+
+    /**
+     * Creates and saves a professor in a NEW research group.
+     * Useful for testing authorization (403) scenarios where the user should not
+     * have access.
+     */
+    public static User savedOtherProfessor(
+        UserRepository userRepo,
+        de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository researchGroupRepo
+    ) {
+        ResearchGroup otherRg = ResearchGroupTestData.savedAll(
+            researchGroupRepo,
+            "Other Group",
+            "Prof. Smith",
+            "other" + UUID.randomUUID().toString().substring(0, 8) + "@example.com",
+            "OTH",
+            "CS",
+            "Other research",
+            "other@example.com",
+            "80333",
+            "CIT",
+            "Other Street",
+            "https://other.tum.de",
+            "ACTIVE"
+        );
+
+        return savedProfessorAll(
+            userRepo,
+            otherRg,
+            null,
+            "other.prof" + UUID.randomUUID().toString().substring(0, 8) + "@tum.de",
+            "Jane",
+            "Doe",
+            "en",
+            "+49 89 5678",
+            "https://jane.tum.de",
+            "https://linkedin.com/in/jane",
+            "DE",
+            null,
+            "weiblich",
+            UUID.randomUUID().toString().replace("-", "").substring(0, 7)
         );
     }
 
@@ -187,6 +273,16 @@ public final class UserTestData {
         link.setUser(user);
         link.setResearchGroup(rg);
         link.setRole(UserRole.PROFESSOR);
+
+        user.getResearchGroupRoles().add(link);
+        rg.getUserRoles().add(link);
+    }
+
+    private static void attachEmployeeRole(User user, ResearchGroup rg) {
+        UserResearchGroupRole link = new UserResearchGroupRole();
+        link.setUser(user);
+        link.setResearchGroup(rg);
+        link.setRole(UserRole.EMPLOYEE);
 
         user.getResearchGroupRoles().add(link);
         rg.getUserRoles().add(link);

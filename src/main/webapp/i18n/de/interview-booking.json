@@ -1,0 +1,46 @@
+{
+  "interview": {
+    "booking": {
+      "title": "Interview Termin Buchung",
+      "summary": "Zusammenfassung",
+      "topic": "Position",
+      "jobTitle": "Titel",
+      "researchGroup": "Forschungsgruppe",
+      "supervisor": "Betreuer:in",
+      "selectedInterview": "Ausgewählter Termin",
+      "yourAppointment": "Deine Buchung",
+      "date": "Datum",
+      "time": "Zeit",
+      "location": "Ort",
+      "noSlotSelected": "Wähle einen Termin aus",
+      "book": "Termin buchen",
+      "alreadyBooked": "Bereits gebucht",
+      "noSlotsInMonth": "Keine Termine in diesem Monat",
+      "error": {
+        "title": "Buchungsdaten konnten nicht geladen werden",
+        "description": "Die Buchungsdaten konnten nicht geladen werden. Bitte aktualisiere die Seite oder versuche es erneut."
+      },
+      "success": {
+        "title": "Termin gebucht!",
+        "message": "Du hast deinen Interview Termin erfolgreich gebucht. Eine E-Mail mit den Informationen wurde an dich gesendet."
+      },
+      "confirmDialog": {
+        "header": "Buchung bestätigen",
+        "message": "Möchtest du diesen Interview-Termin wirklich buchen?",
+        "confirm": "Termin buchen"
+      },
+      "bookingSuccess": {
+        "summary": "Interview Termin erfolgreich gebucht",
+        "detail": "Eine E-Mail mit den Informationen wurde an dich gesendet."
+      },
+      "slotAlreadyBooked": {
+        "summary": "Termin nicht mehr verfügbar",
+        "detail": "Dieser Termin wurde von einem anderen Bewerber gebucht. Bitte wähle einen anderen Termin."
+      },
+      "bookingError": {
+        "summary": "Buchung fehlgeschlagen",
+        "detail": "Beim Buchen des Termins ist ein Fehler aufgetreten. Bitte versuch es erneut."
+      }
+    }
+  }
+}

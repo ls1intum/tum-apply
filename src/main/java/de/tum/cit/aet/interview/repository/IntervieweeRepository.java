@@ -7,6 +7,7 @@ import de.tum.cit.aet.interview.domain.Interviewee;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,7 +32,7 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
      */
     @Query(
         """
-        SELECT i FROM Interviewee i
+        SELECT DISTINCT i FROM Interviewee i
         LEFT JOIN FETCH i.application a
         LEFT JOIN FETCH a.applicant ap
         LEFT JOIN FETCH ap.user
@@ -93,6 +94,37 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
         """
     )
     List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
+
+    /**
+     * Finds a single interviewee by ID within a process.
+     *
+     * @param intervieweeId the ID of the interviewee
+     * @param processId     the ID of the interview process
+     * @return the interviewee or empty if not found
+     */
+    @Query(
+        """
+        SELECT DISTINCT i FROM Interviewee i
+        JOIN FETCH i.interviewProcess ip
+        JOIN FETCH ip.job j
+        LEFT JOIN FETCH i.application a
+        LEFT JOIN FETCH a.applicant ap
+        LEFT JOIN FETCH ap.user
+        LEFT JOIN FETCH i.slots
+        WHERE i.id = :intervieweeId
+        AND ip.id = :processId
+        """
+    )
+    Optional<Interviewee> findByIdAndProcessId(@Param("intervieweeId") UUID intervieweeId, @Param("processId") UUID processId);
+
+    /* Finds all uninvited interviewees for a given interview process.
+     * Fetches application and user details to avoid N+1 issues when sending emails.
+     *
+     * @param processId the ID of the interview process
+     * @return list of uninvited interviewees with user details
+     */
+    @EntityGraph(attributePaths = { "application.applicant.user" })
+    List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
 
     void deleteByApplication(Application application);
 }

@@ -38,7 +38,8 @@
       "about-us": "TumApply - About Us",
       "interview": {
         "overview": "TUMApply - Interview Overview",
-        "detail": "Interview - {{jobTitle}}"
+        "detail": "Interview - {{jobTitle}}",
+        "assessment": "TUMApply - Interview Assessment"
       }
     },
     "menu": {
@@ -137,7 +138,8 @@
       "id": "ID"
     },
     "ribbon": {
-      "dev": "Development"
+      "dev": "Development",
+      "test": "Development"
     },
     "item-count": "Showing {{first}} - {{second}} of {{total}} items."
   },

@@ -2,7 +2,7 @@ import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { Component, ViewEncapsulation, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 import { ButtonModule } from 'primeng/button';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { TooltipModule } from 'primeng/tooltip';
@@ -31,7 +31,7 @@ export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
   standalone: true,
-  imports: [CommonModule, SharedModule, ButtonModule, FontAwesomeModule, OverlayBadgeModule, NgTemplateOutlet, TooltipModule],
+  imports: [CommonModule, ButtonModule, FontAwesomeModule, OverlayBadgeModule, NgTemplateOutlet, TooltipModule, TranslateDirective],
   encapsulation: ViewEncapsulation.None,
 })
 export class ButtonComponent {
@@ -64,7 +64,7 @@ export class ButtonComponent {
   buttonClass(): string {
     let sizeClass = '';
     if (this.label() === undefined) {
-      sizeClass = `rounded-xl ${this.size() === 'sm' ? 'rounded-full w-10 h-10 scale-85' : this.size() === 'md' ? 'w-10 h-10' : 'w-12 h-12'}`;
+      sizeClass = `rounded-md ${this.size() === 'sm' ? 'rounded-full w-10 h-10 scale-85' : this.size() === 'md' ? 'w-10 h-10' : 'w-12 h-12'}`;
     }
 
     if (this.size() === 'xs') {

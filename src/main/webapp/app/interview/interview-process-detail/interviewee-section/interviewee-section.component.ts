@@ -1,6 +1,6 @@
 import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
@@ -8,6 +8,7 @@ import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } 
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
+import { SendInvitationsResultDTO } from 'app/generated/model/sendInvitationsResultDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
@@ -15,6 +16,7 @@ import { FilterTab, FilterTabsComponent } from 'app/shared/components/atoms/filt
 import { Section } from 'app/shared/components/atoms/section/section';
 import { DynamicTableColumn, DynamicTableComponent } from 'app/shared/components/organisms/dynamic-table/dynamic-table.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 
 import { IntervieweeCardComponent } from './interviewee-card/interviewee-card.component';
 
@@ -42,6 +44,7 @@ interface ApplicantRow {
     Section,
     IntervieweeCardComponent,
     DynamicTableComponent,
+    ConfirmDialog,
   ],
   templateUrl: './interviewee-section.component.html',
 })
@@ -63,15 +66,21 @@ export class IntervieweeSectionComponent {
   loadingApplicants = signal(false);
   processingAdd = signal(false); // True while adding interviewees
 
+  // Invitation Sending State
+  sendingInvitationId = signal<string | null>(null);
+  sendingBulk = signal(false);
+
   // Pagination for Modal Table
   pageNumber = signal(0);
   pageSize = signal(10);
   totalApplicants = signal(0);
+  pendingResendId = signal<string | null>(null);
 
-  // Template Reference for Table Column
+  // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
+  readonly confirmDialog = viewChild.required(ConfirmDialog);
 
-  // Computed: Filter Tabs with Counts
+  // Computed Signals
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
     const all = this.interviewees();
     return [
@@ -87,6 +96,9 @@ export class IntervieweeSectionComponent {
     ];
   });
 
+  // Computed: Count of uncontacted interviewees (for bulk send button)
+  uncontactedCount = computed(() => this.interviewees().filter(i => i.state === 'UNCONTACTED').length);
+
   // Computed: Filtered Interviewees
   filteredInterviewees = computed(() => {
     const filter = this.activeFilter();
@@ -94,13 +106,11 @@ export class IntervieweeSectionComponent {
     return this.interviewees().filter(i => i.state === filter);
   });
 
-  // Table Column Definition
-  readonly columns = computed<DynamicTableColumn[]>(() => [
+  columns = computed<DynamicTableColumn[]>(() => [
     { field: 'name', header: 'interview.interviewees.tableColumns.name', width: '100%', template: this.nameTemplate() },
   ]);
 
-  // Computed: Table Data for Add Modal
-  readonly tableData = computed<ApplicantRow[]>(() => {
+  tableData = computed<ApplicantRow[]>(() => {
     const existingIds = new Set(this.interviewees().map(i => i.applicationId));
     const selected = this.selectedIds();
 
@@ -123,6 +133,12 @@ export class IntervieweeSectionComponent {
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
 
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+
   // Effect: Auto load Interviewees when processId or refreshKey changes
   private readonly loadEffect = effect(() => {
     this.refreshKey(); // Track refreshKey to trigger reload
@@ -130,11 +146,6 @@ export class IntervieweeSectionComponent {
       void this.loadInterviewees();
     }
   });
-
-  // Injected Services (private)
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
-  private readonly toastService = inject(ToastService);
 
   // Add Selected Applicants as Interviewees
   async addInterviewees(): Promise<void> {
@@ -171,6 +182,38 @@ export class IntervieweeSectionComponent {
       this.toastService.showErrorKey('interview.interviewees.error.loadFailed');
     } finally {
       this.loadingInterviewees.set(false);
+    }
+  }
+
+  sendInvitation(interviewee: IntervieweeDTO): void {
+    const processId = this.processId();
+    if (!processId || !interviewee.id) return;
+
+    if (interviewee.state === 'INVITED') {
+      this.pendingResendId.set(interviewee.id);
+      this.confirmDialog().confirm();
+    } else {
+      void this.performSendInvitation(processId, interviewee.id);
+    }
+  }
+
+  // Send bulk invitations to all uncontacted
+  async sendAllInvitations(): Promise<void> {
+    const processId = this.processId();
+    if (!processId) return;
+
+    try {
+      this.sendingBulk.set(true);
+      const result = await firstValueFrom(
+        this.interviewService.sendInvitations(processId, {
+          onlyUninvited: true,
+        }),
+      );
+      this.handleInvitationResult(result);
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+    } finally {
+      this.sendingBulk.set(false);
     }
   }
 
@@ -235,5 +278,62 @@ export class IntervieweeSectionComponent {
   closeAddModal(): void {
     this.selectedIds.set(new Set());
     this.showAddModal.set(false);
+  }
+
+  onConfirmResend(): void {
+    const id = this.pendingResendId();
+    const processId = this.processId();
+    if (id !== null && processId) {
+      void this.performSendInvitation(processId, id);
+      this.pendingResendId.set(null);
+    }
+  }
+
+  // Private Methods
+  private handleInvitationResult(result: SendInvitationsResultDTO): void {
+    const sentCount = result.sentCount ?? 0;
+    const failedCount = result.failedEmails?.length ?? 0;
+
+    if (sentCount > 0 && failedCount === 0) {
+      // All successful
+      if (sentCount === 1) {
+        this.toastService.showSuccessKey('interview.interviewees.invitation.successSingle');
+      } else {
+        this.toastService.showSuccessKey('interview.interviewees.invitation.success', {
+          count: sentCount.toString(),
+        });
+      }
+    } else if (sentCount > 0 && failedCount > 0) {
+      // Partial success
+      const failedList = result.failedEmails?.join(', ') ?? '';
+      this.toastService.showWarn({
+        summary: this.translateService.instant('interview.interviewees.invitation.partial.summary', {
+          sent: sentCount.toString(),
+          failed: failedCount.toString(),
+        }),
+        detail: failedList ? this.translateService.instant('interview.interviewees.invitation.partial.detail', { emails: failedList }) : '',
+        life: 10000,
+      });
+    } else {
+      // All failed
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+    }
+    void this.loadInterviewees();
+  }
+
+  private async performSendInvitation(processId: string, intervieweeId: string): Promise<void> {
+    try {
+      this.sendingInvitationId.set(intervieweeId);
+      const result = await firstValueFrom(
+        this.interviewService.sendInvitations(processId, {
+          intervieweeIds: [intervieweeId],
+        }),
+      );
+      this.handleInvitationResult(result);
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+    } finally {
+      this.sendingInvitationId.set(null);
+    }
   }
 }

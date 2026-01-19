@@ -285,7 +285,24 @@ const routes: Routes = [
         component: InterviewProcessDetailComponent,
         title: 'global.routes.interview.detail',
       },
+      {
+        path: 'process/:processId/interviewee/:intervieweeId/assessment',
+        canActivate: [UserRouteAccessService],
+        data: {
+          authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Employee],
+        },
+        loadComponent: () =>
+          import('./interview/interviewee-assessment/interviewee-assessment.component').then(m => m.IntervieweeAssessmentComponent),
+        title: 'global.routes.interview.assessment',
+      },
     ],
+  },
+  {
+    path: 'interview-booking/:processId',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Applicant] },
+    loadComponent: () => import('./interview/interview-booking/interview-booking.component').then(m => m.InterviewBookingComponent),
+    title: 'interview.booking.title',
   },
 
   // ======================================================================================

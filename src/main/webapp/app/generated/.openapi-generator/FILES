@@ -30,10 +30,11 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/aIJobDescriptionDTO.ts
+model/aIJobDescriptionTranslationDTO.ts
 model/acceptDTO.ts
 model/addIntervieweesDTO.ts
 model/addMembersToResearchGroupDTO.ts
-model/aiResponseDTO.ts
 model/applicant.ts
 model/applicantDTO.ts
 model/applicantForApplicationDetailDTO.ts
@@ -51,6 +52,7 @@ model/assignSlotRequestDTO.ts
 model/assignedIntervieweeDTO.ts
 model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
+model/bookSlotRequestDTO.ts
 model/bookingDTO.ts
 model/createSlotsDTO.ts
 model/createdJobDTO.ts
@@ -78,6 +80,7 @@ model/internalCommentUpdateDTO.ts
 model/interviewOverviewDTO.ts
 model/interviewSlotDTO.ts
 model/intervieweeDTO.ts
+model/intervieweeDetailDTO.ts
 model/intervieweeUserDTO.ts
 model/job.ts
 model/jobCardDTO.ts
@@ -117,9 +120,12 @@ model/schoolCreationDTO.ts
 model/schoolDTO.ts
 model/schoolShortDTO.ts
 model/sendCodeRequest.ts
+model/sendInvitationsRequestDTO.ts
+model/sendInvitationsResultDTO.ts
 model/slotInput.ts
 model/sortObject.ts
 model/updateApplicationDTO.ts
+model/updateAssessmentDTO.ts
 model/updatePasswordDTO.ts
 model/updateUserNameDTO.ts
 model/uploadDocumentsRequest.ts

@@ -14,7 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
 import { TranslateModule } from '@ngx-translate/core';
-import SharedModule from 'app/shared/shared.module';
+import { TranslateDirective } from 'app/shared/language';
 
 import { Button } from '../../atoms/button/button.component';
 import ButtonGroupComponent, { ButtonGroupData } from '../button-group/button-group.component';
@@ -39,7 +39,7 @@ export type StepData = {
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, SharedModule],
+  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, TranslateDirective],
   templateUrl: './progress-stepper.component.html',
   styleUrl: './progress-stepper.component.scss',
   standalone: true,

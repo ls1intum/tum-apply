@@ -1,11 +1,14 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
 
 import { AccountService } from './account.service';
+import { AuthFacadeService } from './auth-facade.service';
+import { IdpProvider } from './keycloak-authentication.service';
 
-export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRouteSnapshot) => {
+export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const router = inject(Router);
   const accountService = inject(AccountService);
+  const authFacade = inject(AuthFacadeService);
 
   const authorities: string[] = next.data['authorities'] ?? [];
   const publicRoute: boolean = authorities.length === 0;
@@ -15,9 +18,11 @@ export const UserRouteAccessService: CanActivateFn = async (next: ActivatedRoute
     return true;
   }
 
-  // If route requires authentication and user is not logged in, redirect to login
+  // If route requires authentication and user is not logged in, trigger Keycloak login
   if (!accountService.signedIn()) {
-    await router.navigate(['/']);
+    // Build the full target URL to redirect back after login
+    const targetUrl = window.location.origin + state.url;
+    await authFacade.loginWithProvider(IdpProvider.TUM, targetUrl);
     return false;
   }
 

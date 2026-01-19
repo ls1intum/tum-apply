@@ -20,9 +20,7 @@
     "publish": "Veröffentlichen",
     "chooseFile": "Datei auswählen",
     "assign": "Zuweisen",
-    "tooltip": {
-      "editDisabled": "Nur Entwürfe können bearbeitet werden"
-    },
+    "noFurtherActions": "Keine weiteren Aktionen verfügbar",
     "replace": "Ersetzen",
     "downloadPDF": "Exportieren"
   }
