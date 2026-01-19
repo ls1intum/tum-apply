@@ -31,5 +31,12 @@ public interface UserResearchGroupRoleRepository extends TumApplyJpaRepository<U
     @Query("UPDATE UserResearchGroupRole urgr SET urgr.researchGroup = null WHERE urgr.user.userId = :userId")
     void removeResearchGroupFromUserRoles(@Param("userId") UUID userId);
 
-    void deleteByUser(User user);
+    /**
+     * Deletes all roles for a given user ID using a bulk operation.
+     *
+     * @param userId the user ID whose roles should be deleted
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM UserResearchGroupRole urgr WHERE urgr.user.userId = :userId")
+    void deleteByUserId(@Param("userId") UUID userId);
 }

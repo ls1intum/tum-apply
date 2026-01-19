@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -114,6 +115,15 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      * @return true if a user exists with the ID, false otherwise
      */
     boolean existsById(UUID userId);
+
+    /**
+     * Deletes a user by ID using a bulk operation to avoid merging detached entities.
+     *
+     * @param userId the user ID to delete
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM User u WHERE u.userId = :userId")
+    void deleteByUserId(@Param("userId") UUID userId);
 
     /**
      * Finds user IDs for users available to be added to a research group.

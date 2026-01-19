@@ -56,10 +56,8 @@ public class UserRetentionJob {
         boolean dryRun = Boolean.TRUE.equals(properties.getDryRun());
 
         long totalCandidatesSeen = 0;
-        int pageNumber = 0;
-
         while (Instant.now().isBefore(deadline)) {
-            Page<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForRetention(cutoff, PageRequest.of(pageNumber, batchSize));
+            Page<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForRetention(cutoff, PageRequest.of(0, batchSize));
             List<UUID> ids = userIds.getContent();
 
             if (ids.isEmpty()) {
@@ -69,24 +67,6 @@ public class UserRetentionJob {
             totalCandidatesSeen += ids.size();
 
             userRetentionService.processUserIdsList(ids, cutoff, dryRun);
-
-            if (!dryRun) {
-                // Deletion/anonymization will be implemented next.
-                log.info(
-                    "User retention enabled (dryRun=false) but deletion not implemented yet. First batch candidates={} cutoff={}",
-                    ids.size(),
-                    cutoff
-                );
-                break;
-            }
-
-            log.info("User retention dry-run batch: page={} size={} cutoff={}", pageNumber, ids.size(), cutoff);
-            // Detailed per-user logging is done inside UserRetentionService.
-
-            if (!userIds.hasNext()) {
-                break;
-            }
-            pageNumber++;
         }
 
         Duration runtime = Duration.between(start, Instant.now());

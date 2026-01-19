@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.retention;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
@@ -35,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserRetentionService {
 
-    private final UserRetentionProperties userRetentionProperties = new UserRetentionProperties();
+    private final UserRetentionProperties userRetentionProperties;
 
     private final UserRepository userRepository;
 
@@ -62,7 +63,7 @@ public class UserRetentionService {
         UNKNOWN,
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void processUserIdsList(List<UUID> userIds, LocalDateTime cutoff, boolean dryRun) {
         for (UUID userId : userIds) {
             Optional<User> userOpt = userRepository.findWithResearchGroupRolesByUserId(userId);
@@ -72,11 +73,12 @@ public class UserRetentionService {
             }
 
             User user = userOpt.get();
+            UUID resolvedUserId = user.getUserId();
             RetentionCategory category = classify(user);
 
             log.info(
                 "User retention preview: userId={} category={} rolesCount={} dryRun={} cutoff={}",
-                user.getUserId(),
+                resolvedUserId,
                 category,
                 user.getResearchGroupRoles() == null ? 0 : user.getResearchGroupRoles().size(),
                 dryRun,
@@ -85,16 +87,16 @@ public class UserRetentionService {
 
             if (category == RetentionCategory.SKIP_ADMIN) {
                 // Safety-net; repository query already tries to exclude admins.
-                log.warn("User retention preview: userId={} classified as ADMIN - skipping", user.getUserId());
+                log.warn("User retention preview: userId={} classified as ADMIN - skipping", resolvedUserId);
                 continue;
             }
 
-            if (category == RetentionCategory.APPLICANT) {
-                handleApplicant(user, cutoff, dryRun);
-            } else if (category == RetentionCategory.PROFESSOR_OR_EMPLOYEE) {
+            if (category == RetentionCategory.PROFESSOR_OR_EMPLOYEE) {
                 handleProfessorOrEmployee(user, cutoff, dryRun);
+            } else if (category == RetentionCategory.APPLICANT) {
+                handleApplicant(user, cutoff, dryRun);
             } else if (category == RetentionCategory.UNKNOWN) {
-                log.info("User retention: processing UNKNOWN userId={}", user.getUserId());
+                log.info("User retention: processing UNKNOWN userId={}", resolvedUserId);
                 log.info("No specific handling for UNKNOWN users.");
                 continue;
             }
@@ -114,14 +116,14 @@ public class UserRetentionService {
             return RetentionCategory.SKIP_ADMIN;
         }
 
-        boolean isApplicant = roles.stream().anyMatch(r -> r.getRole() == UserRole.APPLICANT);
-        if (isApplicant) {
-            return RetentionCategory.APPLICANT;
-        }
-
         boolean isProfessorOrEmployee = roles.stream().anyMatch(r -> r.getRole() == UserRole.PROFESSOR || r.getRole() == UserRole.EMPLOYEE);
         if (isProfessorOrEmployee) {
             return RetentionCategory.PROFESSOR_OR_EMPLOYEE;
+        }
+
+        boolean isApplicant = roles.stream().anyMatch(r -> r.getRole() == UserRole.APPLICANT);
+        if (isApplicant) {
+            return RetentionCategory.APPLICANT;
         }
 
         return RetentionCategory.UNKNOWN;
@@ -135,30 +137,23 @@ public class UserRetentionService {
         log.info("User retention: processing APPLICANT userId={}", user.getUserId());
 
         // 1. Delete applications (and for each application delete application reviews, ratings, interviews (slots, interviewees etc), internal comments and documents)
-        applicationRepository
-            .findAllByApplicantId(user.getUserId())
-            .stream()
-            .forEach(application -> {
-                interviewSlotRepository.deleteByIntervieweeApplication(application);
-                intervieweeRepository.deleteByApplication(application);
+        List<Application> applications = applicationRepository.findAllByApplicantId(user.getUserId());
+        applications.forEach(application -> {
+            interviewSlotRepository.deleteByIntervieweeApplication(application);
+            intervieweeRepository.deleteByApplication(application);
 
-                applicationReviewRepository.deleteByApplication(application);
-                ratingRepository.deleteByApplication(application);
-                internalCommentRepository.deleteByApplication(application);
+            applicationReviewRepository.deleteByApplication(application);
+            ratingRepository.deleteByApplication(application);
+            internalCommentRepository.deleteByApplication(application);
 
-                documentDictionaryRepository.deleteByApplication(application);
-                documentRepository.deleteByUploadedBy(user);
-                applicationRepository.delete(application);
-            });
+            documentDictionaryRepository.deleteByApplication(application);
+            applicationRepository.delete(application);
+        });
+
+        documentRepository.deleteByUploadedBy(user);
 
         // 2. Delete applicant data
         applicantRepository.deleteById(user.getUserId());
-
-        // 3. Delete common user data (UserSettings, EmailSettings, ProfileImage, UserResearchGroupRoles)
-        userSettingRepository.deleteByUser(user);
-        emailSettingRepository.deleteByUser(user);
-        imageRepository.deleteProfileImageByUser(user.getUserId());
-        userResearchGroupRoleRepository.deleteByUser(user);
     }
 
     private void handleProfessorOrEmployee(User user, LocalDateTime cutoff, boolean dryRun) {
@@ -169,10 +164,15 @@ public class UserRetentionService {
         log.info("User retention: processing PROFESSOR_OR_EMPLOYEE userId={}", user.getUserId());
 
         UUID deletedUserId = userRetentionProperties.getDeletedUserId();
-        imageRepository.dissociateImagesFromUser(user, deletedUserId);
-        jobRepository.anonymiseJobByUserId(user, deletedUserId, JobState.CLOSED);
-        internalCommentRepository.anonymiseByCreatedBy(user, deletedUserId);
-        emailTemplateRepository.anonymiseByCreatedBy(user, deletedUserId);
+        if (deletedUserId == null || !userRepository.existsById(deletedUserId)) {
+            log.warn("User retention: deletedUserId is not configured or missing; skipping anonymization for userId={}", user.getUserId());
+            return;
+        }
+        User deletedUser = userRepository.getReferenceById(deletedUserId);
+        imageRepository.dissociateImagesFromUser(user, deletedUser);
+        jobRepository.anonymiseJobByUserId(user, deletedUser, JobState.CLOSED);
+        internalCommentRepository.anonymiseByCreatedBy(user, deletedUser);
+        emailTemplateRepository.anonymiseByCreatedBy(user, deletedUser);
     }
 
     private void handleGeneralData(User user, LocalDateTime cutoff, boolean dryRun) {
@@ -184,9 +184,10 @@ public class UserRetentionService {
 
         // Common data deletion/anonymization for all users
         emailSettingRepository.deleteByUser(user);
-        imageRepository.deleteProfileImageByUser(user.getUserId());
+        UUID resolvedUserId = user.getUserId();
+        imageRepository.deleteProfileImageByUser(resolvedUserId);
         userSettingRepository.deleteByUser(user);
-        userResearchGroupRoleRepository.deleteByUser(user);
-        userRepository.delete(user);
+        userResearchGroupRoleRepository.deleteByUserId(resolvedUserId);
+        userRepository.deleteByUserId(resolvedUserId);
     }
 }

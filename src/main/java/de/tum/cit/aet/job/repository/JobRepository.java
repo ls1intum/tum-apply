@@ -278,7 +278,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param userId        the ID of the user whose jobs are to be reassigned
      * @param deletedUserId the ID of the deleted user to whom the jobs will be reassigned
      */
-    @Modifying
-    @Query("UPDATE Job j SET j.supervisingProfessor.userId = :deletedUserId, j.state = :state WHERE j.supervisingProfessor= :user")
-    void anonymiseJobByUserId(@Param("user") User user, @Param("deletedUserId") UUID deletedUserId, @Param("state") JobState state);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Job j SET j.supervisingProfessor = :deletedUser, j.state = :state WHERE j.supervisingProfessor = :user")
+    void anonymiseJobByUserId(@Param("user") User user, @Param("deletedUser") User deletedUser, @Param("state") JobState state);
 }

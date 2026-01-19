@@ -104,7 +104,7 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
      * @param user the user whose created email templates should be anonymized
      * @param deletedUserId the UUID to set as the new user identifier for the anonymized creator
      */
-    @Modifying
-    @Query("UPDATE EmailTemplate et SET et.createdBy.userId = :deletedUserId WHERE et.createdBy = :user")
-    void anonymiseByCreatedBy(@Param("user") User user, @Param("deletedUserId") UUID deletedUserId);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE EmailTemplate et SET et.createdBy = :deletedUser WHERE et.createdBy = :user")
+    void anonymiseByCreatedBy(@Param("user") User user, @Param("deletedUser") User deletedUser);
 }

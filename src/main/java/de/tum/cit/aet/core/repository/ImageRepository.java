@@ -105,7 +105,7 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
      * @param user the user whose uploaded images should be dissociated
      * @param deletedUserId the UUID to set as the uploader's userId
      */
-    @Modifying
-    @Query("UPDATE Image i SET i.uploadedBy.userId = :deletedUserId WHERE i.uploadedBy = :user")
-    void dissociateImagesFromUser(@Param("user") User user, @Param("deletedUserId") UUID deletedUserId);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Image i SET i.uploadedBy = :deletedUser WHERE i.uploadedBy = :user")
+    void dissociateImagesFromUser(@Param("user") User user, @Param("deletedUser") User deletedUser);
 }
