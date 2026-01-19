@@ -1,6 +1,5 @@
 package de.tum.cit.aet.application.web;
 
-import lombok.extern.slf4j.Slf4j;
 import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -16,6 +15,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;

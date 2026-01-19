@@ -1,4 +1,8 @@
 <form [formGroup]="personalInfoForm()">
+  <div class="flex justify-between items-center mb-6">
+    <div [innerHTML]="('settings.personalInformation.description' | translate).replace(/\n/g, '<br>')"></div>
+    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" (click)="onSave()" [disabled]="!hasChanges() || !isValid()" />
+  </div>
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="form-row">
     <div class="form-field">
@@ -167,22 +171,5 @@
         [shouldTranslate]="true"
       />
     </div>
-  </div>
-
-  <div class="flex justify-end gap-4 mt-6">
-    <jhi-button
-      [label]="'entity.action.cancel'"
-      variant="outlined"
-      [shouldTranslate]="true"
-      (click)="onCancel()"
-      [disabled]="!hasChanges()"
-    />
-    <jhi-button
-      [label]="'entity.action.save'"
-      severity="primary"
-      [shouldTranslate]="true"
-      (click)="onSave()"
-      [disabled]="!hasChanges() || !isValid()"
-    />
   </div>
 </form>
