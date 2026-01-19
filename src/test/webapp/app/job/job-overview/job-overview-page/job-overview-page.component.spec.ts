@@ -37,7 +37,7 @@ describe('JobOverviewPageComponent', () => {
   });
 
   it('should render the page title with correct translation key', () => {
-    const title = nativeElement.querySelector('h1.block');
+    const title = nativeElement.querySelector('h1');
     expect(title).not.toBeNull();
     expect(title?.getAttribute('jhiTranslate')).toBe('jobOverviewPage.title');
   });

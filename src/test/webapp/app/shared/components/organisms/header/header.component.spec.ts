@@ -7,6 +7,7 @@ import { provideTranslateMock } from 'util/translate.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 
 import { IdpProvider } from 'app/core/auth/keycloak-authentication.service';
+import { User } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
@@ -190,6 +191,127 @@ describe('HeaderComponent', () => {
       fixture.detectChanges();
 
       expect(component.isProfessorPage()).toBe(true);
+    });
+  });
+
+  describe('navigateToSettings', () => {
+    it('should navigate to settings page', () => {
+      component.navigateToSettings();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/settings']);
+    });
+  });
+
+  describe('toggleProfileMenu', () => {
+    it('should toggle isProfileMenuOpen signal from false to true', () => {
+      component.isProfileMenuOpen.set(false);
+      const mockEvent = new MouseEvent('click');
+
+      component.toggleProfileMenu(mockEvent);
+
+      expect(component.isProfileMenuOpen()).toBe(true);
+    });
+
+    it('should toggle isProfileMenuOpen signal from true to false', () => {
+      component.isProfileMenuOpen.set(true);
+      const mockEvent = new MouseEvent('click');
+
+      component.toggleProfileMenu(mockEvent);
+
+      expect(component.isProfileMenuOpen()).toBe(false);
+    });
+
+    it('should call profileMenu toggle method with event', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      fixture.detectChanges();
+
+      const mockEvent = new MouseEvent('click');
+      const menuComponent = component.profileMenu();
+      const toggleSpy = vi.spyOn(menuComponent!, 'toggle');
+
+      component.toggleProfileMenu(mockEvent);
+
+      expect(toggleSpy).toHaveBeenCalledWith(mockEvent);
+    });
+
+    it('should not throw error when profileMenu is undefined', () => {
+      component.isProfileMenuOpen.set(false);
+      const mockEvent = new MouseEvent('click');
+
+      expect(() => component.toggleProfileMenu(mockEvent)).not.toThrow();
+      expect(component.isProfileMenuOpen()).toBe(true);
+    });
+  });
+
+  describe('profileMenuItems', () => {
+    it('should return empty array when user is not authenticated', () => {
+      accountService.user.set(undefined);
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+
+      expect(menuItems).toEqual([]);
+    });
+
+    it('should return settings and logout menu items when user is authenticated', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+
+      expect(menuItems).toHaveLength(2);
+      expect(menuItems[0]).toMatchObject({
+        label: 'header.settings',
+        icon: 'gear',
+        severity: 'primary',
+      });
+      expect(menuItems[1]).toMatchObject({
+        label: 'header.logout',
+        icon: 'right-from-bracket',
+        severity: 'danger',
+      });
+    });
+
+    it('should trigger navigateToSettings when settings menu item command is executed', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      const navigateSpy = vi.spyOn(component, 'navigateToSettings');
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+      const settingsItem = menuItems[0];
+      settingsItem?.command?.();
+
+      expect(navigateSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should trigger logout when logout menu item command is executed', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      const logoutSpy = vi.spyOn(component, 'logout');
+      fixture.detectChanges();
+
+      const menuItems = component.profileMenuItems();
+      const logoutItem = menuItems[1];
+      logoutItem?.command?.();
+
+      expect(logoutSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should reactively update when language changes', () => {
+      accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
+      fixture.detectChanges();
+
+      const menuItemsBefore = component.profileMenuItems();
+      expect(menuItemsBefore).toHaveLength(2);
+
+      // Trigger language change
+      translate.use('de');
+      fixture.detectChanges();
+
+      const menuItemsAfter = component.profileMenuItems();
+      expect(menuItemsAfter).toHaveLength(2);
+      // Menu items should still have the same structure
+      expect(menuItemsAfter[0]?.label).toBe('header.settings');
+      expect(menuItemsAfter[1]?.label).toBe('header.logout');
     });
   });
 

@@ -25,6 +25,7 @@
   --color-primary-DEFAULT: var(--p-primary-color);
   --color-primary-default: var(--p-primary-color);
   --color-primary-hover: var(--p-primary-hover-color);
+  --color-primary-hover-outlined: var(--p-primary-hover-color-outlined);
   --color-primary-active: var(--p-primary-active-color);
   --color-primary-disabled: var(--p-primary-disabled-color);
 
@@ -86,4 +87,58 @@
   --color-text-on-success: var(--p-text-on-success);
   --color-text-on-warn: var(--p-text-on-warn);
   --color-text-on-danger: var(--p-text-on-danger);
+
+  // ========================================================
+  // Border Radius Tokens
+  // ========================================================
+  //
+  // USAGE GUIDE:
+  //
+  // 1. In HTML with Tailwind classes:
+  //    <div class="rounded-sm">   → uses --border-radius-sm
+  //    <div class="rounded-md">   → uses --border-radius-md
+  //    <div class="rounded-lg">   → uses --border-radius-lg
+  //    <div class="rounded-full"> → uses --border-radius-full
+  //
+  // 2. In CSS/SCSS files:
+  //    .my-component {
+  //      border-radius: var(--border-radius-sm);
+  //    }
+  //
+  // 3. With Tailwind's @apply in SCSS:
+  //    .my-component {
+  //      @apply rounded-md;
+  //    }
+  //
+  // ========================================================
+
+  // Checkboxes, Tiny badges, 0.125rem
+  --border-radius-xs: var(--p-border-radius-xs);
+
+  // Tooltips, Popovers, Info Boxes, 0.25rem
+  --border-radius-sm: var(--p-border-radius-sm);
+
+  // Standard, Inputs, Buttons, 0.375rem
+  --border-radius-md: var(--p-border-radius-md);
+
+  // Cards & Containers, 0.5rem
+  --border-radius-lg: var(--p-border-radius-lg);
+
+  // Modals, Dialogs, 0.75rem
+  --border-radius-xl: var(--p-border-radius-xl);
+
+  // Hero Cards, 1rem
+  --border-radius-2xl: var(--p-border-radius-2xl);
+
+  // Avatars, Circles, 50%
+  --border-radius-full: 50%;
+}
+
+// ========================================================
+// Explicit Utility Generation for Custom Border Radius
+// ========================================================
+
+// Status pills
+@utility rounded-pill {
+  border-radius: 9999px;
 }

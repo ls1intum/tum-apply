@@ -1,9 +1,32 @@
+<jhi-confirm-dialog
+  #withdrawConfirmDialog
+  class="confirm-dialog"
+  [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
+  [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
+  [label]="'button.withdraw' | translate"
+  severity="danger"
+  confirmIcon="withdraw"
+  [showOpenButton]="false"
+  (confirmed)="onWithdrawApplication()"
+/>
+<jhi-confirm-dialog
+  #deleteConfirmDialog
+  class="confirm-dialog"
+  [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
+  [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
+  [label]="'button.delete' | translate"
+  severity="danger"
+  confirmIcon="trash"
+  [showOpenButton]="false"
+  (confirmed)="onDeleteApplication()"
+/>
+
 <div [class]="isSummaryPage() ? '' : 'page-container'">
   @if (application(); as application) {
     @if (!previewDetailData()) {
       <!-- Header Section -->
       <div class="header-container">
-        <div class="title-with-label">
+        <div class="flex flex-col gap-2">
           <h1
             class="page-header"
             jhiTranslate="entity.application_detail.applicant.header"
@@ -11,16 +34,38 @@
           ></h1>
           <jhi-application-state-for-applicants [state]="application.applicationState" />
         </div>
-        <div class="flex gap-2">
-          <jhi-button
-            [label]="'button.downloadPDF'"
-            [shouldTranslate]="true"
-            severity="secondary"
-            [variant]="'outlined'"
-            (click)="onDownloadPDF()"
-          />
-          @if (['SAVED'].includes(application.applicationState)) {
-            <jhi-button [label]="'button.edit'" icon="pencil" [shouldTranslate]="true" (click)="onUpdateApplication()" />
+        <div class="flex items-center gap-2">
+          @for (item of individualActionButtons(); track item.label) {
+            <jhi-button
+              [label]="item.label"
+              [severity]="item.severity ?? 'primary'"
+              [variant]="item.severity === 'danger' ? undefined : 'outlined'"
+              [icon]="item.icon"
+              [shouldTranslate]="true"
+              (click)="item.command?.()"
+            />
+          }
+          @if (shouldShowKebabMenu()) {
+            <jhi-button
+              severity="primary"
+              variant="outlined"
+              icon="ellipsis-vertical"
+              label="button.actions"
+              [shouldTranslate]="true"
+              (click)="menu.toggle($event)"
+            />
+            <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
+          }
+          @if (primaryActionButton(); as primaryActionButton) {
+            <jhi-button
+              [label]="primaryActionButton.label"
+              [severity]="primaryActionButton.severity ?? 'primary'"
+              [variant]="primaryActionButton.variant"
+              [icon]="primaryActionButton.icon"
+              [disabled]="primaryActionButton.disabled ?? false"
+              [shouldTranslate]="primaryActionButton.shouldTranslate ?? true"
+              (click)="primaryActionButton.onClick()"
+            />
           }
         </div>
       </div>
@@ -32,8 +77,8 @@
           <jhi-button
             [label]="'entity.application_detail.view_job_details'"
             [shouldTranslate]="true"
-            severity="secondary"
-            [variant]="'outlined'"
+            severity="primary"
+            variant="outlined"
             (click)="onViewJobDetails()"
           />
         </div>
@@ -297,48 +342,9 @@
       </section>
     }
 
-    <!-- Action Buttons Section -->
     @if (!previewDetailData()) {
-      <section class="action-buttons-section">
-        <div class="button-wrapper">
-          <!-- Left-aligned Back button -->
-          <div class="left-buttons">
-            <jhi-button
-              icon="arrow-left"
-              [label]="'button.back'"
-              [shouldTranslate]="true"
-              severity="info"
-              [variant]="'outlined'"
-              (click)="onBack()"
-            />
-          </div>
-
-          <!-- Right-aligned Destructive actions -->
-          <div class="right-buttons">
-            @if (['SENT', 'IN_REVIEW'].includes(application.applicationState)) {
-              <jhi-confirm-dialog
-                [label]="'button.withdraw' | translate"
-                [confirmIcon]="'withdraw'"
-                [header]="'entity.applicationOverview.dialogs.withdrawHeader' | translate"
-                [message]="'entity.applicationOverview.dialogs.withdrawMessage' | translate"
-                (confirmed)="onWithdrawApplication()"
-                severity="danger"
-                variant="outlined"
-              />
-            }
-
-            @if (['SAVED'].includes(application.applicationState)) {
-              <jhi-confirm-dialog
-                [label]="'button.delete' | translate"
-                [confirmIcon]="'trash'"
-                [header]="'entity.applicationOverview.dialogs.deleteHeader' | translate"
-                [message]="'entity.applicationOverview.dialogs.deleteMessage' | translate"
-                (confirmed)="onDeleteApplication()"
-                severity="danger"
-              />
-            }
-          </div>
-        </div>
+      <section class="mt-8 pt-8 border-t border-divider-default">
+        <jhi-button icon="arrow-left" label="button.back" [shouldTranslate]="true" severity="info" variant="outlined" (click)="onBack()" />
       </section>
     }
   } @else {

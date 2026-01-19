@@ -52,7 +52,7 @@
 </ng-template>
 
 <ng-template #summaryPanel>
-  <p-message severity="warn" class="m-3"><p jhiTranslate="entity.applicationPage4.message"></p> </p-message>
+  <jhi-message severity="warn" styleClass="mb-3" message="entity.applicationPage4.message" [shouldTranslate]="true" />
   <!-- Summary panel -->
   <jhi-application-detail-for-applicant
     [previewDetailData]="previewData()"

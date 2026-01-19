@@ -12,7 +12,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
-import { ButtonColor, ButtonComponent, ButtonVariant } from 'app/shared/components/atoms/button/button.component';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
@@ -25,6 +26,7 @@ import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
+import { createMenuActionSignals } from 'app/shared/util/util';
 
 import * as DropDownOptions from '../dropdown-options';
 
@@ -39,9 +41,7 @@ export interface JobDetails {
   workload: string;
   contractDuration: string;
   fundingType: string;
-  description: string;
-  tasks: string;
-  requirements: string;
+  jobDescription: string;
   startDate: string;
   endDate: string;
   createdAt: string;
@@ -59,16 +59,6 @@ export interface JobDetails {
 
   applicationId?: string;
   applicationState?: ApplicationStateEnum;
-}
-
-export interface PrimaryActionButton {
-  label: string;
-  severity: ButtonColor;
-  variant?: ButtonVariant;
-  icon?: string;
-  onClick: () => void;
-  disabled: boolean;
-  shouldTranslate: boolean;
 }
 
 @Component({
@@ -119,7 +109,7 @@ export class JobDetailComponent {
 
   pdfExportService = inject(PdfExportResourceApiService);
 
-  readonly primaryActionButton = computed<PrimaryActionButton | null>(() => {
+  readonly primaryActionButton = computed<ActionButton | null>(() => {
     if (this.previewData()) {
       return null;
     }
@@ -153,13 +143,12 @@ export class JobDetailComponent {
         default:
           return {
             label: 'button.view',
-            severity: 'secondary',
+            severity: 'primary',
             onClick: () => {
               this.onViewApplication();
             },
             disabled: false,
             shouldTranslate: true,
-            variant: 'outlined',
           };
       }
     }
@@ -258,23 +247,14 @@ export class JobDetailComponent {
     return items;
   });
 
-  readonly shouldShowKebabMenu = computed<boolean>(() => {
-    const primaryButton = this.primaryActionButton();
-    const menuItemsCount = this.menuItems().length;
-    const totalActions = (primaryButton ? 1 : 0) + menuItemsCount;
-
-    // Only show kebab menu if there are 3 or more total actions
-    return totalActions >= 3;
+  // Menu action signals - determines when to show kebab menu vs individual buttons
+  readonly menuActionSignals = createMenuActionSignals({
+    hasPrimaryButton: computed(() => !!this.primaryActionButton()),
+    menuItems: this.menuItems,
   });
 
-  readonly individualActionButtons = computed<JhiMenuItem[]>(() => {
-    // If we should show kebab menu, return empty array
-    if (this.shouldShowKebabMenu()) {
-      return [];
-    }
-    // Otherwise, return all menu items to be shown as individual buttons
-    return this.menuItems();
-  });
+  readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
+  readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
   private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);
@@ -526,9 +506,7 @@ export class JobDetailComponent {
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
       fundingType: data.fundingType ?? '',
-      description: data.description ?? '',
-      tasks: data.tasks ?? '',
-      requirements: data.requirements ?? '',
+      jobDescription: data.jobDescription ?? '',
       startDate,
       endDate,
       createdAt,

@@ -1,6 +1,7 @@
 package de.tum.cit.aet.interview.service;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.dto.PageDTO;
@@ -11,10 +12,13 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.ResourceAlreadyExistsException;
 import de.tum.cit.aet.core.exception.TimeConflictException;
 import de.tum.cit.aet.core.service.CurrentUserService;
+import de.tum.cit.aet.core.service.DocumentDictionaryService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.InterviewSlot;
 import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.domain.enumeration.AssessmentRating;
 import de.tum.cit.aet.interview.dto.*;
+import de.tum.cit.aet.interview.dto.IntervieweeState;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
@@ -36,12 +40,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class InterviewService {
@@ -54,6 +60,7 @@ public class InterviewService {
     private final JobRepository jobRepository;
     private final AsyncEmailSender asyncEmailSender;
     private final IcsCalendarService icsCalendarService;
+    private final DocumentDictionaryService documentDictionaryService;
     private static final ZoneId CET_TIMEZONE = ZoneId.of("Europe/Berlin");
 
     /*--------------------------------------------------------------
@@ -602,6 +609,82 @@ public class InterviewService {
     }
 
     /**
+     * Sends self-scheduling invitations to applicants in the interview process.
+     * Can filter to send only to uninvited applicants or re-send to all.
+     *
+     * @param processId the ID of the interview process
+     * @param request   options for sending (e.g. filter uninvited)
+     * @return summary of sent emails and failures
+     * @throws EntityNotFoundException if process not found
+     * @throws AccessDeniedException   if user has no job access
+     */
+
+    public SendInvitationsResultDTO sendSelfSchedulingInvitations(UUID processId, SendInvitationsRequestDTO request) {
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
+
+        // 2. Security: Verify current user has job access
+        Job job = process.getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Fetch interviewees based on filter
+        List<Interviewee> interviewees;
+        if (Boolean.TRUE.equals(request.onlyUninvited())) {
+            interviewees = intervieweeRepository.findAllByInterviewProcessIdAndLastInvitedIsNull(processId);
+        } else {
+            interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
+        }
+
+        // Filter by explicit IDs if provided
+        if (request.intervieweeIds() != null && !request.intervieweeIds().isEmpty()) {
+            interviewees = interviewees
+                .stream()
+                .filter(i -> request.intervieweeIds().contains(i.getId()))
+                .toList();
+        }
+
+        // 4. Send emails
+        List<String> failedEmails = new ArrayList<>();
+        List<Interviewee> updatedInterviewees = new ArrayList<>();
+
+        for (Interviewee interviewee : interviewees) {
+            try {
+                sendSelfSchedulingEmail(interviewee, job);
+                interviewee.setLastInvited(Instant.now());
+                updatedInterviewees.add(interviewee);
+            } catch (Exception e) {
+                log.debug(
+                    "Failed to send invitation email to {}: {}",
+                    interviewee.getApplication().getApplicant().getUser().getEmail(),
+                    e.getMessage()
+                );
+                failedEmails.add(interviewee.getApplication().getApplicant().getUser().getEmail());
+            }
+        }
+
+        // 5. Save updated timestamps
+        intervieweeRepository.saveAll(updatedInterviewees);
+
+        return new SendInvitationsResultDTO(updatedInterviewees.size(), failedEmails);
+    }
+
+    private void sendSelfSchedulingEmail(Interviewee interviewee, Job job) {
+        User applicant = interviewee.getApplication().getApplicant().getUser();
+
+        Email email = Email.builder()
+            .to(applicant)
+            .emailType(EmailType.INTERVIEW_SELF_SCHEDULING_INVITATION)
+            .language(Language.fromCode(applicant.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(interviewee) // Pass the interviewee object directly
+            .build();
+
+        asyncEmailSender.sendAsync(email);
+    }
+
+    /**
      * Maps an {@link Interviewee} entity into its corresponding DTO.
      * Calculates the interview state based on lastInvited and slots.
      *
@@ -661,5 +744,94 @@ public class InterviewService {
             return null;
         }
         return new IntervieweeDTO.IntervieweeUserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
+    }
+
+    /**
+     * Retrieves full details for a single interviewee including application and
+     * documents.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @return detailed interviewee information
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public IntervieweeDetailDTO getIntervieweeDetails(UUID processId, UUID intervieweeId) {
+        // 1. Load interviewee with all relations
+        Interviewee interviewee = intervieweeRepository
+            .findByIdAndProcessId(intervieweeId, processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
+        // 2. Security: Verify current user has job access
+        Job job = interviewee.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Build and return detail DTO
+        return mapIntervieweeToDetailDTO(interviewee, job);
+    }
+
+    /**
+     * Updates the assessment (rating and/or notes) for an interviewee.
+     *
+     * @param processId     the ID of the interview process
+     * @param intervieweeId the ID of the interviewee
+     * @param dto           the update data containing rating and/or notes
+     * @return updated interviewee details
+     * @throws EntityNotFoundException if the interviewee or process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws BadRequestException     if neither rating nor notes is provided
+     */
+
+    public IntervieweeDetailDTO updateAssessment(UUID processId, UUID intervieweeId, UpdateAssessmentDTO dto) {
+        // 1. Validate input
+        if (!dto.hasContent()) {
+            throw new BadRequestException("At least one of rating or notes must be provided");
+        }
+
+        // 2. Load interviewee with all relations
+        Interviewee interviewee = intervieweeRepository
+            .findByIdAndProcessId(intervieweeId, processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
+
+        // 3. Security: Verify current user has job access
+        Job job = interviewee.getInterviewProcess().getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 4. Update fields if provided
+        if (Boolean.TRUE.equals(dto.clearRating())) {
+            interviewee.setRating(null);
+        } else if (dto.rating() != null) {
+            interviewee.setRating(AssessmentRating.fromValue(dto.rating()));
+        }
+        if (dto.notes() != null) {
+            interviewee.setAssessmentNotes(dto.notes());
+        }
+
+        // 5. Save and return DTO
+        intervieweeRepository.save(interviewee);
+        return mapIntervieweeToDetailDTO(interviewee, job);
+    }
+
+    /**
+     * Maps an Interviewee entity to a detailed DTO including application and
+     * documents.
+     */
+    private IntervieweeDetailDTO mapIntervieweeToDetailDTO(Interviewee interviewee, Job job) {
+        Application application = interviewee.getApplication();
+        User user = application.getApplicant().getUser();
+        InterviewSlot slot = interviewee.getScheduledSlot();
+        IntervieweeState state = calculateIntervieweeState(interviewee);
+
+        return new IntervieweeDetailDTO(
+            interviewee.getId(),
+            application.getApplicationId(),
+            mapUserToIntervieweeUserDTO(user),
+            interviewee.getLastInvited(),
+            slot != null ? InterviewSlotDTO.fromEntity(slot) : null,
+            state,
+            interviewee.getRating() != null ? interviewee.getRating().getValue() : null,
+            interviewee.getAssessmentNotes(),
+            ApplicationDetailDTO.getFromEntity(application, job),
+            documentDictionaryService.getDocumentIdsDTO(application)
+        );
     }
 }

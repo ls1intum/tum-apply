@@ -1,9 +1,10 @@
 import { definePreset } from '@primeuix/themes';
 import Lara from '@primeuix/themes/lara';
 
-import { sharedComponentConfig, sharedLightColorScheme } from './shared-theme-config';
+import { sharedComponentConfig, sharedLightColorScheme, sharedPrimitiveConfig } from './shared-theme-config';
 
 export const BlossomTheme = definePreset(Lara, {
+  primitive: sharedPrimitiveConfig,
   semantic: {
     primary: {
       50: '#fbf4f8',
@@ -39,14 +40,14 @@ export const BlossomTheme = definePreset(Lara, {
       700: '#205c35',
     },
     danger: {
-      50: '#f9e7e7',
-      100: '#f5d3d3',
-      200: '#eeb3b3',
-      300: '#e28787',
-      400: '#d36060',
-      500: '#be4444',
-      600: '#9f3636',
-      700: '#843030',
+      50: '#fff5f5',
+      100: '#ffe3e3',
+      200: '#ffc9c9',
+      300: '#ffa8a8',
+      400: '#ff9494',
+      500: '#ff7070',
+      600: '#e35d5d',
+      700: '#c92a2a',
     },
     warn: {
       50: '#fbf8eb',

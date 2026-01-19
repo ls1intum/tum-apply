@@ -7,14 +7,14 @@
       },
       "steps": {
         "basicInfo": "Basic Information",
-        "positionDetails": "Position Details",
+        "positionDetails": "Employment Terms",
         "imageSelection": "Job Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
       },
       "basicInfo": {
         "section1": "Overview",
-        "section2": "Employment Terms"
+        "section2": "Position Details"
       }
     },
     "basicInformationSection": {
@@ -127,25 +127,20 @@
       "description": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
       "jobDescription": {
         "label": "Job Description",
-        "placeholder": "Describe the scope and focus of the position...",
-        "descriptionHelper": "Describe the research context, goals, and overall scope of the position. Keep it concise but informative.",
-        "toolTipText": "Help the applicant understand the research focus and goals of the position."
-      },
-      "tasks": {
-        "label": "Tasks & Responsibilities",
-        "placeholder": "List the main responsibilities...",
-        "descriptionHelper": "List the main responsibilities or activities the candidate will be involved in. Bullet points are recommended.",
-        "toolTipText": "Provide a clear picture of the position’s responsibilities and activities."
-      },
-      "requirements": {
-        "label": "Eligibility Criteria",
-        "placeholder": "List the minimum requirements for applicants...",
-        "descriptionHelper": "Specify the minimum requirements (e.g., degree, grades, language proficiency) applicants must fulfill.",
-        "toolTipText": "Ensure the applicant knows what qualifications are expected."
+        "placeholder": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
+        "descriptionHelper": "Use the template above to structure your job description clearly for applicants.",
+        "toolTipText": "Help applicants understand the research focus, tasks, and expected qualifications.",
+        "template": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
+        "aiHeaderText": "AI Assistant",
+        "aiButton1": "Write With AI",
+        "aiButton2": "Rewrite With AI",
+        "aiHelperText": "Improve wording and reduce biased language.",
+        "aiFillerText": "Generating...",
+        "aiToggle": "Enable AI"
       }
     },
     "imageSection": {
-      "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library. Uploaded images are shared across your research group and can be reused for multiple job postings.",
+      "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library.",
       "defaultImages": "Default Images",
       "orDivider": "or",
       "researchGroupImages": "Research Group Image Library",
@@ -216,6 +211,16 @@
     "reviewPageSection": {
       "title": "Overview",
       "message": "Please review your entries before publishing the doctorate position."
+    },
+    "toastMessages": {
+      "noDescription": {
+        "summary": "No Job Description",
+        "detail": "Please add a job description or bullet points before publishing."
+      },
+      "saveFailed": {
+        "summary": "Save Failed",
+        "detail": "Could not save changes. Please check your connection and try again."
+      }
     }
   },
   "jobOverviewPage": {
@@ -279,7 +284,6 @@
       "created": "Created",
       "lastModified": "Last Modified"
     },
-    "noFurtherActions": "No further actions available",
     "confirmDialog": {
       "closeHeader": "Confirm Position Closure",
       "closeMessage": "Are you sure you want to close this position? Once closed, applicants will no longer be able to apply for this position. This action can NOT be undone.",
