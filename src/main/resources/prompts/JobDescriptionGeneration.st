@@ -56,6 +56,7 @@ Maximum 200 words
 INPUT:
 Job Description: %s
 
+
 OUTPUT
 1. gender-inclusive
 2. AGG-compliant
