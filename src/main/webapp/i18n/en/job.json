@@ -134,7 +134,7 @@
         "aiHeaderText": "AI Assistant",
         "aiButton1": "Write With AI",
         "aiButton2": "Rewrite With AI",
-        "aiHelperText": "Improve wording and reduce biased language.",
+        "aiHelperText": "Write bullet points to generate first job draft.\nFill in fields above for better results.",
         "aiFillerText": "Generating...",
         "aiToggle": "Enable AI"
       }
