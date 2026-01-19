@@ -17,6 +17,10 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { CheckboxModule } from 'primeng/checkbox';
 import { AiResourceApiService } from 'app/generated';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { FormsModule } from '@angular/forms';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
+import { ToggleSwitchComponent } from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 
@@ -61,6 +65,10 @@ type JobFormMode = 'create' | 'edit';
     ButtonComponent,
     ProgressSpinnerModule,
     CheckboxModule,
+    ToggleSwitchModule,
+    FormsModule,
+    ProgressSpinnerComponent,
+    ToggleSwitchComponent,
     InfoBoxComponent,
     MessageComponent,
   ],
@@ -81,6 +89,8 @@ export class JobCreationFormComponent {
   publishAttempted = signal<boolean>(false);
   jobDescriptionSignal = signal<string>('');
   isGeneratingDraft = signal<boolean>(false);
+  aiToggleSignal = signal<boolean>(true);
+  rewriteButtonSignal = signal<boolean>(false);
   // Image upload state
   defaultImages = signal<ImageDTO[]>([]);
   researchGroupImages = signal<ImageDTO[]>([]);
@@ -216,6 +226,31 @@ export class JobCreationFormComponent {
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
+  // Toggle for AI assistant
+  showAiPanel = computed(() => this.aiToggleSignal());
+  templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
+  // Als Class Field deklarieren (neben den anderen Effects)
+  private aiToggleEffect = effect(() => {
+    const aiEnabled = this.aiToggleSignal();
+    const ctrl = this.basicInfoForm.get('jobDescription');
+    const current = (ctrl?.value ?? '') as string;
+    const template = this.templateText();
+
+    const isEmpty = !current || current.trim() === '' || current.trim() === '<p><br></p>';
+
+    // AI OFF -> set template as editable content (nur wenn leer)
+    if (!aiEnabled && isEmpty) {
+      ctrl?.setValue(template);
+      this.jobDescriptionEditor()?.forceUpdate(template);
+    }
+
+    // AI ON -> empty field to show placeholder (nur wenn template drin ist)
+    if (aiEnabled && current === template) {
+      ctrl?.setValue('');
+      this.jobDescriptionEditor()?.forceUpdate('');
+    }
+  });
+
   private autoSaveTimer: number | undefined;
   private autoSaveInitialized = false;
   // Allowed image file types for upload
@@ -546,27 +581,28 @@ export class JobCreationFormComponent {
    * Updates both the form control and Quill editor in real-time.
    */
   async generateJobApplicationDraft(): Promise<void> {
-    // Textbox is empty check
-    const current = this.basicInfoForm.get('jobDescription')?.value;
-    if (!current || current.trim().length === 0) {
-      this.toastService.showErrorKey('jobCreationForm.toastMessages.noDescription');
-      return;
-    }
+    const current = this.basicInfoForm.get('jobDescription');
 
     this.isGeneratingDraft.set(true);
-
-    // Call server with relevant metadata
-    const request: JobFormDTO = {
-      title: this.basicInfoForm.get('title')?.value ?? '',
-      researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
-      fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
-      supervisingProfessor: this.userId(),
-      location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
-      jobDescription: current ?? '',
-      state: JobFormDTO.StateEnum.Draft,
-    };
+    this.rewriteButtonSignal.set(true);
+    // Loading state
+    const originalContent = current?.value;
+    this.jobDescriptionEditor()?.forceUpdate(
+      `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
+    );
 
     try {
+      // Call server with relevant metadata
+      const request: JobFormDTO = {
+        title: this.basicInfoForm.get('title')?.value ?? '',
+        researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
+        fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
+        supervisingProfessor: this.userId(),
+        location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
+        jobDescription: current?.value,
+        state: JobFormDTO.StateEnum.Draft,
+      };
+
       const response = await firstValueFrom(this.aiService.generateJobApplicationDraft(request));
       if (response.jobDescription) {
         // Update form control
@@ -577,6 +613,7 @@ export class JobCreationFormComponent {
         this.basicInfoValid.set(this.basicInfoForm.valid);
       }
     } catch {
+      this.jobDescriptionEditor()?.forceUpdate(originalContent);
       this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
     } finally {
       this.isGeneratingDraft.set(false);

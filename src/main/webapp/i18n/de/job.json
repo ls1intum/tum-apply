@@ -7,14 +7,14 @@
       },
       "steps": {
         "basicInfo": "Grundlegende Informationen",
-        "positionDetails": "Stellenbeschreibung",
+        "positionDetails": "Arbeitsbedingungen",
         "imageSelection": "Bannerbild",
         "additionalInfo": "Zusätzliche Informationen",
         "summary": "Zusammenfassung"
       },
       "basicInfo": {
         "section1": "Übersicht",
-        "section2": "Arbeitsbedingungen"
+        "section2": "Stellenbeschreibung"
       }
     },
     "basicInformationSection": {
@@ -127,13 +127,16 @@
       "description": "Beschreibe den Forschungsschwerpunkt, die Hauptaufgaben und die Erwartungen an die Bewerber. Definiere die Mindestanforderungen und gegebenenfalls wünschenswerte Qualifikationen.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
-        "placeholder": "Beschreibe den Umfang, die Aufgaben und Anforderungen der Position...",
-        "descriptionHelper": "Beschreibe den Forschungskontext, die Ziele und den Gesamtumfang der Stelle. Liste die wichtigsten Aufgaben und Verantwortlichkeiten, sowie Mindestanforderungen auf (z. B. Abschluss, Noten, Sprachkenntnisse).",
+        "placeholder": "Beschreibung\nTODO: Beschreiben Sie den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Listen Sie die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Geben Sie die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
+        "descriptionHelper": "Nutzen Sie die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
         "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt, die Aufgaben und die erwarteten Qualifikationen und Ziele der Position zu verstehen.",
-        "aiHeaderText": "Lass AI deine Stellenbeschreibung erstellen",
-        "aiButton": "Mit KI schreiben",
-        "aiHelperText": "Die KI erstellt aus Ihren Stichpunkten eine AGG-konforme, professionelle Stellenbeschreibung",
-        "aiConsentText": "Ich willige ein, dass die KI meine aktuellen Stellendaten (Titel, Forschungsbereich, etc.) zur Erstellung eines Textentwurfs verwendet."
+        "template": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreiben Sie den Forschungskontext, Ziele und Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Listen Sie die Hauptverantwortlichkeiten des Kandidaten auf.</p><br><p><strong>Qualifikationskriterien</strong></p><p>TODO: Geben Sie die Mindestanforderungen an (Abschluss, Fähigkeiten, Sprache, etc.)</p>",
+        "aiHeaderText": "KI Assistent",
+        "aiButton1": "Mit KI schreiben",
+        "aiButton2": "Mit KI umschreiben",
+        "aiHelperText": "Formulierungen verbessern und Voreingenommenheit reduzieren.",
+        "aiFillerText": "Generiert...",
+        "aiToggle": "KI aktivieren"
       }
     },
     "imageSection": {
@@ -211,7 +214,7 @@
     },
     "toastMessages": {
       "noDescription": {
-        "summary": "Keine Beschreibung gefunden",
+        "summary": "Keine Stellenbeschreibung gefunden",
         "detail": "Bitte gib einen Text oder Stichpunkte an vor dem Veröffentlichen."
       },
       "saveFailed": {
