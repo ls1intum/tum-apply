@@ -68,7 +68,6 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
     TranslateDirective,
   ],
   templateUrl: './application-creation-page1.component.html',
-  styleUrl: './application-creation-page1.component.scss',
   standalone: true,
 })
 export default class ApplicationCreationPage1Component {

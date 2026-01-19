@@ -1,8 +1,9 @@
-<form [formGroup]="page1Form()">
+<form [formGroup]="page1Form()" class="space-y-8">
   <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.firstName'"
         id="firstName"
         [required]="true"
@@ -13,6 +14,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.lastName'"
         id="lastName"
         [required]="true"
@@ -26,6 +28,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.email'"
         [disabled]="disabledEmail()"
         id="email"
@@ -37,6 +40,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.phoneNumber'"
         id="phoneNumber"
         [required]="true"
@@ -80,6 +84,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.website'"
         id="website"
         [(model)]="data().website"
@@ -89,6 +94,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.linkedIn'"
         id="linkedIn"
         [(model)]="data().linkedIn"
@@ -119,6 +125,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.street'"
         id="street"
         [required]="true"
@@ -132,6 +139,7 @@
   <div class="form-row">
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.city'"
         id="city"
         [required]="true"
@@ -159,6 +167,7 @@
     </div>
     <div class="form-field">
       <jhi-string-input
+        class="w-full inline-block mr-4"
         [label]="'entity.applicationPage1.label.postcode'"
         id="postcode"
         [required]="true"

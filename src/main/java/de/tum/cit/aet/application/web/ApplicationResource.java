@@ -1,6 +1,6 @@
-import lombok.extern.slf4j.Slf4j;
 package de.tum.cit.aet.application.web;
 
+import lombok.extern.slf4j.Slf4j;
 import de.tum.cit.aet.application.domain.dto.*;
 import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.constants.DocumentType;
