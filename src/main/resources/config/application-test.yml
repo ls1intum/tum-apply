@@ -31,6 +31,11 @@ spring:
       enabled: false
     livereload:
       enabled: false
+  jpa:
+    properties:
+      hibernate:
+        type:
+          preferred_uuid_jdbc_type: CHAR
   mail:
     host:
     port: 465
@@ -129,6 +134,7 @@ user:
     dry-run: ${USER_RETENTION_DRY_RUN:true}
     batch-size: ${USER_RETENTION_BATCH_SIZE:300}
     max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:15}
+    cron: ${USER_RETENTION_CRON:0 17 3 * * *}
     deleted-user-id: ${USER_RETENTION_DELETED_USER_ID:00000000-0000-0000-0000-000000000100}
     deleted-user-email: ${USER_RETENTION_DELETED_USER_EMAIL:deleted@user}
     deleted-user-first-name: ${USER_RETENTION_DELETED_USER_FIRST_NAME:Deleted}
