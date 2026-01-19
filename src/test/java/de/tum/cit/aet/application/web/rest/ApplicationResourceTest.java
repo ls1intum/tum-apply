@@ -113,7 +113,164 @@ class ApplicationResourceTest extends AbstractResourceTest {
         );
     }
 
-    // ===== GET APPLICATION BY ID =====
+    @Test
+    void getApplicantProfileReturnsProfileWithPersonalInformation() {
+        ApplicantDTO profile = api
+            .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+            .getAndRead("/api/applications/profile", null, ApplicantDTO.class, 200);
+
+        assertThat(profile).isNotNull();
+        assertThat(profile.user()).isNotNull();
+        assertThat(profile.user().userId()).isEqualTo(applicant.getUserId());
+        assertThat(profile.user().email()).isEqualTo(applicant.getUser().getEmail());
+        assertThat(profile.user().firstName()).isEqualTo(applicant.getUser().getFirstName());
+        assertThat(profile.user().lastName()).isEqualTo(applicant.getUser().getLastName());
+        assertThat(profile.street()).isEqualTo(applicant.getStreet());
+        assertThat(profile.city()).isEqualTo(applicant.getCity());
+        assertThat(profile.country()).isEqualTo(applicant.getCountry());
+    }
+
+    @Test
+    void getApplicantProfileWithoutAuthReturnsForbidden() {
+        api.getAndRead("/api/applications/profile", null, ApplicantDTO.class, 403);
+    }
+
+    @Test
+    void getApplicantProfileWithProfessorRoleReturnsForbidden() {
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndRead("/api/applications/profile", null, ApplicantDTO.class, 403);
+    }
+
+    @Test
+    void updateApplicantProfileUpdatesPersonalInformation() {
+        UserDTO updatedUserDTO = new UserDTO(
+            applicant.getUserId(),
+            "updated.email@example.com",
+            applicant.getUser().getAvatar(),
+            "UpdatedFirstName",
+            "UpdatedLastName",
+            "Other",
+            "German",
+            LocalDate.of(1995, 5, 15),
+            "+49123456789",
+            "https://updated-website.com",
+            "https://linkedin.com/in/updated",
+            "en",
+            null
+        );
+
+        ApplicantDTO updatePayload = new ApplicantDTO(
+            updatedUserDTO,
+            "Updated Street 123",
+            "80333",
+            "Munich",
+            "Germany",
+            "Computer Science",
+            "2.0",
+            "5.0",
+            "1.5",
+            "Technical University of Munich",
+            "Informatics",
+            "1.0",
+            "5.0",
+            "1.3",
+            "TUM"
+        );
+
+        ApplicantDTO updatedProfile = api
+            .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+            .putAndRead("/api/applications/profile", updatePayload, ApplicantDTO.class, 200);
+
+        assertThat(updatedProfile).isNotNull();
+        assertThat(updatedProfile.user().email()).isEqualTo("updated.email@example.com");
+        assertThat(updatedProfile.user().firstName()).isEqualTo("UpdatedFirstName");
+        assertThat(updatedProfile.user().lastName()).isEqualTo("UpdatedLastName");
+        assertThat(updatedProfile.user().gender()).isEqualTo("Other");
+        assertThat(updatedProfile.user().nationality()).isEqualTo("German");
+        assertThat(updatedProfile.street()).isEqualTo("Updated Street 123");
+        assertThat(updatedProfile.postalCode()).isEqualTo("80333");
+        assertThat(updatedProfile.city()).isEqualTo("Munich");
+        assertThat(updatedProfile.country()).isEqualTo("Germany");
+        assertThat(updatedProfile.bachelorDegreeName()).isEqualTo("Computer Science");
+        assertThat(updatedProfile.bachelorGrade()).isEqualTo("1.5");
+        assertThat(updatedProfile.masterDegreeName()).isEqualTo("Informatics");
+        assertThat(updatedProfile.masterGrade()).isEqualTo("1.3");
+
+        // Verify persistence
+        Applicant persistedApplicant = applicantRepository.findById(applicant.getUserId()).orElseThrow();
+        assertThat(persistedApplicant.getUser().getEmail()).isEqualTo("updated.email@example.com");
+        assertThat(persistedApplicant.getUser().getFirstName()).isEqualTo("UpdatedFirstName");
+        assertThat(persistedApplicant.getUser().getLastName()).isEqualTo("UpdatedLastName");
+        assertThat(persistedApplicant.getStreet()).isEqualTo("Updated Street 123");
+        assertThat(persistedApplicant.getCity()).isEqualTo("Munich");
+        assertThat(persistedApplicant.getBachelorDegreeName()).isEqualTo("Computer Science");
+        assertThat(persistedApplicant.getMasterGrade()).isEqualTo("1.3");
+    }
+
+    @Test
+    void updateApplicantProfileWithNullUserReturnsBadRequest() {
+        ApplicantDTO invalidPayload = new ApplicantDTO(
+            null, // Invalid: user is @NotNull
+            "Street 123",
+            "80333",
+            "Munich",
+            "Germany",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+
+        api
+            .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+            .putAndRead("/api/applications/profile", invalidPayload, ApplicantDTO.class, 400);
+    }
+
+    @Test
+    void updateApplicantProfileWithoutAuthReturnsForbidden() {
+        UserDTO userDTO = new UserDTO(
+            applicant.getUserId(),
+            applicant.getUser().getEmail(),
+            applicant.getUser().getAvatar(),
+            "FirstName",
+            "LastName",
+            "Male",
+            "German",
+            LocalDate.of(1990, 1, 1),
+            null,
+            null,
+            null,
+            "en",
+            null
+        );
+
+        ApplicantDTO updatePayload = new ApplicantDTO(
+            userDTO,
+            "Street",
+            "12345",
+            "City",
+            "Country",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+
+        api.putAndRead("/api/applications/profile", updatePayload, ApplicantDTO.class, 403);
+    }
 
     @Test
     void getApplicationByIdReturnsApplication() {

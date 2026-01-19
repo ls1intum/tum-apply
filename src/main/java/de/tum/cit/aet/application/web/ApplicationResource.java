@@ -55,7 +55,7 @@ public class ApplicationResource {
     @ApplicantOrAdmin
     @PutMapping("/profile")
     public ResponseEntity<de.tum.cit.aet.usermanagement.dto.ApplicantDTO> updateApplicantProfile(
-        @RequestBody de.tum.cit.aet.usermanagement.dto.ApplicantDTO applicantDTO
+        @Valid @RequestBody de.tum.cit.aet.usermanagement.dto.ApplicantDTO applicantDTO
     ) {
         de.tum.cit.aet.usermanagement.dto.ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
         return ResponseEntity.ok(updatedProfile);

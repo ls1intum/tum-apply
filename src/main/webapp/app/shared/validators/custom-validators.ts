@@ -1,4 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import * as postalCodes from 'postal-codes-js';
 
 /**
  * Custom validator that checks whether an HTML string contains any non-empty visible text.
@@ -72,4 +73,34 @@ export function tumIdValidator(control: AbstractControl): ValidationErrors | und
   const tumIdPattern = /^[a-z]{2}[0-9]{2}[a-z]{3}$/;
 
   return tumIdPattern.test(trimmedValue) ? undefined : { pattern: true };
+}
+
+/**
+ * Custom validator that checks whether a postal code is valid for a given country.
+ *
+ * This validator uses the postal-codes-js library to validate postal codes
+ * based on the country code. The country is retrieved dynamically via the
+ * provided function, allowing the validator to respond to country changes.
+ *
+ * @param getCountryFn - A function that returns the current country code (e.g., 'US', 'DE').
+ * @returns A validator function that returns a `{ invalidPostalCode: string }` error if invalid,
+ *          otherwise an empty object `{}` to indicate valid input.
+ *
+ * @example
+ * ```typescript
+ * this.formBuilder.group({
+ *   country: ['DE'],
+ *   postcode: ['', [Validators.required, postalCodeValidator(() => this.data().country?.value as string)]]
+ * });
+ * ```
+ */
+export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors => {
+    const country = getCountryFn()?.toUpperCase();
+    const value: string = control.value as string;
+    if (country === undefined || country.length === 0 || value.length === 0) return {};
+    const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
+    const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
+    return isPostalCodeValid === true ? {} : validationError;
+  };
 }

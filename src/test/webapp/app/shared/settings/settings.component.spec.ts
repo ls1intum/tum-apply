@@ -93,6 +93,91 @@ describe('SettingsComponent', () => {
     expect(component.role()).toBeUndefined();
   });
 
+  it('should show general, notifications and personal-information tabs for applicant', () => {
+    accountServiceMock.user.set({
+      id: 'u1',
+      name: 'Test Applicant',
+      email: 'applicant@test.com',
+      authorities: [UserShortDTO.RolesEnum.Applicant],
+    });
+
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    const tabs = component.tabs();
+
+    expect(tabs).toHaveLength(3);
+    expect(tabs[0].id).toBe('general');
+    expect(tabs[1].id).toBe('notifications');
+    expect(tabs[2].id).toBe('personal-information');
+  });
+
+  it('should show general and notifications tabs for professor (no personal-information)', () => {
+    accountServiceMock.user.set({
+      id: 'u1',
+      name: 'Test Professor',
+      email: 'professor@test.com',
+      authorities: [UserShortDTO.RolesEnum.Professor],
+    });
+
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    const tabs = component.tabs();
+
+    expect(tabs).toHaveLength(2);
+    expect(tabs[0].id).toBe('general');
+    expect(tabs[1].id).toBe('notifications');
+    expect(tabs.find(tab => tab.id === 'personal-information')).toBeUndefined();
+  });
+
+  it('should show only general tab for admin (no notifications, no personal-information)', () => {
+    accountServiceMock.user.set({
+      id: 'u1',
+      name: 'Test Admin',
+      email: 'admin@test.com',
+      authorities: [UserShortDTO.RolesEnum.Admin],
+    });
+
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    const tabs = component.tabs();
+
+    expect(tabs).toHaveLength(1);
+    expect(tabs[0].id).toBe('general');
+    expect(tabs.find(tab => tab.id === 'notifications')).toBeUndefined();
+    expect(tabs.find(tab => tab.id === 'personal-information')).toBeUndefined();
+  });
+
+  it('should include correct translation keys for all tabs', () => {
+    accountServiceMock.user.set({
+      id: 'u1',
+      name: 'Test Applicant',
+      email: 'applicant@test.com',
+      authorities: [UserShortDTO.RolesEnum.Applicant],
+    });
+
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    const tabs = component.tabs();
+
+    expect(tabs[0].translationKey).toBe('settings.tabs.general');
+    expect(tabs[1].translationKey).toBe('settings.tabs.notifications');
+    expect(tabs[2].translationKey).toBe('settings.tabs.personalInformation');
+  });
+
+  it('should change active tab', () => {
+    accountServiceMock.user.set({
+      id: 'u1',
+      name: 'Test Applicant',
+      email: 'applicant@test.com',
+      authorities: [UserShortDTO.RolesEnum.Applicant],
+    });
+
+    const component = TestBed.createComponent(SettingsComponent).componentInstance;
+    expect(component.activeTab()).toBe('general');
+
+    component.onTabChange('notifications');
+    expect(component.activeTab()).toBe('notifications');
+
+    component.onTabChange('personal-information');
+    expect(component.activeTab()).toBe('personal-information');
+  });
+
   it('should download export and start cooldown on success', async () => {
     const blob = new Blob(['zip'], { type: 'application/zip' });
     const headers = new HttpHeaders({

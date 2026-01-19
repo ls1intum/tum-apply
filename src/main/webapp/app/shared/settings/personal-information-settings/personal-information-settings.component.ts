@@ -1,17 +1,18 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
-import * as postalCodes from 'postal-codes-js';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
 import { ApplicantDTO } from 'app/generated/model/applicantDTO';
 import { selectCountries } from 'app/shared/language/countries';
 import { selectNationality } from 'app/shared/language/nationalities';
+import { selectGender } from 'app/shared/constants/genders';
+import { postalCodeValidator } from 'app/shared/validators/custom-validators';
 
 import { SelectComponent, SelectOption } from '../../components/atoms/select/select.component';
 import { DatePickerComponent } from '../../components/atoms/datepicker/datepicker.component';
@@ -33,23 +34,6 @@ export type PersonalInformationData = {
   country?: SelectOption;
   postcode: string;
 };
-
-export const selectGender: SelectOption[] = [
-  { value: 'female', name: 'genders.female' },
-  { value: 'male', name: 'genders.male' },
-  { value: 'other', name: 'genders.other' },
-];
-
-export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors => {
-    const country = getCountryFn()?.toUpperCase();
-    const value: string = control.value as string;
-    if (country === undefined || country.length === 0 || value.length === 0) return {};
-    const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
-    const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
-    return isPostalCodeValid === true ? {} : validationError;
-  };
-}
 
 @Component({
   selector: 'jhi-personal-information-settings',
@@ -141,7 +125,7 @@ export class PersonalInformationSettingsComponent {
       street: [currentData.street],
       city: [currentData.city],
       country: [currentData.country],
-      postcode: [currentData.postcode, [Validators.required, postalCodeValidator(() => this.data().country?.value as string)]],
+      postcode: [currentData.postcode, [postalCodeValidator(() => this.data().country?.value as string)]],
 
       // Optional fields
       gender: [currentData.gender ?? null],
@@ -237,12 +221,19 @@ export class PersonalInformationSettingsComponent {
 
   async onSave(): Promise<void> {
     try {
+      const loadedUser = this.accountService.loadedUser();
+      if (loadedUser?.id == null) {
+        this.toastService.showErrorKey('settings.personalInformation.saveFailed');
+        console.error('Cannot save personal information: loaded user or user ID is missing.');
+        return;
+      }
+
       const data = this.data();
 
       // Build ApplicantDTO payload
       const applicantDTO: ApplicantDTO = {
         user: {
-          userId: this.accountService.loadedUser()?.id,
+          userId: loadedUser.id,
           email: data.email || undefined,
           firstName: data.firstName || undefined,
           lastName: data.lastName || undefined,
