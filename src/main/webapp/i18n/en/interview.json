@@ -267,6 +267,36 @@
           "detail": "Failed to load available applicants"
         }
       }
+    },
+    "assessment": {
+      "title": "Interview Assessment",
+      "back": "Back to Overview",
+      "rating": {
+        "label": "Score",
+        "info": "Rate the interview. This is not visible to applicants."
+      },
+      "notes": {
+        "label": "Interview Note",
+        "empty": "No interview notes added yet.",
+        "saved": {
+          "summary": "Saved",
+          "detail": "Interview note saved successfully."
+        }
+      },
+      "error": {
+        "saveFailed": {
+          "summary": "Save Failed",
+          "detail": "Could not save the assessment. Please try again."
+        },
+        "loadFailed": {
+          "summary": "Load Failed",
+          "detail": "Could not load applicant. Please reload the page."
+        },
+        "notFound": {
+          "summary": "Not Found",
+          "detail": "This applicant does not exist or has been removed."
+        }
+      }
     }
   }
 }
