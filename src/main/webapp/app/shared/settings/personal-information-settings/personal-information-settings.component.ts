@@ -48,7 +48,6 @@ export type PersonalInformationData = {
     ButtonComponent,
   ],
   templateUrl: './personal-information-settings.component.html',
-  styleUrl: './personal-information-settings.component.scss',
   standalone: true,
 })
 export class PersonalInformationSettingsComponent {
@@ -136,41 +135,41 @@ export class PersonalInformationSettingsComponent {
     });
   });
 
+  formEffect = effect(onCleanup => {
+    const form = this.personalInfoForm();
+    const data = this.data();
+    const valueSubscription = form.valueChanges.subscribe((value: Record<string, unknown>) => {
+      const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
+      const selectFields = {
+        gender: data.gender,
+        nationality: data.nationality,
+        country: data.country,
+        dateOfBirth: data.dateOfBirth,
+      };
+      this.data.set({
+        ...this.data(),
+        ...selectFields,
+        ...normalizedValue,
+      });
+      this.hasChanges.set(true);
+      this.isValid.set(form.valid);
+    });
+
+    const statusSubscription = form.statusChanges.subscribe(() => {
+      this.isValid.set(form.valid);
+    });
+
+    this.isValid.set(form.valid);
+
+    onCleanup(() => {
+      valueSubscription.unsubscribe();
+      statusSubscription.unsubscribe();
+    });
+  });
+
   constructor() {
     // Load initial data from backend API
     void this.loadPersonalInformation();
-
-    void effect(onCleanup => {
-      const form = this.personalInfoForm();
-      const data = this.data();
-      const valueSubscription = form.valueChanges.subscribe((value: Record<string, unknown>) => {
-        const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? '']));
-        const selectFields = {
-          gender: data.gender,
-          nationality: data.nationality,
-          country: data.country,
-          dateOfBirth: data.dateOfBirth,
-        };
-        this.data.set({
-          ...this.data(),
-          ...selectFields,
-          ...normalizedValue,
-        });
-        this.hasChanges.set(true);
-        this.isValid.set(form.valid);
-      });
-
-      const statusSubscription = form.statusChanges.subscribe(() => {
-        this.isValid.set(form.valid);
-      });
-
-      this.isValid.set(form.valid);
-
-      onCleanup(() => {
-        valueSubscription.unsubscribe();
-        statusSubscription.unsubscribe();
-      });
-    });
   }
 
   async loadPersonalInformation(): Promise<void> {
