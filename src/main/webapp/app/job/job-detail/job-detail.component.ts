@@ -26,6 +26,7 @@ import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
+import { createMenuActionSignals } from 'app/shared/util/util';
 
 import * as DropDownOptions from '../dropdown-options';
 
@@ -246,23 +247,14 @@ export class JobDetailComponent {
     return items;
   });
 
-  readonly shouldShowKebabMenu = computed<boolean>(() => {
-    const primaryButton = this.primaryActionButton();
-    const menuItemsCount = this.menuItems().length;
-    const totalActions = (primaryButton ? 1 : 0) + menuItemsCount;
-
-    // Only show kebab menu if there are 3 or more total actions
-    return totalActions >= 3;
+  // Menu action signals - determines when to show kebab menu vs individual buttons
+  readonly menuActionSignals = createMenuActionSignals({
+    hasPrimaryButton: computed(() => !!this.primaryActionButton()),
+    menuItems: this.menuItems,
   });
 
-  readonly individualActionButtons = computed<JhiMenuItem[]>(() => {
-    // If we should show kebab menu, return empty array
-    if (this.shouldShowKebabMenu()) {
-      return [];
-    }
-    // Otherwise, return all menu items to be shown as individual buttons
-    return this.menuItems();
-  });
+  readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
+  readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
   private jobResourceService = inject(JobResourceApiService);
   private accountService = inject(AccountService);

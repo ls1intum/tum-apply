@@ -14,6 +14,7 @@ import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResource
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { createMenuActionSignals } from 'app/shared/util/util';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -130,23 +131,14 @@ export default class ApplicationDetailForApplicantComponent {
     return items;
   });
 
-  readonly shouldShowKebabMenu = computed<boolean>(() => {
-    const primaryButton = this.primaryActionButton();
-    const menuItemsCount = this.menuItems().length;
-    const totalActions = (primaryButton ? 1 : 0) + menuItemsCount;
-
-    // Show kebab menu if there are 3 or more total actions
-    return totalActions >= 3;
+  // Menu action signals - determines when to show kebab menu vs individual buttons
+  readonly menuActionSignals = createMenuActionSignals({
+    hasPrimaryButton: computed(() => !!this.primaryActionButton()),
+    menuItems: this.menuItems,
   });
 
-  readonly individualActionButtons = computed<JhiMenuItem[]>(() => {
-    // If we should show kebab menu, return empty array
-    if (this.shouldShowKebabMenu()) {
-      return [];
-    }
-    // Otherwise, return all menu items to be shown as individual buttons
-    return this.menuItems();
-  });
+  readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
+  readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
   readonly dropDownOptions = DropDownOptions;
   private applicationService = inject(ApplicationResourceApiService);
