@@ -120,7 +120,7 @@ export class DateSlotCardComponent {
       for (const range of this.slotRanges()) {
         range.slots.forEach((slot, slotIndex) => {
           // Normalize to ISO string to match parent's format
-          const serverKey = `${new Date(slot.startDateTime!).toISOString()}-${new Date(slot.endDateTime!).toISOString()}`;
+          const serverKey = `${new Date(slot.startDateTime ?? '').toISOString()}-${new Date(slot.endDateTime ?? '').toISOString()}`;
           const conflict = serverConflictsMap.get(serverKey);
           if (conflict) {
             const templateKey = `${range.id}_${slotIndex}`;

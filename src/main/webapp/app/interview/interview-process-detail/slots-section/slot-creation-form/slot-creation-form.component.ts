@@ -105,7 +105,7 @@ export class SlotCreationFormComponent {
         if (conflict) {
           // normalized ISO string key (Start-End) to identify which specific NEW slot has a conflict.
           // This key matches the one generated in the child component (DateSlotCard)
-          const key = `${new Date(slot.startDateTime!).toISOString()}-${new Date(slot.endDateTime!).toISOString()}`;
+          const key = `${new Date(slot.startDateTime ?? '').toISOString()}-${new Date(slot.endDateTime ?? '').toISOString()}`;
           conflicts.set(key, conflict);
         }
       }
@@ -392,8 +392,8 @@ export class SlotCreationFormComponent {
       return null;
     }
 
-    const start = new Date(slot.startDateTime!).getTime();
-    const end = new Date(slot.endDateTime!).getTime();
+    const start = new Date(slot.startDateTime ?? '').getTime();
+    const end = new Date(slot.endDateTime ?? '').getTime();
 
     // Check BOOKED slots from other processes first (higher severity)
     for (const existing of data.slots) {
@@ -413,8 +413,8 @@ export class SlotCreationFormComponent {
   }
 
   private overlaps(start: number, end: number, existing: ExistingSlotDTO): boolean {
-    const existStart = new Date(existing.startDateTime!).getTime();
-    const existEnd = new Date(existing.endDateTime!).getTime();
+    const existStart = new Date(existing.startDateTime ?? '').getTime();
+    const existEnd = new Date(existing.endDateTime ?? '').getTime();
     return start < existEnd && end > existStart;
   }
 
@@ -436,7 +436,9 @@ export class SlotCreationFormComponent {
         newMap.set(dateStr, conflictData);
         return newMap;
       });
-    } catch {}
+    } catch {
+      /* empty */
+    }
   }
 
   // Helper to get local date string (YYYY-MM-DD) without UTC conversion

@@ -109,7 +109,7 @@
           "endBeforeStart": "Endzeit muss nach Startzeit liegen",
           "conflict": "Zeitkonflikt mit einem anderen Termin",
           "conflictSameProcess": "Konflikt mit bestehendem Termin in diesem Prozess",
-          "conflictBookedOther": "Konflikt mit einem gebuchtem Termin in anderer Job Position",
+          "conflictBookedOther": "Konflikt mit einem gebuchten Termin in einem anderen Interviewprozess",
           "hasConflicts": "Bitte behebe alle Zeitkonflikte vor dem Speichern",
           "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
           "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
