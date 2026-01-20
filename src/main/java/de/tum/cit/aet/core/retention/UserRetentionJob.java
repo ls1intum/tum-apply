@@ -25,7 +25,12 @@ public class UserRetentionJob {
     private final UserRetentionService userRetentionService;
 
     /**
-     * Scheduled job that applies user retention policies.
+     * Scheduled job that performs user retention cleanup based on configured settings.
+     * <p>
+     * If retention is disabled or no valid run configuration is available, the method exits early.
+     * Otherwise, it builds a run configuration, processes candidate records within the maximum
+     * runtime window, and logs a summary including dry-run status, cutoff timestamp, number of
+     * candidates seen, actual runtime, and configured maximum runtime.
      */
     // Runs daily at 03:17 UTC (override with user.retention.cron)
     @Scheduled(cron = "${user.retention.cron:0 17 3 * * *}", zone = "UTC")
