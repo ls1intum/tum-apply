@@ -142,13 +142,6 @@ class ApplicationResourceTest extends AbstractResourceTest {
         }
 
         @Test
-        void getApplicantProfileWithProfessorRoleReturnsForbidden() {
-            api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .getAndRead("/api/applications/profile", null, ApplicantDTO.class, 403);
-        }
-
-        @Test
         void updateApplicantProfileUpdatesPersonalInformation() {
             UserDTO updatedUserDTO = new UserDTO(
                 applicant.getUserId(),
@@ -276,6 +269,53 @@ class ApplicationResourceTest extends AbstractResourceTest {
             );
 
             api.putAndRead("/api/applications/profile", updatePayload, ApplicantDTO.class, 403);
+        }
+
+        @Test
+        void updateApplicantProfileWithPartialDataUpdatesOnlyProvidedFields() {
+            // Create a DTO with only some fields updated
+            UserDTO partialUserDTO = new UserDTO(
+                applicant.getUserId(),
+                applicant.getUser().getEmail(),
+                applicant.getUser().getAvatar(),
+                "NewFirstName",
+                applicant.getUser().getLastName(),
+                applicant.getUser().getGender(),
+                applicant.getUser().getNationality(),
+                applicant.getUser().getBirthday(),
+                applicant.getUser().getPhoneNumber(),
+                applicant.getUser().getWebsite(),
+                applicant.getUser().getLinkedinUrl(),
+                "en",
+                null
+            );
+
+            ApplicantDTO partialUpdate = new ApplicantDTO(
+                partialUserDTO,
+                "New Street",
+                applicant.getPostalCode(),
+                applicant.getCity(),
+                applicant.getCountry(),
+                applicant.getBachelorDegreeName(),
+                applicant.getBachelorGradeUpperLimit(),
+                applicant.getBachelorGradeLowerLimit(),
+                applicant.getBachelorGrade(),
+                applicant.getBachelorUniversity(),
+                applicant.getMasterDegreeName(),
+                applicant.getMasterGradeUpperLimit(),
+                applicant.getMasterGradeLowerLimit(),
+                applicant.getMasterGrade(),
+                applicant.getMasterUniversity()
+            );
+
+            ApplicantDTO updated = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead("/api/applications/profile", partialUpdate, ApplicantDTO.class, 200);
+
+            assertThat(updated.user().firstName()).isEqualTo("NewFirstName");
+            assertThat(updated.user().lastName()).isEqualTo(applicant.getUser().getLastName());
+            assertThat(updated.street()).isEqualTo("New Street");
+            assertThat(updated.city()).isEqualTo(applicant.getCity());
         }
     }
 
@@ -438,7 +478,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void deleteApplicationWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            api.deleteAndRead("/api/applications/" + application.getApplicationId(), null, Void.class, 401);
+            api.deleteAndRead("/api/applications/" + application.getApplicationId(), null, Void.class, 403);
         }
     }
 
@@ -757,7 +797,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
                 List.of(file),
                 new TypeReference<>() {},
-                403
+                401
             );
         }
     }

@@ -13,6 +13,7 @@ import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InvalidParameterException;
 import de.tum.cit.aet.core.exception.OperationNotAllowedException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.DocumentDictionaryService;
@@ -28,7 +29,6 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +37,6 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -457,7 +456,7 @@ public class ApplicationService {
     public ApplicantDTO getApplicantProfile() {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
-            throw new AccessDeniedException("User must be authenticated to retrieve applicant profile.");
+            throw new InvalidParameterException("UserId must not be null.");
         }
 
         Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
@@ -482,7 +481,7 @@ public class ApplicationService {
     public ApplicantDTO updateApplicantProfile(ApplicantDTO dto) {
         UUID userId = currentUserService.getUserId();
         if (userId == null) {
-            throw new AccessDeniedException("User must be authenticated to update applicant profile.");
+            throw new InvalidParameterException("UserId must not be null.");
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
