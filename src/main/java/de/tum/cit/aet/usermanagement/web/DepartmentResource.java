@@ -9,7 +9,9 @@ import de.tum.cit.aet.usermanagement.dto.AdminDepartmentFilterDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.DepartmentDTO;
 import de.tum.cit.aet.usermanagement.service.DepartmentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -77,8 +79,13 @@ public class DepartmentResource {
     public ResponseEntity<PageResponseDTO<DepartmentDTO>> getDepartmentsForAdmin(
         @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
         @ParameterObject @Valid @ModelAttribute AdminDepartmentFilterDTO filterDTO,
-        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+        HttpServletRequest request
     ) {
+        String[] schoolNames = request.getParameterValues("schoolNames");
+        if (schoolNames != null) {
+            filterDTO.setSchoolNames(Arrays.asList(schoolNames));
+        }
         log.info(
             "GET /api/departments/admin/search - Fetching departments for admin with page={}, filter={}, sort={}",
             pageDTO,
