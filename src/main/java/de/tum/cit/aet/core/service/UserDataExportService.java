@@ -33,8 +33,10 @@ import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
@@ -124,19 +126,29 @@ public class UserDataExportService {
         }
     }
 
+    // ------------------------------------ Private helper methods ------------------------------------
+
     private UserDataExportDTO collectUserData(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        boolean hasApplicantRole = hasRole(user, UserRole.APPLICANT);
+        boolean hasStaffRole = hasRole(user, UserRole.PROFESSOR) || hasRole(user, UserRole.EMPLOYEE) || hasRole(user, UserRole.ADMIN);
 
         UserProfileExportDTO profile = getUserProfile(user);
         List<UserSettingDTO> settings = getUserSettings(userId);
         List<EmailSettingDTO> emailSettings = getEmailSettings(user);
-        ApplicantDataExportDTO applicantData = applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
-        StaffDataDTO staffData = getStaffData(user);
+        ApplicantDataExportDTO applicantData = hasApplicantRole && applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
+        StaffDataDTO staffData = hasStaffRole ? getStaffData(user) : null;
 
         return new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
     }
 
-    // Private helper methods
+    private boolean hasRole(User user, UserRole role) {
+        if (user.getResearchGroupRoles() == null || user.getResearchGroupRoles().isEmpty()) {
+            return false;
+        }
+        return user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).anyMatch(role::equals);
+    }
 
     private UserProfileExportDTO getUserProfile(User user) {
         return new UserProfileExportDTO(
