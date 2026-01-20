@@ -30,7 +30,8 @@ public class AiResource {
     /**
      * Generate a job application draft from the provided structured job form.
      *
-     * @param jobForm the job form data used to build the AI prompt
+     * @param descriptionLanguage the language for the generated job description
+     * @param jobForm             the job form data used to build the AI prompt
      * @return a ResponseEntity containing the generated draft as JSON string
      */
     @ProfessorOrEmployeeOrAdmin

@@ -30,7 +30,8 @@ public class AiService {
      * The draft is generated using the configured ChatClient with AGG\-compliant,
      * gender\-inclusive language.
      *
-     * @param jobFormDTO the job form data containing description, requirements, and tasks
+     * @param jobFormDTO          the job form data containing description, requirements, and tasks
+     * @param descriptionLanguage the language for the generated job description
      * @return The generated job posting content
      */
     public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO, String descriptionLanguage) {
