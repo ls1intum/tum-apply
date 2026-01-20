@@ -79,7 +79,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
             .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
             .setOverviewDescriptionTitle(labels.get("jobDescription"))
-            .setOverviewDescription(job.jobDescription());
+            .setOverviewDescription(job.jobDescriptionEN());
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -176,7 +176,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, job.jobDescription());
+        addJobDetailsSection(builder, labels, job.jobDescriptionEN());
 
         // Research Group Section
         addResearchGroupSection(builder, job.researchGroup(), labels);
@@ -228,7 +228,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, jobFormDTO.jobDescription());
+        addJobDetailsSection(builder, labels, jobFormDTO.jobDescriptionEN());
 
         // Metadata
         builder.setMetadata(buildMetadataText(labels));
