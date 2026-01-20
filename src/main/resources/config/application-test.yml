@@ -56,7 +56,7 @@ spring:
         endpoint: ${SPRING_AI_AZURE_ENDPOINT}
         chat:
           options:
-            deployment-name: gpt-5-mini
+            deployment-name: gpt-5
             temperature: 1.0
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
