@@ -2,7 +2,6 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/actuatorApi.service.ts
 api/aiResourceApi.service.ts
 api/api.ts
 api/applicationEvaluationResourceApi.service.ts
@@ -91,7 +90,6 @@ model/jobFiltersDTO.ts
 model/jobFormDTO.ts
 model/jobPreviewRequest.ts
 model/keycloakUserDTO.ts
-model/link.ts
 model/loginRequestDTO.ts
 model/models.ts
 model/otpCompleteDTO.ts
