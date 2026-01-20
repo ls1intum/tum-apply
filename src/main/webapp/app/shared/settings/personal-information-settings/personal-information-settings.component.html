@@ -1,0 +1,175 @@
+<form [formGroup]="personalInfoForm()">
+  <div class="flex justify-between items-center mb-6">
+    <div [innerHTML]="('settings.personalInformation.description' | translate).replace(/\n/g, '<br>')"></div>
+    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" (click)="onSave()" [disabled]="!hasChanges() || !isValid()" />
+  </div>
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.contactInformation"></span></p-divider>
+  <div class="form-row">
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.firstName'"
+        id="firstName"
+        [(model)]="data().firstName"
+        [control]="personalInfoForm().controls.firstName"
+        [shouldTranslate]="true"
+      />
+    </div>
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.lastName'"
+        id="lastName"
+        [(model)]="data().lastName"
+        [control]="personalInfoForm().controls.lastName"
+        [shouldTranslate]="true"
+      />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.email'"
+        [disabled]="disabledEmail()"
+        id="email"
+        [(model)]="data().email"
+        [control]="personalInfoForm().controls.email"
+        [shouldTranslate]="true"
+      />
+    </div>
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.phoneNumber'"
+        id="phoneNumber"
+        [(model)]="data().phoneNumber"
+        [control]="personalInfoForm().controls.phoneNumber"
+        [shouldTranslate]="true"
+      />
+    </div>
+  </div>
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.voluntaryInformation"></span></p-divider>
+  <div class="form-row mb-6">
+    <div class="form-field">
+      <jhi-select
+        width="100%"
+        [label]="'entity.applicationPage1.label.gender' | translate"
+        [items]="selectGenderLocal"
+        [placeholder]="'entity.applicationPage1.placeholder.selectGender' | translate"
+        id="gender"
+        [(selected)]="data().gender"
+        (selectedChange)="updateSelect('gender', $event)"
+        [showClear]="true"
+        [translateItems]="true"
+      />
+    </div>
+    <div class="form-field">
+      <jhi-select
+        width="100%"
+        [label]="'entity.applicationPage1.label.nationality' | translate"
+        [items]="selectNationalityComputed()"
+        [placeholder]="'entity.applicationPage1.placeholder.selectNationality' | translate"
+        id="nationality"
+        [(selected)]="data().nationality"
+        (selectedChange)="updateSelect('nationality', $event)"
+        [filter]="true"
+        [showClear]="true"
+        [dataKey]="'value'"
+      />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.website'"
+        id="website"
+        [(model)]="data().website"
+        [control]="personalInfoForm().controls.website"
+        [shouldTranslate]="true"
+      />
+    </div>
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.linkedIn'"
+        id="linkedIn"
+        [(model)]="data().linkedIn"
+        [control]="personalInfoForm().controls.linkedIn"
+        [shouldTranslate]="true"
+      />
+    </div>
+  </div>
+
+  <div class="form-row mb-6">
+    <div class="form-field">
+      <jhi-datepicker
+        [selectedDate]="data().dateOfBirth"
+        [label]="'entity.applicationPage1.label.dateOfBirth'"
+        width="100%"
+        (selectedDateChange)="setDateOfBirth($event)"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        [defaultDate]="defaultBirthDate"
+        [shouldTranslate]="true"
+      />
+    </div>
+    <div class="form-field"></div>
+  </div>
+
+  <p-divider layout="horizontal"><span jhiTranslate="entity.applicationPage1.section.address"></span></p-divider>
+
+  <div class="form-row">
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.street'"
+        id="street"
+        [(model)]="data().street"
+        [control]="personalInfoForm().controls.street"
+        [shouldTranslate]="true"
+      />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-field">
+      <jhi-string-input
+        class="w-full inline-block mr-4"
+        [label]="'entity.applicationPage1.label.city'"
+        id="city"
+        [(model)]="data().city"
+        [control]="personalInfoForm().controls.city"
+        [shouldTranslate]="true"
+      />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-field">
+      <jhi-select
+        [label]="'entity.applicationPage1.label.country' | translate"
+        [placeholder]="'entity.applicationPage1.placeholder.selectCountry' | translate"
+        id="country"
+        [(selected)]="data().country"
+        width="100%"
+        [items]="selectCountriesLocal()"
+        (selectedChange)="updateSelect('country', $event)"
+        [filter]="true"
+        [dataKey]="'value'"
+      />
+    </div>
+    <div class="form-field">
+      <jhi-string-input
+        [label]="'entity.applicationPage1.label.postcode'"
+        id="postcode"
+        [(model)]="data().postcode"
+        [control]="personalInfoForm().controls.postcode"
+        [shouldTranslate]="true"
+      />
+    </div>
+  </div>
+</form>
