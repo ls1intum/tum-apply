@@ -42,7 +42,7 @@ export interface JobDetails {
   contractDuration: string;
   fundingType: string;
   jobDescriptionEN: string;
-  jobDescriptionDE?: string;
+  jobDescriptionDE: string;
   startDate: string;
   endDate: string;
   createdAt: string;

@@ -41,11 +41,15 @@ public class AiService {
     public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO, String descriptionLanguage) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
-        return chatClient
+        AIJobDescriptionDTO response = chatClient
             .prompt()
             .user(u -> u.text(jobGenerationResource).param("jobDescription", input))
             .call()
             .entity(AIJobDescriptionDTO.class);
+
+        translateAndPersistJobDescription(String.valueOf(jobFormDTO.jobId()), descriptionLanguage, response != null ? response.jobDescription() : "");
+
+        return response;
     }
 
     /**
