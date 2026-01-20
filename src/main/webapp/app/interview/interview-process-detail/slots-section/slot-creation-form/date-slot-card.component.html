@@ -1,4 +1,4 @@
-<div class="rounded-lg border border-border-default bg-background-default mb-4">
+<div class="rounded border border-border-default bg-background-default mb-4">
   <!-- Header -->
   <div class="flex w-full items-center justify-between p-3 border-b border-border-default">
     <!-- Left: Toggle + Date -->
@@ -99,8 +99,8 @@
                 @if (range.type !== 'scheduled') {
                   <div
                     class="flex flex-col gap-2 rounded p-1"
-                    [class.border]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
-                    [class.border-negative-default]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
+                    [class.border]="range.type === 'single' && allConflicts().has(range.id + '_0')"
+                    [class.border-negative-default]="range.type === 'single' && allConflicts().has(range.id + '_0')"
                   >
                     <!-- Time Inputs-->
                     <div class="flex gap-4 mb-3">
@@ -168,8 +168,8 @@
                       <div class="flex flex-col gap-2 pt-2">
                         @for (slot of range.slots; track $index; let slotIndex = $index) {
                           <div
-                            class="flex flex-col gap-1 rounded-lg border border-border-default bg-background-default px-3 py-2"
-                            [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)"
+                            class="flex flex-col gap-1 rounded border border-border-default bg-background-default px-3 py-2"
+                            [class.border-negative-default]="allConflicts().has(range.id + '_' + slotIndex)"
                           >
                             <div class="flex items-center justify-between">
                               <div class="flex items-center gap-2 text-xs font-medium text-text-primary font-bold">
@@ -183,11 +183,23 @@
                                 (click)="removeSlot(rangeIndex, slotIndex)"
                               />
                             </div>
-                            @if (conflictingSlotKeys().get(range.id + '_' + slotIndex)) {
+                            @if (allConflicts().has(range.id + '_' + slotIndex)) {
                               <span class="text-xs font-medium text-negative-default">
-                                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                                {{ 'interview.slots.create.validation.conflict' | translate }}
-                                ({{ conflictingSlotKeys().get(range.id + '_' + slotIndex) }})
+                                <fa-icon [icon]="['fas', 'exclamation-triangle']" class="mr-1" />
+                                @switch (allConflicts().get(range.id + '_' + slotIndex)?.type) {
+                                  @case ('BATCH_INTERNAL') {
+                                    {{ 'interview.slots.create.validation.conflict' | translate }}
+                                    @if (allConflicts().get(range.id + '_' + slotIndex)?.displayTime) {
+                                      ({{ allConflicts().get(range.id + '_' + slotIndex)?.displayTime }})
+                                    }
+                                  }
+                                  @case ('SAME_PROCESS') {
+                                    {{ 'interview.slots.create.validation.conflictSameProcess' | translate }}
+                                  }
+                                  @case ('BOOKED_OTHER_PROCESS') {
+                                    {{ 'interview.slots.create.validation.conflictBookedOther' | translate }}
+                                  }
+                                }
                               </span>
                             }
                           </div>
@@ -208,11 +220,23 @@
                     }
 
                     <!-- Conflict Error (Single Slot) -->
-                    @if (range.type === 'single' && conflictingSlotKeys().get(range.id + '_0')) {
+                    @if (range.type === 'single' && allConflicts().has(range.id + '_0')) {
                       <span class="mt-1 text-xs font-medium text-negative-default">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                        {{ 'interview.slots.create.validation.conflict' | translate }}
-                        ({{ conflictingSlotKeys().get(range.id + '_0') }})
+                        <fa-icon [icon]="['fas', 'exclamation-triangle']" class="mr-1" />
+                        @switch (allConflicts().get(range.id + '_0')?.type) {
+                          @case ('BATCH_INTERNAL') {
+                            {{ 'interview.slots.create.validation.conflict' | translate }}
+                            @if (allConflicts().get(range.id + '_0')?.displayTime) {
+                              ({{ allConflicts().get(range.id + '_0')?.displayTime }})
+                            }
+                          }
+                          @case ('SAME_PROCESS') {
+                            {{ 'interview.slots.create.validation.conflictSameProcess' | translate }}
+                          }
+                          @case ('BOOKED_OTHER_PROCESS') {
+                            {{ 'interview.slots.create.validation.conflictBookedOther' | translate }}
+                          }
+                        }
                       </span>
                     }
                   </div>

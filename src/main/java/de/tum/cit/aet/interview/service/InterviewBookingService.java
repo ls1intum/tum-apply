@@ -174,12 +174,25 @@ public class InterviewBookingService {
         slot.setIsBooked(true);
         interviewee.getSlots().add(slot);
 
-        // 10. Save entities
+        // 10. Auto-delete overlapping unbooked slots from other processes (cleanup)
+        Job job = process.getJob();
+        UUID professorId = job.getSupervisingProfessor().getUserId();
+        List<InterviewSlot> overlappingSlots = interviewSlotRepository.findOverlappingUnbookedSlots(
+            professorId,
+            processId,
+            slot.getStartDateTime(),
+            slot.getEndDateTime()
+        );
+
+        if (!overlappingSlots.isEmpty()) {
+            interviewSlotRepository.deleteAll(overlappingSlots);
+        }
+
+        // 11. Save entities
         interviewSlotRepository.save(slot);
         intervieweeRepository.save(interviewee);
 
-        // 11. Send confirmation emails
-        Job job = process.getJob();
+        // 12. Send confirmation emails
         sendBookingConfirmationEmails(slot, interviewee, job);
 
         log.info("Slot {} booked by interviewee {} for process {}", slotId, interviewee.getId(), processId);

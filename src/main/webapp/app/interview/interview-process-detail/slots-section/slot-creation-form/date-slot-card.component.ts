@@ -9,6 +9,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { ExistingSlotDTO } from 'app/generated/model/existingSlotDTO';
 import { TooltipModule } from 'primeng/tooltip';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
@@ -55,12 +56,16 @@ export class DateSlotCardComponent {
   readonly existingSlots = input<InterviewSlotDTO[]>([]);
   readonly showApplyAll = input<boolean>(false);
   readonly showValidationErrors = input<boolean>(false);
+  // Server-side conflicts passed from parent (key: startDateTime-endDateTime)
+  readonly serverConflicts = input<Map<string, { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO }>>(new Map());
+
   readonly slotsChange = output<InterviewSlotDTO[]>();
   readonly applyAll = output<boolean>();
   readonly remove = output();
 
   readonly isCollapsed = signal<boolean>(false);
   readonly slotRanges = signal<SlotRange[]>([]);
+
   readonly allSlots = computed(() => this.slotRanges().flatMap(range => range.slots));
 
   readonly conflictingSlotKeys = computed(() => {
@@ -98,6 +103,35 @@ export class DateSlotCardComponent {
       });
     });
     return conflicts;
+  });
+
+  // Combined conflicts: intra-batch (client-side) + server conflicts
+  readonly allConflicts = computed(() => {
+    const combined = new Map<string, { type: 'BATCH_INTERNAL' | 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; displayTime?: string }>();
+
+    // Add client-side intra-batch conflicts
+    for (const [key, displayTime] of this.conflictingSlotKeys().entries()) {
+      combined.set(key, { type: 'BATCH_INTERNAL', displayTime: displayTime ?? undefined });
+    }
+
+    // Convert server conflicts to rangeId_slotIndex format
+    const serverConflictsMap = this.serverConflicts();
+    if (serverConflictsMap.size > 0) {
+      for (const range of this.slotRanges()) {
+        range.slots.forEach((slot, slotIndex) => {
+          // Normalize to ISO string to match parent's format
+          const serverKey = `${new Date(slot.startDateTime!).toISOString()}-${new Date(slot.endDateTime!).toISOString()}`;
+          const conflict = serverConflictsMap.get(serverKey);
+          if (conflict) {
+            const templateKey = `${range.id}_${slotIndex}`;
+            // Server conflicts take priority over batch conflicts
+            combined.set(templateKey, { type: conflict.type });
+          }
+        });
+      }
+    }
+
+    return combined;
   });
 
   private lastEmittedSlots: InterviewSlotDTO[] | null = null;

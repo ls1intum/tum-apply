@@ -254,6 +254,7 @@ public class InterviewService {
         // 2. Security: Verify current user has job access
         Job job = process.getJob();
         currentUserService.verifyJobAccess(job);
+        User professor = job.getSupervisingProfessor();
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -262,8 +263,8 @@ public class InterviewService {
             .map(slotInput -> createSlotFromInput(process, slotInput))
             .toList();
 
-        // 4. Validate no time conflicts
-        validateNoTimeConflicts(newSlots);
+        // 4. Validate no time conflicts (pass professor to avoid lazy loading)
+        validateNoTimeConflicts(newSlots, professor, processId);
 
         // 5. Save all slots
         List<InterviewSlot> savedSlots = interviewSlotRepository.saveAll(newSlots);
@@ -333,11 +334,15 @@ public class InterviewService {
     /**
      * Validates that none of the new slots conflict with existing slots of the same
      * professor.
+     * For the same process: blocks any overlapping slot.
+     * For other processes: only blocks BOOKED overlapping slots.
      *
-     * @param newSlots the slots to validate
+     * @param newSlots  the slots to validate
+     * @param professor the supervising professor (passed to avoid lazy loading)
+     * @param processId the current interview process ID
      * @throws TimeConflictException if a time conflict is detected
      */
-    private void validateNoTimeConflicts(List<InterviewSlot> newSlots) {
+    private void validateNoTimeConflicts(List<InterviewSlot> newSlots, User professor, UUID processId) {
         // 1. Check for internal conflicts within the new batch
         for (int i = 0; i < newSlots.size(); i++) {
             for (int j = i + 1; j < newSlots.size(); j++) {
@@ -359,31 +364,17 @@ public class InterviewService {
         }
 
         // 2. Check for conflicts with existing slots in the database
+        // Same process: any overlap blocks; Other processes: only BOOKED slots block
         for (InterviewSlot newSlot : newSlots) {
-            User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
-
             boolean hasConflict = interviewSlotRepository.hasConflictingSlots(
                 professor,
+                processId,
                 newSlot.getStartDateTime(),
                 newSlot.getEndDateTime()
             );
 
             if (hasConflict) {
-                // Fetch conflicting InterviewSlot entity
-                InterviewSlot conflictingSlot = interviewSlotRepository
-                    .findFirstConflictingSlot(professor, newSlot.getStartDateTime(), newSlot.getEndDateTime())
-                    .orElseThrow();
-
-                ZonedDateTime conflictTime = conflictingSlot.getStartDateTime().atZone(CET_TIMEZONE);
-                String jobTitle = conflictingSlot.getInterviewProcess().getJob().getTitle();
-
-                throw new TimeConflictException(
-                    String.format(
-                        "Time conflict: You already have an interview slot at %s for job '%s'",
-                        conflictTime.toLocalDateTime(),
-                        jobTitle
-                    )
-                );
+                throw new TimeConflictException(String.format("Time conflict: You already have an interview slot at the requested time"));
             }
         }
     }
@@ -886,4 +877,3 @@ public class InterviewService {
         );
     }
 }
-

@@ -59,24 +59,29 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
 
     /**
      * Checks if a professor has any conflicting slots within the given time range.
+     * For the same process: blocks any overlapping slot.
+     * For other processes: only blocks BOOKED overlapping slots.
      *
      * @param professor     the professor to check
+     * @param processId     the current process ID (to distinguish same vs other
+     *                      process)
      * @param startDateTime start of the time range
      * @param endDateTime   end of the time range
      * @return true if at least one conflicting slot exists, false otherwise
      */
     @Query(
         """
-
         SELECT COUNT(s) > 0 FROM InterviewSlot s
             JOIN s.interviewProcess ip
             JOIN ip.job j
             WHERE j.supervisingProfessor = :professor
             AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
+            AND (ip.id = :processId OR s.isBooked = true)
             """
     )
     boolean hasConflictingSlots(
         @Param("professor") User professor,
+        @Param("processId") UUID processId,
         @Param("startDateTime") Instant startDateTime,
         @Param("endDateTime") Instant endDateTime
     );
