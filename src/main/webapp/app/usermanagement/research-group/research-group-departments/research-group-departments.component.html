@@ -3,13 +3,6 @@
     <div class="page-header">
       <h1 jhiTranslate="researchGroup.departments.header">Departments</h1>
     </div>
-    <jhi-button
-      [label]="'researchGroup.departments.createButton'"
-      icon="plus"
-      severity="primary"
-      (click)="onCreateDepartment()"
-      [shouldTranslate]="true"
-    />
   </div>
   <jhi-search-filter-sort-bar
     [searchText]="'researchGroup.departments.searchPlaceholder' | translate"
@@ -21,7 +14,16 @@
     (filterOutput)="onFilterEmit($event)"
     (sortOutput)="loadOnSortEmit($event)"
     [sortableFields]="sortableFields"
-  />
+  >
+    <jhi-button
+      [label]="'researchGroup.departments.createButton'"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateDepartment()"
+      [shouldTranslate]="true"
+    />
+  </jhi-search-filter-sort-bar>
+
   <div class="table-wrapper">
     <jhi-dynamic-table
       [columns]="columns()"
