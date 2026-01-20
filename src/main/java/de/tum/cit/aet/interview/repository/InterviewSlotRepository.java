@@ -199,4 +199,68 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("monthEnd") Instant monthEnd,
         Pageable pageable
     );
+
+    /**
+     * Finds all slots relevant for conflict detection on a specific date.
+     * Returns:
+     * - All slots (booked + unbooked) from the current interview process
+     * - All BOOKED slots from other processes of the same professor
+     *
+     * @param processId   the current interview process ID
+     * @param professorId the supervising professor's user ID
+     * @param dayStart    start of the day (inclusive)
+     * @param dayEnd      end of the day (exclusive)
+     * @return list of slots for conflict checking, ordered by start time
+     */
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        JOIN s.interviewProcess ip
+        JOIN ip.job j
+        WHERE s.startDateTime >= :dayStart
+        AND s.startDateTime < :dayEnd
+        AND (
+            ip.id = :processId
+            OR (s.isBooked = true AND j.supervisingProfessor.userId = :professorId)
+        )
+        ORDER BY s.startDateTime
+        """
+    )
+    List<InterviewSlot> findConflictDataByDate(
+        @Param("processId") UUID processId,
+        @Param("professorId") UUID professorId,
+        @Param("dayStart") Instant dayStart,
+        @Param("dayEnd") Instant dayEnd
+    );
+
+    /**
+     * Finds overlapping unbooked slots from other processes to auto-delete when a
+     * slot is booked.
+     * Used to prevent professors from being double-booked across different
+     * interview processes.
+     *
+     * @param professorId      the supervising professor's user ID
+     * @param excludeProcessId the current process ID to exclude from results
+     * @param startDateTime    start of the time range to check
+     * @param endDateTime      end of the time range to check
+     * @return list of overlapping unbooked slots from other processes
+     */
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        JOIN s.interviewProcess ip
+        JOIN ip.job j
+        WHERE j.supervisingProfessor.userId = :professorId
+        AND ip.id != :excludeProcessId
+        AND s.isBooked = false
+        AND s.startDateTime < :endDateTime
+        AND s.endDateTime > :startDateTime
+        """
+    )
+    List<InterviewSlot> findOverlappingUnbookedSlots(
+        @Param("professorId") UUID professorId,
+        @Param("excludeProcessId") UUID excludeProcessId,
+        @Param("startDateTime") Instant startDateTime,
+        @Param("endDateTime") Instant endDateTime
+    );
 }
