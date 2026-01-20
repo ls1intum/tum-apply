@@ -29,6 +29,7 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -446,6 +447,39 @@ public class InterviewService {
         return new PageResponseDTO<>(slotDTOs, slotsPage.getTotalElements());
     }
 
+    /**
+     * Retrieves conflict data for slot creation validation on a specific date.
+     * Returns all slots relevant for conflict detection in a single response:
+     * - All slots (booked + unbooked) from the current process
+     * - All BOOKED slots from other processes of the same professor
+     *
+     * @param processId the ID of the interview process
+     * @param date      the date to check for conflicts
+     * @return ConflictDataDTO containing slots for client-side conflict detection
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public ConflictDataDTO getConflictDataForDate(UUID processId, LocalDate date) {
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
+
+        // 2. Security: Verify current user has job access
+        currentUserService.verifyJobAccess(process.getJob());
+
+        // 3. Calculate day boundaries in CET timezone
+        UUID professorId = process.getJob().getSupervisingProfessor().getUserId();
+        Instant dayStart = date.atStartOfDay(CET_TIMEZONE).toInstant();
+        Instant dayEnd = date.plusDays(1).atStartOfDay(CET_TIMEZONE).toInstant();
+
+        // 4. Fetch all relevant slots for conflict detection
+        List<InterviewSlot> slots = interviewSlotRepository.findConflictDataByDate(processId, professorId, dayStart, dayEnd);
+
+        // 5. Return DTO for client-side filtering
+        return new ConflictDataDTO(processId, slots.stream().map(ConflictDataDTO.ExistingSlotDTO::fromEntity).toList());
+    }
+
     /*--------------------------------------------------------------
      Interviewee Management
     --------------------------------------------------------------*/
@@ -575,32 +609,49 @@ public class InterviewService {
         slot.setIsBooked(true);
         interviewee.getSlots().add(slot);
 
-        // 7. Save entities
+        // 7. Auto-delete overlapping unbooked slots from other processes
+        UUID professorId = job.getSupervisingProfessor().getUserId();
+        List<InterviewSlot> overlappingSlots = interviewSlotRepository.findOverlappingUnbookedSlots(
+            professorId,
+            processId,
+            slot.getStartDateTime(),
+            slot.getEndDateTime()
+        );
+
+        boolean hadOverlappingSlots = !overlappingSlots.isEmpty();
+        if (hadOverlappingSlots) {
+            interviewSlotRepository.deleteAll(overlappingSlots);
+        }
+
+        // 8. Save entities
         interviewSlotRepository.save(slot);
         intervieweeRepository.save(interviewee);
 
-        // 8. Send interview invitation email
-        sendInterviewInvitationEmail(slot, interviewee, job);
+        // 9. Send interview invitation email
+        sendInterviewInvitationEmail(slot, interviewee, job, hadOverlappingSlots);
 
-        // 9. Build response with interviewee details
+        // 10. Build response with interviewee details
         IntervieweeState state = calculateIntervieweeState(interviewee);
         AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
         return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
     }
 
-    private void sendInterviewInvitationEmail(InterviewSlot slot, Interviewee interviewee, Job job) {
+    private void sendInterviewInvitationEmail(InterviewSlot slot, Interviewee interviewee, Job job, boolean hadOverlappingSlots) {
         Application application = interviewee.getApplication();
         User applicant = application.getApplicant().getUser();
 
         String icsContent = icsCalendarService.generateIcsContent(slot, job);
         String icsFileName = icsCalendarService.generateFileName(slot);
 
+        // Create content map with slot and overlap flag for email template
+        Map<String, Object> content = Map.of("slot", slot, "hadOverlappingSlots", hadOverlappingSlots);
+
         Email email = Email.builder()
             .to(applicant)
             .emailType(EmailType.INTERVIEW_INVITATION)
             .language(Language.fromCode(applicant.getSelectedLanguage()))
             .researchGroup(job.getResearchGroup())
-            .content(slot)
+            .content(content)
             .icsContent(icsContent)
             .icsFileName(icsFileName)
             .build();
