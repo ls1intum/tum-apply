@@ -34,7 +34,7 @@ public class UserService {
 
     public UserService(
         UserRepository userRepository,
-        UserResearchGroupRoleRepository userResearchGroupRoleRepository,
+        UserResearchGroupRoleRepository userResearchGroupRoleRepository
     ) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
