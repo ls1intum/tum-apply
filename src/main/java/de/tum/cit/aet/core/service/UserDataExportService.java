@@ -128,6 +128,14 @@ public class UserDataExportService {
 
     // ------------------------------------ Private helper methods ------------------------------------
 
+    /**
+     * Collects all exportable data for the given user, including profile, settings, email settings,
+     * and role-specific data (applicant or staff) when applicable.
+     *
+     * @param userId the ID of the user whose data should be collected
+     * @return a {@link UserDataExportDTO} containing all available export data for the user
+     * @throws IllegalArgumentException if the user cannot be found
+     */
     private UserDataExportDTO collectUserData(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
