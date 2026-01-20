@@ -20,7 +20,7 @@ class TechnicalStructureTest {
         .consideringAllDependencies()
         .layer("Config").definedBy("..config..")
         .layer("Web").definedBy("..web..")
-        .optionalLayer("Service").definedBy("..service..")
+        .optionalLayer("Service").definedBy("..service..", "..retention..")
         .layer("Security").definedBy("..security..")
         .optionalLayer("Persistence").definedBy("..repository..")
         .layer("Domain").definedBy("..domain..")
