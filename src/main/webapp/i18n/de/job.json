@@ -139,7 +139,8 @@
         "aiFillerText": "Generiert...",
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
-        "languageGerman": "Deutsch"
+        "languageGerman": "Deutsch",
+        "translating": "Übersetzt..."
       }
     },
     "imageSection": {
@@ -327,7 +328,8 @@
       "location": "Standort:"
     },
     "sections": {
-      "jobDescription": "Stellenbeschreibung",
+      "jobDescriptionEN": "Englische Stellenbeschreibung",
+      "jobDescriptionDE": "Deutsche Stellenbeschreibung",
       "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
       "eligibilityCriteria": "Zulassungsvoraussetzungen",
       "dataProtection": "Hinweis zum Datenschutz"

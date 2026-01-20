@@ -26,7 +26,8 @@
     <div class="h-full items-center justify-center flex px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="basicInfoForm" class="w-full">
         <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span>
+        </p-divider>
 
         <div class="form-field">
           <jhi-string-input
@@ -68,12 +69,14 @@
 
         <div class="form-row">
           <div class="form-field input-with-icon">
-            <label for="supervisingProfessor" jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
+            <label for="supervisingProfessor"
+                   jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
               <span class="required">*</span>
             </label>
             <div class="icon-input-wrapper mb-6">
               <fa-icon [icon]="['fas', 'user-tie']" class="input-icon" />
-              <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
+              <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value"
+                     id="supervisingProfessor" type="text" />
             </div>
           </div>
 
@@ -92,37 +95,41 @@
           </div>
         </div>
 
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span>
+        </p-divider>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.description"></p>
         <p jhiTranslate="jobCreationForm.positionDetailsSection.languageInfo"></p>
 
         <!-- Header row: Language switcher (left) + AI toggle (right) -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3 mb-3">
-          <jhi-segmented-toggle
-            [value]="segmentValueForLang(currentDescriptionLanguage())"
-            [disabled]="isTranslating() || savingState() === 'SAVING'"
-            [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageEnglish'"
-            [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageGerman'"
-            [translateLabels]="true"
-            (valueChange)="changeDescriptionLanguage(langForSegmentValue($event))"
-          />
+          <div class="flex items-center gap-3">
+            <jhi-segmented-toggle
+              [value]="segmentValueForLang(currentDescriptionLanguage())"
+              [disabled]="isTranslating() || savingState() === 'SAVING'"
+              [leftLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageEnglish'"
+              [rightLabel]="'jobCreationForm.positionDetailsSection.jobDescription.languageGerman'"
+              [translateLabels]="true"
+              (valueChange)="changeDescriptionLanguage(langForSegmentValue($event))"
+            />
+
+            <!-- Translation indicator -->
+            @if (isTranslating()) {
+              <div class="flex items-center gap-2 px-3 h-[32px] bg-blue-50 border-border-default rounded-[8px]">
+                <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+                <span
+                  class="text-[13px] font-semibold text-blue-700 whitespace-nowrap"
+                  jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"
+                ></span>
+              </div>
+            }
+          </div>
 
           <div class="flex items-center gap-2 sm:justify-end">
             <jhi-toggle-switch [(model)]="aiToggleSignal" />
-            <label class="text-sm whitespace-nowrap" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"></label>
+            <label class="text-sm whitespace-nowrap"
+                   jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"></label>
           </div>
         </div>
-
-        <!-- Translation indicator -->
-        @if (isTranslating()) {
-          <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
-            <jhi-progress-spinner styleClass="w-5 h-5" strokeWidth="4" />
-            <span
-              class="text-sm text-blue-700 font-medium"
-              jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"
-            ></span>
-          </div>
-        }
 
         <div class="form-row mb-6 flex flex-col gap-2">
           <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="showAiPanel()">
@@ -149,8 +156,10 @@
               <p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
 
               <div class="mt-0 max-w-[220px]">
-                <h3 class="mb-3 font-bold" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
-                <h4 class="mb-4 text-base gap-4" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"></h4>
+                <h3 class="mb-3 font-bold"
+                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
+                <h4 class="mb-4 text-base gap-4"
+                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"></h4>
 
                 <div class="flex justify-center">
                   @if (isGeneratingDraft()) {
@@ -186,7 +195,8 @@
   <ng-template #panel2>
     <div class="h-full min-h-[calc(100vh-300px)] flex flex-column px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="positionDetailsForm" class="w-full">
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
+        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span>
+        </p-divider>
 
         <div class="form-row mb-6">
           <div class="form-field">
@@ -266,7 +276,8 @@
   </ng-template>
 
   <!-- Reusable Image Card Template -->
-  <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage" let-isSelected="isSelected">
+  <ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isNoImage="isNoImage"
+               let-isSelected="isSelected">
     <div
       [class]="'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1' + (showDelete ? ' group' : '')"
       (click)="isNoImage ? clearImageSelection() : selectImage(image)"
@@ -345,7 +356,8 @@
 
         <div class="mb-8">
           <h3 class="text-lg font-semibold mb-2" jhiTranslate="jobCreationForm.imageSection.researchGroupImages"></h3>
-          <p class="text-text-secondary mb-4" jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
+          <p class="text-text-secondary mb-4"
+             jhiTranslate="jobCreationForm.imageSection.researchGroupImagesDescription"></p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
             @for (image of researchGroupImages(); track image.imageId) {
@@ -358,7 +370,8 @@
             }
 
             <div [class]="uploadContainerClasses()" (click)="fileInput.click()">
-              <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput class="hidden" />
+              <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput
+                     class="hidden" />
               <div [class]="uploadInnerClasses()">
                 @if (isUploadingImage()) {
                   <jhi-progress-spinner styleClass="w-12 h-12" strokeWidth="4" />
@@ -375,7 +388,8 @@
 
   <!-- Step 4 -->
   <ng-template #panel4>
-    <jhi-message severity="warn" styleClass="mb-3" message="jobCreationForm.reviewPageSection.message" [shouldTranslate]="true" />
+    <jhi-message severity="warn" styleClass="mb-3" message="jobCreationForm.reviewPageSection.message"
+                 [shouldTranslate]="true" />
     <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
 
     <div class="data-privacy-notice">

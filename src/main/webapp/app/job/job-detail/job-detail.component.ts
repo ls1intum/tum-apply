@@ -41,7 +41,8 @@ export interface JobDetails {
   workload: string;
   contractDuration: string;
   fundingType: string;
-  jobDescription: string;
+  jobDescriptionEN: string;
+  jobDescriptionDE?: string;
   startDate: string;
   endDate: string;
   createdAt: string;
@@ -506,7 +507,8 @@ export class JobDetailComponent {
       workload: data.workload?.toString() ?? '',
       contractDuration: data.contractDuration?.toString() ?? '',
       fundingType: data.fundingType ?? '',
-      jobDescription: data.jobDescriptionEN ?? '',
+      jobDescriptionEN: data.jobDescriptionEN ?? '',
+      jobDescriptionDE: data.jobDescriptionDE ?? '',
       startDate,
       endDate,
       createdAt,

@@ -39,8 +39,21 @@ import { ImageDTO } from 'app/generated/model/imageDTO';
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 
+/** Represents the mode of the job creation form: creating a new job or editing an existing one */
 type JobFormMode = 'create' | 'edit';
 
+/**
+ * JobCreationFormComponent
+ *
+ * A multi-step form for creating and editing job postings.
+ * Features:
+ * - 4-step form wizard (Basic Info → Position Details → Image Selection → Summary)
+ * - Dual-language support (EN/DE) with automatic AI translation
+ * - AI-powered job description generation
+ * - Auto-save functionality with 3-second debounce
+ * - Image upload and selection for job banners
+ *
+ */
 @Component({
   selector: 'jhi-job-creation-form',
   standalone: true,
@@ -78,51 +91,109 @@ type JobFormMode = 'create' | 'edit';
 export class JobCreationFormComponent {
   /* eslint-disable @typescript-eslint/member-ordering */
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONSTANTS
+  // ═══════════════════════════════════════════════════════════════════════════
   readonly publishButtonSeverity = 'primary' as ButtonColor;
   readonly publishButtonIcon = 'paper-plane';
 
-  // Mode / meta
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MODE & META SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Current form mode: 'create' for new jobs, 'edit' for existing jobs */
   mode = signal<JobFormMode>('create');
+
   jobId = signal<string>('');
+
   userId = signal<string>('');
+
   isLoading = signal<boolean>(true);
 
-  // Saving state
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SAVING STATE SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Current auto-save state: 'SAVED', 'SAVING', or 'FAILED' */
   savingState = signal<SavingState>(SavingStates.SAVED);
+
+  /** Snapshot of the last successfully saved job data (used for change detection) */
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
+
+  /** Tracks if the user has attempted to publish (triggers validation display) */
   publishAttempted = signal<boolean>(false);
 
-  // Job description UI (single editor)
+  // ═══════════════════════════════════════════════════════════════════════════
+  // JOB DESCRIPTION SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Current content of the job description editor */
   jobDescriptionSignal = signal<string>('');
+
+  /** Currently selected language tab for the job description editor */
   currentDescriptionLanguage = signal<Language>('en');
 
-  // Store both language versions always
+  /** Stores the English version of the job description */
   jobDescriptionEN = signal<string>('');
+
+  /** Stores the German version of the job description */
   jobDescriptionDE = signal<string>('');
 
-  // Translation bookkeeping
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TRANSLATION STATE SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Indicates whether AI translation is in progress */
   isTranslating = signal<boolean>(false);
+
+  /** Last successfully translated English text (used to avoid redundant translations) */
   lastTranslatedEN = signal<string>('');
+
+  /** Last successfully translated German text (used to avoid redundant translations) */
   lastTranslatedDE = signal<string>('');
 
-  // AI
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI GENERATION SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Indicates whether AI is currently generating a job description draft */
   isGeneratingDraft = signal<boolean>(false);
+
+  /** Controls visibility of the AI generation panel */
   aiToggleSignal = signal<boolean>(true);
+
+  /** Tracks if the rewrite button should be shown (after first generation) */
   rewriteButtonSignal = signal<boolean>(false);
+
+  /** Computed: determines if the AI panel should be displayed */
   showAiPanel = computed(() => this.aiToggleSignal());
+
+  /** Computed: returns the localized template text for manual job description */
   templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
 
-  // Image upload state
+  // ═══════════════════════════════════════════════════════════════════════════
+  // IMAGE UPLOAD SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** List of default job banner images provided by the system */
   defaultImages = signal<ImageDTO[]>([]);
+
+  /** List of custom images uploaded by the research group */
   researchGroupImages = signal<ImageDTO[]>([]);
+
+  /** Currently selected image for the job banner */
   selectedImage = signal<ImageDTO | undefined>(undefined);
+
+  /** Indicates whether an image upload is in progress */
   isUploadingImage = signal<boolean>(false);
 
+  /** Computed: checks if the selected image is a custom upload (not a default) */
   hasCustomImage = computed(() => {
     const image = this.selectedImage();
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
   });
 
+  /** Computed: CSS classes for the upload container based on upload state */
   uploadContainerClasses = computed(() => {
     if (this.isUploadingImage()) {
       return 'relative rounded-lg transition-all opacity-50 pointer-events-none';
@@ -130,13 +201,17 @@ export class JobCreationFormComponent {
     return 'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
   });
 
+  /** Computed: CSS classes for the inner upload area */
   uploadInnerClasses = computed(() => {
     const base = 'aspect-video border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-all';
     const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
     return `${base} border-border-default ${hover}`.trim();
   });
 
-  // DI
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DEPENDENCY INJECTION
+  // ═══════════════════════════════════════════════════════════════════════════
+
   private fb = inject(FormBuilder);
   private jobResourceService = inject(JobResourceApiService);
   private imageResourceService = inject(ImageResourceApiService);
@@ -148,35 +223,82 @@ export class JobCreationFormComponent {
   private toastService = inject(ToastService);
   private aiService = inject(AiResourceApiService);
 
-  // Forms
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FORM GROUPS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Step 1: Basic job information (title, research area, field, location, description) */
   basicInfoForm = this.createBasicInfoForm();
+
+  /** Step 2: Position details (funding, dates, workload, contract duration) */
   positionDetailsForm = this.createPositionDetailsForm();
+
+  /** Step 3: Image selection for job banner */
   imageForm = this.createImageForm();
+
+  /** Step 4: Additional info including privacy consent */
   additionalInfoForm = this.createAdditionalInfoForm();
 
-  // Template references
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TEMPLATE REFERENCES (ViewChild)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Template for Step 1: Basic Info panel */
   panel1 = viewChild<TemplateRef<HTMLDivElement>>('panel1');
+
+  /** Template for Step 2: Position Details panel */
   panel2 = viewChild<TemplateRef<HTMLDivElement>>('panel2');
+
+  /** Template for Step 3: Image Selection panel */
   panel3 = viewChild<TemplateRef<HTMLDivElement>>('panel3');
+
+  /** Template for Step 4: Summary/Preview panel */
   panel4 = viewChild<TemplateRef<HTMLDivElement>>('panel4');
+
+  /** Template for the saving state indicator */
   savingStatePanel = viewChild<TemplateRef<HTMLDivElement>>('savingStatePanel');
+
+  /** Reference to the publish confirmation dialog */
   sendPublishDialog = viewChild<ConfirmDialog>('sendPublishDialog');
+
+  /** Reference to the job description rich-text editor */
   jobDescriptionEditor = viewChild<EditorComponent>('jobDescriptionEditor');
 
-  // Validity
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FORM VALIDITY SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Tracks validity of Step 1 (Basic Info) */
   basicInfoValid = signal(false);
+
+  /** Tracks validity of Step 2 (Position Details) */
   positionDetailsValid = signal(false);
+
+  /** Computed: true when all required forms are valid */
   allFormsValid = computed(() => this.basicInfoValid() && this.positionDetailsValid());
+
+  /** Computed: true when an image has been selected */
   imageSelected = computed(() => this.selectedImage() !== undefined);
 
-  // Signals from form changes
+  // ═══════════════════════════════════════════════════════════════════════════
+  // REACTIVE FORM STATUS SIGNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Signal that emits when basicInfoForm status changes */
   basicInfoChanges = toSignal(this.basicInfoForm.statusChanges, { initialValue: this.basicInfoForm.status });
+
+  /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
 
+  /** Signal tracking the privacy consent checkbox state */
   privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
     initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
   });
 
+  /**
+   * Effect: Updates validity signals whenever form status changes.
+   * This keeps the stepper navigation buttons in sync with form state.
+   */
   formValidationEffect = effect(() => {
     this.basicInfoChanges();
     this.positionDetailsChanges();
@@ -186,18 +308,22 @@ export class JobCreationFormComponent {
     this.positionDetailsValid.set(this.positionDetailsForm.valid);
   });
 
+  /** Computed: Returns the job DTO ready for publishing, or undefined if forms are invalid */
   publishableJobData = computed<JobFormDTO | undefined>(() => (this.allFormsValid() ? this.createJobDTO('PUBLISHED') : undefined));
 
+  /** Computed: Detects if there are unsaved changes by comparing current data with last saved */
   hasUnsavedChanges = computed(() => {
     const current = this.currentJobData();
     const lastSaved = this.lastSavedData();
     return JSON.stringify(current) !== JSON.stringify(lastSaved);
   });
 
+  /** Computed: Returns the appropriate page title translation key based on mode */
   readonly pageTitle = computed(() =>
     this.mode() === 'edit' ? 'jobCreationForm.header.title.edit' : 'jobCreationForm.header.title.create',
   );
 
+  /** Computed: CSS classes for the saving state badge based on current state */
   readonly savingBadgeCalculatedClass = computed(
     () =>
       `flex flex-wrap justify-around content-center gap-1 ${
@@ -209,21 +335,46 @@ export class JobCreationFormComponent {
       }`,
   );
 
-  // Step config
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPPER CONFIGURATION
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Computed: Builds the configuration for the multi-step wizard.
+   * Each step defines its panel template, navigation buttons, and validation state.
+   */
   readonly stepData = computed<StepData[]>(() => this.buildStepData());
 
-  // Helpers for translation toggles
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LANGUAGE TOGGLE HELPERS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Converts a language code to the corresponding segmented toggle value.
+   * @param lang - The language code ('en' or 'de')
+   * @returns 'left' for English, 'right' for German
+   */
   segmentValueForLang(lang: Language): SegmentedToggleValue {
     return lang === 'en' ? 'left' : 'right';
   }
 
-  langForSegmentValue(v: SegmentedToggleValue): Language {
-    return v === 'left' ? 'en' : 'de';
+  /**
+   * Converts a segmented toggle value to the corresponding language code.
+   * @param toggleValue - The toggle position ('left' or 'right')
+   * @returns 'en' for left, 'de' for right
+   */
+  langForSegmentValue(toggleValue: SegmentedToggleValue): Language {
+    return toggleValue === 'left' ? 'en' : 'de';
   }
 
-  // Dropdown translate signals
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TRANSLATED DROPDOWN OPTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Signal that tracks the current UI language for dropdown translations */
   currentLang = toSignal(this.translate.onLangChange);
 
+  /** Computed: Returns localized and sorted field of study options */
   translatedFieldsOfStudies = computed(() => {
     void this.currentLang();
     return DropdownOptions.fieldsOfStudies
@@ -231,6 +382,7 @@ export class JobCreationFormComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
+  /** Computed: Returns localized and sorted location options */
   translatedLocations = computed(() => {
     void this.currentLang();
     return DropdownOptions.locations
@@ -238,6 +390,7 @@ export class JobCreationFormComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
+  /** Computed: Returns localized and sorted funding type options */
   translatedFundingTypes = computed(() => {
     void this.currentLang();
     return DropdownOptions.fundingTypes
@@ -245,17 +398,26 @@ export class JobCreationFormComponent {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  // Data computation
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FORM VALUE SIGNALS (for change detection)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Signal that emits the current basicInfoForm values */
   basicInfoFormValueSignal = toSignal(this.basicInfoForm.valueChanges, {
     initialValue: this.basicInfoForm.getRawValue(),
   });
+
+  /** Signal that emits the current positionDetailsForm values */
   positionDetailsFormValueSignal = toSignal(this.positionDetailsForm.valueChanges, {
     initialValue: this.positionDetailsForm.getRawValue(),
   });
+
+  /** Signal that emits the current imageForm values */
   imageFormValueSignal = toSignal(this.imageForm.valueChanges, {
     initialValue: this.imageForm.getRawValue(),
   });
 
+  /** Computed: Aggregates all form data into a JobFormDTO for saving */
   currentJobData = computed<JobFormDTO>(() => {
     this.basicInfoFormValueSignal();
     this.positionDetailsFormValueSignal();
@@ -263,25 +425,51 @@ export class JobCreationFormComponent {
     return this.createJobDTO('DRAFT');
   });
 
-  // Autosave
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AUTO-SAVE INTERNALS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Timer ID for the debounced auto-save (3-second delay) */
   private autoSaveTimer: number | undefined;
+
+  /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
 
-  // Allowed image file types for upload
+  // ═══════════════════════════════════════════════════════════════════════════
+  // IMAGE UPLOAD CONSTRAINTS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Allowed MIME types for image uploads */
   private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+
+  /** Formatted string of allowed types for the file input accept attribute */
   readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
-  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+
+  /** Maximum file size for uploads: 5MB */
+  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
+  /** Maximum image dimension (width or height): 4096px */
   private readonly MAX_IMAGE_DIMENSION_PX = 4096;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONSTRUCTOR
+  // ═══════════════════════════════════════════════════════════════════════════
 
   constructor() {
     this.init();
     this.setupAutoSave();
   }
 
-  // ---------------------------
-  // Language switching
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // LANGUAGE SWITCHING METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Switches the job description editor to a different language tab.
+   * Ensures pending saves are flushed before switching to prevent data loss.
+   *
+   * @param newLang - The target language ('en' or 'de')
+   */
   async changeDescriptionLanguage(newLang: Language): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     if (newLang === currentLang || this.isTranslating()) return;
@@ -308,6 +496,10 @@ export class JobCreationFormComponent {
     this.currentDescriptionLanguage.set(newLang);
   }
 
+  /**
+   * Syncs the current editor content into the appropriate language signal (EN or DE).
+   * Called before saving or switching languages to ensure no content is lost.
+   */
   private syncCurrentEditorIntoLanguageSignals(): void {
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
     const lang = this.currentDescriptionLanguage();
@@ -319,7 +511,8 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Updates editor when language changes (loads the stored EN/DE version)
+   * Effect: Automatically updates the editor when the description language changes.
+   * Loads the stored content for the selected language into the editor.
    */
   languageChangeEffect = effect(() => {
     const newLanguage = this.currentDescriptionLanguage();
@@ -332,10 +525,18 @@ export class JobCreationFormComponent {
     this.jobDescriptionEditor()?.forceUpdate(targetContent);
   });
 
-  // ---------------------------
-  // Translation
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI TRANSLATION METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Translates the job description from one language to another using AI.
+   * Updates the target language signal and optionally refreshes the editor.
+   *
+   * @param text - The source text to translate
+   * @param fromLang - The source language
+   * @param toLang - The target language
+   */
   private async translateJobDescription(text: string, fromLang: Language, toLang: Language): Promise<void> {
     if (!text || text.trim().length === 0) return;
 
@@ -369,10 +570,15 @@ export class JobCreationFormComponent {
     }
   }
 
-  // ---------------------------
-  // AI toggle template behavior (unchanged)
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI TOGGLE EFFECT
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Effect: Manages the job description template based on AI toggle state.
+   * - When AI is disabled and editor is empty: inserts template
+   * - When AI is enabled and content equals template: clears editor
+   */
   private aiToggleEffect = effect(() => {
     const aiEnabled = this.aiToggleSignal();
     const ctrl = this.basicInfoForm.get('jobDescription');
@@ -392,10 +598,15 @@ export class JobCreationFormComponent {
     }
   });
 
-  // ---------------------------
-  // Publish
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PUBLISH METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Publishes the job posting after validation.
+   * Requires privacy consent and valid forms.
+   * Navigates to /my-positions on success.
+   */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
     this.publishAttempted.set(true);
@@ -417,14 +628,23 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Navigates back to the previous page in browser history.
+   */
   onBack(): void {
     this.location.back();
   }
 
-  // ---------------------------
-  // Images
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // IMAGE MANAGEMENT METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Handles image file selection and upload.
+   * Validates file type, size, and dimensions before uploading.
+   *
+   * @param event - The file input change event
+   */
   async onImageSelected(event: Event): Promise<void> {
     const target = event.target;
     if (!(target instanceof HTMLInputElement)) return;
@@ -475,16 +695,29 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Selects an image from the available options as the job banner.
+   *
+   * @param image - The image DTO to select
+   */
   selectImage(image: ImageDTO): void {
     this.selectedImage.set(image);
     this.imageForm.patchValue({ imageId: image.imageId });
   }
 
+  /**
+   * Clears the current image selection.
+   */
   clearImageSelection(): void {
     this.selectedImage.set(undefined);
     this.imageForm.patchValue({ imageId: null });
   }
 
+  /**
+   * Deletes an uploaded image from the server.
+   *
+   * @param imageId - The ID of the image to delete
+   */
   async deleteImage(imageId: string | undefined): Promise<void> {
     if (!imageId) return;
 
@@ -508,10 +741,16 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Deletes the currently selected image.
+   */
   async deleteSelectedImage(): Promise<void> {
     await this.deleteImage(this.selectedImage()?.imageId);
   }
 
+  /**
+   * Loads available images (defaults and research group uploads) from the server.
+   */
   async loadImages(): Promise<void> {
     try {
       try {
@@ -528,10 +767,15 @@ export class JobCreationFormComponent {
     }
   }
 
-  // ---------------------------
-  // AI generation (language-aware)
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AI GENERATION METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Generates a job description draft using AI.
+   * Uses current form values as context for generation.
+   * Updates the editor with the generated content.
+   */
   async generateJobApplicationDraft(): Promise<void> {
     const ctrl = this.basicInfoForm.get('jobDescription');
     const lang = this.currentDescriptionLanguage();
@@ -549,8 +793,6 @@ export class JobCreationFormComponent {
       // Ensure background signals reflect current editor before sending
       this.syncCurrentEditorIntoLanguageSignals();
 
-      // IMPORTANT: send language info so backend selects EN/DE prompt input
-      // Assumes JobFormDTO now has a field like descriptionLanguage (string enum 'en'|'de')
       const request: JobFormDTO = {
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
@@ -589,10 +831,14 @@ export class JobCreationFormComponent {
     }
   }
 
-  // ---------------------------
-  // Forms
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FORM CREATION METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Creates the Step 1 form group with validation rules.
+   * Required fields: title, research area, field of studies, location, job description
+   */
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
       title: ['', [Validators.required]],
@@ -600,12 +846,14 @@ export class JobCreationFormComponent {
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-
-      // single editor control
       jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
     });
   }
 
+  /**
+   * Creates the Step 2 form group for optional position details.
+   * All fields are optional: funding type, start date, deadline, workload, duration
+   */
   private createPositionDetailsForm(): FormGroup {
     return this.fb.group({
       fundingType: [undefined],
@@ -616,18 +864,32 @@ export class JobCreationFormComponent {
     });
   }
 
+  /**
+   * Creates the Step 3 form group for image selection.
+   */
   private createImageForm(): FormGroup {
     return this.fb.group({
       imageId: [undefined],
     });
   }
 
+  /**
+   * Creates the Step 4 form group for additional information.
+   * Contains the required privacy consent checkbox.
+   */
   private createAdditionalInfoForm(): FormGroup {
     return this.fb.group({
       privacyAccepted: [false, [Validators.required]],
     });
   }
 
+  /**
+   * Constructs a JobFormDTO from all form values.
+   * Combines data from all steps into a single DTO for API submission.
+   *
+   * @param state - The job state ('DRAFT' or 'PUBLISHED')
+   * @returns The complete job form DTO
+   */
   private createJobDTO(state: JobFormDTO.StateEnum): JobFormDTO {
     const basicInfoValue = this.basicInfoForm.getRawValue();
     const positionDetailsValue = this.positionDetailsForm.getRawValue();
@@ -660,6 +922,12 @@ export class JobCreationFormComponent {
     };
   }
 
+  /**
+   * Applies server-returned job data to local state.
+   * Used after save operations to sync with server-side changes.
+   *
+   * @param saved - The job form DTO returned from the server
+   */
   private applyServerJobForm(saved: JobFormDTO): void {
     // refresh local truth from server (important for autosave / server-side adjustments)
     this.jobDescriptionEN.set(saved.jobDescriptionEN ?? '');
@@ -674,10 +942,17 @@ export class JobCreationFormComponent {
     this.jobDescriptionEditor()?.forceUpdate(content);
   }
 
-  // ---------------------------
-  // Init / populate
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // INITIALIZATION METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Initializes the component based on the route.
+   * - Validates user authentication
+   * - Loads available images
+   * - Determines mode (create/edit) from URL
+   * - Fetches existing job data in edit mode
+   */
   private async init(): Promise<void> {
     try {
       const userId = this.accountService.loadedUser()?.id ?? '';
@@ -719,6 +994,12 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Populates all forms with initial/existing job data.
+   * Sets up dual-language description signals.
+   *
+   * @param job - Optional existing job data (undefined for create mode)
+   */
   private populateForm(job?: JobDTO): void {
     const user = this.accountService.loadedUser();
 
@@ -768,14 +1049,18 @@ export class JobCreationFormComponent {
       privacyAccepted: false,
     });
 
-    // store baseline lastSaved as DTO
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
   }
 
-  // ---------------------------
-  // Autosave
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AUTO-SAVE METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Sets up the auto-save effect with 3-second debounce.
+   * Triggers save when any form value changes.
+   * Skips during initial population and AI generation.
+   */
   private setupAutoSave(): void {
     effect(() => {
       const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
@@ -805,6 +1090,9 @@ export class JobCreationFormComponent {
     });
   }
 
+  /**
+   * Clears any pending auto-save timer.
+   */
   private clearAutoSaveTimer(): void {
     if (this.autoSaveTimer !== undefined) {
       clearTimeout(this.autoSaveTimer);
@@ -812,11 +1100,15 @@ export class JobCreationFormComponent {
     }
   }
 
+  /**
+   * Performs the actual auto-save operation.
+   * Creates job on first save, updates on subsequent saves.
+   * Triggers translation after successful save if content changed.
+   */
   private async performAutoSave(): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
 
-    // build dto after syncing signals (so EN/DE are correct)
     const currentData = this.createJobDTO('DRAFT');
 
     try {
@@ -849,10 +1141,21 @@ export class JobCreationFormComponent {
     }
   }
 
-  // ---------------------------
-  // Stepper
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STEPPER CONFIGURATION BUILDER
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Builds the configuration array for the progress stepper component.
+   * Defines 4 steps with their templates, navigation buttons, and validation states:
+   *
+   * 1. Basic Info - Back exits, Next requires basicInfoValid
+   * 2. Position Details - Optional fields, always navigable
+   * 3. Image Selection - Optional, always navigable
+   * 4. Summary - Shows publish button instead of next
+   *
+   * @returns Array of StepData objects for the ProgressStepperComponent
+   */
   private buildStepData(): StepData[] {
     const steps: StepData[] = [];
     const templates = {
@@ -997,10 +1300,17 @@ export class JobCreationFormComponent {
     return steps;
   }
 
-  // ---------------------------
-  // Helpers
-  // ---------------------------
+  // ═══════════════════════════════════════════════════════════════════════════
+  // UTILITY METHODS
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Gets the dimensions of an image file before upload.
+   * Used for validation against MAX_IMAGE_DIMENSION_PX.
+   *
+   * @param file - The image file to measure
+   * @returns Promise resolving to width and height in pixels
+   */
   private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -1018,6 +1328,14 @@ export class JobCreationFormComponent {
     });
   }
 
+  /**
+   * Finds a dropdown option by its value.
+   * Used to pre-select dropdown values when editing existing jobs.
+   *
+   * @param options - Array of dropdown options
+   * @param value - The value to find
+   * @returns The matching option or undefined
+   */
   private findDropdownOption<T extends { value: unknown }>(options: T[], value: unknown): T | undefined {
     return options.find(opt => opt.value === value);
   }

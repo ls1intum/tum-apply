@@ -139,7 +139,8 @@
         "aiFillerText": "Generating...",
         "aiToggle": "Enable AI",
         "languageEnglish": "English",
-        "languageGerman": "German"
+        "languageGerman": "German",
+        "translating": "Translating..."
       }
     },
     "imageSection": {
@@ -327,7 +328,8 @@
       "location": "Location:"
     },
     "sections": {
-      "jobDescription": "Job Description",
+      "jobDescriptionEN": "English Job Description",
+      "jobDescriptionDE": "German Job Description",
       "tasksResponsibilities": "Tasks & Responsibilities",
       "eligibilityCriteria": "Eligibility Criteria",
       "dataProtection": "Data Protection Information"
