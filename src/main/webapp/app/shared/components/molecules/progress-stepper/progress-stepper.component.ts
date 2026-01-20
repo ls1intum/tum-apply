@@ -10,6 +10,7 @@ import {
   input,
   signal,
   viewChild,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
@@ -68,6 +69,13 @@ export class ProgressStepperComponent {
   private destroyRef = inject(DestroyRef);
 
   constructor() {
+    effect(() => {
+      this.currentStep();
+      setTimeout(() => {
+        document.querySelector('.content')?.scrollTo({ top: 0, behavior: 'instant' });
+      }, 0);
+    });
+
     afterNextRender(() => {
       const sentinel = this.bottomSentinel()?.nativeElement;
       if (sentinel) {
