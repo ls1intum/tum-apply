@@ -7,7 +7,6 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
-
 import java.time.LocalDate;
 
 /**
@@ -15,8 +14,7 @@ import java.time.LocalDate;
  */
 public final class JobTestData {
 
-    private JobTestData() {
-    }
+    private JobTestData() {}
 
     /**
      * Creates an unsaved Job with common default values. Title, state, and

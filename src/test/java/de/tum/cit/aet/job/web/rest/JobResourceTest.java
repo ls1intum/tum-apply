@@ -231,6 +231,7 @@ class JobResourceTest extends AbstractResourceTest {
                 12,
                 FundingType.FULLY_FUNDED,
                 "Build ML pipelines",
+                "ML Pipeline erstellen",
                 JobState.PUBLISHED
             );
     }
@@ -251,9 +252,8 @@ class JobResourceTest extends AbstractResourceTest {
             entry("workload", "oops"),
             entry("contractDuration", 12),
             entry("fundingType", "FULLY_FUNDED"),
-            entry("description", "desc"),
-            entry("tasks", "tasks"),
-            entry("requirements", "req"),
+            entry("jobDescriptionEN", "desc"),
+            entry("jobDescriptionDE", "desc"),
             entry("state", "PUBLISHED")
         );
 
