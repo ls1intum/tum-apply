@@ -16,8 +16,6 @@ public class UserRetentionProperties {
 
     private Integer inactiveDaysBeforeDeletion;
 
-    private Integer daysBeforeApplicantDataDeletion;
-
     private Boolean enabled;
 
     private Boolean dryRun;
@@ -44,14 +42,6 @@ public class UserRetentionProperties {
 
     public void setBatchSize(Integer batchSize) {
         this.batchSize = batchSize;
-    }
-
-    public Integer getDaysBeforeApplicantDataDeletion() {
-        return daysBeforeApplicantDataDeletion;
-    }
-
-    public void setDaysBeforeApplicantDataDeletion(Integer daysBeforeApplicantDataDeletion) {
-        this.daysBeforeApplicantDataDeletion = daysBeforeApplicantDataDeletion;
     }
 
     public Boolean getDryRun() {
