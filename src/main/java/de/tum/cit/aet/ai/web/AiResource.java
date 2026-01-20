@@ -30,14 +30,18 @@ public class AiResource {
     /**
      * Generate a job application draft from the provided structured job form.
      *
-     * @param jobForm the job form data used to build the AI prompt
+     * @param descriptionLanguage the language for the generated job description
+     * @param jobForm             the job form data used to build the AI prompt
      * @return a ResponseEntity containing the generated draft as JSON string
      */
     @ProfessorOrEmployeeOrAdmin
     @PutMapping(value = "generateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AIJobDescriptionDTO> generateJobApplicationDraft(@RequestBody JobFormDTO jobForm) {
-        log.info("PUT /api/ai/generateJobDescription - Request received");
-        return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm));
+    public ResponseEntity<AIJobDescriptionDTO> generateJobApplicationDraft(
+        @RequestBody JobFormDTO jobForm,
+        @RequestParam("lang") String descriptionLanguage
+    ) {
+        log.info("PUT /api/ai/generateJobDescription - Request received (lang={})", descriptionLanguage);
+        return ResponseEntity.ok(aiService.generateJobApplicationDraft(jobForm, descriptionLanguage));
     }
 
     /**
@@ -45,13 +49,19 @@ public class AiResource {
      * Automatically detects the source language and translates to the other language.
      * Preserves the original text structure and formatting.
      *
+     * @param jobId the ID of the job for which the description is being translated
+     * @param toLang the target language for translation ("de" or "en")
      * @param text the text to translate (German or English)
      * @return a ResponseEntity containing the translated text with language info
      */
     @ProfessorOrEmployeeOrAdmin
-    @PutMapping(value = "translateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AIJobDescriptionTranslationDTO> translateText(@RequestBody String text) {
-        log.info("PUT /api/ai/translateJobDescription - Request received");
-        return ResponseEntity.ok(aiService.translateText(text));
+    @PutMapping(value = "translateJobDescriptionForJob", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AIJobDescriptionTranslationDTO> translateJobDescriptionForJob(
+        @RequestParam("jobId") String jobId,
+        @RequestParam("toLang") String toLang,
+        @RequestBody String text
+    ) {
+        log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
+        return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, text));
     }
 }

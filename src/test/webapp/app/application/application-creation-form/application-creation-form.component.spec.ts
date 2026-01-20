@@ -683,6 +683,60 @@ describe('ApplicationForm', () => {
       expect(comp['mapPagesToDTO']).toHaveBeenCalledWith('SENT');
       expect(result).toBe(true);
     });
+
+    it('should call accountService.loadUser once when state is SENT', async () => {
+      comp.applicationId.set('app-123');
+      comp.useLocalStorage.set(false);
+
+      // Mock mapPagesToDTO
+      spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SENT' });
+      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
+
+      // Mock updateApplication to return success
+      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+        of(
+          new HttpResponse({
+            body: {},
+            status: 200,
+          }),
+        ),
+      );
+
+      // Mock accountService.loadUser
+      accountService.loadUser = vi.fn().mockResolvedValue(undefined);
+
+      const result = await comp.sendCreateApplicationData('SENT', false);
+
+      expect(accountService.loadUser).toHaveBeenCalledOnce();
+      expect(result).toBe(true);
+    });
+
+    it('should NOT call accountService.loadUser when state is SAVED', async () => {
+      comp.applicationId.set('app-456');
+      comp.useLocalStorage.set(false);
+
+      // Mock mapPagesToDTO
+      spyOnPrivate(comp, 'mapPagesToDTO').mockReturnValue({ applicationState: 'SAVED' });
+      spyOnPrivate(comp, 'clearLocalStorage').mockImplementation(() => {});
+
+      // Mock updateApplication to return success
+      applicationResourceApiService.updateApplication = vi.fn().mockReturnValue(
+        of(
+          new HttpResponse({
+            body: {},
+            status: 200,
+          }),
+        ),
+      );
+
+      // Mock accountService.loadUser
+      accountService.loadUser = vi.fn().mockResolvedValue(undefined);
+
+      const result = await comp.sendCreateApplicationData('SAVED', false);
+
+      expect(accountService.loadUser).not.toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
   });
 
   // Tests for private methods using type casting
