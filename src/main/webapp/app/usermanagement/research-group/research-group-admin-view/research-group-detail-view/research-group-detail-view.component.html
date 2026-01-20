@@ -1,7 +1,7 @@
 <div class="page-container">
   <div class="header-container">
     <div class="page-header">
-      <h1 jhiTranslate="researchGroup.detailView.title"></h1>
+      <h1 jhiTranslate="researchGroup.detailView.title" class="h1-text"></h1>
     </div>
   </div>
 
@@ -10,6 +10,11 @@
       @if (!isLoading()) {
         <form [formGroup]="form">
           <div class="form-group">
+            <!-- Information Notice -->
+            <div class="mt-2 mb-4">
+              <jhi-info-box severity="primary" message="researchGroup.detailView.infoMessage" [shouldTranslate]="true" />
+            </div>
+
             <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem">
               <jhi-button
                 [label]="'button.save'"
@@ -18,11 +23,6 @@
                 [disabled]="!form.valid || isSaving()"
                 (click)="onSave()"
               />
-            </div>
-
-            <!-- Information Notice -->
-            <div class="mt-2 mb-4">
-              <jhi-info-box severity="primary" message="researchGroup.detailView.infoMessage" [shouldTranslate]="true" />
             </div>
 
             <!-- Basic information section -->

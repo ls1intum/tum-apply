@@ -8,7 +8,6 @@ import { DepartmentResourceApiService } from 'app/generated/api/departmentResour
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
-import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
@@ -16,6 +15,7 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { DividerModule } from 'primeng/divider';
 import { firstValueFrom } from 'rxjs';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
