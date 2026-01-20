@@ -32,10 +32,8 @@ public class GenderBiasAnalysisResource {
     @PostMapping("/analyze")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeText(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         log.info("REST request to analyze text for gender bias, language: {}", request.language());
-        // Default to English if no language specified
-        String language = request.language() != null ? request.language() : "en";
 
-        GenderBiasAnalysisResponse response = analysisService.analyzeText(request.text(), language);
+        GenderBiasAnalysisResponse response = analysisService.analyzeText(request.text(), request.language());
 
         log.info(
             "Gender bias analysis completed: {} biased words found, coding: {}",
@@ -61,9 +59,7 @@ public class GenderBiasAnalysisResource {
         // Strip HTML tags to get plain text
         String plainText = Jsoup.parse(request.text()).text();
 
-        String language = request.language() != null ? request.language() : "en";
-
-        GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, language);
+        GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
 
         log.info(
             "HTML gender bias analysis completed: {} biased words found",
