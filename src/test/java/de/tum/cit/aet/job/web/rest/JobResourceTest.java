@@ -31,11 +31,9 @@ import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
-
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,8 +148,7 @@ class JobResourceTest extends AbstractResourceTest {
         PageResponse<JobCardDTO> page = api.getAndRead(
             "/api/jobs/available",
             Map.of("pageNumber", "0", "pageSize", "10"),
-            new TypeReference<>() {
-            },
+            new TypeReference<>() {},
             200
         );
 
@@ -170,8 +167,7 @@ class JobResourceTest extends AbstractResourceTest {
 
     @Test
     void getAvailableJobsInvalidPaginationReturnsError() {
-        api.getAndRead("/api/jobs/available", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {
-        }, 400);
+        api.getAndRead("/api/jobs/available", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test
@@ -491,8 +487,7 @@ class JobResourceTest extends AbstractResourceTest {
     void getJobsByProfessor_returnsJobsCreatedByProfessor() {
         PageResponse<CreatedJobDTO> page = api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {
-            }, 200);
+            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 200);
         assertThat(page.totalElements()).isEqualTo(2);
     }
 
@@ -501,14 +496,12 @@ class JobResourceTest extends AbstractResourceTest {
     void getJobsByProfessorInvalidPaginationReturnsError() {
         api
             .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {
-            }, 400);
+            .getAndRead("/api/jobs/professor", Map.of("pageNumber", "-1", "pageSize", "10"), new TypeReference<>() {}, 400);
     }
 
     @Test
     void getJobsByProfessorWithoutAuthForbidden() {
-        api.getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {
-        }, 403);
+        api.getAndRead("/api/jobs/professor", Map.of("pageNumber", "0", "pageSize", "10"), new TypeReference<>() {}, 403);
     }
 
     @Test
