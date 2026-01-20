@@ -470,7 +470,7 @@ export class JobCreationFormComponent {
    *
    * @param newLang - The target language ('en' or 'de')
    */
-  async changeDescriptionLanguage(newLang: Language): Promise<void> {
+  changeDescriptionLanguage(newLang: Language): void {
     const currentLang = this.currentDescriptionLanguage();
     if (newLang === currentLang || this.isTranslating()) return;
 
@@ -1091,7 +1091,7 @@ export class JobCreationFormComponent {
 
   private async translateAndStoreOtherLanguage(currentLang: Language, currentText: string): Promise<void> {
     const jobId = this.jobId();
-    const text = (currentText ?? '').trim();
+    const text = currentText.trim();
     if (!jobId || !text) return;
 
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
@@ -1195,7 +1195,9 @@ export class JobCreationFormComponent {
           {
             severity: 'primary',
             icon: 'chevron-right',
-            onClick: () => this.onStepChange(),
+            onClick: () => {
+              void this.onStepChange();
+            },
             disabled: !this.basicInfoValid(),
             label: 'button.next',
             shouldTranslate: true,

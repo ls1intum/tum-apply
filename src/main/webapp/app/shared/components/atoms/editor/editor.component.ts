@@ -214,7 +214,7 @@ export class EditorComponent extends BaseInputDirective<string> {
     if (hadFocus && range) {
       const len = editor.getLength();
       const index = Math.min(range.index, Math.max(0, len - 1));
-      editor.setSelection(index, range.length ?? 0, 'silent');
+      editor.setSelection(index, range.length, 'silent');
     }
 
     this.cdRef.markForCheck();
