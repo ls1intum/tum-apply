@@ -35,7 +35,7 @@
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'location-dot']" class="icon" />
             <span
-            ><strong jhiTranslate="jobDetailPage.header.location"></strong>
+              ><strong jhiTranslate="jobDetailPage.header.location"></strong>
               {{ (dropDownOptions.getLocationTranslationKey(job.location) | translate) || '-' }}</span
             >
           </div>
@@ -101,8 +101,7 @@
       <div class="flex flex-col gap-6">
         <section>
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed mb-6"
-               [innerHTML]="job.jobDescriptionEN || '-'"></div>
+          <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
           <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
           <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
@@ -120,8 +119,7 @@
             <div class="info-list">
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fieldOfStudies"></span>
-                <span
-                  class="value">{{ (dropDownOptions.getFieldOfStudiesTranslationKey(job.fieldOfStudies) | translate) || '-' }}</span>
+                <span class="value">{{ (dropDownOptions.getFieldOfStudiesTranslationKey(job.fieldOfStudies) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.researchArea"></span>
@@ -130,8 +128,7 @@
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.workload"></span>
                 @if (job.workload !== '') {
-                  <span class="value">{{ job.workload }} <span
-                    jhiTranslate="jobDetailPage.units.hoursPerWeek"></span></span>
+                  <span class="value">{{ job.workload }} <span jhiTranslate="jobDetailPage.units.hoursPerWeek"></span></span>
                 } @else {
                   <span class="value">-</span>
                 }
@@ -146,8 +143,7 @@
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.fundingType"></span>
-                <span
-                  class="value">{{ (dropDownOptions.getFundingTypeTranslationKey(job.fundingType) | translate) || '-' }}</span>
+                <span class="value">{{ (dropDownOptions.getFundingTypeTranslationKey(job.fundingType) | translate) || '-' }}</span>
               </div>
               <div class="info-row">
                 <span jhiTranslate="jobDetailPage.labels.startDate"></span>
@@ -211,7 +207,7 @@
                       [title]="job.researchGroupWebsite"
                       target="_blank"
                       rel="noopener noreferrer"
-                    >{{ this.trimWebsiteUrl(job.researchGroupWebsite) }}</a
+                      >{{ this.trimWebsiteUrl(job.researchGroupWebsite) }}</a
                     >
                   </div>
                 }
