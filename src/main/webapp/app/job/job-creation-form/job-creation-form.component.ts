@@ -754,8 +754,8 @@ export class JobCreationFormComponent {
         supervisingProfessor: this.userId(),
         location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
 
-        jobDescriptionEN: this.jobDescriptionEN() || undefined || '',
-        jobDescriptionDE: this.jobDescriptionDE() || undefined || '',
+        jobDescriptionEN: this.jobDescriptionEN() || '',
+        jobDescriptionDE: this.jobDescriptionDE() || '',
 
         state: JobFormDTO.StateEnum.Draft,
       };
