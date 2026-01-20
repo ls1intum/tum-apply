@@ -52,6 +52,7 @@ public class UserResource {
 
     /**
      * Allows the currently authenticated user to update their first and last name.
+     * Names are stored in the local database and are independent from Keycloak.
      *
      * @param jwt               of the authenticated user
      * @param updateUserNameDTO contains the new first and last name
