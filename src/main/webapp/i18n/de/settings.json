@@ -4,7 +4,23 @@
 
     "tabs": {
       "general": "Allgemein",
-      "notifications": "Benachrichtigungen"
+      "notifications": "Benachrichtigungen",
+      "personalInformation": "Persönliche Informationen"
+    },
+    "personalInformation": {
+      "description": "Aktualisiere hier deine persönlichen Informationen. \nDeine gespeicherten Daten werden verwendet, um Bewerbungen automatisch auszufüllen.",
+      "loadFailed": {
+        "summary": "Laden fehlgeschlagen",
+        "detail": "Fehler beim Laden der persönlichen Informationen. Bitte versuche es erneut."
+      },
+      "saved": {
+        "summary": "Erfolgreich gespeichert",
+        "detail": "Persönliche Informationen erfolgreich gespeichert. \u00c4nderungen werden auf deine nächste Bewerbung angewendet."
+      },
+      "saveFailed": {
+        "summary": "Speichern fehlgeschlagen",
+        "detail": "Fehler beim Speichern der persönlichen Informationen. Bitte versuche es erneut."
+      }
     },
 
     "notifications": {
