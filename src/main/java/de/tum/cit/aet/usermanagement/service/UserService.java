@@ -32,10 +32,7 @@ public class UserService {
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private static final Duration LAST_ACTIVITY_UPDATE_THRESHOLD = Duration.ofHours(24);
 
-    public UserService(
-        UserRepository userRepository,
-        UserResearchGroupRoleRepository userResearchGroupRoleRepository
-    ) {
+    public UserService(UserRepository userRepository, UserResearchGroupRoleRepository userResearchGroupRoleRepository) {
         this.userRepository = userRepository;
         this.userResearchGroupRoleRepository = userResearchGroupRoleRepository;
     }
