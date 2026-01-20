@@ -20,7 +20,6 @@ export type SegmentedToggleValue = 'left' | 'right';
   standalone: true,
   imports: [CommonModule, TranslateDirective],
   templateUrl: './segmented-toggle.component.html',
-  styleUrl: './segmented-toggle.component.scss',
 })
 export class SegmentedToggleComponent {
   /**
