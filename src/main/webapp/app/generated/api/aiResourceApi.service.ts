@@ -110,17 +110,31 @@ export class AiResourceApiService extends BaseService {
     }
 
     /**
+     * @param jobId 
+     * @param toLang 
      * @param body 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public translateText(body: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AIJobDescriptionTranslationDTO>;
-    public translateText(body: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AIJobDescriptionTranslationDTO>>;
-    public translateText(body: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AIJobDescriptionTranslationDTO>>;
-    public translateText(body: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (body === null || body === undefined) {
-            throw new Error('Required parameter body was null or undefined when calling translateText.');
+    public translateJobDescriptionForJob(jobId: string, toLang: string, body: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AIJobDescriptionTranslationDTO>;
+    public translateJobDescriptionForJob(jobId: string, toLang: string, body: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AIJobDescriptionTranslationDTO>>;
+    public translateJobDescriptionForJob(jobId: string, toLang: string, body: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AIJobDescriptionTranslationDTO>>;
+    public translateJobDescriptionForJob(jobId: string, toLang: string, body: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (jobId === null || jobId === undefined) {
+            throw new Error('Required parameter jobId was null or undefined when calling translateJobDescriptionForJob.');
         }
+        if (toLang === null || toLang === undefined) {
+            throw new Error('Required parameter toLang was null or undefined when calling translateJobDescriptionForJob.');
+        }
+        if (body === null || body === undefined) {
+            throw new Error('Required parameter body was null or undefined when calling translateJobDescriptionForJob.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>jobId, 'jobId');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>toLang, 'toLang');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -156,11 +170,12 @@ export class AiResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/ai/translateJobDescription`;
+        let localVarPath = `/api/ai/translateJobDescriptionForJob`;
         return this.httpClient.request<AIJobDescriptionTranslationDTO>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: body,
+                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

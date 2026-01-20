@@ -1,21 +1,19 @@
-<div class="segmented-toggle-wrapper inline-block">
-  <div
-    class="segmented-container relative flex items-center p-[3px] transition-colors bg-[var(--p-background-surface)] rounded-[var(--p-border-radius-lg)]"
-  >
+<div class="inline-block">
+  <div class="relative flex items-center p-[3px] transition-colors bg-background-surface rounded-lg">
     <div
-      class="segmented-active-bg absolute top-[3px] left-[3px] h-[calc(100%-6px)] w-[calc(50%-3px)] z-[1] transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-sm bg-[var(--p-background-default)] border border-[var(--p-neutral-200)] dark:border-[var(--p-neutral-700)] rounded-[var(--p-border-radius-md)]"
+      class="segmented-active-bg absolute top-[3px] left-[3px] h-[calc(100%-6px)] w-[calc(50%-3px)] z-[1] transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-sm bg-background-default border border-border-default rounded-md"
       [class.translate-x-full]="value() === 'right'"
     ></div>
 
     <button
       type="button"
-      class="segmented-option relative z-[2] flex-1 border-none bg-transparent py-1 px-4 min-w-[80px] text-[13px] font-semibold cursor-pointer transition-colors duration-200 outline-none disabled:opacity-50 disabled:cursor-not-allowed text-[var(--p-text-tertiary)] hover:not-disabled:text-[var(--p-text-primary)]"
-      [class.!text-[var(--p-text-primary)]]="value() === 'left'"
+      class="relative z-[2] flex-1 border-none bg-transparent py-1 px-4 min-w-[80px] text-[13px] font-semibold cursor-pointer transition-colors duration-200 outline-none disabled:opacity-50 disabled:cursor-not-allowed text-text-tertiary hover:not-disabled:text-text-primary"
+      [class.!text-text-primary]="value() === 'left'"
       [disabled]="disabled()"
       (click)="setValue('left')"
     >
       @if (translateLabels()) {
-        <span jhiTranslate="{{ leftLabel() }}"></span>
+        <span [jhiTranslate]="leftLabel()"></span>
       } @else {
         <span>{{ leftLabel() }}</span>
       }
@@ -23,13 +21,13 @@
 
     <button
       type="button"
-      class="segmented-option relative z-[2] flex-1 border-none bg-transparent py-1 px-4 min-w-[80px] text-[13px] font-semibold cursor-pointer transition-colors duration-200 outline-none disabled:opacity-50 disabled:cursor-not-allowed text-[var(--p-text-tertiary)] hover:not-disabled:text-[var(--p-text-primary)]"
-      [class.!text-[var(--p-text-primary)]]="value() === 'right'"
+      class="relative z-[2] flex-1 border-none bg-transparent py-1 px-4 min-w-[80px] text-[13px] font-semibold cursor-pointer transition-colors duration-200 outline-none disabled:opacity-50 disabled:cursor-not-allowed text-text-tertiary hover:not-disabled:text-text-primary"
+      [class.!text-text-primary]="value() === 'right'"
       [disabled]="disabled()"
       (click)="setValue('right')"
     >
       @if (translateLabels()) {
-        <span jhiTranslate="{{ rightLabel() }}"></span>
+        <span [jhiTranslate]="rightLabel()"></span>
       } @else {
         <span>{{ rightLabel() }}</span>
       }

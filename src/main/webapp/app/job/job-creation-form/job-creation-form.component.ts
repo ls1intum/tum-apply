@@ -478,19 +478,6 @@ export class JobCreationFormComponent {
     if (this.autoSaveTimer !== undefined) {
       this.clearAutoSaveTimer();
       this.syncCurrentEditorIntoLanguageSignals();
-      await this.performAutoSave();
-    }
-
-    // Wait for translation if one is still running (defensive)
-    if (this.isTranslating()) {
-      await new Promise<void>(resolve => {
-        const interval = setInterval(() => {
-          if (!this.isTranslating()) {
-            clearInterval(interval);
-            resolve();
-          }
-        }, 100);
-      });
     }
 
     this.currentDescriptionLanguage.set(newLang);
@@ -524,51 +511,6 @@ export class JobCreationFormComponent {
     this.jobDescriptionSignal.set(targetContent);
     this.jobDescriptionEditor()?.forceUpdate(targetContent);
   });
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AI TRANSLATION METHODS
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Translates the job description from one language to another using AI.
-   * Updates the target language signal and optionally refreshes the editor.
-   *
-   * @param text - The source text to translate
-   * @param fromLang - The source language
-   * @param toLang - The target language
-   */
-  private async translateJobDescription(text: string, fromLang: Language, toLang: Language): Promise<void> {
-    if (!text || text.trim().length === 0) return;
-
-    this.isTranslating.set(true);
-    try {
-      const response = await firstValueFrom(this.aiService.translateText(text));
-      const translatedText = response.translatedText ?? '';
-
-      if (translatedText) {
-        if (toLang === 'en') {
-          this.jobDescriptionEN.set(translatedText);
-          this.lastTranslatedEN.set(translatedText);
-          this.lastTranslatedDE.set(text);
-        } else {
-          this.jobDescriptionDE.set(translatedText);
-          this.lastTranslatedDE.set(translatedText);
-          this.lastTranslatedEN.set(text);
-        }
-
-        // Only touch the editor if user is currently on that target language
-        if (this.currentDescriptionLanguage() === toLang) {
-          this.basicInfoForm.get('jobDescription')?.setValue(translatedText, { emitEvent: false });
-          this.jobDescriptionSignal.set(translatedText);
-          this.jobDescriptionEditor()?.forceUpdate(translatedText);
-        }
-      }
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.toastMessages.translationFailed');
-    } finally {
-      this.isTranslating.set(false);
-    }
-  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI TOGGLE EFFECT
@@ -633,6 +575,18 @@ export class JobCreationFormComponent {
    */
   onBack(): void {
     this.location.back();
+  }
+
+  /**
+   * Performs a save after changing the step.
+   */
+  async onStepChange(): Promise<void> {
+    // Timer sofort abbrechen und speichern
+    if (this.autoSaveTimer !== undefined) {
+      this.clearAutoSaveTimer();
+      this.syncCurrentEditorIntoLanguageSignals();
+      await this.performAutoSave();
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1108,7 +1062,6 @@ export class JobCreationFormComponent {
   private async performAutoSave(): Promise<void> {
     const currentLang = this.currentDescriptionLanguage();
     const description = this.basicInfoForm.get('jobDescription')?.value ?? '';
-
     const currentData = this.createJobDTO('DRAFT');
 
     try {
@@ -1128,16 +1081,71 @@ export class JobCreationFormComponent {
 
       this.savingState.set('SAVED');
 
-      // Trigger translation only if changed since last baseline
-      const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
-
-      if (Boolean(description.trim()) && description !== lastBaseline) {
-        const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
-        await this.translateJobDescription(description, currentLang, targetLang);
-      }
+      // fire-and-forget translation (don't block autosave UX)
+      void this.translateAndStoreOtherLanguage(currentLang, description);
     } catch {
       this.savingState.set('FAILED');
       this.toastService.showErrorKey('toast.saveFailed');
+    }
+  }
+
+  private async translateAndStoreOtherLanguage(currentLang: Language, currentText: string): Promise<void> {
+    const jobId = this.jobId();
+    const text = (currentText ?? '').trim();
+    if (!jobId || !text) return;
+
+    const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
+    if (text === lastBaseline) return;
+
+    if (this.isTranslating()) return;
+
+    const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
+
+    this.isTranslating.set(true);
+    try {
+      const response = await firstValueFrom(this.aiService.translateJobDescriptionForJob(jobId, targetLang, text));
+
+      const translatedText = (response.translatedText ?? '').trim();
+      if (!translatedText) return;
+
+      // Update local hidden language signals only (no editor update)
+      if (targetLang === 'en') {
+        this.jobDescriptionEN.set(translatedText);
+        this.lastTranslatedEN.set(translatedText);
+        this.lastTranslatedDE.set(text);
+      } else {
+        this.jobDescriptionDE.set(translatedText);
+        this.lastTranslatedDE.set(translatedText);
+        this.lastTranslatedEN.set(text);
+      }
+
+      // Keep lastSavedData in sync so hasUnsavedChanges stays stable
+      const lastSaved = this.lastSavedData();
+      if (lastSaved) {
+        this.lastSavedData.set({
+          title: lastSaved.title,
+          researchArea: lastSaved.researchArea,
+          fieldOfStudies: lastSaved.fieldOfStudies,
+          supervisingProfessor: lastSaved.supervisingProfessor,
+          location: lastSaved.location,
+
+          jobDescriptionEN: this.jobDescriptionEN() || undefined,
+          jobDescriptionDE: this.jobDescriptionDE() || undefined,
+
+          startDate: lastSaved.startDate,
+          endDate: lastSaved.endDate,
+          workload: lastSaved.workload,
+          contractDuration: lastSaved.contractDuration,
+          fundingType: lastSaved.fundingType,
+          imageId: lastSaved.imageId,
+          state: lastSaved.state,
+          jobId: lastSaved.jobId,
+        });
+      }
+    } catch {
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.translationFailed');
+    } finally {
+      this.isTranslating.set(false);
     }
   }
 
@@ -1187,7 +1195,7 @@ export class JobCreationFormComponent {
           {
             severity: 'primary',
             icon: 'chevron-right',
-            onClick() {},
+            onClick: () => this.onStepChange(),
             disabled: !this.basicInfoValid(),
             label: 'button.next',
             shouldTranslate: true,

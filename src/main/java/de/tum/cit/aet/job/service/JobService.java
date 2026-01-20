@@ -374,4 +374,14 @@ public class JobService {
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
     }
+
+    public void updateJobDescriptionLanguage(String jobId, String toLang, String translatedText) {
+        Job job = jobRepository.findById(UUID.fromString(jobId)).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        if ("de".equalsIgnoreCase(toLang)) {
+            job.setJobDescriptionDE(translatedText);
+        } else if ("en".equalsIgnoreCase(toLang)) {
+            job.setJobDescriptionEN(translatedText);
+        }
+        jobRepository.save(job);
+    }
 }

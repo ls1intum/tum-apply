@@ -53,9 +53,13 @@ public class AiResource {
      * @return a ResponseEntity containing the translated text with language info
      */
     @ProfessorOrEmployeeOrAdmin
-    @PutMapping(value = "translateJobDescription", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AIJobDescriptionTranslationDTO> translateText(@RequestBody String text) {
-        log.info("PUT /api/ai/translateJobDescription - Request received");
-        return ResponseEntity.ok(aiService.translateText(text));
+    @PutMapping(value = "translateJobDescriptionForJob", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AIJobDescriptionTranslationDTO> translateJobDescriptionForJob(
+        @RequestParam("jobId") String jobId,
+        @RequestParam("toLang") String toLang,
+        @RequestBody String text
+    ) {
+        log.info("PUT /api/ai/translateJobDescriptionForJob - Request received (jobId={}, toLang={})", jobId, toLang);
+        return ResponseEntity.ok(aiService.translateAndPersistJobDescription(jobId, toLang, text));
     }
 }

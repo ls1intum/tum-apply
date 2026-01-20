@@ -3,6 +3,7 @@ package de.tum.cit.aet.ai.service;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionDTO;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
+import de.tum.cit.aet.job.service.JobService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +22,11 @@ public class AiService {
 
     private final ChatClient chatClient;
 
-    public AiService(ChatClient.Builder chatClientBuilder) {
+    private final JobService jobService;
+
+    public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
         this.chatClient = chatClientBuilder.build();
+        this.jobService = jobService;
     }
 
     /**
@@ -52,11 +56,29 @@ public class AiService {
      * @param text the text to translate (German or English)
      * @return The translated text response with detected and target language info
      */
-    public AIJobDescriptionTranslationDTO translateText(String text) {
+    private AIJobDescriptionTranslationDTO translateText(String text, String toLang) {
         return chatClient
             .prompt()
-            .user(u -> u.text(translationResource).param("text", text))
+            .user(u -> u.text(translationResource).param("text", text).param("targetLanguage", toLang))
             .call()
             .entity(AIJobDescriptionTranslationDTO.class);
+    }
+
+    /**
+     * Translates the provided job description text and persists the translated version
+     * in the job entity for the specified language.
+     *
+     * @param jobId  the ID of the job to update
+     * @param toLang the target language for translation ("de" or "en")
+     * @param text   the job description text to translate
+     * @return The translated text response with detected and target language info
+     */
+    public AIJobDescriptionTranslationDTO translateAndPersistJobDescription(String jobId, String toLang, String text) {
+        AIJobDescriptionTranslationDTO translated = translateText(text, toLang);
+        String translatedText = translated.translatedText();
+        if (translatedText != null && !translatedText.isBlank()) {
+            jobService.updateJobDescriptionLanguage(jobId, toLang, translatedText);
+        }
+        return translated;
     }
 }

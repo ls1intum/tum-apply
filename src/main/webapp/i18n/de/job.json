@@ -224,7 +224,11 @@
       "saveFailed": {
         "summary": "Speichern fehlgeschlagen",
         "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und speichere erneut."
-      }
+      },
+      "translationFailed": {
+        "summary": "Übersetzung fehlgeschlagen",
+        "detail": "Die Stellenbeschreibung konnte nicht übersetzt werden. Bitte versuche es erneut."
+      }}
     }
   },
   "jobOverviewPage": {

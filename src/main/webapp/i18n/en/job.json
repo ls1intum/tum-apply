@@ -224,6 +224,10 @@
       "saveFailed": {
         "summary": "Save Failed",
         "detail": "Could not save changes. Please check your connection and try again."
+      },
+      "translationFailed": {
+        "summary": "Translation Failed",
+        "detail": "Could not translate the job description. Please try again."
       }
     }
   },
