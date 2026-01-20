@@ -1,4 +1,6 @@
-<jhi-banner-section />
+@if (!accountService.user()) {
+  <jhi-banner-section />
+}
 
 <jhi-professor-hero-section />
 
