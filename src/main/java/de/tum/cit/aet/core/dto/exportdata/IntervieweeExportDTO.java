@@ -4,4 +4,4 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record InterviewSlotExportDTO(String jobTitle, Instant start, Instant end, String location, String streamLink, Boolean isBooked) {}
+public record IntervieweeExportDTO(String jobTitle, Instant lastInvited) {}
