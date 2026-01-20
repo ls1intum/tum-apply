@@ -72,6 +72,7 @@ public class DepartmentResource {
      * @param pageDTO paging params
      * @param filterDTO filter params (searchQuery, schoolNames)
      * @param sortDTO sorting params
+     * @param request HTTP servlet request to extract parameters
      * @return paginated departments
      */
     @Admin
