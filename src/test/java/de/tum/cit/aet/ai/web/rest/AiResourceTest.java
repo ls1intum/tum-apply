@@ -43,8 +43,9 @@ class AiResourceTest extends AbstractResourceTest {
         String jobId = "job-1";
         String toLang = "de";
 
-        given(aiService.translateAndPersistJobDescription(anyString(), anyString(), anyString()))
-            .willReturn(new AIJobDescriptionTranslationDTO(mockTranslation));
+        given(aiService.translateAndPersistJobDescription(anyString(), anyString(), anyString())).willReturn(
+            new AIJobDescriptionTranslationDTO(mockTranslation)
+        );
 
         String url = TRANSLATE_URL + "?jobId=" + jobId + "&toLang=" + toLang;
         AIJobDescriptionTranslationDTO response = api.putAndRead(url, input, AIJobDescriptionTranslationDTO.class, 200);

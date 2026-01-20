@@ -49,6 +49,8 @@ public class AiResource {
      * Automatically detects the source language and translates to the other language.
      * Preserves the original text structure and formatting.
      *
+     * @param jobId the ID of the job for which the description is being translated
+     * @param toLang the target language for translation ("de" or "en")
      * @param text the text to translate (German or English)
      * @return a ResponseEntity containing the translated text with language info
      */

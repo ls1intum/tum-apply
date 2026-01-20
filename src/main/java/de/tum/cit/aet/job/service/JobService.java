@@ -375,6 +375,13 @@ public class JobService {
         return job;
     }
 
+    /**
+     * Updates the job description of a job in the specified language.
+     *
+     * @param jobId          the ID of the job to update
+     * @param toLang         the target language ("de" or "en")
+     * @param translatedText the translated job description text
+     */
     public void updateJobDescriptionLanguage(String jobId, String toLang, String translatedText) {
         Job job = jobRepository.findById(UUID.fromString(jobId)).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         if ("de".equalsIgnoreCase(toLang)) {
