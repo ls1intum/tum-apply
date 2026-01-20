@@ -125,6 +125,7 @@
     },
     "positionDetailsSection": {
       "description": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
+      "languageInfo": " Please draft the description in either German or English. Once you switch the input language, an AI-generated translation will appear automatically for you to review and edit as needed.",
       "jobDescription": {
         "label": "Job Description",
         "placeholder": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
@@ -136,7 +137,10 @@
         "aiButton2": "Rewrite With AI",
         "aiHelperText": "Improve wording and reduce biased language.",
         "aiFillerText": "Generating...",
-        "aiToggle": "Enable AI"
+        "aiToggle": "Enable AI",
+        "languageEnglish": "English",
+        "languageGerman": "German",
+        "translating": "Translating..."
       }
     },
     "imageSection": {
@@ -220,6 +224,10 @@
       "saveFailed": {
         "summary": "Save Failed",
         "detail": "Could not save changes. Please check your connection and try again."
+      },
+      "translationFailed": {
+        "summary": "Translation Failed",
+        "detail": "Could not translate the job description. Please try again."
       }
     }
   },
@@ -324,7 +332,8 @@
       "location": "Location:"
     },
     "sections": {
-      "jobDescription": "Job Description",
+      "jobDescriptionEN": "English Job Description",
+      "jobDescriptionDE": "German Job Description",
       "tasksResponsibilities": "Tasks & Responsibilities",
       "eligibilityCriteria": "Eligibility Criteria",
       "dataProtection": "Data Protection Information"
