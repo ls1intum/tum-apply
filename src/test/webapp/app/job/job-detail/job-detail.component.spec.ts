@@ -224,7 +224,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should call loadJobDetailsFromForm() and set jobDetails', async () => {
-    const form: JobFormDTO = { title: 'FormJob', jobDescription: 'Desc' } as JobFormDTO;
+    const form: JobFormDTO = { title: 'FormJob', jobDescriptionEN: 'Desc', jobDescriptionDE: 'Desc' } as JobFormDTO;
     await (component as unknown as { loadJobDetailsFromForm: (f: JobFormDTO) => Promise<void> }).loadJobDetailsFromForm(form);
     expect(component.jobDetails()).not.toBeNull();
     expect(component.dataLoaded()).toBe(true);
@@ -361,7 +361,8 @@ describe('JobDetailComponent', () => {
   it('should map job details in form mode (isForm = true)', () => {
     const form: JobFormDTO = {
       title: 'Form Job',
-      jobDescription: 'Form Desc',
+      jobDescriptionEN: 'Form Desc',
+      jobDescriptionDE: 'Form Desc',
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
     } as JobFormDTO;
@@ -371,11 +372,12 @@ describe('JobDetailComponent', () => {
         mapToJobDetails: (
           d: JobFormDTO,
           u?: ReturnType<typeof mockAccountService.loadedUser>,
-          rg?: { jobDescription?: string },
+          rg?: { jobDescriptionEN?: string },
+          rh?: { jobDescriptionDE?: string },
           f?: boolean,
         ) => JobDetails;
       }
-    ).mapToJobDetails(form, user, { jobDescription: 'RG D' }, true);
+    ).mapToJobDetails(form, user, { jobDescriptionEN: 'RG D' }, { jobDescriptionDE: 'RG D' }, true);
 
     expect(result.title).toBe('Form Job');
     expect(result.jobState).toBe('DRAFT');
@@ -508,7 +510,8 @@ describe('JobDetailComponent', () => {
       lastModifiedAt: new Date().toISOString(),
       startDate: undefined,
       endDate: undefined,
-      jobDescription: undefined,
+      jobDescriptionEN: undefined,
+      jobDescriptionDE: undefined,
       workload: undefined,
       contractDuration: undefined,
     } as unknown as JobDetailDTO;
@@ -619,7 +622,8 @@ describe('JobDetailComponent', () => {
   it('should default supervisingProfessor and researchGroup to empty strings in form mode when user info missing', () => {
     const form: JobFormDTO = {
       title: 'Form Job',
-      jobDescription: 'Some description',
+      jobDescriptionEN: 'Some description',
+      jobDescriptionDE: 'Some description',
       fieldOfStudies: '',
       supervisingProfessor: '',
       location: 'GARCHING',
