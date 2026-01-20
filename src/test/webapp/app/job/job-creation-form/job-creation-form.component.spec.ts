@@ -39,7 +39,8 @@ function fillValidJobForm(component: JobCreationFormComponent) {
     fieldOfStudies: { value: 'CS' },
     location: { value: 'MUNICH' },
     supervisingProfessor: 'Prof',
-    jobDescription: 'This is a job description.',
+    jobDescriptionEN: 'This is a job description.',
+    jobDescriptionDE: 'Das ist eine Job Beschreibung.',
   });
   component.positionDetailsForm.patchValue({
     startDate: '2025-02-25',
@@ -656,13 +657,20 @@ describe('JobCreationFormComponent', () => {
       let dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('');
       expect(dto.researchArea).toBe('');
-      expect(dto.jobDescription).toBe('');
+      expect(dto.jobDescriptionEN).toBe('');
+      expect(dto.jobDescriptionDE).toBe('');
 
-      component.basicInfoForm.patchValue({ title: 'My Job', researchArea: '  AI Research  ', jobDescription: '  Some description  ' });
+      component.basicInfoForm.patchValue({
+        title: 'My Job',
+        researchArea: '  AI Research  ',
+        jobDescriptionEN: '  Some description  ',
+        jobDescriptionDE: '  Beschreibung  ',
+      });
       dto = getPrivate(component).createJobDTO();
       expect(dto.title).toBe('My Job');
       expect(dto.researchArea).toBe('AI Research');
-      expect(dto.jobDescription).toBe('Some description');
+      expect(dto.jobDescriptionEN).toBe('Some description');
+      expect(dto.jobDescriptionDE).toBe('Beschreibung');
     });
 
     it.each([
@@ -696,7 +704,8 @@ describe('JobCreationFormComponent', () => {
         fieldOfStudies: { value: 'CS' },
         location: { value: 'MUNICH' },
         supervisingProfessor: 'Prof',
-        jobDescription: '<p>Description</p>',
+        jobDescriptionEN: '<p>Description</p>',
+        jobDescriptionDE: '<p>Beschreibung</p>',
       });
       fixture.detectChanges();
       expect(component.basicInfoForm.valid).toBe(true);
