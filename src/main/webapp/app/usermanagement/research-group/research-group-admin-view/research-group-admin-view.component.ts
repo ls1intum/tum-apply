@@ -125,7 +125,9 @@ export class ResearchGroupAdminView {
           label: 'researchGroup.members.manageMembers',
           icon: 'users',
           severity: 'primary',
-          command: () => this.onManageMembers(groupId),
+          command: () => {
+            this.onManageMembers(groupId);
+          },
         });
       }
 
