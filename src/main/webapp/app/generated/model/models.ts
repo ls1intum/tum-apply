@@ -58,6 +58,7 @@ export * from './jobFiltersDTO';
 export * from './jobFormDTO';
 export * from './jobPreviewRequest';
 export * from './keycloakUserDTO';
+export * from './link';
 export * from './loginRequestDTO';
 export * from './otpCompleteDTO';
 export * from './pageApplicationOverviewDTO';

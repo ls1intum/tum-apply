@@ -4,10 +4,11 @@ TASK: Generate a polished job posting paragraph based on short bullet-point note
       Your output must be directly usable in a real advertisement with minimal editing.
 
 METADATA (use if provided):
-Title: %s
-Research area: %s
-Location: %s
-Never write "%s" or "placeholder" or "not provided" in your output
+Title: {title}
+Research area: {researchArea}
+Location: {location}
+Never write "%s", "placeholder", "not provided", or template variables in your OUTPUT
+If NOTHING is provided give a generic answer.
 
 SECTIONS REQUIRED:
 1. Description - Describe the research context, goals, and scope of the position. (2-3 sentences)
@@ -17,7 +18,7 @@ SECTIONS REQUIRED:
 STYLE:
 - Natural, human-sounding language
 - Professional academic tone
-- Gender-neutral language or inclusive language
+- Only gender-inclusive language
 - AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
 - Keep ALL technical terms given exact: Python, fMRI, TV-L E13, PyTorch, etc.
 - Keep ALL specific details from INPUT TEXT, NEVER replace with generic terms

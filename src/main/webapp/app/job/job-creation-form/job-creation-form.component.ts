@@ -754,8 +754,8 @@ export class JobCreationFormComponent {
         supervisingProfessor: this.userId(),
         location: this.basicInfoForm.get('location')?.value?.value as JobFormDTO.LocationEnum,
 
-        jobDescriptionEN: this.jobDescriptionEN() || undefined,
-        jobDescriptionDE: this.jobDescriptionDE() || undefined,
+        jobDescriptionEN: this.jobDescriptionEN() || undefined || '',
+        jobDescriptionDE: this.jobDescriptionDE() || undefined || '',
 
         state: JobFormDTO.StateEnum.Draft,
       };
@@ -810,6 +810,7 @@ export class JobCreationFormComponent {
    */
   private createPositionDetailsForm(): FormGroup {
     return this.fb.group({
+      // Position Details Form: Currently required for publishing a job
       fundingType: [undefined],
       startDate: [''],
       applicationDeadline: [''],
