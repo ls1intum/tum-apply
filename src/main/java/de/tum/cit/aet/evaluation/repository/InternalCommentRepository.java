@@ -19,10 +19,10 @@ public interface InternalCommentRepository extends TumApplyJpaRepository<Interna
     void deleteByApplication(Application application);
 
     /**
-     * Anonymizes internal comments by updating the creator's user ID to the given deleted user ID.
+     * Anonymizes internal comments by updating the creator reference to the given deleted user.
      *
      * @param createdBy the user whose comments should be anonymized
-     * @param deletedUserId the replacement user ID used to anonymize the comments
+     * @param deletedUser the replacement user used to anonymize the comments
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE InternalComment ic SET ic.createdBy = :deletedUser WHERE ic.createdBy = :createdBy")

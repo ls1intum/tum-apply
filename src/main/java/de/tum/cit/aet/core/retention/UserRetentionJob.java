@@ -24,6 +24,9 @@ public class UserRetentionJob {
     private final UserRepository userRepository;
     private final UserRetentionService userRetentionService;
 
+    /**
+     * Scheduled job that applies user retention policies.
+     */
     // Runs daily at 03:17 UTC (override with user.retention.cron)
     @Scheduled(cron = "${user.retention.cron:0 17 3 * * *}", zone = "UTC")
     public void deleteUserData() {

@@ -100,10 +100,10 @@ public interface ImageRepository extends TumApplyJpaRepository<Image, UUID> {
 
     /**
      * Updates all {@link Image} records uploaded by the given {@code user} to associate them with the
-     * provided {@code deletedUserId} instead of the original user.
+     * provided {@code deletedUser} instead of the original user.
      *
      * @param user the user whose uploaded images should be dissociated
-     * @param deletedUserId the UUID to set as the uploader's userId
+     * @param deletedUser the user to set as the uploader for those images
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Image i SET i.uploadedBy = :deletedUser WHERE i.uploadedBy = :user")

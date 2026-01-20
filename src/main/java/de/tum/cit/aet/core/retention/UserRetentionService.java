@@ -63,6 +63,13 @@ public class UserRetentionService {
         UNKNOWN,
     }
 
+    /**
+     * Processes a list of candidate user IDs for retention handling.
+     *
+     * @param userIds list of candidate user IDs
+     * @param cutoff inactivity cutoff timestamp used for logging
+     * @param dryRun whether to only log without applying changes
+     */
     @Transactional
     public void processUserIdsList(List<UUID> userIds, LocalDateTime cutoff, boolean dryRun) {
         for (UUID userId : userIds) {

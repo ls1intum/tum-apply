@@ -152,6 +152,10 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
 
     /**
      * Finds user IDs that are inactive (based on last activity or creation date) and are NOT admins.
+     *
+     * @param cutoff the cutoff timestamp used to determine inactivity
+     * @param pageable pagination information
+     * @return a page of inactive non-admin user IDs
      */
     @Query(
         """
