@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DataExportState;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.DataExportRequest;
 import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.domain.Image;
@@ -40,6 +41,8 @@ import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
+import de.tum.cit.aet.notification.constants.EmailType;
+import de.tum.cit.aet.notification.dto.DataExportEmailContext;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.service.AsyncEmailSender;
@@ -98,7 +101,7 @@ public class UserDataExportService {
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final UserSettingRepository userSettingRepository;
-    private final AsyncEmailSender asyncEmailSender;
+    private final AsyncEmailSender sender;
 
     private final ZipExportService zipExportService;
     private final ObjectMapper objectMapper;
@@ -262,21 +265,15 @@ public class UserDataExportService {
     private void sendExportReadyEmail(DataExportRequest request) {
         User user = request.getUser();
         String downloadLink = clientUrl + "/api/users/data-export/download/" + request.getDownloadToken();
-        String body = String.format(
-            """
-                <h2 style=\"margin:0 0 16px 0;font-size:20px;color:#0A66C2;\">Your data export is ready</h2>
-                <p style=\"margin:0 0 16px 0;\">You can download your data export using the link below.</p>
-                <div style=\"text-align:center;margin:24px 0;\">
-                    <a href=\"%s\" style=\"display:inline-block;padding:12px 24px;background:#0A66C2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;\">Download export</a>
-                </div>
-                <p style=\"margin:16px 0 0 0;color:#555;font-size:12px;\">The link expires after %d days.</p>
-            """,
-            downloadLink,
-            exportExpiresDays
-        );
 
-        Email email = Email.builder().to(user).customSubject("Your data export is ready").customBody(body).sendAlways(true).build();
-        asyncEmailSender.sendAsync(email);
+        Email email = Email.builder()
+            .to(user)
+            .language(Language.fromCode(user.getSelectedLanguage()))
+            .emailType(EmailType.DATA_EXPORT_READY)
+            .content(new DataExportEmailContext(user, downloadLink, exportExpiresDays))
+            .build();
+
+        sender.sendAsync(email);
     }
 
     // ------------------------------------ Private helper methods ------------------------------------
@@ -300,7 +297,6 @@ public class UserDataExportService {
         List<EmailSettingDTO> emailSettings = getEmailSettings(user);
         ApplicantDataExportDTO applicantData = hasApplicantRole && applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
         StaffDataDTO staffData = hasStaffRole ? getStaffData(user) : null;
-        // TODO: ADD DOCUMENTS AND IMAGES
 
         return new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
     }
