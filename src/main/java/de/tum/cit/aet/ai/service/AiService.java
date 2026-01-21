@@ -43,7 +43,15 @@ public class AiService {
 
         return chatClient
             .prompt()
-            .user(u -> u.text(jobGenerationResource).param("jobDescription", input))
+            .user(u ->
+                u
+                    .text(jobGenerationResource)
+                    .param("jobDescription", input)
+                    .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
+                    .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
+                    .param("fieldOfStudies", jobFormDTO.fieldOfStudies() != null ? jobFormDTO.fieldOfStudies() : "")
+                    .param("location", jobFormDTO.location() != null ? jobFormDTO.location().toString() : "")
+            )
             .call()
             .entity(AIJobDescriptionDTO.class);
     }
