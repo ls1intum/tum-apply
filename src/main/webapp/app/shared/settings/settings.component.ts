@@ -116,37 +116,7 @@ export class SettingsComponent {
     this.exportInProgress.set(true);
 
     try {
-      const response = await firstValueFrom(
-        this.userDataExportService.exportUserData('response', false, { httpHeaderAccept: 'application/zip' }),
-      );
-
-      const blob = response.body;
-      if (blob && blob.size > 0) {
-        const contentDisposition = response.headers.get('Content-Disposition');
-        let filename = `user-data-export-${new Date().toISOString()}.zip`;
-        if (contentDisposition) {
-          const match = /filename="([^"]+)"/.exec(contentDisposition);
-          if (match?.[1]) {
-            filename = match[1];
-          }
-        }
-
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        window.URL.revokeObjectURL(url);
-
-        this.toastService.showSuccessKey('settings.privacy.export.started');
-
-        const cooldownHeader = response.headers.get('X-Export-Cooldown') ?? response.headers.get('X-Cooldown-Seconds');
-        const cooldownParsed = Number.parseInt(cooldownHeader ?? '', 10);
-        const cooldown = Number.isFinite(cooldownParsed) && cooldownParsed > 0 ? cooldownParsed : 60;
-        this.startExportCooldown(cooldown);
-      } else {
-        this.toastService.showErrorKey('settings.privacy.export.failed');
-      }
+      await firstValueFrom(this.userDataExportService.requestDataExport());
     } catch {
       this.toastService.showErrorKey('settings.privacy.export.failed');
     } finally {

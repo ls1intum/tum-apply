@@ -89,10 +89,8 @@ public class UserDataExportResource {
         }
     )
     @GetMapping("/data-export/download/{token}")
-    @Authenticated
     public ResponseEntity<Resource> downloadDataExport(@PathVariable String token) {
-        UUID userId = currentUserService.getUserId();
-        Path exportPath = Objects.requireNonNull(userDataExportService.getExportPathForToken(userId, token));
+        Path exportPath = Objects.requireNonNull(userDataExportService.getExportPathForToken(token));
         Resource resource = new FileSystemResource(exportPath);
         String filename = exportPath.getFileName().toString();
 
