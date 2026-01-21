@@ -35,11 +35,7 @@ public class GenderBiasAnalysisResource {
 
         GenderBiasAnalysisResponse response = analysisService.analyzeText(request.text(), request.language());
 
-        log.info(
-            "Gender bias analysis completed: {} biased words found, coding: {}",
-            response.biasedWords() != null ? response.biasedWords().size() : 0,
-            response.coding()
-        );
+        log.info("Gender bias analysis completed: {} biased words found, coding: {}", response.biasedWords().size(), response.coding());
 
         return ResponseEntity.ok(response);
     }
@@ -61,10 +57,7 @@ public class GenderBiasAnalysisResource {
 
         GenderBiasAnalysisResponse response = analysisService.analyzeText(plainText, request.language());
 
-        log.info(
-            "HTML gender bias analysis completed: {} biased words found",
-            response.biasedWords() != null ? response.biasedWords().size() : 0
-        );
+        log.info("HTML gender bias analysis completed: {} biased words found", response.biasedWords().size());
 
         return ResponseEntity.ok(response);
     }
