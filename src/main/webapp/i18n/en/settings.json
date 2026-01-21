@@ -4,7 +4,23 @@
 
     "tabs": {
       "general": "General",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "personalInformation": "Personal Information"
+    },
+    "personalInformation": {
+      "description": "Update your personal information here. \nYour saved data is used to prefill forms during the application process.",
+      "loadFailed": {
+        "summary": "Load failed",
+        "detail": "Failed to load personal information. Please try again."
+      },
+      "saved": {
+        "summary": "Successfully saved",
+        "detail": "Personal information saved successfully. Changes will be applied to your next application."
+      },
+      "saveFailed": {
+        "summary": "Save failed",
+        "detail": "Failed to save personal information. Please try again."
+      }
     },
 
     "notifications": {

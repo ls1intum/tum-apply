@@ -23,7 +23,8 @@ export interface Job {
     fieldOfStudies?: string;
     fundingType?: Job.FundingTypeEnum;
     image?: Image;
-    jobDescription?: string;
+    jobDescriptionDE?: string;
+    jobDescriptionEN?: string;
     jobId?: string;
     lastModifiedAt?: string;
     location?: Job.LocationEnum;

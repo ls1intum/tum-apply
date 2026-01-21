@@ -100,8 +100,11 @@
       <!-- Left Column: Text Sections -->
       <div class="flex flex-col gap-6">
         <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescription || '-'"></div>
+          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
+          <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
+
+          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
+          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
         </section>
       </div>
 
