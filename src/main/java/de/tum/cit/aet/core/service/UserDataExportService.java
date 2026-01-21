@@ -80,6 +80,11 @@ public class UserDataExportService {
     private final ObjectMapper objectMapper;
     private final PlatformTransactionManager transactionManager;
 
+    public void initiateDataExportForUser(UUID userId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'initiateDataExportForUser'");
+    }
+
     /**
      * Export all user-related data as a ZIP archive written to the provided {@code HttpServletResponse}.
      *
