@@ -27,6 +27,7 @@ export * from './createdJobDTO';
 export * from './customField';
 export * from './customFieldAnswer';
 export * from './customFieldAnswerDTO';
+export * from './dataExportStatusDTO';
 export * from './department';
 export * from './departmentCreationDTO';
 export * from './departmentDTO';
