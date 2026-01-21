@@ -15,6 +15,7 @@ import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.domain.EmailTemplateTranslation;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -49,11 +50,13 @@ class EmailTemplateServiceTest {
 
     private EmailTemplateService emailTemplateService;
 
+    private ResearchGroupRepository researchGroupRepository;
+
     private ResearchGroup researchGroup;
 
     @BeforeEach
     void setUp() {
-        emailTemplateService = new EmailTemplateService(emailTemplateRepository, currentUserService);
+        emailTemplateService = new EmailTemplateService(emailTemplateRepository, researchGroupRepository, currentUserService);
         researchGroup = createResearchGroup();
     }
 

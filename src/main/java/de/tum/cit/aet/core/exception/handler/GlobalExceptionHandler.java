@@ -59,6 +59,7 @@ public class GlobalExceptionHandler {
         Map.entry(EmailVerificationFailedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
         Map.entry(AccessDeniedException.class, new ExceptionMetadata(HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED)),
         Map.entry(UnauthorizedException.class, new ExceptionMetadata(HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED)),
+        Map.entry(TooManyRequestsException.class, new ExceptionMetadata(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.TOO_MANY_REQUESTS)),
         Map.entry(MailingException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.MAILING_ERROR)),
         Map.entry(InternalServerException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_ERROR)),
         Map.entry(UnknownImageTypeException.class, new ExceptionMetadata(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UNKNOWN_IMAGE_TYPE)),
