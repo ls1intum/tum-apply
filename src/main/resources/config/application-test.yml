@@ -119,7 +119,7 @@ jhipster:
 # Application specific properties:
 aet:
   client:
-    url: http://localhost:4200
+    url: https://tumapply-test.aet.cit.tum.de
   data-export:
     root: /tmp/tum-apply-exports
     expires-days: 1
