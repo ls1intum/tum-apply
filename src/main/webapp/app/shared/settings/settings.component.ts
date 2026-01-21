@@ -13,13 +13,15 @@ import { ButtonComponent } from '../components/atoms/button/button.component';
 import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
+import { PersonalInformationSettingsComponent } from './personal-information-settings';
 
-type SettingsTab = 'general' | 'notifications';
+type SettingsTab = 'general' | 'notifications' | 'personal-information';
 @Component({
   selector: 'jhi-settings',
   imports: [
     TranslateDirective,
     EmailSettingsComponent,
+    PersonalInformationSettingsComponent,
     SelectComponent,
     ButtonComponent,
     TabViewComponent,
@@ -32,10 +34,21 @@ export class SettingsComponent {
   readonly activeTab = signal<SettingsTab>('general');
   readonly role = signal<UserShortDTO.RolesEnum | undefined>(undefined);
 
-  readonly tabs: TabItem[] = [
-    { id: 'general', translationKey: 'settings.tabs.general' },
-    { id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] },
-  ];
+  readonly tabs = computed<TabItem[]>(() => {
+    const baseTabs: TabItem[] = [{ id: 'general', translationKey: 'settings.tabs.general' }];
+
+    // Hide notifications tab for admins
+    if (this.role() !== UserShortDTO.RolesEnum.Admin) {
+      baseTabs.push({ id: 'notifications', translationKey: 'settings.tabs.notifications', icon: ['fas', 'bell'] });
+    }
+
+    // Add Personal Information tab only for applicants
+    if (this.role() === UserShortDTO.RolesEnum.Applicant) {
+      baseTabs.push({ id: 'personal-information', translationKey: 'settings.tabs.personalInformation' });
+    }
+
+    return baseTabs;
+  });
 
   themeOptions: SelectOption[] = [
     { name: 'settings.appearance.options.light', value: 'light' },
@@ -85,7 +98,7 @@ export class SettingsComponent {
   }
 
   onTabChange(tabId: string): void {
-    if (this.tabs.some(tab => tab.id === tabId)) {
+    if (this.tabs().some(tab => tab.id === tabId)) {
       this.activeTab.set(tabId as SettingsTab);
     }
   }
