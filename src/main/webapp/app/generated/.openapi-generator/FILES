@@ -59,6 +59,7 @@ model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
 model/customFieldAnswerDTO.ts
+model/dataExportStatusDTO.ts
 model/department.ts
 model/departmentCreationDTO.ts
 model/departmentDTO.ts
