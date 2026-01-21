@@ -2,7 +2,11 @@ package de.tum.cit.aet.core.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.constants.DataExportState;
+import de.tum.cit.aet.core.domain.DataExportRequest;
 import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.dto.DataExportStatusDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationReviewExportDTO;
@@ -17,9 +21,14 @@ import de.tum.cit.aet.core.dto.exportdata.StaffDataDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserProfileExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.UserSettingDTO;
+import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.TimeConflictException;
+import de.tum.cit.aet.core.exception.TooManyRequestsException;
 import de.tum.cit.aet.core.exception.UserDataExportException;
+import de.tum.cit.aet.core.repository.DataExportRequestRepository;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
@@ -33,6 +42,8 @@ import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -41,17 +52,27 @@ import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
 import de.tum.cit.aet.usermanagement.repository.UserSettingRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -64,71 +85,198 @@ public class UserDataExportService {
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
+    private final DataExportRequestRepository dataExportRequestRepository;
     private final DocumentDictionaryRepository documentDictionaryRepository;
     private final InternalCommentRepository internalCommentRepository;
     private final IntervieweeRepository intervieweeRepository;
     private final InterviewProcessRepository interviewProcessRepository;
     private final InterviewSlotRepository interviewSlotRepository;
     private final DocumentRepository documentRepository;
+    private final ImageRepository imageRepository;
     private final EmailSettingRepository emailSettingRepository;
     private final RatingRepository ratingRepository;
     private final UserRepository userRepository;
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final UserSettingRepository userSettingRepository;
+    private final AsyncEmailSender asyncEmailSender;
 
     private final ZipExportService zipExportService;
     private final ObjectMapper objectMapper;
     private final PlatformTransactionManager transactionManager;
 
-    public void initiateDataExportForUser(UUID userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'initiateDataExportForUser'");
+    @Value("${aet.client.url}")
+    private String clientUrl;
+
+    @Value("${aet.data-export.root:${aet.storage.root:/data/docs}/exports}")
+    private String dataExportRoot;
+
+    @Value("${aet.storage.image-root:/storage/images}")
+    private String imageRoot;
+
+    @Value("${aet.data-export.expires-days:7}")
+    private long exportExpiresDays;
+
+    public DataExportStatusDTO getDataExportStatus(@NonNull UUID userId) {
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        DataExportRequest latest = dataExportRequestRepository.findTop1ByUserUserIdOrderByCreatedAtDesc(userId).orElse(null);
+        LocalDateTime lastRequestedAt = dataExportRequestRepository.findLastRequestedAtForUser(userId).orElse(null);
+
+        if (lastRequestedAt == null && latest != null) {
+            lastRequestedAt = latest.getCreatedAt();
+        }
+
+        LocalDateTime nextAllowedAt = lastRequestedAt != null ? lastRequestedAt.plusDays(7) : null;
+        long cooldownSeconds = 0;
+        if (nextAllowedAt != null && nextAllowedAt.isAfter(now)) {
+            cooldownSeconds = Duration.between(now, nextAllowedAt).getSeconds();
+        }
+
+        DataExportState status = latest != null ? latest.getStatus() : null;
+        return new DataExportStatusDTO(status, lastRequestedAt, nextAllowedAt, cooldownSeconds);
     }
 
-    /**
-     * Export all user-related data as a ZIP archive written to the provided {@code HttpServletResponse}.
-     *
-     * <p>To avoid holding a database transaction open while streaming data to the client,
-     * all data required for the JSON summary is collected inside a short read-only transaction
-     * first. ZIP/HTTP streaming is then performed outside of that transaction.</p>
-     *
-     * <p>The generated ZIP contains a JSON summary file ("user_data_summary.json") with the user's profile,
-     * settings, email settings, optional applicant data and staff data. If applicant data exists, applicant
-     * documents are added to the archive under the {@code documents/} directory; filenames are sanitized with
-     * {@link FileUtil#sanitizeFilename(String)}.</p>
-     *
-     * @param userId   UUID of the user whose data should be exported
-     * @param response HTTP response to which the ZIP archive will be written; response headers will be modified
-     * @throws IOException              if an I/O error occurs while writing the ZIP to the response stream
-     * @throws IllegalArgumentException if the user with the given id does not exist
-     */
-    public void exportUserData(UUID userId, HttpServletResponse response) throws IOException {
-        TransactionTemplate tx = new TransactionTemplate(transactionManager);
+    public void initiateDataExportForUser(@NonNull UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+
+        LocalDateTime lastRequestedAt = dataExportRequestRepository.findLastRequestedAtForUser(userId).orElse(null);
+        if (lastRequestedAt != null && lastRequestedAt.plusDays(7).isAfter(now)) {
+            throw new TooManyRequestsException("Data export can only be requested once per week");
+        }
+
+        Set<DataExportState> activeStates = Set.of(DataExportState.REQUESTED, DataExportState.IN_CREATION, DataExportState.EMAIL_SENT);
+        if (dataExportRequestRepository.existsByUserUserIdAndStatusIn(userId, activeStates)) {
+            throw new TimeConflictException("A data export request is already in progress");
+        }
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(now);
+        dataExportRequestRepository.save(request);
+    }
+
+    public Path getExportPathForToken(@NonNull UUID userId, @NonNull String token) {
+        DataExportRequest request = dataExportRequestRepository
+            .findByDownloadToken(token)
+            .orElseThrow(() -> EntityNotFoundException.forId("DataExportRequest", token));
+
+        if (request.getUser() == null || !request.getUser().getUserId().equals(userId)) {
+            throw EntityNotFoundException.forId("DataExportRequest", token);
+        }
+
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(now)) {
+            throw new TimeConflictException("Data export link has expired");
+        }
+
+        if (!request.getStatus().isDownloadable()) {
+            throw new TimeConflictException("Data export is not ready for download");
+        }
+
+        if (request.getFilePath() == null || request.getFilePath().isBlank()) {
+            throw new UserDataExportException("Data export file is missing");
+        }
+
+        Path path = Paths.get(request.getFilePath()).toAbsolutePath().normalize();
+        if (!Files.exists(path)) {
+            throw new UserDataExportException("Data export file not found");
+        }
+
+        if (request.getStatus() == DataExportState.EMAIL_SENT) {
+            request.setStatus(DataExportState.DOWNLOADED);
+            dataExportRequestRepository.save(request);
+        }
+
+        return path;
+    }
+
+    @Scheduled(cron = "${aet.data-export.cron:0 0 2 * * *}")
+    public void processPendingDataExports() {
+        List<DataExportRequest> pending = dataExportRequestRepository.findAllByStatusOrderByCreatedAtAsc(DataExportState.REQUESTED);
+        for (DataExportRequest request : pending) {
+            try {
+                processSingleRequest(request);
+            } catch (Exception e) {
+                log.error("Data export failed for request {}", request.getExportRequestId(), e);
+                request.setStatus(DataExportState.FAILED);
+                dataExportRequestRepository.save(request);
+            }
+        }
+    }
+
+    private void processSingleRequest(DataExportRequest request) throws IOException {
+        request.setStatus(DataExportState.IN_CREATION);
+        dataExportRequestRepository.save(request);
+
+        Path exportPath = createExportZip(request);
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+
+        request.setFilePath(exportPath.toString());
+        request.setReadyAt(now);
+        request.setExpiresAt(now.plusDays(exportExpiresDays));
+        request.setDownloadToken(UUID.randomUUID().toString());
+        request.setStatus(DataExportState.EMAIL_SENT);
+        dataExportRequestRepository.save(request);
+
+        sendExportReadyEmail(request);
+    }
+
+    private Path createExportZip(DataExportRequest request) throws IOException {
+        TransactionTemplate tx = new TransactionTemplate(Objects.requireNonNull(transactionManager));
         tx.setReadOnly(true);
-        UserDataExportDTO userData = tx.execute(status -> collectUserData(userId));
+        UserDataExportDTO userData = tx.execute(status -> collectUserData(request.getUser().getUserId()));
         if (userData == null) {
             throw new UserDataExportException("User data export failed: could not collect user data");
         }
 
-        zipExportService.initZipResponse(response, "user-data-export-" + userId);
+        Path root = Paths.get(dataExportRoot).toAbsolutePath().normalize();
+        Files.createDirectories(root);
 
-        try (ZipOutputStream zipOut = new ZipOutputStream(new BufferedOutputStream(response.getOutputStream()))) {
+        String fileName = "data-export-" + request.getUser().getUserId() + "-" + request.getExportRequestId() + ".zip";
+        Path zipPath = root.resolve(fileName);
+
+        try (ZipOutputStream zipOut = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(zipPath)))) {
             zipOut.setLevel(Deflater.BEST_COMPRESSION);
 
-            // 1. Add JSON summary
             String jsonSummary = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userData);
-            zipExportService.addFileToZip(zipOut, "user_data_summary.json", jsonSummary.getBytes());
+            zipExportService.addFileToZip(zipOut, "data_export_summary.json", jsonSummary.getBytes());
 
-            // 2. Add Applicant Documents
-            if (userData.applicantData() != null) {
-                for (DocumentExportDTO doc : userData.applicantData().documents()) {
-                    String sanitizedFilename = FileUtil.sanitizeFilename(doc.name());
-                    addDocumentToZip(zipOut, doc.documentId(), "documents/" + sanitizedFilename);
-                }
+            List<Document> uploadedDocuments = documentRepository.findByUploadedByUserId(request.getUser().getUserId());
+            for (Document document : uploadedDocuments) {
+                String entryName = "documents/uploaded/" + document.getDocumentId();
+                addDocumentToZip(zipOut, document.getDocumentId(), entryName);
+            }
+
+            List<Image> images = imageRepository.findByUploaderId(request.getUser().getUserId());
+            for (Image image : images) {
+                addImageToZip(zipOut, image);
             }
 
             zipOut.finish();
         }
+
+        return zipPath;
+    }
+
+    private void sendExportReadyEmail(DataExportRequest request) {
+        User user = request.getUser();
+        String downloadLink = clientUrl + "/api/users/data-export/download/" + request.getDownloadToken();
+        String body = String.format(
+            """
+                <h2 style=\"margin:0 0 16px 0;font-size:20px;color:#0A66C2;\">Your data export is ready</h2>
+                <p style=\"margin:0 0 16px 0;\">You can download your data export using the link below.</p>
+                <div style=\"text-align:center;margin:24px 0;\">
+                    <a href=\"%s\" style=\"display:inline-block;padding:12px 24px;background:#0A66C2;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;\">Download export</a>
+                </div>
+                <p style=\"margin:16px 0 0 0;color:#555;font-size:12px;\">The link expires after %d days.</p>
+            """,
+            downloadLink,
+            exportExpiresDays
+        );
+
+        Email email = Email.builder().to(user).customSubject("Your data export is ready").customBody(body).sendAlways(true).build();
+        asyncEmailSender.sendAsync(email);
     }
 
     // ------------------------------------ Private helper methods ------------------------------------
@@ -141,7 +289,7 @@ public class UserDataExportService {
      * @return a {@link UserDataExportDTO} containing all available export data for the user
      * @throws IllegalArgumentException if the user cannot be found
      */
-    private UserDataExportDTO collectUserData(UUID userId) {
+    private UserDataExportDTO collectUserData(@NonNull UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         boolean hasApplicantRole = hasRole(user, UserRole.APPLICANT);
@@ -152,6 +300,7 @@ public class UserDataExportService {
         List<EmailSettingDTO> emailSettings = getEmailSettings(user);
         ApplicantDataExportDTO applicantData = hasApplicantRole && applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
         StaffDataDTO staffData = hasStaffRole ? getStaffData(user) : null;
+        // TODO: ADD DOCUMENTS AND IMAGES
 
         return new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
     }
@@ -174,7 +323,7 @@ public class UserDataExportService {
         );
     }
 
-    private List<UserSettingDTO> getUserSettings(UUID userId) {
+    private List<UserSettingDTO> getUserSettings(@NonNull UUID userId) {
         return userSettingRepository
             .findAllByIdUserId(userId)
             .stream()
@@ -190,7 +339,7 @@ public class UserDataExportService {
             .toList();
     }
 
-    private ApplicantDataExportDTO getApplicantData(UUID userId) {
+    private ApplicantDataExportDTO getApplicantData(@NonNull UUID userId) {
         Applicant applicant = applicantRepository.findById(userId).orElseThrow();
 
         Set<DocumentExportDTO> documents = documentDictionaryRepository
@@ -271,7 +420,7 @@ public class UserDataExportService {
         return new StaffDataDTO(supervisedJobs, researchGroupRoles, reviews, comments, ratings, interviewProcesses, interviewSlots);
     }
 
-    private List<IntervieweeExportDTO> getInterviewees(UUID userId) {
+    private List<IntervieweeExportDTO> getInterviewees(@NonNull UUID userId) {
         List<Interviewee> interviewees = intervieweeRepository.findByApplicantUserIdWithDetails(userId);
         if (interviewees == null || interviewees.isEmpty()) {
             return List.of();
@@ -388,7 +537,7 @@ public class UserDataExportService {
         );
     }
 
-    private void addDocumentToZip(ZipOutputStream zipOut, UUID documentId, String entryPath) {
+    private void addDocumentToZip(ZipOutputStream zipOut, @NonNull UUID documentId, String entryPath) {
         try {
             Document document = documentRepository
                 .findById(documentId)
@@ -398,6 +547,42 @@ public class UserDataExportService {
         } catch (Exception e) {
             log.error("Failed to add document {} to ZIP export", documentId, e);
             throw new UserDataExportException("Failed to add document to ZIP export", e);
+        }
+    }
+
+    private void addImageToZip(ZipOutputStream zipOut, Image image) {
+        try {
+            String url = image.getUrl();
+            if (url == null || url.isBlank()) {
+                return;
+            }
+
+            String relativePath = url.startsWith("/images/") ? url.substring("/images/".length()) : url;
+            Path relative = Paths.get(relativePath).normalize();
+            if (relative.isAbsolute() || relative.startsWith("..")) {
+                throw new UserDataExportException("Invalid image path: " + relativePath);
+            }
+
+            Path root = Paths.get(imageRoot).toAbsolutePath().normalize();
+            Path imagePath = root.resolve(relative).normalize();
+            if (!imagePath.startsWith(root)) {
+                throw new UserDataExportException("Image path lies outside storage root: " + imagePath);
+            }
+
+            if (!Files.exists(imagePath)) {
+                throw new UserDataExportException("Image file not found: " + imagePath);
+            }
+
+            String fileName = FileUtil.sanitizeFilename(imagePath.getFileName().toString());
+            String parentPath = relative.getParent() != null ? relative.getParent().toString().replace("\\", "/") + "/" : "";
+            String entryPath = "images/" + parentPath + fileName;
+
+            try (InputStream inputStream = Files.newInputStream(imagePath)) {
+                zipExportService.addFileToZip(zipOut, entryPath, inputStream);
+            }
+        } catch (Exception e) {
+            log.error("Failed to add image {} to ZIP export", image.getImageId(), e);
+            throw new UserDataExportException("Failed to add image to ZIP export", e);
         }
     }
 }
