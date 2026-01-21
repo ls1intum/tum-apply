@@ -1931,18 +1931,20 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
-  /api/users/export:
-    get:
+  /api/users/data-export:
+    post:
       tags: [user-data-export-resource]
-      summary: Export user data
-      operationId: exportUserData
+      summary: Request a data export for the current user
+      operationId: requestDataExport
       responses:
-        '200':
-          description: OK
+        '202': {description: Data export request accepted}
+        '409': {description: Data export request already exists or is in progress}
+        '429': {description: Data export request rate limit exceeded}
+        '500':
+          description: Internal server error while creating data export request
           content:
-            application/zip:
-              schema: {type: string, format: binary}
-        '500': {description: Internal Server Error}
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -3094,6 +3096,62 @@ components:
         selectedLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserDataExportException:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName: {type: string}
+                  moduleName: {type: string}
+                  moduleVersion: {type: string}
+                  methodName: {type: string}
+                  fileName: {type: string}
+                  lineNumber: {type: integer, format: int32}
+                  className: {type: string}
+                  nativeMethod: {type: boolean}
+            message: {type: string}
+            localizedMessage: {type: string}
+        localizedMessage: {type: string}
+        message: {type: string}
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName: {type: string}
+              moduleName: {type: string}
+              moduleVersion: {type: string}
+              methodName: {type: string}
+              fileName: {type: string}
+              lineNumber: {type: integer, format: int32}
+              className: {type: string}
+              nativeMethod: {type: boolean}
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName: {type: string}
+                    moduleName: {type: string}
+                    moduleVersion: {type: string}
+                    methodName: {type: string}
+                    fileName: {type: string}
+                    lineNumber: {type: integer, format: int32}
+                    className: {type: string}
+                    nativeMethod: {type: boolean}
+              message: {type: string}
+              localizedMessage: {type: string}
     UserForApplicationDetailDTO:
       type: object
       properties:
