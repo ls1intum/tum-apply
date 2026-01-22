@@ -1,19 +1,19 @@
 import { Component, computed, effect, inject, model, output } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DividerModule } from 'primeng/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AccountService } from 'app/core/auth/account.service';
-import * as postalCodes from 'postal-codes-js';
 import { TranslateDirective } from 'app/shared/language';
+import { selectCountries } from 'app/shared/language/countries';
+import { selectNationality } from 'app/shared/language/nationalities';
 
+import { selectGender } from '../../../shared/constants/genders';
+import { postalCodeValidator } from '../../../shared/validators/custom-validators';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import { DatePickerComponent } from '../../../shared/components/atoms/datepicker/datepicker.component';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
-
-import { selectCountries } from './countries';
-import { selectNationality } from './nationalities';
 
 export type ApplicationCreationPage1Data = {
   firstName: string;
@@ -30,12 +30,6 @@ export type ApplicationCreationPage1Data = {
   country?: SelectOption;
   postcode: string;
 };
-
-export const selectGender: SelectOption[] = [
-  { value: 'female', name: 'genders.female' },
-  { value: 'male', name: 'genders.male' },
-  { value: 'other', name: 'genders.other' },
-];
 
 export const selectLanguage: SelectOption[] = [
   { value: 'de', name: 'German' },
@@ -62,17 +56,6 @@ export const getPage1FromApplication = (application: ApplicationForApplicantDTO)
   };
 };
 
-export function postalCodeValidator(getCountryFn: () => string | undefined): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors => {
-    const country = getCountryFn()?.toUpperCase();
-    const value: string = control.value as string;
-    if (country === undefined || country.length === 0 || value.length === 0) return {};
-    const isPostalCodeValid: boolean | string = postalCodes.validate(country, value);
-    const validationError: ValidationErrors = { invalidPostalCode: 'entity.applicationPage1.validation.postalCode' } as ValidationErrors;
-    return isPostalCodeValid === true ? {} : validationError;
-  };
-}
-
 @Component({
   selector: 'jhi-application-creation-page1',
   imports: [
@@ -85,7 +68,6 @@ export function postalCodeValidator(getCountryFn: () => string | undefined): Val
     TranslateDirective,
   ],
   templateUrl: './application-creation-page1.component.html',
-  styleUrl: './application-creation-page1.component.scss',
   standalone: true,
 })
 export default class ApplicationCreationPage1Component {
