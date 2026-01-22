@@ -194,7 +194,7 @@ public class UserDataExportService {
     public Path getExportPathForToken(@NonNull UUID userId, @NonNull String token) {
         DataExportRequest request = findRequestByToken(token);
         validateRequestBelongsToUser(request, userId, token);
-        validateRequestNotExpired(request, token);
+        validateRequestNotExpired(request);
         validateRequestDownloadable(request, token);
         Path path = validateAndGetFilePath(request);
         updateStatusIfNeeded(request);
@@ -215,7 +215,7 @@ public class UserDataExportService {
      */
     public Path getExportPathForToken(@NonNull String token) {
         DataExportRequest request = findRequestByToken(token);
-        validateRequestNotExpired(request, token);
+        validateRequestNotExpired(request);
         validateRequestDownloadable(request, token);
         Path path = validateAndGetFilePath(request);
         updateStatusIfNeeded(request);
@@ -234,7 +234,7 @@ public class UserDataExportService {
         }
     }
 
-    private void validateRequestNotExpired(DataExportRequest request, String token) {
+    private void validateRequestNotExpired(DataExportRequest request) {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(now)) {
             throw new TimeConflictException("Data export link has expired");
