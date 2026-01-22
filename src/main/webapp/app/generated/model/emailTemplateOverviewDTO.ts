@@ -16,7 +16,7 @@ export interface EmailTemplateOverviewDTO {
     lastName?: string;
     templateName?: string;
 }
-export namespace EmailTemplateOverviewDTO { 
+export namespace EmailTemplateOverviewDTO {
     export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'INTERVIEW_INVITATION' | 'RESEARCH_GROUP_MEMBER_ADDED' | 'RESEARCH_GROUP_APPROVED' | 'INTERVIEW_BOOKED_APPLICANT' | 'INTERVIEW_BOOKED_PROFESSOR' | 'INTERVIEW_SELF_SCHEDULING_INVITATION';
     export const EmailTypeEnum = {
         ApplicationAccepted: 'APPLICATION_ACCEPTED' as EmailTypeEnum,
