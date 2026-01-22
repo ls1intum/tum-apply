@@ -35,6 +35,11 @@ public class UserDataExportResource {
     private final UserDataExportService userDataExportService;
     private final CurrentUserService currentUserService;
 
+    /**
+     * Retrieves the current data export status for the authenticated user.
+     *
+     * @return ResponseEntity containing the data export status
+     */
     @Operation(
         summary = "Get data export status for the current user",
         responses = {
@@ -53,6 +58,11 @@ public class UserDataExportResource {
         return ResponseEntity.ok(userDataExportService.getDataExportStatus(userId));
     }
 
+    /**
+     * Initiates a data export request for the authenticated user.
+     *
+     * @return ResponseEntity with status ACCEPTED indicating the request was accepted
+     */
     @Operation(
         summary = "Request a data export for the current user",
         responses = {
@@ -75,6 +85,12 @@ public class UserDataExportResource {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
+    /**
+     * Downloads the prepared data export file using the provided token.
+     *
+     * @param token the download token for the export
+     * @return ResponseEntity containing the file resource for download
+     */
     @Operation(
         summary = "Download a prepared data export",
         responses = {
