@@ -5,6 +5,7 @@ import de.tum.cit.aet.application.domain.CustomFieldAnswer;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;
@@ -21,5 +22,5 @@ public interface DocumentDictionaryRepository extends TumApplyJpaRepository<Docu
 
     Set<DocumentDictionary> findAllByApplicationApplicationId(UUID applicationId);
 
-    void deleteByApplication(Application application);
+    void deleteByApplicationIn(List<Application> applications);
 }

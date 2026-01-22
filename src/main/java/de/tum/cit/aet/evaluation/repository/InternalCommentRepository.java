@@ -16,7 +16,7 @@ public interface InternalCommentRepository extends TumApplyJpaRepository<Interna
 
     List<InternalComment> findAllByCreatedBy(User createdBy);
 
-    void deleteByApplication(Application application);
+    void deleteByApplicationIn(List<Application> applications);
 
     /**
      * Anonymizes internal comments by updating the creator reference to the given deleted user.

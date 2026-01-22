@@ -201,5 +201,5 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         Pageable pageable
     );
 
-    void deleteByIntervieweeApplication(Application application);
+    void deleteByIntervieweeApplicationIn(List<Application> applications);
 }
