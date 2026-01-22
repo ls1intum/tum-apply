@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,9 +24,13 @@ public interface RatingRepository extends TumApplyJpaRepository<Rating, UUID> {
     )
     Set<Rating> findByApplicationApplicationId(@Param("applicationId") UUID applicationId);
 
-    void deleteByApplicationIn(List<Application> applications);
+    void deleteByApplication(Application application);
 
     void deleteByFromAndApplicationApplicationId(User from, UUID applicationId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Rating r WHERE r.application.applicationId IN :applicationIds")
+    void deleteByApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
 
     Optional<Rating> findByFromAndApplicationApplicationId(User from, UUID applicationId);
 
