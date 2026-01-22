@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -201,5 +202,9 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         Pageable pageable
     );
 
-    void deleteByIntervieweeApplicationIn(List<Application> applications);
+    void deleteByIntervieweeApplication(Application application);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM InterviewSlot s WHERE s.interviewee.application.applicationId IN :applicationIds")
+    void deleteByIntervieweeApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
 }
