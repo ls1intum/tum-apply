@@ -591,13 +591,11 @@ public class InterviewService {
     private void sendInterviewInvitationEmail(InterviewSlot slot, Interviewee interviewee, Job job) {
         Application application = interviewee.getApplication();
         User applicant = application.getApplicant().getUser();
-        User professor = job.getSupervisingProfessor();
 
         String icsContent = icsCalendarService.generateIcsContent(slot, job);
         String icsFileName = icsCalendarService.generateFileName(slot);
 
-        // Email to Applicant (with ICS)
-        Email applicantEmail = Email.builder()
+        Email email = Email.builder()
             .to(applicant)
             .emailType(EmailType.INTERVIEW_INVITATION)
             .language(Language.fromCode(applicant.getSelectedLanguage()))
@@ -606,19 +604,8 @@ public class InterviewService {
             .icsContent(icsContent)
             .icsFileName(icsFileName)
             .build();
-        asyncEmailSender.sendAsync(applicantEmail);
 
-        // Email to Professor (confirmation with ICS)
-        Email professorEmail = Email.builder()
-            .to(professor)
-            .emailType(EmailType.INTERVIEW_ASSIGNED_PROFESSOR)
-            .language(Language.fromCode(professor.getSelectedLanguage()))
-            .researchGroup(job.getResearchGroup())
-            .content(slot)
-            .icsContent(icsContent)
-            .icsFileName(icsFileName)
-            .build();
-        asyncEmailSender.sendAsync(professorEmail);
+        asyncEmailSender.sendAsync(email);
     }
 
     /**
