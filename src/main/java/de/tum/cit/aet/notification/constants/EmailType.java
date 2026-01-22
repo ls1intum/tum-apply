@@ -46,7 +46,8 @@ public enum EmailType {
      * To: Applicant who was assigned to the slot
      */
     INTERVIEW_INVITATION("INTERVIEW_INVITATION", Set.of(UserRole.APPLICANT), true, false),
-    /** When a user is added to a research group
+    /**
+     * When a user is added to a research group
      * To: Newly added member
      */
     RESEARCH_GROUP_MEMBER_ADDED("RESEARCH_GROUP_MEMBER_ADDED", Set.of(UserRole.EMPLOYEE, UserRole.PROFESSOR), true, false),
@@ -67,6 +68,12 @@ public enum EmailType {
      * To: Supervising professor of the job
      */
     INTERVIEW_BOOKED_PROFESSOR("INTERVIEW_BOOKED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
+
+    /**
+     * Confirmation to professor when they manually assign a slot to an applicant
+     * To: Supervising professor of the job
+     */
+    INTERVIEW_ASSIGNED_PROFESSOR("INTERVIEW_ASSIGNED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
 
     /**
      * Invitation to self-schedule an interview slot
