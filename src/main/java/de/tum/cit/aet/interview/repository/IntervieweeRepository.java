@@ -126,5 +126,5 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     @EntityGraph(attributePaths = { "application.applicant.user" })
     List<Interviewee> findAllByInterviewProcessIdAndLastInvitedIsNull(UUID processId);
 
-    void deleteByApplication(Application application);
+    void deleteByApplicationIn(List<Application> applications);
 }

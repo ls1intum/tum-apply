@@ -145,17 +145,17 @@ public class UserRetentionService {
 
         // 1. Delete applications (and for each application delete application reviews, ratings, interviews (slots, interviewees etc), internal comments and documents)
         List<Application> applications = applicationRepository.findAllByApplicantId(user.getUserId());
-        applications.forEach(application -> {
-            interviewSlotRepository.deleteByIntervieweeApplication(application);
-            intervieweeRepository.deleteByApplication(application);
+        if (!applications.isEmpty()) {
+            interviewSlotRepository.deleteByIntervieweeApplicationIn(applications);
+            intervieweeRepository.deleteByApplicationIn(applications);
 
-            applicationReviewRepository.deleteByApplication(application);
-            ratingRepository.deleteByApplication(application);
-            internalCommentRepository.deleteByApplication(application);
+            applicationReviewRepository.deleteByApplicationIn(applications);
+            ratingRepository.deleteByApplicationIn(applications);
+            internalCommentRepository.deleteByApplicationIn(applications);
 
-            documentDictionaryRepository.deleteByApplication(application);
-            applicationRepository.delete(application);
-        });
+            documentDictionaryRepository.deleteByApplicationIn(applications);
+            applicationRepository.deleteAllInBatch(applications);
+        }
 
         documentRepository.deleteByUploadedBy(user);
 

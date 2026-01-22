@@ -15,5 +15,5 @@ import org.springframework.stereotype.Repository;
 public interface ApplicationReviewRepository extends TumApplyJpaRepository<ApplicationReview, UUID> {
     List<ApplicationReview> findAllByReviewedBy(User reviewedBy);
 
-    void deleteByApplication(Application application);
+    void deleteByApplicationIn(List<Application> applications);
 }
