@@ -129,7 +129,6 @@ public class UserDataExportService {
      *         and cooldown duration in seconds
      */
     public DataExportStatusDTO getDataExportStatus(@NonNull UUID userId) {
-        log.info("Getting data export status for user: {}", userId);
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         DataExportRequest latest = dataExportRequestRepository.findTop1ByUserUserIdOrderByCreatedAtDesc(userId).orElse(null);
         LocalDateTime lastRequestedAt = dataExportRequestRepository.findLastRequestedAtForUser(userId).orElse(null);
@@ -145,7 +144,6 @@ public class UserDataExportService {
         }
 
         DataExportState status = latest != null ? latest.getStatus() : null;
-        log.info("Data export status for user {}: status={}, cooldownSeconds={}", userId, status, cooldownSeconds);
         return new DataExportStatusDTO(status, lastRequestedAt, nextAllowedAt, cooldownSeconds);
     }
 
@@ -160,19 +158,16 @@ public class UserDataExportService {
      * @throws IllegalArgumentException if the user does not exist
      */
     public void initiateDataExportForUser(@NonNull UUID userId) {
-        log.info("Initiating data export request for user: {}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
 
         LocalDateTime lastRequestedAt = dataExportRequestRepository.findLastRequestedAtForUser(userId).orElse(null);
         if (lastRequestedAt != null && lastRequestedAt.plusDays(7).isAfter(now)) {
-            log.warn("Data export request rejected for user {}: rate limit exceeded. Last request: {}", userId, lastRequestedAt);
             throw new TooManyRequestsException("Data export can only be requested once per week");
         }
 
         Set<DataExportState> activeStates = Set.of(DataExportState.REQUESTED, DataExportState.IN_CREATION, DataExportState.EMAIL_SENT);
         if (dataExportRequestRepository.existsByUserUserIdAndStatusIn(userId, activeStates)) {
-            log.warn("Data export request rejected for user {}: active request already exists", userId);
             throw new TimeConflictException("A data export request is already in progress");
         }
 
@@ -181,7 +176,6 @@ public class UserDataExportService {
         request.setStatus(DataExportState.REQUESTED);
         request.setLastRequestedAt(now);
         dataExportRequestRepository.save(request);
-        log.info("Data export request created for user {} with ID: {}", userId, request.getExportRequestId());
     }
 
     /**
@@ -198,45 +192,37 @@ public class UserDataExportService {
      * @throws UserDataExportException if the export file is missing or not found
      */
     public Path getExportPathForToken(@NonNull UUID userId, @NonNull String token) {
-        log.info("Retrieving export path for token: {} (user: {})", token.substring(0, 8) + "...", userId);
         DataExportRequest request = dataExportRequestRepository
             .findByDownloadToken(token)
             .orElseThrow(() -> EntityNotFoundException.forId("DataExportRequest", token));
 
         if (request.getUser() == null || !request.getUser().getUserId().equals(userId)) {
-            log.warn("Token {} does not belong to user {}", token.substring(0, 8) + "...", userId);
             throw EntityNotFoundException.forId("DataExportRequest", token);
         }
 
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(now)) {
-            log.warn("Export token {} has expired (expires: {}, now: {})", token.substring(0, 8) + "...", request.getExpiresAt(), now);
             throw new TimeConflictException("Data export link has expired");
         }
 
         if (!request.getStatus().isDownloadable()) {
-            log.warn("Export token {} is not downloadable (status: {})", token.substring(0, 8) + "...", request.getStatus());
             throw new TimeConflictException("Data export is not ready for download");
         }
 
         if (request.getFilePath() == null || request.getFilePath().isBlank()) {
-            log.error("Export request {} has no file path", request.getExportRequestId());
             throw new UserDataExportException("Data export file is missing");
         }
 
         Path path = Paths.get(request.getFilePath()).toAbsolutePath().normalize();
         if (!Files.exists(path)) {
-            log.error("Export file not found at path: {}", path);
             throw new UserDataExportException("Data export file not found");
         }
 
         if (request.getStatus() == DataExportState.EMAIL_SENT) {
-            log.info("Updating export status to DOWNLOADED for request: {}", request.getExportRequestId());
             request.setStatus(DataExportState.DOWNLOADED);
             dataExportRequestRepository.save(request);
         }
 
-        log.info("Export download successful for token: {} (file: {})", token.substring(0, 8) + "...", path.getFileName());
         return path;
     }
 
@@ -253,40 +239,33 @@ public class UserDataExportService {
      * @throws UserDataExportException if the export file is missing or not found
      */
     public Path getExportPathForToken(@NonNull String token) {
-        log.info("Retrieving export path for token: {}", token.substring(0, 8) + "...");
         DataExportRequest request = dataExportRequestRepository
             .findByDownloadToken(token)
             .orElseThrow(() -> EntityNotFoundException.forId("DataExportRequest", token));
 
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(now)) {
-            log.warn("Export token {} has expired (expires: {}, now: {})", token.substring(0, 8) + "...", request.getExpiresAt(), now);
             throw new TimeConflictException("Data export link has expired");
         }
 
         if (!request.getStatus().isDownloadable()) {
-            log.warn("Export token {} is not downloadable (status: {})", token.substring(0, 8) + "...", request.getStatus());
             throw new TimeConflictException("Data export is not ready for download");
         }
 
         if (request.getFilePath() == null || request.getFilePath().isBlank()) {
-            log.error("Export request {} has no file path", request.getExportRequestId());
             throw new UserDataExportException("Data export file is missing");
         }
 
         Path path = Paths.get(request.getFilePath()).toAbsolutePath().normalize();
         if (!Files.exists(path)) {
-            log.error("Export file not found at path: {}", path);
             throw new UserDataExportException("Data export file not found");
         }
 
         if (request.getStatus() == DataExportState.EMAIL_SENT) {
-            log.info("Updating export status to DOWNLOADED for request: {}", request.getExportRequestId());
             request.setStatus(DataExportState.DOWNLOADED);
             dataExportRequestRepository.save(request);
         }
 
-        log.info("Export download successful for token: {} (file: {})", token.substring(0, 8) + "...", path.getFileName());
         return path;
     }
 
@@ -298,26 +277,19 @@ public class UserDataExportService {
      */
     @Scheduled(cron = "${aet.data-export.cron:0 0 2 * * *}")
     public void processPendingDataExports() {
-        log.info("Starting scheduled processing of pending data exports");
         List<DataExportRequest> pending = dataExportRequestRepository.findAllByStatusOrderByCreatedAtAsc(DataExportState.REQUESTED);
-        log.info("Found {} pending data export requests", pending.size());
 
         for (DataExportRequest request : pending) {
             try {
-                log.info("Processing data export request: {}", request.getExportRequestId());
                 processSingleRequest(request);
-                log.info("Successfully processed data export request: {}", request.getExportRequestId());
             } catch (Exception e) {
-                log.error("Data export failed for request {}", request.getExportRequestId(), e);
                 request.setStatus(DataExportState.FAILED);
                 dataExportRequestRepository.save(request);
             }
         }
-        log.info("Completed scheduled processing of pending data exports");
     }
 
     private void processSingleRequest(DataExportRequest request) throws IOException {
-        log.debug(">>>> DEEPER: Processing single request: {}", request.getExportRequestId());
         request.setStatus(DataExportState.IN_CREATION);
         dataExportRequestRepository.save(request);
 
@@ -332,16 +304,13 @@ public class UserDataExportService {
         dataExportRequestRepository.save(request);
 
         sendExportReadyEmail(request);
-        log.debug("<<<< DEEPER: Completed processing single request: {}", request.getExportRequestId());
     }
 
     private Path createExportZip(DataExportRequest request) throws IOException {
-        log.debug(">>>> DEEPER: Creating export ZIP for request: {}", request.getExportRequestId());
         TransactionTemplate tx = new TransactionTemplate(Objects.requireNonNull(transactionManager));
         tx.setReadOnly(true);
         UserDataExportDTO userData = tx.execute(status -> collectUserData(request.getUser().getUserId()));
         if (userData == null) {
-            log.error(">>>> DEEPER: User data collection failed for request: {}", request.getExportRequestId());
             throw new UserDataExportException("User data export failed: could not collect user data");
         }
 
@@ -350,7 +319,6 @@ public class UserDataExportService {
 
         String fileName = "data-export-" + request.getUser().getUserId() + "-" + request.getExportRequestId() + ".zip";
         Path zipPath = root.resolve(fileName);
-        log.debug(">>>> DEEPER: Creating ZIP file: {}", zipPath);
 
         try (ZipOutputStream zipOut = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(zipPath)))) {
             zipOut.setLevel(Deflater.BEST_COMPRESSION);
@@ -359,14 +327,12 @@ public class UserDataExportService {
             zipExportService.addFileToZip(zipOut, "data_export_summary.json", jsonSummary.getBytes());
 
             List<Document> uploadedDocuments = documentRepository.findByUploadedByUserId(request.getUser().getUserId());
-            log.debug(">>>> DEEPER: Adding {} uploaded documents to ZIP", uploadedDocuments.size());
             for (Document document : uploadedDocuments) {
                 String entryName = "documents/uploaded/" + document.getDocumentId();
                 addDocumentToZip(zipOut, document.getDocumentId(), entryName);
             }
 
             List<Image> images = imageRepository.findByUploaderId(request.getUser().getUserId());
-            log.debug(">>>> DEEPER: Adding {} images to ZIP", images.size());
             for (Image image : images) {
                 addImageToZip(zipOut, image);
             }
@@ -374,12 +340,10 @@ public class UserDataExportService {
             zipOut.finish();
         }
 
-        log.debug("<<<< DEEPER: ZIP creation completed: {}", zipPath);
         return zipPath;
     }
 
     private void sendExportReadyEmail(DataExportRequest request) {
-        log.debug(">>>> DEEPER: Sending export ready email for request: {}", request.getExportRequestId());
         User user = request.getUser();
         String downloadLink = clientUrl + "/api/users/data-export/download/" + request.getDownloadToken();
 
@@ -390,14 +354,7 @@ public class UserDataExportService {
             .content(new DataExportEmailContext(user, downloadLink, exportExpiresDays))
             .build();
 
-        log.debug(
-            ">>>> DEEPER: Email details - to: {}, language: {}, type: {}",
-            user.getEmail(),
-            user.getSelectedLanguage(),
-            EmailType.DATA_EXPORT_READY
-        );
         sender.sendAsync(email);
-        log.debug("<<<< DEEPER: Export ready email sent for request: {}", request.getExportRequestId());
     }
 
     // ------------------------------------ helper methods for collecting user data ------------------------------------
@@ -411,7 +368,6 @@ public class UserDataExportService {
      * @throws IllegalArgumentException if the user cannot be found
      */
     private UserDataExportDTO collectUserData(@NonNull UUID userId) {
-        log.debug(">>>> DEEPER: Collecting user data for user: {}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         boolean hasApplicantRole = hasRole(user, UserRole.APPLICANT);
@@ -423,8 +379,6 @@ public class UserDataExportService {
         ApplicantDataExportDTO applicantData = hasApplicantRole && applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
         StaffDataDTO staffData = hasStaffRole ? getStaffData(user) : null;
 
-        log.debug(">>>> DEEPER: User {} has roles - applicant: {}, staff: {}", userId, hasApplicantRole, hasStaffRole);
-        log.debug("<<<< DEEPER: User data collection completed for user: {}", userId);
         return new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
     }
 
@@ -661,7 +615,6 @@ public class UserDataExportService {
     }
 
     private void addDocumentToZip(ZipOutputStream zipOut, @NonNull UUID documentId, String entryPath) {
-        log.debug(">>>>>> DEEPEST: Adding document {} to ZIP as {}", documentId, entryPath);
         try {
             Document document = documentRepository
                 .findById(documentId)
@@ -675,9 +628,7 @@ public class UserDataExportService {
             String fullEntryPath = entryPath + extension;
 
             zipExportService.addDocumentToZip(zipOut, fullEntryPath, document);
-            log.debug("<<<<<< DEEPEST: Document {} added successfully as {}", documentId, fullEntryPath);
         } catch (Exception e) {
-            log.error(">>>>>> DEEPEST: Failed to add document {} to ZIP export", documentId, e);
             throw new UserDataExportException("Failed to add document to ZIP export", e);
         }
     }
@@ -713,7 +664,6 @@ public class UserDataExportService {
                 zipExportService.addFileToZip(zipOut, entryPath, inputStream);
             }
         } catch (Exception e) {
-            log.error("Failed to add image {} to ZIP export", image.getImageId(), e);
             throw new UserDataExportException("Failed to add image to ZIP export", e);
         }
     }
