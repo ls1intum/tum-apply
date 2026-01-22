@@ -192,37 +192,12 @@ public class UserDataExportService {
      * @throws UserDataExportException if the export file is missing or not found
      */
     public Path getExportPathForToken(@NonNull UUID userId, @NonNull String token) {
-        DataExportRequest request = dataExportRequestRepository
-            .findByDownloadToken(token)
-            .orElseThrow(() -> EntityNotFoundException.forId("DataExportRequest", token));
-
-        if (request.getUser() == null || !request.getUser().getUserId().equals(userId)) {
-            throw EntityNotFoundException.forId("DataExportRequest", token);
-        }
-
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(now)) {
-            throw new TimeConflictException("Data export link has expired");
-        }
-
-        if (!request.getStatus().isDownloadable()) {
-            throw new TimeConflictException("Data export is not ready for download");
-        }
-
-        if (request.getFilePath() == null || request.getFilePath().isBlank()) {
-            throw new UserDataExportException("Data export file is missing");
-        }
-
-        Path path = Paths.get(request.getFilePath()).toAbsolutePath().normalize();
-        if (!Files.exists(path)) {
-            throw new UserDataExportException("Data export file not found");
-        }
-
-        if (request.getStatus() == DataExportState.EMAIL_SENT) {
-            request.setStatus(DataExportState.DOWNLOADED);
-            dataExportRequestRepository.save(request);
-        }
-
+        DataExportRequest request = findRequestByToken(token);
+        validateRequestBelongsToUser(request, userId, token);
+        validateRequestNotExpired(request, token);
+        validateRequestDownloadable(request, token);
+        Path path = validateAndGetFilePath(request);
+        updateStatusIfNeeded(request);
         return path;
     }
 
@@ -239,19 +214,40 @@ public class UserDataExportService {
      * @throws UserDataExportException if the export file is missing or not found
      */
     public Path getExportPathForToken(@NonNull String token) {
-        DataExportRequest request = dataExportRequestRepository
+        DataExportRequest request = findRequestByToken(token);
+        validateRequestNotExpired(request, token);
+        validateRequestDownloadable(request, token);
+        Path path = validateAndGetFilePath(request);
+        updateStatusIfNeeded(request);
+        return path;
+    }
+
+    private DataExportRequest findRequestByToken(String token) {
+        return dataExportRequestRepository
             .findByDownloadToken(token)
             .orElseThrow(() -> EntityNotFoundException.forId("DataExportRequest", token));
+    }
 
+    private void validateRequestBelongsToUser(DataExportRequest request, UUID userId, String token) {
+        if (request.getUser() == null || !request.getUser().getUserId().equals(userId)) {
+            throw EntityNotFoundException.forId("DataExportRequest", token);
+        }
+    }
+
+    private void validateRequestNotExpired(DataExportRequest request, String token) {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(now)) {
             throw new TimeConflictException("Data export link has expired");
         }
+    }
 
+    private void validateRequestDownloadable(DataExportRequest request, String token) {
         if (!request.getStatus().isDownloadable()) {
             throw new TimeConflictException("Data export is not ready for download");
         }
+    }
 
+    private Path validateAndGetFilePath(DataExportRequest request) {
         if (request.getFilePath() == null || request.getFilePath().isBlank()) {
             throw new UserDataExportException("Data export file is missing");
         }
@@ -261,12 +257,14 @@ public class UserDataExportService {
             throw new UserDataExportException("Data export file not found");
         }
 
+        return path;
+    }
+
+    private void updateStatusIfNeeded(DataExportRequest request) {
         if (request.getStatus() == DataExportState.EMAIL_SENT) {
             request.setStatus(DataExportState.DOWNLOADED);
             dataExportRequestRepository.save(request);
         }
-
-        return path;
     }
 
     /**
@@ -635,30 +633,15 @@ public class UserDataExportService {
 
     private void addImageToZip(ZipOutputStream zipOut, Image image) {
         try {
-            String url = image.getUrl();
-            if (url == null || url.isBlank()) {
+            String relativePath = extractRelativePath(image.getUrl());
+            if (relativePath == null) {
                 return;
             }
 
-            String relativePath = url.startsWith("/images/") ? url.substring("/images/".length()) : url;
-            Path relative = Paths.get(relativePath).normalize();
-            if (relative.isAbsolute() || relative.startsWith("..")) {
-                throw new UserDataExportException("Invalid image path: " + relativePath);
-            }
-
-            Path root = Paths.get(imageRoot).toAbsolutePath().normalize();
-            Path imagePath = root.resolve(relative).normalize();
-            if (!imagePath.startsWith(root)) {
-                throw new UserDataExportException("Image path lies outside storage root: " + imagePath);
-            }
-
-            if (!Files.exists(imagePath)) {
-                throw new UserDataExportException("Image file not found: " + imagePath);
-            }
-
+            Path imagePath = resolveImagePath(relativePath);
+            Path relative = Paths.get(relativePath);
             String fileName = FileUtil.sanitizeFilename(imagePath.getFileName().toString());
-            String parentPath = relative.getParent() != null ? relative.getParent().toString().replace("\\", "/") + "/" : "";
-            String entryPath = "images/" + parentPath + fileName;
+            String entryPath = buildEntryPath(relative, fileName);
 
             try (InputStream inputStream = Files.newInputStream(imagePath)) {
                 zipExportService.addFileToZip(zipOut, entryPath, inputStream);
@@ -666,5 +649,38 @@ public class UserDataExportService {
         } catch (Exception e) {
             throw new UserDataExportException("Failed to add image to ZIP export", e);
         }
+    }
+
+    private String extractRelativePath(String url) {
+        if (url == null || url.isBlank()) {
+            return null;
+        }
+
+        String relativePath = url.startsWith("/images/") ? url.substring("/images/".length()) : url;
+        Path relative = Paths.get(relativePath).normalize();
+        if (relative.isAbsolute() || relative.startsWith("..")) {
+            throw new UserDataExportException("Invalid image path: " + relativePath);
+        }
+
+        return relativePath;
+    }
+
+    private Path resolveImagePath(String relativePath) {
+        Path root = Paths.get(imageRoot).toAbsolutePath().normalize();
+        Path imagePath = root.resolve(relativePath).normalize();
+        if (!imagePath.startsWith(root)) {
+            throw new UserDataExportException("Image path lies outside storage root: " + imagePath);
+        }
+
+        if (!Files.exists(imagePath)) {
+            throw new UserDataExportException("Image file not found: " + imagePath);
+        }
+
+        return imagePath;
+    }
+
+    private String buildEntryPath(Path relative, String fileName) {
+        String parentPath = relative.getParent() != null ? relative.getParent().toString().replace("\\", "/") + "/" : "";
+        return "images/" + parentPath + fileName;
     }
 }

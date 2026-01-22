@@ -73,13 +73,11 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     @Value("${aet.data-export.root}")
     private String exportRootConfig;
 
-    private AsyncEmailSender asyncEmailSenderMock;
-
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
         api.withoutPostProcessors();
-        asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+        AsyncEmailSender asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
         ReflectionTestUtils.setField(userDataExportService, "sender", asyncEmailSenderMock);
         cleanExportRoot();
     }
