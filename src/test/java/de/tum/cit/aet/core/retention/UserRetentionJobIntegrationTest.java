@@ -8,7 +8,6 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
-import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -48,7 +47,12 @@ class UserRetentionJobIntegrationTest {
 
     @Test
     void shouldRespectDryRunWhenEnabled() {
-        User user = saveApplicant("dryrun-job@test.local", LocalDateTime.now(ZoneOffset.UTC).minusDays(2));
+        User user = ApplicantTestData.savedApplicantWithLastActivity(
+            applicantRepository,
+            userRepository,
+            "dryrun-job@test.local",
+            LocalDateTime.now(ZoneOffset.UTC).minusDays(2)
+        );
 
         properties.setDryRun(true);
         userRetentionJob.deleteUserData();
@@ -65,8 +69,18 @@ class UserRetentionJobIntegrationTest {
 
     @Test
     void shouldOnlyDeleteUsersBeforeCutoff() {
-        User oldUser = saveApplicant("old-user@test.local", LocalDateTime.now(ZoneOffset.UTC).minusDays(3));
-        User recentUser = saveApplicant("recent-user@test.local", LocalDateTime.now(ZoneOffset.UTC).minusHours(6));
+        User oldUser = ApplicantTestData.savedApplicantWithLastActivity(
+            applicantRepository,
+            userRepository,
+            "old-user@test.local",
+            LocalDateTime.now(ZoneOffset.UTC).minusDays(3)
+        );
+        User recentUser = ApplicantTestData.savedApplicantWithLastActivity(
+            applicantRepository,
+            userRepository,
+            "recent-user@test.local",
+            LocalDateTime.now(ZoneOffset.UTC).minusHours(6)
+        );
 
         userRetentionJob.deleteUserData();
 
@@ -75,16 +89,6 @@ class UserRetentionJobIntegrationTest {
 
         assertThat(userRepository.existsById(recentUser.getUserId())).isTrue();
         assertThat(applicantRepository.findById(recentUser.getUserId())).isPresent();
-    }
-
-    private User saveApplicant(String email, LocalDateTime lastActivityAt) {
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), email, "Applicant", "User");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        applicantUser.setLastActivityAt(lastActivityAt);
-        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
-        ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
-        return savedApplicantUser;
     }
 
     private void ensureDeletedUserExists() {

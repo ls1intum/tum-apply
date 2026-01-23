@@ -6,6 +6,9 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.testdata.UserTestData;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -153,6 +156,32 @@ public final class ApplicantTestData {
         User savedUser = userRepo.save(applicantUser);
 
         return savedWithExistingUser(repo, savedUser);
+    }
+
+    /**
+     * Saves a new applicant user (with APPLICANT role) using the given email, and creates the Applicant entity.
+     */
+    public static User savedApplicant(ApplicantRepository applicantRepository, UserRepository userRepository, String email) {
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), email, "Applicant", "User");
+        attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+        savedWithExistingUser(applicantRepository, savedApplicantUser);
+        return savedApplicantUser;
+    }
+
+    /**
+     * Saves a new applicant user with lastActivityAt set, and creates the Applicant entity.
+     */
+    public static User savedApplicantWithLastActivity(
+        ApplicantRepository applicantRepository,
+        UserRepository userRepository,
+        String email,
+        LocalDateTime lastActivityAt
+    ) {
+        User savedApplicantUser = savedApplicant(applicantRepository, userRepository, email);
+        savedApplicantUser.setLastActivityAt(lastActivityAt);
+        return userRepository.saveAndFlush(savedApplicantUser);
     }
 
     // --- Attach roles---------------------------------------------------------------------------

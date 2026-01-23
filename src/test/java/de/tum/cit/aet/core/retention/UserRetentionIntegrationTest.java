@@ -32,13 +32,11 @@ import de.tum.cit.aet.notification.domain.EmailSetting;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
-import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
@@ -154,8 +152,8 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldDeleteApplicantAndAllAssociatedData() throws Exception {
-        User professor = saveProfessor(researchGroup);
-        User savedApplicantUser = saveApplicant("applicant@test.local");
+        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
+        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "applicant@test.local");
         UUID applicantId = savedApplicantUser.getUserId();
 
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
@@ -187,12 +185,9 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldAnonymizeProfessorDataAndDeleteUser() {
-        User professor = saveProfessor(researchGroup);
+        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
         UUID professorId = professor.getUserId();
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "applicant2@test.local", "App", "User");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "applicant2@test.local");
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
 
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
@@ -227,13 +222,10 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldNotChangeAnythingOnDryRun() {
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "dryrun@test.local", "Dry", "Run");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "dryrun@test.local");
         UUID applicantId = savedApplicantUser.getUserId();
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
-        User professor = saveProfessor(researchGroup);
+        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
         Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
 
@@ -256,7 +248,7 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldSkipAdminUserAndKeepData() {
-        User admin = saveAdmin();
+        User admin = UserTestData.savedAdmin(userRepository);
         UUID adminId = admin.getUserId();
 
         UserSetting setting = new UserSetting(admin, "theme", "dark");
@@ -314,13 +306,10 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldProcessMixedBatchAndBeIdempotent() {
-        User professor = saveProfessor(researchGroup);
+        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
         UUID professorId = professor.getUserId();
 
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "batch-applicant@test.local", "Batch", "Applicant");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "batch-applicant@test.local");
         UUID applicantId = savedApplicantUser.getUserId();
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
 
@@ -382,49 +371,6 @@ class UserRetentionIntegrationTest {
         deleted.setLastName("User");
         deleted.setSelectedLanguage("en");
         userRepository.save(deleted);
-    }
-
-    private User saveProfessor(ResearchGroup rg) {
-        User professor = new User();
-        professor.setUserId(UUID.randomUUID());
-        professor.setEmail("professor-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
-        professor.setFirstName("Prof");
-        professor.setLastName("Tester");
-        professor.setSelectedLanguage("en");
-        professor.setResearchGroup(rg);
-        professor.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-
-        UserResearchGroupRole role = new UserResearchGroupRole();
-        role.setUser(professor);
-        role.setResearchGroup(rg);
-        role.setRole(UserRole.PROFESSOR);
-        professor.getResearchGroupRoles().add(role);
-
-        return userRepository.saveAndFlush(professor);
-    }
-
-    private User saveAdmin() {
-        User admin = new User();
-        admin.setUserId(UUID.randomUUID());
-        admin.setEmail("admin-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
-        admin.setFirstName("Admin");
-        admin.setLastName("Tester");
-        admin.setSelectedLanguage("en");
-        admin.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-
-        UserResearchGroupRole role = new UserResearchGroupRole();
-        role.setUser(admin);
-        role.setRole(UserRole.ADMIN);
-        admin.getResearchGroupRoles().add(role);
-
-        return userRepository.saveAndFlush(admin);
-    }
-
-    private User saveApplicant(String email) {
-        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), email, "App", "User");
-        ApplicantTestData.attachApplicantRole(applicantUser);
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        return userRepository.saveAndFlush(applicantUser);
     }
 
     private ApplicationReview saveReview(Application application, User professor) {
