@@ -1,6 +1,7 @@
-import { Component, ViewEncapsulation, inject } from '@angular/core';
+import { Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { UserDataExportResourceApiService } from 'app/generated/api/api';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -17,10 +18,31 @@ import TranslateDirective from '../../language/translate.directive';
   encapsulation: ViewEncapsulation.None,
 })
 export class PrivacyPageComponent {
+  readonly exportButtonDisabled = computed(
+    () => this.currentExportStatus() === DataExportStatusDTO.StatusEnum.InCreation || this.cooldownSeconds() > 0,
+  );
+  readonly tooltip = computed(() => {
+    if (!this.exportButtonDisabled()) return undefined;
+
+    if (this.currentExportStatus() === DataExportStatusDTO.StatusEnum.InCreation) {
+      return this.translateService.instant('privacy.export.tooltip.inCreation');
+    } else if (this.cooldownSeconds() > 0) {
+      const days = Math.ceil(this.cooldownSeconds() / (24 * 60 * 60));
+      return this.translateService.instant('privacy.export.tooltip.cooldown', { days: days.toString() });
+    }
+
+    return undefined;
+  });
+
   protected readonly userDataExportService = inject(UserDataExportResourceApiService);
   private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+  private readonly currentExportStatus = signal<DataExportStatusDTO.StatusEnum | null | undefined>(null);
+  private readonly cooldownSeconds = signal<number>(0);
 
-  private currentExportStatus: DataExportStatusDTO.StatusEnum | null | undefined = null;
+  constructor() {
+    void this.refreshStatus();
+  }
 
   /**
    * Trigger user data export. Implementation mirrors the download approach used in
@@ -28,41 +50,42 @@ export class PrivacyPageComponent {
    * filename, create object URL for the blob, call `a.click()` and revoke the URL.
    */
   async exportUserData(): Promise<void> {
-    try {
-      await this.requestDataExport();
-      this.currentExportStatus = DataExportStatusDTO.StatusEnum.InCreation;
-    } catch {
-      this.toastService.showErrorKey('privacy.export.requestFailed');
+    if (this.exportButtonDisabled()) {
+      return;
     }
-  }
 
-  exportButtonDisabled(): boolean {
-    return this.currentExportStatus === DataExportStatusDTO.StatusEnum.InCreation;
-  }
+    this.currentExportStatus.set(DataExportStatusDTO.StatusEnum.InCreation);
 
-  private async requestDataExport(): Promise<void> {
     try {
       await firstValueFrom(this.userDataExportService.requestDataExport());
+      await this.refreshStatus();
       this.toastService.showInfoKey('privacy.export.requested');
     } catch (error) {
-      this.handleRequestError(error);
+      this.currentExportStatus.set(null);
+      if (error instanceof HttpErrorResponse) {
+        switch (error.status) {
+          case 409:
+            this.toastService.showErrorKey('privacy.export.requestFailed409');
+            break;
+          case 429:
+            this.toastService.showErrorKey('privacy.export.requestFailed429');
+            break;
+          default:
+            this.toastService.showErrorKey('privacy.export.requestFailed');
+        }
+      } else {
+        this.toastService.showErrorKey('privacy.export.requestFailed');
+      }
     }
   }
 
-  private handleRequestError(error: any): void {
-    if (error instanceof HttpErrorResponse) {
-      switch (error.status) {
-        case 409:
-          this.toastService.showErrorKey('privacy.export.requestFailed409');
-          break;
-        case 429:
-          this.toastService.showErrorKey('privacy.export.requestFailed429');
-          break;
-        default:
-          this.toastService.showErrorKey('privacy.export.requestFailed');
-      }
-    } else {
-      this.toastService.showErrorKey('privacy.export.requestFailed');
+  private async refreshStatus(): Promise<void> {
+    try {
+      const status = await firstValueFrom(this.userDataExportService.getDataExportStatus());
+      this.currentExportStatus.set(status.status);
+      this.cooldownSeconds.set(status.cooldownSeconds ?? 0);
+    } catch {
+      // ignore status fetch errors
     }
   }
 }

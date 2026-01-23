@@ -63,6 +63,10 @@
       "requestFailed429": {
         "summary": "Limit: ein Export pro Woche",
         "detail": "Du kannst den Datenexport nur einmal pro Woche anfordern. Bitte versuche es nächste Woche erneut."
+      },
+      "tooltip": {
+        "inCreation": "Ein Export wird derzeit vorbereitet. Du erhältst eine E-Mail, sobald er bereit ist.",
+        "cooldown": "Du kannst einen weiteren Export in {{days}} Tagen anfordern. Eine E-Mail wurde mit deinen Daten versendet."
       }
     },
     "privacyConsent": {

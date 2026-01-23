@@ -63,6 +63,10 @@
       "requestFailed429": {
         "summary": "Limit: one export per week",
         "detail": "You can request the data export only once per week. Please try again next week."
+      },
+      "tooltip": {
+        "inCreation": "An export is currently being prepared. You will receive an email once it's ready.",
+        "cooldown": "You can request another export in {{days}} days. An email was sent with your data."
       }
     },
     "privacyConsent": {
