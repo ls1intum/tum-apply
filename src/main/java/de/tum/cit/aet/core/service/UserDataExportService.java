@@ -63,6 +63,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
@@ -578,7 +579,7 @@ public class UserDataExportService {
                         " " +
                         comment.getApplication().getApplicant().getUser().getLastName(),
                     comment.getMessage(),
-                    comment.getCreatedAt()
+                    comment.getCreatedAt().toInstant(ZoneOffset.UTC)
                 )
             )
             .toList();
@@ -595,7 +596,7 @@ public class UserDataExportService {
                         " " +
                         rating.getApplication().getApplicant().getUser().getLastName(),
                     rating.getRating(),
-                    rating.getCreatedAt()
+                    rating.getCreatedAt().toInstant(ZoneOffset.UTC)
                 )
             )
             .toList();
@@ -604,8 +605,8 @@ public class UserDataExportService {
     private InterviewSlotExportDTO mapInterviewSlot(InterviewSlot slot) {
         return new InterviewSlotExportDTO(
             slot.getInterviewProcess().getJob().getTitle(),
-            slot.getStartDateTime(),
-            slot.getEndDateTime(),
+            slot.getStartDateTime().atZone(ZoneId.of("Europe/Berlin")),
+            slot.getEndDateTime().atZone(ZoneId.of("Europe/Berlin")),
             slot.getLocation(),
             slot.getStreamLink(),
             slot.getIsBooked()
