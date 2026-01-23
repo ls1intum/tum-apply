@@ -29,8 +29,9 @@ public record SchoolDTO(
             return null;
         }
 
-        List<DepartmentShortDTO> departmentDTOs =
-            departments != null ? departments.stream().map(DepartmentShortDTO::fromEntity).collect(Collectors.toList()) : List.of();
+        List<DepartmentShortDTO> departmentDTOs = departments != null
+            ? departments.stream().map(DepartmentShortDTO::fromEntity).collect(Collectors.toList())
+            : List.of();
 
         return new SchoolDTO(school.getSchoolId(), school.getName(), school.getAbbreviation(), departmentDTOs);
     }
