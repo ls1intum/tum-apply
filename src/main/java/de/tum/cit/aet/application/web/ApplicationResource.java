@@ -7,6 +7,7 @@ import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.ApplicantOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Authenticated;
+import de.tum.cit.aet.usermanagement.dto.ApplicantDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/applications")
 public class ApplicationResource {
@@ -32,6 +35,33 @@ public class ApplicationResource {
     @Autowired
     public ApplicationResource(ApplicationService applicationService) {
         this.applicationService = applicationService;
+    }
+
+    /**
+     * Retrieves the current user's applicant profile with personal information.
+     *
+     * @return ApplicantDTO with current user and applicant data
+     */
+    @ApplicantOrAdmin
+    @GetMapping("/profile")
+    public ResponseEntity<ApplicantDTO> getApplicantProfile() {
+        log.info("GET /api/applications/profile - Retrieving applicant profile for current user");
+        ApplicantDTO profile = applicationService.getApplicantProfile();
+        return ResponseEntity.ok(profile);
+    }
+
+    /**
+     * Updates the current user's applicant profile with personal information.
+     *
+     * @param applicantDTO the updated applicant data
+     * @return ApplicantDTO with updated user and applicant data
+     */
+    @ApplicantOrAdmin
+    @PutMapping("/profile")
+    public ResponseEntity<ApplicantDTO> updateApplicantProfile(@Valid @RequestBody ApplicantDTO applicantDTO) {
+        log.info("PUT /api/applications/profile - Updating applicant profile for current user");
+        ApplicantDTO updatedProfile = applicationService.updateApplicantProfile(applicantDTO);
+        return ResponseEntity.ok(updatedProfile);
     }
 
     /**
