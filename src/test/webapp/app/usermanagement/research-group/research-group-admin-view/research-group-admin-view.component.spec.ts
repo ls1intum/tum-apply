@@ -80,7 +80,7 @@ describe('ResearchGroupAdminView', () => {
         provideTranslateMock(mockTranslateService),
         provideToastServiceMock(mockToastService),
         provideFontAwesomeTesting(),
-        { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: Router, useValue: { navigate: vi.fn(), events: of() } },
       ],
     }).compileComponents();
 
@@ -573,6 +573,98 @@ describe('ResearchGroupAdminView', () => {
       const deniedEl = deniedRow as Element;
       const manageButton = deniedEl.querySelector('[aria-label="researchGroup.members.manageMembers"]');
       expect(manageButton).toBeNull();
+    });
+  });
+
+  describe('Action menu and confirm dialogs', () => {
+    it('builds menu items per status and triggers confirm dialogs', async () => {
+      component.researchGroups.set([mockResearchGroup1, mockResearchGroup2, mockResearchGroup3]);
+      fixture.detectChanges();
+
+      const manageMembersSpy = vi.spyOn(component, 'onManageMembers');
+      const approveConfirmSpy = vi.spyOn(component.approveDialog(), 'confirm');
+      const denyConfirmSpy = vi.spyOn(component.denyDialog(), 'confirm');
+      const withdrawConfirmSpy = vi.spyOn(component.withdrawDialog(), 'confirm');
+
+      const menuMap = component.actionMenuItems();
+
+      const draftItems = menuMap.get('rg-1') ?? [];
+      const activeItems = menuMap.get('rg-2') ?? [];
+      const deniedItems = menuMap.get('rg-3') ?? [];
+
+      expect(draftItems.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.confirm', 'button.deny']);
+      expect(activeItems.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.withdraw']);
+      expect(deniedItems.map(item => item.label)).toEqual(['button.confirm']);
+
+      draftItems.find(item => item.label === 'researchGroup.members.manageMembers')?.command?.();
+      expect(manageMembersSpy).toHaveBeenCalledWith('rg-1');
+
+      draftItems.find(item => item.label === 'button.confirm')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-1');
+      expect(approveConfirmSpy).toHaveBeenCalled();
+
+      draftItems.find(item => item.label === 'button.deny')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-1');
+      expect(denyConfirmSpy).toHaveBeenCalled();
+
+      activeItems.find(item => item.label === 'button.withdraw')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-2');
+      expect(withdrawConfirmSpy).toHaveBeenCalled();
+
+      deniedItems.find(item => item.label === 'button.confirm')?.command?.();
+      expect(component.currentResearchGroupId()).toBe('rg-3');
+      expect(approveConfirmSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('executes confirm handlers when currentResearchGroupId is set', () => {
+      const approveSpy = vi.spyOn(component, 'onApproveResearchGroup').mockResolvedValue(undefined);
+      const denySpy = vi.spyOn(component, 'onDenyResearchGroup').mockResolvedValue(undefined);
+      const withdrawSpy = vi.spyOn(component, 'onWithdrawResearchGroup').mockResolvedValue(undefined);
+
+      component.currentResearchGroupId.set('rg-1');
+      component.onConfirmApprove();
+      expect(approveSpy).toHaveBeenCalledWith('rg-1');
+
+      component.currentResearchGroupId.set('rg-2');
+      component.onConfirmDeny();
+      expect(denySpy).toHaveBeenCalledWith('rg-2');
+
+      component.currentResearchGroupId.set('rg-3');
+      component.onConfirmWithdraw();
+      expect(withdrawSpy).toHaveBeenCalledWith('rg-3');
+    });
+
+    it('does not execute confirm handlers when currentResearchGroupId is missing', () => {
+      const approveSpy = vi.spyOn(component, 'onApproveResearchGroup').mockResolvedValue(undefined);
+      const denySpy = vi.spyOn(component, 'onDenyResearchGroup').mockResolvedValue(undefined);
+      const withdrawSpy = vi.spyOn(component, 'onWithdrawResearchGroup').mockResolvedValue(undefined);
+
+      component.currentResearchGroupId.set(undefined);
+      component.onConfirmApprove();
+      component.onConfirmDeny();
+      component.onConfirmWithdraw();
+
+      expect(approveSpy).not.toHaveBeenCalled();
+      expect(denySpy).not.toHaveBeenCalled();
+      expect(withdrawSpy).not.toHaveBeenCalled();
+    });
+
+    it('returns empty menu items when research group id is missing', () => {
+      component.researchGroups.set([{ ...mockResearchGroup1, id: undefined }]);
+      const items = component.getMenuItems()({ ...mockResearchGroup1, id: undefined });
+      expect(items).toEqual([]);
+    });
+
+    it('returns menu items when research group id is present', () => {
+      component.researchGroups.set([mockResearchGroup2]);
+      const items = component.getMenuItems()(mockResearchGroup2);
+      expect(items.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.withdraw']);
+    });
+
+    it('returns empty menu items when id is present but not in menu map', () => {
+      component.researchGroups.set([]);
+      const items = component.getMenuItems()(mockResearchGroup2);
+      expect(items).toEqual([]);
     });
   });
 });
