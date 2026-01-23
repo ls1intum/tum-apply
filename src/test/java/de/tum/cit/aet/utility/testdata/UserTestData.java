@@ -113,13 +113,6 @@ public final class UserTestData {
         return repo.save(newProfessor(rg));
     }
 
-    /** Saved professor with a random email to avoid unique conflicts. */
-    public static User savedProfessorWithRandomEmail(UserRepository repo, ResearchGroup rg) {
-        User prof = newProfessor(rg);
-        prof.setEmail("professor-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
-        return repo.saveAndFlush(prof);
-    }
-
     public static User savedEmployee(UserRepository repo, ResearchGroup rg) {
         return repo.save(newEmployee(rg));
     }
@@ -159,10 +152,31 @@ public final class UserTestData {
         );
     }
 
-    /** Saved admin with a random email and ADMIN role. */
-    public static User savedAdmin(UserRepository repo) {
-        User admin = newUser();
+    public static User saveProfessor(ResearchGroup rg, UserRepository userRepository) {
+        User professor = new User();
+        professor.setUserId(UUID.randomUUID());
+        professor.setEmail("professor-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
+        professor.setFirstName("Prof");
+        professor.setLastName("Tester");
+        professor.setSelectedLanguage("en");
+        professor.setResearchGroup(rg);
+        professor.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+
+        UserResearchGroupRole role = new UserResearchGroupRole();
+        role.setUser(professor);
+        role.setResearchGroup(rg);
+        role.setRole(UserRole.PROFESSOR);
+        professor.getResearchGroupRoles().add(role);
+
+        return userRepository.saveAndFlush(professor);
+    }
+
+    public static User saveAdmin(UserRepository userRepository) {
+        User admin = new User();
+        admin.setUserId(UUID.randomUUID());
         admin.setEmail("admin-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
+        admin.setFirstName("Admin");
+        admin.setLastName("Tester");
         admin.setSelectedLanguage("en");
         admin.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
 
@@ -171,7 +185,7 @@ public final class UserTestData {
         role.setRole(UserRole.ADMIN);
         admin.getResearchGroupRoles().add(role);
 
-        return repo.saveAndFlush(admin);
+        return userRepository.saveAndFlush(admin);
     }
 
     /**

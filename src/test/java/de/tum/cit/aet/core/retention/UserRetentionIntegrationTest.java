@@ -32,11 +32,13 @@ import de.tum.cit.aet.notification.domain.EmailSetting;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
@@ -152,8 +154,8 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldDeleteApplicantAndAllAssociatedData() throws Exception {
-        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
-        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "applicant@test.local");
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+        User savedApplicantUser = ApplicantTestData.saveApplicant("applicant@test.local", userRepository);
         UUID applicantId = savedApplicantUser.getUserId();
 
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
@@ -185,9 +187,12 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldAnonymizeProfessorDataAndDeleteUser() {
-        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         UUID professorId = professor.getUserId();
-        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "applicant2@test.local");
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "applicant2@test.local", "App", "User");
+        ApplicantTestData.attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
 
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
@@ -222,10 +227,13 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldNotChangeAnythingOnDryRun() {
-        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "dryrun@test.local");
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "dryrun@test.local", "Dry", "Run");
+        ApplicantTestData.attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
         UUID applicantId = savedApplicantUser.getUserId();
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
-        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job", JobState.PUBLISHED, null);
         Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
 
@@ -248,7 +256,7 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldSkipAdminUserAndKeepData() {
-        User admin = UserTestData.savedAdmin(userRepository);
+        User admin = UserTestData.saveAdmin(userRepository);
         UUID adminId = admin.getUserId();
 
         UserSetting setting = new UserSetting(admin, "theme", "dark");
@@ -306,10 +314,13 @@ class UserRetentionIntegrationTest {
 
     @Test
     void shouldProcessMixedBatchAndBeIdempotent() {
-        User professor = UserTestData.savedProfessorWithRandomEmail(userRepository, researchGroup);
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         UUID professorId = professor.getUserId();
 
-        User savedApplicantUser = ApplicantTestData.savedApplicant(applicantRepository, userRepository, "batch-applicant@test.local");
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), "batch-applicant@test.local", "Batch", "Applicant");
+        ApplicantTestData.attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
         UUID applicantId = savedApplicantUser.getUserId();
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
 
