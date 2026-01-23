@@ -1,50 +1,57 @@
-<div class="relative min-w-[13.75rem] border border-border-default rounded-lg p-2.5">
-  <!-- 3-Dots Menu Button -->
-  <button
-    class="absolute top-2 right-2 p-1 hover:bg-background-surface rounded-full transition-colors z-10"
-    (click)="toggleMenu(); $event.stopPropagation()"
-  >
-    <fa-icon icon="ellipsis-vertical" class="text-[var(--p-neutral-500)] text-xs" />
-  </button>
-
-  <!-- Dropdown Menu -->
-  @if (showMenu()) {
-    <div
-      class="absolute top-9 right-2 shadow-lg rounded-md bg-background-default border border-border-default z-20 min-w-[8.75rem] overflow-hidden"
+<div
+  class="relative min-w-[13.75rem] border rounded-lg p-2.5 transition-colors"
+  [class.border-border-default]="!isPast()"
+  [class.border-neutral-200]="isPast()"
+  [class.bg-neutral-50]="isPast()"
+>
+  <!-- 3-Dots Menu Button (Hidden for past slots) -->
+  @if (!isPast()) {
+    <button
+      class="absolute top-2 right-2 p-1 hover:bg-background-surface rounded-full transition-colors z-10"
+      (click)="toggleMenu(); $event.stopPropagation()"
     >
-      <jhi-button
-        class="w-full block"
-        [fullWidth]="true"
-        variant="text"
-        icon="pencil"
-        label="button.edit"
-        [shouldTranslate]="true"
-        [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-background-surface flex items-center gap-2 text-text-primary transition-colors justify-start border-none rounded-none'"
-        (click)="onEdit()"
-      />
+      <fa-icon icon="ellipsis-vertical" class="text-[var(--p-neutral-500)] text-xs" />
+    </button>
 
-      <jhi-button
-        class="w-full block"
-        [fullWidth]="true"
-        variant="text"
-        icon="trash"
-        label="button.delete"
-        [shouldTranslate]="true"
-        [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-negative-hover flex items-center gap-2 text-negative-default transition-colors justify-start border-none rounded-none'"
-        (click)="deleteDialog.confirm()"
-      />
+    <!-- Dropdown Menu -->
+    @if (showMenu()) {
+      <div
+        class="absolute top-9 right-2 shadow-lg rounded-md bg-background-default border border-border-default z-20 min-w-[8.75rem] overflow-hidden"
+      >
+        <jhi-button
+          class="w-full block"
+          [fullWidth]="true"
+          variant="text"
+          icon="pencil"
+          label="button.edit"
+          [shouldTranslate]="true"
+          [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-background-surface flex items-center gap-2 text-text-primary transition-colors justify-start border-none rounded-none'"
+          (click)="onEdit()"
+        />
 
-      <jhi-confirm-dialog
-        #deleteDialog
-        [label]="'button.delete' | translate"
-        [header]="'interview.slots.delete.confirm.header' | translate"
-        [message]="'interview.slots.delete.confirm.message' | translate"
-        [severity]="'danger'"
-        [confirmIcon]="'trash'"
-        [showOpenButton]="false"
-        (confirmed)="onDelete()"
-      />
-    </div>
+        <jhi-button
+          class="w-full block"
+          [fullWidth]="true"
+          variant="text"
+          icon="trash"
+          label="button.delete"
+          [shouldTranslate]="true"
+          [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-negative-hover flex items-center gap-2 text-negative-default transition-colors justify-start border-none rounded-none'"
+          (click)="deleteDialog.confirm()"
+        />
+
+        <jhi-confirm-dialog
+          #deleteDialog
+          [label]="'button.delete' | translate"
+          [header]="'interview.slots.delete.confirm.header' | translate"
+          [message]="'interview.slots.delete.confirm.message' | translate"
+          [severity]="'danger'"
+          [confirmIcon]="'trash'"
+          [showOpenButton]="false"
+          (confirmed)="onDelete()"
+        />
+      </div>
+    }
   }
 
   <!-- Card Content -->
@@ -52,9 +59,12 @@
     @if (isBooked()) {
       <!-- Booked Slot: Time + Badge -->
       <div class="flex items-center justify-between">
-        <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
+        <span class="text-sm font-semibold" [class.text-text-primary]="!isPast()" [class.text-text-disabled]="isPast()">
+          {{ timeRange() }}
+        </span>
         <span
           class="bg-positive-100 text-positive-default px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
+          [class.opacity-60]="isPast()"
           jhiTranslate="interview.slots.status.booked"
         >
           booked
@@ -63,8 +73,10 @@
 
       <!-- Applicant Name + Location -->
       <div class="flex items-center justify-between gap-2">
-        <span class="text-xs text-text-primary font-medium">{{ applicantName() }}</span>
-        <div class="flex items-center gap-1 text-xs text-text-secondary">
+        <span class="text-xs font-medium" [class.text-text-primary]="!isPast()" [class.text-text-disabled]="isPast()">
+          {{ applicantName() }}
+        </span>
+        <div class="flex items-center gap-1 text-xs" [class.text-text-secondary]="!isPast()" [class.text-text-disabled]="isPast()">
           <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
           <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
             {{ isVirtual() ? 'virtual' : 'in-person' }}
@@ -76,8 +88,10 @@
     @if (!isBooked()) {
       <!-- Available Slot: Time + Location -->
       <div class="flex items-center justify-between gap-2">
-        <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
-        <div class="flex items-center gap-1 text-xs text-text-secondary">
+        <span class="text-sm font-semibold" [class.text-text-primary]="!isPast()" [class.text-text-disabled]="isPast()">
+          {{ timeRange() }}
+        </span>
+        <div class="flex items-center gap-1 text-xs" [class.text-text-secondary]="!isPast()" [class.text-text-disabled]="isPast()">
           <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
           <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
             {{ isVirtual() ? 'virtual' : 'in-person' }}
@@ -85,17 +99,19 @@
         </div>
       </div>
 
-      <!-- Assign Button -->
-      <jhi-button
-        class="w-full"
-        [fullWidth]="true"
-        variant="text"
-        icon="plus"
-        label="button.assign"
-        [shouldTranslate]="true"
-        [styleClass]="'h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all flex items-center justify-center'"
-        (click)="onAssign()"
-      />
+      <!-- Assign Button (Only for future slots) -->
+      @if (!isPast()) {
+        <jhi-button
+          class="w-full"
+          [fullWidth]="true"
+          variant="text"
+          icon="plus"
+          label="button.assign"
+          [shouldTranslate]="true"
+          [styleClass]="'h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all flex items-center justify-center'"
+          (click)="onAssign()"
+        />
+      }
     }
   </div>
 </div>

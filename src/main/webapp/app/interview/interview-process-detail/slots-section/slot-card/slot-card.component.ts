@@ -35,6 +35,13 @@ export class SlotCardComponent {
     return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
   });
 
+  isPast = computed(() => {
+    if (!this.slot().startDateTime) return false;
+    const now = new Date();
+    const start = new Date(this.slot().startDateTime!);
+    return start < now;
+  });
+
   private readonly elementRef = inject(ElementRef);
 
   handleOutsideClick(event: Event): void {
@@ -56,12 +63,10 @@ export class SlotCardComponent {
   onDelete(): void {
     this.deleteSlot.emit(this.slot());
     this.showMenu.set(false);
-    // TODO: Open Delete Confirmation
   }
 
   onAssign(): void {
     this.assignApplicant.emit(this.slot());
     this.showMenu.set(false);
-    // TODO: Open Assign Modal
   }
 }
