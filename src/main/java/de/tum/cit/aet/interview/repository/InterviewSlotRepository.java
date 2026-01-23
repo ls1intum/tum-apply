@@ -181,17 +181,6 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable   pagination information
      * @return page of available future slots ordered by start time ascending
      */
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.isBooked = false
-        AND s.startDateTime >= :now
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
-        ORDER BY s.startDateTime ASC
-        """
-    )
     Page<InterviewSlot> findAvailableSlotsByProcessIdAndMonth(
         @Param("processId") UUID processId,
         @Param("now") Instant now,
@@ -199,4 +188,22 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("monthEnd") Instant monthEnd,
         Pageable pageable
     );
+
+    /**
+     * Counts the number of availble (unbooked) future slots for a process.
+     * Used to warn professors if they invite more applicants than available slots.
+     *
+     * @param processId the ID of the interview process
+     * @param now       the current timestamp to filter out past slots
+     * @return the count of available future slots
+     */
+    @Query(
+        """
+        SELECT COUNT(s) FROM InterviewSlot s
+        WHERE s.interviewProcess.id = :processId
+        AND s.startDateTime > :now
+        AND s.isBooked = false
+        """
+    )
+    long countFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now);
 }
