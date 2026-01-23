@@ -53,6 +53,10 @@
       "showMoreSingular": "more slot",
       "showMorePlural": "more slots",
       "showLess": "Show less",
+      "noFutureSlots": {
+        "title": "Currently no slots available",
+        "description": "There are currently no future slots. Add new slots so that applicants can book."
+      },
       "error": {
         "loadFailed": {
           "summary": "Failed to load interview slots",
@@ -240,6 +244,11 @@
         "error": {
           "summary": "Send Failed",
           "detail": "Failed to send invitation. Please try again or contact an admin."
+        },
+        "insufficientSlots": {
+          "header": "Insufficient Slots",
+          "message": "You are about to invite applicants, but there might not be enough future slots available. Do you want to add more slots first?",
+          "addSlots": "Add Slots"
         }
       }
     },

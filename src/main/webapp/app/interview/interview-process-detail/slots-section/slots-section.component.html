@@ -37,6 +37,7 @@
       <!-- Month Navigation -->
       <jhi-month-navigation
         [currentMonth]="currentMonth()"
+        [showAddButton]="hasFutureSlots()"
         (previousMonth)="previousMonth()"
         (nextMonth)="nextMonth()"
         (addSlots)="openCreateSlotsModal()"
@@ -95,12 +96,33 @@
           </div>
         </div>
       } @else {
-        <!-- No slots in current month (but slots exist elsewhere) -->
-        <div class="text-center py-12 text-text-secondary">
-          <fa-icon icon="calendar-xmark" class="text-5xl mb-4 block" />
-          <p class="text-lg" [jhiTranslate]="'interview.detail.noSlotsInMonth'" [translateValues]="{ month: currentMonth() }">
-            No slots in {{ currentMonth() }}
-          </p>
+        <!-- Monthly Empty State -->
+        <div class="text-center py-12">
+          @if (!hasFutureSlots()) {
+            <!-- No future slots at all-> Show Call to Action -->
+            <div class="flex flex-col items-center gap-3">
+              <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
+              <div class="space-y-1">
+                <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">
+                  No future slots available
+                </h3>
+                <p class="text-sm text-text-secondary" jhiTranslate="interview.slots.noFutureSlots.description">
+                  Add new slots to invite applicants.
+                </p>
+              </div>
+              <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus" (click)="openCreateSlotsModal()" />
+            </div>
+          } @else {
+            <!-- Has future slots other months, just not here -->
+            <fa-icon icon="calendar-xmark" class="text-5xl mb-4 block text-text-tertiary" />
+            <p
+              class="text-lg text-text-secondary"
+              [jhiTranslate]="'interview.detail.noSlotsInMonth'"
+              [translateValues]="{ month: currentMonth() }"
+            >
+              No slots in {{ currentMonth() }}
+            </p>
+          }
         </div>
       }
     </div>

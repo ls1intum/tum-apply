@@ -44,6 +44,7 @@ interface GroupedSlots {
 export class SlotsSectionComponent {
   // Inputs
   processId = input.required<string>();
+  createSlotsRequest = input<number>(0);
 
   // Outputs
   slotAssigned = output();
@@ -60,8 +61,10 @@ export class SlotsSectionComponent {
   selectedSlotForAssignment = signal<InterviewSlotDTO | null>(null);
   refreshKey = signal(0);
   hasAnySlots = signal<boolean | undefined>(undefined);
+  futureSlotsCount = signal<number>(0);
 
   // Computed
+  hasFutureSlots = computed(() => this.futureSlotsCount() > 0);
   groupedSlots = computed<GroupedSlots[]>(() => {
     const slotsData = this.slots();
     if (slotsData.length === 0) return [];
@@ -154,8 +157,17 @@ export class SlotsSectionComponent {
     }
   });
 
-  private readonly checkGlobalSlotsEffect = effect(() => {
-    void this.checkGlobalSlots();
+  // Effect to update the global slot status key when processId changes
+  private readonly slotStatusEffect = effect(() => {
+    void this.refreshSlotStatus();
+  });
+
+  // Effect to open the create slots modal when requested by parent
+  private readonly createSlotsRequestEffect = effect(() => {
+    const request = this.createSlotsRequest();
+    if (request > 0) {
+      this.openCreateSlotsModal();
+    }
   });
 
   // Public methods
@@ -167,6 +179,7 @@ export class SlotsSectionComponent {
     const id = this.processId();
     if (id !== '') {
       await this.loadSlots(id, this.currentYear(), this.currentMonthNumber());
+      void this.refreshSlotStatus();
     }
   }
 
@@ -245,6 +258,7 @@ export class SlotsSectionComponent {
 
       await firstValueFrom(this.interviewService.deleteSlot(slotId));
       await this.loadSlots(this.processId(), this.currentYear(), this.currentMonthNumber());
+      void this.refreshSlotStatus();
 
       this.toastService.showSuccessKey('interview.slots.delete.success');
     } catch (error: unknown) {
@@ -273,11 +287,15 @@ export class SlotsSectionComponent {
   }
 
   // Private methods
-  private async checkGlobalSlots(): Promise<void> {
+  // Check if any slots exist (for empty state) and if future slots exist (for add button)
+  private async refreshSlotStatus(): Promise<void> {
     try {
       // Just check if any slots exist
       const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(this.processId(), undefined, undefined, 0, 1));
       this.hasAnySlots.set((response.totalElements ?? 0) > 0);
+
+      const futureCount = await firstValueFrom(this.interviewService.countAvailableFutureSlots(this.processId()));
+      this.futureSlotsCount.set(futureCount);
     } catch {
       // Ignore errors
     }

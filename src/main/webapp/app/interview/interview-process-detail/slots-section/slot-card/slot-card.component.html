@@ -1,8 +1,8 @@
 <div
-  class="relative min-w-[13.75rem] border rounded-lg p-2.5 transition-colors"
-  [class.border-border-default]="!isPast()"
-  [class.border-neutral-200]="isPast()"
-  [class.bg-neutral-50]="isPast()"
+  class="relative min-w-[13.75rem] border border-border-default rounded-lg p-2.5 transition-all"
+  [class.opacity-50]="isPast()"
+  [class.pointer-events-none]="isPast()"
+  [style.border-color]="isPast() ? 'var(--p-background-disabled)' : null"
 >
   <!-- 3-Dots Menu Button (Hidden for past slots) -->
   @if (!isPast()) {
@@ -59,12 +59,9 @@
     @if (isBooked()) {
       <!-- Booked Slot: Time + Badge -->
       <div class="flex items-center justify-between">
-        <span class="text-sm font-semibold" [class.text-text-primary]="!isPast()" [class.text-text-disabled]="isPast()">
-          {{ timeRange() }}
-        </span>
+        <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
         <span
           class="bg-positive-100 text-positive-default px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase"
-          [class.opacity-60]="isPast()"
           jhiTranslate="interview.slots.status.booked"
         >
           booked
@@ -73,10 +70,8 @@
 
       <!-- Applicant Name + Location -->
       <div class="flex items-center justify-between gap-2">
-        <span class="text-xs font-medium" [class.text-text-primary]="!isPast()" [class.text-text-disabled]="isPast()">
-          {{ applicantName() }}
-        </span>
-        <div class="flex items-center gap-1 text-xs" [class.text-text-secondary]="!isPast()" [class.text-text-disabled]="isPast()">
+        <span class="text-xs font-medium text-text-primary">{{ applicantName() }}</span>
+        <div class="flex items-center gap-1 text-xs text-text-secondary">
           <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
           <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
             {{ isVirtual() ? 'virtual' : 'in-person' }}
@@ -88,10 +83,8 @@
     @if (!isBooked()) {
       <!-- Available Slot: Time + Location -->
       <div class="flex items-center justify-between gap-2">
-        <span class="text-sm font-semibold" [class.text-text-primary]="!isPast()" [class.text-text-disabled]="isPast()">
-          {{ timeRange() }}
-        </span>
-        <div class="flex items-center gap-1 text-xs" [class.text-text-secondary]="!isPast()" [class.text-text-disabled]="isPast()">
+        <span class="text-sm font-semibold text-text-primary">{{ timeRange() }}</span>
+        <div class="flex items-center gap-1 text-xs text-text-secondary">
           <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
           <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">
             {{ isVirtual() ? 'virtual' : 'in-person' }}
@@ -99,19 +92,18 @@
         </div>
       </div>
 
-      <!-- Assign Button (Only for future slots) -->
-      @if (!isPast()) {
-        <jhi-button
-          class="w-full"
-          [fullWidth]="true"
-          variant="text"
-          icon="plus"
-          label="button.assign"
-          [shouldTranslate]="true"
-          [styleClass]="'h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all flex items-center justify-center'"
-          (click)="onAssign()"
-        />
-      }
+      <!-- Assign Button -->
+      <jhi-button
+        class="w-full"
+        [fullWidth]="true"
+        variant="text"
+        icon="plus"
+        label="button.assign"
+        [shouldTranslate]="true"
+        [disabled]="isPast()"
+        [styleClass]="'h-6 px-3 py-1 text-xs font-medium text-text-secondary border border-border-default rounded-md hover:bg-background-surface transition-all flex items-center justify-center'"
+        (click)="onAssign()"
+      />
     }
   </div>
 </div>
