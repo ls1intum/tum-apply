@@ -7,6 +7,16 @@
       [translateItems]="true"
       [width]="'8rem'"
     />
-    <jhi-button [icon]="getSortIcon()" [tooltip]="getSortTooltip()" variant="text" (click)="toggleDirection()" size="md" />
+    <jhi-button
+      [icon]="getSortIcon()"
+      [tooltip]="getSortTooltip()"
+      [tooltipOptions]="{
+        tooltipStyleClass: 'tooltip-top',
+      }"
+      [tooltipPosition]="'top'"
+      variant="text"
+      (click)="toggleDirection()"
+      size="md"
+    />
   </div>
 </div>
