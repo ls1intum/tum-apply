@@ -66,6 +66,7 @@ export class AiStreamingService {
 
     const decoder = new TextDecoder();
     let accumulatedContent = '';
+    let lineBuffer = ''; // Buffer for incomplete lines across chunk boundaries
     let done = false;
 
     while (!done) {
@@ -73,9 +74,17 @@ export class AiStreamingService {
       done = result.done;
 
       if (result.value) {
-        const chunk = decoder.decode(result.value, { stream: true });
-        // Parse SSE format: "data:content\n\n"
+        // Decode the chunk and prepend any buffered incomplete line from the previous read
+        const chunk = lineBuffer + decoder.decode(result.value, { stream: true });
+
+        // Split by newlines, but the last element might be incomplete
         const lines = chunk.split('\n');
+
+        // The last element is either empty (if chunk ended with \n) or an incomplete line
+        // Store it in the buffer for the next iteration
+        lineBuffer = lines.pop() ?? '';
+
+        // Process all complete lines
         for (const line of lines) {
           if (line.startsWith('data:')) {
             const content = line.slice(5); // Remove "data:" prefix
@@ -83,8 +92,16 @@ export class AiStreamingService {
             // Call the callback with accumulated content for real-time updates
             onChunk(accumulatedContent);
           }
+          // Ignore empty lines and other SSE fields (event:, id:, retry:)
         }
       }
+    }
+
+    // Process any remaining buffered content after stream ends
+    if (lineBuffer.startsWith('data:')) {
+      const content = lineBuffer.slice(5);
+      accumulatedContent += content;
+      onChunk(accumulatedContent);
     }
 
     return accumulatedContent;
