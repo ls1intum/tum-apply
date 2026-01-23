@@ -189,15 +189,26 @@ export class IntervieweeSectionComponent {
     }
   }
 
-  sendInvitation(interviewee: IntervieweeDTO): void {
+  async sendInvitation(interviewee: IntervieweeDTO): Promise<void> {
     const processId = this.processId();
     if (processId === '' || interviewee.id === undefined) return;
 
-    if (interviewee.state === 'INVITED') {
-      this.pendingResendId.set(interviewee.id);
-      this.resendDialog().confirm();
-    } else {
-      void this.performSendInvitation(processId, interviewee.id);
+    // Check capacity for single invitation (including resend)
+    try {
+      const futureSlots = await firstValueFrom(this.interviewService.countAvailableFutureSlots(processId));
+      if (futureSlots === 0) {
+        this.insufficientSlotsDialog().confirm();
+        return;
+      }
+
+      if (interviewee.state === 'INVITED') {
+        this.pendingResendId.set(interviewee.id);
+        this.resendDialog().confirm();
+      } else {
+        void this.performSendInvitation(processId, interviewee.id);
+      }
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
     }
   }
 
