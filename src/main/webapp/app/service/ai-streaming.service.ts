@@ -12,7 +12,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 })
 export class AiStreamingService {
   private keycloakService = inject(KeycloakAuthenticationService);
-
+  // TODO: Check if streaming can be implemented in the generated AiResourceApiService and remove this service if so.
   /**
    * Generates a job application draft using streaming SSE.
    * Calls the provided callback for each chunk received, allowing real-time UI updates.

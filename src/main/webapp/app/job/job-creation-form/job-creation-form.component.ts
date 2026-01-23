@@ -734,22 +734,19 @@ export class JobCreationFormComponent {
    * After generation completes, the final content is force-updated to ensure correctness.
    */
   async generateJobApplicationDraft(): Promise<void> {
-    const ctrl = this.basicInfoForm.get('jobDescription');
-    const lang = this.currentDescriptionLanguage();
-    const jobId = this.jobId() || undefined;
+    const originalContent = this.basicInfoForm.get('jobDescription')?.value;
+    const language = this.currentDescriptionLanguage();
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
 
-    const originalContent = ctrl?.value;
-
-    // Show "Generating..." message in the editor while AI is working
+    // Show "Generating" message in the editor while AI is working
     this.jobDescriptionEditor()?.forceUpdate(
       `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
     );
 
     try {
-      // Ensure background signals reflect current editor before sending
+      // Ensure background signals reflect the current editor before sending
       this.syncCurrentEditorIntoLanguageSignals();
 
       const request: JobFormDTO = {
@@ -766,7 +763,7 @@ export class JobCreationFormComponent {
       };
 
       // Use the AiStreamingService with live updates during streaming
-      const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(lang, request, jobId, content => {
+      const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(language, request, this.jobId(), content => {
         // Try to extract content from the partial JSON
         const extractedContent = this.extractJobDescriptionFromStream(content);
         this.jobDescriptionEditor()?.forceUpdate(
@@ -789,16 +786,14 @@ export class JobCreationFormComponent {
           this.basicInfoValid.set(this.basicInfoForm.valid);
 
           // Persist to correct language bucket
-          if (lang === 'en') {
+          if (language === 'en') {
             this.jobDescriptionEN.set(finalContent);
           } else {
             this.jobDescriptionDE.set(finalContent);
           }
 
           // We need to fetch the translated version from the server
-          if (jobId) {
-            await this.loadTranslatedDescription(lang === 'en' ? 'de' : 'en');
-          }
+          await this.loadTranslatedDescription(language === 'en' ? 'de' : 'en');
         } else {
           // Extraction failed - show error and restore original content
           this.jobDescriptionEditor()?.forceUpdate(originalContent);
