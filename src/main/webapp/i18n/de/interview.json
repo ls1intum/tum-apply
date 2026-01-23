@@ -138,8 +138,6 @@
         "singleSlot": "Einzelner Termin",
         "rangeSlot": "Zeitraum",
         "bookedSlot": "Gebuchter Termin",
-        "addStartTime": "Startzeit hinzufügen, um diesen Termin zu erstellen",
-        "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
         "singleSlotHelp": "Gib eine Startzeit ein. Die Endzeit wird basierend auf der Interviewdauer berechnet.",
         "rangeSlotHelp": "Gib Start- und Endzeit ein. Termine werden automatisch basierend auf Dauer und Pausenzeit berechnet.",
         "saveSlots": "Termine speichern",
