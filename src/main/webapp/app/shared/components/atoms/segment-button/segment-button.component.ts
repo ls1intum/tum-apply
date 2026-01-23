@@ -16,7 +16,7 @@ export class SegmentButtonComponent {
   readonly buttonClick = output();
 
   readonly buttonClass = computed(() => {
-    const base = 'w-full rounded-md border-none shadow-none transition-all px-3 py-1.5 text-xs cursor-pointer';
+    const base = 'w-full rounded border-none shadow-none transition-all px-3 py-1.5 text-xs cursor-pointer';
     const activeStyle = 'bg-primary-default text-text-on-primary font-semibold';
     const inactiveStyle = 'bg-transparent text-text-secondary hover:bg-primary-default hover:text-text-on-primary';
     const disabledStyle = 'opacity-50 cursor-not-allowed';

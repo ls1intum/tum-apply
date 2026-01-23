@@ -1,6 +1,6 @@
-<div class="rounded-lg border border-border-default bg-background-default mb-4">
+<div class="rounded border border-border-default bg-background-default mb-4">
   <!-- Header -->
-  <div class="flex w-full items-center justify-between p-3 border-b border-border-default">
+  <div class="flex w-full items-center justify-between p-3 border-border-default" [class.border-b]="!isCollapsed()">
     <!-- Left: Toggle + Date -->
     <div class="flex items-center gap-3">
       <jhi-button
@@ -50,7 +50,7 @@
         (click)="addRange()"
       />
 
-      <div class="w-px h-6 bg-border-default mx-1"></div>
+      <div class="w-[0.0625rem] h-6 bg-border-default mx-1"></div>
 
       <jhi-button icon="trash" variant="text" severity="danger" size="xs" (click)="remove.emit()" />
     </div>
@@ -71,6 +71,9 @@
           </div>
         } @else {
           @for (range of slotRanges(); track range.id; let rangeIndex = $index) {
+            @if (rangeIndex > 0) {
+              <div class="w-full h-px bg-border-default my-2"></div>
+            }
             <div class="flex gap-2">
               <!-- Colored Bar Left -->
               <div
@@ -79,7 +82,7 @@
                   (range.type === 'single' ? 'bg-[var(--p-secondary-400)]' : 'bg-[var(--p-secondary-600)]')
                 "
               ></div>
-              <div class="flex flex-1 flex-col gap-2">
+              <div class="flex flex-1 flex-col gap-0.5">
                 <!-- Slot Row Header -->
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
@@ -110,7 +113,7 @@
 
                 @if (range.type !== 'scheduled') {
                   <div
-                    class="flex flex-col gap-2 rounded p-3"
+                    class="flex flex-col gap-1 rounded pt-1 pb-2 px-2"
                     [class.border]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
                     [class.border-negative-default]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
                   >
@@ -178,7 +181,7 @@
                       <div class="flex flex-col gap-2 pt-2">
                         @for (slot of range.slots; track $index; let slotIndex = $index) {
                           <div
-                            class="flex flex-col gap-1 rounded-lg border border-border-default bg-background-default px-3 py-2"
+                            class="flex flex-col gap-1 rounded border border-border-default bg-background-default px-3 py-2"
                             [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)"
                           >
                             <div class="flex items-center justify-between">
