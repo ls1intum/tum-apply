@@ -7,10 +7,6 @@
         <h1 jhiTranslate="researchGroup.memberHeader"></h1>
       }
     </div>
-  </div>
-
-  <!-- Members Table -->
-  <div class="actions flex justify-end gap-4">
     <jhi-button
       [label]="'researchGroup.members.addMembers'"
       icon="user-plus"
@@ -19,6 +15,8 @@
       (click)="openAddMembersModal()"
     />
   </div>
+
+  <!-- Members Table -->
   <div class="table-wrapper">
     <jhi-dynamic-table
       [columns]="columns()"
