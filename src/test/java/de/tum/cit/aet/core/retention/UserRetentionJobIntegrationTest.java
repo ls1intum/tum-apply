@@ -8,7 +8,6 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
-import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;

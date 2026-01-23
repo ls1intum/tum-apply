@@ -60,6 +60,23 @@ public class UserRetentionJob {
         );
     }
 
+    /**
+     * Scheduled method that runs daily at 3 AM UTC (configurable via {@code user.retention.cron}) to warn users about impending data deletion.
+     * It calculates a cutoff date based on the configured number of inactive days before deletion and delegates the warning process
+     * to the {@link UserRetentionService#warnUserOfDataDeletion(LocalDateTime)} method.
+     *
+     * <p>This job ensures users are notified before their data is permanently deleted due to inactivity.</p>
+     */
+    @Scheduled(cron = "${user.retention.cron:0 0 3 * * *}", zone = "UTC")
+    public void warnUserOfDataDeletion() {
+        Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
+        LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime cutoff = nowUtc.minusDays(inactiveDays);
+        userRetentionService.warnUserOfDataDeletion(cutoff);
+    }
+
+    // ------------ Helper methods ------------
+
     private RetentionRunConfig buildRunConfig() {
         Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
         Integer batchSize = properties.getBatchSize();

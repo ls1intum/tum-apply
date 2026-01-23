@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.retention;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -13,8 +14,11 @@ import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
@@ -28,6 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +44,8 @@ public class UserRetentionService {
     private final UserRetentionProperties userRetentionProperties;
 
     private final UserRepository userRepository;
+
+    private final AsyncEmailSender sender;
 
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
@@ -111,12 +118,40 @@ public class UserRetentionService {
         }
     }
 
+    public void warnUserOfDataDeletion(LocalDateTime cutoff) {
+        LocalDateTime warningDate = cutoff.plusDays(28);
+        List<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForWarning(warningDate);
+
+        for (UUID userId : userIds) {
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (userOpt.isEmpty()) {
+                log.error("User retention warning: candidate userId={} no longer exists (cutoff={})", userId, cutoff);
+                continue;
+            }
+
+            User user = userOpt.get();
+            RetentionCategory category = classify(user);
+
+            if (category == RetentionCategory.SKIP_ADMIN) {
+                // Safety-net; repository query already tries to exclude admins.
+                continue;
+            }
+
+            Email email = Email.builder()
+                .to(user)
+                .language(Language.fromCode(user.getSelectedLanguage()))
+                .emailType(EmailType.USER_DATA_DELETION_WARNING)
+                .build();
+
+            sender.sendAsync(email);
+        }
+    }
+
     // Helper methods for handling different categories
 
     private RetentionCategory classify(User user) {
-        List<UserResearchGroupRole> roles = user.getResearchGroupRoles() == null
-            ? List.of()
-            : user.getResearchGroupRoles().stream().toList();
+        List<UserResearchGroupRole> roles =
+            user.getResearchGroupRoles() == null ? List.of() : user.getResearchGroupRoles().stream().toList();
 
         boolean isAdmin = roles.stream().anyMatch(r -> r.getRole() == UserRole.ADMIN);
         if (isAdmin) {
