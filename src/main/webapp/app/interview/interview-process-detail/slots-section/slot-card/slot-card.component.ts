@@ -36,9 +36,10 @@ export class SlotCardComponent {
   });
 
   isPast = computed(() => {
-    if (!this.slot().startDateTime) return false;
+    const dateTime = this.slot().startDateTime;
+    if (!dateTime) return false;
     const now = new Date();
-    const start = new Date(this.slot().startDateTime!);
+    const start = new Date(dateTime);
     return start < now;
   });
 
