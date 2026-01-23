@@ -58,25 +58,6 @@
         "aquabloom": "Hell AquaBloom",
         "system": "System"
       }
-    },
-
-    "privacy": {
-      "header": "Datenschutz",
-      "export": {
-        "header": "Deine Daten",
-        "description": "Lade ein ZIP-Archiv mit einer Zusammenfassung deines Profils, Einstellungen und Dokumenten herunter.",
-        "button": "Exportiere meine Daten",
-        "cooldown": "Du kannst in {{seconds}}s einen neuen Export anfordern",
-        "inProgress": "Export läuft…",
-        "started": {
-          "summary": "Export gestartet",
-          "detail": "Du erhältst eine E-Mail, sobald das Archiv bereit ist."
-        },
-        "failed": {
-          "summary": "Export fehlgeschlagen",
-          "detail": "Bitte versuche es später erneut."
-        }
-      }
     }
   }
 }

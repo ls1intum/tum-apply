@@ -34,6 +34,37 @@
       "headline": "E-Mail-Sicherheit",
       "text": "Wenn Sie uns eine E-Mail schicken, so wird Ihre E-Mail-Adresse nur für die Korrespondenz mit Ihnen verwendet. Bitte beachten Sie, dass die Datenübertragung im Internet Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich."
     },
+    "export": {
+      "button": "Meine Daten exportieren",
+      "downloadFailed": {
+        "summary": "Download fehlgeschlagen",
+        "detail": "Bitte versuche es erneut."
+      },
+      "downloadFailed404": {
+        "summary": "Export nicht gefunden",
+        "detail": "Der Export ist nicht verfügbar."
+      },
+      "downloadFailed409": {
+        "summary": "Export nicht bereit",
+        "detail": "Der Export ist noch nicht fertig. Du erhältst eine E-Mail, sobald er bereit ist."
+      },
+      "requested": {
+        "summary": "Datenexport angefordert (1x/Woche)",
+        "detail": "Du kannst nur einmal pro Woche einen Datenexport anfordern. Sobald er bereit ist, erhältst du den Link per E-Mail."
+      },
+      "requestFailed": {
+        "summary": "Anforderung fehlgeschlagen",
+        "detail": "Bitte versuche es später erneut."
+      },
+      "requestFailed409": {
+        "summary": "Export bereits in Bearbeitung",
+        "detail": "Ein Export ist bereits im Gange. Du erhältst eine E-Mail, sobald er fertig ist."
+      },
+      "requestFailed429": {
+        "summary": "Limit: ein Export pro Woche",
+        "detail": "Du kannst den Datenexport nur einmal pro Woche anfordern. Bitte versuche es nächste Woche erneut."
+      }
+    },
     "privacyConsent": {
       "title": "Datenschutz",
       "text": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch beigefügt. Weitere Informationen findest du unter: <a class=\"link\" href=\"https://www.community.tum.de/de/datenschutz/\">TUM Datenschutzinformationen</a>.",

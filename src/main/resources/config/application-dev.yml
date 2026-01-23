@@ -99,7 +99,7 @@ aet:
   data-export:
     root: /tmp/tum-apply-exports
     expires-days: 1
-    cron: '*/15 * * * * *'
+    cron: '*/45 * * * * *'
 
 management:
   health:

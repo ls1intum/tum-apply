@@ -145,7 +145,8 @@ public class UserDataExportService {
         }
 
         DataExportState status = latest != null ? latest.getStatus() : null;
-        return new DataExportStatusDTO(status, lastRequestedAt, nextAllowedAt, cooldownSeconds);
+        String downloadToken = (status == DataExportState.EMAIL_SENT && latest != null) ? latest.getDownloadToken() : null;
+        return new DataExportStatusDTO(status, lastRequestedAt, nextAllowedAt, cooldownSeconds, downloadToken);
     }
 
     /**
@@ -167,8 +168,8 @@ public class UserDataExportService {
             throw new TooManyRequestsException("Data export can only be requested once per week");
         }
 
-        Set<DataExportState> activeStates = Set.of(DataExportState.REQUESTED, DataExportState.IN_CREATION, DataExportState.EMAIL_SENT);
-        if (dataExportRequestRepository.existsByUserUserIdAndStatusIn(userId, activeStates)) {
+        Set<DataExportState> activeCreationStates = Set.of(DataExportState.REQUESTED, DataExportState.IN_CREATION);
+        if (dataExportRequestRepository.existsByUserUserIdAndStatusIn(userId, activeCreationStates)) {
             throw new TimeConflictException("A data export request is already in progress");
         }
 

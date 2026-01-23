@@ -2,14 +2,11 @@ import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserShortDTO } from 'app/generated/model/userShortDTO';
 import { ThemeOption, ThemeService } from 'app/service/theme.service';
-import { ToastService } from 'app/service/toast-service';
-import { UserDataExportResourceApiService } from 'app/generated';
-import { Subscription, firstValueFrom, interval } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { SelectComponent, SelectOption } from '../components/atoms/select/select.component';
 import TranslateDirective from '../language/translate.directive';
-import { ButtonComponent } from '../components/atoms/button/button.component';
 import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../components/molecules/tab-view/tab-view.component';
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
@@ -23,7 +20,6 @@ type SettingsTab = 'general' | 'notifications' | 'personal-information';
     EmailSettingsComponent,
     PersonalInformationSettingsComponent,
     SelectComponent,
-    ButtonComponent,
     TabViewComponent,
     TabPanelTemplateDirective,
     FontAwesomeModule,
@@ -69,8 +65,6 @@ export class SettingsComponent {
 
   protected readonly themeService = inject(ThemeService);
   protected readonly accountService = inject(AccountService);
-  protected readonly userDataExportService = inject(UserDataExportResourceApiService);
-  private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   // Internal subscription used for the cooldown interval
@@ -101,50 +95,5 @@ export class SettingsComponent {
     if (this.tabs().some(tab => tab.id === tabId)) {
       this.activeTab.set(tabId as SettingsTab);
     }
-  }
-
-  /**
-   * Trigger user data export. Implementation mirrors the download approach used in
-   * ApplicationDetailForApplicantComponent: read Content-Disposition header, extract
-   * filename, create object URL for the blob, call `a.click()` and revoke the URL.
-   */
-  async exportUserData(): Promise<void> {
-    if (this.exportButtonDisabled()) {
-      return;
-    }
-
-    this.exportInProgress.set(true);
-
-    try {
-      await firstValueFrom(this.userDataExportService.requestDataExport());
-    } catch {
-      this.toastService.showErrorKey('settings.privacy.export.failed');
-    } finally {
-      this.exportInProgress.set(false);
-    }
-  }
-
-  /**
-   * Start an export cooldown to prevent spamming the export endpoint.
-   * Implementation intentionally omitted — this is a design stub.
-   * @param seconds cooldown duration in seconds
-   */
-  startExportCooldown(seconds: number): void {
-    // Clear any existing interval subscription
-    this.exportCooldownSub?.unsubscribe();
-    this.exportCooldownSub = null;
-
-    this.exportCooldownRemaining.set(seconds);
-
-    this.exportCooldownSub = interval(1000).subscribe(() => {
-      const remaining = this.exportCooldownRemaining();
-      if (remaining <= 1) {
-        this.exportCooldownRemaining.set(0);
-        this.exportCooldownSub?.unsubscribe();
-        this.exportCooldownSub = null;
-      } else {
-        this.exportCooldownRemaining.set(remaining - 1);
-      }
-    });
   }
 }

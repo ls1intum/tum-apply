@@ -34,6 +34,37 @@
       "headline": "E-mail security",
       "text": "If you e-mail us, your e-mail address will only be used for correspondence with you. Please note that data transmission on the Internet can have security gaps. Complete protection of data from access by third parties is not possible."
     },
+    "export": {
+      "button": "Export My Data",
+      "downloadFailed": {
+        "summary": "Download failed",
+        "detail": "Please try again."
+      },
+      "downloadFailed404": {
+        "summary": "Export not found",
+        "detail": "The export is not available."
+      },
+      "downloadFailed409": {
+        "summary": "Export not ready",
+        "detail": "The export is not ready yet. You'll receive an email when it's ready."
+      },
+      "requested": {
+        "summary": "Data export requested (1x/week)",
+        "detail": "You can request a data export only once per week. The download link will be sent via email when it's ready."
+      },
+      "requestFailed": {
+        "summary": "Request failed",
+        "detail": "Please try again later."
+      },
+      "requestFailed409": {
+        "summary": "Export already in progress",
+        "detail": "An export is already in progress. You'll receive an email when it's ready."
+      },
+      "requestFailed429": {
+        "summary": "Limit: one export per week",
+        "detail": "You can request the data export only once per week. Please try again next week."
+      }
+    },
     "privacyConsent": {
       "title": "Privacy",
       "text": "A Data Privacy Statement from the Technical University of Munich (TUM) will automatically be attached. For more information, please visit: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Data Protection Information</a>.",

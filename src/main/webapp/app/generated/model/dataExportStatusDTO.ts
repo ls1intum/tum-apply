@@ -11,6 +11,7 @@
 
 export interface DataExportStatusDTO { 
     cooldownSeconds?: number;
+    downloadToken?: string;
     lastRequestedAt?: string;
     nextAllowedAt?: string;
     status?: DataExportStatusDTO.StatusEnum;
