@@ -181,6 +181,17 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * @param pageable   pagination information
      * @return page of available future slots ordered by start time ascending
      */
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.id = :processId
+        AND s.isBooked = false
+        AND s.startDateTime >= :now
+        AND s.startDateTime >= :monthStart
+        AND s.startDateTime < :monthEnd
+        ORDER BY s.startDateTime ASC
+        """
+    )
     Page<InterviewSlot> findAvailableSlotsByProcessIdAndMonth(
         @Param("processId") UUID processId,
         @Param("now") Instant now,
