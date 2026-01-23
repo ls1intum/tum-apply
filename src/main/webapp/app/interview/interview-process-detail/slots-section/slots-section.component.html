@@ -80,9 +80,7 @@
                           : getShowMoreText(getRemainingCount(group.date, group.slots.length))
                       "
                       [shouldTranslate]="isExpanded(group.date)"
-                      [styleClass]="
-                        'w-full py-2 border border-border-default rounded-md text-text-secondary text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-background-surface hover:border-border-default transition-all'
-                      "
+                      [styleClass]="'w-full py-2 border border-border-default rounded-md text-text-secondary text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-background-surface hover:border-border-default transition-all'"
                       (click)="toggleExpanded(group.date)"
                     />
                   }
