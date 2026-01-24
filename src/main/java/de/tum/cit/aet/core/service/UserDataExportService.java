@@ -20,6 +20,8 @@ import de.tum.cit.aet.core.dto.exportdata.UserSettingDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.core.service.DocumentZipUtility;
+import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
@@ -77,6 +79,7 @@ public class UserDataExportService {
     private final UserSettingRepository userSettingRepository;
 
     private final ZipExportService zipExportService;
+    private final DocumentZipUtility documentZipUtility;
     private final ObjectMapper objectMapper;
     private final PlatformTransactionManager transactionManager;
 
@@ -118,7 +121,7 @@ public class UserDataExportService {
             if (userData.applicantData() != null) {
                 for (DocumentExportDTO doc : userData.applicantData().documents()) {
                     String sanitizedFilename = FileUtil.sanitizeFilename(doc.name());
-                    addDocumentToZip(zipOut, doc.documentId(), "documents/" + sanitizedFilename);
+                    documentZipUtility.addDocumentToZip(zipOut, doc.documentId(), "documents/" + sanitizedFilename);
                 }
             }
 
@@ -381,18 +384,5 @@ public class UserDataExportService {
             slot.getStreamLink(),
             slot.getIsBooked()
         );
-    }
-
-    private void addDocumentToZip(ZipOutputStream zipOut, UUID documentId, String entryPath) {
-        try {
-            Document document = documentRepository
-                .findById(documentId)
-                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
-
-            zipExportService.addDocumentToZip(zipOut, entryPath, document);
-        } catch (Exception e) {
-            log.error("Failed to add document {} to ZIP export", documentId, e);
-            throw new UserDataExportException("Failed to add document to ZIP export", e);
-        }
     }
 }
