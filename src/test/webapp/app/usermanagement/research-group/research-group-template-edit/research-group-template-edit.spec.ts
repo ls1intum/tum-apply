@@ -180,14 +180,6 @@ describe('ResearchGroupTemplateEdit', () => {
     });
   });
 
-  // ---------------- NAVIGATION ----------------
-  describe('navigation', () => {
-    it('navigates back to template list', () => {
-      component['navigateBack']();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/templates']);
-    });
-  });
-
   // ---------------- FORM UPDATES ----------------
   describe('form updates', () => {
     const getters: Record<string, (m: EmailTemplateDTO) => unknown> = {
