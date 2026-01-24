@@ -125,7 +125,7 @@
     },
     "positionDetailsSection": {
       "description": "Beschreibe den Forschungsschwerpunkt, die Hauptaufgaben und die Erwartungen an die Bewerber. Definiere die Mindestanforderungen und gegebenenfalls wünschenswerte Qualifikationen.",
-      "languageInfo": "Bitte verfasse die Beschreibung entweder auf Deutsch oder Englisch. Eine KI-generierte Übersetzung in die jeweils andere Sprache erscheint automatisch, die du überprüfen und bei Bedarf bearbeiten kannst.",
+      "languageInfo": "Bitte verfasse die Beschreibung entweder auf Deutsch oder Englisch. Eine KI-generierte Übersetzung in die jeweils andere Sprache erscheint automatisch, die du überprüfen und bei Bedarf bearbeiten kannst. Man kann nicht zwischen beiden Sprachen wechseln während die KI die Übersetzung generiert.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "placeholder": "Beschreibung\nTODO: Beschreiben Sie den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Listen Sie die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Geben Sie die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
@@ -135,7 +135,7 @@
         "aiHeaderText": "KI Assistent",
         "aiButton1": "Mit KI schreiben",
         "aiButton2": "Mit KI umschreiben",
-        "aiHelperText": "Schreibe Stichpunkte für deinen ersten Job-Entwurf. Fülle obenstehende Felder für bessere Ergebnisse aus.",
+        "aiHelperText": "Schreibe Stichpunkte für deinen ersten Job-Entwurf. Fülle obenstehende Felder für bessere Ergebnisse aus. KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
@@ -225,9 +225,13 @@
         "summary": "Speichern fehlgeschlagen",
         "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und speichere erneut."
       },
-      "translationFailed": {
+      "aiTranslationFailed": {
         "summary": "Übersetzung fehlgeschlagen",
         "detail": "Die Stellenbeschreibung konnte nicht übersetzt werden. Bitte versuche es erneut."
+      },
+      "aiGenerationFailed": {
+        "summary": "KI-Generierung fehlgeschlagen",
+        "detail": "Die Stellenbeschreibung konnte nicht generiert werden. Bitte versuche es erneut."
       }
     }
   },

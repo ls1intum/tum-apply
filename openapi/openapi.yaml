@@ -3,14 +3,18 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/ai/generateJobDescription:
+  /api/ai/generateJobDescriptionStream:
     put:
       tags: [ai-resource]
-      operationId: generateJobApplicationDraft
+      operationId: generateJobApplicationDraftStream
       parameters:
       - name: lang
         in: query
         required: true
+        schema: {type: string}
+      - name: jobId
+        in: query
+        required: false
         schema: {type: string}
       requestBody:
         content:
@@ -21,8 +25,10 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
-              schema: {$ref: '#/components/schemas/AIJobDescriptionDTO'}
+            text/event-stream:
+              schema:
+                type: array
+                items: {type: string}
   /api/ai/translateJobDescriptionForJob:
     put:
       tags: [ai-resource]
@@ -1977,10 +1983,6 @@ paths:
         '200': {description: OK}
 components:
   schemas:
-    AIJobDescriptionDTO:
-      type: object
-      properties:
-        jobDescription: {type: string}
     AIJobDescriptionTranslationDTO:
       type: object
       properties:
