@@ -211,10 +211,16 @@ public class EmailService {
      */
     private EmailTemplateTranslation getEmailTemplateTranslation(Email email) {
         if (email.getEmailType() == null) {
+            log.warn("Cannot translate email template: EmailType is null for email to recipients {}", email.getRecipients());
             return null;
         }
 
         if (email.getResearchGroup() == null && email.getEmailType().isMultipleTemplates()) {
+            log.warn(
+                "Cannot translate email template: ResearchGroup is null but EmailType '{}' requires multiple templates for email to recipients {}",
+                email.getEmailType(),
+                email.getRecipients()
+            );
             return null;
         }
 
