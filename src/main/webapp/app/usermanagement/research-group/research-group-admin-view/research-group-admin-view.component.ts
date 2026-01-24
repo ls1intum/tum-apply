@@ -9,6 +9,7 @@ import { ResearchGroupAdminDTO } from 'app/generated/model/researchGroupAdminDTO
 import { ToastService } from 'app/service/toast-service';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { Filter, FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort, SortOption } from 'app/shared/components/atoms/sorting/sorting';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
@@ -21,7 +22,16 @@ const I18N_BASE = 'researchGroup.adminView';
 
 @Component({
   selector: 'jhi-research-group-admin-view',
-  imports: [ButtonComponent, TagComponent, TranslateModule, TranslateDirective, SearchFilterSortBar, DynamicTableComponent, ConfirmDialog],
+  imports: [
+    ButtonComponent,
+    MenuComponent,
+    TagComponent,
+    TranslateModule,
+    TranslateDirective,
+    SearchFilterSortBar,
+    DynamicTableComponent,
+    ConfirmDialog,
+  ],
   templateUrl: './research-group-admin-view.component.html',
 })
 export class ResearchGroupAdminView {
@@ -58,6 +68,12 @@ export class ResearchGroupAdminView {
   readonly buttonTemplate = viewChild.required<TemplateRef<unknown>>('actionTemplate');
   readonly stateTemplate = viewChild.required<TemplateRef<unknown>>('stateTemplate');
 
+  readonly approveDialog = viewChild.required<ConfirmDialog>('approveDialog');
+  readonly denyDialog = viewChild.required<ConfirmDialog>('denyDialog');
+  readonly withdrawDialog = viewChild.required<ConfirmDialog>('withdrawDialog');
+
+  currentResearchGroupId = signal<string | undefined>(undefined);
+
   readonly selectedStatusFilters = signal<('DRAFT' | 'ACTIVE' | 'DENIED')[]>([]);
 
   readonly columns = computed<DynamicTableColumn[]>(() => {
@@ -93,6 +109,83 @@ export class ResearchGroupAdminView {
     { displayName: `${I18N_BASE}.tableColumn.status`, fieldName: 'state', type: 'TEXT' },
     { displayName: `${I18N_BASE}.tableColumn.requestedAt`, fieldName: 'createdAt', type: 'NUMBER' },
   ];
+
+  readonly actionMenuItems = computed<Map<string, JhiMenuItem[]>>(() => {
+    const menuMap = new Map<string, JhiMenuItem[]>();
+
+    for (const group of this.researchGroups()) {
+      const groupId = group.id;
+      if (!groupId) {
+        continue;
+      }
+      const items: JhiMenuItem[] = [];
+
+      if (group.status !== 'DENIED') {
+        items.push({
+          label: 'researchGroup.members.manageMembers',
+          icon: 'users',
+          severity: 'primary',
+          command: () => {
+            this.onManageMembers(groupId);
+          },
+        });
+      }
+
+      if (group.status === 'ACTIVE') {
+        items.push({
+          label: 'button.withdraw',
+          icon: 'withdraw',
+          severity: 'danger',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.withdrawDialog().confirm();
+          },
+        });
+      }
+
+      if (group.status === 'DRAFT') {
+        items.push({
+          label: 'button.confirm',
+          icon: 'check',
+          severity: 'success',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.approveDialog().confirm();
+          },
+        });
+        items.push({
+          label: 'button.deny',
+          icon: 'times',
+          severity: 'danger',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.denyDialog().confirm();
+          },
+        });
+      }
+
+      if (group.status === 'DENIED') {
+        items.push({
+          label: 'button.confirm',
+          icon: 'check',
+          severity: 'success',
+          command: () => {
+            this.currentResearchGroupId.set(groupId);
+            this.approveDialog().confirm();
+          },
+        });
+      }
+
+      menuMap.set(groupId, items);
+    }
+
+    return menuMap;
+  });
+
+  readonly getMenuItems = computed(() => {
+    const menuMap = this.actionMenuItems();
+    return (group: ResearchGroupAdminDTO): JhiMenuItem[] => (group.id ? (menuMap.get(group.id) ?? []) : []);
+  });
 
   private toastService = inject(ToastService);
   private readonly translate = inject(TranslateService);
@@ -186,6 +279,27 @@ export class ResearchGroupAdminView {
       await this.loadResearchGroups();
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.errors.withdraw`);
+    }
+  }
+
+  onConfirmApprove(): void {
+    const researchGroupId = this.currentResearchGroupId();
+    if (researchGroupId) {
+      void this.onApproveResearchGroup(researchGroupId);
+    }
+  }
+
+  onConfirmDeny(): void {
+    const researchGroupId = this.currentResearchGroupId();
+    if (researchGroupId) {
+      void this.onDenyResearchGroup(researchGroupId);
+    }
+  }
+
+  onConfirmWithdraw(): void {
+    const researchGroupId = this.currentResearchGroupId();
+    if (researchGroupId) {
+      void this.onWithdrawResearchGroup(researchGroupId);
     }
   }
 
