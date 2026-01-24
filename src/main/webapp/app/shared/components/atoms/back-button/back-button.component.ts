@@ -5,7 +5,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from '../button/button.component';
 
 @Component({
-  standalone: true,
   selector: 'jhi-back-button',
   imports: [ButtonComponent, TranslateModule],
   templateUrl: './back-button.component.html',
