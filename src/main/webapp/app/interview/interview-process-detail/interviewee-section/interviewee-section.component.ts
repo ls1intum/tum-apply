@@ -4,6 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { firstValueFrom } from 'rxjs';
+import { toLanguageSignal } from 'app/shared/util/language.util';
 import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
@@ -49,6 +50,12 @@ interface ApplicantRow {
   templateUrl: './interviewee-section.component.html',
 })
 export class IntervieweeSectionComponent {
+  // Services
+  readonly interviewService = inject(InterviewResourceApiService);
+  readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  readonly toastService = inject(ToastService);
+  readonly translateService = inject(TranslateService);
+
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
@@ -79,6 +86,8 @@ export class IntervieweeSectionComponent {
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly confirmDialog = viewChild.required(ConfirmDialog);
+
+  currentLang = toLanguageSignal(this.translateService);
 
   // Computed Signals
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
@@ -133,16 +142,24 @@ export class IntervieweeSectionComponent {
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
 
-  // Services
-  private readonly interviewService = inject(InterviewResourceApiService);
-  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
-  private readonly toastService = inject(ToastService);
-  private readonly translateService = inject(TranslateService);
+  allInvitedTooltip = computed(() => {
+    this.currentLang(); // Dependency for reactivity
+    return this.uncontactedCount() === 0 ? this.translateService.instant('interview.interviewees.allInvited') : '';
+  });
 
-  // Effect: Auto load Interviewees when processId or refreshKey changes
-  private readonly loadEffect = effect(() => {
+  resendConfirmation = computed(() => {
+    this.currentLang(); // Dependency
+    return {
+      header: this.translateService.instant('interview.interviewees.resendConfirmation.header'),
+      message: this.translateService.instant('interview.interviewees.resendConfirmation.message'),
+      label: this.translateService.instant('interview.interviewees.resendInvitation'),
+    };
+  });
+
+  // Effects
+  readonly loadEffect = effect(() => {
     this.refreshKey(); // Track refreshKey to trigger reload
-    if (this.processId()) {
+    if (this.processId() !== '') {
       void this.loadInterviewees();
     }
   });
@@ -150,7 +167,7 @@ export class IntervieweeSectionComponent {
   // Add Selected Applicants as Interviewees
   async addInterviewees(): Promise<void> {
     const processId = this.processId();
-    if (!processId) return;
+    if (processId === '') return;
 
     const dto: AddIntervieweesDTO = {
       applicationIds: Array.from(this.selectedIds()),
@@ -172,7 +189,7 @@ export class IntervieweeSectionComponent {
   // Data Loading: Interviewees
   async loadInterviewees(): Promise<void> {
     const processId = this.processId();
-    if (!processId) return;
+    if (processId === '') return;
 
     try {
       this.loadingInterviewees.set(true);
@@ -187,7 +204,7 @@ export class IntervieweeSectionComponent {
 
   sendInvitation(interviewee: IntervieweeDTO): void {
     const processId = this.processId();
-    if (!processId || !interviewee.id) return;
+    if (processId === '' || interviewee.id == null) return;
 
     if (interviewee.state === 'INVITED') {
       this.pendingResendId.set(interviewee.id);
@@ -200,7 +217,7 @@ export class IntervieweeSectionComponent {
   // Send bulk invitations to all uncontacted
   async sendAllInvitations(): Promise<void> {
     const processId = this.processId();
-    if (!processId) return;
+    if (processId === '') return;
 
     try {
       this.sendingBulk.set(true);
@@ -283,7 +300,7 @@ export class IntervieweeSectionComponent {
   onConfirmResend(): void {
     const id = this.pendingResendId();
     const processId = this.processId();
-    if (id !== null && processId) {
+    if (id !== null && processId !== '') {
       void this.performSendInvitation(processId, id);
       this.pendingResendId.set(null);
     }

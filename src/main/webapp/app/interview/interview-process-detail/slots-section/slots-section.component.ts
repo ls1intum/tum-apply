@@ -14,6 +14,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { getLocale } from 'app/shared/util/date-time.util';
+import { toLanguageSignal } from 'app/shared/util/language.util';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -131,8 +132,7 @@ export class SlotsSectionComponent {
   private readonly breakpointObserver = inject(BreakpointObserver);
 
   // Private Signals & Computed
-  private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
-  private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
+  private readonly currentLang = toLanguageSignal(this.translateService);
 
   private readonly breakpointState = toSignal(
     this.breakpointObserver
@@ -157,17 +157,11 @@ export class SlotsSectionComponent {
   );
 
   private readonly locale = computed(() => {
-    this.currentLangSignal();
+    this.currentLang();
     return getLocale(this.translateService);
   });
 
   // Effects
-  private readonly langChangeEffect = effect(() => {
-    const langEvent = this.langChangeSignal();
-    if (langEvent?.lang !== undefined) {
-      this.currentLangSignal.set(langEvent.lang);
-    }
-  });
 
   private readonly pageSizeChangeEffect = effect(
     () => {
