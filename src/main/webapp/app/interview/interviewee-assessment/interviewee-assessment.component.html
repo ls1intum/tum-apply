@@ -22,10 +22,9 @@
   @if (!loading() && !error() && interviewee()) {
     <div class="flex flex-col gap-6">
       <!-- Header -->
-      <div class="flex items-center gap-4">
-        <div class="flex flex-col gap-1">
-          <h1 class="text-3xl font-bold text-text-primary" jhiTranslate="interview.assessment.title">Interview Assessment</h1>
-        </div>
+      <div class="page-header flex flex-row items-center">
+        <jhi-button [icon]="'arrow-left'" variant="text" severity="secondary" (click)="goBack()" />
+        <h1 class="h1-text" jhiTranslate="interview.assessment.title">Interview Assessment</h1>
       </div>
 
       <div class="flex flex-col xl:flex-row gap-8">
@@ -125,20 +124,6 @@
           </jhi-section>
         </div>
       </div>
-    </div>
-
-    <!-- Sticky Footer -->
-    <div
-      class="sticky-footer sticky bottom-0 mt-auto py-3 bg-background-default transition-all duration-300 z-[1000] ease-in-out -mx-4 px-4 w-[calc(100%+2rem)] md:-mx-16 md:px-16 md:w-[calc(100%+8rem)] border-t border-border-default"
-    >
-      <jhi-button
-        [label]="'button.back'"
-        [shouldTranslate]="true"
-        icon="arrow-left"
-        variant="outlined"
-        [severity]="'info'"
-        (click)="goBack()"
-      />
     </div>
   }
 </div>
