@@ -22,6 +22,7 @@ import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.compo
 import { SegmentButtonComponent } from 'app/shared/components/atoms/segment-button/segment-button.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { toLocalDateString } from 'app/shared/util/date-time.util';
 
 @Component({
   selector: 'jhi-slot-creation-form',
@@ -269,7 +270,7 @@ export class SlotCreationFormComponent {
    * @param slots The new list of slots for that date.
    */
   updateSlotsForDate(date: Date, slots: InterviewSlotDTO[]): void {
-    const dateStr = this.toLocalDateString(date);
+    const dateStr = toLocalDateString(date);
     this.slotsByDate.update(map => {
       const newMap = new Map(map);
       newMap.set(dateStr, slots);
@@ -337,7 +338,7 @@ export class SlotCreationFormComponent {
         const start = new Date(slot.startDateTime ?? '');
         const end = new Date(slot.endDateTime ?? '');
         return {
-          date: this.toLocalDateString(start),
+          date: toLocalDateString(start),
           startTime: start.toTimeString().slice(0, 5),
           endTime: end.toTimeString().slice(0, 5),
           location: slot.location ?? '',
@@ -364,7 +365,7 @@ export class SlotCreationFormComponent {
 
   // Public method for template usage - get local date string (YYYY-MM-DD) without UTC conversion
   getDateKey(date: Date): string {
-    return this.toLocalDateString(date);
+    return toLocalDateString(date);
   }
 
   /**
@@ -422,7 +423,7 @@ export class SlotCreationFormComponent {
    * Loads conflict data for a specific date from server.
    */
   private async loadConflictDataForDate(date: Date): Promise<void> {
-    const dateStr = this.toLocalDateString(date);
+    const dateStr = toLocalDateString(date);
 
     // Skip if already loaded
     if (this.conflictDataByDate().has(dateStr)) {
@@ -437,15 +438,7 @@ export class SlotCreationFormComponent {
         return newMap;
       });
     } catch {
-      /* empty */
+      /* Fail silently as conflict data is optional and only used for UI warnings */
     }
-  }
-
-  // Helper to get local date string (YYYY-MM-DD) without UTC conversion
-  private toLocalDateString(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 }
