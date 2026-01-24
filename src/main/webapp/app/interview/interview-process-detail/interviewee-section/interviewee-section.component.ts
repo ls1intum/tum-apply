@@ -1,10 +1,10 @@
 import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { firstValueFrom } from 'rxjs';
-import { toLanguageSignal } from 'app/shared/util/language.util';
+import { firstValueFrom, map } from 'rxjs';
 import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
@@ -50,12 +50,6 @@ interface ApplicantRow {
   templateUrl: './interviewee-section.component.html',
 })
 export class IntervieweeSectionComponent {
-  // Services
-  readonly interviewService = inject(InterviewResourceApiService);
-  readonly applicationService = inject(ApplicationEvaluationResourceApiService);
-  readonly toastService = inject(ToastService);
-  readonly translateService = inject(TranslateService);
-
   // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
@@ -86,8 +80,6 @@ export class IntervieweeSectionComponent {
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
   readonly confirmDialog = viewChild.required(ConfirmDialog);
-
-  currentLang = toLanguageSignal(this.translateService);
 
   // Computed Signals
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
@@ -156,10 +148,20 @@ export class IntervieweeSectionComponent {
     };
   });
 
-  // Effects
-  readonly loadEffect = effect(() => {
+  // Services
+  private readonly interviewService = inject(InterviewResourceApiService);
+  private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
+  private readonly toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
+
+  private readonly currentLang = toSignal(this.translateService.onLangChange.pipe(map((event: LangChangeEvent) => event.lang)), {
+    initialValue: this.translateService.getCurrentLang(),
+  });
+
+  // Effect: Auto load Interviewees when processId or refreshKey changes
+  private readonly loadEffect = effect(() => {
     this.refreshKey(); // Track refreshKey to trigger reload
-    if (this.processId() !== '') {
+    if (this.processId()) {
       void this.loadInterviewees();
     }
   });

@@ -48,15 +48,8 @@
 
 <!-- Template for name column with checkbox -->
 <ng-template #nameTemplate let-row>
-  <div
-    class="flex items-center gap-3 cursor-pointer p-1 rounded-md hover:bg-background-surface-active"
-    role="button"
-    tabindex="0"
-    (click)="toggleSelection(row.applicationId)"
-    (keydown.enter)="toggleSelection(row.applicationId)"
-    (keydown.space)="$event.preventDefault(); toggleSelection(row.applicationId)"
-  >
-    <jhi-checkbox [model]="row.selected" [errorEnabled]="false" (click)="$event.stopPropagation()" />
+  <div class="flex items-center gap-3 cursor-pointer" (click)="toggleSelection(row.applicationId)">
+    <jhi-checkbox [model]="row.selected" [errorEnabled]="false" (click)="$event.stopPropagation(); toggleSelection(row.applicationId)" />
     <span class="font-medium text-text-primary">{{ row.name }}</span>
   </div>
 </ng-template>
