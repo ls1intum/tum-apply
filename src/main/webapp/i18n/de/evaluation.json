@@ -2,6 +2,7 @@
   "evaluation": {
     "overviewHeader": "Bewerbungen - Übersicht",
     "reviewHeader": "Bewerbungen - Prüfen",
+    "appliedAt": "Beworben am",
     "searchFilterSortBar": {
       "searchText": "Bewerbungen suchen..."
     },

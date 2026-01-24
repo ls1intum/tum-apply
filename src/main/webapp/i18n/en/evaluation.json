@@ -2,6 +2,7 @@
   "evaluation": {
     "overviewHeader": "Applications - Overview",
     "reviewHeader": "Applications - Review",
+    "appliedAt": "Applied at",
     "searchFilterSortBar": {
       "searchText": "Search Applications..."
     },

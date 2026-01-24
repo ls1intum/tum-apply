@@ -3,14 +3,14 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 import { TagComponent } from '../../atoms/tag/tag.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule, LocalizedDatePipe],
   templateUrl: './application-card.component.html',
-  styleUrl: './application-card.component.scss',
 })
 export class ApplicationCardComponent {
   disabled = input<boolean>(false);

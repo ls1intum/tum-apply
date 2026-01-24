@@ -1,14 +1,24 @@
-<div class="card" [class.disabled]="disabled()" [class.placeholder]="placeholder()">
+<div
+  class="mt-6 flex flex-col gap-1 p-4 w-48 sm:w-56 md:w-64 lg:w-72 xl:w-80 border-2 rounded-lg"
+  [class.border-primary]="!disabled() && !placeholder()"
+  [class.opacity-50]="disabled()"
+  [class.border-gray-300]="disabled()"
+  [class.cursor-not-allowed]="disabled()"
+  [class.pointer-events-none]="disabled()"
+  [class.border-transparent]="placeholder()"
+>
   @if (!placeholder()) {
-    <!-- Header -->
-    <div class="header">
-      <div class="name" [class.has-last]="!!nameParts().last">
-        <span class="first">{{ nameParts().first }}</span>
-        <span class="last">{{ nameParts().last }}</span>
+    <!-- Header with Name and Status -->
+    <div class="flex justify-between items-start gap-2">
+      <div class="flex flex-col text-lg font-bold">
+        <span>{{ nameParts().first }}</span>
+        @if (nameParts().last) {
+          <span>{{ nameParts().last }}</span>
+        }
       </div>
 
       <jhi-tag
-        class="status-tag"
+        class="shrink-0"
         [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
         [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
         [tooltipText]="'evaluation.statusBadge.tooltips.' + (applicationDetails()?.applicationState || '')"
@@ -16,25 +26,20 @@
     </div>
 
     <!-- Job Title -->
-    <div class="job">
+    <div class="flex items-start gap-2">
       <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-      <span class="job-title">
+      <span class="line-clamp-1 break-words leading-[1.4rem]">
         {{ applicationDetails()?.jobTitle }}
       </span>
     </div>
 
-    <!--
-
-    Rating and Comments removed for now
-
-    <div class="rating">
-      <jhi-rating [rating]="application()?.rating" />
-      <div class="comments">
-        <p>0</p>
-        <fa-icon [icon]="['fas', 'comment-alt']" />
+    <!-- Applied Date -->
+    @if (application()?.appliedAt) {
+      <div class="flex items-center gap-2">
+        <span>
+          {{ 'evaluation.appliedAt' | translate }}: {{ application()?.appliedAt | localizedDate }}
+        </span>
       </div>
-    </div>
-
-    -->
+    }
   }
 </div>
