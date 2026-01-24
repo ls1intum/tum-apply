@@ -90,12 +90,7 @@ export class DateSlotCardComponent {
 
         // 4. Check for time overlap: (StartA < EndB) and (StartB < EndA)
         if (slot1.start < slot2.end && slot2.start < slot1.end) {
-          // 5. Mark slot1 as conflicting (if not already marked)
-          if (!conflicts.has(slot1.key)) {
-            conflicts.set(slot1.key, null);
-          }
-
-          // 6. Mark slot2 as conflicting, and store the display time of slot1
+          // 5. Mark slot2 as conflicting, and store the display time of slot1
           if (!conflicts.has(slot2.key) || conflicts.get(slot2.key) === null) {
             conflicts.set(slot2.key, slot1.display);
           }
