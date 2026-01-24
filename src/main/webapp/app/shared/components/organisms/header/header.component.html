@@ -32,8 +32,8 @@
       <jhi-button
         class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
         (click)="toggleTheme()"
-        [icon]="isDarkMode() ? 'moon' : 'custom-sun'"
-        [tooltip]="'header.theme' | translate"
+        [icon]="themeIcon()"
+        [tooltip]="themeTooltip() | translate"
         variant="text"
         severity="primary"
       />
