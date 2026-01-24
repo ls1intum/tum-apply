@@ -828,6 +828,17 @@ class InterviewResourceTest extends AbstractResourceTest {
             assertThat(result.isBooked()).isTrue();
             assertThat(result.interviewee()).isNotNull();
             assertThat(result.interviewee().applicationId()).isEqualTo(application.getApplicationId());
+
+            // Verify 2 emails sent: 1 to applicant, 1 to professor
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(2)).sendAsync(emailCaptor.capture());
+
+            List<Email> sentEmails = emailCaptor.getAllValues();
+            assertThat(sentEmails).hasSize(2);
+            assertThat(sentEmails.stream().map(Email::getEmailType)).containsExactlyInAnyOrder(
+                EmailType.INTERVIEW_INVITATION,
+                EmailType.INTERVIEW_ASSIGNED_PROFESSOR
+            );
         }
 
         @Test
