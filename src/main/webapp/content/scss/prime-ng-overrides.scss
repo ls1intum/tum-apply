@@ -161,5 +161,5 @@ p-step[data-p-active='true'] .p-step-title {
 // Adjust tooltip positioning on the right side to avoid a cramped appearance
 // Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}"
 .tooltip-top.p-tooltip-right {
-  top: -10px !important;
+  top: -0.5rem !important;
 }
