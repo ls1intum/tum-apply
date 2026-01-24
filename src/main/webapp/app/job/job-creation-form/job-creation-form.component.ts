@@ -908,7 +908,7 @@ export class JobCreationFormComponent {
 
   /**
    * Loads the translated job description from the server after AI generation.
-   * This is needed because the backend translates asynchronously after streaming.
+   * This is needed because the server translates asynchronously after streaming.
    * Uses retry logic with delay to wait for the translation to complete.
    *
    * @param targetLang The language to load ('en' or 'de')
@@ -942,7 +942,6 @@ export class JobCreationFormComponent {
       }
     }
   }
-
   private autoScrollStreaming(): void {
     const smoothScroll = () => {
       if (!this.isAutoScrolling) {
@@ -1319,7 +1318,7 @@ export class JobCreationFormComponent {
         });
       }
     } catch {
-      this.toastService.showErrorKey('jobCreationForm.toastMessages.translationFailed');
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
     } finally {
       this.isTranslating.set(false);
     }

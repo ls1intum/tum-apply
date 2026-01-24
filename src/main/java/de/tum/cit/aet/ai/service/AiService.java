@@ -9,11 +9,9 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-
 import java.time.Duration;
+import reactor.core.publisher.Flux;
 import java.util.Set;
-
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 @Service
@@ -31,10 +29,16 @@ public class AiService {
     private final JobService jobService;
 
     /**
+     * Maximum number of tokens for AI completion responses.
+     * Set to 2000 to balance response length with generation speed.
+     */
+    private static final int MAX_COMPLETION_TOKENS = 2000;
+
+    /**
      * Chat options for fast, deterministic responses.
      */
     private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
-        .maxCompletionTokens(2000)
+        .maxCompletionTokens(MAX_COMPLETION_TOKENS)
         .reasoningEffort("low")
         .build();
 
