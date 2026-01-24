@@ -260,10 +260,6 @@ export class ResearchGroupTemplateEdit {
     }));
   }
 
-  protected navigateBack(): void {
-    void this.router.navigate(['/research-group/templates']);
-  }
-
   // Replace mention labels in the Quill HTML with translated versions
   private translateMentionsInTemplate(form: EmailTemplateDTO): EmailTemplateDTO {
     const updateMentionValues = (html: string): string => {
