@@ -1,4 +1,4 @@
-<div class="rounded border border-border-default bg-background-default mb-4">
+<div class="rounded-lg border border-border-default bg-background-default mb-4">
   <!-- Header -->
   <div class="flex w-full items-center justify-between p-3 border-border-default" [class.border-b]="!isCollapsed()">
     <!-- Left: Toggle + Date -->
@@ -113,7 +113,7 @@
 
                 @if (range.type !== 'scheduled') {
                   <div
-                    class="flex flex-col gap-1 rounded pt-1 pb-2 px-2"
+                    class="flex flex-col gap-1 rounded-md pt-1 pb-2 px-2"
                     [class.border]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
                     [class.border-negative-default]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
                   >
@@ -181,7 +181,7 @@
                       <div class="flex flex-col gap-2 pt-2">
                         @for (slot of range.slots; track $index; let slotIndex = $index) {
                           <div
-                            class="flex flex-col gap-1 rounded border border-border-default bg-background-default px-3 py-2"
+                            class="flex flex-col gap-1 rounded-md border border-border-default bg-background-default px-3 py-2"
                             [class.border-negative-default]="conflictingSlotKeys().has(range.id + '_' + slotIndex)"
                           >
                             <div class="flex items-center justify-between">
