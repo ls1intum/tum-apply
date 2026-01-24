@@ -21,43 +21,6 @@
           </div>
         </div>
       </div>
-
-      <div class="mb-4">
-        <div class="text-lg font-semibold mb-2">
-          <h2 jhiTranslate="settings.privacy.header"></h2>
-        </div>
-
-        <div class="pb-4">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="max-w-3xl flex flex-col">
-              <div class="text-base font-medium text-text-secondary" jhiTranslate="settings.privacy.export.header"></div>
-              <div class="text-sm text-text-secondary mt-1" jhiTranslate="settings.privacy.export.description"></div>
-            </div>
-
-            <div class="export-actions flex flex-col items-start md:items-end gap-2">
-              <div class="flex flex-row items-center gap-3">
-                <jhi-button
-                  (click)="exportUserData()"
-                  [label]="'settings.privacy.export.button'"
-                  severity="primary"
-                  [shouldTranslate]="true"
-                  [disabled]="exportButtonDisabled()"
-                />
-
-                @if (exportInProgress()) {
-                  <div class="text-sm text-text-secondary" jhiTranslate="settings.privacy.export.inProgress"></div>
-                }
-              </div>
-
-              @if (exportCooldownRemaining() > 0) {
-                <div class="text-sm text-text-secondary">
-                  <span [translateValues]="{ seconds: exportCooldownRemaining() }" jhiTranslate="settings.privacy.export.cooldown"></span>
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
     </ng-template>
 
     <ng-template jhiTabPanel="notifications">

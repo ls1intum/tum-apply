@@ -26,5 +26,18 @@
 
     <h2 class="subheadline" jhiTranslate="privacy.emailSec.headline"></h2>
     <span class="text" jhiTranslate="privacy.emailSec.text"></span>
+
+    <div class="pt-6">
+      <jhi-button
+        (click)="exportUserData()"
+        [label]="'privacy.export.button'"
+        severity="primary"
+        variant="outlined"
+        size="xs"
+        [shouldTranslate]="true"
+        [disabled]="exportButtonDisabled()"
+        [tooltip]="tooltip()"
+      />
+    </div>
   </div>
 </div>

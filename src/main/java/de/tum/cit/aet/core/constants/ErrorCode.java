@@ -16,5 +16,6 @@ public enum ErrorCode {
     UPLOAD_FAILED,
     VALIDATION_ERROR,
     TIME_CONFLICT,
+    TOO_MANY_REQUESTS,
     UNKNOWN_IMAGE_TYPE,
 }

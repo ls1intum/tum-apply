@@ -145,6 +145,9 @@ public class SecurityConfiguration {
                     // Public GET endpoints for departments
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/departments", "/api/departments/*")
                     .permitAll()
+                    // Public download for data export (token-based authentication)
+                    .requestMatchers("/api/users/data-export/download/**")
+                    .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()
                     .requestMatchers("/login/webauthn")

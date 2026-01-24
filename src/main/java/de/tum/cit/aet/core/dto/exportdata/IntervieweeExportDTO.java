@@ -4,4 +4,4 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record InternalCommentExportDTO(String jobTitle, String applicantName, String message, Instant createdAt) {}
+public record IntervieweeExportDTO(String jobTitle, Instant lastInvited) {}
