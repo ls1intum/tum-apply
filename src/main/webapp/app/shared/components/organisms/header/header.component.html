@@ -42,6 +42,7 @@
     @if (user() === undefined) {
       @if (isProfessorPage()) {
         <jhi-button
+          [class]="headerButtonClass"
           (click)="redirectToApplicantLandingPage()"
           label="{{ 'header.applicant' | translate }}"
           severity="primary"
@@ -49,7 +50,7 @@
         />
       } @else {
         <jhi-button
-          class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
+          [class]="headerButtonClass"
           (click)="redirectToProfessorLandingPage()"
           label="{{ 'header.professor' | translate }}"
           severity="primary"
@@ -57,12 +58,7 @@
         />
       }
 
-      <jhi-button
-        class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md"
-        (click)="login()"
-        label="{{ 'header.login' | translate }}"
-        severity="primary"
-      />
+      <jhi-button [class]="headerButtonClass" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
     } @else {
       <button
         class="flex py-1 px-2 items-center gap-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"

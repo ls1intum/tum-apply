@@ -1,14 +1,15 @@
 package de.tum.cit.aet.ai.service;
 
-import de.tum.cit.aet.ai.dto.AIJobDescriptionDTO;
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 @Service
 @Slf4j
@@ -24,32 +25,68 @@ public class AiService {
 
     private final JobService jobService;
 
+    /**
+     * Maximum number of tokens for AI completion responses.
+     * Set to 2000 to balance response length with generation speed.
+     */
+    private static final int MAX_COMPLETION_TOKENS = 2000;
+
+    /**
+     * Chat options for fast, deterministic responses.
+     */
+    private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
+        .maxCompletionTokens(MAX_COMPLETION_TOKENS)
+        .reasoningEffort("low")
+        .build();
+
     public AiService(ChatClient.Builder chatClientBuilder, JobService jobService) {
         this.chatClient = chatClientBuilder.build();
         this.jobService = jobService;
     }
 
     /**
-     * Generates a polished job application draft from the provided job form data.
-     * The draft is generated using the configured ChatClient with AGG\-compliant,
-     * gender\-inclusive language.
+     * Generates a job application draft using streaming for faster perceived response time.
+     * Returns a Flux that emits content chunks as they are generated.
+     * After streaming completes, automatically translates the content to the other language.
      *
      * @param jobFormDTO          the job form data containing description, requirements, and tasks
-     * @param descriptionLanguage the language for the generated job description
-     * @return The generated job posting content
+     * @param descriptionLanguage the language for the generated job description ("de" or "en")
+     * @param jobId               optional job ID - if provided, auto-translates to the other language after streaming
+     * @return Flux of content chunks as they are generated
      */
-    public AIJobDescriptionDTO generateJobApplicationDraft(JobFormDTO jobFormDTO, String descriptionLanguage) {
+    public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage, String jobId) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
-        AIJobDescriptionDTO response = chatClient
+        Flux<String> contentFlux = chatClient
             .prompt()
-            .user(u -> u.text(jobGenerationResource).param("jobDescription", input))
-            .call()
-            .entity(AIJobDescriptionDTO.class);
+            .options(FAST_CHAT_OPTIONS)
+            .user(u ->
+                u
+                    .text(jobGenerationResource)
+                    .param("jobDescription", input)
+                    .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
+                    .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
+                    .param("fieldOfStudies", jobFormDTO.fieldOfStudies() != null ? jobFormDTO.fieldOfStudies() : "")
+                    .param("location", jobFormDTO.location() != null ? jobFormDTO.location().toString() : "")
+            )
+            .stream()
+            .content();
 
-        translateAndPersistJobDescription(String.valueOf(jobFormDTO.jobId()), descriptionLanguage, response != null ? response.jobDescription() : "");
+        if (jobId != null) {
+            StringBuilder contentBuilder = new StringBuilder();
+            String targetLang = "de".equals(descriptionLanguage) ? "en" : "de";
 
-        return response;
+            return contentFlux
+                .doOnNext(contentBuilder::append)
+                .doOnComplete(() -> {
+                    String fullContent = contentBuilder.toString();
+                    if (!fullContent.isBlank()) {
+                        translateAndPersistJobDescription(jobId, targetLang, fullContent);
+                    }
+                });
+        }
+
+        return contentFlux;
     }
 
     /**
@@ -63,6 +100,7 @@ public class AiService {
     private AIJobDescriptionTranslationDTO translateText(String text, String toLang) {
         return chatClient
             .prompt()
+            .options(FAST_CHAT_OPTIONS)
             .user(u -> u.text(translationResource).param("text", text).param("targetLanguage", toLang))
             .call()
             .entity(AIJobDescriptionTranslationDTO.class);
