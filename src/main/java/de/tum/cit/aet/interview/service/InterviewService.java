@@ -374,7 +374,21 @@ public class InterviewService {
             );
 
             if (hasConflict) {
-                throw new TimeConflictException(String.format("Time conflict: You already have an interview slot at the requested time"));
+                // Fetch conflicting InterviewSlot entity to provide details
+                InterviewSlot conflictingSlot = interviewSlotRepository
+                    .findFirstConflictingSlot(professor, newSlot.getStartDateTime(), newSlot.getEndDateTime())
+                    .orElseThrow();
+
+                ZonedDateTime conflictTime = conflictingSlot.getStartDateTime().atZone(CET_TIMEZONE);
+                String jobTitle = conflictingSlot.getInterviewProcess().getJob().getTitle();
+
+                throw new TimeConflictException(
+                    String.format(
+                        "Time conflict: You already have an interview slot at %s for job '%s'",
+                        conflictTime.toLocalDateTime(),
+                        jobTitle
+                    )
+                );
             }
         }
     }
