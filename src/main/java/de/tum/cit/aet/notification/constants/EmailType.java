@@ -69,6 +69,12 @@ public enum EmailType {
     INTERVIEW_BOOKED_PROFESSOR("INTERVIEW_BOOKED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
 
     /**
+     * Confirmation to professor when they manually assign a slot to an applicant
+     * To: Supervising professor of the job
+     */
+    INTERVIEW_ASSIGNED_PROFESSOR("INTERVIEW_ASSIGNED_PROFESSOR", Set.of(UserRole.PROFESSOR, UserRole.EMPLOYEE), false, false),
+
+    /**
      * Invitation to self-schedule an interview slot
      * To: Applicant
      */
