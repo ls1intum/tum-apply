@@ -205,10 +205,16 @@
                                     }
                                   }
                                   @case ('SAME_PROCESS') {
-                                    {{ 'interview.slots.create.validation.conflictSameProcess' | translate }}
+                                    {{
+                                      'interview.slots.create.validation.conflictSameProcess'
+                                        | translate: { time: allConflicts().get(range.id + '_' + slotIndex)?.displayTime }
+                                    }}
                                   }
                                   @case ('BOOKED_OTHER_PROCESS') {
-                                    {{ 'interview.slots.create.validation.conflictBookedOther' | translate }}
+                                    {{
+                                      'interview.slots.create.validation.conflictBookedOther'
+                                        | translate: { time: allConflicts().get(range.id + '_' + slotIndex)?.displayTime }
+                                    }}
                                   }
                                 }
                               </span>
@@ -242,10 +248,16 @@
                             }
                           }
                           @case ('SAME_PROCESS') {
-                            {{ 'interview.slots.create.validation.conflictSameProcess' | translate }}
+                            {{
+                              'interview.slots.create.validation.conflictSameProcess'
+                                | translate: { time: allConflicts().get(range.id + '_0')?.displayTime }
+                            }}
                           }
                           @case ('BOOKED_OTHER_PROCESS') {
-                            {{ 'interview.slots.create.validation.conflictBookedOther' | translate }}
+                            {{
+                              'interview.slots.create.validation.conflictBookedOther'
+                                | translate: { time: allConflicts().get(range.id + '_0')?.displayTime }
+                            }}
                           }
                         }
                       </span>

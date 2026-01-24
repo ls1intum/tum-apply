@@ -91,7 +91,7 @@ export class SlotCreationFormComponent {
 
   // Computes all conflicts between new slots and existing server data.
   readonly serverConflicts = computed(() => {
-    const conflicts = new Map<string, { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO }>();
+    const conflicts = new Map<string, { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO; displayTime: string }>();
 
     // Iterates over all selected dates
     for (const [dateKey, newSlots] of this.slotsByDate().entries()) {
@@ -385,10 +385,15 @@ export class SlotCreationFormComponent {
    * Finds conflicts for a new slot against existing slots.
    * Priority: BOOKED_OTHER_PROCESS > SAME_PROCESS
    */
+  /**
+   * Finds conflicts for a new slot against existing slots.
+   * Priority: BOOKED_OTHER_PROCESS > SAME_PROCESS
+   * If multiple conflicts exist, returns the most severe type and a combined time string.
+   */
   private findConflict(
     slot: InterviewSlotDTO,
     data: ConflictDataDTO,
-  ): { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO } | null {
+  ): { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO; displayTime: string } | null {
     if (!data.slots || (data.currentProcessId ?? '') === '') {
       return null;
     }
@@ -396,21 +401,47 @@ export class SlotCreationFormComponent {
     const start = new Date(slot.startDateTime ?? '').getTime();
     const end = new Date(slot.endDateTime ?? '').getTime();
 
-    // Check BOOKED slots from other processes first (higher severity)
+    const conflicts: ExistingSlotDTO[] = [];
+    let hasBookedConflict = false;
+
+    // Collect all overlapping existing slots
     for (const existing of data.slots) {
-      if (existing.interviewProcessId !== data.currentProcessId && existing.isBooked === true && this.overlaps(start, end, existing)) {
-        return { type: 'BOOKED_OTHER_PROCESS', slot: existing };
+      if (this.overlaps(start, end, existing)) {
+        conflicts.push(existing);
+        if (existing.interviewProcessId !== data.currentProcessId && existing.isBooked === true) {
+          hasBookedConflict = true;
+        }
       }
     }
 
-    // Then check same-process slots (any overlap)
-    for (const existing of data.slots) {
-      if (existing.interviewProcessId === data.currentProcessId && this.overlaps(start, end, existing)) {
-        return { type: 'SAME_PROCESS', slot: existing };
-      }
+    if (conflicts.length === 0) {
+      return null;
     }
 
-    return null;
+    // Determine type and formatted times
+    // Sort logic or keeping order? Server order is usually chronological, which is good.
+    const displayTimes = conflicts
+      .map(c => this.formatTimeRange(c.startDateTime, c.endDateTime))
+      .filter(t => t !== '')
+      .join(', ');
+
+    const primaryType = hasBookedConflict ? 'BOOKED_OTHER_PROCESS' : 'SAME_PROCESS';
+
+    // We return the first slot as the "representative" slot object for the interface,
+    // but the displayTime contains info for all of them.
+    return { type: primaryType, slot: conflicts[0], displayTime: displayTimes };
+  }
+
+  private formatTimeRange(start: string | undefined, end: string | undefined): string {
+    if (!start || !end) return '';
+    const s = new Date(start);
+    const e = new Date(end);
+
+    // Check for invalid dates
+    if (isNaN(s.getTime()) || isNaN(e.getTime())) return '';
+
+    const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
+    return `${s.toLocaleTimeString([], options)} - ${e.toLocaleTimeString([], options)}`;
   }
 
   private overlaps(start: number, end: number, existing: ExistingSlotDTO): boolean {

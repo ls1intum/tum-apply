@@ -59,7 +59,9 @@ export class DateSlotCardComponent {
   readonly showApplyAll = input<boolean>(false);
   readonly showValidationErrors = input<boolean>(false);
   // Server-side conflicts passed from parent (key: startDateTime-endDateTime)
-  readonly serverConflicts = input<Map<string, { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO }>>(new Map());
+  readonly serverConflicts = input<
+    Map<string, { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO; displayTime?: string }>
+  >(new Map());
 
   readonly slotsChange = output<InterviewSlotDTO[]>();
   readonly applyAll = output<boolean>();
@@ -122,7 +124,7 @@ export class DateSlotCardComponent {
           if (conflict) {
             const templateKey = `${range.id}_${slotIndex}`;
             // Server conflicts take priority over batch conflicts
-            combined.set(templateKey, { type: conflict.type });
+            combined.set(templateKey, { type: conflict.type, displayTime: conflict.displayTime });
           }
         });
       }
