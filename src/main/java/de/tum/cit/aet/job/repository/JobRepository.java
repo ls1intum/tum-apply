@@ -6,10 +6,13 @@ import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
+import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -256,7 +259,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @return the job with image loaded, or empty if not found
      */
     @Query("SELECT j FROM Job j LEFT JOIN FETCH j.image WHERE j.jobId = :jobId")
-    java.util.Optional<Job> findByIdWithImage(@Param("jobId") UUID jobId);
+    Optional<Job> findByIdWithImage(@Param("jobId") UUID jobId);
 
     /**
      * Find all jobs by state with images eagerly loaded
@@ -268,4 +271,15 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
         "SELECT DISTINCT j FROM Job j LEFT JOIN FETCH j.image WHERE j.state = :state AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)"
     )
     List<Job> findAllByStateWithImages(@Param("state") JobState state);
+
+    /**
+     * Reassigns jobs supervised by a specific user to a deleted user.
+     *
+     * @param user the user whose jobs are to be reassigned
+     * @param deletedUser the deleted user to whom the jobs will be reassigned
+     * @param state the job state to apply after reassignment
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Job j SET j.supervisingProfessor = :deletedUser, j.state = :state WHERE j.supervisingProfessor = :user")
+    void anonymiseJobByUserId(@Param("user") User user, @Param("deletedUser") User deletedUser, @Param("state") JobState state);
 }

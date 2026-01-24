@@ -10,6 +10,7 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.Constants;
+import de.tum.cit.aet.core.config.UserRetentionProperties;
 
 @AnalyzeClasses(packagesOf = TumApplyApp.class, importOptions = DoNotIncludeTests.class)
 class TechnicalStructureTest {
@@ -20,7 +21,7 @@ class TechnicalStructureTest {
         .consideringAllDependencies()
         .layer("Config").definedBy("..config..")
         .layer("Web").definedBy("..web..")
-        .optionalLayer("Service").definedBy("..service..")
+        .optionalLayer("Service").definedBy("..service..", "..retention..")
         .layer("Security").definedBy("..security..")
         .optionalLayer("Persistence").definedBy("..repository..")
         .layer("Domain").definedBy("..domain..")
@@ -36,6 +37,7 @@ class TechnicalStructureTest {
         .ignoreDependency(belongToAnyOf(TumApplyApp.class), alwaysTrue())
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
             Constants.class,
-            ApplicationProperties.class
+            ApplicationProperties.class,
+            UserRetentionProperties.class
         ));
 }

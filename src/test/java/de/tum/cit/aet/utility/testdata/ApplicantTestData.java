@@ -6,6 +6,8 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
+import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -138,10 +140,7 @@ public final class ApplicantTestData {
      * Creates and saves an Applicant with a random unique email address.
      * Useful when multiple applicants are needed in a single test.
      */
-    public static Applicant savedWithRandomEmail(
-        ApplicantRepository repo,
-        de.tum.cit.aet.usermanagement.repository.UserRepository userRepo
-    ) {
+    public static Applicant savedWithRandomEmail(ApplicantRepository repo, UserRepository userRepo) {
         User applicantUser = new User();
         applicantUser.setUserId(UUID.randomUUID());
         applicantUser.setEmail("applicant" + UUID.randomUUID().toString().substring(0, 8) + "@example.com");
@@ -153,6 +152,28 @@ public final class ApplicantTestData {
         User savedUser = userRepo.save(applicantUser);
 
         return savedWithExistingUser(repo, savedUser);
+    }
+
+    public static User saveApplicant(String email, UserRepository userRepository) {
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), email, "App", "User");
+        ApplicantTestData.attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        return userRepository.saveAndFlush(applicantUser);
+    }
+
+    public static User saveApplicantWithLastActivity(
+        String email,
+        ApplicantRepository applicantRepository,
+        UserRepository userRepository,
+        LocalDateTime lastActivityAt
+    ) {
+        User applicantUser = UserTestData.newUserAll(UUID.randomUUID(), email, "Applicant", "User");
+        ApplicantTestData.attachApplicantRole(applicantUser);
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        applicantUser.setLastActivityAt(lastActivityAt);
+        User savedApplicantUser = userRepository.saveAndFlush(applicantUser);
+        ApplicantTestData.savedWithExistingUser(applicantRepository, savedApplicantUser);
+        return savedApplicantUser;
     }
 
     // --- Attach roles---------------------------------------------------------------------------
