@@ -11,6 +11,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+import java.util.Set;
+
+import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
+
 @Service
 @Slf4j
 public class AiService {
@@ -51,6 +56,19 @@ public class AiService {
     public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage, String jobId) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
+        Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
+        Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+        final String locationText = (jobFormDTO.location().toString() == null) ? "" :
+            switch (jobFormDTO.location().toString()) {
+                case "GARCHING" -> "Garching";
+                case "GARCHING_HOCHBRUECK" -> "Garching Hochbrück";
+                case "HEILBRONN" -> "Heilbronn";
+                case "MUNICH" -> "Munich";
+                case "STRAUBING" -> "Straubing";
+                case "WEIHENSTEPHAN" -> "Weihenstephan";
+                case "SINGAPORE" -> "Singapore";
+                default -> "";
+            };
         Flux<String> contentFlux = chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
@@ -61,10 +79,13 @@ public class AiService {
                     .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
                     .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
                     .param("fieldOfStudies", jobFormDTO.fieldOfStudies() != null ? jobFormDTO.fieldOfStudies() : "")
-                    .param("location", jobFormDTO.location() != null ? jobFormDTO.location().toString() : "")
+                    .param("location", locationText)
+                    .param("inclusiveWords", String.join(", ", inclusive))
+                    .param("nonInclusiveWords", String.join(", ", nonInclusive))
             )
             .stream()
-            .content();
+            .content()
+            .delayElements(Duration.ofMillis(70));
 
         if (jobId != null) {
             StringBuilder contentBuilder = new StringBuilder();
