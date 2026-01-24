@@ -15,6 +15,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { TimeInputComponent } from 'app/shared/components/atoms/time-input/time-input.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ValidationMessageComponent } from 'app/shared/components/atoms/validation-message/validation-message.component';
 
 export interface SlotRange {
   id: string;
@@ -46,6 +47,7 @@ export interface SlotRange {
     StringInputComponent,
     TimeInputComponent,
     FontAwesomeModule,
+    ValidationMessageComponent,
   ],
   templateUrl: './date-slot-card.component.html',
 })

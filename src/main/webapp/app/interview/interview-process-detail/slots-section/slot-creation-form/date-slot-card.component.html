@@ -157,9 +157,7 @@
                         [errorEnabled]="false"
                       />
                       @if (showValidationErrors() && !range.location) {
-                        <span class="text-xs text-negative-default mt-1 ml-5 block">
-                          {{ 'interview.slots.create.validation.locationRequired.detail' | translate }}
-                        </span>
+                        <jhi-validation-message message="interview.slots.create.validation.locationRequired.detail" styleClass="ml-5" />
                       }
                     </div>
 
@@ -206,17 +204,17 @@
                         }
                       </div>
                     } @else if (range.startTime && range.endTime && range.startTime.getTime() >= range.endTime.getTime()) {
-                      <span class="mt-1 text-xs text-negative-default">
-                        {{ 'interview.slots.create.validation.endBeforeStart' | translate }}
-                      </span>
+                      <jhi-validation-message message="interview.slots.create.validation.endBeforeStart" />
                     } @else if (range.type === 'range' && (!range.startTime || !range.endTime)) {
                       <span class="mt-1 text-xs font-medium text-text-secondary">
                         {{ 'interview.slots.create.addStartAndEndTime' | translate }}
                       </span>
                     } @else if (range.type === 'range' && range.startTime && range.endTime && range.slots.length === 0) {
-                      <span class="mt-1 text-xs font-medium text-negative-default">
-                        {{ 'interview.slots.create.validation.rangeTooShort' | translate: { duration: range.duration } }}
-                      </span>
+                      <jhi-validation-message
+                        message="interview.slots.create.validation.rangeTooShort"
+                        [translationParams]="{ duration: range.duration }"
+                        styleClass="font-medium"
+                      />
                     }
 
                     <!-- Conflict Error (Single Slot) -->
