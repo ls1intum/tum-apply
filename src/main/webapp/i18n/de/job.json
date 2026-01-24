@@ -135,7 +135,7 @@
         "aiHeaderText": "KI Assistent",
         "aiButton1": "Mit KI schreiben",
         "aiButton2": "Mit KI umschreiben",
-        "aiHelperText": "Schreibe Stichpunkte für deinen ersten Job-Entwurf. Fülle obenstehende Felder für bessere Ergebnisse aus. KI generierung kann einen Moment dauern.",
+        "aiHelperText": "Schreibe Stichpunkte für deinen ersten Job-Entwurf. Fülle obenstehende Felder für bessere Ergebnisse aus. KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
@@ -225,7 +225,7 @@
         "summary": "Speichern fehlgeschlagen",
         "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und speichere erneut."
       },
-      "translationFailed": {
+      "aiTranslationFailed": {
         "summary": "Übersetzung fehlgeschlagen",
         "detail": "Die Stellenbeschreibung konnte nicht übersetzt werden. Bitte versuche es erneut."
       },
