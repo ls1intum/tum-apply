@@ -2,7 +2,6 @@ package de.tum.cit.aet.core.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationReviewExportDTO;
@@ -20,8 +19,6 @@ import de.tum.cit.aet.core.dto.exportdata.UserSettingDTO;
 import de.tum.cit.aet.core.exception.UserDataExportException;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.core.service.DocumentZipUtility;
-import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
@@ -32,6 +29,7 @@ import de.tum.cit.aet.interview.domain.Interviewee;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
@@ -78,6 +76,7 @@ public class UserDataExportService {
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final UserSettingRepository userSettingRepository;
 
+    private final InterviewService interviewService;
     private final ZipExportService zipExportService;
     private final DocumentZipUtility documentZipUtility;
     private final ObjectMapper objectMapper;
@@ -284,8 +283,7 @@ public class UserDataExportService {
     }
 
     private List<InterviewProcess> getInterviewProcesses(User user) {
-        List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
-        return processes == null ? List.of() : processes;
+        return interviewService.getInterviewProcessesByProfessor(user);
     }
 
     private List<InterviewProcessExportDTO> mapInterviewProcesses(List<InterviewProcess> processes) {
