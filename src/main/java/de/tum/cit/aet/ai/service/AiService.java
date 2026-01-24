@@ -29,7 +29,7 @@ public class AiService {
      * Chat options for fast, deterministic responses.
      */
     private static final AzureOpenAiChatOptions FAST_CHAT_OPTIONS = AzureOpenAiChatOptions.builder()
-        .maxTokens(2000)
+        .maxCompletionTokens(2000)
         .reasoningEffort("low")
         .build();
 
