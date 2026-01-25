@@ -62,15 +62,15 @@ public class AiService {
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
-        final String locationText = (jobFormDTO.location().toString() == null) ? "" :
-            switch (jobFormDTO.location().toString()) {
-                case "GARCHING" -> "Garching";
-                case "GARCHING_HOCHBRUECK" -> "Garching Hochbrück";
-                case "HEILBRONN" -> "Heilbronn";
-                case "MUNICH" -> "Munich";
-                case "STRAUBING" -> "Straubing";
-                case "WEIHENSTEPHAN" -> "Weihenstephan";
-                case "SINGAPORE" -> "Singapore";
+        final String locationText = (jobFormDTO.location() == null) ? "" :
+            switch (jobFormDTO.location()) {
+                case GARCHING -> "Garching";
+                case GARCHING_HOCHBRUECK -> "Garching Hochbrück";
+                case HEILBRONN -> "Heilbronn";
+                case MUNICH -> "Munich";
+                case STRAUBING -> "Straubing";
+                case WEIHENSTEPHAN -> "Weihenstephan";
+                case SINGAPORE -> "Singapore";
                 default -> "";
             };
         Flux<String> contentFlux = chatClient
