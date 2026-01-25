@@ -90,8 +90,7 @@ public class AiService {
                     .param("nonInclusiveWords", String.join(", ", nonInclusive))
             )
             .stream()
-            .content()
-            .delayElements(Duration.ofMillis(70));
+            .content();
 
         if (jobId != null) {
             StringBuilder contentBuilder = new StringBuilder();
