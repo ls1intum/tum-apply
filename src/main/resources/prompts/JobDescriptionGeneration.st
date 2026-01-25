@@ -28,6 +28,12 @@ STYLE:
 USER INSTRUCTIONS:
 When user gives instructions after initial generation (make shorter, more formal, add X, remove Y), immediately apply those changes to the text.
 
+Determine the correct section by the content type:
+- Offers/Benefits (salary, funding, equipment) -> Description
+- Duties/Activities (tasks, responsibilities) -> Tasks & Responsibilities
+- Requirements (skills, degrees, experience) -> Eligibility Criteria
+- Style/Tone -> All sections
+
 INPUT TEXT:
 {jobDescription}
 
