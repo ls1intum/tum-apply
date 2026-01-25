@@ -109,7 +109,7 @@
             <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
           } @else {
             <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="getJobDescriptionForCurrentLang(job) || '-'"></div>
+            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDescriptionForCurrentLang() || '-'"></div>
           }
         </section>
       </div>
