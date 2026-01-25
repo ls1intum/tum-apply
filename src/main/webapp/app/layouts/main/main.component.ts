@@ -1,12 +1,11 @@
 import { Component, ElementRef, Renderer2, RendererFactory2, afterNextRender, computed, inject, viewChild } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import { LocalStorageService } from 'app/service/localStorage.service';
 import { SidebarComponent } from 'app/shared/components/organisms/sidebar/sidebar.component';
-import { filter } from 'rxjs/operators';
 import { HeaderComponent } from 'app/shared/components/organisms/header/header.component';
 import { OnboardingOrchestratorService } from 'app/service/onboarding-orchestrator.service';
 
@@ -42,18 +41,14 @@ export default class MainComponent {
       dayjs.locale(langChangeEvent.lang);
       this.renderer.setAttribute(document.querySelector('html'), 'lang', langChangeEvent.lang);
     });
-
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
-      // Small timeout to ensure the DOM has updated
-      setTimeout(() => {
-        const container = this.scrollContainer(); // Access it like a signal
-        if (container) {
-          container.nativeElement.scrollTo({ top: 0, behavior: 'instant' });
-        }
-      }, 0);
-    });
-
     afterNextRender(() => this.onboardingOrchestratorService.hookToAuth(this.loggedIn));
+  }
+
+  onActivate(): void {
+    const container = this.scrollContainer();
+    if (container) {
+      container.nativeElement.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }
 
   toggleSidebar(): void {

@@ -12,7 +12,7 @@
     }
     <div #scrollContainer class="content">
       <div class="content-flex">
-        <router-outlet />
+        <router-outlet (activate)="onActivate()" />
       </div>
 
       <jhi-footer />
