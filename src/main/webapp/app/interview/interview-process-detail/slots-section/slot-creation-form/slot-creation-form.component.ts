@@ -11,6 +11,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { InterviewResourceApiService } from 'app/generated';
 import { ToastService } from 'app/service/toast-service';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
+import { ConflictDataDTO } from 'app/generated/model/conflictDataDTO';
+import { ExistingSlotDTO } from 'app/generated/model/existingSlotDTO';
 import { SlotInput } from 'app/generated/model/slotInput';
 import { firstValueFrom } from 'rxjs';
 import { DateSlotCardComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/date-slot-card.component';
@@ -20,6 +22,7 @@ import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.compo
 import { SegmentButtonComponent } from 'app/shared/components/atoms/segment-button/segment-button.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { toLocalDateString } from 'app/shared/util/date-time.util';
 
 @Component({
   selector: 'jhi-slot-creation-form',
@@ -82,6 +85,37 @@ export class SlotCreationFormComponent {
 
   // Map date string to slots
   readonly slotsByDate = signal<Map<string, InterviewSlotDTO[]>>(new Map());
+
+  // Conflict detection state
+  readonly conflictDataByDate = signal<Map<string, ConflictDataDTO>>(new Map());
+
+  // Computes all conflicts between new slots and existing server data.
+  readonly serverConflicts = computed(() => {
+    const conflicts = new Map<string, { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO; displayTime: string }>();
+
+    // Iterates over all selected dates
+    for (const [dateKey, newSlots] of this.slotsByDate().entries()) {
+      // Get the server-side conflict data loaded for this specific date
+      const conflictData = this.conflictDataByDate().get(dateKey);
+      if (!conflictData?.slots) continue;
+
+      // Check each new slot against the server's existing slots for that day
+      for (const slot of newSlots) {
+        const conflict = this.findConflict(slot, conflictData);
+
+        if (conflict) {
+          // normalized ISO string key (Start-End) to identify which specific NEW slot has a conflict.
+          // This key matches the one generated in the child component (DateSlotCard)
+          const key = `${new Date(slot.startDateTime ?? '').toISOString()}-${new Date(slot.endDateTime ?? '').toISOString()}`;
+          conflicts.set(key, conflict);
+        }
+      }
+    }
+    return conflicts;
+  });
+
+  // Flag to disable save button when conflicts exist
+  readonly hasConflicts = computed(() => this.serverConflicts().size > 0);
 
   // Options
   readonly durationOptions = [
@@ -178,45 +212,45 @@ export class SlotCreationFormComponent {
   /**
    * Handles date selection from the calendar.
    * Syncs the regular property with the signal for template reactivity.
+   * Also loads conflict data for newly selected dates.
    */
   onDateSelect(dates: Date | Date[] | null): void {
     if (!dates) {
       this.selectedDatesSignal.set([]);
+      this.selectedDates = [];
       return;
     }
 
     const currentSelection = Array.isArray(dates) ? dates : [dates];
+
+    // Handle single vs multi selection behavior
+    let newSelection: Date[];
     const previousSelection = this.selectedDatesSignal();
 
-    // Single date selection toggles the state
-    if (currentSelection.length === 1) {
+    if (currentSelection.length === 1 && !Array.isArray(dates)) {
+      // Toggle logic for single click in calendar
       const clickedDate = currentSelection[0];
-      const clickedTime = clickedDate.getTime();
+      const exists = previousSelection.some(d => d.getTime() === clickedDate.getTime());
 
-      // Check if date is already selected
-      const exists = previousSelection.some(d => d.getTime() === clickedTime);
-
-      let newSelection: Date[];
       if (exists) {
-        if (previousSelection.length > 1) {
-          newSelection = currentSelection;
-        } else {
-          newSelection = [];
-        }
+        // Deselect if already selected
+        newSelection = previousSelection.length > 1 ? previousSelection.filter(d => d.getTime() !== clickedDate.getTime()) : [];
       } else {
-        newSelection = previousSelection.concat(clickedDate);
+        newSelection = [...previousSelection, clickedDate];
       }
-
-      // Sort dates chronologically
-      newSelection.sort((a, b) => a.getTime() - b.getTime());
-      this.selectedDatesSignal.set(newSelection);
     } else {
-      // Replace selection for range inputs
-      currentSelection.sort((a, b) => a.getTime() - b.getTime());
-      this.selectedDatesSignal.set(currentSelection);
+      // Standard multi-select update
+      newSelection = [...currentSelection];
     }
 
-    this.selectedDates = this.selectedDatesSignal();
+    newSelection.sort((a, b) => a.getTime() - b.getTime());
+    this.selectedDatesSignal.set(newSelection);
+    this.selectedDates = newSelection;
+
+    // Load conflict data for all selected dates
+    newSelection.forEach(date => {
+      void this.loadConflictDataForDate(date);
+    });
   }
 
   /**
@@ -236,7 +270,7 @@ export class SlotCreationFormComponent {
    * @param slots The new list of slots for that date.
    */
   updateSlotsForDate(date: Date, slots: InterviewSlotDTO[]): void {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = toLocalDateString(date);
     this.slotsByDate.update(map => {
       const newMap = new Map(map);
       newMap.set(dateStr, slots);
@@ -290,7 +324,7 @@ export class SlotCreationFormComponent {
     }
 
     // Validate that all slots have a location to display red border if missing
-    const hasMissingLocation = allSlots.some(slot => !slot.location || slot.location.trim() === '');
+    const hasMissingLocation = allSlots.some(slot => (slot.location ?? '').trim() === '');
     if (hasMissingLocation) {
       this.showValidationErrors.set(true);
       this.toastService.showErrorKey('interview.slots.create.validation.locationRequired');
@@ -304,7 +338,7 @@ export class SlotCreationFormComponent {
         const start = new Date(slot.startDateTime ?? '');
         const end = new Date(slot.endDateTime ?? '');
         return {
-          date: start.toISOString().split('T')[0],
+          date: toLocalDateString(start),
           startTime: start.toTimeString().slice(0, 5),
           endTime: end.toTimeString().slice(0, 5),
           location: slot.location ?? '',
@@ -329,6 +363,11 @@ export class SlotCreationFormComponent {
     }
   }
 
+  // Public method for template usage - get local date string (YYYY-MM-DD) without UTC conversion
+  getDateKey(date: Date): string {
+    return toLocalDateString(date);
+  }
+
   /**
    * Resets the internal state of the form.
    * Clears selected dates, slots, and resets duration/break settings.
@@ -337,7 +376,100 @@ export class SlotCreationFormComponent {
     this.selectedDatesSignal.set([]);
     this.selectedDates = [];
     this.slotsByDate.set(new Map());
+    this.conflictDataByDate.set(new Map());
     this.isSubmitting.set(false);
     this.showValidationErrors.set(false);
+  }
+
+  /**
+   * Finds conflicts for a new slot against existing slots.
+   * Priority: BOOKED_OTHER_PROCESS > SAME_PROCESS
+   */
+  /**
+   * Finds conflicts for a new slot against existing slots.
+   * Priority: BOOKED_OTHER_PROCESS > SAME_PROCESS
+   * If multiple conflicts exist, returns the most severe type and a combined time string.
+   */
+  private findConflict(
+    slot: InterviewSlotDTO,
+    data: ConflictDataDTO,
+  ): { type: 'SAME_PROCESS' | 'BOOKED_OTHER_PROCESS'; slot: ExistingSlotDTO; displayTime: string } | null {
+    if (!data.slots || (data.currentProcessId ?? '') === '') {
+      return null;
+    }
+
+    const start = new Date(slot.startDateTime ?? '').getTime();
+    const end = new Date(slot.endDateTime ?? '').getTime();
+
+    const conflicts: ExistingSlotDTO[] = [];
+    let hasBookedConflict = false;
+
+    // Collect all overlapping existing slots
+    for (const existing of data.slots) {
+      if (this.overlaps(start, end, existing)) {
+        conflicts.push(existing);
+        if (existing.interviewProcessId !== data.currentProcessId && existing.isBooked === true) {
+          hasBookedConflict = true;
+        }
+      }
+    }
+
+    if (conflicts.length === 0) {
+      return null;
+    }
+
+    // Determine type and formatted times
+    // Sort logic or keeping order? Server order is usually chronological, which is good.
+    const displayTimes = conflicts
+      .map(c => this.formatTimeRange(c.startDateTime, c.endDateTime))
+      .filter(t => t !== '')
+      .join(', ');
+
+    const primaryType = hasBookedConflict ? 'BOOKED_OTHER_PROCESS' : 'SAME_PROCESS';
+
+    // We return the first slot as the "representative" slot object for the interface,
+    // but the displayTime contains info for all of them.
+    return { type: primaryType, slot: conflicts[0], displayTime: displayTimes };
+  }
+
+  private formatTimeRange(start: string | undefined, end: string | undefined): string {
+    if (!start || !end) return '';
+    const s = new Date(start);
+    const e = new Date(end);
+
+    // Check for invalid dates
+    if (isNaN(s.getTime()) || isNaN(e.getTime())) return '';
+
+    const options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
+    return `${s.toLocaleTimeString([], options)} - ${e.toLocaleTimeString([], options)}`;
+  }
+
+  private overlaps(start: number, end: number, existing: ExistingSlotDTO): boolean {
+    const existStart = new Date(existing.startDateTime ?? '').getTime();
+    const existEnd = new Date(existing.endDateTime ?? '').getTime();
+    return start < existEnd && end > existStart;
+  }
+
+  /**
+   * Loads conflict data for a specific date from server.
+   */
+  private async loadConflictDataForDate(date: Date): Promise<void> {
+    const dateStr = toLocalDateString(date);
+
+    // Skip if already loaded
+    if (this.conflictDataByDate().has(dateStr)) {
+      return;
+    }
+
+    try {
+      const conflictData = await firstValueFrom(this.interviewService.getConflictDataForDate(this.processId(), dateStr));
+      this.conflictDataByDate.update(map => {
+        const newMap = new Map(map);
+        newMap.set(dateStr, conflictData);
+        return newMap;
+      });
+    } catch {
+      /* Fail silently as conflict data is optional and only used for UI warnings */
+    }
   }
 }
