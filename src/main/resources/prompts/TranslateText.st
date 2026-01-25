@@ -5,11 +5,7 @@ TASK: Translate the provided job description text into {targetLanguage}.
 STYLE:
 - Natural, human-sounding language
 - Professional academic tone
-- Only gender-inclusive language
-- AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
-- Keep ALL technical terms given exact: Python, fMRI, TV-L E13, PyTorch, etc.
-- Keep ALL specific details from INPUT TEXT, NEVER replace with generic terms
-- Maximum length: 1500 characters total
+- Keep ALL specific details from INPUT TEXT
 
 INPUT TEXT (HTML):
 {text}
@@ -19,11 +15,12 @@ OUTPUT FORMAT - CRITICAL:
 2. Structure: You must preserve the exact formatting of the original text, including line breaks, bullet points, and paragraphs.
 3. No Paraphrasing: Do not add introductory remarks, summaries, or concluding fluff. Return only the translated text.
 4. Terminology: Ensure specific academic ranks and legal requirements (e.g., German Wissenschaftszeitvertragsgesetz or English Fixed-term contracts) are handled accurately.
-5. Technical Terms: Keep industry-standard terminology (e.g., "Java", "Scrum", "Stakeholder") if they are commonly used in the target language's professional context.
+5. Technical Terms: Keep ALL industry-standard terminology (e.g., "Java", "Scrum", "Stakeholder", "Python", "fMRI", "TV-L E13", "PyTorch", etc.) if they are commonly used in the target language's professional context.
 6. Keep proper nouns (names, places, organizations) unchanged
 7. Preserve all numbers, dates, and special characters
 8. If a word has multiple meanings, choose the most contextually appropriate translation
 9. Consistency: Use gender-inclusive language appropriate for Higher Education (e.g., using the 'Gender-Gap' or neutral forms in German if present in the source, or 'they/them/their' structures in English).
+10. Maximum length: 1500 characters total
 
 Structure:
 {{
