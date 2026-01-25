@@ -91,7 +91,6 @@ public class AiService {
 
     /**
      * Translates the provided text between German and English.
-     * Automatically detects the source language and translates to the other language.
      * The translation preserves the original text structure and formatting.
      *
      * @param text the text to translate (German or English)
