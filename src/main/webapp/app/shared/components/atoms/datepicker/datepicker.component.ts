@@ -63,7 +63,7 @@ export class DatePickerComponent {
    */
   effectiveMinDate = computed(() => {
     const min = this.minDate();
-    if (min && min.getHours() === 0 && min.getMinutes() === 0 && min.getSeconds() === 0 && min.getMilliseconds() === 0) {
+    if (min?.getHours() === 0 && min.getMinutes() === 0 && min.getSeconds() === 0 && min.getMilliseconds() === 0) {
       return min;
     }
     const base = min ?? new Date();

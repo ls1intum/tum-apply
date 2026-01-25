@@ -15,11 +15,13 @@ import { StringInputComponent } from 'app/shared/components/atoms/string-input/s
 import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { DividerModule } from 'primeng/divider';
 import { firstValueFrom } from 'rxjs';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
   imports: [
     TranslateModule,
+    TranslateDirective,
     StringInputComponent,
     SelectComponent,
     ButtonComponent,

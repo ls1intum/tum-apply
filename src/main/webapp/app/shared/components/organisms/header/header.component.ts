@@ -47,8 +47,21 @@ export class HeaderComponent {
   router = inject(Router);
   themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  syncWithSystem = this.themeService.syncWithSystem;
   isDarkMode = computed(() => this.theme() === 'dark');
   showBorder = signal(false);
+  themeIcon = computed(() => {
+    if (this.syncWithSystem()) {
+      return 'custom-sun-moon';
+    }
+    return this.isDarkMode() ? 'moon' : 'custom-sun';
+  });
+  themeTooltip = computed(() => {
+    if (this.syncWithSystem()) {
+      return 'header.systemMode';
+    }
+    return this.isDarkMode() ? 'header.darkMode' : 'header.lightMode';
+  });
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
     { name: 'Dark', value: 'dark' },
