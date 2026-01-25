@@ -633,7 +633,7 @@ public class InterviewService {
         intervieweeRepository.save(interviewee);
 
         // 9. Send interview invitation email
-        sendInterviewInvitationEmail(slot, interviewee, job, hadOverlappingSlots);
+        sendInterviewInvitationEmail(slot, interviewee, job);
 
         // 10. Build response with interviewee details
         IntervieweeState state = calculateIntervieweeState(interviewee);
@@ -641,7 +641,7 @@ public class InterviewService {
         return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
     }
 
-    private void sendInterviewInvitationEmail(InterviewSlot slot, Interviewee interviewee, Job job, boolean hadOverlappingSlots) {
+    private void sendInterviewInvitationEmail(InterviewSlot slot, Interviewee interviewee, Job job) {
         Application application = interviewee.getApplication();
         User applicant = application.getApplicant().getUser();
         User professor = job.getSupervisingProfessor();
