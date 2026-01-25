@@ -100,6 +100,23 @@ export abstract class BaseInputDirective<T> {
       });
       onCleanup(() => sub.unsubscribe());
     });
+
+    // Sync `disabled` input into the provided control (if there is one).
+    effect(() => {
+      const ctrl = this.control();
+      const disabled = this.disabled();
+      if (ctrl) {
+        try {
+          if (disabled) {
+            // avoid emitting events when toggling programmatically during setup
+            ctrl.disable({ emitEvent: false });
+          } else {
+            ctrl.enable({ emitEvent: false });
+          }
+        } catch (e) {
+        }
+      }
+    });
   }
 
   onBlur(): void {
