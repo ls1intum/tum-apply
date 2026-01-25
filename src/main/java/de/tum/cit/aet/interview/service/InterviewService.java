@@ -485,6 +485,28 @@ public class InterviewService {
         return new ConflictDataDTO(processId, slots.stream().map(ConflictDataDTO.ExistingSlotDTO::fromEntity).toList());
     }
 
+    /**
+     * Counts the number of available (unbooked) future slots for a given process.
+     *
+     * @param processId the ID of the interview process
+     * @return the count of future available slots
+     * @throws EntityNotFoundException if the process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public long countFutureAvailableSlots(UUID processId) {
+        // 1. Load Interview Process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
+
+        // 2. Security: Verify current user has job access
+        Job job = process.getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Count future slots
+        return interviewSlotRepository.countFutureSlots(processId, Instant.now());
+    }
+
     /*--------------------------------------------------------------
      Interviewee Management
     --------------------------------------------------------------*/

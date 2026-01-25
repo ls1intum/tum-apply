@@ -100,10 +100,22 @@
 </jhi-dialog>
 
 <jhi-confirm-dialog
-  [header]="resendConfirmation().header"
-  [message]="resendConfirmation().message"
-  [label]="resendConfirmation().label"
+  #resendDialog
+  [header]="'interview.interviewees.resendConfirmation.header' | translate"
+  [message]="'interview.interviewees.resendConfirmation.message' | translate"
+  [label]="'interview.interviewees.resendInvitation' | translate"
   severity="primary"
   (confirmed)="onConfirmResend()"
+  [showOpenButton]="false"
+/>
+
+<jhi-confirm-dialog
+  #insufficientSlotsDialog
+  [header]="'interview.interviewees.invitation.insufficientSlots.header' | translate"
+  [message]="'interview.interviewees.invitation.insufficientSlots.message' | translate"
+  [label]="'interview.interviewees.invitation.insufficientSlots.addSlots' | translate"
+  severity="primary"
+  confirmIcon="plus"
+  (confirmed)="confirmInsufficientSlots()"
   [showOpenButton]="false"
 />

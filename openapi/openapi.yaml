@@ -1280,6 +1280,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ConflictDataDTO'}
+  /api/interviews/processes/{processId}/slots/available-count:
+    get:
+      tags: [interview-resource]
+      operationId: countAvailableFutureSlots
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {type: integer, format: int64}
   /api/interviews/processes/{processId}/slots/create:
     post:
       tags: [interview-resource]

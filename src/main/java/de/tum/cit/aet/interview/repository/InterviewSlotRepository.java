@@ -268,4 +268,22 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("startDateTime") Instant startDateTime,
         @Param("endDateTime") Instant endDateTime
     );
+
+    /**
+     * Counts the number of availble (unbooked) future slots for a process.
+     * Used to warn professors if they invite more applicants than available slots.
+     *
+     * @param processId the ID of the interview process
+     * @param now       the current timestamp to filter out past slots
+     * @return the count of available future slots
+     */
+    @Query(
+        """
+        SELECT COUNT(s) FROM InterviewSlot s
+        WHERE s.interviewProcess.id = :processId
+        AND s.startDateTime > :now
+        AND s.isBooked = false
+        """
+    )
+    long countFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now);
 }

@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, input,output, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -50,10 +50,13 @@ interface ApplicantRow {
   templateUrl: './interviewee-section.component.html',
 })
 export class IntervieweeSectionComponent {
-  // Component Inputs
+  // Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
   refreshKey = input<number>(0);
+
+  // Outputs
+  requestAddSlots = output();
 
   // Interviewee List State
   interviewees = signal<IntervieweeDTO[]>([]); // All interviewees for this process
@@ -79,7 +82,8 @@ export class IntervieweeSectionComponent {
 
   // Template References
   readonly nameTemplate = viewChild.required<TemplateRef<unknown>>('nameTemplate');
-  readonly confirmDialog = viewChild.required(ConfirmDialog);
+  readonly resendDialog = viewChild.required<ConfirmDialog>('resendDialog');
+  readonly insufficientSlotsDialog = viewChild.required<ConfirmDialog>('insufficientSlotsDialog');
 
   // Computed Signals
   filterTabs = computed<FilterTab<FilterKey>[]>(() => {
@@ -204,15 +208,26 @@ export class IntervieweeSectionComponent {
     }
   }
 
-  sendInvitation(interviewee: IntervieweeDTO): void {
+  async sendInvitation(interviewee: IntervieweeDTO): Promise<void> {
     const processId = this.processId();
-    if (processId === '' || interviewee.id == null) return;
+    if (processId === '' || interviewee.id === undefined) return;
 
-    if (interviewee.state === 'INVITED') {
-      this.pendingResendId.set(interviewee.id);
-      this.confirmDialog().confirm();
-    } else {
-      void this.performSendInvitation(processId, interviewee.id);
+    // Check capacity for single invitation (including resend)
+    try {
+      const futureSlots = await firstValueFrom(this.interviewService.countAvailableFutureSlots(processId));
+      if (futureSlots === 0) {
+        this.insufficientSlotsDialog().confirm();
+        return;
+      }
+
+      if (interviewee.state === 'INVITED') {
+        this.pendingResendId.set(interviewee.id);
+        this.resendDialog().confirm();
+      } else {
+        void this.performSendInvitation(processId, interviewee.id);
+      }
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
     }
   }
 
@@ -221,18 +236,40 @@ export class IntervieweeSectionComponent {
     const processId = this.processId();
     if (processId === '') return;
 
+    const count = this.uncontactedCount();
+    if (count === 0) return;
+
+    // Check capacity before sending
     try {
       this.sendingBulk.set(true);
-      const result = await firstValueFrom(
-        this.interviewService.sendInvitations(processId, {
-          onlyUninvited: true,
-        }),
-      );
-      this.handleInvitationResult(result);
+      const futureSlots = await firstValueFrom(this.interviewService.countAvailableFutureSlots(processId));
+
+      if (futureSlots < count) {
+        this.insufficientSlotsDialog().confirm();
+      } else {
+        void this.performBulkSend();
+      }
     } catch {
-      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+      void this.performBulkSend();
     } finally {
       this.sendingBulk.set(false);
+    }
+  }
+
+  confirmInsufficientSlots(): void {
+    this.requestAddSlots.emit();
+  }
+
+  cancelInsufficientSlots(): void {
+    // User cancelled. Do nothing.
+  }
+
+  onConfirmResend(): void {
+    const id = this.pendingResendId();
+    const processId = this.processId();
+    if (id !== null && processId) {
+      void this.performSendInvitation(processId, id);
+      this.pendingResendId.set(null);
     }
   }
 
@@ -302,7 +339,7 @@ export class IntervieweeSectionComponent {
   onConfirmResend(): void {
     const id = this.pendingResendId();
     const processId = this.processId();
-    if (id !== null && processId !== '') {
+    if (id !== null && processId) {
       void this.performSendInvitation(processId, id);
       this.pendingResendId.set(null);
     }
@@ -353,6 +390,22 @@ export class IntervieweeSectionComponent {
       this.toastService.showErrorKey('interview.interviewees.invitation.error');
     } finally {
       this.sendingInvitationId.set(null);
+    }
+  }
+  // Helper method to execute the bulk invitation logic
+  private async performBulkSend(): Promise<void> {
+    try {
+      this.sendingBulk.set(true);
+      const result = await firstValueFrom(
+        this.interviewService.sendInvitations(this.processId(), {
+          onlyUninvited: true,
+        }),
+      );
+      this.handleInvitationResult(result);
+    } catch {
+      this.toastService.showErrorKey('interview.interviewees.invitation.error');
+    } finally {
+      this.sendingBulk.set(false);
     }
   }
 }

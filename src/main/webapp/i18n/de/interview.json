@@ -53,6 +53,10 @@
       "showMoreSingular": "weiteren Termin",
       "showMorePlural": "weitere Termine",
       "showLess": "Weniger anzeigen",
+      "noFutureSlots": {
+        "title": "Aktuell keine Termine verfügbar",
+        "description": "Es gibt derzeit keine buchbaren Termine. Füge neue Termine hinzu, damit Bewerber einen Termin buchen können."
+      },
       "error": {
         "loadFailed": {
           "summary": "Interview Termine konnten nicht geladen werden",
@@ -243,6 +247,11 @@
         "error": {
           "summary": "Senden fehlgeschlagen",
           "detail": "Einladung konnte nicht gesendet werden. Bitte versuche es erneut oder kontaktiere einen Admin."
+        },
+        "insufficientSlots": {
+          "header": "Zu wenige Termine",
+          "message": "Du bist dabei Bewerber einzuladen, aber es sind möglicherweise nicht genügend zukünftige Termine verfügbar. Bitte füge erst weitere Termine hinzu.",
+          "addSlots": "Termine hinzufügen"
         }
       }
     },
