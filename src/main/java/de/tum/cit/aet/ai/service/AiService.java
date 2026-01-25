@@ -1,18 +1,19 @@
 package de.tum.cit.aet.ai.service;
 
+import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
+
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import java.time.Duration;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import java.time.Duration;
 import reactor.core.publisher.Flux;
-import java.util.Set;
-import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 @Service
 @Slf4j
@@ -62,17 +63,18 @@ public class AiService {
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
-        final String locationText = (jobFormDTO.location() == null) ? "" :
-            switch (jobFormDTO.location()) {
-                case GARCHING -> "Garching";
-                case GARCHING_HOCHBRUECK -> "Garching Hochbrück";
-                case HEILBRONN -> "Heilbronn";
-                case MUNICH -> "Munich";
-                case STRAUBING -> "Straubing";
-                case WEIHENSTEPHAN -> "Weihenstephan";
-                case SINGAPORE -> "Singapore";
-                default -> "";
-            };
+        final String locationText = (jobFormDTO.location() == null)
+            ? ""
+            : switch (jobFormDTO.location()) {
+                  case GARCHING -> "Garching";
+                  case GARCHING_HOCHBRUECK -> "Garching Hochbrück";
+                  case HEILBRONN -> "Heilbronn";
+                  case MUNICH -> "Munich";
+                  case STRAUBING -> "Straubing";
+                  case WEIHENSTEPHAN -> "Weihenstephan";
+                  case SINGAPORE -> "Singapore";
+                  default -> "";
+              };
         Flux<String> contentFlux = chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)

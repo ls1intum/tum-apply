@@ -943,17 +943,15 @@ export class JobCreationFormComponent {
     }
   }
   private autoScrollStreaming(): void {
-    const smoothScroll = () => {
+    const smoothScroll = (): void => {
       if (!this.isAutoScrolling) {
         return;
       }
       const editorContainer = document.querySelector('.ql-editor') as HTMLElement;
-      if (editorContainer) {
-        editorContainer.scrollTo({
-          top: editorContainer.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
+      editorContainer.scrollTo({
+        top: editorContainer.scrollHeight,
+        behavior: 'smooth',
+      });
       setTimeout(() => requestAnimationFrame(smoothScroll), 200);
     };
     requestAnimationFrame(smoothScroll);
