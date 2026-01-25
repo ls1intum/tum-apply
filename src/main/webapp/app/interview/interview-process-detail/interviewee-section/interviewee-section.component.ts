@@ -1,4 +1,4 @@
-import { Component, TemplateRef, computed, effect, inject, input,output, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -336,14 +336,6 @@ export class IntervieweeSectionComponent {
     this.showAddModal.set(false);
   }
 
-  onConfirmResend(): void {
-    const id = this.pendingResendId();
-    const processId = this.processId();
-    if (id !== null && processId) {
-      void this.performSendInvitation(processId, id);
-      this.pendingResendId.set(null);
-    }
-  }
 
   // Private Methods
   private handleInvitationResult(result: SendInvitationsResultDTO): void {
