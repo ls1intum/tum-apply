@@ -93,16 +93,6 @@ export class ProgressStepperComponent {
     }
   }
 
-  /**
-   * Encapsulates the scrolling logic.
-   * Uses setTimeout to allow the view to update before scrolling.
-   */
-  private scrollToTop(): void {
-    setTimeout(() => {
-      document.querySelector('.content')?.scrollTo({ top: 0, behavior: 'instant' });
-    }, 0);
-  }
-
   buildButtonGroupData(steps: StepButton[], action: 'prev' | 'next', index: number): ButtonGroupData {
     return {
       direction: 'horizontal',
@@ -122,5 +112,12 @@ export class ProgressStepperComponent {
         };
       }),
     };
+  }
+
+  private scrollToTop(): void {
+    // Uses timeout to allow the view to update before scrolling.
+    setTimeout(() => {
+      document.querySelector('.content')?.scrollTo({ top: 0, behavior: 'instant' });
+    }, 0);
   }
 }
