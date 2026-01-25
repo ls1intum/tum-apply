@@ -55,7 +55,7 @@ export class SegmentedToggleComponent {
   valueChange = output<SegmentedToggleValue>();
 
   readonly btnClass =
-    'relative z-[2] flex-1 border-none bg-transparent py-1 px-4 min-w-[5rem] text-[0.8125rem] font-semibold cursor-pointer transition-colors duration-200 outline-none disabled:opacity-50 text-text-tertiary hover:not-disabled:text-text-primary';
+    'relative z-[2] flex-1 py-1 px-4 min-w-[5rem] text-sm font-semibold cursor-pointer transition-colors duration-200 disabled:opacity-50 text-text-tertiary hover:enabled:text-text-primary';
 
   setValue(next: SegmentedToggleValue): void {
     if (next === this.value() || this.disabled()) return;
