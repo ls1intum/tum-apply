@@ -750,7 +750,6 @@ export class JobCreationFormComponent {
       this.syncCurrentEditorIntoLanguageSignals();
 
       const request: JobFormDTO = {
-        jobId: this.jobId(),
         title: this.basicInfoForm.get('title')?.value ?? '',
         researchArea: this.basicInfoForm.get('researchArea')?.value ?? '',
         fieldOfStudies: this.basicInfoForm.get('fieldOfStudies')?.value?.value ?? '',
