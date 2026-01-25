@@ -49,7 +49,11 @@ OUTPUT FORMAT - CRITICAL:
 6. You MUST return ONLY a valid JSON object. NO other text before or after.
 7. NO markdown, NO explanations, NO code blocks.
 
-Structure (EXACTLY this format):
+Structure (EXACTLY this format for input DE):
+{{
+  "jobDescription": "<p><strong>Beschreibung</strong></p><p>Text here.</p><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><ul><li>Task 1</li><li>Task 2</li></ul><p><strong>Qualifikationskriterien</strong></p><ul><li>Criterion 1</li><li>Criterion 2</li></ul>"
+}}
+Structure (EXACTLY this format for input EN):
 {{
   "jobDescription": "<p><strong>Description</strong></p><p>Text here.</p><p><strong>Tasks & Responsibilities</strong></p><ul><li>Task 1</li><li>Task 2</li></ul><p><strong>Eligibility Criteria</strong></p><ul><li>Criterion 1</li><li>Criterion 2</li></ul>"
 }}
