@@ -406,27 +406,33 @@ describe('JobDetailComponent', () => {
   it('should return English job description when current language is en', () => {
     const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as unknown as JobDetails;
     translate.use('en');
-    const result = component.getJobDescriptionForCurrentLang(job);
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
     expect(result).toBe('<p>English</p>');
   });
 
   it('should return German job description when current language is de', () => {
     const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as unknown as JobDetails;
     translate.use('de');
-    const result = component.getJobDescriptionForCurrentLang(job);
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
     expect(result).toBe('<p>Deutsch</p>');
   });
 
   it('should fall back to the other language when job description of current language is empty', () => {
     const job = { jobDescriptionEN: '   ', jobDescriptionDE: '<p>Deutsch Fallback</p>' } as unknown as JobDetails;
     translate.use('en');
-    const result = component.getJobDescriptionForCurrentLang(job);
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
     expect(result).toBe('<p>Deutsch Fallback</p>');
   });
 
   it('should returns empty string when job is null or undefined', () => {
-    expect(component.getJobDescriptionForCurrentLang(null)).toBe('');
-    expect(component.getJobDescriptionForCurrentLang(undefined)).toBe('');
+    component.jobDetails.set(null);
+    expect(component.jobDescriptionForCurrentLang()).toBe('');
+    // also ensure undefined case is handled (cast to any to bypass typing)
+    (component as any).jobDetails.set(undefined);
+    expect(component.jobDescriptionForCurrentLang()).toBe('');
   });
 
   it('should return null from primaryActionButton when previewData exists', () => {
