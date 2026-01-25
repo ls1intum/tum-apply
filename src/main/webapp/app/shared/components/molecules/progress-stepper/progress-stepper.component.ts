@@ -10,7 +10,6 @@ import {
   input,
   signal,
   viewChild,
-  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
@@ -69,13 +68,6 @@ export class ProgressStepperComponent {
   private destroyRef = inject(DestroyRef);
 
   constructor() {
-    effect(() => {
-      this.currentStep();
-      setTimeout(() => {
-        document.querySelector('.content')?.scrollTo({ top: 0, behavior: 'instant' });
-      }, 0);
-    });
-
     afterNextRender(() => {
       const sentinel = this.bottomSentinel()?.nativeElement;
       if (sentinel) {
@@ -97,7 +89,18 @@ export class ProgressStepperComponent {
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {
       this.currentStep.set(index);
+      this.scrollToTop();
     }
+  }
+
+  /**
+   * Encapsulates the scrolling logic.
+   * Uses setTimeout to allow the view to update before scrolling.
+   */
+  private scrollToTop(): void {
+    setTimeout(() => {
+      document.querySelector('.content')?.scrollTo({ top: 0, behavior: 'instant' });
+    }, 0);
   }
 
   buildButtonGroupData(steps: StepButton[], action: 'prev' | 'next', index: number): ButtonGroupData {
