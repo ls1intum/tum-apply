@@ -336,6 +336,7 @@
       "location": "Location:"
     },
     "sections": {
+      "jobDescription": "Job Description",
       "jobDescriptionEN": "English Job Description",
       "jobDescriptionDE": "German Job Description",
       "tasksResponsibilities": "Tasks & Responsibilities",

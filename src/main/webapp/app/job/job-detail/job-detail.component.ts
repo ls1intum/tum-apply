@@ -103,6 +103,7 @@ export class JobDetailComponent {
 
   translate = inject(TranslateService);
   langChange: Signal<LangChangeEvent | undefined> = toSignal(this.translate.onLangChange, { initialValue: undefined });
+  currentLang = toSignal(this.translate.onLangChange);
   noData = computed<string>(() => {
     this.langChange();
     return this.translate.instant('jobDetailPage.noData');
@@ -446,6 +447,18 @@ export class JobDetailComponent {
 
   loadJobDetails(job: JobDetailDTO): void {
     this.jobDetails.set(this.mapToJobDetails(job, this.accountService.loadedUser()));
+  }
+
+  // Returns the job description in the currently selected language. Falls back to the other language if empty.
+  getJobDescriptionForCurrentLang(job?: JobDetails | null): string {
+    void this.currentLang();
+    if (!job) return '';
+    const isEnglish = this.translate.getCurrentLang() === 'en';
+
+    if (isEnglish) {
+      return job.jobDescriptionEN.trim() || job.jobDescriptionDE;
+    }
+    return job.jobDescriptionDE.trim() || job.jobDescriptionEN;
   }
 
   private isOwnerOfJob(job: JobDetails): boolean {

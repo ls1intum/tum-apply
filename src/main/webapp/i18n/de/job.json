@@ -336,6 +336,7 @@
       "location": "Standort:"
     },
     "sections": {
+      "jobDescription": "Stellenbeschreibung",
       "jobDescriptionEN": "Englische Stellenbeschreibung",
       "jobDescriptionDE": "Deutsche Stellenbeschreibung",
       "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
