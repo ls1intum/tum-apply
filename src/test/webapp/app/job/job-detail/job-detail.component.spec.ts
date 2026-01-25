@@ -404,7 +404,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should return English job description when current language is en', () => {
-    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as unknown as JobDetails;
+    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as JobDetails;
     translate.use('en');
     component.jobDetails.set(job);
     const result = component.jobDescriptionForCurrentLang();
@@ -412,7 +412,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should return German job description when current language is de', () => {
-    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as unknown as JobDetails;
+    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as JobDetails;
     translate.use('de');
     component.jobDetails.set(job);
     const result = component.jobDescriptionForCurrentLang();
@@ -420,7 +420,7 @@ describe('JobDetailComponent', () => {
   });
 
   it('should fall back to the other language when job description of current language is empty', () => {
-    const job = { jobDescriptionEN: '   ', jobDescriptionDE: '<p>Deutsch Fallback</p>' } as unknown as JobDetails;
+    const job = { jobDescriptionEN: '   ', jobDescriptionDE: '<p>Deutsch Fallback</p>' } as JobDetails;
     translate.use('en');
     component.jobDetails.set(job);
     const result = component.jobDescriptionForCurrentLang();
@@ -430,7 +430,6 @@ describe('JobDetailComponent', () => {
   it('should returns empty string when job is null or undefined', () => {
     component.jobDetails.set(null);
     expect(component.jobDescriptionForCurrentLang()).toBe('');
-    // also ensure undefined case is handled (cast to any to bypass typing)
     (component as any).jobDetails.set(undefined);
     expect(component.jobDescriptionForCurrentLang()).toBe('');
   });
