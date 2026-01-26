@@ -910,7 +910,7 @@ export class JobCreationFormComponent {
    * @returns Safe HTML string with incomplete tags removed
    */
   private extractCompleteHtmlTags(html: string): string {
-    const text = (html ?? '').trim();
+    const text = html.trim();
     if (!text) return '';
     const lastOpen = text.lastIndexOf('<');
     const lastClose = text.lastIndexOf('>');
