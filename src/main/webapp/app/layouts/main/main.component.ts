@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, RendererFactory2, afterNextRender, computed, inject, viewChild } from '@angular/core';
+import { Component, Renderer2, RendererFactory2, afterNextRender, computed, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
@@ -32,7 +32,6 @@ export default class MainComponent {
   private readonly translateService = inject(TranslateService);
   private readonly rootRenderer = inject(RendererFactory2);
   private readonly onboardingOrchestratorService = inject(OnboardingOrchestratorService);
-  private readonly scrollContainer = viewChild<ElementRef<HTMLElement>>('scrollContainer');
 
   constructor() {
     this.renderer = this.rootRenderer.createRenderer(document.querySelector('html'), null);
@@ -45,9 +44,9 @@ export default class MainComponent {
   }
 
   onActivate(): void {
-    const container = this.scrollContainer();
+    const container = document.getElementById('scrollContainer');
     if (container) {
-      container.nativeElement.scrollTo({ top: 0, behavior: 'instant' });
+      container.scrollTo({ top: 0, behavior: 'instant' });
     }
   }
 
