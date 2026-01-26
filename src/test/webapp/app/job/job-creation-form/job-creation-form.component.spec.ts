@@ -1005,11 +1005,11 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('HTTP error'));
+        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('Generic error'));
 
         await component.generateJobApplicationDraft();
 
-        expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.toastMessages.aiGenerationFailed');
+        expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.toastMessages.saveFailed');
       });
 
       it('should restore original content on error', async () => {
