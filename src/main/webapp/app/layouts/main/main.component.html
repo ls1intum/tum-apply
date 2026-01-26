@@ -10,7 +10,7 @@
         (sidebarCollapsedChange)="toggleSidebar()"
       />
     }
-    <div id="scrollContainer" class="content">
+    <div #scrollContainer class="content">
       <div class="content-flex">
         <router-outlet (activate)="onActivate()" />
       </div>
