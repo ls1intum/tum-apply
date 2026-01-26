@@ -438,6 +438,8 @@ export class JobCreationFormComponent {
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
 
+  private isAutoScrolling = false;
+
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD CONSTRAINTS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -740,6 +742,7 @@ export class JobCreationFormComponent {
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
+    this.isAutoScrolling = true;
 
     // Show "Generating" message in the editor while AI is working
     this.jobDescriptionEditor()?.forceUpdate(
@@ -762,6 +765,7 @@ export class JobCreationFormComponent {
 
         state: JobFormDTO.StateEnum.Draft,
       };
+      this.autoScrollStreaming();
 
       let lastRendered = '';
       // Use the AiStreamingService with live updates during streaming
@@ -777,6 +781,7 @@ export class JobCreationFormComponent {
           this.jobDescriptionEditor()?.forceUpdate(safeHtml);
         }
       });
+      this.isAutoScrolling = false;
       // Final update after streaming completes - parse the complete JSON
       if (accumulatedContent) {
         // Extract final content from complete JSON
@@ -807,6 +812,7 @@ export class JobCreationFormComponent {
       }
     } catch (error) {
       this.jobDescriptionEditor()?.forceUpdate(originalContent);
+      this.isAutoScrolling = false;
       // Show error toast with appropriate message
       if (error instanceof Error && error.message.includes('HTTP error')) {
         this.toastService.showErrorKey('jobCreationForm.toastMessages.aiGenerationFailed');
@@ -814,6 +820,7 @@ export class JobCreationFormComponent {
         this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
       }
     } finally {
+      this.isAutoScrolling = false;
       this.isGeneratingDraft.set(false);
     }
   }
@@ -932,6 +939,29 @@ export class JobCreationFormComponent {
         // Error fetching job, will retry
       }
     }
+  }
+  /**
+   * Automatically scrolls the editor to the bottom during AI streaming.
+   * Runs every 200ms while isAutoScrolling is true.
+   */
+  private autoScrollStreaming(): void {
+    const editorContainer = document.querySelector('.ql-editor') as HTMLElement;
+    let lastScrollTop = editorContainer.scrollTop;
+
+    const smoothScroll = (): void => {
+      if (!this.isAutoScrolling) return;
+      if (editorContainer.scrollTop < lastScrollTop) {
+        this.isAutoScrolling = false;
+        return;
+      }
+      editorContainer.scrollTo({
+        top: editorContainer.scrollHeight,
+        behavior: 'smooth',
+      });
+      lastScrollTop = editorContainer.scrollTop;
+      setTimeout(() => requestAnimationFrame(smoothScroll), 200);
+    };
+    requestAnimationFrame(smoothScroll);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1360,7 +1390,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel2) {
       steps.push({
-        name: 'jobCreationForm.header.steps.positionDetails',
+        name: 'jobCreationForm.header.steps.employmentTerms',
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [

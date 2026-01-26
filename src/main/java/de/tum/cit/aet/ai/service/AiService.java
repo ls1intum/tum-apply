@@ -1,9 +1,13 @@
 package de.tum.cit.aet.ai.service;
 
+import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
+
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.time.Duration;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
@@ -58,6 +62,9 @@ public class AiService {
     public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage, String jobId) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
+        Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
+        Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+        final String locationText = UiTextFormatter.formatEnumValue(jobFormDTO.location());
         Flux<String> contentFlux = chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
@@ -68,7 +75,9 @@ public class AiService {
                     .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
                     .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
                     .param("fieldOfStudies", jobFormDTO.fieldOfStudies() != null ? jobFormDTO.fieldOfStudies() : "")
-                    .param("location", jobFormDTO.location() != null ? jobFormDTO.location().toString() : "")
+                    .param("location", locationText)
+                    .param("inclusiveWords", String.join(", ", inclusive))
+                    .param("nonInclusiveWords", String.join(", ", nonInclusive))
             )
             .stream()
             .content()
