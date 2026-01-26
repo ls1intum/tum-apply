@@ -42,7 +42,7 @@ export interface JobDetails {
   contractDuration: string;
   fundingType: string;
   jobDescriptionEN: string;
-  jobDescriptionDE?: string;
+  jobDescriptionDE: string;
   startDate: string;
   endDate: string;
   createdAt: string;
@@ -203,6 +203,19 @@ export class JobDetailComponent {
 
   readonly currentJobState = computed<string | undefined>(() => {
     return this.jobDetails()?.jobState;
+  });
+
+  // Returns the job description in the currently selected language. Falls back to the other language if empty.
+  readonly jobDescriptionForCurrentLang = computed<string>(() => {
+    this.langChange();
+    const job = this.jobDetails();
+    if (!job) return '';
+    const isEnglish = this.translate.getCurrentLang() === 'en';
+
+    if (isEnglish) {
+      return job.jobDescriptionEN.trim() || job.jobDescriptionDE;
+    }
+    return job.jobDescriptionDE.trim() || job.jobDescriptionEN;
   });
 
   readonly jobStateText = computed<string>(() => {
