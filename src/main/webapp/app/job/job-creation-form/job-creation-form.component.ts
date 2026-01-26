@@ -36,6 +36,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
+import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -769,7 +770,7 @@ export class JobCreationFormComponent {
         const extractedContent = this.extractJobDescriptionFromStream(content);
         if (!extractedContent?.startsWith('<')) return;
 
-        const safeHtml = this.extractCompleteHtmlTags(extractedContent);
+        const safeHtml = extractCompleteHtmlTags(extractedContent);
         // Only update if we have new content
         if (safeHtml && safeHtml !== lastRendered) {
           lastRendered = safeHtml;
@@ -888,37 +889,12 @@ export class JobCreationFormComponent {
         extracted = extracted.slice(0, -2);
       }
       // Unescape
-      return this.unescapeJsonString(extracted);
+      return unescapeJsonString(extracted);
     }
 
     // Extract the value between quotes
     const rawValue = trimmed.substring(valueStart, valueEnd);
-    return this.unescapeJsonString(rawValue);
-  }
-
-  /**
-   * Unescapes a JSON string value (handles \n, \r, \t, \", \\)
-   */
-  private unescapeJsonString(str: string): string {
-    return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-  }
-  /**
-   * Extracts safe HTML for streaming (stops before incomplete tags)
-   * Prevents displaying incomplete tags like "<", "</", or "<br" to the user.
-   *
-   * @param html - The HTML content to check
-   * @returns Safe HTML string with incomplete tags removed
-   */
-  private extractCompleteHtmlTags(html: string): string {
-    const text = html.trim();
-    if (!text) return '';
-    const lastOpen = text.lastIndexOf('<');
-    const lastClose = text.lastIndexOf('>');
-    // Check incomplete tag
-    if (lastOpen > lastClose) {
-      return text.slice(0, lastOpen);
-    }
-    return text;
+    return unescapeJsonString(rawValue);
   }
 
   /**

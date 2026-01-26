@@ -76,3 +76,32 @@ export function createMenuActionSignals(config: MenuActionConfig): {
     individualActionButtons,
   };
 }
+
+/**
+ * Extracts safe HTML for streaming (stops before incomplete tags).
+ * Prevents displaying incomplete tags like "<", "</", or "<br" to the user.
+ *
+ * @param html - The HTML content to check
+ * @returns Safe HTML string with incomplete tags removed
+ */
+export function extractCompleteHtmlTags(html: string): string {
+  const text = html.trim();
+  if (!text) return '';
+  const lastOpen = text.lastIndexOf('<');
+  const lastClose = text.lastIndexOf('>');
+  // Check incomplete tag
+  if (lastOpen > lastClose) {
+    return text.slice(0, lastOpen);
+  }
+  return text;
+}
+
+/**
+ * Unescapes a JSON string value (handles \n, \r, \t, \", \\)
+ *
+ * @param str - The JSON string to unescape
+ * @returns The unescaped string
+ */
+export function unescapeJsonString(str: string): string {
+  return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
