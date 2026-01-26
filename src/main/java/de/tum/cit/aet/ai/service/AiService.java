@@ -11,6 +11,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+
 @Service
 @Slf4j
 public class AiService {
@@ -70,7 +72,8 @@ public class AiService {
                     .param("location", jobFormDTO.location() != null ? jobFormDTO.location().toString() : "")
             )
             .stream()
-            .content();
+            .content()
+            .delayElements(Duration.ofMillis(35));
 
         if (jobId != null) {
             StringBuilder contentBuilder = new StringBuilder();

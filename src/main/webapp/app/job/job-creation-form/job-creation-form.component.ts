@@ -762,16 +762,20 @@ export class JobCreationFormComponent {
         state: JobFormDTO.StateEnum.Draft,
       };
 
+      let lastRendered = '';
       // Use the AiStreamingService with live updates during streaming
       const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(language, request, this.jobId(), content => {
         // Try to extract content from the partial JSON
         const extractedContent = this.extractJobDescriptionFromStream(content);
-        this.jobDescriptionEditor()?.forceUpdate(
-          extractedContent ??
-            `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
-        );
-      });
+        if (!extractedContent?.startsWith('<')) return;
 
+        const safeHtml = this.extractCompleteHtmlTags(extractedContent);
+        // Only update if we have new content
+        if (safeHtml && safeHtml !== lastRendered) {
+          lastRendered = safeHtml;
+          this.jobDescriptionEditor()?.forceUpdate(safeHtml);
+        }
+      });
       // Final update after streaming completes - parse the complete JSON
       if (accumulatedContent) {
         // Extract final content from complete JSON
@@ -897,6 +901,24 @@ export class JobCreationFormComponent {
    */
   private unescapeJsonString(str: string): string {
     return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+  }
+  /**
+   * Extracts safe HTML for streaming (stops before incomplete tags)
+   * Prevents displaying incomplete tags like "<", "</", or "<br" to the user.
+   *
+   * @param html - The HTML content to check
+   * @returns Safe HTML string with incomplete tags removed
+   */
+  private extractCompleteHtmlTags(html: string): string {
+    const text = (html ?? '').trim();
+    if (!text) return '';
+    const lastOpen = text.lastIndexOf('<');
+    const lastClose = text.lastIndexOf('>');
+    // Check incomplete tag
+    if (lastOpen > lastClose) {
+      return text.slice(0, lastOpen);
+    }
+    return text;
   }
 
   /**
