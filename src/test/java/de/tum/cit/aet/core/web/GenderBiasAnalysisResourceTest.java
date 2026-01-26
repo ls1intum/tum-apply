@@ -136,117 +136,96 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
         assertThat(response.biasedWords()).isEqualTo(expectedBiasedWords);
     }
 
+    private GenderBiasAnalysisResponse analyzeText(String text, String language) {
+        GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(text, language);
+        return api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
+    }
+
+    private GenderBiasAnalysisResponse analyzeHtml(String html, String language) {
+        GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(html, language);
+        return api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(BASE_URL + "/analyze-html", request, GenderBiasAnalysisResponse.class, 200);
+    }
+
     @Nested
     class AnalyzeText {
 
         @Test
         void shouldDetectNonInclusiveCodedEnglishText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "en");
+            GenderBiasAnalysisResponse response = analyzeText(NON_INCLUSIVE_ENGLISH_TEXT, "en");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "en", "non-inclusive-coded", NON_INCLUSIVE_ENGLISH_TEXT_LIST);
+            assertGenderBiasAnalysisResponse(
+                response,
+                NON_INCLUSIVE_ENGLISH_TEXT,
+                "en",
+                "non-inclusive-coded",
+                NON_INCLUSIVE_ENGLISH_TEXT_LIST
+            );
         }
 
         @Test
         void shouldDetectInclusiveCodedEnglishText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(INCLUSIVE_ENGLISH_TEXT, "en");
+            GenderBiasAnalysisResponse response = analyzeText(INCLUSIVE_ENGLISH_TEXT, "en");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "en", "inclusive-coded", INCLUSIVE_ENGLISH_TEXT_LIST);
+            assertGenderBiasAnalysisResponse(response, INCLUSIVE_ENGLISH_TEXT, "en", "inclusive-coded", INCLUSIVE_ENGLISH_TEXT_LIST);
         }
 
         @Test
         void shouldDetectNeutralEnglishText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NEUTRAL_ENGLISH_TEXT, "en");
+            GenderBiasAnalysisResponse response = analyzeText(NEUTRAL_ENGLISH_TEXT, "en");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "en", "neutral", NEUTRAL_ENGLISH_TEXT_LIST);
+            assertGenderBiasAnalysisResponse(response, NEUTRAL_ENGLISH_TEXT, "en", "neutral", NEUTRAL_ENGLISH_TEXT_LIST);
         }
 
         @Test
         void shouldDetectEmptyEnglishText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(EMPTY_ENGLISH_TEXT, "en");
+            GenderBiasAnalysisResponse response = analyzeText(EMPTY_ENGLISH_TEXT, "en");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "en", "empty", null);
+            assertGenderBiasAnalysisResponse(response, EMPTY_ENGLISH_TEXT, "en", "empty", null);
         }
 
         @Test
         void shouldDetectNonInclusiveCodedGermanText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_GERMAN_TEXT, "de");
+            GenderBiasAnalysisResponse response = analyzeText(NON_INCLUSIVE_GERMAN_TEXT, "de");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "de", "non-inclusive-coded", NON_INCLUSIVE_GERMAN_TEXT_LIST);
+            assertGenderBiasAnalysisResponse(
+                response,
+                NON_INCLUSIVE_GERMAN_TEXT,
+                "de",
+                "non-inclusive-coded",
+                NON_INCLUSIVE_GERMAN_TEXT_LIST
+            );
         }
 
         @Test
         void shouldDetectInclusiveCodedGermanText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(INCLUSIVE_GERMAN_TEXT, "de");
+            GenderBiasAnalysisResponse response = analyzeText(INCLUSIVE_GERMAN_TEXT, "de");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "de", "inclusive-coded", INCLUSIVE_GERMAN_TEXT_LIST);
+            assertGenderBiasAnalysisResponse(response, INCLUSIVE_GERMAN_TEXT, "de", "inclusive-coded", INCLUSIVE_GERMAN_TEXT_LIST);
         }
 
         @Test
         void shouldDetectNeutralGermanText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NEUTRAL_GERMAN_TEXT, "de");
+            GenderBiasAnalysisResponse response = analyzeText(NEUTRAL_GERMAN_TEXT, "de");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "de", "neutral", NEUTRAL_GERMAN_TEXT_LIST);
+            assertGenderBiasAnalysisResponse(response, NEUTRAL_GERMAN_TEXT, "de", "neutral", NEUTRAL_GERMAN_TEXT_LIST);
         }
 
         @Test
         void shouldDetectEmptyGermanText() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(EMPTY_GERMAN_TEXT, "de");
+            GenderBiasAnalysisResponse response = analyzeText(EMPTY_GERMAN_TEXT, "de");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "de", "empty", null);
+            assertGenderBiasAnalysisResponse(response, EMPTY_GERMAN_TEXT, "de", "empty", null);
         }
 
         @Test
         void shouldHandleTextWithSpecialCharacters() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(SPECIAL_CHARACTER_TEXT, "en");
+            GenderBiasAnalysisResponse response = analyzeText(SPECIAL_CHARACTER_TEXT, "en");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "en", "non-inclusive-coded", SPECIAL_CHARACTER_LIST);
-        }
-
-        @Test
-        void shouldDefaultToEnglishWhenNoLanguageSpecified() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, null);
-
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertThat(response.language()).isEqualTo("en");
+            assertGenderBiasAnalysisResponse(response, SPECIAL_CHARACTER_TEXT, "en", "non-inclusive-coded", SPECIAL_CHARACTER_LIST);
         }
     }
 
@@ -255,39 +234,20 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldStripHtmlTagsBeforeAnalysis() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(HTML_TEXT, "en");
+            GenderBiasAnalysisResponse response = analyzeHtml(HTML_TEXT, "en");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze-html", request, GenderBiasAnalysisResponse.class, 200);
-
-            String strippedText = Jsoup.parse(request.text()).text();
+            String strippedText = Jsoup.parse(HTML_TEXT).text();
 
             assertGenderBiasAnalysisResponse(response, strippedText, "en", "non-inclusive-coded", HTML_LIST);
         }
 
         @Test
         void shouldHandleGermanHtmlContent() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest("<p>" + NON_INCLUSIVE_GERMAN_TEXT + "</p>", "de");
+            GenderBiasAnalysisResponse response = analyzeHtml("<p>" + NON_INCLUSIVE_GERMAN_TEXT + "</p>", "de");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze-html", request, GenderBiasAnalysisResponse.class, 200);
-
-            String strippedText = Jsoup.parse(request.text()).text();
+            String strippedText = Jsoup.parse("<p>" + NON_INCLUSIVE_GERMAN_TEXT + "</p>").text();
 
             assertGenderBiasAnalysisResponse(response, strippedText, "de", "non-inclusive-coded", NON_INCLUSIVE_GERMAN_TEXT_LIST);
-        }
-
-        @Test
-        void shouldDefaultToEnglishForHtmlWhenNoLanguageSpecified() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(HTML_TEXT, null);
-
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze-html", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertThat(response.language()).isEqualTo("en");
         }
     }
 
@@ -342,46 +302,28 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldHandleEmptyTexts() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest("", "en");
-
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
+            GenderBiasAnalysisResponse response = analyzeText("", "en");
             assertGenderBiasAnalysisResponse(response, null, "en", "empty", null);
         }
 
         @Test
         void shouldHandleNullTexts() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(null, "en");
-
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
+            GenderBiasAnalysisResponse response = analyzeText(null, "en");
             assertGenderBiasAnalysisResponse(response, null, "en", "empty", null);
         }
 
         @Test
         void shouldDefaultToEnglishWhenLanguageIsEmpty() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(NON_INCLUSIVE_ENGLISH_TEXT, "");
-
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
+            GenderBiasAnalysisResponse response = analyzeText(NON_INCLUSIVE_ENGLISH_TEXT, "");
             assertThat(response.language()).isEqualTo("en");
+            GenderBiasAnalysisResponse responseHtml = analyzeHtml(NON_INCLUSIVE_ENGLISH_TEXT, "");
+            assertThat(responseHtml.language()).isEqualTo("en");
         }
 
         @Test
         void shouldHandleHyphenedWords() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(HYPHENED_TEXT, "en");
-
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
-
-            assertGenderBiasAnalysisResponse(response, request.text(), "en", "inclusive-coded", HYPHENED_TEXT_LIST);
+            GenderBiasAnalysisResponse response = analyzeText(HYPHENED_TEXT, "en");
+            assertGenderBiasAnalysisResponse(response, HYPHENED_TEXT, "en", "inclusive-coded", HYPHENED_TEXT_LIST);
         }
 
         @Test
@@ -390,11 +332,8 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
             for (int i = 0; i < 1000; i++) {
                 longText.append("competitive analytical decisive leader ");
             }
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest(longText.toString(), "en");
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
+            GenderBiasAnalysisResponse response = analyzeText(longText.toString(), "en");
 
             assertThat(response.originalText()).isEqualTo(longText.toString());
             assertThat(response.language()).isEqualTo("en");
@@ -404,27 +343,23 @@ class GenderBiasAnalysisResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldHandleMixedCaseWords() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest("The candidate should be COMPETITIVE and Analytical", "en");
+            String mixedCaseText = "The candidate should be COMPETITIVE and Analytical";
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
+            GenderBiasAnalysisResponse response = analyzeText(mixedCaseText, "en");
 
             List<BiasedWordDTO> expectedBiasedWords = List.of(
                 new BiasedWordDTO("competitive", "non-inclusive"),
                 new BiasedWordDTO("analytical", "non-inclusive")
             );
 
-            assertGenderBiasAnalysisResponse(response, request.text(), "en", "non-inclusive-coded", expectedBiasedWords);
+            assertGenderBiasAnalysisResponse(response, mixedCaseText, "en", "non-inclusive-coded", expectedBiasedWords);
         }
 
         @Test
         void shouldHandleRepeatedWords() {
-            GenderBiasAnalysisRequest request = new GenderBiasAnalysisRequest("competitive competitive competitive competitive", "en");
+            String repeatedText = "competitive competitive competitive competitive";
 
-            GenderBiasAnalysisResponse response = api
-                .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-                .postAndRead(BASE_URL + "/analyze", request, GenderBiasAnalysisResponse.class, 200);
+            GenderBiasAnalysisResponse response = analyzeText(repeatedText, "en");
 
             assertThat(response.coding()).isEqualTo("non-inclusive-coded");
             assertThat(response.biasedWords()).hasSize(4);
