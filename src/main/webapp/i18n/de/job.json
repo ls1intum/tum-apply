@@ -135,7 +135,7 @@
         "aiHeaderText": "KI Assistent",
         "aiButton1": "Mit KI schreiben",
         "aiButton2": "Mit KI umschreiben",
-        "aiHelperText": "Füge Stichpunkte hinzu und erhalte einen ersten Entwurf.\nFür bessere Ergebnisse, fülle die Felder oben aus. Die Erstellung kann einen Moment dauern.",
+        "aiHelperText": "Füge Stichpunkte hinzu und erhalte einen ersten Entwurf.\nFür bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
