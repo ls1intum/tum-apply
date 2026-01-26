@@ -7,15 +7,14 @@
       },
       "steps": {
         "basicInfo": "Grundlegende Informationen",
-        "positionDetails": "Arbeitsbedingungen",
+        "employmentTerms": "Arbeitsbedingungen",
         "imageSelection": "Bannerbild",
         "additionalInfo": "Zusätzliche Informationen",
         "summary": "Zusammenfassung"
       },
       "basicInfo": {
         "section1": "Übersicht",
-        "section2": "Stellenbeschreibung",
-        "section3": "Arbeitsbedingungen"
+        "section2": "Stellenbeschreibung"
       }
     },
     "basicInformationSection": {

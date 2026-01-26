@@ -7,15 +7,14 @@
       },
       "steps": {
         "basicInfo": "Basic Information",
-        "positionDetails": "Employment Terms",
+        "employmentTerms": "Employment Terms",
         "imageSelection": "Job Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
       },
       "basicInfo": {
         "section1": "Overview",
-        "section2": "Position Details",
-        "section3": "Employment Terms"
+        "section2": "Position Details"
       }
     },
     "basicInformationSection": {

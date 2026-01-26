@@ -1362,7 +1362,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel2) {
       steps.push({
-        name: 'jobCreationForm.header.steps.positionDetails',
+        name: 'jobCreationForm.header.steps.employmentTerms',
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [

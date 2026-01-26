@@ -760,7 +760,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoValid.set(false);
       component.positionDetailsValid.set(false);
       let steps = getPrivate(component).buildStepData();
-      expect(steps.find(s => s.name.includes('positionDetails'))?.disabled).toBe(true);
+      expect(steps.find(s => s.name.includes('employmentTerms'))?.disabled).toBe(true);
       expect(steps.find(s => s.name.includes('summary'))?.disabled).toBe(true);
       expect(steps[0].buttonGroupNext?.[0].disabled).toBe(true);
 
