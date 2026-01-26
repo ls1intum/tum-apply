@@ -128,10 +128,10 @@
       "languageInfo": "Schreibe auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel deaktiviert.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
-        "placeholder": "Beschreibung\nTODO: Beschreiben Sie den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Listen Sie die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Geben Sie die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
+        "placeholder": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Gib die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Nutze die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
         "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt, die Aufgaben und die erwarteten Qualifikationen und Ziele der Position zu verstehen.",
-        "template": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreiben Sie den Forschungskontext, Ziele und Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Listen Sie die Hauptverantwortlichkeiten des Kandidaten auf.</p><br><p><strong>Qualifikationskriterien</strong></p><p>TODO: Geben Sie die Mindestanforderungen an (Abschluss, Fähigkeiten, Sprache, etc.)</p>",
+        "template": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, Ziele und Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die Hauptverantwortlichkeiten des Kandidaten auf.</p><br><p><strong>Qualifikationskriterien</strong></p><p>TODO: Gib die Mindestanforderungen an (Abschluss, Fähigkeiten, Sprache, etc.)</p>",
         "aiHeaderText": "KI Assistent",
         "aiButton1": "Mit KI schreiben",
         "aiButton2": "Mit KI umschreiben",
