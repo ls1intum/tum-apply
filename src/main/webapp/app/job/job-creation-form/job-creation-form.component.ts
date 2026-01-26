@@ -943,19 +943,24 @@ export class JobCreationFormComponent {
     }
   }
   /**
-  * Automatically scrolls the editor to the bottom during AI streaming.
-  * Runs every 200ms while isAutoScrolling is true.
-*/
+   * Automatically scrolls the editor to the bottom during AI streaming.
+   * Runs every 200ms while isAutoScrolling is true.
+   */
   private autoScrollStreaming(): void {
+    const editorContainer = document.querySelector('.ql-editor') as HTMLElement;
+    let lastScrollTop = editorContainer.scrollTop;
+
     const smoothScroll = (): void => {
-      if (!this.isAutoScrolling) {
+      if (!this.isAutoScrolling) return;
+      if (editorContainer.scrollTop < lastScrollTop) {
+        this.isAutoScrolling = false;
         return;
       }
-      const editorContainer = document.querySelector('.ql-editor') as HTMLElement;
       editorContainer.scrollTo({
         top: editorContainer.scrollHeight,
         behavior: 'smooth',
       });
+      lastScrollTop = editorContainer.scrollTop;
       setTimeout(() => requestAnimationFrame(smoothScroll), 200);
     };
     requestAnimationFrame(smoothScroll);
