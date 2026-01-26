@@ -2,9 +2,6 @@ package de.tum.cit.aet.ai.web;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.ai.service.AiService;
-import de.tum.cit.aet.core.constants.GenderBiasWordLists;
-import de.tum.cit.aet.core.dto.GenderBiasAnalysisRequest;
-import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import lombok.extern.slf4j.Slf4j;

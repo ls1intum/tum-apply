@@ -942,6 +942,10 @@ export class JobCreationFormComponent {
       }
     }
   }
+  /**
+  * Automatically scrolls the editor to the bottom during AI streaming.
+  * Runs every 200ms while isAutoScrolling is true.
+*/
   private autoScrollStreaming(): void {
     const smoothScroll = (): void => {
       if (!this.isAutoScrolling) {

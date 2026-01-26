@@ -23,7 +23,7 @@ STYLE:
 - AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
 - Keep ALL technical terms given exact: Python, fMRI, TV-L E13, PyTorch, etc.
 - Keep ALL specific facts, numbers, named entities, and technical terms from INPUT TEXT, BUT you may rephrase descriptive wording containing {nonInclusiveWords} to achieve inclusive language
-- Maximum length: 1500 characters total
+- CHARACTER LIMIT: 1200-1400 Characters for entire job description
 
 USER INSTRUCTIONS:
 When user gives instructions after initial generation (make shorter, more formal, add X, remove Y), immediately apply those changes to the text.
@@ -80,4 +80,5 @@ FORBIDDEN:
 Do NOT output markdown code blocks like ```json
 Do NOT add explanatory text outside the JSON
 Do NOT use unescaped double quotes inside the HTML content
-Do NOT use more {nonInclusiveWords} than {inclusiveWords}, duplicates count
+Do NOT use more {nonInclusiveWords} than {inclusiveWords}, DUPLICATE WORDS COUNT
+Do NOT exceed 1500 characters under ANY circumstances, this will cause database failure
