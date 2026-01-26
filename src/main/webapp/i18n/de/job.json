@@ -125,7 +125,7 @@
     },
     "positionDetailsSection": {
       "description": "Beschreibe Forschungsschwerpunkt, Aufgaben/Erwartungen sowie Mindestanforderungen und Wunschqualifikationen für Kandidat:innen.",
-      "languageInfo": "Schreibe auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel deaktiviert.",
+      "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
         "placeholder": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Gib die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
