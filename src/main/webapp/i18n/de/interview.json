@@ -55,7 +55,7 @@
       "showLess": "Weniger anzeigen",
       "noFutureSlots": {
         "title": "Aktuell keine Termine verfügbar",
-        "description": "Es gibt derzeit keine buchbaren Termine. Füge neue Termine hinzu, damit Bewerber einen Termin buchen können."
+        "description": "Es gibt derzeit keine buchbaren Termine. Füge neue Termine hinzu, damit Bewerber:innen einen Termin buchen können."
       },
       "error": {
         "loadFailed": {
@@ -247,7 +247,7 @@
         },
         "insufficientSlots": {
           "header": "Zu wenige Termine",
-          "message": "Du bist dabei Bewerber einzuladen, aber es sind möglicherweise nicht genügend zukünftige Termine verfügbar. Bitte füge erst weitere Termine hinzu.",
+          "message": "Du bist dabei Bewerber:innen einzuladen, aber es sind möglicherweise nicht genügend zukünftige Termine verfügbar. Bitte füge erst weitere Termine hinzu.",
           "addSlots": "Termine hinzufügen"
         }
       }
