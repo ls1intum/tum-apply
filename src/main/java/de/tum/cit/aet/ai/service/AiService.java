@@ -3,6 +3,7 @@ package de.tum.cit.aet.ai.service;
 import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
 
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
 import java.time.Duration;
@@ -63,18 +64,7 @@ public class AiService {
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
-        final String locationText = (jobFormDTO.location() == null)
-            ? ""
-            : switch (jobFormDTO.location()) {
-                  case GARCHING -> "Garching";
-                  case GARCHING_HOCHBRUECK -> "Garching Hochbrück";
-                  case HEILBRONN -> "Heilbronn";
-                  case MUNICH -> "Munich";
-                  case STRAUBING -> "Straubing";
-                  case WEIHENSTEPHAN -> "Weihenstephan";
-                  case SINGAPORE -> "Singapore";
-                  default -> "";
-              };
+        final String locationText = UiTextFormatter.formatEnumValue(jobFormDTO.location());
         Flux<String> contentFlux = chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
