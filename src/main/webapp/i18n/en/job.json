@@ -135,7 +135,7 @@
         "aiHeaderText": "AI Assistant",
         "aiButton1": "Write With AI",
         "aiButton2": "Rewrite With AI",
-        "aiHelperText": "Add bullet points and get a first draft.\nFor better results, fill in the fields above. Generation may take a moment.",
+        "aiHelperText": "Add bullet points and get a first draft.\nFor better results, fill in the fields above. AI generation may take a moment.",
         "aiFillerText": "Generating...",
         "aiToggle": "Enable AI",
         "languageEnglish": "English",
