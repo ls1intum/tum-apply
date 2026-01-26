@@ -54,7 +54,7 @@ ext {
 }
 
 wrapper {
-  gradleVersion = "9.2.1"
+  gradleVersion = "9.3.0"
 }
 
 spotless {
@@ -209,36 +209,13 @@ dependencies {
   testImplementation "org.springframework.boot:spring-boot-test"
   testImplementation "org.springframework.security:spring-security-test"
   implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-  // Consistently use the latest version of spring framework modules the latest version to avoid security vulnerabilities
-  implementation "org.springframework:spring-aop:${springFrameworkVersion}"
-  implementation "org.springframework:spring-aspects:${springFrameworkVersion}"
-  implementation "org.springframework:spring-beans:${springFrameworkVersion}"
-  implementation "org.springframework:spring-context:${springFrameworkVersion}"
-  implementation "org.springframework:spring-context-support:${springFrameworkVersion}"
-  implementation "org.springframework:spring-core:${springFrameworkVersion}"
-  implementation "org.springframework:spring-expression:${springFrameworkVersion}"
-  implementation "org.springframework:spring-jcl:${springFrameworkVersion}"
-  implementation "org.springframework:spring-jdbc:${springFrameworkVersion}"
-  implementation "org.springframework:spring-messaging:${springFrameworkVersion}"
-  implementation "org.springframework:spring-orm:${springFrameworkVersion}"
-  implementation "org.springframework:spring-tx:${springFrameworkVersion}"
-  implementation "org.springframework:spring-webmvc:${springFrameworkVersion}"
-  implementation "org.springframework:spring-web:${springFrameworkVersion}"
-  implementation "org.springframework:spring-webflux:${springFrameworkVersion}"
-  implementation "org.springframework:spring-websocket:${springFrameworkVersion}"
+
   // Consistently use the latest version of all spring security modules to avoid vulnerabilities
-  implementation "org.springframework.security:spring-security-config:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-data:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-core:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-oauth2-core:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-oauth2-jose:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-oauth2-resource-server:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-crypto:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-web:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-messaging:${springSecurityVersion}"
-  implementation "org.springframework.security:spring-security-ldap:${springSecurityVersion}"
-  testImplementation "org.springframework.security:spring-security-test:${springSecurityVersion}"
+  implementation "org.springframework.security:spring-security-oauth2-core"
+  implementation "org.springframework.security:spring-security-oauth2-client"
+  implementation "org.springframework.security:spring-security-oauth2-jose"
+  implementation "org.springframework.security:spring-security-oauth2-resource-server"
+  testImplementation "org.springframework.security:spring-security-test"
   // Database and connection pooling
   implementation "com.mysql:mysql-connector-j:9.5.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
@@ -249,8 +226,8 @@ dependencies {
   implementation "com.github.ben-manes.caffeine:caffeine:3.2.3"
   implementation "com.github.ben-manes.caffeine:jcache:3.2.3"
   implementation "javax.cache:cache-api"
-  implementation "org.hibernate.orm:hibernate-jcache:${hibernateVersion}"
-  implementation "org.hibernate.orm:hibernate-core:${hibernateVersion}"
+  implementation "org.hibernate.orm:hibernate-jcache"
+  implementation "org.hibernate.orm:hibernate-core"
   implementation "org.hibernate.validator:hibernate-validator:9.1.0.Final"
   // needed for OpenAPI generation
   implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14"
@@ -269,7 +246,7 @@ dependencies {
   testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
   // Annotation processors
   annotationProcessor "org.glassfish.jaxb:jaxb-runtime:4.0.6"
-  annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen:${hibernateVersion}"
+  annotationProcessor "org.hibernate.orm:hibernate-jpamodelgen"
   compileOnly "org.projectlombok:lombok:${lombokVersion}"
   annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
   testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -302,7 +279,7 @@ tasks.register("cleanResources", Delete) {
 }
 
 wrapper {
-  gradleVersion = "9.2.1"
+  gradleVersion = "9.3.0"
 }
 
 node {

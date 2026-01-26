@@ -1,8 +1,9 @@
 <div class="page-container">
   <div class="header-container">
     <div class="page-header">
-      <h1 jhiTranslate="researchGroup.detailView.title" class="h1-text"></h1>
+      <h1 jhiTranslate="researchGroup.detailView.title"></h1>
     </div>
+    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!form.valid || isSaving()" (click)="onSave()" />
   </div>
 
   <div class="body">
@@ -13,16 +14,6 @@
             <!-- Information Notice -->
             <div class="mt-2 mb-4">
               <jhi-info-box severity="primary" message="researchGroup.detailView.infoMessage" [shouldTranslate]="true" />
-            </div>
-
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem">
-              <jhi-button
-                [label]="'button.save'"
-                icon="save"
-                [shouldTranslate]="true"
-                [disabled]="!form.valid || isSaving()"
-                (click)="onSave()"
-              />
             </div>
 
             <!-- Basic information section -->

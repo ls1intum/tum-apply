@@ -282,7 +282,7 @@ describe('SearchFilterSortBar', () => {
         totalRecords: 10,
       });
 
-      const recordCount = fixture.nativeElement.querySelector('.text-text-secondary.text-md');
+      const recordCount = fixture.nativeElement.querySelector('div[jhiTranslate="entity.filters.recordsFound"]');
       expect(recordCount).toBeTruthy();
     });
 
