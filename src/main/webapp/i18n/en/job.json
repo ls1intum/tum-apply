@@ -7,7 +7,7 @@
       },
       "steps": {
         "basicInfo": "Basic Information",
-        "positionDetails": "Employment Terms",
+        "employmentTerms": "Employment Terms",
         "imageSelection": "Job Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
