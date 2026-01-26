@@ -36,6 +36,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
+import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -766,17 +767,21 @@ export class JobCreationFormComponent {
       };
       this.autoScrollStreaming();
 
+      let lastRendered = '';
       // Use the AiStreamingService with live updates during streaming
       const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(language, request, this.jobId(), content => {
         // Try to extract content from the partial JSON
         const extractedContent = this.extractJobDescriptionFromStream(content);
-        this.jobDescriptionEditor()?.forceUpdate(
-          extractedContent ??
-            `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
-        );
+        if (!extractedContent?.startsWith('<')) return;
+
+        const safeHtml = extractCompleteHtmlTags(extractedContent);
+        // Only update if we have new content
+        if (safeHtml && safeHtml !== lastRendered) {
+          lastRendered = safeHtml;
+          this.jobDescriptionEditor()?.forceUpdate(safeHtml);
+        }
       });
       this.isAutoScrolling = false;
-
       // Final update after streaming completes - parse the complete JSON
       if (accumulatedContent) {
         // Extract final content from complete JSON
@@ -891,19 +896,12 @@ export class JobCreationFormComponent {
         extracted = extracted.slice(0, -2);
       }
       // Unescape
-      return this.unescapeJsonString(extracted);
+      return unescapeJsonString(extracted);
     }
 
     // Extract the value between quotes
     const rawValue = trimmed.substring(valueStart, valueEnd);
-    return this.unescapeJsonString(rawValue);
-  }
-
-  /**
-   * Unescapes a JSON string value (handles \n, \r, \t, \", \\)
-   */
-  private unescapeJsonString(str: string): string {
-    return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+    return unescapeJsonString(rawValue);
   }
 
   /**
