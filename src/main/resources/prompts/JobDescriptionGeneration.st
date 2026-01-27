@@ -10,7 +10,7 @@ Location: {location}
 Never output placeholder text or template variables
 If NOTHING is provided give a reasonable generic answer.
 
-CHARACTER HARD LIMIT: MAXIMUM 1200 Characters for entire job description (HTML included)
+CHARACTER HARD LIMIT: MAXIMUM 1200 Characters, NEVER go over that LIMIT
 
 SECTIONS REQUIRED:
 1. Description - Describe the research context, goals, and scope of the position. (2-3 sentences)
@@ -19,9 +19,7 @@ SECTIONS REQUIRED:
 
 STYLE AND OUTPUT:
 - Professional academic tone, natural tone, AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
-- Gender-inclusive: use {inclusiveWords}, avoid {nonInclusiveWords}
-- Substitute INPUT TEXT with {nonInclusiveWords} wording with gender-inclusive language {inclusiveWords}
-- Keep ALL technical terms given exact: Python, fMRI, TV-L E13, PyTorch, etc.
+- NEVER USE {nonInclusiveWords}
 - ALWAYS preserve EXACTLY as written:
     - Technical terms: Python, PyTorch, fMRI, TV-L E13 etc.
     - Numbers: dates, salaries, percentages
@@ -31,11 +29,7 @@ STYLE AND OUTPUT:
 - Do not explain your reasoning or mention guidelines
 
 WORD COUNT RULE:
-1. Count ALL occurrences of word stems:
-   - {nonInclusiveWords}
-   - {inclusiveWords}
-Your output MUST have: Total uses of {inclusiveWords} > Total uses of {nonInclusiveWords}
-2. Count the total characters in the entire job description, if you exceed 1200 characters
+1. Count the total characters of user INPUT TEXT, if it exceeds 600 characters:
   - shorten the description
   - merge similar bullet points
   - remove non critical information
@@ -57,7 +51,7 @@ If the INPUT TEXT already contains a description, update it to strictly include 
 
 Structure (EXACTLY this format for input DE):
 {{
-  "jobDescription": "<p><strong>Beschreibung</strong></p><p>Text here.</p><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><ul><li>Task 1</li><li>Task 2</li></ul><p><strong>Qualifikationskriterien</strong></p><ul><li>Criterion 1</li><li>Criterion 2</li></ul>"
+  "jobDescription": "<p><strong>Beschreibung</strong></p><p>Text here.</p><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><ul><li>Task 1</li><li>Task 2</li></ul><p><strong>Zulassungsvoraussetzungen</strong></p><ul><li>Criterion 1</li><li>Criterion 2</li></ul>"
 }}
 Structure (EXACTLY this format for input EN):
 {{
@@ -79,7 +73,6 @@ JSON SAFETY - EXTREMELY IMPORTANT:
 - Valid example: {{"jobDescription": "<p><strong>Title</strong></p><p>Text with 'quotes' here.</p>"}}
 
 FORBIDDEN:
-DO NOT use more {nonInclusiveWords} (duplicates count) than {inclusiveWords}
 Do NOT output markdown code blocks like ```json
 Do NOT add explanatory text outside the JSON
 Do NOT use unescaped double quotes inside the HTML content
