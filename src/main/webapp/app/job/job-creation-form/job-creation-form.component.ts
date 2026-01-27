@@ -28,6 +28,7 @@ import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/compo
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
 import { AiResourceApiService } from 'app/generated';
+import { AiStreamingService } from 'app/service/ai-streaming.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { ToastService } from 'app/service/toast-service';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
@@ -35,6 +36,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
+import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -169,7 +171,18 @@ export class JobCreationFormComponent {
   showAiPanel = computed(() => this.aiToggleSignal());
 
   /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
+  templateText = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
+      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
+  );
+
+  /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
+  jobDescriptionPlaceholder = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? 'jobCreationForm.positionDetailsSection.jobDescription.placeholderEN'
+      : 'jobCreationForm.positionDetailsSection.jobDescription.placeholderDE',
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD SIGNALS
@@ -222,6 +235,7 @@ export class JobCreationFormComponent {
   private route = inject(ActivatedRoute);
   private toastService = inject(ToastService);
   private aiService = inject(AiResourceApiService);
+  private aiStreamingService = inject(AiStreamingService);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -434,6 +448,8 @@ export class JobCreationFormComponent {
 
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
+
+  private isAutoScrolling = false;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD CONSTRAINTS
@@ -728,23 +744,24 @@ export class JobCreationFormComponent {
   /**
    * Generates a job description draft using AI.
    * Uses current form values as context for generation.
-   * Updates the editor with the generated content.
+   * Shows "Generating..." initially, then displays partial content as it streams in.
+   * After generation completes, the final content is force-updated to ensure correctness.
    */
   async generateJobApplicationDraft(): Promise<void> {
-    const ctrl = this.basicInfoForm.get('jobDescription');
-    const lang = this.currentDescriptionLanguage();
+    const originalContent = this.basicInfoForm.get('jobDescription')?.value;
+    const language = this.currentDescriptionLanguage();
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
+    this.isAutoScrolling = true;
 
-    const originalContent = ctrl?.value;
-
+    // Show "Generating" message in the editor while AI is working
     this.jobDescriptionEditor()?.forceUpdate(
       `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
     );
 
     try {
-      // Ensure background signals reflect current editor before sending
+      // Ensure background signals reflect the current editor before sending
       this.syncCurrentEditorIntoLanguageSignals();
 
       const request: JobFormDTO = {
@@ -759,30 +776,203 @@ export class JobCreationFormComponent {
 
         state: JobFormDTO.StateEnum.Draft,
       };
+      this.autoScrollStreaming();
 
-      const response = await firstValueFrom(this.aiService.generateJobApplicationDraft(lang, request));
+      let lastRendered = '';
+      // Use the AiStreamingService with live updates during streaming
+      const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(language, request, this.jobId(), content => {
+        // Try to extract content from the partial JSON
+        const extractedContent = this.extractJobDescriptionFromStream(content);
+        if (!extractedContent?.startsWith('<')) return;
 
-      if (response.jobDescription) {
-        // Update current editor
-        this.basicInfoForm.get('jobDescription')?.setValue(response.jobDescription);
-        this.basicInfoForm.get('jobDescription')?.markAsDirty();
-        this.jobDescriptionSignal.set(response.jobDescription);
-        this.jobDescriptionEditor()?.forceUpdate(response.jobDescription);
-        this.basicInfoValid.set(this.basicInfoForm.valid);
+        const safeHtml = extractCompleteHtmlTags(extractedContent);
+        // Only update if we have new content
+        if (safeHtml && safeHtml !== lastRendered) {
+          lastRendered = safeHtml;
+          this.jobDescriptionEditor()?.forceUpdate(safeHtml);
+        }
+      });
+      this.isAutoScrolling = false;
+      // Final update after streaming completes - parse the complete JSON
+      if (accumulatedContent) {
+        // Extract final content from complete JSON
+        const finalContent = this.extractJobDescriptionFromStream(accumulatedContent);
 
-        // Persist to correct language bucket
-        if (lang === 'en') {
-          this.jobDescriptionEN.set(response.jobDescription);
+        if (finalContent && finalContent.length > 0) {
+          // Force update with the final, correctly parsed content
+          this.basicInfoForm.get('jobDescription')?.setValue(finalContent);
+          this.basicInfoForm.get('jobDescription')?.markAsDirty();
+          this.jobDescriptionSignal.set(finalContent);
+          this.jobDescriptionEditor()?.forceUpdate(finalContent);
+          this.basicInfoValid.set(this.basicInfoForm.valid);
+
+          // Persist to correct language bucket
+          if (language === 'en') {
+            this.jobDescriptionEN.set(finalContent);
+          } else {
+            this.jobDescriptionDE.set(finalContent);
+          }
+
+          // We need to fetch the translated version from the server
+          await this.loadTranslatedDescription(language === 'en' ? 'de' : 'en');
         } else {
-          this.jobDescriptionDE.set(response.jobDescription);
+          // Extraction failed - show error and restore original content
+          this.jobDescriptionEditor()?.forceUpdate(originalContent);
+          this.toastService.showErrorKey('jobCreationForm.toastMessages.aiGenerationFailed');
         }
       }
-    } catch {
+    } catch (error) {
       this.jobDescriptionEditor()?.forceUpdate(originalContent);
-      this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
+      this.isAutoScrolling = false;
+      // Show error toast with appropriate message
+      if (error instanceof Error && error.message.includes('HTTP error')) {
+        this.toastService.showErrorKey('jobCreationForm.toastMessages.aiGenerationFailed');
+      } else {
+        this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
+      }
     } finally {
+      this.isAutoScrolling = false;
       this.isGeneratingDraft.set(false);
     }
+  }
+
+  /**
+   * Extracts the jobDescription content from the AI response.
+   * The AI returns JSON like: {"jobDescription":"<html content>"}
+   * This method extracts the HTML content from the JSON wrapper.
+   *
+   * @param content The complete streamed content (should be valid JSON when complete)
+   * @returns The extracted HTML content, or null if extraction fails
+   */
+  private extractJobDescriptionFromStream(content: string): string | null {
+    if (!content || content.trim().length === 0) {
+      return null;
+    }
+
+    const trimmed = content.trim();
+
+    // Method 1: Try to parse as complete JSON (most reliable)
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (parsed.jobDescription && typeof parsed.jobDescription === 'string') {
+        return parsed.jobDescription;
+      }
+    } catch {
+      // JSON parsing failed, try manual extraction
+    }
+
+    // Method 2: Manual extraction from JSON structure
+    // Look for the pattern: {"jobDescription":"<content>"}
+    const startMarker = '"jobDescription"';
+    const startIndex = trimmed.indexOf(startMarker);
+
+    if (startIndex === -1) {
+      // Not a JSON response, return as-is (might be plain HTML)
+      return trimmed;
+    }
+
+    // Find the opening quote after the colon
+    const colonIndex = trimmed.indexOf(':', startIndex);
+    if (colonIndex === -1) return null;
+
+    // Find the first quote after the colon (start of value)
+    let valueStart = trimmed.indexOf('"', colonIndex + 1);
+    if (valueStart === -1) return null;
+    valueStart++; // Move past the opening quote
+
+    // Find the closing quote - need to handle escaped quotes
+    let valueEnd = valueStart;
+    while (valueEnd < trimmed.length) {
+      const char = trimmed[valueEnd];
+      if (char === '\\') {
+        // Skip escaped character
+        valueEnd += 2;
+      } else if (char === '"') {
+        // Found the closing quote
+        break;
+      } else {
+        valueEnd++;
+      }
+    }
+
+    if (valueEnd >= trimmed.length) {
+      // No closing quote found - incomplete JSON
+      // Try to extract what we have
+      let extracted = trimmed.substring(valueStart);
+      // Remove trailing incomplete parts
+      if (extracted.endsWith('"')) {
+        extracted = extracted.slice(0, -1);
+      }
+      if (extracted.endsWith('"}')) {
+        extracted = extracted.slice(0, -2);
+      }
+      // Unescape
+      return unescapeJsonString(extracted);
+    }
+
+    // Extract the value between quotes
+    const rawValue = trimmed.substring(valueStart, valueEnd);
+    return unescapeJsonString(rawValue);
+  }
+
+  /**
+   * Loads the translated job description from the server after AI generation.
+   * This is needed because the server translates asynchronously after streaming.
+   * Uses retry logic with delay to wait for the translation to complete.
+   *
+   * @param targetLang The language to load ('en' or 'de')
+   * @param maxRetries Maximum number of retry attempts (default: 5)
+   * @param delayMs Delay between retries in milliseconds (default: 2000)
+   */
+  private async loadTranslatedDescription(targetLang: 'en' | 'de', maxRetries = 5, delayMs = 2000): Promise<void> {
+    const jobId = this.jobId();
+    if (!jobId) return;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // Wait before checking (translation needs time to complete)
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+
+        const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
+        const translatedContent = targetLang === 'en' ? job.jobDescriptionEN : job.jobDescriptionDE;
+
+        if (translatedContent && translatedContent.trim().length > 0) {
+          // Translation found - update the signal
+          if (targetLang === 'en') {
+            this.jobDescriptionEN.set(translatedContent);
+          } else {
+            this.jobDescriptionDE.set(translatedContent);
+          }
+          return; // Success - exit
+        }
+        // Error translating, will retry
+      } catch {
+        // Error fetching job, will retry
+      }
+    }
+  }
+  /**
+   * Automatically scrolls the editor to the bottom during AI streaming.
+   * Runs every 200ms while isAutoScrolling is true.
+   */
+  private autoScrollStreaming(): void {
+    const editorContainer = document.querySelector('.ql-editor') as HTMLElement;
+    let lastScrollTop = editorContainer.scrollTop;
+
+    const smoothScroll = (): void => {
+      if (!this.isAutoScrolling) return;
+      if (editorContainer.scrollTop < lastScrollTop) {
+        this.isAutoScrolling = false;
+        return;
+      }
+      editorContainer.scrollTo({
+        top: editorContainer.scrollHeight,
+        behavior: 'smooth',
+      });
+      lastScrollTop = editorContainer.scrollTop;
+      setTimeout(() => requestAnimationFrame(smoothScroll), 200);
+    };
+    requestAnimationFrame(smoothScroll);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1144,7 +1334,7 @@ export class JobCreationFormComponent {
         });
       }
     } catch {
-      this.toastService.showErrorKey('jobCreationForm.toastMessages.translationFailed');
+      this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
     } finally {
       this.isTranslating.set(false);
     }
@@ -1211,7 +1401,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel2) {
       steps.push({
-        name: 'jobCreationForm.header.steps.positionDetails',
+        name: 'jobCreationForm.header.steps.employmentTerms',
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [
