@@ -33,7 +33,7 @@ If NOTHING is provided give a reasonable generic answer.
 
 ---
 
-###5. STYLE
+### 5. STYLE
 Professional academic, neutral tone
 ALWAYS preserve EXACTLY as written:
   - Technical terms: Python, PyTorch, fMRI, TV-L E13 etc.
@@ -59,7 +59,7 @@ Structure (EXACTLY this format for input EN):
 FORMAT: Use HTML like: <p>,<strong>,<ul>,<li>
 
 ---
-### 6. OUTPUT SPECIFICATIONS
+### 7. OUTPUT SPECIFICATIONS
 - Return ONLY a valid JSON object.
 - NO Markdown code blocks (NO ```json).
 - HTML tags allowed: <p>, <strong>, <ul>, <li>.
