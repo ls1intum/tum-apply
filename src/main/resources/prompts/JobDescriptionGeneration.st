@@ -19,9 +19,9 @@ TASK: Generate a polished job posting paragraph based on short bullet-point note
 ---
 ### 3. COMPRESSION & STRUCTURE (MAX 1200 CHARS)
 You are a summarizer. If the input is long, MERGE and CUT information.
-- **Description**: MAX 2-3 sentences. Context and goals.
-- **Tasks**: EXACTLY 3 bullet points. (Categorize: 1. Design/Architecture, 2. Implementation/Testing, 3. Safety/Governance).
-- **Eligibility**: MAX 3 bullet points. Focus on hard requirements (Degrees, Tech Stack, Language).
+- Description: MAX 2-3 sentences.  -> Offers/Benefits (salary, funding, equipment)
+- Tasks: EXACTLY 3 bullet points. -> Duties/Activities (tasks, responsibilities)
+- Eligibility: MAX 3 bullet points. Focus on hard requirements (Degrees, skills, Language etc.).
 
 ---
 ### 4. METADATA
