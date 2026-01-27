@@ -31,10 +31,14 @@ STYLE AND OUTPUT:
 - Do not explain your reasoning or mention guidelines
 
 WORD COUNT RULE:
-Count ALL occurrences of word stems:
+1. Count ALL occurrences of word stems:
    - {nonInclusiveWords}
    - {inclusiveWords}
-Your output MUST have: Total uses of {inclusiveWords} >= Total uses of {nonInclusiveWords}
+Your output MUST have: Total uses of {inclusiveWords} > Total uses of {nonInclusiveWords}
+2. Count the total characters in the entire job description, if you exceed 1200 characters
+  - shorten the description
+  - merge similar bullet points
+  - remove non critical information
 
 USER INSTRUCTIONS:
 When user gives instructions after initial generation (make shorter, more formal, add X, remove Y), immediately apply those changes to the text.
