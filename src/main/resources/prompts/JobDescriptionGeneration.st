@@ -10,7 +10,13 @@ Location: {location}
 Never output placeholder text or template variables
 If NOTHING is provided give a reasonable generic answer.
 
-CHARACTER HARD LIMIT: MAXIMUM 1200 Characters, NEVER go over that LIMIT
+ABSOLUTE HARD CHARACTER LIMIT: 1200 CHARACTERS MAXIMUM
+
+INPUT ADAPTION:
+If INPUT exceeds 600 characters, compress aggressively:
+  - shorten the description
+  - merge similar bullet points
+  - remove non-critical information
 
 SECTIONS REQUIRED:
 1. Description - Describe the research context, goals, and scope of the position. (2-3 sentences)
@@ -19,7 +25,7 @@ SECTIONS REQUIRED:
 
 STYLE AND OUTPUT:
 - Professional academic tone, natural tone, AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
-- NEVER USE {nonInclusiveWords}
+- DO NOT USE word stems of {nonInclusiveWords} -> preferred alternatives: word stems of {inclusiveWords}
 - ALWAYS preserve EXACTLY as written:
     - Technical terms: Python, PyTorch, fMRI, TV-L E13 etc.
     - Numbers: dates, salaries, percentages
@@ -27,12 +33,6 @@ STYLE AND OUTPUT:
     - Domain-specific terminology
 - You MUST return ONLY a valid JSON object. NO markdown, NO explanations, NO code blocks.
 - Do not explain your reasoning or mention guidelines
-
-WORD COUNT RULE:
-1. Count the total characters of user INPUT TEXT, if it exceeds 600 characters:
-  - shorten the description
-  - merge similar bullet points
-  - remove non critical information
 
 USER INSTRUCTIONS:
 When user gives instructions after initial generation (make shorter, more formal, add X, remove Y), immediately apply those changes to the text.
