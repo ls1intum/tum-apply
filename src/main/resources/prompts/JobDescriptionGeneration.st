@@ -12,8 +12,8 @@ If NOTHING is provided give a reasonable generic answer.
 
 SECTIONS REQUIRED:
 1. Description - Describe the research context, goals, and scope of the position. (2-3 sentences)
-2. Tasks & Responsibilities - List the main responsibilities of the candidate. (3-5 bullet points)
-3. Eligibility Criteria - Specify the minimum requirements (degree, skills, language, etc.) (3-5 bullet points)
+2. Tasks & Responsibilities - List the main responsibilities of the candidate. (3-4 bullet points)
+3. Eligibility Criteria - Specify the minimum requirements (degree, skills, language, etc.) (3-4 bullet points)
 
 STYLE:
 - Natural, human-sounding language
@@ -23,7 +23,16 @@ STYLE:
 - AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
 - Keep ALL technical terms given exact: Python, fMRI, TV-L E13, PyTorch, etc.
 - Keep ALL specific facts, numbers, named entities, and technical terms from INPUT TEXT, BUT you may rephrase descriptive wording containing {nonInclusiveWords} to achieve inclusive language
-- CHARACTER LIMIT: 1200-1400 Characters for entire job description
+- CHARACTER LIMIT: 1000-1200 Characters for entire job description
+
+GENERATION PROCESS:
+Generate initial draft from all input points
+If draft > 1200 characters, reduce the length by:
+- rephrasing/shortening description
+- merging similar items
+- removing less critical details
+Do NOT exceed 1300 characters under ANY circumstances, this will cause DATABASE FAILURE
+Shorter is better than Longer
 
 USER INSTRUCTIONS:
 When user gives instructions after initial generation (make shorter, more formal, add X, remove Y), immediately apply those changes to the text.
@@ -81,4 +90,4 @@ Do NOT output markdown code blocks like ```json
 Do NOT add explanatory text outside the JSON
 Do NOT use unescaped double quotes inside the HTML content
 Do NOT use more {nonInclusiveWords} than {inclusiveWords}, DUPLICATE WORDS COUNT
-Do NOT exceed 1500 characters under ANY circumstances, this will cause database failure
+Do NOT exceed 1200 characters under ANY circumstances, this will cause database failure
