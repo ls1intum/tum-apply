@@ -171,7 +171,18 @@ export class JobCreationFormComponent {
   showAiPanel = computed(() => this.aiToggleSignal());
 
   /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
+  templateText = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
+      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
+  );
+
+  /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
+  jobDescriptionPlaceholder = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? 'jobCreationForm.positionDetailsSection.jobDescription.placeholderEN'
+      : 'jobCreationForm.positionDetailsSection.jobDescription.placeholderDE',
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD SIGNALS
