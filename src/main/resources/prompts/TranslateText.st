@@ -22,6 +22,16 @@ OUTPUT FORMAT - CRITICAL:
 9. Consistency: Use gender-inclusive language appropriate for Higher Education (e.g., using the 'Gender-Gap' or neutral forms in German if present in the source, or 'they/them/their' structures in English).
 10. Maximum length: 1500 characters total
 
+ALWAYS translate these words as specified:
+- English to German:
+  - "Description" -> "Beschreibung"
+  - "Tasks & Responsibilities" -> "Aufgaben & Verantwortlichkeiten"
+  - "Eligibility Criteria" -> "Zulassungsvoraussetzungen"
+- German to English:
+  - "Beschreibung" -> "Description"
+  - "Aufgaben & Verantwortlichkeiten" -> "Tasks & Responsibilities"
+  - "Zulassungsvoraussetzungen" -> "Eligibility Criteria"
+
 Structure:
 {{
   "translatedText": "HTML_CONTENT_HERE"
