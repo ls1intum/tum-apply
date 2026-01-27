@@ -46,6 +46,12 @@ ALWAYS preserve EXACTLY as written:
 {jobDescription}
 
 ---
+
+### 7. INSTRUCTION FOR REWRITE:
+If the INPUT TEXT already contains a description, update it to strictly include the METADATA provided above.
+If a field like {title} or {location} is provided, it OVERWRITES any conflicting information in the INPUT TEXT.
+
+
 Structure (EXACTLY this format for input DE):
 {{
   "jobDescription": "<p><strong>Beschreibung</strong></p><p>Text here.</p><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><ul><li>Task 1</li><li>Task 2</li></ul><p><strong>Zulassungsvoraussetzungen</strong></p><ul><li>Criterion 1</li><li>Criterion 2</li></ul>"
@@ -59,7 +65,7 @@ Structure (EXACTLY this format for input EN):
 FORMAT: Use HTML like: <p>,<strong>,<ul>,<li>
 
 ---
-### 7. OUTPUT SPECIFICATIONS
+### 8. OUTPUT SPECIFICATIONS
 - Return ONLY a valid JSON object.
 - NO Markdown code blocks (NO ```json).
 - HTML tags allowed: <p>, <strong>, <ul>, <li>.
