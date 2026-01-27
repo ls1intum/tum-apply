@@ -14,6 +14,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { getLocale } from 'app/shared/util/date-time.util';
+import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -137,18 +138,18 @@ export class SlotsSectionComponent {
   private readonly breakpointState = toSignal(
     this.breakpointObserver
       .observe([
-        '(min-width: 103.125rem)', // 5 columns (1650px)
-        '(min-width: 87.5rem)', // 4 columns (1400px)
-        '(min-width: 68.75rem)', // 3 columns (1100px)
-        '(min-width: 43.75rem)', // 2 columns (700px)
+        `(min-width: ${BREAKPOINTS.ultraWide}px)`, // 5 columns (2048px)
+        '(min-width: 1700px)', // 4 columns
+        `(min-width: ${BREAKPOINTS.xl}px)`, // 3 columns (1300px)
+        `(min-width: ${BREAKPOINTS.lg}px)`, // 2 columns (1024px)
       ])
       .pipe(
         map(result => {
           if (result.matches) {
-            if (result.breakpoints['(min-width: 103.125rem)']) return 5;
-            if (result.breakpoints['(min-width: 87.5rem)']) return 4;
-            if (result.breakpoints['(min-width: 68.75rem)']) return 3;
-            if (result.breakpoints['(min-width: 43.75rem)']) return 2;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.ultraWide}px)`]) return 5;
+            if (result.breakpoints['(min-width: 1700px)']) return 4;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.xl}px)`]) return 3;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.lg}px)`]) return 2;
           }
           return 1;
         }),
