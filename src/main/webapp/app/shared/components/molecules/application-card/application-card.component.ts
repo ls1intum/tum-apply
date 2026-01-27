@@ -4,12 +4,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
+import { DividerModule } from 'primeng/divider';
 
 import { TagComponent } from '../../atoms/tag/tag.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule, LocalizedDatePipe],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule, LocalizedDatePipe, DividerModule],
   templateUrl: './application-card.component.html',
 })
 export class ApplicationCardComponent {
@@ -43,5 +44,22 @@ export class ApplicationCardComponent {
     const last = parts.pop() ?? '';
     const first = parts.join(' ');
     return { first, last };
+  });
+
+  readonly masterDegree = computed(() => {
+    const applicant = this.applicationDetails()?.applicant;
+    if (!applicant) {
+      return null;
+    }
+    const degreeName = applicant.masterDegreeName;
+    const university = applicant.masterUniversity;
+    if (degreeName === undefined && university === undefined) {
+      return null;
+    }
+    return {
+      name: degreeName ?? '—',
+      university: university ?? '—',
+      grade: applicant.masterGrade ?? '—',
+    };
   });
 }

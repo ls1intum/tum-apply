@@ -1,5 +1,5 @@
 <div
-  class="mt-6 flex flex-col gap-1 p-4 w-48 sm:w-56 md:w-64 lg:w-72 xl:w-80 border-2 rounded-lg"
+  class="mt-6 flex flex-col gap-2 p-4 w-48 sm:w-56 md:w-64 lg:w-72 xl:w-80 border-2 rounded-lg"
   [class.border-primary]="!disabled() && !placeholder()"
   [class.opacity-50]="disabled()"
   [class.border-gray-300]="disabled()"
@@ -33,9 +33,41 @@
       </span>
     </div>
 
+    <p-divider layout="horizontal" />
+
+    <!-- Master's Degree -->
+    @if (masterDegree()) {
+      <div class="flex flex-col gap-1">
+        <span class="font-semibold">{{ 'evaluation.details.educationMasters' | translate }}</span>
+        <div class="flex flex-col text-sm">
+          <span class="text-xs text-text-secondary">{{ 'evaluation.details.educationDegree' | translate }}</span>
+          <span>{{ masterDegree()!.name }}</span>
+        </div>
+        <div class="flex flex-col text-sm">
+          <span class="text-xs text-text-secondary">{{ 'evaluation.details.educationUniversity' | translate }}</span>
+          <span>{{ masterDegree()!.university }}</span>
+        </div>
+        <div class="flex flex-col text-sm">
+          <span class="text-xs text-text-secondary">{{ 'evaluation.details.educationGrade' | translate }}</span>
+          <span>{{ masterDegree()!.grade }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Preferred Start Date -->
+    @if (applicationDetails()?.desiredDate) {
+      <div class="flex items-start gap-2 text-sm">
+        <fa-icon class="icon text-text-secondary" [icon]="['fas', 'calendar']" />
+        <div class="flex flex-col">
+          <span class="text-xs text-text-secondary">{{ 'evaluation.details.applicationDesiredStartDate' | translate }}</span>
+          <span>{{ applicationDetails()?.desiredDate | localizedDate }}</span>
+        </div>
+      </div>
+    }
+
     <!-- Applied Date -->
     @if (application()?.appliedAt) {
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 text-sm text-text-secondary">
         <span>
           {{ 'evaluation.appliedAt' | translate }}: {{ application()?.appliedAt | localizedDate }}
         </span>

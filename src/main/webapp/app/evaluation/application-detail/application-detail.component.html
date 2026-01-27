@@ -47,12 +47,8 @@
     />
 
     @if (currentApplication(); as application) {
-      <div class="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-3 sm:p-4 md:px-6 border border-border-default rounded-lg overflow-hidden">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 min-w-0 flex-1">
-          <span class="text-text-primary flex-shrink-0">Position:</span>
-          <span class="text-text-primary text-lg break-words">{{ application.applicationDetailDTO.jobTitle }}</span>
-        </div>
-        <div class="flex gap-3 justify-start md:justify-end flex-shrink-0">
+      <div class="w-full flex flex-col md:flex-row justify-end items-start md:items-center gap-4 p-3 sm:p-4 md:px-6 border-b border-border-default rounded-lg overflow-hidden">
+        <div class="flex gap-3 flex-shrink-0">
           <jhi-button
             [label]="'evaluation.accept' | translate"
             variant="outlined"
@@ -75,13 +71,26 @@
         <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
           <div>
             <jhi-section titleKey="evaluation.details.applicantTitle" icon="user">
+              <!-- Links as Icons next to "Applicant" section title -->
+              <div actions class="flex gap-2">
+                @if (application.applicationDetailDTO.applicant?.user?.website) {
+                  <a [href]="application.applicationDetailDTO.applicant?.user?.website" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-dark">
+                    <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
+                  </a>
+                }
+                @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
+                  <a [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-dark">
+                    <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
+                  </a>
+                }
+              </div>
+
               <div class="grid gap-8 md:grid-cols-2">
                 <!-- Applicant Information -->
                 <jhi-sub-section titleKey="evaluation.details.applicantInformation">
                   <jhi-description-list
                     [items]="[
                       { labelKey: 'evaluation.details.applicantName', value: application.applicationDetailDTO.applicant?.user?.name },
-
                       {
                         labelKey: 'evaluation.details.applicantGender',
                         value: application.applicationDetailDTO.applicant?.user?.gender
@@ -98,40 +107,9 @@
                   />
                 </jhi-sub-section>
 
-                <!-- Links -->
-                <jhi-sub-section titleKey="evaluation.details.applicantLinks">
-                  <jhi-link-list
-                    [links]="[
-                      {
-                        labelKey: 'evaluation.details.applicantWebsite',
-                        url: application.applicationDetailDTO.applicant?.user?.linkedinUrl,
-                        icon: 'link',
-                      },
-                      {
-                        labelKey: 'evaluation.details.applicantLinkedIn',
-                        url: application.applicationDetailDTO.applicant?.user?.website,
-                        icon: 'linkedin',
-                        isBrandIcon: true,
-                      },
-                    ]"
-                  />
-                </jhi-sub-section>
-              </div>
-            </jhi-section>
-
-            <p-divider />
-
-            <!-- Education -->
-            <jhi-section titleKey="evaluation.details.educationTitle" icon="graduation-cap">
-              <div class="grid gap-8 md:grid-cols-2">
-                <!-- Bachelor -->
+                <!-- Bachelor's Degree -->
                 <jhi-sub-section titleKey="evaluation.details.educationBachelors">
                   <jhi-description-list [items]="bachelorItemsComputed()" />
-                </jhi-sub-section>
-
-                <!-- Master -->
-                <jhi-sub-section titleKey="evaluation.details.educationMasters">
-                  <jhi-description-list [items]="masterItemsComputed()" />
                 </jhi-sub-section>
               </div>
             </jhi-section>
@@ -140,10 +118,6 @@
 
             <!-- Application -->
             <jhi-section titleKey="evaluation.details.applicationTitle" icon="file">
-              <jhi-sub-section titleKey="evaluation.details.applicationDesiredStartDate">
-                <span class="text-sm"> {{ (application.applicationDetailDTO.desiredDate | localizedDate) || '—' }} </span>
-              </jhi-sub-section>
-
               <jhi-sub-section titleKey="evaluation.details.applicationMotivation">
                 <jhi-prose [text]="application.applicationDetailDTO.motivation" />
               </jhi-sub-section>
