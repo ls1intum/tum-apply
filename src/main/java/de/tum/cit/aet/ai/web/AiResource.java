@@ -33,19 +33,16 @@ public class AiResource {
      * Optionally translates the generated content to the other language after streaming if jobId is provided.
      *
      * @param descriptionLanguage the language for the generated job description ("de" or "en")
-     * @param jobId               optional job ID - if provided, auto-translates to the other language after streaming
      * @param jobForm             the job form data used to build the AI prompt
      * @return a Flux of content chunks streamed as Server-Sent Events
      */
     @ProfessorOrEmployeeOrAdmin
-    @PutMapping(value = "generateJobDescriptionStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PutMapping(value = "generateJobApplicationDraftStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> generateJobApplicationDraftStream(
         @RequestBody JobFormDTO jobForm,
-        @RequestParam("lang") String descriptionLanguage,
-        @RequestParam(value = "jobId", required = false) String jobId
-    ) {
-        log.info("PUT /api/ai/generateJobDescriptionStream - Streaming request received (lang={}, jobId={})", descriptionLanguage, jobId);
-        return aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage, jobId);
+        @RequestParam("lang") String descriptionLanguage) {
+        log.info("PUT /api/ai/generateJobDescriptionStream - Streaming request received (lang={})", descriptionLanguage);
+        return aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage);
     }
 
     /**
@@ -53,9 +50,9 @@ public class AiResource {
      * Automatically detects the source language and translates to the other language.
      * Preserves the original text structure and formatting.
      *
-     * @param jobId the ID of the job for which the description is being translated
+     * @param jobId  the ID of the job for which the description is being translated
      * @param toLang the target language for translation ("de" or "en")
-     * @param text the text to translate (German or English)
+     * @param text   the text to translate (German or English)
      * @return a ResponseEntity containing the translated text with language info
      */
     @ProfessorOrEmployeeOrAdmin

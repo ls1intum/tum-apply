@@ -51,13 +51,12 @@ public class AiService {
      *
      * @param jobFormDTO          the job form data containing description, requirements, and tasks
      * @param descriptionLanguage the language for the generated job description ("de" or "en")
-     * @param jobId               optional job ID - if provided, auto-translates to the other language after streaming
      * @return Flux of content chunks as they are generated
      */
-    public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage, String jobId) {
+    public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
-        Flux<String> contentFlux = chatClient
+        return chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
             .user(u ->
@@ -71,22 +70,6 @@ public class AiService {
             )
             .stream()
             .content();
-
-        if (jobId != null) {
-            StringBuilder contentBuilder = new StringBuilder();
-            String targetLang = "de".equals(descriptionLanguage) ? "en" : "de";
-
-            return contentFlux
-                .doOnNext(contentBuilder::append)
-                .doOnComplete(() -> {
-                    String fullContent = contentBuilder.toString();
-                    if (!fullContent.isBlank()) {
-                        translateAndPersistJobDescription(jobId, targetLang, fullContent);
-                    }
-                });
-        }
-
-        return contentFlux;
     }
 
     /**
