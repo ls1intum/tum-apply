@@ -20,4 +20,6 @@ public interface DocumentDictionaryRepository extends TumApplyJpaRepository<Docu
     Set<DocumentDictionary> findAllByApplicant(Applicant applicant);
 
     Set<DocumentDictionary> findAllByApplicationApplicationId(UUID applicationId);
+
+    void deleteByApplication(Application application);
 }

@@ -1,5 +1,6 @@
 package de.tum.cit.aet.evaluation.repository;
 
+import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.evaluation.domain.Rating;
 import de.tum.cit.aet.usermanagement.domain.User;
@@ -20,6 +21,8 @@ public interface RatingRepository extends TumApplyJpaRepository<Rating, UUID> {
         """
     )
     Set<Rating> findByApplicationApplicationId(@Param("applicationId") UUID applicationId);
+
+    void deleteByApplication(Application application);
 
     void deleteByFromAndApplicationApplicationId(User from, UUID applicationId);
 
