@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { of, throwError, Subject } from 'rxjs';
-import { ActivatedRoute, UrlSegment } from '@angular/router';
-import { Location } from '@angular/common';
+import { of, throwError } from 'rxjs';
+import { UrlSegment } from '@angular/router';
 import { signal, TemplateRef } from '@angular/core';
 
 import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation-form.component';
@@ -107,7 +106,6 @@ type ComponentPrivate = {
   savingStatePanel: () => object;
   extractJobDescriptionFromStream: (content: string) => string | null;
   unescapeJsonString: (str: string) => string;
-  loadTranslatedDescription: (targetLang: 'en' | 'de', maxRetries?: number, delayMs?: number) => Promise<void>;
 };
 
 function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
@@ -909,83 +907,6 @@ describe('JobCreationFormComponent', () => {
       it('should return unchanged string if no escapes', () => {
         const result = unescapeJsonString('Plain text');
         expect(result).toBe('Plain text');
-      });
-    });
-
-    describe('loadTranslatedDescription', () => {
-      it('should update jobDescriptionDE signal when loading German translation', async () => {
-        component.jobId.set('job123');
-        mockJobService.getJobById.mockReturnValue(
-          of({
-            jobId: 'job123',
-            jobDescriptionEN: '<p>English</p>',
-            jobDescriptionDE: '<p>Deutsch</p>',
-          }),
-        );
-
-        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
-
-        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
-      });
-
-      it('should update jobDescriptionEN signal when loading English translation', async () => {
-        component.jobId.set('job123');
-        mockJobService.getJobById.mockReturnValue(
-          of({
-            jobId: 'job123',
-            jobDescriptionEN: '<p>English</p>',
-            jobDescriptionDE: '<p>Deutsch</p>',
-          }),
-        );
-
-        await getPrivate(component).loadTranslatedDescription('en', 1, 10);
-
-        expect(component.jobDescriptionEN()).toBe('<p>English</p>');
-      });
-
-      it('should not update signals if jobId is not set', async () => {
-        component.jobId.set('');
-        const originalEN = component.jobDescriptionEN();
-        const originalDE = component.jobDescriptionDE();
-
-        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
-
-        expect(component.jobDescriptionEN()).toBe(originalEN);
-        expect(component.jobDescriptionDE()).toBe(originalDE);
-        expect(mockJobService.getJobById).not.toHaveBeenCalled();
-      });
-
-      it('should retry when translation is empty', async () => {
-        component.jobId.set('job123');
-        let callCount = 0;
-        mockJobService.getJobById.mockImplementation(() => {
-          callCount++;
-          if (callCount < 2) {
-            return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '' });
-          }
-          return of({ jobId: 'job123', jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' });
-        });
-
-        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
-
-        expect(callCount).toBe(2);
-        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
-      });
-
-      it('should retry on API error', async () => {
-        component.jobId.set('job123');
-        let callCount = 0;
-        mockJobService.getJobById.mockImplementation(() => {
-          callCount++;
-          if (callCount < 2) {
-            return throwError(() => new Error('API Error'));
-          }
-          return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '<p>Deutsch</p>' });
-        });
-
-        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
-
-        expect(callCount).toBe(2);
       });
     });
 
