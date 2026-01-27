@@ -16,6 +16,11 @@ p-button > .p-button-text:disabled {
   color: var(--p-text-disabled);
 }
 
+// Preserve border on disabled text buttons when border class is explicitly set
+p-button > .p-button-text.border:disabled {
+  border-color: var(--p-border-default);
+}
+
 p-button > .p-button-outlined {
   border: 0.1rem solid;
 }
