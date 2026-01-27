@@ -58,13 +58,13 @@ describe('AiStreamingService', () => {
     vi.restoreAllMocks();
   });
 
-  describe('generateJobDescriptionStream', () => {
+  describe('generateJobApplicationDraftStream', () => {
     it('should parse complete SSE lines correctly', async () => {
       const chunks = ['data:{"jobDescription":"Hello"}\n\n'];
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       expect(result).toBe('{"jobDescription":"Hello"}');
       expect(onChunk).toHaveBeenCalledWith('{"jobDescription":"Hello"}');
@@ -75,7 +75,7 @@ describe('AiStreamingService', () => {
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       expect(result).toBe('part1part2');
       expect(onChunk).toHaveBeenCalledTimes(2);
@@ -92,7 +92,7 @@ describe('AiStreamingService', () => {
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       // The complete content should be assembled correctly
       expect(result).toBe('{"jobDescription":"test"}');
@@ -110,7 +110,7 @@ describe('AiStreamingService', () => {
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       expect(result).toBe('{"jobDescription":"Hello World"}');
     });
@@ -123,7 +123,7 @@ describe('AiStreamingService', () => {
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       expect(result).toBe('{"content":"value"}');
     });
@@ -133,7 +133,7 @@ describe('AiStreamingService', () => {
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       // Only data: line should be processed
       expect(result).toBe('content');
@@ -146,7 +146,7 @@ describe('AiStreamingService', () => {
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       expect(result).toBe('final-content');
     });
@@ -154,7 +154,7 @@ describe('AiStreamingService', () => {
     it('should throw error on non-ok response', async () => {
       fetchSpy.mockResolvedValue(createMockResponse([], 401));
 
-      await expect(service.generateJobDescriptionStream('en', {} as never, undefined, vi.fn())).rejects.toThrow('HTTP error! status: 401');
+      await expect(service.generateJobApplicationDraftStream('en', {} as never, vi.fn())).rejects.toThrow('HTTP error! status: 401');
     });
 
     it('should return empty string when response body is null', async () => {
@@ -164,30 +164,16 @@ describe('AiStreamingService', () => {
         body: null,
       });
 
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, vi.fn());
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, vi.fn());
 
       expect(result).toBe('');
-    });
-
-    it('should include jobId in URL when provided', async () => {
-      const chunks = ['data:test\n\n'];
-      fetchSpy.mockResolvedValue(createMockResponse(chunks));
-
-      await service.generateJobDescriptionStream('de', {} as never, 'job-123', vi.fn());
-
-      expect(fetchSpy).toHaveBeenCalledWith(
-        expect.stringContaining('jobId=job-123'),
-        expect.objectContaining({
-          method: 'PUT',
-        }),
-      );
     });
 
     it('should include Authorization header when token exists', async () => {
       const chunks = ['data:test\n\n'];
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
-      await service.generateJobDescriptionStream('en', {} as never, undefined, vi.fn());
+      await service.generateJobApplicationDraftStream('en', {} as never, vi.fn());
 
       expect(fetchSpy).toHaveBeenCalledWith(
         expect.any(String),
@@ -204,7 +190,7 @@ describe('AiStreamingService', () => {
       const chunks = ['data:test\n\n'];
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
-      await service.generateJobDescriptionStream('en', {} as never, undefined, vi.fn());
+      await service.generateJobApplicationDraftStream('en', {} as never, vi.fn());
 
       const callHeaders = fetchSpy.mock.calls[0][1].headers;
       expect(callHeaders.Authorization).toBeUndefined();
@@ -225,7 +211,7 @@ describe('AiStreamingService', () => {
       fetchSpy.mockResolvedValue(createMockResponse(chunks));
 
       const onChunk = vi.fn();
-      const result = await service.generateJobDescriptionStream('en', {} as never, undefined, onChunk);
+      const result = await service.generateJobApplicationDraftStream('en', {} as never, onChunk);
 
       expect(result).toBe(fullContent);
     });

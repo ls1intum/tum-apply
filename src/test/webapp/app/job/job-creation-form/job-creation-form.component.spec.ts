@@ -152,7 +152,7 @@ describe('JobCreationFormComponent', () => {
     mockLocation = createLocationMock();
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
     mockAiStreamingService = createAiStreamingServiceMock();
-    mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+    mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
@@ -992,8 +992,8 @@ describe('JobCreationFormComponent', () => {
     describe('generateJobApplicationDraft', () => {
       beforeEach(() => {
         // Reset the mock before each test
-        mockAiStreamingService.generateJobDescriptionStream.mockReset();
-        mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+        mockAiStreamingService.generateJobApplicationDraftStream.mockReset();
+        mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
       });
 
       it('should show error toast on generation failure', async () => {
@@ -1006,7 +1006,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('Generic error'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('Generic error'));
 
         await component.generateJobApplicationDraft();
 
@@ -1026,7 +1026,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('HTTP error'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('HTTP error'));
 
         await component.generateJobApplicationDraft();
 
@@ -1045,7 +1045,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('fail'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('fail'));
 
         await component.generateJobApplicationDraft();
 
