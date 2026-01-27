@@ -64,7 +64,8 @@ public class AiService {
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
         final String locationText = UiTextFormatter.formatEnumValue(jobFormDTO.location());
-        Flux<String> contentFlux = chatClient
+
+        return chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
             .user(u ->
@@ -81,8 +82,6 @@ public class AiService {
             .stream()
             .content()
             .delayElements(Duration.ofMillis(35));
-
-        return contentFlux;
     }
 
     /**

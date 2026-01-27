@@ -40,7 +40,8 @@ public class AiResource {
     @PutMapping(value = "generateJobApplicationDraftStream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> generateJobApplicationDraftStream(
         @RequestBody JobFormDTO jobForm,
-        @RequestParam("lang") String descriptionLanguage) {
+        @RequestParam("lang") String descriptionLanguage
+    ) {
         log.info("PUT /api/ai/generateJobDescriptionStream - Streaming request received (lang={})", descriptionLanguage);
         return aiService.generateJobApplicationDraftStream(jobForm, descriptionLanguage);
     }
