@@ -470,11 +470,23 @@ export class SlotCreationFormComponent {
       .filter(s => !isNaN(s.start) && !isNaN(s.end))
       .sort((a, b) => a.start - b.start);
 
-    for (let i = 0; i < sorted.length - 1; i++) {
-      if (sorted[i].end > sorted[i + 1].start) {
+    // Scan through sorted slots to find any overlap
+    let maxEndTime = sorted[0].end;
+
+    for (let i = 1; i < sorted.length; i++) {
+      const current = sorted[i];
+
+      // If current slot starts before the previous max end time, we have an overlap
+      if (current.start < maxEndTime) {
         return true;
       }
+
+      // Update maxEndTime if current slot extends further
+      if (current.end > maxEndTime) {
+        maxEndTime = current.end;
+      }
     }
+
     return false;
   }
 
