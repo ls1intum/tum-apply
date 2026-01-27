@@ -147,7 +147,8 @@
                 [date]="date"
                 [duration]="duration()"
                 [breakDuration]="breakDuration()"
-                [existingSlots]="slotsByDate().get(date.toISOString().split('T')[0]) || []"
+                [existingSlots]="slotsByDate().get(getDateKey(date)) || []"
+                [serverConflicts]="serverConflicts()"
                 [showApplyAll]="i === 0 && sortedDates().length > 1"
                 [showValidationErrors]="showValidationErrors()"
                 (slotsChange)="updateSlotsForDate(date, $event)"
@@ -165,7 +166,9 @@
             size="md"
             (click)="submit()"
             [loading]="isSubmitting()"
-            [disabled]="isSubmitting()"
+            [disabled]="isSubmitting() || hasConflicts()"
+            [pTooltip]="hasConflicts() ? ('interview.slots.create.validation.hasConflicts' | translate) : ''"
+            tooltipPosition="top"
           />
         </div>
       }
