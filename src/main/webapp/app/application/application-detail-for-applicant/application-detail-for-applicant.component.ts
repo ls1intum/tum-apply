@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
@@ -27,6 +28,7 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
   selector: 'jhi-application-detail-for-applicant',
   imports: [
     ButtonComponent,
+    BackButtonComponent,
     FontAwesomeModule,
     ApplicationStateForApplicantsComponent,
     DocumentViewerComponent,
@@ -257,9 +259,5 @@ export default class ApplicationDetailForApplicantComponent {
         },
       });
     }
-  }
-
-  onBack(): void {
-    this.location.back();
   }
 }

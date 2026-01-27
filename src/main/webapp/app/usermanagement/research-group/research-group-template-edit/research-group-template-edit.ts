@@ -8,9 +8,10 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 
-import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
-import { ButtonComponent } from '../../../shared/components/atoms/button/button.component';
 import 'quill-mention/autoregister';
 import { SelectComponent, SelectOption } from '../../../shared/components/atoms/select/select.component';
 import TranslateDirective from '../../../shared/language/translate.directive';
@@ -30,6 +31,7 @@ import { UserShortDTO } from '../../../generated/model/userShortDTO';
     TabsModule,
     QuillEditorComponent,
     ButtonComponent,
+    BackButtonComponent,
     SelectComponent,
     TranslateModule,
     TranslateDirective,
@@ -256,10 +258,6 @@ export class ResearchGroupTemplateEdit {
         body,
       },
     }));
-  }
-
-  protected navigateBack(): void {
-    void this.router.navigate(['/research-group/templates']);
   }
 
   // Replace mention labels in the Quill HTML with translated versions
