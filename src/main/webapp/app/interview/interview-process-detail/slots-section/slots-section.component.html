@@ -23,12 +23,10 @@
   @if (hasAnySlots() === false) {
     <!-- Global Empty State (No slots at all) -->
     <div class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
+      <div class="flex flex-col items-center gap-3 text-center max-w-md mx-auto">
         <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-        <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
-        <p class="text-text-secondary" jhiTranslate="interview.detail.empty.description">
-          Create your first interview slots to get started.
-        </p>
+        <h3 class="font-semibold text-text-primary" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
+        <p class="text-text-primary" jhiTranslate="interview.detail.empty.description">Create your first interview slots to get started.</p>
         <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
       </div>
     </div>
@@ -102,26 +100,22 @@
             <!-- No future slots at all-> Show Call to Action -->
             <div class="flex flex-col items-center gap-3">
               <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-              <div class="space-y-1">
-                <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">
-                  No future slots available
-                </h3>
-                <p class="text-sm text-text-secondary" jhiTranslate="interview.slots.noFutureSlots.description">
-                  Add new slots to invite applicants.
-                </p>
-              </div>
+              <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">No future slots available</h3>
+              <p class="text-text-primary" jhiTranslate="interview.slots.noFutureSlots.description">Add new slots to invite applicants.</p>
               <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus" (click)="openCreateSlotsModal()" />
             </div>
           } @else {
             <!-- Has future slots other months, just not here -->
-            <fa-icon icon="calendar-xmark" class="text-5xl mb-4 block text-text-tertiary" />
-            <p
-              class="text-lg text-text-secondary"
-              [jhiTranslate]="'interview.detail.noSlotsInMonth'"
-              [translateValues]="{ month: currentMonth() }"
-            >
-              No slots in {{ currentMonth() }}
-            </p>
+            <div class="flex flex-col items-center gap-3">
+              <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
+              <h3
+                class="font-semibold text-text-primary"
+                [jhiTranslate]="'interview.detail.noSlotsInMonth'"
+                [translateValues]="{ month: currentMonth() }"
+              >
+                No slots in {{ currentMonth() }}
+              </h3>
+            </div>
           }
         </div>
       }
