@@ -471,10 +471,15 @@ export class SlotCreationFormComponent {
       .sort((a, b) => a.start - b.start);
 
     // Scan through sorted slots to find any overlap
-    let maxEndTime = sorted[0].end;
+    let maxEndTime = 0;
+    let isFirst = true;
 
-    for (let i = 1; i < sorted.length; i++) {
-      const current = sorted[i];
+    for (const current of sorted) {
+      if (isFirst) {
+        maxEndTime = current.end;
+        isFirst = false;
+        continue;
+      }
 
       // If current slot starts before the previous max end time, we have an overlap
       if (current.start < maxEndTime) {
