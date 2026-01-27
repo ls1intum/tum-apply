@@ -115,7 +115,16 @@ export class SlotCreationFormComponent {
   });
 
   // Flag to disable save button when conflicts exist
-  readonly hasConflicts = computed(() => this.serverConflicts().size > 0);
+  readonly hasConflicts = computed(() => this.serverConflicts().size > 0 || this.hasInternalConflicts());
+
+  readonly hasInternalConflicts = computed(() => {
+    for (const slots of this.slotsByDate().values()) {
+      if (this.checkInternalOverlaps(slots)) {
+        return true;
+      }
+    }
+    return false;
+  });
 
   // Options
   readonly durationOptions = [
@@ -448,6 +457,25 @@ export class SlotCreationFormComponent {
     const existStart = new Date(existing.startDateTime ?? '').getTime();
     const existEnd = new Date(existing.endDateTime ?? '').getTime();
     return start < existEnd && end > existStart;
+  }
+
+  private checkInternalOverlaps(slots: InterviewSlotDTO[]): boolean {
+    if (slots.length < 2) return false;
+
+    const sorted = [...slots]
+      .map(s => ({
+        start: new Date(s.startDateTime ?? '').getTime(),
+        end: new Date(s.endDateTime ?? '').getTime(),
+      }))
+      .filter(s => !isNaN(s.start) && !isNaN(s.end))
+      .sort((a, b) => a.start - b.start);
+
+    for (let i = 0; i < sorted.length - 1; i++) {
+      if (sorted[i].end > sorted[i + 1].start) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
