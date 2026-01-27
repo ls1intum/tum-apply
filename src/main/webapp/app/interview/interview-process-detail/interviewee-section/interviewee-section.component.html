@@ -1,6 +1,6 @@
 <jhi-section [titleKey]="'interview.interviewees.title'">
   <!-- Actions Slot -->
-  <div actions class="flex flex-nowrap gap-2 ml-auto justify-end">
+  <div actions class="flex flex-wrap gap-2 lg:ml-auto items-center">
     <jhi-button
       (click)="sendAllInvitations()"
       [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
@@ -12,6 +12,7 @@
       severity="primary"
       size="sm"
       variant="outlined"
+      styleClass="whitespace-nowrap"
     />
     <jhi-button
       icon="plus"
@@ -20,6 +21,7 @@
       size="sm"
       [shouldTranslate]="true"
       (click)="openAddModal()"
+      styleClass="whitespace-nowrap"
     />
   </div>
 
