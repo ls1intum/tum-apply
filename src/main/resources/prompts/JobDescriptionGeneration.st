@@ -34,7 +34,8 @@ If NOTHING is provided give a reasonable generic answer.
 ---
 
 ### 5. STYLE
-Professional academic, neutral tone
+Professional academic formatting
+Natural, human-sounding language
 ALWAYS preserve EXACTLY as written:
   - Technical terms: Python, PyTorch, fMRI, TV-L E13 etc.
   - Numbers: dates, salaries, percentages
