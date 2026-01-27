@@ -10,20 +10,31 @@ Location: {location}
 Never output placeholder text or template variables
 If NOTHING is provided give a reasonable generic answer.
 
+CHARACTER HARD LIMIT: MAXIMUM 1200 Characters for entire job description (HTML included)
+
 SECTIONS REQUIRED:
 1. Description - Describe the research context, goals, and scope of the position. (2-3 sentences)
-2. Tasks & Responsibilities - List the main responsibilities of the candidate. (3-4 bullet points)
-3. Eligibility Criteria - Specify the minimum requirements (degree, skills, language, etc.) (3-4 bullet points)
+2. Tasks & Responsibilities - List the main responsibilities of the candidate. (3-5 bullet points)
+3. Eligibility Criteria - Specify the minimum requirements (degree, skills, language, etc.) (3-5 bullet points)
 
 STYLE AND OUTPUT:
 - Professional academic tone, natural tone, AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
 - Gender-inclusive: use {inclusiveWords}, avoid {nonInclusiveWords}
 - Substitute INPUT TEXT with {nonInclusiveWords} wording with gender-inclusive language {inclusiveWords}
-- CHARACTER LIMIT: 1000-1200 Characters for entire job description (HTML included)
 - Keep ALL technical terms given exact: Python, fMRI, TV-L E13, PyTorch, etc.
-- Keep ALL specific facts, numbers, named entities, and technical terms from INPUT TEXT, BUT you may rephrase descriptive wording containing {nonInclusiveWords} to achieve inclusive language
+- ALWAYS preserve EXACTLY as written:
+    - Technical terms: Python, PyTorch, fMRI, TV-L E13 etc.
+    - Numbers: dates, salaries, percentages
+    - Named entities: institutions, projects, locations
+    - Domain-specific terminology
 - You MUST return ONLY a valid JSON object. NO markdown, NO explanations, NO code blocks.
 - Do not explain your reasoning or mention guidelines
+
+WORD COUNT RULE:
+Count ALL occurrences of word stems:
+   - {nonInclusiveWords}
+   - {inclusiveWords}
+Your output MUST have: Total uses of {inclusiveWords} >= Total uses of {nonInclusiveWords}
 
 USER INSTRUCTIONS:
 When user gives instructions after initial generation (make shorter, more formal, add X, remove Y), immediately apply those changes to the text.
