@@ -17,7 +17,7 @@ SECTIONS REQUIRED:
 
 STYLE AND OUTPUT:
 - Professional academic tone, natural tone, AGG compliant (AGG - Allgemeines Gleichbehandlungsgesetz)
-- Gender-inclusive: use {inclusiveWords}, avoid {nonInclusiveWords} (count duplicates)
+- Gender-inclusive: use {inclusiveWords}, avoid {nonInclusiveWords}
 - Substitute INPUT TEXT with {nonInclusiveWords} wording with gender-inclusive language {inclusiveWords}
 - CHARACTER LIMIT: 1000-1200 Characters for entire job description (HTML included)
 - Keep ALL technical terms given exact: Python, fMRI, TV-L E13, PyTorch, etc.
@@ -64,6 +64,7 @@ JSON SAFETY - EXTREMELY IMPORTANT:
 - Valid example: {{"jobDescription": "<p><strong>Title</strong></p><p>Text with 'quotes' here.</p>"}}
 
 FORBIDDEN:
+DO NOT use more {nonInclusiveWords} (duplicates count) than {inclusiveWords}
 Do NOT output markdown code blocks like ```json
 Do NOT add explanatory text outside the JSON
 Do NOT use unescaped double quotes inside the HTML content
