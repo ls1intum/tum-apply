@@ -39,6 +39,17 @@ public class UserExportZipWriter {
     @Value("${aet.storage.image-root:/storage/images}")
     private String imageRoot;
 
+    /**
+     * Creates a ZIP archive containing the user's exported data, including a JSON summary,
+     * uploaded documents, and images. The ZIP file is stored in the configured data export root directory
+     * with a filename format of "data-export-{userId}-{exportRequestId}.zip".
+     *
+     * @param userId the unique identifier of the user whose data is being exported
+     * @param exportRequestId the unique identifier of the export request
+     * @param userData the DTO containing the user's data to be included in the export summary
+     * @return the {@link Path} to the created ZIP file
+     * @throws IOException if an I/O error occurs during ZIP creation or file writing
+     */
     public Path writeExport(@NonNull UUID userId, @NonNull UUID exportRequestId, @NonNull UserDataExportDTO userData) throws IOException {
         Path root = Paths.get(dataExportRoot).toAbsolutePath().normalize();
         Files.createDirectories(root);
