@@ -451,6 +451,8 @@ export class JobCreationFormComponent {
 
   private isAutoScrolling = false;
 
+  aiSidebarVisible = false;
+
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD CONSTRAINTS
   // ═══════════════════════════════════════════════════════════════════════════

@@ -123,6 +123,9 @@
         "PartiallyFunded": "Teilweise finanziert"
       }
     },
+    "aiSidebar": {
+      "header": "KI-Assistent"
+    },
     "positionDetailsSection": {
       "description": "Beschreibe Forschungsschwerpunkt, Aufgaben/Erwartungen sowie Mindestanforderungen und Wunschqualifikationen für Kandidat:innen.",
       "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",

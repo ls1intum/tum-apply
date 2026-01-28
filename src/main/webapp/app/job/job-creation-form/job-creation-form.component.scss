@@ -207,3 +207,31 @@ input:disabled {
     color: var(--p-primary-color);
   }
 }
+
+.ai-sidebar {
+  position: fixed;
+  right: 0;
+  top: 180px;
+  width: 48px;
+  height: 160px;
+  display: flex;
+  cursor: pointer;
+  border-radius: 8px 0 0 8px;
+  border: 1px solid var(--p-border-default);
+  border-right: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.ai-sidebar-text {
+  writing-mode: vertical-rl ;
+  text-orientation: mixed;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--p-primary-color);
+  letter-spacing: 1px;
+}
