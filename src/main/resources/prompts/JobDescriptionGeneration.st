@@ -24,8 +24,10 @@ If NOTHING is provided give a reasonable generic answer.
 
 ---
 ### 4. STYLE
-- professional academic tone
-- Formal, objective, and institutional
+- Academic eloquence
+- Human sounding with narrative flow
+- Syntactic clarity
+- Active professionalism with factual weigh
 - Sentence length: Keep it under 20 words
 
 ---
