@@ -54,12 +54,39 @@
         <h2 class="text-lg font-semibold" jhiTranslate="interview.overview.upcoming.title">Upcoming</h2>
       </div>
 
-      <div
-        class="bg-[var(--p-background-surface)] border border-dashed border-[var(--p-border-default)] rounded-lg py-16 px-6 flex flex-col items-center text-center"
-      >
-        <i class="pi pi-calendar text-[var(--p-text-tertiary)] text-4xl mb-3"></i>
-        <p class="text-sm text-[var(--p-text-secondary)]" jhiTranslate="interview.overview.upcoming.empty"></p>
-      </div>
+      <!-- Error State -->
+      @if (error()) {
+        <div class="flex flex-col items-center justify-center border border-border-default rounded-lg p-6 text-center">
+          <i class="pi pi-exclamation-triangle text-negative text-2xl mb-2"></i>
+          <p class="text-text-secondary text-sm" jhiTranslate="interview.overview.error.failedToLoad"></p>
+        </div>
+      }
+
+      <!-- Loading State -->
+      @if (loading() && !error()) {
+        <div class="flex items-center justify-center bg-background-default border border-border-default rounded-lg p-12">
+          <i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading() && !error() && upcomingInterviews().length === 0) {
+        <div
+          class="bg-background-surface border border-dashed border-border-default rounded-lg py-12 px-6 flex flex-col items-center text-center"
+        >
+          <i class="pi pi-calendar text-text-tertiary text-2xl mb-3"></i>
+          <p class="text-sm text-text-secondary" jhiTranslate="interview.overview.upcoming.empty"></p>
+        </div>
+      }
+
+      <!-- List State -->
+      @if (!loading() && !error() && upcomingInterviews().length > 0) {
+        <div class="flex flex-col gap-3">
+          @for (interview of upcomingInterviews(); track interview.id) {
+            <jhi-upcoming-interview-card [interview]="interview" />
+          }
+        </div>
+      }
     </div>
   </div>
 </div>
