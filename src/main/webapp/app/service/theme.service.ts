@@ -107,10 +107,18 @@ export class ThemeService {
   }
 
   toggleTheme(): void {
-    const newTheme = this.theme() === 'dark' ? 'light' : 'dark';
-    this.syncWithSystem.set(false);
-    localStorage.setItem('tumApplySyncWithSystem', 'false');
-    this.setTheme(newTheme);
+    if (this.syncWithSystem()) {
+      // Currently on system, switch to light
+      this.syncWithSystem.set(false);
+      localStorage.setItem('tumApplySyncWithSystem', 'false');
+      this.setTheme('light');
+    } else if (this.theme() === 'light') {
+      // Currently on light, switch to dark
+      this.setTheme('dark');
+    } else {
+      // Currently on dark, switch back to system
+      this.setSyncWithSystem(true);
+    }
   }
 
   setSyncWithSystem(value: boolean): void {
