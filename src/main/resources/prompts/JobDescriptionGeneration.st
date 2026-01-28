@@ -23,6 +23,9 @@ You are a summarizer. If the input is long, MERGE and CUT information.
 - Tasks: EXACTLY 3 bullet points. -> Duties/Activities (tasks, responsibilities)
 - Eligibility: MAX 3 bullet points. Focus on hard requirements (Degrees, skills, Language etc.).
 
+DATA INTEGRITY RULES:
+- PRESERVE EXACTLY: Technical terms, dates, percentages, and named entities.
+
 ---
 ### 4. METADATA
 Title: {title}
@@ -36,11 +39,6 @@ If NOTHING is provided give a reasonable generic answer.
 ### 5. STYLE
 Professional academic formatting
 Natural, human-sounding language
-ALWAYS preserve EXACTLY as written:
-  - Technical terms: Python, PyTorch, fMRI, TV-L E13 etc.
-  - Numbers: dates, salaries, percentages
-  - Named entities: institutions, projects, locations
-  - Domain-specific terminology
 
 ---
 ### 6. INPUT DATA
@@ -51,7 +49,6 @@ ALWAYS preserve EXACTLY as written:
 ### 7. INSTRUCTION FOR REWRITE:
 If the INPUT TEXT already contains a description, update it to strictly include the METADATA provided above.
 If a field like {title} or {location} is provided, it OVERWRITES any conflicting information in the INPUT TEXT.
-
 
 Structure (EXACTLY this format for input DE):
 {{
