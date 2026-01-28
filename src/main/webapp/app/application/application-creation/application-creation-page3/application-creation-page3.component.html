@@ -5,7 +5,7 @@
     </p-divider>
 
     @if (data(); as data) {
-      <div class="w-full lg:w-1/2 mb-6 lg:pe-3">
+      <div class="w-full lg:w-1/2 lg:pe-3">
         <label>
           <span jhiTranslate="entity.applicationPage3.label.desiredStartDate"></span>
           <fa-icon
@@ -21,14 +21,15 @@
           [placeholder]="'entity.applicationPage3.placeholder.selectStartDate' | translate"
           width="100%"
           (selectedDateChange)="setDesiredStartDate($event)"
+          [errorEnabled]="true"
         />
       </div>
     }
 
     @if (applicationIdForDocuments(); as applicationId) {
-      <div class="mb-6 flex flex-col lg:flex-row lg:gap-8">
+      <div class="flex flex-col lg:flex-row lg:gap-8">
         <!-- CV Upload -->
-        <div class="flex-1">
+        <div class="flex-1 mb-6">
           <label>
             <span jhiTranslate="entity.applicationPage3.label.curriculumVitae"></span>
             <span class="required"> *</span>
