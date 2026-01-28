@@ -137,7 +137,7 @@ public class UserDataExportService {
         DataExportRequest request = findRequestByToken(token);
         validateRequestBelongsToUser(request, userId, token);
         validateRequestNotExpired(request);
-        validateRequestDownloadable(request, token);
+        validateRequestDownloadable(request);
         Path path = validateAndGetFilePath(request);
         updateStatusIfNeeded(request);
         return path;
@@ -158,7 +158,7 @@ public class UserDataExportService {
     public Path getExportPathForToken(@NonNull String token) {
         DataExportRequest request = findRequestByToken(token);
         validateRequestNotExpired(request);
-        validateRequestDownloadable(request, token);
+        validateRequestDownloadable(request);
         Path path = validateAndGetFilePath(request);
         updateStatusIfNeeded(request);
         return path;
@@ -183,7 +183,7 @@ public class UserDataExportService {
         }
     }
 
-    private void validateRequestDownloadable(DataExportRequest request, String token) {
+    private void validateRequestDownloadable(DataExportRequest request) {
         if (!request.getStatus().isDownloadable()) {
             throw new TimeConflictException("Data export is not ready for download");
         }
