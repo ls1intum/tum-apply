@@ -1,4 +1,45 @@
-<p-stepper [value]="currentStep()" (valueChange)="currentStep.set($event ?? 1)" class="basis-[40rem]">
+<!-- Mobile: Simplified Progress Indicator -->
+<div class="lg:hidden mb-4">
+  <div class="flex items-center justify-between font-semibold mb-2">
+    <span jhiTranslate="global.stepper.progress" [translateValues]="{ current: currentStep(), total: steps().length }">
+      Step {{ currentStep() }} of {{ steps().length }}
+    </span>
+    @if (steps()[currentStep() - 1]) {
+      <span>
+        @if (steps()[currentStep() - 1].shouldTranslate) {
+          <span [jhiTranslate]="steps()[currentStep() - 1].name"></span>
+        } @else {
+          {{ steps()[currentStep() - 1].name }}
+        }
+      </span>
+    }
+  </div>
+  <div class="w-full bg-background-surface-alt rounded-full h-2">
+    <div
+      class="bg-primary h-2 rounded-full transition-all duration-300 ease-in-out"
+      [style.width.%]="(currentStep() / steps().length) * 100"
+    ></div>
+  </div>
+  <!-- Step dots indicator -->
+  <div class="flex justify-center gap-2 mt-3">
+    @for (step of steps(); track $index) {
+      <button
+        type="button"
+        (click)="goToStep($index + 1)"
+        [disabled]="step?.disabled ?? false"
+        class="w-2 h-2 rounded-full transition-all duration-200"
+        [class.bg-primary]="$index + 1 === currentStep()"
+        [class.bg-background-surface-alt]="$index + 1 !== currentStep()"
+        [class.scale-125]="$index + 1 === currentStep()"
+        [class.opacity-50]="step?.disabled"
+        [class.cursor-pointer]="!step?.disabled"
+      ></button>
+    }
+  </div>
+</div>
+
+<!-- Desktop: Full Stepper -->
+<p-stepper [value]="currentStep()" (valueChange)="currentStep.set($event ?? 1)" class="hidden lg:block basis-[40rem]">
   <p-step-list class="[&_.p-step-header]:cursor-pointer">
     @for (step of steps(); track $index) {
       @if (step.shouldTranslate) {
@@ -18,19 +59,26 @@
 </div>
 
 <div
-  class="sticky-footer sticky bottom-0 mt-auto py-2 bg-background-default transition-all duration-300 z-[1000] ease-in-out -mx-4 px-4 w-[calc(100%+2rem)] md:-mx-16 md:px-16 md:w-[calc(100%+8rem)] border-t"
+  class="sticky-footer sticky bottom-0 mt-auto py-2 sm:py-3 bg-background-default transition-all duration-300 z-[1000] ease-in-out -mx-4 px-4 w-[calc(100%+2rem)] lg:-mx-16 lg:px-16 lg:w-[calc(100%+8rem)] border-t"
   [class.border-border-default]="!isAtBottom()"
   [class.border-transparent]="isAtBottom()"
 >
-  <div class="flex justify-between transition-opacity duration-200 ease-in-out">
-    <div>
-      <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
-    </div>
-    <div class="flex gap-6">
-      @if (statusDiv(); as statusDiv) {
+  <div class="flex flex-col gap-3 transition-opacity duration-200 ease-in-out">
+    @if (statusDiv(); as statusDiv) {
+      <div class="sm:hidden flex justify-end">
         <ng-container [ngTemplateOutlet]="statusDiv" />
-      }
-      <jhi-button-group [data]="buttonGroupNext()" [shouldTranslate]="shouldTranslate() ?? false" />
+      </div>
+    }
+    <div class="flex justify-between">
+      <jhi-button-group [data]="buttonGroupPrev()" [shouldTranslate]="shouldTranslate() ?? false" />
+      <div class="flex gap-6">
+        @if (statusDiv(); as statusDiv) {
+          <div class="hidden sm:flex">
+            <ng-container [ngTemplateOutlet]="statusDiv" />
+          </div>
+        }
+        <jhi-button-group [data]="buttonGroupNext()" [shouldTranslate]="shouldTranslate() ?? false" />
+      </div>
     </div>
   </div>
 </div>
