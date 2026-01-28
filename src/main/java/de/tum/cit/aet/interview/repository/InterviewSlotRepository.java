@@ -204,9 +204,9 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
      * Finds all booked future interview slots for a given professor.
      * Used for the professor dashboard to display upcoming interviews.
      *
-     * @param professor the professor to find slots for
-     * @param now       the current time (to filter out past slots)
-     * @param pageable  pagination information
+     * @param professorId the professor to find slots for
+     * @param now         the current time (to filter out past slots)
+     * @param pageable    pagination information
      * @return page of upcoming booked slots ordered by start time ascending
      */
     @Query(
