@@ -25,6 +25,7 @@ export class DatePickerComponent {
   icon = input<string | undefined>(undefined);
   tooltipText = input<string | undefined>(undefined);
   shouldTranslate = input<boolean>(false);
+  errorEnabled = input<boolean>(false);
 
   /**
    * Input date value in ISO format: 'YYYY-MM-DD'

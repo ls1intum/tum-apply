@@ -106,6 +106,9 @@
         }
       }
     },
+    "stepper": {
+      "progress": "Schritt {{ current }} von {{ total }}"
+    },
     "input": {
       "error": {
         "required": "Dieses Feld ist ein Pflichtfeld.",
