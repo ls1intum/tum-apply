@@ -1,51 +1,26 @@
 <div class="relative min-w-[13.75rem] border border-border-default rounded-lg p-2.5">
-  <!-- 3-Dots Menu Button -->
+  <!-- Kebab Menu Button -->
   <button
-    class="absolute top-2 right-2 p-1 hover:bg-background-surface rounded-full transition-colors z-10"
-    (click)="toggleMenu(); $event.stopPropagation()"
+    class="absolute top-2 right-2 p-0.5 hover:bg-background-surface rounded transition-colors z-10"
+    (click)="menu.toggle($event); $event.stopPropagation()"
   >
-    <fa-icon icon="ellipsis-vertical" class="text-[var(--p-neutral-500)] text-xs" />
+    <fa-icon icon="ellipsis-vertical" class="text-text-secondary text-xs" />
   </button>
 
-  <!-- Dropdown Menu -->
-  @if (showMenu()) {
-    <div
-      class="absolute top-9 right-2 shadow-lg rounded-md bg-background-default border border-border-default z-20 min-w-[8.75rem] overflow-hidden"
-    >
-      <jhi-button
-        class="w-full block"
-        [fullWidth]="true"
-        variant="text"
-        icon="pencil"
-        label="button.edit"
-        [shouldTranslate]="true"
-        [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-background-surface flex items-center gap-2 text-text-primary transition-colors justify-start border-none rounded-none'"
-        (click)="onEdit()"
-      />
+  <!-- Menu -->
+  <jhi-menu #menu [items]="menuItems()" [shouldTranslate]="true" />
 
-      <jhi-button
-        class="w-full block"
-        [fullWidth]="true"
-        variant="text"
-        icon="trash"
-        label="button.delete"
-        [shouldTranslate]="true"
-        [styleClass]="'px-4 py-2.5 text-left text-sm hover:bg-negative-hover flex items-center gap-2 text-negative-default transition-colors justify-start border-none rounded-none'"
-        (click)="deleteDialog.confirm()"
-      />
-
-      <jhi-confirm-dialog
-        #deleteDialog
-        [label]="'button.delete' | translate"
-        [header]="'interview.slots.delete.confirm.header' | translate"
-        [message]="'interview.slots.delete.confirm.message' | translate"
-        [severity]="'danger'"
-        [confirmIcon]="'trash'"
-        [showOpenButton]="false"
-        (confirmed)="onDelete()"
-      />
-    </div>
-  }
+  <!-- Confirm Dialog -->
+  <jhi-confirm-dialog
+    #deleteDialog
+    [label]="'button.delete' | translate"
+    [header]="'interview.slots.delete.confirm.header' | translate"
+    [message]="'interview.slots.delete.confirm.message' | translate"
+    [severity]="'danger'"
+    [confirmIcon]="'trash'"
+    [showOpenButton]="false"
+    (confirmed)="onDelete()"
+  />
 
   <!-- Card Content -->
   <div class="flex flex-col gap-1.5 pr-5">
