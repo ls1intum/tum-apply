@@ -2,12 +2,14 @@ package de.tum.cit.aet.core.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.domain.Document;
 import de.tum.cit.aet.core.dto.exportdata.ApplicantDataExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ApplicationReviewExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.DocumentExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.InternalCommentExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.InterviewProcessExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.InterviewSlotExportDTO;
+import de.tum.cit.aet.core.dto.exportdata.IntervieweeExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.RatingExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.ResearchGroupRoleExportDTO;
 import de.tum.cit.aet.core.dto.exportdata.StaffDataDTO;
@@ -21,11 +23,20 @@ import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
 import de.tum.cit.aet.evaluation.repository.RatingRepository;
+import de.tum.cit.aet.interview.domain.InterviewProcess;
+import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
+import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.interview.service.InterviewService;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.dto.EmailSettingDTO;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
+import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.User;
+import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.usermanagement.repository.UserResearchGroupRoleRepository;
@@ -50,18 +61,24 @@ import org.springframework.transaction.support.TransactionTemplate;
 @RequiredArgsConstructor
 public class UserDataExportService {
 
-    private final UserRepository userRepository;
     private final ApplicantRepository applicantRepository;
-    private final UserSettingRepository userSettingRepository;
-    private final EmailSettingRepository emailSettingRepository;
     private final ApplicationRepository applicationRepository;
-    private final DocumentDictionaryRepository documentDictionaryRepository;
-    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
     private final ApplicationReviewRepository applicationReviewRepository;
+    private final DocumentDictionaryRepository documentDictionaryRepository;
     private final InternalCommentRepository internalCommentRepository;
-    private final RatingRepository ratingRepository;
+    private final IntervieweeRepository intervieweeRepository;
+    private final InterviewProcessRepository interviewProcessRepository;
+    private final InterviewSlotRepository interviewSlotRepository;
     private final DocumentRepository documentRepository;
+    private final EmailSettingRepository emailSettingRepository;
+    private final RatingRepository ratingRepository;
+    private final UserRepository userRepository;
+    private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final UserSettingRepository userSettingRepository;
+
+    private final InterviewService interviewService;
     private final ZipExportService zipExportService;
+    private final DocumentZipUtility documentZipUtility;
     private final ObjectMapper objectMapper;
     private final PlatformTransactionManager transactionManager;
 
@@ -103,7 +120,7 @@ public class UserDataExportService {
             if (userData.applicantData() != null) {
                 for (DocumentExportDTO doc : userData.applicantData().documents()) {
                     String sanitizedFilename = FileUtil.sanitizeFilename(doc.name());
-                    addDocumentToZip(zipOut, doc.documentId(), "documents/" + sanitizedFilename);
+                    documentZipUtility.addDocumentToZip(zipOut, doc.documentId(), "documents/" + sanitizedFilename);
                 }
             }
 
@@ -111,19 +128,37 @@ public class UserDataExportService {
         }
     }
 
+    // ------------------------------------ Private helper methods ------------------------------------
+
+    /**
+     * Collects all exportable data for the given user, including profile, settings, email settings,
+     * and role-specific data (applicant or staff) when applicable.
+     *
+     * @param userId the ID of the user whose data should be collected
+     * @return a {@link UserDataExportDTO} containing all available export data for the user
+     * @throws IllegalArgumentException if the user cannot be found
+     */
     private UserDataExportDTO collectUserData(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        boolean hasApplicantRole = hasRole(user, UserRole.APPLICANT);
+        boolean hasStaffRole = hasRole(user, UserRole.PROFESSOR) || hasRole(user, UserRole.EMPLOYEE) || hasRole(user, UserRole.ADMIN);
 
         UserProfileExportDTO profile = getUserProfile(user);
         List<UserSettingDTO> settings = getUserSettings(userId);
         List<EmailSettingDTO> emailSettings = getEmailSettings(user);
-        ApplicantDataExportDTO applicantData = applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
-        StaffDataDTO staffData = getStaffData(user);
+        ApplicantDataExportDTO applicantData = hasApplicantRole && applicantRepository.existsById(userId) ? getApplicantData(userId) : null;
+        StaffDataDTO staffData = hasStaffRole ? getStaffData(user) : null;
 
         return new UserDataExportDTO(profile, settings, emailSettings, applicantData, staffData);
     }
 
-    // Private helper methods
+    private boolean hasRole(User user, UserRole role) {
+        if (user.getResearchGroupRoles() == null || user.getResearchGroupRoles().isEmpty()) {
+            return false;
+        }
+        return user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).anyMatch(role::equals);
+    }
 
     private UserProfileExportDTO getUserProfile(User user) {
         return new UserProfileExportDTO(
@@ -184,6 +219,8 @@ public class UserDataExportService {
             )
             .toList();
 
+        List<IntervieweeExportDTO> interviewees = getInterviewees(userId);
+
         return new ApplicantDataExportDTO(
             applicant.getStreet(),
             applicant.getPostalCode(),
@@ -200,7 +237,8 @@ public class UserDataExportService {
             applicant.getMasterGrade(),
             applicant.getMasterUniversity(),
             documents,
-            applications
+            applications,
+            interviewees
         );
     }
 
@@ -211,12 +249,63 @@ public class UserDataExportService {
         List<ApplicationReviewExportDTO> reviews = getReviews(user);
         List<InternalCommentExportDTO> comments = getComments(user);
         List<RatingExportDTO> ratings = getRatings(user);
+        List<InterviewProcess> interviewProcessEntities = getInterviewProcesses(user);
+        List<InterviewProcessExportDTO> interviewProcesses = mapInterviewProcesses(interviewProcessEntities);
+        List<InterviewSlotExportDTO> interviewSlots = getInterviewSlots(interviewProcessEntities);
 
-        if (supervisedJobs.isEmpty() && researchGroupRoles.isEmpty() && reviews.isEmpty() && comments.isEmpty() && ratings.isEmpty()) {
+        if (
+            supervisedJobs.isEmpty() &&
+            researchGroupRoles.isEmpty() &&
+            reviews.isEmpty() &&
+            comments.isEmpty() &&
+            ratings.isEmpty() &&
+            interviewProcesses.isEmpty() &&
+            interviewSlots.isEmpty()
+        ) {
             return null;
         }
 
-        return new StaffDataDTO(supervisedJobs, researchGroupRoles, reviews, comments, ratings);
+        return new StaffDataDTO(supervisedJobs, researchGroupRoles, reviews, comments, ratings, interviewProcesses, interviewSlots);
+    }
+
+    private List<IntervieweeExportDTO> getInterviewees(UUID userId) {
+        List<Interviewee> interviewees = intervieweeRepository.findByApplicantUserIdWithDetails(userId);
+        if (interviewees == null || interviewees.isEmpty()) {
+            return List.of();
+        }
+
+        return interviewees
+            .stream()
+            .map(interviewee ->
+                new IntervieweeExportDTO(interviewee.getInterviewProcess().getJob().getTitle(), interviewee.getLastInvited())
+            )
+            .toList();
+    }
+
+    private List<InterviewProcess> getInterviewProcesses(User user) {
+        return interviewService.getInterviewProcessesByProfessor(user);
+    }
+
+    private List<InterviewProcessExportDTO> mapInterviewProcesses(List<InterviewProcess> processes) {
+        if (processes == null || processes.isEmpty()) {
+            return List.of();
+        }
+        return processes
+            .stream()
+            .map(process -> new InterviewProcessExportDTO(process.getJob().getTitle()))
+            .toList();
+    }
+
+    private List<InterviewSlotExportDTO> getInterviewSlots(List<InterviewProcess> interviewProcesses) {
+        if (interviewProcesses == null || interviewProcesses.isEmpty()) {
+            return List.of();
+        }
+        List<UUID> processIds = interviewProcesses.stream().map(InterviewProcess::getId).toList();
+        List<InterviewSlot> slots = interviewSlotRepository.findByInterviewProcessIdInWithJob(processIds);
+        if (slots == null || slots.isEmpty()) {
+            return List.of();
+        }
+        return slots.stream().map(this::mapInterviewSlot).toList();
     }
 
     private List<ResearchGroupRoleExportDTO> getResearchGroupRoles(User user) {
@@ -284,16 +373,14 @@ public class UserDataExportService {
             .toList();
     }
 
-    private void addDocumentToZip(ZipOutputStream zipOut, UUID documentId, String entryPath) {
-        try {
-            Document document = documentRepository
-                .findById(documentId)
-                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
-
-            zipExportService.addDocumentToZip(zipOut, entryPath, document);
-        } catch (Exception e) {
-            log.error("Failed to add document {} to ZIP export", documentId, e);
-            throw new UserDataExportException("Failed to add document to ZIP export", e);
-        }
+    private InterviewSlotExportDTO mapInterviewSlot(InterviewSlot slot) {
+        return new InterviewSlotExportDTO(
+            slot.getInterviewProcess().getJob().getTitle(),
+            slot.getStartDateTime(),
+            slot.getEndDateTime(),
+            slot.getLocation(),
+            slot.getStreamLink(),
+            slot.getIsBooked()
+        );
     }
 }
