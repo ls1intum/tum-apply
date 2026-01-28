@@ -199,4 +199,29 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("monthEnd") Instant monthEnd,
         Pageable pageable
     );
+
+    /**
+     * Finds all booked future interview slots for a given professor.
+     * Used for the professor dashboard to display upcoming interviews.
+     *
+     * @param professor the professor to find slots for
+     * @param now       the current time (to filter out past slots)
+     * @param pageable  pagination information
+     * @return page of upcoming booked slots ordered by start time ascending
+     */
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.job.supervisingProfessor.userId = :professorId
+        AND s.isBooked = true
+        AND s.endDateTime > :now
+        ORDER BY s.startDateTime ASC
+        """
+    )
+    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee", "interviewee.application.applicant" })
+    Page<InterviewSlot> findUpcomingBookedSlotsForProfessor(
+        @Param("professorId") UUID professorId,
+        @Param("now") Instant now,
+        Pageable pageable
+    );
 }
