@@ -21,6 +21,8 @@
         type="button"
         (click)="goToStep($index + 1)"
         [disabled]="step?.disabled ?? false"
+        [pTooltip]="step.shouldTranslate ? (step.name | translate) : step.name"
+        tooltipPosition="top"
         class="flex-1 h-2 rounded-full transition-all duration-300 ease-in-out"
         [class.bg-primary]="$index + 1 <= currentStep()"
         [class.bg-background-surface-alt]="$index + 1 > currentStep()"
