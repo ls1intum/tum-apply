@@ -5,7 +5,7 @@
   </h3>
 
   <!-- Statistics Row -->
-  <div class="grid grid-cols-4 gap-4 mb-3">
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
     @for (stat of stats(); track stat.label) {
       <div class="flex items-start gap-1.5">
         <div class="w-0.75 h-8 rounded" [ngClass]="stat.colorClass"></div>
