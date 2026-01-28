@@ -52,6 +52,7 @@ export class IntervieweeAssessmentComponent {
 
   protected readonly saving = signal<boolean>(false);
   protected readonly params = toSignal(inject(ActivatedRoute).paramMap);
+  protected readonly queryParamsSignal = toSignal(inject(ActivatedRoute).queryParams);
 
   // Computed
   protected readonly processId = computed(() => this.params()?.get('processId') ?? '');
@@ -149,6 +150,11 @@ export class IntervieweeAssessmentComponent {
   // Navigates to process detail or overview fallback
   goBack(): void {
     const processId = this.processId();
+    if (this.queryParamsSignal()?.from === 'overview') {
+      void this.router.navigate(['/interviews/overview']);
+      return;
+    }
+
     if (processId) {
       void this.router.navigate(['/interviews', processId]);
     } else {

@@ -90,6 +90,7 @@ export * from './sendInvitationsRequestDTO';
 export * from './sendInvitationsResultDTO';
 export * from './slotInput';
 export * from './sortObject';
+export * from './upcomingInterviewDTO';
 export * from './updateApplicationDTO';
 export * from './updateAssessmentDTO';
 export * from './updatePasswordDTO';

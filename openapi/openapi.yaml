@@ -1314,6 +1314,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/upcoming:
+    get:
+      tags: [interview-resource]
+      operationId: getUpcomingInterviews
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UpcomingInterviewDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -3012,6 +3024,17 @@ components:
         empty: {type: boolean}
         sorted: {type: boolean}
         unsorted: {type: boolean}
+    UpcomingInterviewDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        intervieweeId: {type: string, format: uuid}
+        intervieweeName: {type: string}
+        jobTitle: {type: string}
+        location: {type: string}
+        processId: {type: string, format: uuid}
+        startDateTime: {type: string, format: date-time}
     UpdateApplicationDTO:
       type: object
       properties:
