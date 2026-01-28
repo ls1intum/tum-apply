@@ -4,26 +4,24 @@ TASK: Generate a polished job posting paragraph based on short bullet-point note
       Your output must be directly usable in a real advertisement with minimal editing
 
 ---
-### 1. GENDER-INCLUSIVE RULES (STRICT)
+### 1. GENDER-INCLUSIVE RULES (HIGHEST PRIORITY)
 - Scan input for forbidden stems: [{nonInclusiveWords}]
 - If a word starts with or contains a forbidden stem, you MUST replace it with a neutral alternative from: [{inclusiveWords}] or a synonym.
 - Ensure the text is AGG compliant.
 
 ---
 ### 2. COMPRESSION & STRUCTURE (MAX 1200 CHARS)
-You are a summarizer. If the input is long, MERGE and CUT information.
-- Description: MAX 2-3 sentences.  -> Offers/Benefits (salary, funding, equipment)
-- Tasks: EXACTLY 3 bullet points. -> Duties/Activities (tasks, responsibilities)
-- Eligibility: MAX 3 bullet points. Focus on hard requirements (Degrees, skills, Language etc.).
+You are a SUMMARIZER. If the input is long, MERGE and CUT information.
+- Description: MAX 3 concise sentences.  -> Offers/Benefits (salary, funding, equipment)
+- Tasks: EXACTLY 3 concise bullet points. -> Duties/Activities (tasks, responsibilities)
+- Eligibility: MAX 3 concise bullet points. Focus on hard requirements (Degrees, skills, Language etc.).
 
 DATA INTEGRITY RULES:
 - PRESERVE EXACTLY: Technical terms, dates, percentages, and named entities.
 
 ---
 ### 3. METADATA
-Title: {title}
-Research Area: {researchArea}
-Location: {location}
+Metadata: {title}, {researchArea}, {location}
 Never output placeholder text or template variables
 If NOTHING is provided give a reasonable generic answer.
 
