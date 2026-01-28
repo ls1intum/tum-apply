@@ -52,9 +52,11 @@ export class SlotsSectionComponent {
   // Signals
   slots = signal<InterviewSlotDTO[]>([]);
   loading = signal(true);
+  isRefreshing = signal(false);
   error = signal(false);
   currentMonthOffset = signal(0);
   currentDatePage = signal(0);
+  paginationAnchorIndex = signal(0);
   expandedDates = signal<Set<string>>(new Set());
   showSlotCreationForm = signal(false);
   showAssignModal = signal(false);
@@ -100,10 +102,21 @@ export class SlotsSectionComponent {
 
   paginatedSlots = computed(() => {
     const monthDates = this.currentMonthSlots();
+    const anchor = this.paginationAnchorIndex();
     const page = this.currentDatePage();
-    const start = page * this.DATES_PER_PAGE;
-    const end = start + this.DATES_PER_PAGE;
-    return monthDates.slice(start, end);
+
+    // Relative Pagination: Page 0 starts at anchor.
+    // Negative pages go backwards from anchor.
+    const start = anchor + page * this.DATES_PER_PAGE;
+
+    // Ensure we don't slice before 0
+    const sliceStart = Math.max(0, start);
+    const sliceEnd = start + this.DATES_PER_PAGE;
+
+    // If start is beyond length (empty future page), return empty array
+    if (sliceStart >= monthDates.length) return [];
+
+    return monthDates.slice(sliceStart, sliceEnd);
   });
 
   currentMonth = computed(() => {
@@ -114,13 +127,37 @@ export class SlotsSectionComponent {
     });
   });
 
+  hasFutureSlotsInCurrentMonth = computed(() => {
+    if (this.currentMonthOffset() !== 0) return true;
+    const slots = this.groupedSlots();
+    const now = Date.now();
+    return slots.some(group => group.slots.some(s => this.safeDate(s.startDateTime) > now));
+  });
+
   totalDatePages = computed(() => {
     return Math.ceil(this.currentMonthSlots().length / this.DATES_PER_PAGE);
   });
 
-  canGoPreviousDate = computed(() => this.currentDatePage() > 0);
+  canGoPreviousDate = computed(() => {
+    const anchor = this.paginationAnchorIndex();
+    const page = this.currentDatePage();
+    const start = anchor + page * this.DATES_PER_PAGE;
+    return start > 0;
+  });
 
-  canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
+  canGoNextDate = computed(() => {
+    const monthDates = this.currentMonthSlots();
+    const anchor = this.paginationAnchorIndex();
+    const page = this.currentDatePage();
+    const startNext = anchor + (page + 1) * this.DATES_PER_PAGE;
+
+    if (startNext >= monthDates.length) {
+      // Allow creating the "Empty Future" page if we are viewing past
+      const currentStart = anchor + page * this.DATES_PER_PAGE;
+      return currentStart < monthDates.length;
+    }
+    return true;
+  });
 
   // Constants
   private readonly MAX_VISIBLE_SLOTS = 3;
@@ -301,19 +338,43 @@ export class SlotsSectionComponent {
     }
   }
 
+  /**
+   * Loads slots for a specific month and updates the local state.
+   * If it's the current month, it calculates an anchor index to focus on today/future slots.
+   *
+   * @param processId The interview process ID
+   * @param year The year to load
+   * @param month The month to load (1-12)
+   */
   private async loadSlots(processId: string, year: number, month: number): Promise<void> {
-    const isFirstLoad = this.hasAnySlots() === undefined;
+    const isInitialLoad = this.hasAnySlots() === undefined;
 
     try {
-      if (isFirstLoad) {
+      if (isInitialLoad) {
         this.loading.set(true);
+      } else {
+        this.isRefreshing.set(true);
+        this.slots.set([]);
       }
       this.error.set(false);
 
       // Server side filtering by year and month
       const response = await firstValueFrom(this.interviewService.getSlotsByProcessId(processId, year, month, 0, 1000));
 
-      this.slots.set(response.content ?? []);
+      const slotsList = response.content ?? [];
+      this.slots.set(slotsList);
+
+      if (this.currentMonthOffset() === 0) {
+        const anchorIndex = this.calculateFutureSlotsIndex(slotsList);
+        this.paginationAnchorIndex.set(anchorIndex);
+      } else {
+        // For other months, start at the beginning
+        this.paginationAnchorIndex.set(0);
+      }
+
+      // Always reset page to 0 (the anchor view)
+      this.currentDatePage.set(0);
+
       if (this.hasAnySlots() === undefined) {
         this.hasAnySlots.set((response.totalElements ?? 0) > 0);
       }
@@ -322,7 +383,54 @@ export class SlotsSectionComponent {
       this.error.set(true);
     } finally {
       this.loading.set(false);
+      this.isRefreshing.set(false);
     }
+  }
+
+  /**
+   * Calculates the index of the first group of slots that is either today or in the future.
+   * This is used for "Relative Pagination" to anchor the view to the relevant dates.
+   *
+   * 1. Groups slots by date locally.
+   * 2. Sorts groups chronologically.
+   * 3. Finds the first group date that is >= Today.
+   *
+   * @param slots The list of fetched slots
+   * @return The index of the future/today group, or the end/length if all are past.
+   */
+  private calculateFutureSlotsIndex(slots: InterviewSlotDTO[]): number {
+    // Calculate groups locally to ensure we use the fresh data
+    const grouped = new Map<string, InterviewSlotDTO[]>();
+    slots.forEach(slot => {
+      const localDate = new Date(this.safeDate(slot.startDateTime));
+      const dateKey = localDate.toISOString().split('T')[0];
+      if (!grouped.has(dateKey)) {
+        grouped.set(dateKey, []);
+      }
+      grouped.get(dateKey)?.push(slot);
+    });
+
+    // Sort groups by date
+    const localSlotsByDate = Array.from(grouped.entries())
+      .map(([dateKey, dateSlots]) => ({
+        date: dateKey,
+        slots: dateSlots,
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // Find index of group that is today or in the future
+    const futureOrTodayIndex = localSlotsByDate.findIndex(group => group.date >= todayStr);
+
+    if (futureOrTodayIndex >= 0) {
+      return futureOrTodayIndex;
+    } else if (localSlotsByDate.length > 0) {
+      // All past -> Anchor at end (Empty page)
+      return localSlotsByDate.length;
+    }
+
+    return 0;
   }
 
   private safeDate(value?: string): number {

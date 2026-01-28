@@ -9,11 +9,12 @@
  */
 /* tslint:disable:no-unused-variable member-ordering */
 
-import { Inject, Injectable, Optional }                      from '@angular/core';
-import { HttpClient, HttpParams,
-         HttpResponse, HttpEvent, HttpContext 
-        }       from '@angular/common/http';
-import { Observable }                                        from 'rxjs';
+import { Inject, Injectable, Optional } from '@angular/core';
+import {
+    HttpClient, HttpParams,
+    HttpResponse, HttpEvent, HttpContext
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 // @ts-ignore
 import { AddIntervieweesDTO } from '../model/addIntervieweesDTO';
@@ -39,18 +40,18 @@ import { SendInvitationsResultDTO } from '../model/sendInvitationsResultDTO';
 import { UpdateAssessmentDTO } from '../model/updateAssessmentDTO';
 
 // @ts-ignore
-import { BASE_PATH }                     from '../variables';
-import { Configuration }                                     from '../configuration';
+import { BASE_PATH } from '../variables';
+import { Configuration } from '../configuration';
 import { BaseService } from '../api.base.service';
 
 
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class InterviewResourceApiService extends BaseService {
 
-    constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
+    constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string | string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
     }
 
@@ -60,10 +61,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<IntervieweeDTO>>;
-    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<IntervieweeDTO>>>;
-    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<IntervieweeDTO>>>;
-    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<Array<IntervieweeDTO>>;
+    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<Array<IntervieweeDTO>>>;
+    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<Array<IntervieweeDTO>>>;
+    public addApplicantsToInterview(processId: string, addIntervieweesDTO: AddIntervieweesDTO, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling addApplicantsToInterview.');
         }
@@ -105,7 +106,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/interviewees`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/interviewees`;
         return this.httpClient.request<Array<IntervieweeDTO>>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -126,10 +127,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<InterviewSlotDTO>;
-    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<InterviewSlotDTO>>;
-    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<InterviewSlotDTO>>;
-    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<InterviewSlotDTO>;
+    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<InterviewSlotDTO>>;
+    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<InterviewSlotDTO>>;
+    public assignSlotToInterviewee(slotId: string, assignSlotRequestDTO: AssignSlotRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (slotId === null || slotId === undefined) {
             throw new Error('Required parameter slotId was null or undefined when calling assignSlotToInterviewee.');
         }
@@ -171,7 +172,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/slots/${this.configuration.encodeParam({name: "slotId", value: slotId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/assign`;
+        let localVarPath = `/api/interviews/slots/${this.configuration.encodeParam({ name: "slotId", value: slotId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/assign`;
         return this.httpClient.request<InterviewSlotDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -191,10 +192,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public countAvailableFutureSlots(processId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<number>;
-    public countAvailableFutureSlots(processId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<number>>;
-    public countAvailableFutureSlots(processId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<number>>;
-    public countAvailableFutureSlots(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public countAvailableFutureSlots(processId: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<number>;
+    public countAvailableFutureSlots(processId: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<number>>;
+    public countAvailableFutureSlots(processId: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<number>>;
+    public countAvailableFutureSlots(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling countAvailableFutureSlots.');
         }
@@ -224,8 +225,60 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots/available-count`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/slots/available-count`;
         return this.httpClient.request<number>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param processId
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getFirstFutureSlot(processId: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<InterviewSlotDTO>;
+    public getFirstFutureSlot(processId: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<InterviewSlotDTO>>;
+    public getFirstFutureSlot(processId: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<InterviewSlotDTO>>;
+    public getFirstFutureSlot(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
+        if (processId === null || processId === undefined) {
+            throw new Error('Required parameter processId was null or undefined when calling getFirstFutureSlot.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/slots/first-future`;
+        return this.httpClient.request<InterviewSlotDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -244,10 +297,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<InterviewSlotDTO>>;
-    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<InterviewSlotDTO>>>;
-    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<InterviewSlotDTO>>>;
-    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<Array<InterviewSlotDTO>>;
+    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<Array<InterviewSlotDTO>>>;
+    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<Array<InterviewSlotDTO>>>;
+    public createSlots(processId: string, createSlotsDTO: CreateSlotsDTO, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling createSlots.');
         }
@@ -289,7 +342,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots/create`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/slots/create`;
         return this.httpClient.request<Array<InterviewSlotDTO>>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -309,10 +362,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteSlot(slotId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public deleteSlot(slotId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public deleteSlot(slotId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public deleteSlot(slotId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public deleteSlot(slotId: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean }): Observable<any>;
+    public deleteSlot(slotId: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<any>>;
+    public deleteSlot(slotId: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<any>>;
+    public deleteSlot(slotId: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (slotId === null || slotId === undefined) {
             throw new Error('Required parameter slotId was null or undefined when calling deleteSlot.');
         }
@@ -341,7 +394,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/slots/${this.configuration.encodeParam({name: "slotId", value: slotId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        let localVarPath = `/api/interviews/slots/${this.configuration.encodeParam({ name: "slotId", value: slotId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -359,10 +412,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getInterviewOverview(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<InterviewOverviewDTO>>;
-    public getInterviewOverview(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<InterviewOverviewDTO>>>;
-    public getInterviewOverview(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<InterviewOverviewDTO>>>;
-    public getInterviewOverview(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getInterviewOverview(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<Array<InterviewOverviewDTO>>;
+    public getInterviewOverview(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<Array<InterviewOverviewDTO>>>;
+    public getInterviewOverview(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<Array<InterviewOverviewDTO>>>;
+    public getInterviewOverview(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -408,10 +461,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getInterviewProcessDetails(processId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<InterviewOverviewDTO>;
-    public getInterviewProcessDetails(processId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<InterviewOverviewDTO>>;
-    public getInterviewProcessDetails(processId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<InterviewOverviewDTO>>;
-    public getInterviewProcessDetails(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getInterviewProcessDetails(processId: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<InterviewOverviewDTO>;
+    public getInterviewProcessDetails(processId: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<InterviewOverviewDTO>>;
+    public getInterviewProcessDetails(processId: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<InterviewOverviewDTO>>;
+    public getInterviewProcessDetails(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling getInterviewProcessDetails.');
         }
@@ -441,7 +494,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}`;
         return this.httpClient.request<InterviewOverviewDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -461,10 +514,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IntervieweeDetailDTO>;
-    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IntervieweeDetailDTO>>;
-    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IntervieweeDetailDTO>>;
-    public getIntervieweeDetails(processId: string, intervieweeId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<IntervieweeDetailDTO>;
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<IntervieweeDetailDTO>>;
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<IntervieweeDetailDTO>>;
+    public getIntervieweeDetails(processId: string, intervieweeId: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling getIntervieweeDetails.');
         }
@@ -497,7 +550,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/interviewees/${this.configuration.encodeParam({name: "intervieweeId", value: intervieweeId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/interviewees/${this.configuration.encodeParam({ name: "intervieweeId", value: intervieweeId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}`;
         return this.httpClient.request<IntervieweeDetailDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -516,10 +569,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getIntervieweesByProcessId(processId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<IntervieweeDTO>>;
-    public getIntervieweesByProcessId(processId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<IntervieweeDTO>>>;
-    public getIntervieweesByProcessId(processId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<IntervieweeDTO>>>;
-    public getIntervieweesByProcessId(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getIntervieweesByProcessId(processId: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<Array<IntervieweeDTO>>;
+    public getIntervieweesByProcessId(processId: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<Array<IntervieweeDTO>>>;
+    public getIntervieweesByProcessId(processId: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<Array<IntervieweeDTO>>>;
+    public getIntervieweesByProcessId(processId: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling getIntervieweesByProcessId.');
         }
@@ -549,7 +602,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/interviewees`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/interviewees`;
         return this.httpClient.request<Array<IntervieweeDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -572,23 +625,23 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageResponseDTOInterviewSlotDTO>;
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageResponseDTOInterviewSlotDTO>>;
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageResponseDTOInterviewSlotDTO>>;
-    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<PageResponseDTOInterviewSlotDTO>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<PageResponseDTOInterviewSlotDTO>>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<PageResponseDTOInterviewSlotDTO>>;
+    public getSlotsByProcessId(processId: string, year?: number, month?: number, page?: number, size?: number, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling getSlotsByProcessId.');
         }
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        let localVarQueryParameters = new HttpParams({ encoder: this.encoder });
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>year, 'year');
+            <any>year, 'year');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>month, 'month');
+            <any>month, 'month');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>page, 'page');
+            <any>page, 'page');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>size, 'size');
+            <any>size, 'size');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -615,7 +668,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/slots`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/slots`;
         return this.httpClient.request<PageResponseDTOInterviewSlotDTO>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -636,10 +689,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SendInvitationsResultDTO>;
-    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SendInvitationsResultDTO>>;
-    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SendInvitationsResultDTO>>;
-    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<SendInvitationsResultDTO>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<SendInvitationsResultDTO>>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<SendInvitationsResultDTO>>;
+    public sendInvitations(processId: string, sendInvitationsRequestDTO: SendInvitationsRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling sendInvitations.');
         }
@@ -681,7 +734,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/send-invitations`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/send-invitations`;
         return this.httpClient.request<SendInvitationsResultDTO>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -703,10 +756,10 @@ export class InterviewResourceApiService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<IntervieweeDetailDTO>;
-    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<IntervieweeDetailDTO>>;
-    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<IntervieweeDetailDTO>>;
-    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<IntervieweeDetailDTO>;
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpResponse<IntervieweeDetailDTO>>;
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<HttpEvent<IntervieweeDetailDTO>>;
+    public updateAssessment(processId: string, intervieweeId: string, updateAssessmentDTO: UpdateAssessmentDTO, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean }): Observable<any> {
         if (processId === null || processId === undefined) {
             throw new Error('Required parameter processId was null or undefined when calling updateAssessment.');
         }
@@ -751,7 +804,7 @@ export class InterviewResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/interviewees/${this.configuration.encodeParam({name: "intervieweeId", value: intervieweeId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/assessment`;
+        let localVarPath = `/api/interviews/processes/${this.configuration.encodeParam({ name: "processId", value: processId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/interviewees/${this.configuration.encodeParam({ name: "intervieweeId", value: intervieweeId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid" })}/assessment`;
         return this.httpClient.request<IntervieweeDetailDTO>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

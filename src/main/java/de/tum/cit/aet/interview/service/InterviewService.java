@@ -468,6 +468,31 @@ public class InterviewService {
         return interviewSlotRepository.countFutureSlots(processId, Instant.now());
     }
 
+    /**
+     * Gets the very first future slot (booked or not) for the process.
+     * Used to determine which month to show by default.
+     *
+     * @param processId the ID of the interview process
+     * @return Optional of the first future slot
+     */
+    public Optional<InterviewSlotDTO> getFirstFutureSlot(UUID processId) {
+        // 1. Load Interview Process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
+
+        // 2. Security: Verify current user has job access
+        Job job = process.getJob();
+        currentUserService.verifyJobAccess(job);
+
+        // 3. Find first slot
+        Page<InterviewSlot> page = interviewSlotRepository.findFutureSlots(processId, Instant.now(), PageRequest.of(0, 1));
+        if (page.hasContent()) {
+            return Optional.of(InterviewSlotDTO.fromEntity(page.getContent().get(0)));
+        }
+        return Optional.empty();
+    }
+
     /*--------------------------------------------------------------
      Interviewee Management
     --------------------------------------------------------------*/

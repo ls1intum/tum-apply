@@ -1,141 +1,153 @@
 <!-- Loading State -->
 @if (loading()) {
-<div class="flex justify-center items-center py-8">
-  <p-progressSpinner styleClass="w-12 h-12" />
-</div>
+  <div class="flex justify-center items-center py-8">
+    <p-progressSpinner styleClass="w-12 h-12" />
+  </div>
 }
 
 <!-- Error State -->
 @if (error() && !loading()) {
-<div class="flex justify-center items-center py-8">
-  <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
-    <fa-icon icon="exclamation-triangle" class="text-4xl text-negative-default" />
-    <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.error.title">Failed to load slots</h3>
-    <p class="text-secondary-default" jhiTranslate="interview.detail.error.description">
-      There was an error loading the interview slots. Please try again.
-    </p>
-    <jhi-button [label]="'interview.detail.error.retry'" [shouldTranslate]="true" [icon]="'rotate-right'"
-      (click)="refreshSlots()" />
+  <div class="flex justify-center items-center py-8">
+    <div class="flex flex-col items-center gap-4 text-center max-w-md mx-auto">
+      <fa-icon icon="exclamation-triangle" class="text-4xl text-negative-default" />
+      <h3 class="text-xl font-semibold" jhiTranslate="interview.detail.error.title">Failed to load slots</h3>
+      <p class="text-secondary-default" jhiTranslate="interview.detail.error.description">
+        There was an error loading the interview slots. Please try again.
+      </p>
+      <jhi-button [label]="'interview.detail.error.retry'" [shouldTranslate]="true" [icon]="'rotate-right'" (click)="refreshSlots()" />
+    </div>
   </div>
-</div>
 }
 
 @if (!loading() && !error()) {
-@if (hasAnySlots() === false) {
-<!-- Global Empty State (No slots at all) -->
-<div class="flex justify-center items-center py-12">
-  <div class="flex flex-col items-center gap-3 text-center max-w-3xl mx-auto">
-    <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-    <h3 class="font-semibold text-text-primary" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
-    <p class="text-text-primary" jhiTranslate="interview.detail.empty.description">Create your first interview slots to
-      get started.</p>
-    <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'"
-      (click)="openCreateSlotsModal()" />
-  </div>
-</div>
-} @else {
-<div>
-  <!-- Month Navigation -->
-  <jhi-month-navigation [currentMonth]="currentMonth()" [showAddButton]="true" (previousMonth)="previousMonth()"
-    (nextMonth)="nextMonth()" (addSlots)="openCreateSlotsModal()" />
-
-  @if (groupedSlots().length > 0) {
-  <div class="flex flex-col gap-12">
-    <div class="flex items-start gap-4">
-      <!-- Left Pagination Arrow -->
-      <div class="flex-shrink-0 pt-8">
-        <jhi-button [icon]="'chevron-left'" [variant]="'text'" [disabled]="!canGoPreviousDate()"
-          (click)="previousDatePage()" />
+  @if (hasAnySlots() === false) {
+    <!-- Global Empty State (No slots at all) -->
+    <div class="flex justify-center items-center py-12">
+      <div class="flex flex-col items-center gap-3 text-center max-w-3xl mx-auto">
+        <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
+        <h3 class="font-semibold text-text-primary" jhiTranslate="interview.detail.empty.title">No slots yet</h3>
+        <p class="text-text-primary" jhiTranslate="interview.detail.empty.description">Create your first interview slots to get started.</p>
+        <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" [icon]="'plus'" (click)="openCreateSlotsModal()" />
       </div>
+    </div>
+  } @else {
+    <div>
+      <!-- Month Navigation -->
+      <jhi-month-navigation
+        [currentMonth]="currentMonth()"
+        [showAddButton]="true"
+        (previousMonth)="previousMonth()"
+        (nextMonth)="nextMonth()"
+        (addSlots)="openCreateSlotsModal()"
+      />
 
-      <!-- Date Grid (max 5 dates visible) -->
-      <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
-        @for (group of paginatedSlots(); track group.date) {
-        <div class="flex flex-col gap-2">
-          <!-- Date Header -->
-          <jhi-date-header [date]="group.localDate" [slotCount]="group.slots.length" />
+      @if (groupedSlots().length > 0) {
+        <div class="flex flex-col gap-12">
+          <div class="flex items-start gap-4">
+            <!-- Left Pagination Arrow -->
+            <div class="flex-shrink-0 pt-8">
+              <jhi-button [icon]="'chevron-left'" [variant]="'text'" [disabled]="!canGoPreviousDate()" (click)="previousDatePage()" />
+            </div>
 
-          <!-- Slot Cards -->
-          <div class="flex flex-col gap-2">
-            @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
-            <jhi-slot-card [slot]="slot" (editSlot)="onEditSlot()" (deleteSlot)="onDeleteSlot(slot)"
-              (assignApplicant)="onAssignApplicant(slot)" />
-            }
+            <!-- Date Grid (max 5 dates visible) -->
+            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
+              @if (paginatedSlots().length === 0) {
+                <div class="col-span-full flex flex-col items-center gap-3 text-center py-12">
+                  <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
+                  <div class="space-y-1">
+                    <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">
+                      No future slots available
+                    </h3>
+                    <p class="text-text-primary" jhiTranslate="interview.slots.noFutureSlots.description">
+                      Add new slots to invite applicants.
+                    </p>
+                  </div>
+                  <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus" (click)="openCreateSlotsModal()" />
+                </div>
+              }
+              @for (group of paginatedSlots(); track group.date) {
+                <div class="flex flex-col gap-2">
+                  <!-- Date Header -->
+                  <jhi-date-header [date]="group.localDate" [slotCount]="group.slots.length" />
 
-            <!-- Show More/Less Button -->
-            @if (group.slots.length > 3) {
-            <jhi-button class="w-full" [fullWidth]="true" [variant]="'text'"
-              [icon]="isExpanded(group.date) ? 'chevron-up' : 'chevron-down'" [label]="
-                        isExpanded(group.date)
-                          ? 'interview.detail.showLess'
-                          : getShowMoreText(getRemainingCount(group.date, group.slots.length))
-                      " [shouldTranslate]="isExpanded(group.date)"
-              [styleClass]="'w-full py-2 border border-border-default rounded-md text-text-secondary text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-background-surface hover:border-border-default transition-all'"
-              (click)="toggleExpanded(group.date)" />
-            }
+                  <!-- Slot Cards -->
+                  <div class="flex flex-col gap-2">
+                    @for (slot of getVisibleSlots(group.date, group.slots); track slot.id) {
+                      <jhi-slot-card
+                        [slot]="slot"
+                        (editSlot)="onEditSlot()"
+                        (deleteSlot)="onDeleteSlot(slot)"
+                        (assignApplicant)="onAssignApplicant(slot)"
+                      />
+                    }
+
+                    <!-- Show More/Less Button -->
+                    @if (group.slots.length > 3) {
+                      <jhi-button
+                        class="w-full"
+                        [fullWidth]="true"
+                        [variant]="'text'"
+                        [icon]="isExpanded(group.date) ? 'chevron-up' : 'chevron-down'"
+                        [label]="
+                          isExpanded(group.date)
+                            ? 'interview.detail.showLess'
+                            : getShowMoreText(getRemainingCount(group.date, group.slots.length))
+                        "
+                        [shouldTranslate]="isExpanded(group.date)"
+                        [styleClass]="'w-full py-2 border border-border-default rounded-md text-text-secondary text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-background-surface hover:border-border-default transition-all'"
+                        (click)="toggleExpanded(group.date)"
+                      />
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Right Pagination Arrow -->
+            <div class="flex-shrink-0 pt-8">
+              <jhi-button [icon]="'chevron-right'" [variant]="'text'" [disabled]="!canGoNextDate()" (click)="nextDatePage()" />
+            </div>
           </div>
         </div>
-        }
-      </div>
-
-      <!-- Right Pagination Arrow -->
-      <div class="flex-shrink-0 pt-8">
-        <jhi-button [icon]="'chevron-right'" [variant]="'text'" [disabled]="!canGoNextDate()"
-          (click)="nextDatePage()" />
-      </div>
+      } @else {
+        <!-- Monthly Empty State -->
+        <div class="text-center py-12">
+          @if (!hasFutureSlots()) {
+            <!-- No future slots at all-> Show Call to Action -->
+            <div class="flex flex-col items-center gap-3">
+              <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
+              <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">No future slots available</h3>
+              <p class="text-text-primary" jhiTranslate="interview.slots.noFutureSlots.description">Add new slots to invite applicants.</p>
+              <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus" (click)="openCreateSlotsModal()" />
+            </div>
+          } @else {
+            <!-- Has future slots other months, just not here -->
+            <div class="flex flex-col items-center gap-3">
+              <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
+              <h3
+                class="font-semibold text-text-primary"
+                [jhiTranslate]="'interview.detail.noSlotsInMonth'"
+                [translateValues]="{ month: currentMonth() }"
+              >
+                No slots in {{ currentMonth() }}
+              </h3>
+            </div>
+          }
+        </div>
+      }
     </div>
-
-    @if (!hasFutureSlots()) {
-    <!-- Global No Future Slots Warning (Visible even with past slots) -->
-    <div class="flex flex-col items-center gap-3 text-center max-w-3xl mx-auto pb-8">
-      <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-      <div class="space-y-1">
-        <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">
-          No future slots available
-        </h3>
-        <p class="text-text-primary" jhiTranslate="interview.slots.noFutureSlots.description">
-          Add new slots to invite applicants.
-        </p>
-      </div>
-      <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus"
-        (click)="openCreateSlotsModal()" />
-    </div>
-    }
-  </div>
-  } @else {
-  <!-- Monthly Empty State -->
-  <div class="text-center py-12">
-    @if (!hasFutureSlots()) {
-    <!-- No future slots at all-> Show Call to Action -->
-    <div class="flex flex-col items-center gap-3">
-      <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-      <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">No future slots
-        available</h3>
-      <p class="text-text-primary" jhiTranslate="interview.slots.noFutureSlots.description">Add new slots to invite
-        applicants.</p>
-      <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus"
-        (click)="openCreateSlotsModal()" />
-    </div>
-    } @else {
-    <!-- Has future slots other months, just not here -->
-    <div class="flex flex-col items-center gap-3">
-      <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-      <h3 class="font-semibold text-text-primary" [jhiTranslate]="'interview.detail.noSlotsInMonth'"
-        [translateValues]="{ month: currentMonth() }">
-        No slots in {{ currentMonth() }}
-      </h3>
-    </div>
-    }
-  </div>
   }
-</div>
-}
 }
 
 <jhi-slot-creation-form [(visible)]="showSlotCreationForm" [processId]="processId()" (success)="onSlotsCreated()" />
 
 @if (selectedSlotForAssignment()) {
-<jhi-assign-applicant-modal [visible]="showAssignModal()" [slot]="selectedSlotForAssignment()!"
-  [processId]="processId()" [refreshKey]="refreshKey()" (visibleChange)="showAssignModal.set($event)"
-  (applicantAssigned)="onApplicantAssigned()" />
+  <jhi-assign-applicant-modal
+    [visible]="showAssignModal()"
+    [slot]="selectedSlotForAssignment()!"
+    [processId]="processId()"
+    [refreshKey]="refreshKey()"
+    (visibleChange)="showAssignModal.set($event)"
+    (applicantAssigned)="onApplicantAssigned()"
+  />
 }

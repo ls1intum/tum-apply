@@ -217,4 +217,23 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         """
     )
     long countFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now);
+
+    /**
+     * Finds the first future slot for a given process.
+     * Including booked slots (as we just want to know where to jump to).
+     *
+     * @param processId the ID of the interview process
+     * @param now       the current timestamp
+     * @param pageable  pagination (use PageRequest.of(0, 1))
+     * @return page containing the first future slot
+     */
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.id = :processId
+        AND s.startDateTime >= :now
+        ORDER BY s.startDateTime ASC
+        """
+    )
+    Page<InterviewSlot> findFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now, Pageable pageable);
 }
