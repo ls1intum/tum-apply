@@ -327,6 +327,7 @@ keycloak:
 
 user:
   retention:
+    # Controls scheduled user-data cleanup; enabled runs the job, dry-run logs planned deletions without applying them
     inactive-days-before-deletion: ${USER_RETENTION_INACTIVE_DAYS_BEFORE_DELETION:365}
     days-before-applicant-data-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
     enabled: ${USER_RETENTION_ENABLED:true}
