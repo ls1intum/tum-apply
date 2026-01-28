@@ -26,7 +26,7 @@
     </div>
 
     <!-- Job Title -->
-    <div class="flex items-start gap-2 border-b border-border-default pb-2">
+    <div class="flex items-start gap-2">
       <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
       <span class="line-clamp-1 break-words leading-[1.4rem]">
         {{ applicationDetails()?.jobTitle }}
@@ -35,41 +35,35 @@
 
     <!-- Master's Degree -->
     @if (masterDegree()) {
-      <div class="flex flex-col gap-1">
-        <span class="font-semibold">{{ 'evaluation.details.educationMasters' | translate }}</span>
-        <div class="flex flex-col">
-          <span>{{ 'evaluation.details.educationDegree' | translate }}</span>
-          <span>{{ masterDegree()!.name }}</span>
-        </div>
-        <div class="flex flex-col">
-          <span>{{ 'evaluation.details.educationUniversity' | translate }}</span>
+      <div class="flex flex-col gap-1 border-b border-border-default pb-2">
+        <span>{{ masterDegree()!.name }}</span>
+        <div class="flex gap-2">
           <span>{{ masterDegree()!.university }}</span>
-        </div>
-        <div class="flex flex-col">
-          <span>{{ 'evaluation.details.educationGrade' | translate }}</span>
-          <span>{{ masterDegree()!.grade }}</span>
+          <span>&middot;</span>
+          <span>{{ 'evaluation.grade' | translate }}: {{ masterDegree()!.grade }}</span>
         </div>
       </div>
     }
 
-    <!-- Preferred Start Date -->
-    @if (applicationDetails()?.desiredDate) {
-      <div class="flex items-start gap-2">
-        <fa-icon class="icon" [icon]="['fas', 'calendar']" />
-        <div class="flex flex-col">
-          <span>{{ 'evaluation.details.applicationDesiredStartDate' | translate }}</span>
-          <span>{{ applicationDetails()?.desiredDate | localizedDate }}</span>
+    <div class="flex justify-between">
+      <!-- Applied Date -->
+      @if (application()?.appliedAt) {
+        <div class="flex items-start gap-2">
+          <div class="flex flex-col">
+            <span class="text-text-secondary"> {{ 'evaluation.applied' | translate }}</span>
+            <span> {{ application()?.appliedAt | localizedDate }} </span>
+          </div>
         </div>
-      </div>
-    }
-
-    <!-- Applied Date -->
-    @if (application()?.appliedAt) {
-      <div class="flex items-center gap-2">
-        <span>
-          {{ 'evaluation.appliedAt' | translate }}: {{ application()?.appliedAt | localizedDate }}
-        </span>
-      </div>
-    }
+      }
+      <!-- Preferred Start Date -->
+      @if (applicationDetails()?.desiredDate) {
+        <div class="flex items-end gap-2">
+          <div class="flex flex-col items-end">
+            <span class="text-text-secondary">{{ 'evaluation.start' | translate }}</span>
+            <span>{{ applicationDetails()?.desiredDate | localizedDate }}</span>
+          </div>
+        </div>
+      }
+    </div>
   }
 </div>
