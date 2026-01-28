@@ -47,7 +47,43 @@
     />
 
     @if (currentApplication(); as application) {
-      <div class="w-full flex flex-col md:flex-row justify-end items-start md:items-center gap-4 p-3 sm:p-4 md:px-6 border-b border-border-default rounded-lg overflow-hidden">
+      <div class="w-full flex flex-col md:flex-row justify-between items-end p-2 gap-4 border-b border-border-default overflow-hidden">
+        <div class="flex gap-2 flex-wrap">
+          <span class="text-xl font-semibold mr-4">{{ application.applicationDetailDTO.applicant?.user?.name }}</span>
+          <span>{{
+            application.applicationDetailDTO.applicant?.user?.gender
+              ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
+              : '—'
+          }}</span>
+          <span>&middot;</span>
+          <span>{{
+            application.applicationDetailDTO.applicant?.user?.nationality
+              ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
+              : '—'
+          }}</span>
+          <div class="flex gap-2 ml-2">
+            @if (application.applicationDetailDTO.applicant?.user?.website) {
+              <a
+                [href]="application.applicationDetailDTO.applicant?.user?.website"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary hover:text-primary-dark"
+              >
+                <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
+              </a>
+            }
+            @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
+              <a
+                [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary hover:text-primary-dark"
+              >
+                <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
+              </a>
+            }
+          </div>
+        </div>
         <div class="flex gap-3 flex-shrink-0">
           <jhi-button
             [label]="'evaluation.accept' | translate"
@@ -70,52 +106,6 @@
       <div class="w-full">
         <div class="grid xl:gap-16 grid-cols-1 xl:grid-cols-[7fr_3fr]">
           <div>
-            <jhi-section titleKey="evaluation.details.applicantTitle" icon="user">
-              <!-- Links as Icons next to "Applicant" section title -->
-              <div actions class="flex gap-2">
-                @if (application.applicationDetailDTO.applicant?.user?.website) {
-                  <a [href]="application.applicationDetailDTO.applicant?.user?.website" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-dark">
-                    <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
-                  </a>
-                }
-                @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
-                  <a [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-dark">
-                    <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
-                  </a>
-                }
-              </div>
-
-              <div class="grid gap-8 md:grid-cols-2">
-                <!-- Applicant Information -->
-                <jhi-sub-section titleKey="evaluation.details.applicantInformation">
-                  <jhi-description-list
-                    [items]="[
-                      { labelKey: 'evaluation.details.applicantName', value: application.applicationDetailDTO.applicant?.user?.name },
-                      {
-                        labelKey: 'evaluation.details.applicantGender',
-                        value: application.applicationDetailDTO.applicant?.user?.gender
-                          ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
-                          : '—',
-                      },
-                      {
-                        labelKey: 'evaluation.details.applicantNationality',
-                        value: application.applicationDetailDTO.applicant?.user?.nationality
-                          ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
-                          : '—',
-                      },
-                    ]"
-                  />
-                </jhi-sub-section>
-
-                <!-- Bachelor's Degree -->
-                <jhi-sub-section titleKey="evaluation.details.educationBachelors">
-                  <jhi-description-list [items]="bachelorItemsComputed()" />
-                </jhi-sub-section>
-              </div>
-            </jhi-section>
-
-            <p-divider />
-
             <!-- Application -->
             <jhi-section titleKey="evaluation.details.applicationTitle" icon="file">
               <jhi-sub-section titleKey="evaluation.details.applicationMotivation">
