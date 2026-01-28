@@ -152,6 +152,42 @@ public final class UserTestData {
         );
     }
 
+    public static User saveProfessor(ResearchGroup rg, UserRepository userRepository) {
+        User professor = new User();
+        professor.setUserId(UUID.randomUUID());
+        professor.setEmail("professor-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
+        professor.setFirstName("Prof");
+        professor.setLastName("Tester");
+        professor.setSelectedLanguage("en");
+        professor.setResearchGroup(rg);
+        professor.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+
+        UserResearchGroupRole role = new UserResearchGroupRole();
+        role.setUser(professor);
+        role.setResearchGroup(rg);
+        role.setRole(UserRole.PROFESSOR);
+        professor.getResearchGroupRoles().add(role);
+
+        return userRepository.saveAndFlush(professor);
+    }
+
+    public static User saveAdmin(UserRepository userRepository) {
+        User admin = new User();
+        admin.setUserId(UUID.randomUUID());
+        admin.setEmail("admin-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
+        admin.setFirstName("Admin");
+        admin.setLastName("Tester");
+        admin.setSelectedLanguage("en");
+        admin.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+
+        UserResearchGroupRole role = new UserResearchGroupRole();
+        role.setUser(admin);
+        role.setRole(UserRole.ADMIN);
+        admin.getResearchGroupRoles().add(role);
+
+        return userRepository.saveAndFlush(admin);
+    }
+
     /**
      * Saved employee with essential fields only.
      * Use this method to avoid long parameter lists.
