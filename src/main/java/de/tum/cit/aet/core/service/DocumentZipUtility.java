@@ -25,7 +25,6 @@ public class DocumentZipUtility {
 
             zipExportService.addDocumentToZip(zipOut, entryPath, document);
         } catch (Exception e) {
-            log.error("Failed to add document {} to ZIP export", documentId, e);
             throw new UserDataExportException("Failed to add document to ZIP export", e);
         }
     }
