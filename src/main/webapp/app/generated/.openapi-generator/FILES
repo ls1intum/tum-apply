@@ -123,6 +123,7 @@ model/sendInvitationsRequestDTO.ts
 model/sendInvitationsResultDTO.ts
 model/slotInput.ts
 model/sortObject.ts
+model/upcomingInterviewDTO.ts
 model/updateApplicationDTO.ts
 model/updateAssessmentDTO.ts
 model/updatePasswordDTO.ts
