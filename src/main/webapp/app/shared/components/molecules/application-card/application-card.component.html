@@ -1,14 +1,24 @@
-<div class="card" [class.disabled]="disabled()" [class.placeholder]="placeholder()">
+<div
+  class="mt-6 flex flex-col gap-2 p-4 w-56 sm:w-64 md:w-72 lg:w-80 xl:w-96 border-2 rounded-lg"
+  [class.border-primary]="!disabled() && !placeholder()"
+  [class.opacity-50]="disabled()"
+  [class.border-gray-300]="disabled()"
+  [class.cursor-not-allowed]="disabled()"
+  [class.pointer-events-none]="disabled()"
+  [class.border-transparent]="placeholder()"
+>
   @if (!placeholder()) {
-    <!-- Header -->
-    <div class="header">
-      <div class="name" [class.has-last]="!!nameParts().last">
-        <span class="first">{{ nameParts().first }}</span>
-        <span class="last">{{ nameParts().last }}</span>
+    <!-- Header with Name and Status -->
+    <div class="flex justify-between items-start gap-2">
+      <div class="flex flex-col text-lg font-bold">
+        <span>{{ nameParts().first }}</span>
+        @if (nameParts().last) {
+          <span>{{ nameParts().last }}</span>
+        }
       </div>
 
       <jhi-tag
-        class="status-tag"
+        class="shrink-0"
         [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
         [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
         [tooltipText]="'evaluation.statusBadge.tooltips.' + (applicationDetails()?.applicationState || '')"
@@ -16,25 +26,44 @@
     </div>
 
     <!-- Job Title -->
-    <div class="job">
+    <div class="flex items-start gap-2">
       <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-      <span class="job-title">
+      <span class="line-clamp-1 break-words leading-[1.4rem] text-text-secondary">
         {{ applicationDetails()?.jobTitle }}
       </span>
     </div>
 
-    <!--
-
-    Rating and Comments removed for now
-
-    <div class="rating">
-      <jhi-rating [rating]="application()?.rating" />
-      <div class="comments">
-        <p>0</p>
-        <fa-icon [icon]="['fas', 'comment-alt']" />
+    <!-- Master's Degree -->
+    @if (masterDegree()) {
+      <div class="flex flex-col gap-1 border-b border-border-default pb-2">
+        <span>{{ masterDegree()!.name }}</span>
+        <div class="flex gap-2">
+          <span>{{ masterDegree()!.university }}</span>
+          <span>&middot;</span>
+          <span>{{ 'evaluation.grade' | translate }}: {{ masterDegree()!.grade }}</span>
+        </div>
       </div>
-    </div>
+    }
 
-    -->
+    <div class="flex justify-between">
+      <!-- Applied Date -->
+      @if (application()?.appliedAt) {
+        <div class="flex items-start gap-2">
+          <div class="flex flex-col">
+            <span class="text-text-secondary"> {{ 'evaluation.applied' | translate }}</span>
+            <span> {{ application()?.appliedAt | localizedDate }} </span>
+          </div>
+        </div>
+      }
+      <!-- Preferred Start Date -->
+      @if (applicationDetails()?.desiredDate) {
+        <div class="flex items-end gap-2">
+          <div class="flex flex-col items-end">
+            <span class="text-text-secondary">{{ 'evaluation.start' | translate }}</span>
+            <span>{{ applicationDetails()?.desiredDate | localizedDate }}</span>
+          </div>
+        </div>
+      }
+    </div>
   }
 </div>

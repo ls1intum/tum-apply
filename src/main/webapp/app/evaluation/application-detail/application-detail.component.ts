@@ -3,12 +3,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
-import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
@@ -27,7 +27,6 @@ import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
 import { SubSection } from '../../shared/components/atoms/sub-section/sub-section';
 import { DescItem, DescriptionList } from '../../shared/components/atoms/description-list/description-list';
-import { LinkList } from '../../shared/components/atoms/link-list/link-list';
 import { Prose } from '../../shared/components/atoms/prose/prose';
 import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
@@ -51,12 +50,11 @@ const CAROUSEL_SIZE = 7;
     Section,
     SubSection,
     DescriptionList,
-    LinkList,
     Prose,
     DocumentSection,
     CommentSection,
     RatingSection,
-    LocalizedDatePipe,
+    FontAwesomeModule,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',
