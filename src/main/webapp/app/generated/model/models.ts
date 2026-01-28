@@ -1,4 +1,3 @@
-export * from './aIJobDescriptionDTO';
 export * from './aIJobDescriptionTranslationDTO';
 export * from './acceptDTO';
 export * from './addIntervieweesDTO';

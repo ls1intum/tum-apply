@@ -108,10 +108,10 @@
 
             <!-- Translation indicator -->
             @if (isTranslating()) {
-              <div class="flex items-center gap-2 px-3 h-[32px] border border-border-default rounded-[8px]">
+              <div class="flex items-center gap-2 px-3 h-8 border border-border-default rounded-lg">
                 <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
                 <span
-                  class="text-[13px] font-semibold text-text-primary whitespace-nowrap"
+                  class="text-sm font-semibold text-text-primary whitespace-nowrap"
                   jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.translating"
                 ></span>
               </div>
@@ -132,7 +132,7 @@
                 #jobDescriptionEditor
                 fieldId="jobDescription"
                 label="jobCreationForm.positionDetailsSection.jobDescription.label"
-                placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
+                [placeholder]="jobDescriptionPlaceholder()"
                 helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
                 tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
                 [required]="true"
@@ -159,8 +159,12 @@
 
                 <div class="flex justify-center">
                   @if (isGeneratingDraft()) {
-                    <div class="flex items-center justify-center w-full py-2">
-                      <jhi-progress-spinner styleClass="w-10 h-10 text-primary-default" />
+                    <div class="flex items-center gap-2 px-3 h-8 border border-border-default rounded-lg">
+                      <jhi-progress-spinner styleClass="w-4 h-4" strokeWidth="4" />
+                      <span
+                        class="text-sm font-semibold text-text-primary whitespace-nowrap"
+                        jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiFillerText"
+                      ></span>
                     </div>
                   } @else {
                     <div class="w-full flex justify-center">
@@ -187,11 +191,10 @@
     </div>
   </ng-template>
 
-  <!-- Step 2: Position Details -->
+  <!-- Step 2: Employment Terms -->
   <ng-template #panel2>
     <div class="h-full min-h-[calc(100vh-300px)] flex flex-column px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="positionDetailsForm" class="w-full">
-        <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
         <div class="form-row mb-6">
           <div class="form-field">
             <jhi-datepicker
