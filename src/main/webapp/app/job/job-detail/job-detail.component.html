@@ -100,11 +100,17 @@
       <!-- Left Column: Text Sections -->
       <div class="flex flex-col gap-6 mb-2">
         <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
+          <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
+          @if (isProfessorOrEmployee()) {
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
+          } @else {
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDescriptionForCurrentLang() || '-'"></div>
+          }
         </section>
       </div>
 
