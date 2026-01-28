@@ -150,7 +150,7 @@ export class IntervieweeAssessmentComponent {
   // Navigates to process detail or overview fallback
   goBack(): void {
     const processId = this.processId();
-    if (this.queryParamsSignal()?.['from'] === 'overview') {
+    if (this.queryParamsSignal()?.from === 'overview') {
       void this.router.navigate(['/interviews/overview']);
       return;
     }
