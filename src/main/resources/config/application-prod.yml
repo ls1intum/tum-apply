@@ -62,11 +62,10 @@ spring:
       openai:
         enabled: true
         api-key: ${SPRING_AI_AZURE_API_KEY}
-        endpoint: https://endpoint.openai.azure.com
+        endpoint: ${SPRING_AI_AZURE_ENDPOINT}
         chat:
           options:
             deployment-name: gpt-5-mini
-            temperature: 1.0
 
 # ===================================================================
 # To enable TLS in production, generate a certificate using:

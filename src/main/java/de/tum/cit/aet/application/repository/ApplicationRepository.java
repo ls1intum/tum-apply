@@ -4,6 +4,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
@@ -255,4 +256,18 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     List<Object[]> countApplicationsByJobAndStateForUserAccess(@Param("userId") UUID userId);
+     * Finds an application by ID with applicant and user details fetched.
+     *
+     * @param id the ID of the application
+     * @return the application with details, or empty if not found
+     */
+    @Query(
+        """
+        SELECT a FROM Application a
+        LEFT JOIN FETCH a.applicant ap
+        LEFT JOIN FETCH ap.user
+        WHERE a.applicationId = :id
+        """
+    )
+    Optional<Application> findWithDetailsById(@Param("id") UUID id);
 }

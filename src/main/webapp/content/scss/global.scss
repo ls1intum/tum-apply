@@ -66,6 +66,7 @@
 }
 
 .custom-label {
+  margin-bottom: 0.25rem;
   color: var(--p-text-primary);
 }
 
@@ -106,88 +107,122 @@
    outside component with appendTo="body"
 --------------------------------------------------- */
 
+// Remove jhi-menu from layout flow to prevent spacing issues
+jhi-menu {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.p-menu-list {
+  padding: 0;
+}
+
 .p-menu-item-link {
+  border-radius: var(--border-radius-md);
   &.menu-primary {
-    color: var(--p-primary-color);
+    color: var(--p-text-primary);
 
     .p-menu-item-icon {
-      color: var(--p-primary-color);
+      color: var(--p-text-primary);
     }
 
     &:hover {
       background-color: var(--p-primary-hover-color-outlined);
+      .p-menu-item-icon {
+        color: var(--p-primary-color);
+      }
     }
   }
 
   &.menu-secondary {
-    color: var(--p-secondary-color);
+    color: var(--p-text-primary);
 
     .p-menu-item-icon {
-      color: var(--p-secondary-color);
+      color: var(--p-text-primary);
     }
 
     &:hover {
       background-color: var(--p-secondary-hover-color-outlined);
+      .p-menu-item-icon {
+        color: var(--p-secondary-color);
+      }
     }
   }
 
   &.menu-success {
-    color: var(--p-success-color);
+    color: var(--p-text-primary);
 
     .p-menu-item-icon {
-      color: var(--p-success-color);
+      color: var(--p-text-primary);
     }
 
     &:hover {
       background-color: var(--p-success-hover-color-outlined);
+      .p-menu-item-icon {
+        color: var(--p-success-color);
+      }
     }
   }
 
   &.menu-warn {
-    color: var(--p-warn-color);
+    color: var(--p-text-primary);
 
     .p-menu-item-icon {
-      color: var(--p-warn-color);
+      color: var(--p-text-primary);
     }
 
     &:hover {
       background-color: var(--p-warn-hover-color-outlined);
+      .p-menu-item-icon {
+        color: var(--p-warn-color);
+      }
     }
   }
 
   &.menu-danger {
-    color: var(--p-danger-color);
+    color: var(--p-text-primary);
 
     .p-menu-item-icon {
-      color: var(--p-danger-color);
+      color: var(--p-text-primary);
     }
 
     &:hover {
       background-color: var(--p-danger-hover-color-outlined);
+      .p-menu-item-icon {
+        color: var(--p-danger-color);
+      }
     }
   }
 
   &.menu-info {
-    color: var(--p-neutral-color);
+    color: var(--p-text-primary);
 
     .p-menu-item-icon {
-      color: var(--p-neutral-color);
+      color: var(--p-text-primary);
     }
 
     &:hover {
       background-color: var(--p-neutral-hover-color-outlined);
+      .p-menu-item-icon {
+        color: var(--p-neutral-color);
+      }
     }
   }
 
   &.menu-contrast {
-    color: var(--p-accent-color);
+    color: var(--p-text-primary);
 
     .p-menu-item-icon {
-      color: var(--p-accent-color);
+      color: var(--p-text-primary);
     }
 
     &:hover {
       background-color: var(--p-accent-hover-color-outlined);
+      .p-menu-item-icon {
+        color: var(--p-accent-color);
+      }
     }
   }
 
@@ -209,6 +244,7 @@
   background: var(--p-background-default);
   color: var(--p-text-primary);
   overflow-wrap: anywhere;
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
 }
 
 .ql-editor.ql-blank {
@@ -238,6 +274,7 @@
   background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
   border: 1px solid var(--p-border-default) !important;
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0 !important;
 }
 
 /* Default text color for toolbar buttons and pickers */
@@ -318,6 +355,7 @@
   border-bottom: none !important;
   border-color: var(--p-border-default) !important;
   background: var(--p-background-default) !important;
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0 !important;
 }
 
 .p-editor-content.ql-container.ql-snow,
@@ -325,6 +363,7 @@
   background: var(--p-background-default) !important;
   border-color: var(--p-border-default) !important;
   border: 1px solid var(--p-border-default) !important;
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md) !important;
 
   &:focus-within {
     border-color: var(--p-primary-color) !important;
@@ -432,7 +471,7 @@
 // Base card styles - shared between all card types
 .section-card {
   border: 0.1rem solid var(--p-border-default);
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius-lg);
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -534,7 +573,7 @@
 .hero-carousel .p-carousel-indicator .p-carousel-indicator-button {
   width: 0.6rem;
   height: 0.6rem;
-  border-radius: 50%;
+  border-radius: var(--border-radius-full);
 }
 
 .hero-overlay {

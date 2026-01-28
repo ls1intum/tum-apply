@@ -15,7 +15,7 @@
   // Add styling for border and corners of select fields
   .custom-select {
     border: 0.1rem solid var(--p-border-default);
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-md);
 
     // Add styling for disabled select fields
     &.p-disabled {
@@ -45,7 +45,7 @@
     height: 1.25rem;
     font-size: 0.75rem;
     right: 2rem;
-    border-radius: 50%;
+    border-radius: var(--border-radius-full);
     position: absolute;
     align-items: center;
     justify-content: center;
@@ -65,12 +65,13 @@
 
 // Global styles for dropdown options (works even when appended to body)
 .p-select-overlay {
+  margin-top: 0.25rem;
   .p-select-list {
     padding: 0;
   }
 
   .p-select-list-container {
-    border-radius: 0.3rem;
+    border-radius: var(--border-radius-sm);
   }
 
   .p-select-items {

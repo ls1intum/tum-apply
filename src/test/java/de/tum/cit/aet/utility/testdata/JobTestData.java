@@ -53,7 +53,9 @@ public final class JobTestData {
         return j;
     }
 
-    /** Unsaved job; every field optional (null = keep default). */
+    /**
+     * Unsaved job; every field optional (null = keep default).
+     */
     public static Job newJobAll(
         String title,
         String researchArea,
@@ -66,9 +68,8 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
+        String jobDescriptionEN,
+        String jobDescriptionDE,
         JobState state
     ) {
         Job j = newJob(supervisingProfessor, researchGroup, title, state, startDate);
@@ -79,9 +80,8 @@ public final class JobTestData {
         if (workload != null) j.setWorkload(workload);
         if (contractDuration != null) j.setContractDuration(contractDuration);
         if (fundingType != null) j.setFundingType(fundingType);
-        if (description != null) j.setDescription(description);
-        if (tasks != null) j.setTasks(tasks);
-        if (requirements != null) j.setRequirements(requirements);
+        if (jobDescriptionEN != null) j.setJobDescriptionEN(jobDescriptionEN);
+        if (jobDescriptionDE != null) j.setJobDescriptionDE(jobDescriptionDE);
         return j;
     }
 
@@ -108,9 +108,8 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String description,
-        String tasks,
-        String requirements,
+        String jobDescriptionEN,
+        String jobDescriptionDE,
         JobState state
     ) {
         return repo.save(
@@ -126,9 +125,8 @@ public final class JobTestData {
                 workload,
                 contractDuration,
                 fundingType,
-                description,
-                tasks,
-                requirements,
+                jobDescriptionEN,
+                jobDescriptionDE,
                 state
             )
         );

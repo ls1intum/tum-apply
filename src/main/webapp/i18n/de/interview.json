@@ -138,8 +138,8 @@
         "singleSlot": "Einzelner Termin",
         "rangeSlot": "Zeitraum",
         "bookedSlot": "Gebuchter Termin",
-        "addStartTime": "Startzeit hinzufügen, um diesen Termin zu erstellen",
-        "addStartAndEndTime": "Start- und Endzeit hinzufügen, um Termine in diesem Bereich zu sehen",
+        "singleSlotHelp": "Gib eine Startzeit ein. Die Endzeit wird basierend auf der Interviewdauer berechnet.",
+        "rangeSlotHelp": "Gib Start- und Endzeit ein. Termine werden automatisch basierend auf Dauer und Pausenzeit berechnet.",
         "saveSlots": "Termine speichern",
         "locationPlaceholder": "z.B. Raum 01.02.03 oder Zoom Link",
         "useForAll": "Gleicher Ort für alle Termine",
@@ -265,6 +265,36 @@
         "loadFailed": {
           "summary": "Laden fehlgeschlagen",
           "detail": "Verfügbare Bewerber:innen konnten nicht geladen werden"
+        }
+      }
+    },
+    "assessment": {
+      "title": "Interview Bewertung",
+      "back": "Zurück zur Übersicht",
+      "rating": {
+        "label": "Bewertung",
+        "info": "Bewerte das Gespräch. Dies ist für Bewerber:innen nicht sichtbar."
+      },
+      "notes": {
+        "label": "Interview Notiz",
+        "empty": "Noch keine Notizen hinzugefügt.",
+        "saved": {
+          "summary": "Gespeichert",
+          "detail": "Die Interview Notiz wurde erfolgreich gespeichert."
+        }
+      },
+      "error": {
+        "saveFailed": {
+          "summary": "Speichern fehlgeschlagen",
+          "detail": "Bewertung konnte nicht gespeichert werden. Bitte versuche es erneut."
+        },
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bewerber:in konnte nicht geladen werden. Bitte lade die Seite neu."
+        },
+        "notFound": {
+          "summary": "Nicht gefunden",
+          "detail": "Diese:r Bewerber:in existiert nicht oder wurde entfernt."
         }
       }
     }

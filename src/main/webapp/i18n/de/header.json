@@ -5,10 +5,11 @@
     "professor": "Bist du Professor:in?",
     "applicant": "Bist du Bewerber:in?",
     "logout": "Abmelden",
-    "theme": "Theme wechseln",
+    "settings": "Einstellungen",
+    "profileMenu": "Profilmenü öffnen",
     "universityName": "Technische Universität München",
-    "lightMode": "Heller Modus",
-    "darkMode": "Dunkler Modus",
-    "syncWithSystem": "Mit Betriebssystem synchronisieren"
+    "lightMode": "Helles Theme",
+    "darkMode": "Dunkles Theme",
+    "systemMode": "System Theme"
   }
 }

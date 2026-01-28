@@ -1,9 +1,10 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -12,6 +13,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { TranslateDirective } from 'app/shared/language';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { createMenuActionSignals } from 'app/shared/util/util';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -32,11 +35,14 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
     TranslateModule,
     TranslateDirective,
     LocalizedDatePipe,
+    MenuComponent,
   ],
   templateUrl: './application-detail-for-applicant.component.html',
   styleUrl: './application-detail-for-applicant.component.scss',
 })
 export default class ApplicationDetailForApplicantComponent {
+  withdrawConfirmDialog = viewChild<ConfirmDialog>('withdrawConfirmDialog');
+  deleteConfirmDialog = viewChild<ConfirmDialog>('deleteConfirmDialog');
   // preview application data passed from parent component (if any)
   previewDetailData = input<ApplicationDetailDTO | undefined>();
   previewDocumentData = input<ApplicationDocumentIdsDTO | undefined>();
@@ -62,6 +68,77 @@ export default class ApplicationDetailForApplicantComponent {
 
     return this.actualDocumentDataExists() ? this.actualDocumentData() : undefined;
   });
+
+  readonly primaryActionButton = computed<ActionButton | null>(() => {
+    const app = this.application();
+    if (!app) return null;
+
+    // Edit button for SAVED state
+    if (['SAVED'].includes(app.applicationState)) {
+      return {
+        label: 'button.edit',
+        icon: 'pencil',
+        severity: 'primary',
+        onClick: () => {
+          this.onUpdateApplication();
+        },
+      };
+    }
+
+    return null;
+  });
+
+  readonly menuItems = computed<JhiMenuItem[]>(() => {
+    const app = this.application();
+    const items: JhiMenuItem[] = [];
+
+    if (!app) return items;
+
+    // Always add PDF download option
+    items.push({
+      label: 'button.downloadPDF',
+      icon: 'file-pdf',
+      severity: 'primary',
+      command: () => {
+        this.onDownloadPDF();
+      },
+    });
+
+    // Add Withdraw button for SENT/IN_REVIEW states
+    if (['SENT', 'IN_REVIEW'].includes(app.applicationState)) {
+      items.push({
+        label: 'button.withdraw',
+        icon: 'withdraw',
+        severity: 'danger',
+        command: () => {
+          this.withdrawConfirmDialog()?.confirm();
+        },
+      });
+    }
+
+    // Add Delete button for SAVED state
+    if (['SAVED'].includes(app.applicationState)) {
+      items.push({
+        label: 'button.delete',
+        icon: 'trash',
+        severity: 'danger',
+        command: () => {
+          this.deleteConfirmDialog()?.confirm();
+        },
+      });
+    }
+
+    return items;
+  });
+
+  // Menu action signals - determines when to show kebab menu vs individual buttons
+  readonly menuActionSignals = createMenuActionSignals({
+    hasPrimaryButton: computed(() => !!this.primaryActionButton()),
+    menuItems: this.menuItems,
+  });
+
+  readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
+  readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
 
   readonly dropDownOptions = DropDownOptions;
   private applicationService = inject(ApplicationResourceApiService);
@@ -117,8 +194,9 @@ export default class ApplicationDetailForApplicantComponent {
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'application.pdf';
 
-      if (contentDisposition) {
-        filename = /filename="([^"]+)"/.exec(contentDisposition)?.[1] ?? 'application.pdf';
+      if (contentDisposition !== null) {
+        const match = /filename="([^"]+)"/.exec(contentDisposition);
+        filename = match?.[1] ?? 'application.pdf';
       }
 
       const blob = response.body;

@@ -1,0 +1,7 @@
+<p-message [severity]="severity()" [styleClass]="'rounded-sm ' + styleClass()" [closable]="closable()">
+  @if (shouldTranslate()) {
+    <p>{{ message() | translate }}</p>
+  } @else {
+    <p>{{ message() }}</p>
+  }
+</p-message>

@@ -52,7 +52,7 @@
           @if (showPdfButtonForPreview()) {
             <jhi-button
               label="button.downloadPDF"
-              severity="secondary"
+              severity="primary"
               variant="outlined"
               icon="file-pdf"
               [shouldTranslate]="true"
@@ -83,11 +83,11 @@
           @if (primaryActionButton(); as primaryActionButton) {
             <jhi-button
               [label]="primaryActionButton.label"
-              [severity]="primaryActionButton.severity"
+              [severity]="primaryActionButton.severity ?? 'primary'"
               [variant]="primaryActionButton.variant"
               [icon]="primaryActionButton.icon"
-              [disabled]="primaryActionButton.disabled"
-              [shouldTranslate]="primaryActionButton.shouldTranslate"
+              [disabled]="primaryActionButton.disabled ?? false"
+              [shouldTranslate]="primaryActionButton.shouldTranslate ?? true"
               (click)="primaryActionButton.onClick()"
             />
           }
@@ -98,20 +98,19 @@
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_25rem] gap-8">
       <!-- Left Column: Text Sections -->
-      <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-6 mb-2">
         <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.description || '-'"></div>
-        </section>
+          <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
+          @if (isProfessorOrEmployee()) {
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
-        <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.tasksResponsibilities"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.tasks || '-'"></div>
-        </section>
-
-        <section>
-          <h2 class="section-title" jhiTranslate="jobDetailPage.sections.eligibilityCriteria"></h2>
-          <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.requirements || '-'"></div>
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
+          } @else {
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
+            <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="jobDescriptionForCurrentLang() || '-'"></div>
+          }
         </section>
       </div>
 
@@ -229,7 +228,7 @@
     <section class="mb-8">
       <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
       <div
-        class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded wrap-anywhere"
+        class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere"
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
       ></div>
     </section>

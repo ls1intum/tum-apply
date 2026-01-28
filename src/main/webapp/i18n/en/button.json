@@ -20,9 +20,7 @@
     "publish": "Publish",
     "chooseFile": "Choose File",
     "assign": "Assign",
-    "tooltip": {
-      "editDisabled": "Only drafts can be edited"
-    },
+    "noFurtherActions": "No further actions available",
     "replace": "Replace",
     "downloadPDF": "Export"
   }

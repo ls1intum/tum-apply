@@ -5,10 +5,11 @@
     "professor": "Are you a professor?",
     "applicant": "Are you an applicant?",
     "logout": "Logout",
-    "theme": "Toggle Theme",
+    "settings": "Settings",
+    "profileMenu": "Open profile menu",
     "universityName": "Technical University of Munich",
-    "lightMode": "Light Mode",
-    "darkMode": "Dark Mode",
-    "syncWithSystem": "Sync with Operating System"
+    "lightMode": "Light Theme",
+    "darkMode": "Dark Theme",
+    "systemMode": "System Theme"
   }
 }

@@ -1,4 +1,14 @@
-import { Component, DestroyRef, ViewEncapsulation, WritableSignal, afterNextRender, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ViewEncapsulation,
+  WritableSignal,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LANGUAGES } from 'app/config/language.constants';
@@ -17,13 +27,13 @@ import { ThemeService } from 'app/service/theme.service';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { SelectOption } from '../../atoms/select/select.component';
 import TranslateDirective from '../../../language/translate.directive';
+import { JhiMenuItem, MenuComponent } from '../../atoms/menu/menu.component';
 
 @Component({
   selector: 'jhi-header',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective],
+  imports: [CommonModule, ButtonComponent, FontAwesomeModule, TranslateModule, DynamicDialogModule, TranslateDirective, MenuComponent],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
@@ -37,8 +47,21 @@ export class HeaderComponent {
   router = inject(Router);
   themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  syncWithSystem = this.themeService.syncWithSystem;
   isDarkMode = computed(() => this.theme() === 'dark');
   showBorder = signal(false);
+  themeIcon = computed(() => {
+    if (this.syncWithSystem()) {
+      return 'custom-sun-moon';
+    }
+    return this.isDarkMode() ? 'moon' : 'custom-sun';
+  });
+  themeTooltip = computed(() => {
+    if (this.syncWithSystem()) {
+      return 'header.systemMode';
+    }
+    return this.isDarkMode() ? 'header.darkMode' : 'header.lightMode';
+  });
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
     { name: 'Dark', value: 'dark' },
@@ -72,6 +95,38 @@ export class HeaderComponent {
       this.accountService.hasAnyAuthority(['PROFESSOR']) ||
       (Array.isArray(auths) && auths.includes(UserShortDTO.RolesEnum.Professor))
     );
+  });
+
+  readonly headerButtonClass =
+    'inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
+
+  profileMenu = viewChild<MenuComponent>('profileMenu');
+  isProfileMenuOpen = signal(false);
+
+  profileMenuItems = computed<JhiMenuItem[]>(() => {
+    this.currentLanguage();
+    if (!this.user()) {
+      return [];
+    }
+
+    return [
+      {
+        label: 'header.settings',
+        icon: 'gear',
+        severity: 'primary',
+        command: () => {
+          this.navigateToSettings();
+        },
+      },
+      {
+        label: 'header.logout',
+        icon: 'right-from-bracket',
+        severity: 'danger',
+        command: () => {
+          this.logout();
+        },
+      },
+    ];
   });
 
   private destroyRef = inject(DestroyRef);
@@ -153,6 +208,15 @@ export class HeaderComponent {
     } else {
       console.warn(`Unsupported language: ${language}`);
     }
+  }
+
+  navigateToSettings(): void {
+    void this.router.navigate(['/settings']);
+  }
+
+  toggleProfileMenu(event: Event): void {
+    this.isProfileMenuOpen.update(state => !state);
+    this.profileMenu()?.toggle(event);
   }
 
   private setupBannerObserver(): void {

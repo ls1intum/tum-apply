@@ -20,7 +20,7 @@ import { DividerModule } from 'primeng/divider';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
 import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
-import { MessageModule } from 'primeng/message';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
 
 import ApplicationCreationPage1Component, {
   ApplicationCreationPage1Data,
@@ -60,7 +60,7 @@ const applyflow = 'entity.toast.applyFlow';
     ConfirmDialog,
     ApplicationDetailForApplicantComponent,
     TranslateDirective,
-    MessageModule,
+    MessageComponent,
   ],
   templateUrl: './application-creation-form.component.html',
   styleUrl: './application-creation-form.component.scss',
@@ -513,6 +513,11 @@ export default class ApplicationCreationFormComponent {
 
       // Clear local storage on successful server save
       this.clearLocalStorage();
+
+      // After application is sent, reload user data to update header with latest names
+      if (state === 'SENT') {
+        await this.accountService.loadUser();
+      }
 
       if (rerouteToOtherPage) {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);

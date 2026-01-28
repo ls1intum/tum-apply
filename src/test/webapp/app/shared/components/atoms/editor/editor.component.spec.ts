@@ -278,7 +278,7 @@ describe('EditorComponent', () => {
   });
 
   describe('Character limit edge cases', () => {
-    it('uses STANDARD_CHARACTER_LIMIT in charCounterColor when characterLimit is explicitly undefined', async () => {
+    it('should return normal color and not match limit when characterLimit is explicitly undefined', async () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
 
@@ -290,11 +290,11 @@ describe('EditorComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(comp.isOverCharLimit()).toBe(true);
-      expect(comp.charCounterColor()).toBe('char-counter-danger');
+      expect(comp.isOverCharLimit()).toBe(false);
+      expect(comp.charCounterColor()).toBe('char-counter-normal');
     });
 
-    it('applies (characterLimit ?? STANDARD_CHARACTER_LIMIT) + buffer in textChanged when characterLimit is undefined', async () => {
+    it('should not truncate text when characterLimit is undefined', async () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
 
@@ -306,8 +306,8 @@ describe('EditorComponent', () => {
 
       (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
 
-      expect(event.editor.setContents).toHaveBeenCalledTimes(1);
-      expect(event.editor.setSelection).toHaveBeenCalledTimes(1);
+      expect(event.editor.setContents).not.toHaveBeenCalled();
+      expect(event.editor.setSelection).not.toHaveBeenCalled();
     });
   });
 

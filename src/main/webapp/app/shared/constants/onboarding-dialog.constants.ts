@@ -10,7 +10,7 @@ export const ONBOARDING_FORM_DIALOG_CONFIG = {
   style: {
     'max-width': '95vw',
     'background-color': 'var(--p-background-default)',
-    'border-radius': '0.5rem',
+    'border-radius': 'var(--border-radius-xl)',
   },
   focusOnShow: false,
 } as const;

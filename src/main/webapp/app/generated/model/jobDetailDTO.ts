@@ -15,20 +15,19 @@ export interface JobDetailDTO {
     applicationState?: JobDetailDTO.ApplicationStateEnum;
     contractDuration?: number;
     createdAt: string;
-    description?: string;
     endDate?: string;
     fieldOfStudies?: string;
     fundingType?: string;
+    jobDescriptionDE?: string;
+    jobDescriptionEN?: string;
     jobId: string;
     lastModifiedAt: string;
     location?: string;
-    requirements?: string;
     researchArea?: string;
     researchGroup: ResearchGroup;
     startDate?: string;
     state?: JobDetailDTO.StateEnum;
     supervisingProfessorName: string;
-    tasks?: string;
     title: string;
     workload?: number;
 }

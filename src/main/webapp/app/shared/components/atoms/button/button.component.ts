@@ -64,7 +64,7 @@ export class ButtonComponent {
   buttonClass(): string {
     let sizeClass = '';
     if (this.label() === undefined) {
-      sizeClass = `rounded-xl ${this.size() === 'sm' ? 'rounded-full w-10 h-10 scale-85' : this.size() === 'md' ? 'w-10 h-10' : 'w-12 h-12'}`;
+      sizeClass = `rounded-md ${this.size() === 'sm' ? 'rounded-full w-10 h-10 scale-85' : this.size() === 'md' ? 'w-10 h-10' : 'w-12 h-12'}`;
     }
 
     if (this.size() === 'xs') {

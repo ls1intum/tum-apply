@@ -56,7 +56,7 @@ export class InfoBoxComponent {
    * Uses PrimeNG color variables for consistency.
    */
   containerClasses = computed(() => {
-    const baseClasses = 'flex items-center gap-3 p-4 border-l-4 rounded';
+    const baseClasses = 'flex items-center gap-3 p-4 border-l-4 rounded-sm';
     const severityClasses: Record<InfoBoxSeverity, string> = {
       primary: 'bg-[var(--p-background-surface)] border-[var(--p-primary-color)]',
       secondary: 'bg-[var(--p-border-default)] border-[var(--p-text-disabled)]',

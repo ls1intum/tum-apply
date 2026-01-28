@@ -11,20 +11,19 @@
 
 export interface JobDTO { 
     contractDuration?: number;
-    description?: string;
     endDate?: string;
     fieldOfStudies?: string;
     fundingType?: JobDTO.FundingTypeEnum;
     imageId?: string;
     imageUrl?: string;
+    jobDescriptionDE?: string;
+    jobDescriptionEN?: string;
     jobId: string;
     location?: JobDTO.LocationEnum;
-    requirements?: string;
     researchArea?: string;
     startDate?: string;
     state: JobDTO.StateEnum;
     supervisingProfessor: string;
-    tasks?: string;
     title: string;
     workload?: number;
 }

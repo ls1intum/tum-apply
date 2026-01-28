@@ -1,7 +1,7 @@
 @use '../../../content/scss/breakpoints' as bp;
 
-.title-with-label {
-  min-width: 0;
+.confirm-dialog {
+  display: none;
 }
 
 // Card styles now moved to global.scss for reusability
@@ -68,29 +68,5 @@
     @media (max-width: bp.$md) {
       height: 31.25rem;
     }
-  }
-}
-
-.action-buttons-section {
-  margin-top: 2rem;
-
-  .button-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    border-top: 0.05rem solid var(--p-border-default);
-    padding-top: 2rem;
-    gap: 1rem;
-  }
-
-  .left-buttons {
-    display: flex;
-    align-items: center;
-  }
-
-  .right-buttons {
-    display: flex;
-    align-items: center;
   }
 }

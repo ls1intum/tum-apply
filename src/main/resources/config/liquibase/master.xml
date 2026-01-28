@@ -31,6 +31,9 @@
   <include file="changelog/00000000000019_fix_bachelor_master_grade_bug.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000020_add_last_activity_at_to_users.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000021_add_version_to_interview_slots.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000022_merge_job_description_fields.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000023_add_assessment_to_interviewees.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000024_split_job_description_to_english_german.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints

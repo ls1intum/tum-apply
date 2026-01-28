@@ -19,21 +19,20 @@ export interface Job {
     contractDuration?: number;
     createdAt?: string;
     customFields?: Array<CustomField>;
-    description?: string;
     endDate?: string;
     fieldOfStudies?: string;
     fundingType?: Job.FundingTypeEnum;
     image?: Image;
+    jobDescriptionDE?: string;
+    jobDescriptionEN?: string;
     jobId?: string;
     lastModifiedAt?: string;
     location?: Job.LocationEnum;
-    requirements?: string;
     researchArea?: string;
     researchGroup?: ResearchGroup;
     startDate?: string;
     state?: Job.StateEnum;
     supervisingProfessor?: User;
-    tasks?: string;
     title?: string;
     workload?: number;
 }

@@ -285,6 +285,16 @@ const routes: Routes = [
         component: InterviewProcessDetailComponent,
         title: 'global.routes.interview.detail',
       },
+      {
+        path: 'process/:processId/interviewee/:intervieweeId/assessment',
+        canActivate: [UserRouteAccessService],
+        data: {
+          authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Employee],
+        },
+        loadComponent: () =>
+          import('./interview/interviewee-assessment/interviewee-assessment.component').then(m => m.IntervieweeAssessmentComponent),
+        title: 'global.routes.interview.assessment',
+      },
     ],
   },
   {

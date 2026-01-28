@@ -79,7 +79,7 @@ public class PDFExportService {
             .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
             .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
             .setOverviewDescriptionTitle(labels.get("jobDescription"))
-            .setOverviewDescription(job.description());
+            .setOverviewDescription(job.jobDescriptionEN());
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -176,7 +176,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, job.description(), job.tasks(), job.requirements());
+        addJobDetailsSection(builder, labels, job.jobDescriptionEN());
 
         // Research Group Section
         addResearchGroupSection(builder, job.researchGroup(), labels);
@@ -228,7 +228,7 @@ public class PDFExportService {
         );
 
         // Job Details Section
-        addJobDetailsSection(builder, labels, jobFormDTO.description(), jobFormDTO.tasks(), jobFormDTO.requirements());
+        addJobDetailsSection(builder, labels, jobFormDTO.jobDescriptionEN());
 
         // Metadata
         builder.setMetadata(buildMetadataText(labels));
@@ -261,20 +261,10 @@ public class PDFExportService {
             .addOverviewItem(labels.get("endDate"), getValue(data.endDate()));
     }
 
-    private void addJobDetailsSection(
-        PDFBuilder builder,
-        Map<String, String> labels,
-        String description,
-        String tasks,
-        String requirements
-    ) {
+    private void addJobDetailsSection(PDFBuilder builder, Map<String, String> labels, String jobDescription) {
         builder.startSectionGroup(labels.get("jobDetails"));
 
-        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(description));
-
-        builder.startInfoSection(labels.get("tasksResponsibilities")).addSectionContent(getValue(tasks));
-
-        builder.startInfoSection(labels.get("eligibilityCriteria")).addSectionContent(getValue(requirements));
+        builder.startInfoSection(labels.get("description")).addSectionContent(getValue(jobDescription));
     }
 
     private void addResearchGroupSection(PDFBuilder builder, ResearchGroup group, Map<String, String> labels) {

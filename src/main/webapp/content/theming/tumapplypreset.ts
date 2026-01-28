@@ -1,9 +1,10 @@
 import { definePreset } from '@primeuix/themes';
 import Lara from '@primeuix/themes/lara';
 
-import { sharedComponentConfig, sharedLightColorScheme } from './shared-theme-config';
+import { sharedComponentConfig, sharedLightColorScheme, sharedPrimitiveConfig } from './shared-theme-config';
 
 export const TUMApplyPreset = definePreset(Lara, {
+  primitive: sharedPrimitiveConfig,
   semantic: {
     primary: {
       50: '#f3f6fc',

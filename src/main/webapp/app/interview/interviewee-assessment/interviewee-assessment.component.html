@@ -1,0 +1,129 @@
+<!-- Page Container -->
+<div class="page-container min-h-screen flex flex-col">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex items-center justify-center h-64">
+      <p-progressSpinner styleClass="w-8 h-8" strokeWidth="4" />
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error(); as errorKey) {
+    <div class="flex items-center justify-center h-64">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <fa-icon icon="exclamation-triangle" class="text-4xl text-negative-default" />
+        <span class="text-text-secondary" [jhiTranslate]="errorKey">Error loading interviewee</span>
+        <jhi-button label="interview.assessment.back" [shouldTranslate]="true" variant="outlined" severity="primary" (click)="goBack()" />
+      </div>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!loading() && !error() && interviewee()) {
+    <div class="flex flex-col gap-6">
+      <!-- Header -->
+      <div class="page-header flex flex-row items-center">
+        <jhi-button [icon]="'arrow-left'" variant="text" severity="secondary" (click)="goBack()" />
+        <h1 class="h1-text" jhiTranslate="interview.assessment.title">Interview Assessment</h1>
+      </div>
+
+      <div class="flex flex-col xl:flex-row gap-8">
+        <!-- Left Column: Assessment Tools -->
+        <div class="flex-1 flex flex-col gap-6">
+          <!-- Rating Section -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-2">
+              <fa-icon icon="star" class="text-primary" />
+              <h3 class="text-lg font-bold text-text-primary mb-0" jhiTranslate="interview.assessment.rating.label">Rating</h3>
+            </div>
+
+            <p class="text-text-secondary text-sm mb-2" jhiTranslate="interview.assessment.rating.info">
+              Rate the application. This is not visible to the applicant.
+            </p>
+
+            <div class="flex items-center gap-4 h-10">
+              <jhi-rating [(rating)]="rating" [selectable]="true" class="flex-1" />
+            </div>
+            <span class="text-text-secondary text-sm" jhiTranslate="evaluation.details.ratingYourRatingLabel"
+              >Click a box to select your rating</span
+            >
+          </div>
+
+          <!-- Notes Section -->
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2">
+              <h3 class="text-lg font-semibold text-text-primary" jhiTranslate="interview.assessment.notes.label">Interview Note</h3>
+            </div>
+
+            <!-- Editor-->
+            <jhi-editor
+              [control]="notesControl"
+              [model]="notesControl.value"
+              fieldId="assessment-notes"
+              [characterLimit]="undefined"
+              [showGenderDecoderButton]="false"
+            />
+
+            <!-- Save button -->
+            <div class="flex justify-end">
+              <jhi-button label="entity.action.save" [shouldTranslate]="true" icon="save" [disabled]="saving()" (click)="saveNotes()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Vertical Divider -->
+        <p-divider layout="vertical" class="hidden xl:block h-auto !m-0" />
+
+        <!-- Right Column: Applicant Information -->
+        <div class="w-full xl:w-[30%] flex flex-col gap-6">
+          <!-- User Information Card -->
+          <div class="flex items-center gap-4 rounded-lg border border-border-default bg-background-default p-4 overflow-hidden">
+            <div class="flex flex-col min-w-0">
+              <span class="text-lg font-bold text-text-primary truncate">{{ applicantName() }}</span>
+              <span class="text-sm text-text-secondary truncate">{{ degreeName() }}</span>
+              <span class="text-sm text-text-secondary truncate">{{ universityName() }}</span>
+            </div>
+          </div>
+
+          <!-- Motivation Section -->
+          <jhi-section titleKey="evaluation.details.applicationMotivation" icon="rocket">
+            @if (motivation()) {
+              <div class="max-h-64 overflow-y-auto">
+                <jhi-prose [text]="motivation()" />
+              </div>
+            } @else {
+              <span class="text-sm text-text-secondary italic" jhiTranslate="global.none">None</span>
+            }
+          </jhi-section>
+
+          <!-- Skills Section -->
+          <jhi-section titleKey="evaluation.details.applicationSkills" icon="brain">
+            @if (skills()) {
+              <div class="max-h-64 overflow-y-auto">
+                <jhi-prose [text]="skills()" />
+              </div>
+            } @else {
+              <span class="text-sm text-text-secondary italic" jhiTranslate="global.none">None</span>
+            }
+          </jhi-section>
+
+          <!-- Interests Section -->
+          <jhi-section titleKey="evaluation.details.applicationProjects" icon="flask">
+            @if (interests()) {
+              <div class="max-h-64 overflow-y-auto">
+                <jhi-prose [text]="interests()" />
+              </div>
+            } @else {
+              <span class="text-sm text-text-secondary italic" jhiTranslate="global.none">None</span>
+            }
+          </jhi-section>
+
+          <!-- Documents Section -->
+          <jhi-section titleKey="evaluation.details.documentTitle" icon="file-lines">
+            <jhi-document-section [idsDTO]="documentIds()" [applicationId]="applicationId()" />
+          </jhi-section>
+        </div>
+      </div>
+    </div>
+  }
+</div>

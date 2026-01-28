@@ -353,8 +353,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 null,
                 null,
                 "Job Description",
-                null,
-                null,
+                "Stellenbeschreibung",
                 JobState.DRAFT,
                 null
             );
@@ -417,8 +416,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 3,
                 FundingType.FULLY_FUNDED,
                 "Description",
-                null,
-                null,
+                "Beschreibung",
                 JobState.DRAFT,
                 null
             );

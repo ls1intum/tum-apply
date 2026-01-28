@@ -38,6 +38,7 @@
         <jhi-interviewee-card
           (sendInvitation)="sendInvitation($event)"
           [interviewee]="interviewee"
+          [processId]="processId()"
           [sending]="sendingInvitationId() === interviewee.id"
         />
       }

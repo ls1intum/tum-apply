@@ -37,6 +37,13 @@
     <div class="page-header">
       <h1 jhiTranslate="myPositionsPage.header.title"></h1>
     </div>
+    <jhi-button
+      label="myPositionsPage.header.createButton"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateJob()"
+      [shouldTranslate]="true"
+    />
   </div>
   <div class="my-positions-container">
     <div class="body">
@@ -58,16 +65,7 @@
           },
         ]"
         [sortableFields]="sortableFields"
-      >
-        <!-- Content projection: This button is projected into the search-filter-sort-bar component's ng-content slot -->
-        <jhi-button
-          label="myPositionsPage.header.createButton"
-          icon="plus"
-          severity="primary"
-          (click)="onCreateJob()"
-          [shouldTranslate]="true"
-        />
-      </jhi-search-filter-sort-bar>
+      />
       <div class="table-wrapper">
         <jhi-dynamic-table
           [columns]="columns()"
@@ -95,13 +93,13 @@
         <div class="flex justify-end gap-1">
           <jhi-button [tooltip]="'button.view' | translate" icon="eye" variant="text" (click)="onViewJob(job.jobId)" />
           <jhi-button
-            [tooltip]="getMenuItems(job).length > 0 ? ('button.actions' | translate) : ('myPositionsPage.noFurtherActions' | translate)"
+            [tooltip]="getMenuItems()(job).length > 0 ? ('button.actions' | translate) : ('button.noFurtherActions' | translate)"
             icon="ellipsis-vertical"
             variant="text"
             (click)="menu.toggle($event)"
-            [disabled]="getMenuItems(job).length === 0"
+            [disabled]="getMenuItems()(job).length === 0"
           />
-          <jhi-menu #menu [items]="getMenuItems(job)" [shouldTranslate]="true" />
+          <jhi-menu #menu [items]="getMenuItems()(job)" [shouldTranslate]="true" />
         </div>
       </ng-template>
 

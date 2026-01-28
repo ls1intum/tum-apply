@@ -91,9 +91,8 @@ class JobResourceTest extends AbstractResourceTest {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getDescription(),
-            job.getTasks(),
-            job.getRequirements(),
+            job.getJobDescriptionEN(),
+            job.getJobDescriptionDE(),
             JobState.DRAFT,
             imageId
         );
@@ -187,8 +186,7 @@ class JobResourceTest extends AbstractResourceTest {
             12,
             FundingType.FULLY_FUNDED,
             "Build ML pipelines",
-            "data cleaning and model training",
-            "Python and TensorFlow",
+            "ML Pipeline erstellen",
             JobState.PUBLISHED,
             null
         );
@@ -213,9 +211,8 @@ class JobResourceTest extends AbstractResourceTest {
                 Job::getWorkload,
                 Job::getContractDuration,
                 Job::getFundingType,
-                Job::getDescription,
-                Job::getTasks,
-                Job::getRequirements,
+                Job::getJobDescriptionEN,
+                Job::getJobDescriptionDE,
                 Job::getState
             )
             .containsExactly(
@@ -230,8 +227,7 @@ class JobResourceTest extends AbstractResourceTest {
                 12,
                 FundingType.FULLY_FUNDED,
                 "Build ML pipelines",
-                "data cleaning and model training",
-                "Python and TensorFlow",
+                "ML Pipeline erstellen",
                 JobState.PUBLISHED
             );
     }
@@ -252,9 +248,8 @@ class JobResourceTest extends AbstractResourceTest {
             entry("workload", "oops"),
             entry("contractDuration", 12),
             entry("fundingType", "FULLY_FUNDED"),
-            entry("description", "desc"),
-            entry("tasks", "tasks"),
-            entry("requirements", "req"),
+            entry("jobDescriptionEN", "desc"),
+            entry("jobDescriptionDE", "desc"),
             entry("state", "PUBLISHED")
         );
 
@@ -278,8 +273,7 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
             null
         );
@@ -302,8 +296,7 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
             null
         );
@@ -328,8 +321,7 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.PARTIALLY_FUNDED,
             "Updated Description",
-            "Updated Tasks",
-            "Updated Requirements",
+            "Neue Beschreibung",
             JobState.DRAFT,
             null
         );
@@ -351,9 +343,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(updatedJob.getWorkload()).isEqualTo(updatedPayload.workload());
         assertThat(updatedJob.getContractDuration()).isEqualTo(updatedPayload.contractDuration());
         assertThat(updatedJob.getFundingType()).isEqualTo(updatedPayload.fundingType());
-        assertThat(updatedJob.getDescription()).isEqualTo(updatedPayload.description());
-        assertThat(updatedJob.getTasks()).isEqualTo(updatedPayload.tasks());
-        assertThat(updatedJob.getRequirements()).isEqualTo(updatedPayload.requirements());
+        assertThat(updatedJob.getJobDescriptionEN()).isEqualTo(updatedPayload.jobDescriptionEN());
+        assertThat(updatedJob.getJobDescriptionDE()).isEqualTo(updatedPayload.jobDescriptionDE());
         assertThat(updatedJob.getState()).isEqualTo(updatedPayload.state());
     }
 
@@ -373,8 +364,7 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
             null
         );
@@ -398,8 +388,7 @@ class JobResourceTest extends AbstractResourceTest {
             3,
             FundingType.FULLY_FUNDED,
             "desc",
-            "tasks",
-            "req",
+            "desc",
             JobState.DRAFT,
             null
         );
@@ -535,9 +524,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
-        assertThat(returnedJob.description()).isEqualTo(job.getDescription());
-        assertThat(returnedJob.tasks()).isEqualTo(job.getTasks());
-        assertThat(returnedJob.requirements()).isEqualTo(job.getRequirements());
+        assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
+        assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.state()).isEqualTo(job.getState());
     }
 
@@ -573,9 +561,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
-        assertThat(returnedJob.description()).isEqualTo(job.getDescription());
-        assertThat(returnedJob.tasks()).isEqualTo(job.getTasks());
-        assertThat(returnedJob.requirements()).isEqualTo(job.getRequirements());
+        assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
+        assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
         assertThat(returnedJob.endDate()).isEqualTo(job.getEndDate());
         assertThat(returnedJob.createdAt()).isEqualTo(job.getCreatedAt());

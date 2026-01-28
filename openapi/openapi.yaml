@@ -3,10 +3,19 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/ai/generate:
-    post:
+  /api/ai/generateJobDescriptionStream:
+    put:
       tags: [ai-resource]
-      operationId: generateJobApplicationDraft
+      operationId: generateJobApplicationDraftStream
+      parameters:
+      - name: lang
+        in: query
+        required: true
+        schema: {type: string}
+      - name: jobId
+        in: query
+        required: false
+        schema: {type: string}
       requestBody:
         content:
           application/json:
@@ -16,8 +25,34 @@ paths:
         '200':
           description: OK
           content:
+            text/event-stream:
+              schema:
+                type: array
+                items: {type: string}
+  /api/ai/translateJobDescriptionForJob:
+    put:
+      tags: [ai-resource]
+      operationId: translateJobDescriptionForJob
+      parameters:
+      - name: jobId
+        in: query
+        required: true
+        schema: {type: string}
+      - name: toLang
+        in: query
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema: {type: string}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
             application/json:
-              schema: {$ref: '#/components/schemas/AiResponseDTO'}
+              schema: {$ref: '#/components/schemas/AIJobDescriptionTranslationDTO'}
   /api/applications:
     put:
       tags: [application-resource]
@@ -103,6 +138,30 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageApplicationOverviewDTO'}
+  /api/applications/profile:
+    get:
+      tags: [application-resource]
+      operationId: getApplicantProfile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
+    put:
+      tags: [application-resource]
+      operationId: updateApplicantProfile
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ApplicantDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ApplicantDTO'}
   /api/applications/rename-document/{documentDictionaryId}:
     put:
       tags: [application-resource]
@@ -1108,6 +1167,49 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/IntervieweeDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}:
+    get:
+      tags: [interview-resource]
+      operationId: getIntervieweeDetails
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
+  /api/interviews/processes/{processId}/interviewees/{intervieweeId}/assessment:
+    put:
+      tags: [interview-resource]
+      operationId: updateAssessment
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: intervieweeId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UpdateAssessmentDTO'}
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/IntervieweeDetailDTO'}
   /api/interviews/processes/{processId}/send-invitations:
     post:
       tags: [interview-resource]
@@ -1881,6 +1983,10 @@ paths:
         '200': {description: OK}
 components:
   schemas:
+    AIJobDescriptionTranslationDTO:
+      type: object
+      properties:
+        translatedText: {type: string}
     AcceptDTO:
       type: object
       properties:
@@ -1903,10 +2009,6 @@ components:
           minItems: 1
         researchGroupId: {type: string, format: uuid}
       required: [keycloakUsers]
-    AiResponseDTO:
-      type: object
-      properties:
-        jobDescription: {type: string}
     Applicant:
       type: object
       properties:
@@ -2268,7 +2370,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2279,7 +2381,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2290,7 +2392,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2304,7 +2406,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2412,6 +2514,21 @@ components:
           type: string
           enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
         user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
+    IntervieweeDetailDTO:
+      type: object
+      properties:
+        application: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+        applicationId: {type: string, format: uuid}
+        assessmentNotes: {type: string}
+        documents: {$ref: '#/components/schemas/ApplicationDocumentIdsDTO'}
+        id: {type: string, format: uuid}
+        lastInvited: {type: string, format: date-time}
+        rating: {type: integer, format: int32}
+        scheduledSlot: {$ref: '#/components/schemas/InterviewSlotDTO'}
+        state:
+          type: string
+          enum: [UNCONTACTED, INVITED, SCHEDULED, COMPLETED]
+        user: {$ref: '#/components/schemas/IntervieweeUserDTO'}
     IntervieweeUserDTO:
       type: object
       properties:
@@ -2431,7 +2548,6 @@ components:
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomField'}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2439,13 +2555,14 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         image: {$ref: '#/components/schemas/Image'}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
@@ -2453,7 +2570,6 @@ components:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {$ref: '#/components/schemas/User'}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
     JobCardDTO:
@@ -2480,7 +2596,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2489,19 +2604,19 @@ components:
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
         imageUrl: {type: string}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [jobId, state, supervisingProfessor, title]
@@ -2515,14 +2630,14 @@ components:
             INVITED, SCHEDULED, COMPLETED]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         lastModifiedAt: {type: string, format: date-time}
         location: {type: string}
-        requirements: {type: string}
         researchArea: {type: string}
         researchGroup: {$ref: '#/components/schemas/ResearchGroup'}
         startDate: {type: string, format: date}
@@ -2530,7 +2645,6 @@ components:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessorName: {type: string}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [createdAt, jobId, lastModifiedAt, researchGroup, supervisingProfessorName,
@@ -2548,7 +2662,6 @@ components:
       type: object
       properties:
         contractDuration: {type: integer, format: int32}
-        description: {type: string}
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType:
@@ -2556,19 +2669,19 @@ components:
           enum: [FULLY_FUNDED, PARTIALLY_FUNDED, SCHOLARSHIP, SELF_FUNDED, INDUSTRY_SPONSORED,
             GOVERNMENT_FUNDED, RESEARCH_GRANT]
         imageId: {type: string, format: uuid}
+        jobDescriptionDE: {type: string}
+        jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
         location:
           type: string
           enum: [GARCHING, GARCHING_HOCHBRUECK, HEILBRONN, MUNICH, STRAUBING, WEIHENSTEPHAN,
             SINGAPORE]
-        requirements: {type: string}
         researchArea: {type: string}
         startDate: {type: string, format: date}
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
         supervisingProfessor: {type: string, format: uuid}
-        tasks: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
       required: [fieldOfStudies, location, state, supervisingProfessor, title]
@@ -2913,6 +3026,12 @@ components:
         projects: {type: string}
         specialSkills: {type: string}
       required: [applicant, applicationId, applicationState]
+    UpdateAssessmentDTO:
+      type: object
+      properties:
+        clearRating: {type: boolean}
+        notes: {type: string}
+        rating: {type: integer, format: int32, maximum: 2, minimum: -2}
     UpdatePasswordDTO:
       type: object
       properties:

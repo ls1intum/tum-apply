@@ -1,4 +1,5 @@
 import { Component, computed, inject, input, output } from '@angular/core';
+import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IntervieweeDTO } from 'app/generated/model/intervieweeDTO';
@@ -19,6 +20,7 @@ import { formatDate, formatTimeRange, getLocale } from 'app/shared/util/date-tim
 export class IntervieweeCardComponent {
   // Inputs
   interviewee = input.required<IntervieweeDTO>();
+  processId = input.required<string>();
   sending = input<boolean>(false);
 
   // Outputs
@@ -47,8 +49,12 @@ export class IntervieweeCardComponent {
   } as const;
 
   // Services
+  private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
-
-  // Computed locale
   private locale = computed(() => getLocale(this.translateService));
+
+  // Methods
+  navigateToAssessment(): void {
+    void this.router.navigate(['/interviews', 'process', this.processId(), 'interviewee', this.interviewee().id, 'assessment']);
+  }
 }

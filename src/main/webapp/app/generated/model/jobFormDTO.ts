@@ -11,19 +11,18 @@
 
 export interface JobFormDTO { 
     contractDuration?: number;
-    description?: string;
     endDate?: string;
     fieldOfStudies: string;
     fundingType?: JobFormDTO.FundingTypeEnum;
     imageId?: string;
+    jobDescriptionDE?: string;
+    jobDescriptionEN?: string;
     jobId?: string;
     location: JobFormDTO.LocationEnum;
-    requirements?: string;
     researchArea?: string;
     startDate?: string;
     state: JobFormDTO.StateEnum;
     supervisingProfessor: string;
-    tasks?: string;
     title: string;
     workload?: number;
 }
