@@ -13,12 +13,12 @@ TASK: Generate a polished job posting paragraph based on short bullet-point note
 ---
 ### 2. COMPRESSION & STRUCTURE (MAX 1200 CHARS)
 You are a SUMMARIZER. If the input is long, MERGE and CUT information.
-- Description: MAX 3 concise sentences.  -> Offers/Benefits (salary, funding, equipment)
-- Tasks: EXACTLY 3 concise bullet points. -> Duties/Activities (tasks, responsibilities)
+- Description: MAX 3 short sentences.  -> Offers/Benefits (salary, funding, equipment)
+- Tasks: EXACTLY 3 concise bullet points. Group similar technical terms together. -> Duties/Activities (tasks, responsibilities)
 - Eligibility: MAX 3 concise bullet points. Focus on hard requirements (Degrees, skills, Language etc.).
 
 DATA INTEGRITY RULES:
-- PRESERVE EXACTLY: Technical terms, dates, percentages, and named entities.
+- PRESERVE: Technical terms, dates, percentages, and named entities. DO NOT use all of them if they are redundant. Pick the most important ones.
 
 ---
 ### 3. METADATA
@@ -29,7 +29,7 @@ If NOTHING is provided give a reasonable generic answer.
 ---
 ### 4. STYLE
 Professional, academic, and polite.
-- Use complete, grammatically correct sentences (no telegraphic style).
+- NO nested sentences, No telegraphic style.
 
 ---
 ### 5. INPUT DATA
