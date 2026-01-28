@@ -145,7 +145,7 @@
                 #jobDescriptionEditor
                 fieldId="jobDescription"
                 label="jobCreationForm.positionDetailsSection.jobDescription.label"
-                placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
+                [placeholder]="jobDescriptionPlaceholder()"
                 helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
                 tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
                 [required]="true"
@@ -204,7 +204,7 @@
     </div>
   </ng-template>
 
-  <!-- Step 2: Position Details -->
+  <!-- Step 2: Employment Terms -->
   <ng-template #panel2>
     <div class="h-full min-h-[calc(100vh-300px)] flex flex-column px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="positionDetailsForm" class="w-full">

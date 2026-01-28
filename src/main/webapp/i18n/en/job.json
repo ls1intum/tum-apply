@@ -7,7 +7,7 @@
       },
       "steps": {
         "basicInfo": "Basic Information",
-        "positionDetails": "Employment Terms",
+        "employmentTerms": "Employment Terms",
         "imageSelection": "Job Banner Image",
         "additionalInfo": "Additional Information",
         "summary": "Summary"
@@ -124,18 +124,20 @@
       }
     },
     "positionDetailsSection": {
-      "description": "Describe the research focus, main tasks, and expectations for the candidate. Define the minimum requirements and any preferred qualifications for applicants.",
-      "languageInfo": "Please draft the description in either German or English. An AI-generated translation will automatically be created for the other language, which you can review and edit as needed. You can not switch between both languages while the AI is translating.",
+      "description": "Describe the research focus, main tasks, and expectations for the candidate. Specify minimum requirements and preferred qualifications.",
+      "languageInfo": "Please choose and write in German or English, the other language is auto-translated and can be reviewed or edited. Switching languages is disabled during translation.",
       "jobDescription": {
         "label": "Job Description",
-        "placeholder": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
+        "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
+        "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Gib die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
         "descriptionHelper": "Use the template above to structure your job description clearly for applicants.",
         "toolTipText": "Help applicants understand the research focus, tasks, and expected qualifications.",
-        "template": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
+        "templateEN": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
+        "templateDE": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, Ziele und Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die Hauptverantwortlichkeiten des Kandidaten auf.</p><br><p><strong>Qualifikationskriterien</strong></p><p>TODO: Gib die Mindestanforderungen an (Abschluss, Fähigkeiten, Sprache, etc.)</p>",
         "aiHeaderText": "AI Assistant",
         "aiButton1": "Write With AI",
         "aiButton2": "Rewrite With AI",
-        "aiHelperText": "Write bullet points to generate your first job draft. Fill in fields above\nfor better results. AI generation may take a moment.",
+        "aiHelperText": "Add bullet points and get a first draft.\nFor better results, fill in the fields above. AI generation may take a moment.",
         "aiFillerText": "Generating...",
         "aiToggle": "Enable AI",
         "languageEnglish": "English",
@@ -336,8 +338,9 @@
       "location": "Location:"
     },
     "sections": {
-      "jobDescriptionEN": "English Job Description",
-      "jobDescriptionDE": "German Job Description",
+      "jobDescription": "Job Details",
+      "jobDescriptionEN": "English Job Details",
+      "jobDescriptionDE": "German Job Details",
       "tasksResponsibilities": "Tasks & Responsibilities",
       "eligibilityCriteria": "Eligibility Criteria",
       "dataProtection": "Data Protection Information"
