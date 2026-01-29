@@ -403,6 +403,37 @@ describe('JobDetailComponent', () => {
     expect(spy).toHaveBeenCalledWith('jobDetailPage.noData');
   });
 
+  it('should return English job description when current language is en', () => {
+    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as JobDetails;
+    translate.use('en');
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
+    expect(result).toBe('<p>English</p>');
+  });
+
+  it('should return German job description when current language is de', () => {
+    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as JobDetails;
+    translate.use('de');
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
+    expect(result).toBe('<p>Deutsch</p>');
+  });
+
+  it('should fall back to the other language when job description of current language is empty', () => {
+    const job = { jobDescriptionEN: '   ', jobDescriptionDE: '<p>Deutsch Fallback</p>' } as JobDetails;
+    translate.use('en');
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
+    expect(result).toBe('<p>Deutsch Fallback</p>');
+  });
+
+  it('should returns empty string when job is null or undefined', () => {
+    component.jobDetails.set(null);
+    expect(component.jobDescriptionForCurrentLang()).toBe('');
+    (component as any).jobDetails.set(undefined);
+    expect(component.jobDescriptionForCurrentLang()).toBe('');
+  });
+
   it('should return null from primaryActionButton when previewData exists', () => {
     const previewSignal = signal({ title: 'Preview job' } as JobFormDTO);
     (component as unknown as { previewData: () => typeof previewSignal }).previewData = () => previewSignal;
