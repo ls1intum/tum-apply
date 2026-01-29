@@ -7,12 +7,13 @@ import { InterviewOverviewDTO } from 'app/generated/model/interviewOverviewDTO';
 import { UpcomingInterviewDTO } from 'app/generated/model/upcomingInterviewDTO';
 import { InterviewResourceApiService } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 import { UpcomingInterviewCardComponent } from './upcoming-interviews-widget/upcoming-interview-card/upcoming-interview-card.component';
 
 @Component({
   selector: 'jhi-interview-processes-overview',
-  imports: [TranslateModule, TranslateDirective, InterviewProcessCardComponent, UpcomingInterviewCardComponent],
+  imports: [TranslateModule, TranslateDirective, InterviewProcessCardComponent, UpcomingInterviewCardComponent, InfoBoxComponent],
   templateUrl: './interview-processes-overview.component.html',
 })
 export class InterviewProcessesOverviewComponent {

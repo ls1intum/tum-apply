@@ -13,10 +13,12 @@
       </div>
 
       @if (error()) {
-        <div class="flex flex-col items-center justify-center border border-border-default rounded-lg p-12">
-          <i class="pi pi-exclamation-triangle text-[var(--p-danger-500)] text-4xl mb-3"></i>
-          <p class="text-secondary-default text-sm" jhiTranslate="interview.overview.error.failedToLoad"></p>
-        </div>
+        <jhi-info-box
+          message="interview.overview.error.failedToLoad"
+          [shouldTranslate]="true"
+          severity="danger"
+          icon="exclamation-triangle"
+        />
       }
 
       <!-- Loading State -->
@@ -56,10 +58,12 @@
 
       <!-- Error State -->
       @if (error()) {
-        <div class="flex flex-col items-center justify-center border border-border-default rounded-lg p-6 text-center">
-          <i class="pi pi-exclamation-triangle text-negative text-2xl mb-2"></i>
-          <p class="text-text-secondary text-sm" jhiTranslate="interview.overview.error.failedToLoad"></p>
-        </div>
+        <jhi-info-box
+          message="interview.overview.error.failedToLoad"
+          [shouldTranslate]="true"
+          severity="danger"
+          icon="exclamation-triangle"
+        />
       }
 
       <!-- Loading State -->
@@ -71,12 +75,7 @@
 
       <!-- Empty State -->
       @if (!loading() && !error() && upcomingInterviews().length === 0) {
-        <div
-          class="bg-background-surface border border-dashed border-border-default rounded-lg py-12 px-6 flex flex-col items-center text-center"
-        >
-          <i class="pi pi-calendar text-text-tertiary text-2xl mb-3"></i>
-          <p class="text-sm text-text-secondary" jhiTranslate="interview.overview.upcoming.empty"></p>
-        </div>
+        <jhi-info-box message="interview.overview.upcoming.empty" [shouldTranslate]="true" severity="secondary" icon="calendar" />
       }
 
       <!-- List State -->
