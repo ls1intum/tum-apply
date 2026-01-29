@@ -14,7 +14,7 @@ import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 describe('PrivacyPageComponent', () => {
   let fixture: ComponentFixture<PrivacyPageComponent>;
   let component: PrivacyPageComponent;
-  let mockTranslate: any;
+  let mockTranslate: TranslateService;
 
   const mockToast = createToastServiceMock();
   const mockUserDataExportService = {

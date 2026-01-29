@@ -40,7 +40,7 @@ export class PrivacyPageComponent {
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly currentLang = signal<string>(this.translateService.getCurrentLang());
-  private readonly currentExportStatus = signal<DataExportStatusDTO.StatusEnum | null | undefined>(null);
+  private readonly currentExportStatus = signal<DataExportStatusDTO.StatusEnum | null>(null);
   private readonly cooldownSeconds = signal<number>(0);
 
   constructor() {
@@ -87,7 +87,7 @@ export class PrivacyPageComponent {
   private async refreshStatus(): Promise<void> {
     try {
       const status = await firstValueFrom(this.userDataExportService.getDataExportStatus());
-      this.currentExportStatus.set(status.status);
+      this.currentExportStatus.set(status.status ?? null);
       this.cooldownSeconds.set(status.cooldownSeconds ?? 0);
     } catch {
       // ignore status fetch errors
