@@ -9,7 +9,7 @@ on:
       - 'src/main/webapp/i18n/**'
 
 concurrency:
-  group: coverage-${{ github.event.pull_request.number }}
+  group: translation-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
