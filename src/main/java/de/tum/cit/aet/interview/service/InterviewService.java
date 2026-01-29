@@ -664,6 +664,8 @@ public class InterviewService {
 
         for (Interviewee interviewee : interviewees) {
             try {
+                // Set job to prevent LazyInitializationException in async email sending
+                interviewee.getApplication().setJob(job);
                 sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
