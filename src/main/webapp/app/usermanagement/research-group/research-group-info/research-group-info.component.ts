@@ -40,7 +40,6 @@ export interface ResearchGroupFormData {
     InfoBoxComponent,
   ],
   templateUrl: './research-group-info.component.html',
-  styleUrl: './research-group-info.component.scss',
 })
 export class ResearchGroupInfoComponent {
   // Effect to initialize when user data becomes available

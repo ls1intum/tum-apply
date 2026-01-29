@@ -1,16 +1,12 @@
 <div class="page-container">
-  <div class="page-header">
-    <h1 jhiTranslate="researchGroup.emailTemplatesHeader">Applications - Overview</h1>
+  <div class="header-container">
+    <div class="page-header">
+      <h1 jhiTranslate="researchGroup.emailTemplatesHeader">Applications - Overview</h1>
+    </div>
+    <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
   </div>
 
   <div class="table-wrapper">
-    <div class="actions flex justify-end gap-4">
-      <jhi-button label="researchGroup.emailTemplates.newTemplate" icon="plus" [shouldTranslate]="true" (click)="navigateToCreate()" />
-      <!-- Will be added later
-      <jhi-button label="researchGroup.emailTemplates.signature" variant="outlined" icon="pen-nib" [shouldTranslate]="true" />
-      -->
-    </div>
-
     <jhi-dynamic-table
       [columns]="columns()"
       [data]="tableData()"

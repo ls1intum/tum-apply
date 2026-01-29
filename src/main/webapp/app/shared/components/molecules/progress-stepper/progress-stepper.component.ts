@@ -89,6 +89,7 @@ export class ProgressStepperComponent {
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {
       this.currentStep.set(index);
+      this.scrollToTop();
     }
   }
 
@@ -111,5 +112,12 @@ export class ProgressStepperComponent {
         };
       }),
     };
+  }
+
+  private scrollToTop(): void {
+    // Uses timeout to allow the view to update before scrolling.
+    setTimeout(() => {
+      document.querySelector('.content')?.scrollTo({ top: 0, behavior: 'instant' });
+    }, 0);
   }
 }
