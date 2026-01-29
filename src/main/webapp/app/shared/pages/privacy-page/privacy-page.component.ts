@@ -1,6 +1,7 @@
-import { Component, ViewEncapsulation, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { UserDataExportResourceApiService } from 'app/generated/api/api';
@@ -21,7 +22,9 @@ export class PrivacyPageComponent {
   readonly exportButtonDisabled = computed(
     () => this.currentExportStatus() === DataExportStatusDTO.StatusEnum.InCreation || this.cooldownSeconds() > 0,
   );
+
   readonly tooltip = computed(() => {
+    this.currentLang(); // re-run when language changes to update translation
     if (!this.exportButtonDisabled()) return undefined;
 
     if (this.currentExportStatus() === DataExportStatusDTO.StatusEnum.InCreation) {
@@ -37,11 +40,15 @@ export class PrivacyPageComponent {
   protected readonly userDataExportService = inject(UserDataExportResourceApiService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly currentLang = signal<string>(this.translateService.getCurrentLang());
   private readonly currentExportStatus = signal<DataExportStatusDTO.StatusEnum | null | undefined>(null);
   private readonly cooldownSeconds = signal<number>(0);
 
   constructor() {
     void this.refreshStatus();
+
+    this.translateService.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(event => this.currentLang.set(event.lang));
   }
 
   /**
