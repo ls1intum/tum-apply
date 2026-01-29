@@ -9,5 +9,7 @@ public record StaffDataDTO(
     List<ResearchGroupRoleExportDTO> researchGroupRoles,
     List<ApplicationReviewExportDTO> reviews,
     List<InternalCommentExportDTO> comments,
-    List<RatingExportDTO> ratings
+    List<RatingExportDTO> ratings,
+    List<InterviewProcessExportDTO> interviewProcesses,
+    List<InterviewSlotExportDTO> interviewSlots
 ) {}
