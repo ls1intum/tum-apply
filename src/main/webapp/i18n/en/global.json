@@ -106,6 +106,9 @@
         }
       }
     },
+    "stepper": {
+      "progress": "Step {{ current }} of {{ total }}"
+    },
     "input": {
       "error": {
         "required": "This field is required.",
