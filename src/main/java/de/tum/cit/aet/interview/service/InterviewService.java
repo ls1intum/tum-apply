@@ -847,4 +847,15 @@ public class InterviewService {
             documentDictionaryService.getDocumentIdsDTO(application)
         );
     }
+
+    /**
+     * Retrieves all interview processes for a given professor.
+     *
+     * @param user the professor user
+     * @return list of interview processes
+     */
+    public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
+        List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
+        return processes == null ? List.of() : processes;
+    }
 }

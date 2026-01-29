@@ -97,6 +97,23 @@ public interface IntervieweeRepository extends TumApplyJpaRepository<Interviewee
     List<Interviewee> findByInterviewProcessIdInWithSlots(@Param("processIds") List<UUID> processIds);
 
     /**
+     * Finds all interviewees for a given applicant user id with process, job and slot data.
+     *
+     * @param userId the applicant user id
+     * @return list of interviewees with process/job and slot data
+     */
+    @Query(
+        """
+        SELECT DISTINCT i FROM Interviewee i
+        JOIN FETCH i.interviewProcess ip
+        JOIN FETCH ip.job j
+        LEFT JOIN FETCH i.slots
+        WHERE i.application.applicant.user.userId = :userId
+        """
+    )
+    List<Interviewee> findByApplicantUserIdWithDetails(@Param("userId") UUID userId);
+
+    /**
      * Finds a single interviewee by ID within a process.
      *
      * @param intervieweeId the ID of the interviewee
