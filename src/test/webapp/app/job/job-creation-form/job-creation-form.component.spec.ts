@@ -13,6 +13,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import * as DropdownOptions from 'app/job/dropdown-options';
+import { unescapeJsonString } from 'app/shared/util/util';
 
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
@@ -23,6 +24,7 @@ import { createLocationMock, provideLocationMock } from '../../../util/location.
 import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../util/activated-route.mock';
 import { createJobResourceApiServiceMock, provideJobResourceApiServiceMock } from '../../../util/job-resource-api.service.mock';
 import { createImageResourceApiServiceMock, provideImageResourceApiServiceMock } from '../../../util/image-resource-api.service.mock';
+import { createAiStreamingServiceMock, provideAiStreamingServiceMock } from '../../../util/ai-streaming.service.mock';
 
 interface Step {
   name: string;
@@ -103,6 +105,9 @@ type ComponentPrivate = {
   panel1: () => object;
   panel2: () => object;
   savingStatePanel: () => object;
+  extractJobDescriptionFromStream: (content: string) => string | null;
+  unescapeJsonString: (str: string) => string;
+  loadTranslatedDescription: (targetLang: 'en' | 'de', maxRetries?: number, delayMs?: number) => Promise<void>;
 };
 
 function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
@@ -119,6 +124,7 @@ describe('JobCreationFormComponent', () => {
   let mockRouter: ReturnType<typeof createRouterMock>;
   let mockLocation: ReturnType<typeof createLocationMock>;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
+  let mockAiStreamingService: ReturnType<typeof createAiStreamingServiceMock>;
 
   beforeEach(async () => {
     mockJobService = createJobResourceApiServiceMock();
@@ -145,6 +151,8 @@ describe('JobCreationFormComponent', () => {
     mockRouter = createRouterMock();
     mockLocation = createLocationMock();
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
+    mockAiStreamingService = createAiStreamingServiceMock();
+    mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
@@ -158,6 +166,7 @@ describe('JobCreationFormComponent', () => {
         provideRouterMock(mockRouter),
         provideTranslateMock(),
         provideFontAwesomeTesting(),
+        provideAiStreamingServiceMock(mockAiStreamingService),
       ],
     })
       .overrideComponent(JobCreationFormComponent, {
@@ -752,7 +761,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoValid.set(false);
       component.positionDetailsValid.set(false);
       let steps = getPrivate(component).buildStepData();
-      expect(steps.find(s => s.name.includes('positionDetails'))?.disabled).toBe(true);
+      expect(steps.find(s => s.name.includes('employmentTerms'))?.disabled).toBe(true);
       expect(steps.find(s => s.name.includes('summary'))?.disabled).toBe(true);
       expect(steps[0].buttonGroupNext?.[0].disabled).toBe(true);
 
@@ -813,6 +822,235 @@ describe('JobCreationFormComponent', () => {
     ])('should $desc', ({ options, search, expected }) => {
       const result = getPrivate(component).findDropdownOption(options, search);
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('AI Generation Methods', () => {
+    describe('extractJobDescriptionFromStream', () => {
+      it('should return null for empty content', () => {
+        const result = getPrivate(component).extractJobDescriptionFromStream('');
+        expect(result).toBeNull();
+      });
+
+      it('should return null for whitespace-only content', () => {
+        const result = getPrivate(component).extractJobDescriptionFromStream('   ');
+        expect(result).toBeNull();
+      });
+
+      it('should parse complete valid JSON', () => {
+        const json = '{"jobDescription":"<p>Test content</p>"}';
+        const result = getPrivate(component).extractJobDescriptionFromStream(json);
+        expect(result).toBe('<p>Test content</p>');
+      });
+
+      it('should parse JSON with escaped characters', () => {
+        const json = '{"jobDescription":"Line1\\nLine2\\tTabbed"}';
+        const result = getPrivate(component).extractJobDescriptionFromStream(json);
+        expect(result).toBe('Line1\nLine2\tTabbed');
+      });
+
+      it('should parse JSON with escaped quotes', () => {
+        const json = '{"jobDescription":"He said \\"Hello\\""}';
+        const result = getPrivate(component).extractJobDescriptionFromStream(json);
+        expect(result).toBe('He said "Hello"');
+      });
+
+      it('should handle incomplete JSON gracefully', () => {
+        const partialJson = '{"jobDescription":"<p>Partial content';
+        const result = getPrivate(component).extractJobDescriptionFromStream(partialJson);
+        expect(result).toBe('<p>Partial content');
+      });
+
+      it('should handle JSON with trailing incomplete parts', () => {
+        const partialJson = '{"jobDescription":"<p>Content</p>"';
+        const result = getPrivate(component).extractJobDescriptionFromStream(partialJson);
+        expect(result).toBe('<p>Content</p>');
+      });
+
+      it('should return content as-is if not JSON format', () => {
+        const plainHtml = '<p>Plain HTML content</p>';
+        const result = getPrivate(component).extractJobDescriptionFromStream(plainHtml);
+        expect(result).toBe('<p>Plain HTML content</p>');
+      });
+
+      it('should handle complex HTML content in JSON', () => {
+        const json = '{"jobDescription":"<p><strong>Bold</strong> and <em>italic</em></p>"}';
+        const result = getPrivate(component).extractJobDescriptionFromStream(json);
+        expect(result).toBe('<p><strong>Bold</strong> and <em>italic</em></p>');
+      });
+    });
+
+    describe('unescapeJsonString', () => {
+      it('should unescape newline characters', () => {
+        const result = unescapeJsonString('Line1\\nLine2');
+        expect(result).toBe('Line1\nLine2');
+      });
+
+      it('should unescape carriage return characters', () => {
+        const result = unescapeJsonString('Line1\\rLine2');
+        expect(result).toBe('Line1\rLine2');
+      });
+
+      it('should unescape tab characters', () => {
+        const result = unescapeJsonString('Col1\\tCol2');
+        expect(result).toBe('Col1\tCol2');
+      });
+
+      it('should unescape escaped quotes', () => {
+        const result = unescapeJsonString('He said \\"Hi\\"');
+        expect(result).toBe('He said "Hi"');
+      });
+
+      it('should handle multiple escape sequences', () => {
+        const result = unescapeJsonString('Line1\\nLine2\\tTabbed\\rReturn');
+        expect(result).toBe('Line1\nLine2\tTabbed\rReturn');
+      });
+
+      it('should return unchanged string if no escapes', () => {
+        const result = unescapeJsonString('Plain text');
+        expect(result).toBe('Plain text');
+      });
+    });
+
+    describe('loadTranslatedDescription', () => {
+      it('should update jobDescriptionDE signal when loading German translation', async () => {
+        component.jobId.set('job123');
+        mockJobService.getJobById.mockReturnValue(
+          of({
+            jobId: 'job123',
+            jobDescriptionEN: '<p>English</p>',
+            jobDescriptionDE: '<p>Deutsch</p>',
+          }),
+        );
+
+        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
+
+        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
+      });
+
+      it('should update jobDescriptionEN signal when loading English translation', async () => {
+        component.jobId.set('job123');
+        mockJobService.getJobById.mockReturnValue(
+          of({
+            jobId: 'job123',
+            jobDescriptionEN: '<p>English</p>',
+            jobDescriptionDE: '<p>Deutsch</p>',
+          }),
+        );
+
+        await getPrivate(component).loadTranslatedDescription('en', 1, 10);
+
+        expect(component.jobDescriptionEN()).toBe('<p>English</p>');
+      });
+
+      it('should not update signals if jobId is not set', async () => {
+        component.jobId.set('');
+        const originalEN = component.jobDescriptionEN();
+        const originalDE = component.jobDescriptionDE();
+
+        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
+
+        expect(component.jobDescriptionEN()).toBe(originalEN);
+        expect(component.jobDescriptionDE()).toBe(originalDE);
+        expect(mockJobService.getJobById).not.toHaveBeenCalled();
+      });
+
+      it('should retry when translation is empty', async () => {
+        component.jobId.set('job123');
+        let callCount = 0;
+        mockJobService.getJobById.mockImplementation(() => {
+          callCount++;
+          if (callCount < 2) {
+            return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '' });
+          }
+          return of({ jobId: 'job123', jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' });
+        });
+
+        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
+
+        expect(callCount).toBe(2);
+        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
+      });
+
+      it('should retry on API error', async () => {
+        component.jobId.set('job123');
+        let callCount = 0;
+        mockJobService.getJobById.mockImplementation(() => {
+          callCount++;
+          if (callCount < 2) {
+            return throwError(() => new Error('API Error'));
+          }
+          return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '<p>Deutsch</p>' });
+        });
+
+        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
+
+        expect(callCount).toBe(2);
+      });
+    });
+
+    describe('generateJobApplicationDraft', () => {
+      beforeEach(() => {
+        // Reset the mock before each test
+        mockAiStreamingService.generateJobDescriptionStream.mockReset();
+        mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+      });
+
+      it('should show error toast on generation failure', async () => {
+        component.jobId.set('job123');
+        fillValidJobForm(component);
+
+        const mockEditor = { forceUpdate: vi.fn() };
+        Object.defineProperty(component, 'jobDescriptionEditor', {
+          value: () => mockEditor,
+          configurable: true,
+        });
+
+        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('Generic error'));
+
+        await component.generateJobApplicationDraft();
+
+        expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.toastMessages.saveFailed');
+      });
+
+      it('should restore original content on error', async () => {
+        component.jobId.set('job123');
+        fillValidJobForm(component);
+        const originalContent = '<p>Original content</p>';
+        component.basicInfoForm.get('jobDescription')?.setValue(originalContent);
+
+        const forceUpdateSpy = vi.fn();
+        const mockEditor = { forceUpdate: forceUpdateSpy };
+        Object.defineProperty(component, 'jobDescriptionEditor', {
+          value: () => mockEditor,
+          configurable: true,
+        });
+
+        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('HTTP error'));
+
+        await component.generateJobApplicationDraft();
+
+        // The last forceUpdate should restore the original content
+        const lastCall = forceUpdateSpy.mock.calls[forceUpdateSpy.mock.calls.length - 1];
+        expect(lastCall[0]).toBe(originalContent);
+      });
+
+      it('should set rewriteButtonSignal to true when generating', async () => {
+        component.jobId.set('job123');
+        fillValidJobForm(component);
+
+        const mockEditor = { forceUpdate: vi.fn() };
+        Object.defineProperty(component, 'jobDescriptionEditor', {
+          value: () => mockEditor,
+          configurable: true,
+        });
+
+        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('fail'));
+
+        await component.generateJobApplicationDraft();
+
+        expect(component.rewriteButtonSignal()).toBe(true);
+      });
     });
   });
 });

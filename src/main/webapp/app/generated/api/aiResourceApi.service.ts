@@ -16,8 +16,6 @@ import { HttpClient, HttpParams,
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { AIJobDescriptionDTO } from '../model/aIJobDescriptionDTO';
-// @ts-ignore
 import { AIJobDescriptionTranslationDTO } from '../model/aIJobDescriptionTranslationDTO';
 // @ts-ignore
 import { JobFormDTO } from '../model/jobFormDTO';
@@ -41,28 +39,31 @@ export class AiResourceApiService extends BaseService {
     /**
      * @param lang 
      * @param jobFormDTO 
+     * @param jobId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<AIJobDescriptionDTO>;
-    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AIJobDescriptionDTO>>;
-    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AIJobDescriptionDTO>>;
-    public generateJobApplicationDraft(lang: string, jobFormDTO: JobFormDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<Array<string>>;
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<string>>>;
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<string>>>;
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (lang === null || lang === undefined) {
-            throw new Error('Required parameter lang was null or undefined when calling generateJobApplicationDraft.');
+            throw new Error('Required parameter lang was null or undefined when calling generateJobApplicationDraftStream.');
         }
         if (jobFormDTO === null || jobFormDTO === undefined) {
-            throw new Error('Required parameter jobFormDTO was null or undefined when calling generateJobApplicationDraft.');
+            throw new Error('Required parameter jobFormDTO was null or undefined when calling generateJobApplicationDraftStream.');
         }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>lang, 'lang');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>jobId, 'jobId');
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/json'
+            'text/event-stream'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -93,8 +94,8 @@ export class AiResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/ai/generateJobDescription`;
-        return this.httpClient.request<AIJobDescriptionDTO>('put', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/ai/generateJobDescriptionStream`;
+        return this.httpClient.request<Array<string>>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: jobFormDTO,
