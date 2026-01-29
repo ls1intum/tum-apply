@@ -132,6 +132,22 @@ public class InterviewResource {
     }
 
     /**
+     * {@code GET /api/interviews/processes/{processId}/slots/available-count} :
+     * Count
+     * available future slots.
+     *
+     * @param processId the ID of the interview process
+     * @return the count of available future slots
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/processes/{processId}/slots/available-count")
+    public ResponseEntity<Long> countAvailableFutureSlots(@PathVariable UUID processId) {
+        log.info("REST request to count future available slots for process: {}", processId);
+        long count = interviewService.countFutureAvailableSlots(processId);
+        return ResponseEntity.ok(count);
+    }
+
+    /**
      * {@code POST /api/interviews/processes/{processId}/interviewees} : Add
      * applicants to interview process.
      *

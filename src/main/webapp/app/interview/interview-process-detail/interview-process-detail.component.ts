@@ -26,6 +26,9 @@ export class InterviewProcessDetailComponent {
   // Signal to trigger interviewee section reload
   intervieweeRefreshKey = signal(0);
 
+  // Signal to trigger slot creation modal in child
+  triggerSlotCreation = signal(0);
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly interviewService = inject(InterviewResourceApiService);
@@ -49,6 +52,10 @@ export class InterviewProcessDetailComponent {
 
   onSlotAssigned(): void {
     this.intervieweeRefreshKey.update(k => k + 1);
+  }
+
+  onAddSlotsRequested(): void {
+    this.triggerSlotCreation.update(v => v + 1);
   }
 
   navigateBack(): void {
