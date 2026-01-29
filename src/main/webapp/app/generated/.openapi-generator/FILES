@@ -30,7 +30,6 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
-model/aIJobDescriptionDTO.ts
 model/aIJobDescriptionTranslationDTO.ts
 model/acceptDTO.ts
 model/addIntervieweesDTO.ts

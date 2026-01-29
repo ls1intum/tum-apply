@@ -3,14 +3,18 @@ info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
 paths:
-  /api/ai/generateJobDescription:
+  /api/ai/generateJobDescriptionStream:
     put:
       tags: [ai-resource]
-      operationId: generateJobApplicationDraft
+      operationId: generateJobApplicationDraftStream
       parameters:
       - name: lang
         in: query
         required: true
+        schema: {type: string}
+      - name: jobId
+        in: query
+        required: false
         schema: {type: string}
       requestBody:
         content:
@@ -21,8 +25,10 @@ paths:
         '200':
           description: OK
           content:
-            application/json:
-              schema: {$ref: '#/components/schemas/AIJobDescriptionDTO'}
+            text/event-stream:
+              schema:
+                type: array
+                items: {type: string}
   /api/ai/translateJobDescriptionForJob:
     put:
       tags: [ai-resource]
@@ -2026,10 +2032,6 @@ paths:
         '200': {description: OK}
 components:
   schemas:
-    AIJobDescriptionDTO:
-      type: object
-      properties:
-        jobDescription: {type: string}
     AIJobDescriptionTranslationDTO:
       type: object
       properties:
@@ -2428,7 +2430,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2439,7 +2441,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2450,7 +2452,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2464,7 +2466,7 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
