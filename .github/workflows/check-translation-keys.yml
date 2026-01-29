@@ -8,6 +8,10 @@ on:
     paths:
       - 'src/main/webapp/i18n/**'
 
+concurrency:
+  group: coverage-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Check if translation keys are consistent
