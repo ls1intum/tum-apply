@@ -6,9 +6,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { UserDataExportResourceApiService } from 'app/generated/api/api';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
-import { DataExportStatusDTO } from 'app/generated/model/models';
 
 import TranslateDirective from '../../language/translate.directive';
+
+type ExportStatus = 'REQUESTED' | 'IN_CREATION' | 'EMAIL_SENT' | 'COMPLETED' | null;
 
 @Component({
   selector: 'jhi-privacy-page',
@@ -19,15 +20,13 @@ import TranslateDirective from '../../language/translate.directive';
   encapsulation: ViewEncapsulation.None,
 })
 export class PrivacyPageComponent {
-  readonly exportButtonDisabled = computed(
-    () => this.currentExportStatus() === DataExportStatusDTO.StatusEnum.InCreation || this.cooldownSeconds() > 0,
-  );
+  readonly exportButtonDisabled = computed(() => this.currentExportStatus() === 'IN_CREATION' || this.cooldownSeconds() > 0);
 
   readonly tooltip = computed(() => {
     this.currentLang(); // re-run when language changes to update translation
     if (!this.exportButtonDisabled()) return undefined;
 
-    if (this.currentExportStatus() === DataExportStatusDTO.StatusEnum.InCreation) {
+    if (this.currentExportStatus() === 'IN_CREATION') {
       return this.translateService.instant('privacy.export.tooltip.inCreation');
     } else if (this.cooldownSeconds() > 0) {
       const days = Math.ceil(this.cooldownSeconds() / (24 * 60 * 60));
@@ -40,7 +39,7 @@ export class PrivacyPageComponent {
   private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly currentLang = signal<string>(this.translateService.getCurrentLang());
-  private readonly currentExportStatus = signal<DataExportStatusDTO.StatusEnum | null>(null);
+  private readonly currentExportStatus = signal<ExportStatus>(null);
   private readonly cooldownSeconds = signal<number>(0);
 
   constructor() {
@@ -59,7 +58,7 @@ export class PrivacyPageComponent {
       return;
     }
 
-    this.currentExportStatus.set(DataExportStatusDTO.StatusEnum.InCreation);
+    this.currentExportStatus.set('IN_CREATION');
 
     try {
       await firstValueFrom(this.userDataExportService.requestDataExport());
@@ -87,7 +86,7 @@ export class PrivacyPageComponent {
   private async refreshStatus(): Promise<void> {
     try {
       const status = await firstValueFrom(this.userDataExportService.getDataExportStatus());
-      this.currentExportStatus.set(status.status ?? null);
+      this.currentExportStatus.set((status.status as ExportStatus) ?? null);
       this.cooldownSeconds.set(status.cooldownSeconds ?? 0);
     } catch {
       // ignore status fetch errors
