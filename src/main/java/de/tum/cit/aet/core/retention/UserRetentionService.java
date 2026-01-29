@@ -114,9 +114,8 @@ public class UserRetentionService {
     // Helper methods for handling different categories
 
     private RetentionCategory classify(User user) {
-        List<UserResearchGroupRole> roles = user.getResearchGroupRoles() == null
-            ? List.of()
-            : user.getResearchGroupRoles().stream().toList();
+        List<UserResearchGroupRole> roles =
+            user.getResearchGroupRoles() == null ? List.of() : user.getResearchGroupRoles().stream().toList();
 
         boolean isAdmin = roles.stream().anyMatch(r -> r.getRole() == UserRole.ADMIN);
         if (isAdmin) {
