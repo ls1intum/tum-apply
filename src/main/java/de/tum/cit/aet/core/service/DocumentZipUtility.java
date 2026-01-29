@@ -17,6 +17,14 @@ public class DocumentZipUtility {
     private final DocumentRepository documentRepository;
     private final ZipExportService zipExportService;
 
+    /**
+     * Adds a document to the ZIP archive.
+     *
+     * @param zipOut the ZIP output stream to which the document will be added
+     * @param documentId the unique identifier of the document to retrieve and add
+     * @param entryPath the path within the ZIP archive where the document will be placed
+     * @throws UserDataExportException if the document cannot be found or added to the ZIP export
+     */
     public void addDocumentToZip(ZipOutputStream zipOut, UUID documentId, String entryPath) {
         try {
             Document document = documentRepository
