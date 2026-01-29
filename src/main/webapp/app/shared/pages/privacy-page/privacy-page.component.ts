@@ -33,8 +33,6 @@ export class PrivacyPageComponent {
       const days = Math.ceil(this.cooldownSeconds() / (24 * 60 * 60));
       return this.translateService.instant('privacy.export.tooltip.cooldown', { days: days.toString() });
     }
-
-    return undefined;
   });
 
   protected readonly userDataExportService = inject(UserDataExportResourceApiService);
