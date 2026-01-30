@@ -69,6 +69,15 @@ export class SlotCreationFormComponent {
   // Sorted dates for display
   readonly sortedDates = computed(() => Array.from(this.selectedDatesSignal()).sort((a, b) => a.getTime() - b.getTime()));
 
+  // Computed map: date timestamp -> date key string (YYYY-MM-DD)
+  readonly dateKeys = computed(() => {
+    const map = new Map<number, string>();
+    for (const date of this.selectedDatesSignal()) {
+      map.set(date.getTime(), toLocalDateString(date));
+    }
+    return map;
+  });
+
   readonly duration = signal<number>(30);
   readonly breakDuration = signal<number>(0);
 
@@ -370,11 +379,6 @@ export class SlotCreationFormComponent {
     } finally {
       this.isSubmitting.set(false);
     }
-  }
-
-  // Public method for template usage - get local date string (YYYY-MM-DD) without UTC conversion
-  getDateKey(date: Date): string {
-    return toLocalDateString(date);
   }
 
   /**
