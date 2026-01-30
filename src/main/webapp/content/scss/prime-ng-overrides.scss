@@ -175,4 +175,11 @@ p-step[data-p-active='true'] .p-step-title {
     font-weight: 500 !important;
     line-height: 1.25 !important;
   }
+   Custom Tooltip Styles
+---------------------------------- */
+
+// Adjust tooltip positioning on the right side to avoid a cramped appearance
+// Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}"
+.tooltip-top.p-tooltip-right {
+  top: -0.5rem !important;
 }
