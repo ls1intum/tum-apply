@@ -28,7 +28,7 @@ export class AiStreamingService {
     onChunk: (accumulatedContent: string) => void,
   ): Promise<string> {
     // Build URL with query parameters
-    const url = `/api/ai/generateJobApplicationDraftStream?lang=${encodeURIComponent(lang)}`;
+    let url = `/api/ai/generateJobApplicationDraftStream?lang=${encodeURIComponent(lang)}`;
 
     // Get auth token from Keycloak
     const token = this.keycloakService.getToken();
