@@ -19,6 +19,8 @@ import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -326,5 +328,22 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
             }
         }
         return entries;
+    }
+
+    private String extractSummaryJson(byte[] zipBytes) throws Exception {
+        String summaryJson = null;
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if ("user_data_summary.json".equals(entry.getName())) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    zis.transferTo(out);
+                    summaryJson = out.toString(StandardCharsets.UTF_8);
+                }
+                zis.closeEntry();
+            }
+        }
+        assertThat(summaryJson).isNotNull();
+        return summaryJson;
     }
 }
