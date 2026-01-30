@@ -13,6 +13,7 @@ import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
@@ -66,6 +67,7 @@ export interface JobDetails {
   selector: 'jhi-job-detail',
   imports: [
     ButtonComponent,
+    BackButtonComponent,
     FontAwesomeModule,
     TranslateModule,
     TranslateDirective,
@@ -286,10 +288,6 @@ export class JobDetailComponent {
       void this.init();
     }
   });
-
-  onBack(): void {
-    this.location.back();
-  }
 
   isProfessorOrEmployee(): boolean {
     return this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee]);

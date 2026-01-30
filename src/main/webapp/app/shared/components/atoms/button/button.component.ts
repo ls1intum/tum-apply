@@ -3,6 +3,7 @@ import { Component, ViewEncapsulation, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { TranslateDirective } from 'app/shared/language';
+import { TooltipOptions } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { TooltipModule } from 'primeng/tooltip';
@@ -50,6 +51,7 @@ export class ButtonComponent {
   size = input<ButtonSize>('lg');
   tooltip = input<string | undefined>(undefined);
   tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
+  tooltipOptions = input<TooltipOptions>();
 
   readonly faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   styleClass = input<string>('');
