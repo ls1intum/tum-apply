@@ -68,7 +68,7 @@ p-step[data-p-active='true'] .p-step-title {
 /* -------------------------------
    Custom Global Styles for Accordion
 ---------------------------------- */
-.p-accordionpanel:not(.p-disabled).p-accordionpanel-active > .p-accordionheader {
+.p-accordionpanel:not(.p-disabled).p-accordionpanel-active>.p-accordionheader {
   background: var(--p-background-surface) !important;
 }
 
@@ -177,8 +177,11 @@ p-step[data-p-active='true'] .p-step-title {
   }
 }
 
-Custom Tooltip Styles ---------------------------------- */ // Adjust tooltip positioning on the right side to avoid a cramped appearance
-    // Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}"
-  . tooltip-top . p-tooltip-right {
+/* -------------------------------
+   Custom Tooltip Styles
+---------------------------------- */
+// Adjust tooltip positioning on the right side to avoid a cramped appearance
+// Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}"
+.tooltip-top .p-tooltip-right {
   top: -0.5rem !important;
 }
