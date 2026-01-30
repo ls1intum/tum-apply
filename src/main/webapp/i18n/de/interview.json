@@ -1,7 +1,7 @@
 {
   "interview": {
     "overview": {
-      "title": "Interviews",
+      "title": "Übersicht der Interviews",
       "positions": {
         "title": "Positionen"
       },
@@ -23,7 +23,7 @@
       },
       "upcoming": {
         "title": "Anstehend",
-        "empty": "Keine anstehenden Interviews geplant"
+        "empty": "Keine anstehenden Interviews"
       },
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."

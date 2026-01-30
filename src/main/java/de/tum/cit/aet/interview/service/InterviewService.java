@@ -126,7 +126,8 @@ public class InterviewService {
                 long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
 
                 // Calculate total number of all interviewees in this interview process
-                long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+                // Only count interviewees who have a decided slot (SCHEDULED or COMPLETED)
+                long totalInterviews = completedCount + scheduledCount;
 
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
@@ -140,6 +141,49 @@ public class InterviewService {
                     totalInterviews
                 );
             })
+            .toList();
+    }
+
+    /**
+     * Retrieves upcoming booked interviews for the currently logged-in professor.
+     * Shows strictly TODAY + FUTURE booked interviews from all jobs of the
+     * professor.
+     *
+     * @return list of {@link UpcomingInterviewDTO} for the dashboard
+     */
+    public List<UpcomingInterviewDTO> getUpcomingInterviews() {
+        // 1. Get current professor ID
+        UUID professorId = currentUserService.getUserId();
+
+        // 2. Fetch upcoming slots (pagination max 5)
+        Pageable limit = PageRequest.of(0, 5);
+        Page<InterviewSlot> slots = interviewSlotRepository.findUpcomingBookedSlotsForProfessor(professorId, Instant.now(), limit);
+
+        // 3. Map to DTO
+        return slots
+            .stream()
+            .map(slot -> {
+                Interviewee interviewee = slot.getInterviewee();
+                // safe check
+                if (interviewee == null) {
+                    return null;
+                }
+
+                User applicantUser = interviewee.getApplication().getApplicant().getUser();
+                String applicantName = applicantUser.getFirstName() + " " + applicantUser.getLastName();
+
+                return new UpcomingInterviewDTO(
+                    slot.getId(),
+                    slot.getStartDateTime(),
+                    slot.getEndDateTime(),
+                    applicantName,
+                    slot.getInterviewProcess().getJob().getTitle(),
+                    slot.getLocation(),
+                    slot.getInterviewProcess().getId(),
+                    interviewee.getId()
+                );
+            })
+            .filter(java.util.Objects::nonNull)
             .toList();
     }
 
@@ -174,7 +218,7 @@ public class InterviewService {
         long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
         long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
         long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
-        long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+        long totalInterviews = completedCount + scheduledCount;
 
         return new InterviewOverviewDTO(
             job.getJobId(),
