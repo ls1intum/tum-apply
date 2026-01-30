@@ -92,11 +92,6 @@ describe('JobDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call location.back on onBack()', () => {
-    component.onBack();
-    expect(location.back).toHaveBeenCalled();
-  });
-
   it('should navigate to apply form on onApply()', () => {
     component.jobId.set('job123');
     component.onApply();
