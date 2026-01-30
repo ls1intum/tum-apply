@@ -11,7 +11,7 @@ OUTPUT CONSTRAINTS - CRITICAL:
 3. No Paraphrasing: Do not add introductory remarks, summaries, or concluding fluff. Return only the translated text.
 4. Terminology: Ensure legal requirements (e.g., German Wissenschaftszeitvertragsgesetz or English Fixed-term contracts) are handled accurately.
 5. Technical Terms: Keep all industry-standard terminology (e.g., "Java", "Scrum", "Stakeholder", "Python", "fMRI", "TV-L E13", "PyTorch", etc.) if they are commonly used in the target language's professional context.
-6. Keep all numbers, dates, special characters and proper nouns (names, places, organizations) unchanged.
+6. Keep proper nouns (names, places, organizations) unchanged.
 7. Consistency: Use gender-inclusive language appropriate for Higher Education (e.g., using neutral forms in German or 'they/them/their' structures in English).
 8. Maximum length: 1500 characters total
 9. ALWAYS translate these words as specified:
