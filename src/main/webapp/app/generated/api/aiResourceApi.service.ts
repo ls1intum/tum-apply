@@ -39,14 +39,13 @@ export class AiResourceApiService extends BaseService {
     /**
      * @param lang 
      * @param jobFormDTO 
-     * @param jobId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<Array<string>>;
-    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<string>>>;
-    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<string>>>;
-    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, jobId?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<Array<string>>;
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<string>>>;
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<string>>>;
+    public generateJobApplicationDraftStream(lang: string, jobFormDTO: JobFormDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/event-stream', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (lang === null || lang === undefined) {
             throw new Error('Required parameter lang was null or undefined when calling generateJobApplicationDraftStream.');
         }
@@ -57,8 +56,6 @@ export class AiResourceApiService extends BaseService {
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>lang, 'lang');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>jobId, 'jobId');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -94,7 +91,7 @@ export class AiResourceApiService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/ai/generateJobDescriptionStream`;
+        let localVarPath = `/api/ai/generateJobApplicationDraftStream`;
         return this.httpClient.request<Array<string>>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
