@@ -19,21 +19,16 @@ export class AiStreamingService {
    *
    * @param lang The language for the generated job description ('en' or 'de')
    * @param jobFormDTO The job form data used to build the AI prompt
-   * @param jobId Optional job ID - if provided, auto-translates to the other language after streaming
    * @param onChunk Callback function called for each content chunk received
    * @returns Promise that resolves with the full accumulated content, or rejects on error
    */
-  async generateJobDescriptionStream(
+  async generateJobApplicationDraftStream(
     lang: string,
     jobFormDTO: JobFormDTO,
-    jobId: string | undefined,
     onChunk: (accumulatedContent: string) => void,
   ): Promise<string> {
     // Build URL with query parameters
-    let url = `/api/ai/generateJobDescriptionStream?lang=${encodeURIComponent(lang)}`;
-    if (jobId) {
-      url += `&jobId=${encodeURIComponent(jobId)}`;
-    }
+    let url = `/api/ai/generateJobApplicationDraftStream?lang=${encodeURIComponent(lang)}`;
 
     // Get auth token from Keycloak
     const token = this.keycloakService.getToken();

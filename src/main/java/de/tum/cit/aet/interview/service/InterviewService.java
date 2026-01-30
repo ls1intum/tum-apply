@@ -29,6 +29,7 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -253,6 +254,7 @@ public class InterviewService {
         // 2. Security: Verify current user has job access
         Job job = process.getJob();
         currentUserService.verifyJobAccess(job);
+        User professor = job.getSupervisingProfessor();
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -261,8 +263,8 @@ public class InterviewService {
             .map(slotInput -> createSlotFromInput(process, slotInput))
             .toList();
 
-        // 4. Validate no time conflicts
-        validateNoTimeConflicts(newSlots);
+        // 4. Validate no time conflicts (pass professor to avoid lazy loading)
+        validateNoTimeConflicts(newSlots, professor, processId);
 
         // 5. Save all slots
         List<InterviewSlot> savedSlots = interviewSlotRepository.saveAll(newSlots);
@@ -332,11 +334,15 @@ public class InterviewService {
     /**
      * Validates that none of the new slots conflict with existing slots of the same
      * professor.
+     * For the same process: blocks any overlapping slot.
+     * For other processes: only blocks BOOKED overlapping slots.
      *
-     * @param newSlots the slots to validate
+     * @param newSlots  the slots to validate
+     * @param professor the supervising professor (passed to avoid lazy loading)
+     * @param processId the current interview process ID
      * @throws TimeConflictException if a time conflict is detected
      */
-    private void validateNoTimeConflicts(List<InterviewSlot> newSlots) {
+    private void validateNoTimeConflicts(List<InterviewSlot> newSlots, User professor, UUID processId) {
         // 1. Check for internal conflicts within the new batch
         for (int i = 0; i < newSlots.size(); i++) {
             for (int j = i + 1; j < newSlots.size(); j++) {
@@ -358,17 +364,17 @@ public class InterviewService {
         }
 
         // 2. Check for conflicts with existing slots in the database
+        // Same process: any overlap blocks; Other processes: only BOOKED slots block
         for (InterviewSlot newSlot : newSlots) {
-            User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
-
             boolean hasConflict = interviewSlotRepository.hasConflictingSlots(
                 professor,
+                processId,
                 newSlot.getStartDateTime(),
                 newSlot.getEndDateTime()
             );
 
             if (hasConflict) {
-                // Fetch conflicting InterviewSlot entity
+                // Fetch conflicting InterviewSlot entity to provide details
                 InterviewSlot conflictingSlot = interviewSlotRepository
                     .findFirstConflictingSlot(professor, newSlot.getStartDateTime(), newSlot.getEndDateTime())
                     .orElseThrow();
@@ -444,6 +450,39 @@ public class InterviewService {
             .toList();
 
         return new PageResponseDTO<>(slotDTOs, slotsPage.getTotalElements());
+    }
+
+    /**
+     * Retrieves conflict data for slot creation validation on a specific date.
+     * Returns all slots relevant for conflict detection in a single response:
+     * - All slots (booked + unbooked) from the current process
+     * - All BOOKED slots from other processes of the same professor
+     *
+     * @param processId the ID of the interview process
+     * @param date      the date to check for conflicts
+     * @return ConflictDataDTO containing slots for client-side conflict detection
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public ConflictDataDTO getConflictDataForDate(UUID processId, LocalDate date) {
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
+
+        // 2. Security: Verify current user has job access
+        currentUserService.verifyJobAccess(process.getJob());
+
+        // 3. Calculate day boundaries in CET timezone
+        UUID professorId = process.getJob().getSupervisingProfessor().getUserId();
+        Instant dayStart = date.atStartOfDay(CET_TIMEZONE).toInstant();
+        Instant dayEnd = date.plusDays(1).atStartOfDay(CET_TIMEZONE).toInstant();
+
+        // 4. Fetch all relevant slots for conflict detection
+        List<InterviewSlot> slots = interviewSlotRepository.findConflictDataByDate(processId, professorId, dayStart, dayEnd);
+
+        // 5. Return DTO for client-side filtering
+        return new ConflictDataDTO(processId, slots.stream().map(ConflictDataDTO.ExistingSlotDTO::fromEntity).toList());
     }
 
     /*--------------------------------------------------------------
@@ -575,14 +614,28 @@ public class InterviewService {
         slot.setIsBooked(true);
         interviewee.getSlots().add(slot);
 
-        // 7. Save entities
+        // 7. Auto-delete overlapping unbooked slots from other processes
+        UUID professorId = job.getSupervisingProfessor().getUserId();
+        List<InterviewSlot> overlappingSlots = interviewSlotRepository.findOverlappingUnbookedSlots(
+            professorId,
+            processId,
+            slot.getStartDateTime(),
+            slot.getEndDateTime()
+        );
+
+        boolean hadOverlappingSlots = !overlappingSlots.isEmpty();
+        if (hadOverlappingSlots) {
+            interviewSlotRepository.deleteAll(overlappingSlots);
+        }
+
+        // 8. Save entities
         interviewSlotRepository.save(slot);
         intervieweeRepository.save(interviewee);
 
-        // 8. Send interview invitation email
+        // 9. Send interview invitation email
         sendInterviewInvitationEmail(slot, interviewee, job);
 
-        // 9. Build response with interviewee details
+        // 10. Build response with interviewee details
         IntervieweeState state = calculateIntervieweeState(interviewee);
         AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
         return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
@@ -664,6 +717,8 @@ public class InterviewService {
 
         for (Interviewee interviewee : interviewees) {
             try {
+                // Set job to prevent LazyInitializationException in async email sending
+                interviewee.getApplication().setJob(job);
                 sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
@@ -846,5 +901,16 @@ public class InterviewService {
             ApplicationDetailDTO.getFromEntity(application, job),
             documentDictionaryService.getDocumentIdsDTO(application)
         );
+    }
+
+    /**
+     * Retrieves all interview processes for a given professor.
+     *
+     * @param user the professor user
+     * @return list of interview processes
+     */
+    public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
+        List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
+        return processes == null ? List.of() : processes;
     }
 }
