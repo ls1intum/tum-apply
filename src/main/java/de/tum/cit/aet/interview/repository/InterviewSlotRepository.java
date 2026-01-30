@@ -242,6 +242,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         @Param("now") Instant now,
         Pageable pageable
     );
+
     void deleteByIntervieweeApplication(Application application);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
