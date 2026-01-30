@@ -71,6 +71,7 @@ public class AiService {
             .user(u ->
                 u
                     .text(jobGenerationResource)
+                    .param("descriptionLanguage", descriptionLanguage)
                     .param("jobDescription", input)
                     .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
                     .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
