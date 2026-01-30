@@ -1,6 +1,5 @@
 <div class="whole-page">
   <jhi-page-ribbon />
-
   <jhi-header />
 
   <div [class.is-collapsed]="isSidebarCollapsed()" class="main-page">
@@ -11,9 +10,9 @@
         (sidebarCollapsedChange)="toggleSidebar()"
       />
     }
-    <div class="content">
+    <div #scrollContainer class="content">
       <div class="content-flex">
-        <router-outlet />
+        <router-outlet (activate)="onActivate()" />
       </div>
 
       <jhi-footer />

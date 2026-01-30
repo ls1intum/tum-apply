@@ -47,8 +47,21 @@ export class HeaderComponent {
   router = inject(Router);
   themeService = inject(ThemeService);
   theme = this.themeService.theme;
+  syncWithSystem = this.themeService.syncWithSystem;
   isDarkMode = computed(() => this.theme() === 'dark');
   showBorder = signal(false);
+  themeIcon = computed(() => {
+    if (this.syncWithSystem()) {
+      return 'custom-sun-moon';
+    }
+    return this.isDarkMode() ? 'moon' : 'custom-sun';
+  });
+  themeTooltip = computed(() => {
+    if (this.syncWithSystem()) {
+      return 'header.systemMode';
+    }
+    return this.isDarkMode() ? 'header.darkMode' : 'header.lightMode';
+  });
   themeOptions: SelectOption[] = [
     { name: 'Light', value: 'light' },
     { name: 'Dark', value: 'dark' },
@@ -85,7 +98,7 @@ export class HeaderComponent {
   });
 
   readonly headerButtonClass =
-    'inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
+    'inline-flex [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md';
 
   profileMenu = viewChild<MenuComponent>('profileMenu');
   isProfileMenuOpen = signal(false);

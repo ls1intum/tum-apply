@@ -591,11 +591,13 @@ public class InterviewService {
     private void sendInterviewInvitationEmail(InterviewSlot slot, Interviewee interviewee, Job job) {
         Application application = interviewee.getApplication();
         User applicant = application.getApplicant().getUser();
+        User professor = job.getSupervisingProfessor();
 
         String icsContent = icsCalendarService.generateIcsContent(slot, job);
         String icsFileName = icsCalendarService.generateFileName(slot);
 
-        Email email = Email.builder()
+        // Email to Applicant (with ICS)
+        Email applicantEmail = Email.builder()
             .to(applicant)
             .emailType(EmailType.INTERVIEW_INVITATION)
             .language(Language.fromCode(applicant.getSelectedLanguage()))
@@ -604,8 +606,19 @@ public class InterviewService {
             .icsContent(icsContent)
             .icsFileName(icsFileName)
             .build();
+        asyncEmailSender.sendAsync(applicantEmail);
 
-        asyncEmailSender.sendAsync(email);
+        // Email to Professor (confirmation with ICS)
+        Email professorEmail = Email.builder()
+            .to(professor)
+            .emailType(EmailType.INTERVIEW_ASSIGNED_PROFESSOR)
+            .language(Language.fromCode(professor.getSelectedLanguage()))
+            .researchGroup(job.getResearchGroup())
+            .content(slot)
+            .icsContent(icsContent)
+            .icsFileName(icsFileName)
+            .build();
+        asyncEmailSender.sendAsync(professorEmail);
     }
 
     /**
@@ -651,6 +664,8 @@ public class InterviewService {
 
         for (Interviewee interviewee : interviewees) {
             try {
+                // Set job to prevent LazyInitializationException in async email sending
+                interviewee.getApplication().setJob(job);
                 sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
@@ -833,5 +848,16 @@ public class InterviewService {
             ApplicationDetailDTO.getFromEntity(application, job),
             documentDictionaryService.getDocumentIdsDTO(application)
         );
+    }
+
+    /**
+     * Retrieves all interview processes for a given professor.
+     *
+     * @param user the professor user
+     * @return list of interview processes
+     */
+    public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
+        List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
+        return processes == null ? List.of() : processes;
     }
 }

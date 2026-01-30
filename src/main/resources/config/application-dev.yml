@@ -53,7 +53,7 @@ spring:
         completions-path: /v1/chat/completions
         options:
           model: openai/gpt-oss-20b
-          temperature: 0.7
+          temperature: 0.0
 springdoc:
   api-docs:
     enabled: true
@@ -100,14 +100,6 @@ management:
 
 user:
   retention:
-    inactive-days-before-deletion: ${USER_RETENTION_INACTIVE_DAYS_BEFORE_DELETION:365}
-    days-before-applicant-data-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
-    enabled: ${USER_RETENTION_ENABLED:false}
     dry-run: ${USER_RETENTION_DRY_RUN:true}
     batch-size: ${USER_RETENTION_BATCH_SIZE:100}
     max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:5}
-    deleted-user-id: ${USER_RETENTION_DELETED_USER_ID:00000000-0000-0000-0000-000000000100}
-    deleted-user-email: ${USER_RETENTION_DELETED_USER_EMAIL:deleted@user}
-    deleted-user-first-name: ${USER_RETENTION_DELETED_USER_FIRST_NAME:Deleted}
-    deleted-user-last-name: ${USER_RETENTION_DELETED_USER_LAST_NAME:User}
-    deleted-user-language: ${USER_RETENTION_DELETED_USER_LANGUAGE:en}

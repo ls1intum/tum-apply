@@ -48,6 +48,22 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     Optional<InterviewSlot> findByIdWithJob(@Param("slotId") UUID slotId);
 
     /**
+     * Finds all slots for the given interview process ids with job data.
+     *
+     * @param processIds interview process ids
+     * @return list of slots ordered by start time
+     */
+    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job" })
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.id IN :processIds
+        ORDER BY s.startDateTime ASC
+        """
+    )
+    List<InterviewSlot> findByInterviewProcessIdInWithJob(@Param("processIds") List<UUID> processIds);
+
+    /**
      * Counts all interview slots associated with a specific interview process.
      * Finds all interview slots of a given professor that overlap with a specified
      * time range.

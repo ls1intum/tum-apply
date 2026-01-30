@@ -5,12 +5,14 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -115,6 +117,15 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
      * @return true if a user exists with the ID, false otherwise
      */
     boolean existsById(UUID userId);
+
+    /**
+     * Deletes a user by ID using a bulk operation to avoid merging detached entities.
+     *
+     * @param userId the user ID to delete
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM User u WHERE u.userId = :userId")
+    void deleteByUserId(@Param("userId") UUID userId);
 
     /**
      * Deletes a user by ID using a bulk operation to avoid merging detached entities.

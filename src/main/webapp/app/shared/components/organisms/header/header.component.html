@@ -12,8 +12,8 @@
     }
   </div>
 
-  <div class="flex items-center gap-3 flex-shrink-0">
-    <div class="flex items-center gap-1">
+  <div class="flex items-center gap-1 flex-shrink-0">
+    <div class="flex items-center gap-1 mr-2">
       @for (language of languages; track language; let isLast = $last) {
         <button
           (click)="toggleLanguage(language)"
@@ -32,8 +32,8 @@
       <jhi-button
         class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
         (click)="toggleTheme()"
-        [icon]="isDarkMode() ? 'moon' : 'custom-sun'"
-        [tooltip]="'header.theme' | translate"
+        [icon]="themeIcon()"
+        [tooltip]="themeTooltip() | translate"
         variant="text"
         severity="primary"
       />
@@ -46,7 +46,7 @@
           (click)="redirectToApplicantLandingPage()"
           label="{{ 'header.applicant' | translate }}"
           severity="primary"
-          variant="outlined"
+          variant="text"
         />
       } @else {
         <jhi-button
@@ -54,11 +54,20 @@
           (click)="redirectToProfessorLandingPage()"
           label="{{ 'header.professor' | translate }}"
           severity="primary"
-          variant="outlined"
+          variant="text"
         />
       }
 
-      <jhi-button [class]="headerButtonClass" (click)="login()" label="{{ 'header.login' | translate }}" severity="primary" />
+      <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
+
+      <jhi-button
+        [class]="headerButtonClass"
+        (click)="login()"
+        label="{{ 'header.login' | translate }}"
+        severity="primary"
+        variant="text"
+        styleClass="font-bold"
+      />
     } @else {
       <button
         class="flex py-1 px-2 items-center gap-2 rounded-md cursor-pointer bg-transparent transition-colors duration-200 hover:bg-primary-hover-outlined"

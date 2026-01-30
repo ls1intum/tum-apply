@@ -9,6 +9,12 @@ import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
+import de.tum.cit.aet.interview.domain.InterviewProcess;
+import de.tum.cit.aet.interview.domain.InterviewSlot;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
+import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -30,6 +36,8 @@ import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +78,15 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
 
     @Autowired
     DocumentDictionaryRepository documentDictionaryRepository;
+
+    @Autowired
+    InterviewProcessRepository interviewProcessRepository;
+
+    @Autowired
+    InterviewSlotRepository interviewSlotRepository;
+
+    @Autowired
+    IntervieweeRepository intervieweeRepository;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -151,7 +168,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
             researchGroup,
             "Published Role",
             JobState.PUBLISHED,
-            java.time.LocalDate.now().plusDays(7)
+            LocalDate.now().plusDays(7)
         );
 
         Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SENT);
@@ -191,6 +208,97 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    void exportIncludesIntervieweesForApplicant() throws Exception {
+        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
+
+        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
+        User applicantUser = applicant.getUser();
+
+        Job job = JobTestData.saved(
+            jobRepository,
+            professor,
+            researchGroup,
+            "Interview Role",
+            JobState.PUBLISHED,
+            LocalDate.now().plusDays(7)
+        );
+        Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
+
+        InterviewProcess process = new InterviewProcess();
+        process.setJob(job);
+        process = interviewProcessRepository.save(process);
+
+        Interviewee interviewee = new Interviewee();
+        interviewee.setInterviewProcess(process);
+        interviewee.setApplication(application);
+        interviewee.setLastInvited(Instant.parse("2025-01-01T10:00:00Z"));
+        interviewee = intervieweeRepository.save(interviewee);
+
+        InterviewSlot slot = new InterviewSlot();
+        slot.setInterviewProcess(process);
+        slot.setInterviewee(interviewee);
+        slot.setStartDateTime(Instant.now().plusSeconds(3600));
+        slot.setEndDateTime(Instant.now().plusSeconds(7200));
+        slot.setLocation("Room 101");
+        slot.setStreamLink("https://stream.test/slot");
+        slot.setIsBooked(true);
+        interviewSlotRepository.save(slot);
+
+        byte[] zipBytes = api
+            .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
+            .getAndReturnBytes(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
+
+        String summaryJson = extractSummaryJson(zipBytes);
+
+        assertThat(summaryJson).contains("\"interviewees\"").contains("\"Interview Role\"").contains("\"lastInvited\"");
+        assertThat(summaryJson).doesNotContain("\"interviewProcessId\"").doesNotContain("\"interviewSlotId\"").doesNotContain("\"jobId\"");
+    }
+
+    @Test
+    void exportIncludesInterviewProcessesAndSlotsForStaff() throws Exception {
+        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
+        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
+
+        Job job = JobTestData.saved(
+            jobRepository,
+            professor,
+            researchGroup,
+            "Staff Interview Role",
+            JobState.PUBLISHED,
+            LocalDate.now().plusDays(7)
+        );
+
+        InterviewProcess process = new InterviewProcess();
+        process.setJob(job);
+        process = interviewProcessRepository.save(process);
+
+        InterviewSlot slot = new InterviewSlot();
+        slot.setInterviewProcess(process);
+        slot.setStartDateTime(Instant.now().plusSeconds(3600));
+        slot.setEndDateTime(Instant.now().plusSeconds(7200));
+        slot.setLocation("Room 202");
+        slot.setStreamLink("https://stream.test/staff-slot");
+        slot.setIsBooked(false);
+        interviewSlotRepository.save(slot);
+
+        byte[] zipBytes = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .getAndReturnBytes(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
+
+        String summaryJson = extractSummaryJson(zipBytes);
+
+        assertThat(summaryJson)
+            .contains("\"interviewProcesses\"")
+            .contains("\"Staff Interview Role\"")
+            .contains("\"interviewSlots\"")
+            .contains("\"Room 202\"")
+            .doesNotContain("\"interviewProcessId\"")
+            .doesNotContain("\"interviewSlotId\"")
+            .doesNotContain("\"jobId\"");
+    }
+
+    @Test
     void exportReturns500WhenUserDoesNotExist() {
         UUID missingUserId = UUID.randomUUID();
 
@@ -200,5 +308,22 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
 
         String bodyString = new String(body, StandardCharsets.UTF_8);
         assertThat(bodyString).contains("User data export failed");
+    }
+
+    private String extractSummaryJson(byte[] zipBytes) throws Exception {
+        String summaryJson = null;
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if ("user_data_summary.json".equals(entry.getName())) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    zis.transferTo(out);
+                    summaryJson = out.toString(StandardCharsets.UTF_8);
+                }
+                zis.closeEntry();
+            }
+        }
+        assertThat(summaryJson).isNotNull();
+        return summaryJson;
     }
 }
