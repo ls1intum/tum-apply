@@ -9,7 +9,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TabsModule } from 'primeng/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
-import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 
 import 'quill-mention/autoregister';
@@ -30,7 +29,6 @@ import { UserShortDTO } from '../../../generated/model/userShortDTO';
     StringInputComponent,
     TabsModule,
     QuillEditorComponent,
-    ButtonComponent,
     BackButtonComponent,
     SelectComponent,
     TranslateModule,
