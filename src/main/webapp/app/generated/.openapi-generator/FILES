@@ -53,6 +53,7 @@ model/authSessionInfoDTO.ts
 model/biasedWordDTO.ts
 model/bookSlotRequestDTO.ts
 model/bookingDTO.ts
+model/conflictDataDTO.ts
 model/createSlotsDTO.ts
 model/createdJobDTO.ts
 model/customField.ts
@@ -69,6 +70,7 @@ model/emailTemplateDTO.ts
 model/emailTemplateOverviewDTO.ts
 model/emailTemplateTranslationDTO.ts
 model/employeeResearchGroupRequestDTO.ts
+model/existingSlotDTO.ts
 model/genderBiasAnalysisRequest.ts
 model/genderBiasAnalysisResponse.ts
 model/image.ts
@@ -123,6 +125,7 @@ model/sendInvitationsRequestDTO.ts
 model/sendInvitationsResultDTO.ts
 model/slotInput.ts
 model/sortObject.ts
+model/upcomingInterviewDTO.ts
 model/updateApplicationDTO.ts
 model/updateAssessmentDTO.ts
 model/updatePasswordDTO.ts
