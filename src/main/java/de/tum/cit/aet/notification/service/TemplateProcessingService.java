@@ -83,9 +83,10 @@ public class TemplateProcessingService {
             Map<String, Object> dataModel = createDataModel(content);
             addMetaData(emailTemplateTranslation.getLanguage(), dataModel);
 
-            String templateName = emailTemplateTranslation.getEmailTemplate().getTemplateName() != null
-                ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
-                : "inline";
+            String templateName =
+                emailTemplateTranslation.getEmailTemplate().getTemplateName() != null
+                    ? emailTemplateTranslation.getEmailTemplate().getTemplateName()
+                    : "inline";
 
             Template inlineTemplate = new Template(
                 templateName,
