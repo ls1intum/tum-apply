@@ -147,7 +147,7 @@
                 [date]="date"
                 [duration]="duration()"
                 [breakDuration]="breakDuration()"
-                [existingSlots]="slotsByDate().get(dateKeys().get(date.getTime())) || []"
+                [existingSlots]="slotsByDate().get(dateKeys().get(date.getTime()) ?? '') || []"
                 [serverConflicts]="serverConflicts()"
                 [showApplyAll]="i === 0 && sortedDates().length > 1"
                 [showValidationErrors]="showValidationErrors()"
