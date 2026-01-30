@@ -19,7 +19,7 @@ export interface EmailTemplateDTO {
     templateName?: string;
 }
 export namespace EmailTemplateDTO {
-    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'INTERVIEW_INVITATION' | 'RESEARCH_GROUP_MEMBER_ADDED' | 'RESEARCH_GROUP_APPROVED' | 'INTERVIEW_BOOKED_APPLICANT' | 'INTERVIEW_BOOKED_PROFESSOR' | 'INTERVIEW_ASSIGNED_PROFESSOR' | 'INTERVIEW_SELF_SCHEDULING_INVITATION';
+    export type EmailTypeEnum = 'APPLICATION_ACCEPTED' | 'APPLICATION_REJECTED' | 'APPLICATION_RECEIVED' | 'APPLICATION_SENT' | 'APPLICATION_WITHDRAWN' | 'INTERVIEW_INVITATION' | 'RESEARCH_GROUP_MEMBER_ADDED' | 'RESEARCH_GROUP_APPROVED' | 'INTERVIEW_BOOKED_APPLICANT' | 'INTERVIEW_BOOKED_PROFESSOR' | 'INTERVIEW_SELF_SCHEDULING_INVITATION' | 'USER_DATA_DELETION_WARNING';
     export const EmailTypeEnum = {
         ApplicationAccepted: 'APPLICATION_ACCEPTED' as EmailTypeEnum,
         ApplicationRejected: 'APPLICATION_REJECTED' as EmailTypeEnum,
@@ -31,8 +31,8 @@ export namespace EmailTemplateDTO {
         ResearchGroupApproved: 'RESEARCH_GROUP_APPROVED' as EmailTypeEnum,
         InterviewBookedApplicant: 'INTERVIEW_BOOKED_APPLICANT' as EmailTypeEnum,
         InterviewBookedProfessor: 'INTERVIEW_BOOKED_PROFESSOR' as EmailTypeEnum,
-        InterviewAssignedProfessor: 'INTERVIEW_ASSIGNED_PROFESSOR' as EmailTypeEnum,
-        InterviewSelfSchedulingInvitation: 'INTERVIEW_SELF_SCHEDULING_INVITATION' as EmailTypeEnum
+        InterviewSelfSchedulingInvitation: 'INTERVIEW_SELF_SCHEDULING_INVITATION' as EmailTypeEnum,
+        UserDataDeletionWarning: 'USER_DATA_DELETION_WARNING' as EmailTypeEnum
     };
 }
 
