@@ -325,6 +325,22 @@ keycloak:
     # Secret for the admin client; generate in Keycloak → Clients → tumapply-otp-admin → Credentials
     client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:tumapply-otp-secret}
 
+user:
+  retention:
+    # Controls scheduled user-data cleanup; enabled runs the job, dry-run logs planned deletions without applying them
+    inactive-days-before-deletion: ${USER_RETENTION_INACTIVE_DAYS_BEFORE_DELETION:365}
+    days-before-applicant-data-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
+    enabled: ${USER_RETENTION_ENABLED:true}
+    dry-run: ${USER_RETENTION_DRY_RUN:false}
+    batch-size: ${USER_RETENTION_BATCH_SIZE:300}
+    max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:10}
+    cron: ${USER_RETENTION_CRON:0 17 3 * * *}
+    deleted-user-id: ${USER_RETENTION_DELETED_USER_ID:00000000-0000-0000-0000-000000000100}
+    deleted-user-email: ${USER_RETENTION_DELETED_USER_EMAIL:deleted@user}
+    deleted-user-first-name: ${USER_RETENTION_DELETED_USER_FIRST_NAME:Deleted}
+    deleted-user-last-name: ${USER_RETENTION_DELETED_USER_LAST_NAME:User}
+    deleted-user-language: ${USER_RETENTION_DELETED_USER_LANGUAGE:en}
+
 # ===================================================================
 # OTP (One-Time Password) / Email Verification settings
 # - length: number of digits/characters for the generated OTP code

@@ -707,6 +707,8 @@ public class InterviewService {
 
         for (Interviewee interviewee : interviewees) {
             try {
+                // Set job to prevent LazyInitializationException in async email sending
+                interviewee.getApplication().setJob(job);
                 sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
@@ -889,5 +891,16 @@ public class InterviewService {
             ApplicationDetailDTO.getFromEntity(application, job),
             documentDictionaryService.getDocumentIdsDTO(application)
         );
+    }
+
+    /**
+     * Retrieves all interview processes for a given professor.
+     *
+     * @param user the professor user
+     * @return list of interview processes
+     */
+    public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
+        List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
+        return processes == null ? List.of() : processes;
     }
 }
