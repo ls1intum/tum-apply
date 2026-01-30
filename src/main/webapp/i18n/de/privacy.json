@@ -38,11 +38,11 @@
       "button": "Meine Daten exportieren",
       "downloadFailed": {
         "summary": "Download fehlgeschlagen",
-        "detail": "Bitte versuche es erneut."
+        "detail": "Der Download der Daten ist fehlgeschlagen. Bitte versuche es erneut."
       },
       "downloadFailed404": {
         "summary": "Export nicht gefunden",
-        "detail": "Der Export ist nicht verfügbar."
+        "detail": "Der Export konnte nicht gefunden werden. Möglicherweise ist der Link abgelaufen, der Export wurde bereits heruntergeladen und gelöscht, oder es liegt ein technischer Fehler vor."
       },
       "downloadFailed409": {
         "summary": "Export nicht bereit",
@@ -54,7 +54,7 @@
       },
       "requestFailed": {
         "summary": "Anforderung fehlgeschlagen",
-        "detail": "Bitte versuche es später erneut."
+        "detail": "Die Anforderung des Datenexports ist fehlgeschlagen. Bitte versuche es später erneut. Mögliche Ursachen sind Netzwerkprobleme, Serverüberlastung oder ein vorübergehender technischer Fehler."
       },
       "requestFailed409": {
         "summary": "Export bereits in Bearbeitung",

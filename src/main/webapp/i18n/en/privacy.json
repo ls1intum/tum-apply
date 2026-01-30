@@ -38,11 +38,11 @@
       "button": "Export My Data",
       "downloadFailed": {
         "summary": "Download failed",
-        "detail": "Please try again."
+        "detail": "The download of your data has failed. Please try again."
       },
       "downloadFailed404": {
         "summary": "Export not found",
-        "detail": "The export is not available."
+        "detail": "The export could not be found. The link may have expired, the export may have already been downloaded and deleted, or there may be a technical error."
       },
       "downloadFailed409": {
         "summary": "Export not ready",
@@ -54,7 +54,7 @@
       },
       "requestFailed": {
         "summary": "Request failed",
-        "detail": "Please try again later."
+        "detail": "The data export request has failed. Please try again later. Possible causes include network issues, server overload, or a temporary technical error."
       },
       "requestFailed409": {
         "summary": "Export already in progress",
