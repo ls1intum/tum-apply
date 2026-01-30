@@ -26,7 +26,7 @@ import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
 import { SubSection } from '../../shared/components/atoms/sub-section/sub-section';
-import { DescItem, DescriptionList } from '../../shared/components/atoms/description-list/description-list';
+import { DescItem } from '../../shared/components/atoms/description-list/description-list';
 import { Prose } from '../../shared/components/atoms/prose/prose';
 import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
@@ -49,7 +49,6 @@ const CAROUSEL_SIZE = 7;
     TranslateDirective,
     Section,
     SubSection,
-    DescriptionList,
     Prose,
     DocumentSection,
     CommentSection,

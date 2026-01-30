@@ -1,5 +1,5 @@
 <div
-  class="mt-6 flex flex-col gap-2 p-4 w-56 sm:w-64 md:w-72 lg:w-80 xl:w-96 border-2 rounded-lg"
+  class="mt-6 flex flex-col flex-1 gap-2 p-4 w-56 sm:w-64 md:w-72 lg:w-80 xl:w-96 border-2 rounded-lg"
   [class.border-primary]="!disabled() && !placeholder()"
   [class.opacity-50]="disabled()"
   [class.border-gray-300]="disabled()"
@@ -28,7 +28,7 @@
     <!-- Job Title -->
     <div class="flex items-start gap-2">
       <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-      <span class="line-clamp-1 break-words leading-[1.4rem] text-text-secondary">
+      <span class="line-clamp-1 break-words leading-[1.4rem]">
         {{ applicationDetails()?.jobTitle }}
       </span>
     </div>
@@ -36,11 +36,11 @@
     <!-- Master's Degree -->
     @if (masterDegree()) {
       <div class="flex flex-col gap-1 border-b border-border-default pb-2">
-        <span>{{ masterDegree()!.name }}</span>
-        <div class="flex gap-2">
-          <span>{{ masterDegree()!.university }}</span>
-          <span>&middot;</span>
-          <span>{{ 'evaluation.grade' | translate }}: {{ masterDegree()!.grade }}</span>
+        <span class="text-xs font-medium text-text-secondary uppercase tracking-wide" jhiTranslate="evaluation.masterDegree">Master</span>
+        <span class="break-words">{{ masterDegree()!.name }}</span>
+        <div class="flex flex-wrap gap-x-2 gap-y-1 text-sm">
+          <span class="break-words">{{ masterDegree()!.university }}</span>
+          <span class="whitespace-nowrap">&middot; {{ 'evaluation.grade' | translate }}: {{ masterDegree()!.grade }}</span>
         </div>
       </div>
     }
@@ -50,7 +50,7 @@
       @if (application()?.appliedAt) {
         <div class="flex items-start gap-2">
           <div class="flex flex-col">
-            <span class="text-text-secondary"> {{ 'evaluation.applied' | translate }}</span>
+            <span class="text-text-secondary uppercase text-xs font-medium tracking-wide"> {{ 'evaluation.applied' | translate }}</span>
             <span> {{ application()?.appliedAt | localizedDate }} </span>
           </div>
         </div>
@@ -59,7 +59,7 @@
       @if (applicationDetails()?.desiredDate) {
         <div class="flex items-end gap-2">
           <div class="flex flex-col items-end">
-            <span class="text-text-secondary">{{ 'evaluation.start' | translate }}</span>
+            <span class="text-text-secondary uppercase text-xs font-medium tracking-wide">{{ 'evaluation.start' | translate }}</span>
             <span>{{ applicationDetails()?.desiredDate | localizedDate }}</span>
           </div>
         </div>

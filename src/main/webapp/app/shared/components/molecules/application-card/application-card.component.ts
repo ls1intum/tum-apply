@@ -12,6 +12,9 @@ import { TagComponent } from '../../atoms/tag/tag.component';
   selector: 'jhi-application-card',
   imports: [FontAwesomeModule, TagComponent, TranslateModule, LocalizedDatePipe, DividerModule],
   templateUrl: './application-card.component.html',
+  host: {
+    class: 'flex flex-col h-full',
+  },
 })
 export class ApplicationCardComponent {
   disabled = input<boolean>(false);

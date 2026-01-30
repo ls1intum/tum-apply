@@ -5,6 +5,7 @@
     "applied": "Beworben",
     "start": "Start",
     "grade": "Note",
+    "masterDegree": "Master",
     "searchFilterSortBar": {
       "searchText": "Bewerbungen suchen..."
     },
@@ -70,6 +71,8 @@
       "educationTitle": "Ausbildung",
       "educationBachelors": "Bachelor",
       "educationMasters": "Master",
+      "bachelorDegree": "Bachelor",
+      "grade": "Note",
       "educationDegree": "Abschluss",
       "educationUniversity": "Universität",
       "educationGrade": "Abschlussnote",

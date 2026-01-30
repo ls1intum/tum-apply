@@ -48,40 +48,62 @@
 
     @if (currentApplication(); as application) {
       <div class="w-full flex flex-col md:flex-row justify-between items-end p-2 gap-4 border-b border-border-default overflow-hidden">
-        <div class="flex gap-2 flex-wrap">
-          <span class="text-xl font-semibold mr-4">{{ application.applicationDetailDTO.applicant?.user?.name }}</span>
-          <span>{{
-            application.applicationDetailDTO.applicant?.user?.gender
-              ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
-              : '—'
-          }}</span>
-          <span>&middot;</span>
-          <span>{{
-            application.applicationDetailDTO.applicant?.user?.nationality
-              ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
-              : '—'
-          }}</span>
-          <div class="flex gap-2 ml-2">
-            @if (application.applicationDetailDTO.applicant?.user?.website) {
-              <a
-                [href]="application.applicationDetailDTO.applicant?.user?.website"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-primary hover:text-primary-dark"
-              >
-                <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
-              </a>
+        <div class="flex flex-col">
+          <div class="flex gap-1 flex-wrap items-center">
+            <span class="text-xl font-semibold">{{ application.applicationDetailDTO.applicant?.user?.name }}</span>
+            <div class="flex gap-2 ml-2">
+              @if (application.applicationDetailDTO.applicant?.user?.website) {
+                <a
+                  [href]="application.applicationDetailDTO.applicant?.user?.website"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary hover:text-primary-dark"
+                >
+                  <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
+                </a>
+              }
+              @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
+                <a
+                  [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary hover:text-primary-dark"
+                >
+                  <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
+                </a>
+              }
+            </div>
+          </div>
+          <div class="flex gap-3 flex-wrap text-sm">
+            <!-- Bachelor's Degree -->
+            @if (bachelorItemsComputed()[0]?.value || bachelorItemsComputed()[1]?.value) {
+              <div class="flex gap-1">
+                <span class="font-medium" jhiTranslate="evaluation.details.bachelorDegree">Bachelor's:</span>
+                <span>
+                  {{ bachelorItemsComputed()[0]?.value || '—' }}
+                  @if (bachelorItemsComputed()[1]?.value) {
+                    <span>, {{ bachelorItemsComputed()[1]?.value }}</span>
+                  }
+                  @if (bachelorItemsComputed()[2]?.value) {
+                    <span> (<span jhiTranslate="evaluation.details.grade">Grade</span>: {{ bachelorItemsComputed()[2]?.value }})</span>
+                  }
+                </span>
+              </div>
+              <span>&middot;</span>
             }
-            @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
-              <a
-                [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-primary hover:text-primary-dark"
-              >
-                <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
-              </a>
-            }
+            <!-- Nationality -->
+            <span>{{
+              application.applicationDetailDTO.applicant?.user?.nationality
+                ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
+                : '—'
+            }}</span>
+            <!-- Gender (de-emphasized) -->
+            <span>&middot;</span>
+            <span>{{
+              application.applicationDetailDTO.applicant?.user?.gender
+                ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
+                : '—'
+            }}</span>
           </div>
         </div>
         <div class="flex gap-3 flex-shrink-0">

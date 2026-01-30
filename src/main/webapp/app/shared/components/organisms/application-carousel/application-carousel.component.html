@@ -9,9 +9,13 @@
     } @else {
       @for (app of visibleApplications(); track i; let i = $index) {
         @if (app) {
-          <jhi-application-card [application]="app" [disabled]="i !== middle()" />
+          <div class="flex max-h-[18rem]">
+            <jhi-application-card [application]="app" [disabled]="i !== middle()" />
+          </div>
         } @else {
-          <jhi-application-card [application]="app" [placeholder]="true" />
+          <div class="flex max-h-[18rem]">
+            <jhi-application-card [application]="app" [placeholder]="true" />
+          </div>
         }
       }
     }
