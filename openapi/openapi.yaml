@@ -2,6 +2,10 @@ openapi: 3.1.0
 info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
+tags:
+- name: Actuator
+  description: Monitor and interact
+  externalDocs: {description: Spring Boot Actuator Web API Documentation, url: 'https://docs.spring.io/spring-boot/docs/current/actuator-api/html/'}
 paths:
   /api/ai/generateJobDescriptionStream:
     put:
@@ -1937,18 +1941,67 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
-  /api/users/export:
+  /api/users/data-export:
+    post:
+      tags: [user-data-export-resource]
+      summary: Request a data export for the current user
+      operationId: requestDataExport
+      responses:
+        '202': {description: Data export request accepted}
+        '409': {description: Data export request already exists or is in progress}
+        '429': {description: Data export request rate limit exceeded}
+        '500':
+          description: Internal server error while creating data export request
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
+  /api/users/data-export/download/{token}:
     get:
       tags: [user-data-export-resource]
-      summary: Export user data
-      operationId: exportUserData
+      summary: Download a prepared data export
+      operationId: downloadDataExport
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
       responses:
         '200':
-          description: OK
+          description: Data export download
           content:
-            application/zip:
+            application/json:
               schema: {type: string, format: binary}
-        '500': {description: Internal Server Error}
+        '404':
+          description: Export not found
+          content:
+            application/json:
+              schema: {type: string, format: binary}
+        '409':
+          description: Export not ready or expired
+          content:
+            application/json:
+              schema: {type: string, format: binary}
+        '500':
+          description: Internal server error while downloading data export
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
+  /api/users/data-export/status:
+    get:
+      tags: [user-data-export-resource]
+      summary: Get data export status for the current user
+      operationId: getDataExportStatus
+      responses:
+        '200':
+          description: Current data export status
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DataExportStatusDTO'}
+        '500':
+          description: Internal server error while loading data export status
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -1981,6 +2034,315 @@ paths:
         required: true
       responses:
         '200': {description: OK}
+  /management:
+    get:
+      tags: [Actuator]
+      summary: Actuator root web endpoint
+      operationId: links
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: {$ref: '#/components/schemas/Link'}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: {$ref: '#/components/schemas/Link'}
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: {$ref: '#/components/schemas/Link'}
+  /management/caches:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches'
+      operationId: caches
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+    delete:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches'
+      operationId: clearCaches
+      responses:
+        '204': {description: No Content}
+  /management/caches/{cache}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches-cache'
+      operationId: cache
+      parameters:
+      - name: cache
+        in: path
+        required: true
+        schema: {type: string}
+      - name: cacheManager
+        in: query
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+    delete:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'caches-cache'
+      operationId: clearCache
+      parameters:
+      - name: cache
+        in: path
+        required: true
+        schema: {type: string}
+      - name: cacheManager
+        in: query
+        schema: {type: string}
+      responses:
+        '204': {description: No Content}
+        '404': {description: Not Found}
+  /management/configprops:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'configprops'
+      operationId: configurationProperties
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/configprops/{prefix}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'configprops-prefix'
+      operationId: configurationPropertiesWithPrefix
+      parameters:
+      - name: prefix
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+  /management/env:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'env'
+      operationId: environment
+      parameters:
+      - name: pattern
+        in: query
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/env/{toMatch}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'env-toMatch'
+      operationId: environmentEntry
+      parameters:
+      - name: toMatch
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+  /management/health:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'health'
+      operationId: health
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/info:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'info'
+      operationId: info
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/jhimetrics:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'jhimetrics'
+      operationId: allMetrics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/jhiopenapigroups:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'jhiopenapigroups'
+      operationId: allOpenApi
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/liquibase:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'liquibase'
+      operationId: liquibaseBeans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/loggers:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'loggers'
+      operationId: loggers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+  /management/loggers/{name}:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'loggers-name'
+      operationId: loggerLevels
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema: {type: string}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
+        '404': {description: Not Found}
+    post:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'loggers-name'
+      operationId: configureLogLevel
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              enum: [TRACE, DEBUG, INFO, WARN, ERROR, FATAL, 'OFF']
+      responses:
+        '204': {description: No Content}
+        '400': {description: Bad Request}
+  /management/threaddump:
+    get:
+      tags: [Actuator]
+      summary: Actuator web endpoint 'threaddump'
+      operationId: threadDump
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain;charset=UTF-8:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v3+json:
+              schema: {type: object}
+            application/vnd.spring-boot.actuator.v2+json:
+              schema: {type: object}
+            application/json:
+              schema: {type: object}
 components:
   schemas:
     AIJobDescriptionTranslationDTO:
@@ -2328,6 +2690,17 @@ components:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
     CustomFieldDTO: {}
+    DataExportStatusDTO:
+      type: object
+      properties:
+        cooldownSeconds: {type: integer, format: int64}
+        downloadToken: {type: string}
+        lastRequestedAt: {type: string, format: date-time}
+        nextAllowedAt: {type: string, format: date-time}
+        status:
+          type: string
+          enum: [REQUESTED, IN_CREATION, EMAIL_SENT, DOWNLOADED, DOWNLOADED_DELETED,
+            DELETED, FAILED]
     Department:
       type: object
       properties:
@@ -2370,7 +2743,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2381,7 +2755,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2392,7 +2767,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2406,7 +2782,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, USER_DATA_DELETION_WARNING]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -2701,6 +3078,11 @@ components:
         lastName: {type: string}
         universityId: {type: string}
         username: {type: string}
+    Link:
+      type: object
+      properties:
+        href: {type: string}
+        templated: {type: boolean}
     LoginRequestDTO:
       type: object
       properties:
@@ -3096,6 +3478,62 @@ components:
         selectedLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserDataExportException:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName: {type: string}
+                  moduleName: {type: string}
+                  moduleVersion: {type: string}
+                  methodName: {type: string}
+                  fileName: {type: string}
+                  lineNumber: {type: integer, format: int32}
+                  className: {type: string}
+                  nativeMethod: {type: boolean}
+            message: {type: string}
+            localizedMessage: {type: string}
+        localizedMessage: {type: string}
+        message: {type: string}
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName: {type: string}
+              moduleName: {type: string}
+              moduleVersion: {type: string}
+              methodName: {type: string}
+              fileName: {type: string}
+              lineNumber: {type: integer, format: int32}
+              className: {type: string}
+              nativeMethod: {type: boolean}
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName: {type: string}
+                    moduleName: {type: string}
+                    moduleVersion: {type: string}
+                    methodName: {type: string}
+                    fileName: {type: string}
+                    lineNumber: {type: integer, format: int32}
+                    className: {type: string}
+                    nativeMethod: {type: boolean}
+              message: {type: string}
+              localizedMessage: {type: string}
     UserForApplicationDetailDTO:
       type: object
       properties:

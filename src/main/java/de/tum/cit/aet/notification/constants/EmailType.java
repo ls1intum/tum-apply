@@ -7,6 +7,11 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Enumeration representing different types of emails that can be sent within the application.
+ * Each email type defines the recipients (based on UserRole), whether the template is editable,
+ * and whether multiple templates are allowed per research group.
+ */
 @Getter
 @AllArgsConstructor
 public enum EmailType {
@@ -80,6 +85,17 @@ public enum EmailType {
      */
     INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true, false),
 
+    /**
+     * Data export ready notification
+     * To: User who requested the export
+     */
+    DATA_EXPORT_READY("DATA_EXPORT_READY", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE, UserRole.ADMIN), false, false),
+
+    /**
+     * Warning email sent to inactive users before their data is deleted due to prolonged inactivity.
+     * This notification is triggered 28 days before the scheduled deletion date, giving users time to log in and reactivate their account.
+     * To: Inactive applicants, employees, and professors who are approaching the data deletion threshold.
+     */
     USER_DATA_DELETION_WARNING(
         "USER_DATA_DELETION_WARNING",
         Set.of(UserRole.APPLICANT, UserRole.EMPLOYEE, UserRole.PROFESSOR),
