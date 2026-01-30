@@ -413,8 +413,6 @@
     },
     "imageLibrary": {
       "title": "Research Group Image Library",
-      "subtitle": "Manage banner images for job positions",
-      "uploadImage": "Upload Image",
       "stats": {
         "totalImages": "Total Images",
         "inUse": "In Use",
