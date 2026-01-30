@@ -63,8 +63,8 @@ export class InfoBoxComponent {
     const severityClasses: Record<InfoBoxSeverity, string> = {
       primary: 'bg-[var(--p-background-surface)] border-[var(--p-primary-color)]',
       secondary: 'bg-[var(--p-border-default)] border-[var(--p-text-disabled)]',
-      danger: 'bg-[var(--p-background-surface)] border-negative',
-      warning: 'bg-[var(--p-background-surface)] border-warning',
+      danger: 'bg-background-surface border-negative',
+      warning: 'bg-background-surface border-warning',
       info: 'bg-[var(--p-background-surface)] border-[var(--p-primary-color)]',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
