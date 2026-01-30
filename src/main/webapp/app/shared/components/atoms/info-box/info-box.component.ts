@@ -61,11 +61,11 @@ export class InfoBoxComponent {
   containerClasses = computed(() => {
     const baseClasses = 'flex items-center gap-3 p-4 border-l-4 rounded-sm';
     const severityClasses: Record<InfoBoxSeverity, string> = {
-      primary: 'bg-[var(--p-background-surface)] border-[var(--p-primary-color)]',
+      primary: 'bg-background-surface border-primary',
       secondary: 'bg-[var(--p-border-default)] border-[var(--p-text-disabled)]',
       danger: 'bg-background-surface border-negative',
       warning: 'bg-background-surface border-warning',
-      info: 'bg-[var(--p-background-surface)] border-[var(--p-primary-color)]',
+      info: 'bg-background-surface border-primary',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });
@@ -77,11 +77,11 @@ export class InfoBoxComponent {
   iconClasses = computed(() => {
     const baseClasses = 'text-xl mt-0.5';
     const severityClasses: Record<InfoBoxSeverity, string> = {
-      primary: 'text-[var(--p-primary-color)]',
+      primary: 'text-primary',
       secondary: 'text-[var(--p-text-disabled)]',
       danger: 'text-negative',
       warning: 'text-warning',
-      info: 'text-[var(--p-primary-color)]',
+      info: 'text-primary',
     };
     return `${baseClasses} ${severityClasses[this.severity()]}`;
   });
