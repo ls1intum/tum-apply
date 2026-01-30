@@ -1,50 +1,44 @@
-import {CommonModule, Location} from '@angular/common';
-import {Component, TemplateRef, computed, effect, inject, signal, viewChild} from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
-import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {Language, TranslateModule, TranslateService} from '@ngx-translate/core';
-import {firstValueFrom} from 'rxjs';
-import {TooltipModule} from 'primeng/tooltip';
-import {DividerModule} from 'primeng/divider';
-import {ProgressSpinnerModule} from 'primeng/progressspinner';
-import {CheckboxModule} from 'primeng/checkbox';
-import {ToggleSwitchModule} from 'primeng/toggleswitch';
-import {TranslateDirective} from 'app/shared/language';
-import {
-  ProgressStepperComponent,
-  StepData
-} from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
-import {ButtonColor, ButtonComponent} from 'app/shared/components/atoms/button/button.component';
-import {ConfirmDialog} from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
-import {EditorComponent} from 'app/shared/components/atoms/editor/editor.component';
-import {DatePickerComponent} from 'app/shared/components/atoms/datepicker/datepicker.component';
-import {StringInputComponent} from 'app/shared/components/atoms/string-input/string-input.component';
-import {SelectComponent} from 'app/shared/components/atoms/select/select.component';
-import {NumberInputComponent} from 'app/shared/components/atoms/number-input/number-input.component';
-import {ProgressSpinnerComponent} from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
-import {ToggleSwitchComponent} from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
-import {InfoBoxComponent} from 'app/shared/components/atoms/info-box/info-box.component';
-import {MessageComponent} from 'app/shared/components/atoms/message/message.component';
-import {
-  SegmentedToggleComponent,
-  SegmentedToggleValue
-} from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
-import {SavingState, SavingStates} from 'app/shared/constants/saving-states';
-import {htmlTextMaxLengthValidator, htmlTextRequiredValidator} from 'app/shared/validators/custom-validators';
-import {AiResourceApiService} from 'app/generated';
-import {AiStreamingService} from 'app/service/ai-streaming.service';
-import {AccountService} from 'app/core/auth/account.service';
-import {ToastService} from 'app/service/toast-service';
-import {JobResourceApiService} from 'app/generated/api/jobResourceApi.service';
-import {JobFormDTO} from 'app/generated/model/jobFormDTO';
-import {JobDTO} from 'app/generated/model/jobDTO';
-import {ImageResourceApiService} from 'app/generated/api/imageResourceApi.service';
-import {ImageDTO} from 'app/generated/model/imageDTO';
-import {extractCompleteHtmlTags, unescapeJsonString} from 'app/shared/util/util';
+import { CommonModule, Location } from '@angular/common';
+import { Component, TemplateRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Language, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
+import { TooltipModule } from 'primeng/tooltip';
+import { DividerModule } from 'primeng/divider';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { TranslateDirective } from 'app/shared/language';
+import { ProgressStepperComponent, StepData } from 'app/shared/components/molecules/progress-stepper/progress-stepper.component';
+import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
+import { DatePickerComponent } from 'app/shared/components/atoms/datepicker/datepicker.component';
+import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
+import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
+import { NumberInputComponent } from 'app/shared/components/atoms/number-input/number-input.component';
+import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
+import { ToggleSwitchComponent } from 'app/shared/components/atoms/toggle-switch/toggle-switch.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
+import { MessageComponent } from 'app/shared/components/atoms/message/message.component';
+import { SegmentedToggleComponent, SegmentedToggleValue } from 'app/shared/components/atoms/segmented-toggle/segmented-toggle.component';
+import { SavingState, SavingStates } from 'app/shared/constants/saving-states';
+import { htmlTextMaxLengthValidator, htmlTextRequiredValidator } from 'app/shared/validators/custom-validators';
+import { AiResourceApiService } from 'app/generated';
+import { AiStreamingService } from 'app/service/ai-streaming.service';
+import { AccountService } from 'app/core/auth/account.service';
+import { ToastService } from 'app/service/toast-service';
+import { JobResourceApiService } from 'app/generated/api/jobResourceApi.service';
+import { JobFormDTO } from 'app/generated/model/jobFormDTO';
+import { JobDTO } from 'app/generated/model/jobDTO';
+import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
+import { ImageDTO } from 'app/generated/model/imageDTO';
+import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 
-import {JobDetailComponent} from '../job-detail/job-detail.component';
+import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
 
 /** Represents the mode of the job creation form: creating a new job or editing an existing one */
@@ -153,6 +147,12 @@ export class JobCreationFormComponent {
 
   /** Indicates whether AI translation is in progress */
   isTranslating = signal<boolean>(false);
+
+  /** Last successfully translated English text (used to avoid redundant translations) */
+  lastTranslatedEN = signal<string>('');
+
+  /** Last successfully translated German text (used to avoid redundant translations) */
+  lastTranslatedDE = signal<string>('');
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AI GENERATION SIGNALS
@@ -299,10 +299,10 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Signal that emits when basicInfoForm status changes */
-  basicInfoChanges = toSignal(this.basicInfoForm.statusChanges, {initialValue: this.basicInfoForm.status});
+  basicInfoChanges = toSignal(this.basicInfoForm.statusChanges, { initialValue: this.basicInfoForm.status });
 
   /** Signal that emits when positionDetailsForm status changes */
-  positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, {initialValue: this.positionDetailsForm.status});
+  positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
 
   /** Signal tracking the privacy consent checkbox state */
   privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
@@ -392,7 +392,7 @@ export class JobCreationFormComponent {
   translatedFieldsOfStudies = computed(() => {
     void this.currentLang();
     return DropdownOptions.fieldsOfStudies
-      .map(option => ({value: option.value, name: this.translate.instant(option.name)}))
+      .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
@@ -400,7 +400,7 @@ export class JobCreationFormComponent {
   translatedLocations = computed(() => {
     void this.currentLang();
     return DropdownOptions.locations
-      .map(option => ({value: option.value, name: this.translate.instant(option.name)}))
+      .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
@@ -408,7 +408,7 @@ export class JobCreationFormComponent {
   translatedFundingTypes = computed(() => {
     void this.currentLang();
     return DropdownOptions.fundingTypes
-      .map(option => ({value: option.value, name: this.translate.instant(option.name)}))
+      .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
@@ -450,6 +450,9 @@ export class JobCreationFormComponent {
   private autoSaveInitialized = false;
 
   private isAutoScrolling = false;
+
+  /** Monotonic id to track latest translation request and ignore stale responses */
+  private latestTranslationRequestId = 0;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD CONSTRAINTS
@@ -523,7 +526,7 @@ export class JobCreationFormComponent {
 
     const targetContent = newLanguage === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
 
-    this.basicInfoForm.get('jobDescription')?.setValue(targetContent, {emitEvent: false});
+    this.basicInfoForm.get('jobDescription')?.setValue(targetContent, { emitEvent: false });
     this.jobDescriptionSignal.set(targetContent);
     this.jobDescriptionEditor()?.forceUpdate(targetContent);
   });
@@ -651,7 +654,7 @@ export class JobCreationFormComponent {
       const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
 
       this.selectedImage.set(uploadedImage);
-      this.imageForm.patchValue({imageId: uploadedImage.imageId});
+      this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
       const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
@@ -672,7 +675,7 @@ export class JobCreationFormComponent {
    */
   selectImage(image: ImageDTO): void {
     this.selectedImage.set(image);
-    this.imageForm.patchValue({imageId: image.imageId});
+    this.imageForm.patchValue({ imageId: image.imageId });
   }
 
   /**
@@ -680,7 +683,7 @@ export class JobCreationFormComponent {
    */
   clearImageSelection(): void {
     this.selectedImage.set(undefined);
-    this.imageForm.patchValue({imageId: null});
+    this.imageForm.patchValue({ imageId: null });
   }
 
   /**
@@ -950,7 +953,7 @@ export class JobCreationFormComponent {
       researchArea: ['', [Validators.required]],
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
-      supervisingProfessor: [{value: this.accountService.loadedUser()?.name ?? ''}, Validators.required],
+      supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
       jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
     });
   }
@@ -1043,7 +1046,7 @@ export class JobCreationFormComponent {
     // keep editor in sync with selected language (without triggering autosave loop)
     const lang = this.currentDescriptionLanguage();
     const content = lang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
-    this.basicInfoForm.get('jobDescription')?.setValue(content, {emitEvent: false});
+    this.basicInfoForm.get('jobDescription')?.setValue(content, { emitEvent: false });
     this.jobDescriptionSignal.set(content);
     this.jobDescriptionEditor()?.forceUpdate(content);
   }
@@ -1139,7 +1142,7 @@ export class JobCreationFormComponent {
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {
-      this.imageForm.patchValue({imageId: job.imageId});
+      this.imageForm.patchValue({ imageId: job.imageId });
 
       const isDefaultImage = this.defaultImages().some(img => img.imageId === job.imageId);
       const imageType = isDefaultImage ? 'DEFAULT_JOB_BANNER' : 'JOB_BANNER';
@@ -1246,8 +1249,10 @@ export class JobCreationFormComponent {
     const text = currentText.trim();
     if (!jobId || !text) return;
 
-    const lastBaseline = currentLang === 'en' ? this.jobDescriptionEN() : this.jobDescriptionDE();
+    const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
     if (text === lastBaseline) return;
+
+    const requestId = ++this.latestTranslationRequestId;
 
     const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
 
@@ -1255,14 +1260,21 @@ export class JobCreationFormComponent {
     try {
       const response = await firstValueFrom(this.aiService.translateJobDescriptionForJob(jobId, targetLang, text));
 
+      // If a newer translation request was started meanwhile, ignore this (stale) response
+      if (requestId !== this.latestTranslationRequestId) return;
+
       const translatedText = (response.translatedText ?? '').trim();
       if (!translatedText) return;
 
       // Update local hidden language signals only (no editor update)
       if (targetLang === 'en') {
         this.jobDescriptionEN.set(translatedText);
+        this.lastTranslatedEN.set(translatedText);
+        this.lastTranslatedDE.set(text);
       } else {
         this.jobDescriptionDE.set(translatedText);
+        this.lastTranslatedDE.set(translatedText);
+        this.lastTranslatedEN.set(text);
       }
 
       // Keep lastSavedData in sync so hasUnsavedChanges stays stable
@@ -1291,7 +1303,10 @@ export class JobCreationFormComponent {
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
     } finally {
-      this.isTranslating.set(false);
+      // Only clear isTranslating for the latest request
+      if (requestId === this.latestTranslationRequestId) {
+        this.isTranslating.set(false);
+      }
     }
   }
 
@@ -1364,8 +1379,7 @@ export class JobCreationFormComponent {
             variant: 'outlined',
             severity: 'primary',
             icon: 'chevron-left',
-            onClick() {
-            },
+            onClick() {},
             disabled: false,
             label: 'button.back',
             shouldTranslate: true,
@@ -1376,8 +1390,7 @@ export class JobCreationFormComponent {
           {
             severity: 'primary',
             icon: 'chevron-right',
-            onClick() {
-            },
+            onClick() {},
             disabled: !this.positionDetailsValid(),
             label: 'button.next',
             shouldTranslate: true,
@@ -1399,8 +1412,7 @@ export class JobCreationFormComponent {
             variant: 'outlined',
             severity: 'primary',
             icon: 'chevron-left',
-            onClick() {
-            },
+            onClick() {},
             disabled: false,
             label: 'button.back',
             shouldTranslate: true,
@@ -1411,8 +1423,7 @@ export class JobCreationFormComponent {
           {
             severity: 'primary',
             icon: 'chevron-right',
-            onClick() {
-            },
+            onClick() {},
             disabled: false,
             label: 'button.next',
             shouldTranslate: true,
@@ -1434,8 +1445,7 @@ export class JobCreationFormComponent {
             variant: 'outlined',
             severity: 'primary',
             icon: 'chevron-left',
-            onClick() {
-            },
+            onClick() {},
             disabled: false,
             label: 'button.back',
             shouldTranslate: true,
@@ -1479,7 +1489,7 @@ export class JobCreationFormComponent {
 
       img.onload = () => {
         URL.revokeObjectURL(objectUrl);
-        resolve({width: img.width, height: img.height});
+        resolve({ width: img.width, height: img.height });
       };
       img.onerror = () => {
         URL.revokeObjectURL(objectUrl);
