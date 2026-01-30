@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -27,4 +28,8 @@ public interface InternalCommentRepository extends TumApplyJpaRepository<Interna
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE InternalComment ic SET ic.createdBy = :deletedUser WHERE ic.createdBy = :createdBy")
     void anonymiseByCreatedBy(User createdBy, User deletedUser);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM InternalComment ic WHERE ic.application.applicationId IN :applicationIds")
+    void deleteByApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
 }

@@ -16,15 +16,20 @@
               COALESCE(description, ''),
               CASE
                 WHEN description IS NOT NULL AND description &lt;&gt; ''
-                  AND ((tasks IS NOT NULL AND tasks &lt;&gt; '') OR (requirements IS NOT NULL AND requirements &lt;&gt; ''))
-                  THEN '\n\n' ELSE '' END,
+                  AND ((tasks IS NOT NULL AND tasks &lt;&gt; '') OR
+                       (requirements IS NOT NULL AND requirements &lt;&gt; ''))
+                  THEN '\n\n'
+                ELSE '' END,
               COALESCE(tasks, ''),
               CASE
                 WHEN tasks IS NOT NULL AND tasks &lt;&gt; '' AND requirements IS NOT NULL AND requirements &lt;&gt; ''
-                  THEN '\n\n' ELSE '' END,
+                  THEN '\n\n'
+                ELSE '' END,
               COALESCE(requirements, '')
             )
-      WHERE description IS NOT NULL OR tasks IS NOT NULL OR requirements IS NOT NULL;
+      WHERE description IS NOT NULL
+         OR tasks IS NOT NULL
+         OR requirements IS NOT NULL;
     </sql>
 
     <dropColumn tableName="jobs" columnName="description"/>

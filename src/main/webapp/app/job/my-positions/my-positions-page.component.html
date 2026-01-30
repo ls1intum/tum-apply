@@ -37,6 +37,13 @@
     <div class="page-header">
       <h1 jhiTranslate="myPositionsPage.header.title"></h1>
     </div>
+    <jhi-button
+      label="myPositionsPage.header.createButton"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateJob()"
+      [shouldTranslate]="true"
+    />
   </div>
   <div class="my-positions-container">
     <div class="body">
@@ -58,16 +65,7 @@
           },
         ]"
         [sortableFields]="sortableFields"
-      >
-        <!-- Content projection: This button is projected into the search-filter-sort-bar component's ng-content slot -->
-        <jhi-button
-          label="myPositionsPage.header.createButton"
-          icon="plus"
-          severity="primary"
-          (click)="onCreateJob()"
-          [shouldTranslate]="true"
-        />
-      </jhi-search-filter-sort-bar>
+      />
       <div class="table-wrapper">
         <jhi-dynamic-table
           [columns]="columns()"

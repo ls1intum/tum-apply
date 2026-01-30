@@ -53,7 +53,9 @@ public final class JobTestData {
         return j;
     }
 
-    /** Unsaved job; every field optional (null = keep default). */
+    /**
+     * Unsaved job; every field optional (null = keep default).
+     */
     public static Job newJobAll(
         String title,
         String researchArea,
@@ -66,7 +68,8 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String jobDescription,
+        String jobDescriptionEN,
+        String jobDescriptionDE,
         JobState state
     ) {
         Job j = newJob(supervisingProfessor, researchGroup, title, state, startDate);
@@ -77,7 +80,8 @@ public final class JobTestData {
         if (workload != null) j.setWorkload(workload);
         if (contractDuration != null) j.setContractDuration(contractDuration);
         if (fundingType != null) j.setFundingType(fundingType);
-        if (jobDescription != null) j.setJobDescription(jobDescription);
+        if (jobDescriptionEN != null) j.setJobDescriptionEN(jobDescriptionEN);
+        if (jobDescriptionDE != null) j.setJobDescriptionDE(jobDescriptionDE);
         return j;
     }
 
@@ -104,7 +108,8 @@ public final class JobTestData {
         Integer workload,
         Integer contractDuration,
         FundingType fundingType,
-        String jobDescription,
+        String jobDescriptionEN,
+        String jobDescriptionDE,
         JobState state
     ) {
         return repo.save(
@@ -120,7 +125,8 @@ public final class JobTestData {
                 workload,
                 contractDuration,
                 fundingType,
-                jobDescription,
+                jobDescriptionEN,
+                jobDescriptionDE,
                 state
             )
         );

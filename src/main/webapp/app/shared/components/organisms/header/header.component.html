@@ -12,8 +12,8 @@
     }
   </div>
 
-  <div class="flex items-center gap-3 flex-shrink-0">
-    <div class="flex items-center gap-1">
+  <div class="flex items-center gap-1 flex-shrink-0">
+    <div class="flex items-center gap-1 mr-2">
       @for (language of languages; track language; let isLast = $last) {
         <button
           (click)="toggleLanguage(language)"
@@ -32,8 +32,8 @@
       <jhi-button
         class="[&_.p-button]:w-8 [&_.p-button]:h-8 [&_.p-button]:rounded-md"
         (click)="toggleTheme()"
-        [icon]="isDarkMode() ? 'moon' : 'custom-sun'"
-        [tooltip]="'header.theme' | translate"
+        [icon]="themeIcon()"
+        [tooltip]="themeTooltip() | translate"
         variant="text"
         severity="primary"
       />
@@ -42,26 +42,31 @@
     @if (user() === undefined) {
       @if (isProfessorPage()) {
         <jhi-button
+          [class]="headerButtonClass"
           (click)="redirectToApplicantLandingPage()"
           label="{{ 'header.applicant' | translate }}"
           severity="primary"
-          variant="outlined"
+          variant="text"
         />
       } @else {
         <jhi-button
-          class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-lg"
+          [class]="headerButtonClass"
           (click)="redirectToProfessorLandingPage()"
           label="{{ 'header.professor' | translate }}"
           severity="primary"
-          variant="outlined"
+          variant="text"
         />
       }
 
+      <div class="h-4 mx-0.5 w-px bg-primary-default self-center"></div>
+
       <jhi-button
-        class="inline-flex [&_.p-button]:min-w-[6.3rem] [&_.p-button]:h-8 [&_.p-button]:justify-center [&_.p-button]:px-3 [&_.p-button]:py-[0.4rem] [&_.p-button]:text-[0.9rem] [&_.p-button]:rounded-md"
+        [class]="headerButtonClass"
         (click)="login()"
         label="{{ 'header.login' | translate }}"
         severity="primary"
+        variant="text"
+        styleClass="font-bold"
       />
     } @else {
       <button

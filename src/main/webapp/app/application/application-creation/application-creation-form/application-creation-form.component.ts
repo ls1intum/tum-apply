@@ -514,6 +514,11 @@ export default class ApplicationCreationFormComponent {
       // Clear local storage on successful server save
       this.clearLocalStorage();
 
+      // After application is sent, reload user data to update header with latest names
+      if (state === 'SENT') {
+        await this.accountService.loadUser();
+      }
+
       if (rerouteToOtherPage) {
         this.toastService.showSuccessKey(`${applyflow}.submitted`);
         await this.router.navigate(['/application/overview']);

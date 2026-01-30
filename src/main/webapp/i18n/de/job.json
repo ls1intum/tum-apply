@@ -7,7 +7,7 @@
       },
       "steps": {
         "basicInfo": "Grundlegende Informationen",
-        "positionDetails": "Arbeitsbedingungen",
+        "employmentTerms": "Arbeitsbedingungen",
         "imageSelection": "Bannerbild",
         "additionalInfo": "Zusätzliche Informationen",
         "summary": "Zusammenfassung"
@@ -124,19 +124,25 @@
       }
     },
     "positionDetailsSection": {
-      "description": "Beschreibe den Forschungsschwerpunkt, die Hauptaufgaben und die Erwartungen an die Bewerber. Definiere die Mindestanforderungen und gegebenenfalls wünschenswerte Qualifikationen.",
+      "description": "Beschreibe Forschungsschwerpunkt, Aufgaben/Erwartungen sowie Mindestanforderungen und Wunschqualifikationen für Kandidat:innen.",
+      "languageInfo": "Wähle und schreibe entweder auf Deutsch oder Englisch, die andere Sprache wird automatisch übersetzt und kann anschließend geprüft oder bearbeitet werden. Während der Übersetzung ist ein Sprachwechsel nicht möglich.",
       "jobDescription": {
         "label": "Stellenbeschreibung",
-        "placeholder": "Beschreibung\nTODO: Beschreiben Sie den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Listen Sie die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Geben Sie die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
-        "descriptionHelper": "Nutzen Sie die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
+        "placeholderEN": "Description\nTODO: Describe the research context, goals, and scope of the position.\n\nTasks & Responsibilities\nTODO: List the main responsibilities of the candidate.\n\nEligibility Criteria\nTODO: Specify the minimum requirements (degree, skills, language, etc.)",
+        "placeholderDE": "Beschreibung\nTODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.\n\nAufgaben & Verantwortlichkeiten\nTODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.\n\nAnforderungen\nTODO: Gib die Mindestanforderungen an (z. B. Abschluss, Fähigkeiten, Sprachkenntnisse).",
+        "descriptionHelper": "Nutze die Vorlage oben, um die Stellenbeschreibung klar und strukturiert zu formulieren.",
         "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt, die Aufgaben und die erwarteten Qualifikationen und Ziele der Position zu verstehen.",
-        "template": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreiben Sie den Forschungskontext, Ziele und Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Listen Sie die Hauptverantwortlichkeiten des Kandidaten auf.</p><br><p><strong>Qualifikationskriterien</strong></p><p>TODO: Geben Sie die Mindestanforderungen an (Abschluss, Fähigkeiten, Sprache, etc.)</p>",
+        "templateEN": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
+        "templateDE": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, Ziele und Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die Hauptverantwortlichkeiten des Kandidaten auf.</p><br><p><strong>Qualifikationskriterien</strong></p><p>TODO: Gib die Mindestanforderungen an (Abschluss, Fähigkeiten, Sprache, etc.)</p>",
         "aiHeaderText": "KI Assistent",
         "aiButton1": "Mit KI schreiben",
         "aiButton2": "Mit KI umschreiben",
-        "aiHelperText": "Formulierungen verbessern und Voreingenommenheit reduzieren.",
+        "aiHelperText": "Füge Stichpunkte hinzu und erhalte einen ersten Entwurf.\nFür bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
-        "aiToggle": "KI aktivieren"
+        "aiToggle": "KI aktivieren",
+        "languageEnglish": "Englisch",
+        "languageGerman": "Deutsch",
+        "translating": "Übersetzt..."
       }
     },
     "imageSection": {
@@ -220,6 +226,14 @@
       "saveFailed": {
         "summary": "Speichern fehlgeschlagen",
         "detail": "Die Änderungen konnten nicht gespeichert werden. Bitte prüfe deine Verbindung und speichere erneut."
+      },
+      "aiTranslationFailed": {
+        "summary": "Übersetzung fehlgeschlagen",
+        "detail": "Die Stellenbeschreibung konnte nicht übersetzt werden. Bitte versuche es erneut."
+      },
+      "aiGenerationFailed": {
+        "summary": "KI-Generierung fehlgeschlagen",
+        "detail": "Die Stellenbeschreibung konnte nicht generiert werden. Bitte versuche es erneut."
       }
     }
   },
@@ -325,6 +339,8 @@
     },
     "sections": {
       "jobDescription": "Stellenbeschreibung",
+      "jobDescriptionEN": "Englische Stellenbeschreibung",
+      "jobDescriptionDE": "Deutsche Stellenbeschreibung",
       "tasksResponsibilities": "Aufgaben & Verantwortlichkeiten",
       "eligibilityCriteria": "Zulassungsvoraussetzungen",
       "dataProtection": "Hinweis zum Datenschutz"

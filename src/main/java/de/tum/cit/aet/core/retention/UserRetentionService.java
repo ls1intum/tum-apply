@@ -114,9 +114,8 @@ public class UserRetentionService {
     // Helper methods for handling different categories
 
     private RetentionCategory classify(User user) {
-        List<UserResearchGroupRole> roles = user.getResearchGroupRoles() == null
-            ? List.of()
-            : user.getResearchGroupRoles().stream().toList();
+        List<UserResearchGroupRole> roles =
+            user.getResearchGroupRoles() == null ? List.of() : user.getResearchGroupRoles().stream().toList();
 
         boolean isAdmin = roles.stream().anyMatch(r -> r.getRole() == UserRole.ADMIN);
         if (isAdmin) {
@@ -145,17 +144,19 @@ public class UserRetentionService {
 
         // 1. Delete applications (and for each application delete application reviews, ratings, interviews (slots, interviewees etc), internal comments and documents)
         List<Application> applications = applicationRepository.findAllByApplicantId(user.getUserId());
-        applications.forEach(application -> {
-            interviewSlotRepository.deleteByIntervieweeApplication(application);
-            intervieweeRepository.deleteByApplication(application);
+        if (!applications.isEmpty()) {
+            List<UUID> applicationIds = applications.stream().map(Application::getApplicationId).toList();
 
-            applicationReviewRepository.deleteByApplication(application);
-            ratingRepository.deleteByApplication(application);
-            internalCommentRepository.deleteByApplication(application);
+            interviewSlotRepository.deleteByIntervieweeApplicationIdIn(applicationIds);
+            intervieweeRepository.deleteByApplicationIdIn(applicationIds);
 
-            documentDictionaryRepository.deleteByApplication(application);
-            applicationRepository.delete(application);
-        });
+            applicationReviewRepository.deleteByApplicationIdIn(applicationIds);
+            ratingRepository.deleteByApplicationIdIn(applicationIds);
+            internalCommentRepository.deleteByApplicationIdIn(applicationIds);
+
+            documentDictionaryRepository.deleteByApplicationIdIn(applicationIds);
+            applicationRepository.deleteAllInBatch(applications);
+        }
 
         documentRepository.deleteByUploadedBy(user);
 

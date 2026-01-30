@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -45,6 +46,22 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewProcess.job.researchGroup" })
     @Query("SELECT s FROM InterviewSlot s WHERE s.id = :slotId")
     Optional<InterviewSlot> findByIdWithJob(@Param("slotId") UUID slotId);
+
+    /**
+     * Finds all slots for the given interview process ids with job data.
+     *
+     * @param processIds interview process ids
+     * @return list of slots ordered by start time
+     */
+    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job" })
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.id IN :processIds
+        ORDER BY s.startDateTime ASC
+        """
+    )
+    List<InterviewSlot> findByInterviewProcessIdInWithJob(@Param("processIds") List<UUID> processIds);
 
     /**
      * Counts all interview slots associated with a specific interview process.
@@ -202,4 +219,8 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     );
 
     void deleteByIntervieweeApplication(Application application);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM InterviewSlot s WHERE s.interviewee.application.applicationId IN :applicationIds")
+    void deleteByIntervieweeApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
 }

@@ -91,7 +91,8 @@ class JobResourceTest extends AbstractResourceTest {
             job.getWorkload(),
             job.getContractDuration(),
             job.getFundingType(),
-            job.getJobDescription(),
+            job.getJobDescriptionEN(),
+            job.getJobDescriptionDE(),
             JobState.DRAFT,
             imageId
         );
@@ -185,6 +186,7 @@ class JobResourceTest extends AbstractResourceTest {
             12,
             FundingType.FULLY_FUNDED,
             "Build ML pipelines",
+            "ML Pipeline erstellen",
             JobState.PUBLISHED,
             null
         );
@@ -209,7 +211,8 @@ class JobResourceTest extends AbstractResourceTest {
                 Job::getWorkload,
                 Job::getContractDuration,
                 Job::getFundingType,
-                Job::getJobDescription,
+                Job::getJobDescriptionEN,
+                Job::getJobDescriptionDE,
                 Job::getState
             )
             .containsExactly(
@@ -224,6 +227,7 @@ class JobResourceTest extends AbstractResourceTest {
                 12,
                 FundingType.FULLY_FUNDED,
                 "Build ML pipelines",
+                "ML Pipeline erstellen",
                 JobState.PUBLISHED
             );
     }
@@ -244,9 +248,8 @@ class JobResourceTest extends AbstractResourceTest {
             entry("workload", "oops"),
             entry("contractDuration", 12),
             entry("fundingType", "FULLY_FUNDED"),
-            entry("description", "desc"),
-            entry("tasks", "tasks"),
-            entry("requirements", "req"),
+            entry("jobDescriptionEN", "desc"),
+            entry("jobDescriptionDE", "desc"),
             entry("state", "PUBLISHED")
         );
 
@@ -270,6 +273,7 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.FULLY_FUNDED,
             "desc",
+            "desc",
             JobState.DRAFT,
             null
         );
@@ -291,6 +295,7 @@ class JobResourceTest extends AbstractResourceTest {
             20,
             6,
             FundingType.FULLY_FUNDED,
+            "desc",
             "desc",
             JobState.DRAFT,
             null
@@ -316,6 +321,7 @@ class JobResourceTest extends AbstractResourceTest {
             6,
             FundingType.PARTIALLY_FUNDED,
             "Updated Description",
+            "Neue Beschreibung",
             JobState.DRAFT,
             null
         );
@@ -337,7 +343,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(updatedJob.getWorkload()).isEqualTo(updatedPayload.workload());
         assertThat(updatedJob.getContractDuration()).isEqualTo(updatedPayload.contractDuration());
         assertThat(updatedJob.getFundingType()).isEqualTo(updatedPayload.fundingType());
-        assertThat(updatedJob.getJobDescription()).isEqualTo(updatedPayload.jobDescription());
+        assertThat(updatedJob.getJobDescriptionEN()).isEqualTo(updatedPayload.jobDescriptionEN());
+        assertThat(updatedJob.getJobDescriptionDE()).isEqualTo(updatedPayload.jobDescriptionDE());
         assertThat(updatedJob.getState()).isEqualTo(updatedPayload.state());
     }
 
@@ -356,6 +363,7 @@ class JobResourceTest extends AbstractResourceTest {
             20,
             6,
             FundingType.FULLY_FUNDED,
+            "desc",
             "desc",
             JobState.DRAFT,
             null
@@ -379,6 +387,7 @@ class JobResourceTest extends AbstractResourceTest {
             10,
             3,
             FundingType.FULLY_FUNDED,
+            "desc",
             "desc",
             JobState.DRAFT,
             null
@@ -515,7 +524,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
-        assertThat(returnedJob.jobDescription()).isEqualTo(job.getJobDescription());
+        assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
+        assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.state()).isEqualTo(job.getState());
     }
 
@@ -551,7 +561,8 @@ class JobResourceTest extends AbstractResourceTest {
         assertThat(returnedJob.workload()).isEqualTo(job.getWorkload());
         assertThat(returnedJob.contractDuration()).isEqualTo(job.getContractDuration());
         assertThat(returnedJob.fundingType()).isEqualTo(job.getFundingType());
-        assertThat(returnedJob.jobDescription()).isEqualTo(job.getJobDescription());
+        assertThat(returnedJob.jobDescriptionEN()).isEqualTo(job.getJobDescriptionEN());
+        assertThat(returnedJob.jobDescriptionDE()).isEqualTo(job.getJobDescriptionDE());
         assertThat(returnedJob.startDate()).isEqualTo(job.getStartDate());
         assertThat(returnedJob.endDate()).isEqualTo(job.getEndDate());
         assertThat(returnedJob.createdAt()).isEqualTo(job.getCreatedAt());

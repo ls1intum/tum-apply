@@ -208,33 +208,7 @@ public class ApplicationService {
         Applicant applicant = application.getApplicant();
         User user = applicant.getUser();
 
-        // Update user data
-        user.setFirstName(application.getApplicantFirstName());
-        user.setLastName(application.getApplicantLastName());
-        user.setGender(application.getApplicantGender());
-        user.setNationality(application.getApplicantNationality());
-        user.setBirthday(application.getApplicantBirthday());
-        user.setPhoneNumber(application.getApplicantPhoneNumber());
-        user.setWebsite(application.getApplicantWebsite());
-        user.setLinkedinUrl(application.getApplicantLinkedinUrl());
-        userRepository.save(user);
-
-        // Update applicant data
-        applicant.setStreet(application.getApplicantStreet());
-        applicant.setPostalCode(application.getApplicantPostalCode());
-        applicant.setCity(application.getApplicantCity());
-        applicant.setCountry(application.getApplicantCountry());
-        applicant.setBachelorDegreeName(application.getApplicantBachelorDegreeName());
-        applicant.setBachelorGradeUpperLimit(application.getApplicantBachelorGradeUpperLimit());
-        applicant.setBachelorGradeLowerLimit(application.getApplicantBachelorGradeLowerLimit());
-        applicant.setBachelorGrade(application.getApplicantBachelorGrade());
-        applicant.setBachelorUniversity(application.getApplicantBachelorUniversity());
-        applicant.setMasterDegreeName(application.getApplicantMasterDegreeName());
-        applicant.setMasterGradeUpperLimit(application.getApplicantMasterGradeUpperLimit());
-        applicant.setMasterGradeLowerLimit(application.getApplicantMasterGradeLowerLimit());
-        applicant.setMasterGrade(application.getApplicantMasterGrade());
-        applicant.setMasterUniversity(application.getApplicantMasterUniversity());
-        applicantRepository.save(applicant);
+        applyApplicantData(user, applicant, ApplicantDTO.getFromApplicationSnapshot(application));
     }
 
     private void confirmApplicationToApplicant(Application application) {
@@ -474,6 +448,53 @@ public class ApplicationService {
     }
 
     /**
+     * Retrieves the current user's applicant profile with all personal information.
+     * Creates an empty applicant profile if none exists yet.
+     *
+     * @return the ApplicantDTO with current user and applicant data
+     */
+    public ApplicantDTO getApplicantProfile() {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        Optional<Applicant> applicantOptional = applicantRepository.findById(userId);
+        Applicant applicant;
+        if (applicantOptional.isEmpty()) {
+            applicant = createApplicant(userId);
+        } else {
+            applicant = applicantOptional.get();
+        }
+
+        return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
+     * Updates the current user's applicant profile with personal information.
+     * Writes directly to `User` and `Applicant` entities.
+     *
+     * @param dto the updated applicant data
+     * @return the updated ApplicantDTO
+     */
+    @Transactional
+    public ApplicantDTO updateApplicantProfile(ApplicantDTO dto) {
+        UUID userId = currentUserService.getUserId();
+        if (userId == null) {
+            throw new InvalidParameterException("UserId must not be null.");
+        }
+
+        User user = userRepository.findById(userId).orElseThrow(() -> EntityNotFoundException.forId("User", userId));
+        Applicant applicant = applicantRepository.findById(userId).orElseGet(() -> createApplicant(userId));
+
+        applyApplicantData(user, applicant, dto);
+        userRepository.save(user);
+        applicantRepository.save(applicant);
+
+        return ApplicantDTO.getFromEntity(applicant);
+    }
+
+    /**
      * Creates an Applicant for the given userId
      *
      * @param userId The id of the User
@@ -484,6 +505,42 @@ public class ApplicationService {
         Applicant applicant = new Applicant();
         applicant.setUser(user);
         return applicantRepository.save(applicant);
+    }
+
+    /**
+     * Applies applicant and user data from a DTO and persists both entities.
+     */
+    private void applyApplicantData(User user, Applicant applicant, ApplicantDTO dto) {
+        if (dto.user() != null) {
+            if (dto.user().firstName() != null) user.setFirstName(dto.user().firstName());
+            if (dto.user().lastName() != null) user.setLastName(dto.user().lastName());
+            if (dto.user().email() != null) user.setEmail(dto.user().email());
+            user.setGender(dto.user().gender());
+            user.setNationality(dto.user().nationality());
+            user.setBirthday(dto.user().birthday());
+            user.setPhoneNumber(dto.user().phoneNumber());
+            user.setWebsite(dto.user().website());
+            user.setLinkedinUrl(dto.user().linkedinUrl());
+        }
+
+        applicant.setStreet(dto.street());
+        applicant.setPostalCode(dto.postalCode());
+        applicant.setCity(dto.city());
+        applicant.setCountry(dto.country());
+
+        applicant.setBachelorDegreeName(dto.bachelorDegreeName());
+        applicant.setBachelorGradeUpperLimit(dto.bachelorGradeUpperLimit());
+        applicant.setBachelorGradeLowerLimit(dto.bachelorGradeLowerLimit());
+        applicant.setBachelorGrade(dto.bachelorGrade());
+        applicant.setBachelorUniversity(dto.bachelorUniversity());
+
+        applicant.setMasterDegreeName(dto.masterDegreeName());
+        applicant.setMasterGradeUpperLimit(dto.masterGradeUpperLimit());
+        applicant.setMasterGradeLowerLimit(dto.masterGradeLowerLimit());
+        applicant.setMasterGrade(dto.masterGrade());
+        applicant.setMasterUniversity(dto.masterUniversity());
+
+        // Save operations moved to updateApplicantProfile
     }
 
     /**

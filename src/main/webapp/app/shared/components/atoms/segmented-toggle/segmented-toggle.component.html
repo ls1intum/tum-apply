@@ -1,0 +1,36 @@
+<div class="inline-block">
+  <div class="relative flex items-center p-1 transition-colors bg-background-surface dark:bg-background-surface-alt rounded-lg">
+    <div
+      class="segmented-active-bg absolute top-1 left-1 h-[calc(100%-0.5rem)] w-[calc(50%-0.25rem)] z-[1] transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-sm bg-background-default border border-border-default rounded-md"
+      [class.translate-x-full]="value() === 'right'"
+    ></div>
+
+    <button
+      type="button"
+      [class]="btnClass"
+      [class.!text-text-primary]="value() === 'left'"
+      [disabled]="disabled()"
+      (click)="setValue('left')"
+    >
+      @if (translateLabels()) {
+        <span [jhiTranslate]="leftLabel()"></span>
+      } @else {
+        <span>{{ leftLabel() }}</span>
+      }
+    </button>
+
+    <button
+      type="button"
+      [class]="btnClass"
+      [class.!text-text-primary]="value() === 'right'"
+      [disabled]="disabled()"
+      (click)="setValue('right')"
+    >
+      @if (translateLabels()) {
+        <span [jhiTranslate]="rightLabel()"></span>
+      } @else {
+        <span>{{ rightLabel() }}</span>
+      }
+    </button>
+  </div>
+</div>

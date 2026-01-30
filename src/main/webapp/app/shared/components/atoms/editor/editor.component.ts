@@ -203,8 +203,20 @@ export class EditorComponent extends BaseInputDirective<string> {
     const editor = this.quillEditorComponent()?.quillEditor;
     if (!editor) return;
 
+    // Preserve cursor/selection if editor currently focused
+    const hadFocus = editor.hasFocus();
+    const range = hadFocus ? editor.getSelection() : null;
+
     const content = editor.clipboard.convert({ html: newValue });
     editor.setContents(content, 'api');
+
+    // Restore selection (clamp to doc length)
+    if (hadFocus && range) {
+      const len = editor.getLength();
+      const index = Math.min(range.index, Math.max(0, len - 1));
+      editor.setSelection(index, range.length, 'silent');
+    }
+
     this.cdRef.markForCheck();
   }
 

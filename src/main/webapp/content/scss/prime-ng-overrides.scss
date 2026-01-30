@@ -153,3 +153,13 @@ p-step[data-p-active='true'] .p-step-title {
 .p-dialog-content {
   border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl) !important;
 }
+
+/* -------------------------------
+   Custom Tooltip Styles
+---------------------------------- */
+
+// Adjust tooltip positioning on the right side to avoid a cramped appearance
+// Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}"
+.tooltip-top.p-tooltip-right {
+  top: -0.5rem !important;
+}
