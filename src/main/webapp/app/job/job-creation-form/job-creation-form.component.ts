@@ -451,9 +451,6 @@ export class JobCreationFormComponent {
 
   private isAutoScrolling = false;
 
-  /** Monotonic id to track latest translation request and ignore stale responses */
-  private latestTranslationRequestId = 0;
-
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD CONSTRAINTS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1252,16 +1249,13 @@ export class JobCreationFormComponent {
     const lastBaseline = currentLang === 'en' ? this.lastTranslatedEN() : this.lastTranslatedDE();
     if (text === lastBaseline) return;
 
-    const requestId = ++this.latestTranslationRequestId;
+    if (this.isTranslating()) return;
 
     const targetLang: Language = currentLang === 'en' ? 'de' : 'en';
 
     this.isTranslating.set(true);
     try {
       const response = await firstValueFrom(this.aiService.translateJobDescriptionForJob(jobId, targetLang, text));
-
-      // If a newer translation request was started meanwhile, ignore this (stale) response
-      if (requestId !== this.latestTranslationRequestId) return;
 
       const translatedText = (response.translatedText ?? '').trim();
       if (!translatedText) return;
@@ -1303,10 +1297,7 @@ export class JobCreationFormComponent {
     } catch {
       this.toastService.showErrorKey('jobCreationForm.toastMessages.aiTranslationFailed');
     } finally {
-      // Only clear isTranslating for the latest request
-      if (requestId === this.latestTranslationRequestId) {
-        this.isTranslating.set(false);
-      }
+      this.isTranslating.set(false);
     }
   }
 
