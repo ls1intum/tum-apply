@@ -23,13 +23,7 @@ Structure:
   "translatedText": "HTML_CONTENT_HERE"
 }}
 
-JSON SAFETY - EXTREMELY IMPORTANT:
-- Use only single quotes inside HTML or escape double quotes
-- Keep everything on one line inside the JSON value
-- No line breaks inside the translatedText string
+TECHNICAL OUTPUT - EXTREMELY IMPORTANT:
+- Output only a single-line JSON object
+- No markdown code blocks, no introductory text, no line breaks within the JSON value
 - Valid example: {{"translatedText": "<p><strong>Title</strong></p><p>Text with 'quotes' here.</p>"}}
-
-FORBIDDEN:
-Do NOT output markdown code blocks like ```json
-Do NOT add explanatory text outside the JSON
-Do NOT use unescaped double quotes inside the HTML content
