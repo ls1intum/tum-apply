@@ -1257,6 +1257,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOInterviewSlotDTO'}
+  /api/interviews/processes/{processId}/slots/conflict-data:
+    get:
+      tags: [interview-resource]
+      operationId: getConflictDataForDate
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: date
+        in: query
+        required: true
+        schema: {type: string, format: date}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConflictDataDTO'}
   /api/interviews/processes/{processId}/slots/create:
     post:
       tags: [interview-resource]
@@ -2263,6 +2282,13 @@ components:
         researchGroupName: {type: string}
         supervisor: {$ref: '#/components/schemas/ProfessorDTO'}
         userBookingInfo: {$ref: '#/components/schemas/UserBookingInfoDTO'}
+    ConflictDataDTO:
+      type: object
+      properties:
+        currentProcessId: {type: string, format: uuid}
+        slots:
+          type: array
+          items: {$ref: '#/components/schemas/ExistingSlotDTO'}
     CreateSlotsDTO:
       type: object
       properties:
@@ -2417,6 +2443,14 @@ components:
       properties:
         professorName: {type: string, minLength: 1}
       required: [professorName]
+    ExistingSlotDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        interviewProcessId: {type: string, format: uuid}
+        isBooked: {type: boolean}
+        startDateTime: {type: string, format: date-time}
     GenderBiasAnalysisRequest:
       type: object
       properties:
