@@ -125,7 +125,8 @@ public class InterviewService {
                 long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
 
                 // Calculate total number of all interviewees in this interview process
-                long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+                // Only count interviewees who have a decided slot (SCHEDULED or COMPLETED)
+                long totalInterviews = completedCount + scheduledCount;
 
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
@@ -216,7 +217,7 @@ public class InterviewService {
         long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
         long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
         long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
-        long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+        long totalInterviews = completedCount + scheduledCount;
 
         return new InterviewOverviewDTO(
             job.getJobId(),
