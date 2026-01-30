@@ -337,6 +337,7 @@ export const sharedComponentConfig = {
       color: '{text.primary}',
       background: '{background.default}',
       borderRadius: '{border-radius-md}',
+      paddingY: '0.5rem',
     },
   },
   divider: {
@@ -353,6 +354,7 @@ export const sharedComponentConfig = {
   select: {
     root: {
       placeholderColor: '{text.tertiary}',
+      paddingY: '0.5rem',
     },
     overlay: {
       background: '{background.default}',
