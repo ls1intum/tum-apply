@@ -24,6 +24,7 @@ Structure:
 }}
 
 TECHNICAL OUTPUT - EXTREMELY IMPORTANT:
-- Output only a single-line JSON object
-- No markdown code blocks, no introductory text, no line breaks within the JSON value
+- Use only single quotes or escape all double quotes (\") inside the HTML content
+- No Markdown code blocks (no ```json)
+- No line breaks within the JSON value
 - Valid example: {{"translatedText": "<p><strong>Title</strong></p><p>Text with 'quotes' here.</p>"}}
