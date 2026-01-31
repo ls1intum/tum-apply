@@ -2,6 +2,10 @@
   "evaluation": {
     "overviewHeader": "Applications - Overview",
     "reviewHeader": "Applications - Review",
+    "applied": "Applied",
+    "start": "Start",
+    "grade": "Grade",
+    "masterDegree": "Master",
     "searchFilterSortBar": {
       "searchText": "Search Applications..."
     },
@@ -67,6 +71,8 @@
       "educationTitle": "Education",
       "educationBachelors": "Bachelor",
       "educationMasters": "Master",
+      "bachelorDegree": "Bachelor's",
+      "grade": "Grade",
       "educationDegree": "Degree",
       "educationUniversity": "University",
       "educationGrade": "Grade",
