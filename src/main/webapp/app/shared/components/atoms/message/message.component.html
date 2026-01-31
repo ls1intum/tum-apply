@@ -1,7 +1,17 @@
-<p-message [severity]="severity()" [styleClass]="'rounded-sm ' + styleClass()" [closable]="closable()">
-  @if (shouldTranslate()) {
-    <p>{{ message() | translate }}</p>
+<p-message
+  [severity]="severity()"
+  [variant]="variant()"
+  [size]="size()"
+  [styleClass]="'rounded-sm ' + styleClass()"
+  [closable]="closable()"
+>
+  @if (message()) {
+    @if (shouldTranslate()) {
+      <p>{{ message() | translate: translationParams() }}</p>
+    } @else {
+      <p>{{ message() }}</p>
+    }
   } @else {
-    <p>{{ message() }}</p>
+    <ng-content />
   }
 </p-message>

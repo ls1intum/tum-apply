@@ -183,7 +183,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     }
 
     @Test
-    void downloadIsPublicAndUpdatesStatus() throws Exception {
+    void downloadRequiresAuthenticationAndUpdatesStatus() throws Exception {
         User user = savedUser("download-user@tum.de");
 
         DataExportRequest request = new DataExportRequest();
@@ -197,7 +197,9 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         DataExportRequest ready = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
         String url = String.format(DOWNLOAD_URL, ready.getDownloadToken());
 
-        MockHttpServletResponse response = api.getAndReturnResponse(url, Map.of(), 200, MediaType.valueOf("application/zip"));
+        MockHttpServletResponse response = api
+            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+            .getAndReturnResponse(url, Map.of(), 200, MediaType.valueOf("application/zip"));
 
         assertThat(response.getContentType()).isEqualTo("application/zip");
         assertThat(response.getHeader("Content-Disposition")).isNotNull().contains("attachment");
@@ -208,8 +210,9 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
 
     @Test
     void downloadRejectsInvalidToken() {
+        User user = savedUser("invalid-token@tum.de");
         String url = String.format(DOWNLOAD_URL, UUID.randomUUID());
-        api.getAndReturnBytes(url, Map.of(), 404, MediaType.ALL);
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 404, MediaType.ALL);
     }
 
     @Test
@@ -225,7 +228,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         dataExportRequestRepository.saveAndFlush(request);
 
         String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
-        api.getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
     }
 
     @Test
@@ -241,7 +244,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         dataExportRequestRepository.saveAndFlush(request);
 
         String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
-        api.getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
     }
 
     @Test
@@ -257,7 +260,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         dataExportRequestRepository.saveAndFlush(request);
 
         String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
-        api.getAndReturnBytes(url, Map.of(), 500, MediaType.ALL);
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 500, MediaType.ALL);
     }
 
     @Test
