@@ -23,6 +23,7 @@ export abstract class BaseInputDirective<T> {
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
   customErrorKey = input<string | undefined>(undefined);
+  helperText = input<string | undefined>(undefined);
 
   readonly formValidityVersion = signal(0);
   isFocused = signal(false);

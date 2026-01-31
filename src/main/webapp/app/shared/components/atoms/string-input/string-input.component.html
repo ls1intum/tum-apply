@@ -55,6 +55,11 @@
         />
       }
     </div>
+    @if (helperText()) {
+      <div class="text-sm text-text-disabled">
+        {{ helperText() }}
+      </div>
+    }
     @if (errorEnabled()) {
       <div class="error-text">
         @if (inputState() === 'invalid' && !isFocused()) {
