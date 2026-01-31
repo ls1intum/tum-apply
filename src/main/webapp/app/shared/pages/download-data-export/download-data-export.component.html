@@ -16,11 +16,15 @@
       }
 
       @if (downloadSuccess()) {
-        <div class="mt-4">
-          <div class="alert alert-success" role="alert">
-            <i class="fas fa-check-circle"></i>
-            <strong>Success!</strong> Your data export has been downloaded successfully.
+        <div class="max-w-3xl mx-auto flex flex-col items-center justify-center py-12 text-center">
+          <!-- Success Icon -->
+          <div class="text-positive-default mb-6 inline-flex items-center justify-center">
+            <fa-icon icon="check" class="text-5xl" />
           </div>
+
+          <h2 class="text-2xl font-bold mb-2 text-text-primary">Download Successful!</h2>
+          <p class="text-text-secondary mb-8">Your data export has been downloaded successfully.</p>
+
           <p>You can now access your exported data from the downloaded file.</p>
         </div>
       }

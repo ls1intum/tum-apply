@@ -40,6 +40,9 @@
         "overview": "TUMApply - Interviewübersicht",
         "detail": "Interview - {{jobTitle}}",
         "assessment": "TUMApply - Interview Bewertung"
+      },
+      "dataExport": {
+        "download": "TUMApply - Datenexport Download"
       }
     },
     "menu": {
