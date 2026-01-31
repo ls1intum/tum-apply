@@ -93,14 +93,6 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-aet:
-  client:
-    url: http://localhost:4200
-  data-export:
-    root: /tmp/tum-apply-exports
-    expires-days: 1
-    cron: '*/45 * * * * *'
-
 management:
   health:
     ldap:
