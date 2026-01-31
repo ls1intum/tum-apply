@@ -134,3 +134,9 @@ user:
     deleted-user-first-name: ${USER_RETENTION_DELETED_USER_FIRST_NAME:Deleted}
     deleted-user-last-name: ${USER_RETENTION_DELETED_USER_LAST_NAME:User}
     deleted-user-language: ${USER_RETENTION_DELETED_USER_LANGUAGE:en}
+
+applicant:
+  retention:
+    days-before-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
+    enabled: ${USER_RETENTION_ENABLED:true}
+    dry-run: ${USER_RETENTION_DRY_RUN:false}
