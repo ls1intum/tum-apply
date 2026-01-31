@@ -2,12 +2,8 @@ openapi: 3.1.0
 info: {title: OpenAPI definition, version: v0}
 servers:
 - {url: 'http://localhost:8080', description: Generated server url}
-tags:
-- name: Actuator
-  description: Monitor and interact
-  externalDocs: {description: Spring Boot Actuator Web API Documentation, url: 'https://docs.spring.io/spring-boot/docs/current/actuator-api/html/'}
 paths:
-  /api/ai/generateJobDescriptionStream:
+  /api/ai/generateJobApplicationDraftStream:
     put:
       tags: [ai-resource]
       operationId: generateJobApplicationDraftStream
@@ -15,10 +11,6 @@ paths:
       - name: lang
         in: query
         required: true
-        schema: {type: string}
-      - name: jobId
-        in: query
-        required: false
         schema: {type: string}
       requestBody:
         content:
@@ -1265,6 +1257,25 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOInterviewSlotDTO'}
+  /api/interviews/processes/{processId}/slots/conflict-data:
+    get:
+      tags: [interview-resource]
+      operationId: getConflictDataForDate
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      - name: date
+        in: query
+        required: true
+        schema: {type: string, format: date}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConflictDataDTO'}
   /api/interviews/processes/{processId}/slots/create:
     post:
       tags: [interview-resource]
@@ -1318,6 +1329,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/InterviewSlotDTO'}
+  /api/interviews/upcoming:
+    get:
+      tags: [interview-resource]
+      operationId: getUpcomingInterviews
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UpcomingInterviewDTO'}
   /api/jobs/available:
     get:
       tags: [job-resource]
@@ -2034,315 +2057,6 @@ paths:
         required: true
       responses:
         '200': {description: OK}
-  /management:
-    get:
-      tags: [Actuator]
-      summary: Actuator root web endpoint
-      operationId: links
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-                  additionalProperties: {$ref: '#/components/schemas/Link'}
-  /management/caches:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches'
-      operationId: caches
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-    delete:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches'
-      operationId: clearCaches
-      responses:
-        '204': {description: No Content}
-  /management/caches/{cache}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches-cache'
-      operationId: cache
-      parameters:
-      - name: cache
-        in: path
-        required: true
-        schema: {type: string}
-      - name: cacheManager
-        in: query
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-    delete:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'caches-cache'
-      operationId: clearCache
-      parameters:
-      - name: cache
-        in: path
-        required: true
-        schema: {type: string}
-      - name: cacheManager
-        in: query
-        schema: {type: string}
-      responses:
-        '204': {description: No Content}
-        '404': {description: Not Found}
-  /management/configprops:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'configprops'
-      operationId: configurationProperties
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/configprops/{prefix}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'configprops-prefix'
-      operationId: configurationPropertiesWithPrefix
-      parameters:
-      - name: prefix
-        in: path
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-  /management/env:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'env'
-      operationId: environment
-      parameters:
-      - name: pattern
-        in: query
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/env/{toMatch}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'env-toMatch'
-      operationId: environmentEntry
-      parameters:
-      - name: toMatch
-        in: path
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-  /management/health:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'health'
-      operationId: health
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/info:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'info'
-      operationId: info
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/jhimetrics:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'jhimetrics'
-      operationId: allMetrics
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/jhiopenapigroups:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'jhiopenapigroups'
-      operationId: allOpenApi
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/liquibase:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'liquibase'
-      operationId: liquibaseBeans
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/loggers:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers'
-      operationId: loggers
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-  /management/loggers/{name}:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers-name'
-      operationId: loggerLevels
-      parameters:
-      - name: name
-        in: path
-        required: true
-        schema: {type: string}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
-        '404': {description: Not Found}
-    post:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'loggers-name'
-      operationId: configureLogLevel
-      parameters:
-      - name: name
-        in: path
-        required: true
-        schema: {type: string}
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: string
-              enum: [TRACE, DEBUG, INFO, WARN, ERROR, FATAL, 'OFF']
-      responses:
-        '204': {description: No Content}
-        '400': {description: Bad Request}
-  /management/threaddump:
-    get:
-      tags: [Actuator]
-      summary: Actuator web endpoint 'threaddump'
-      operationId: threadDump
-      responses:
-        '200':
-          description: OK
-          content:
-            text/plain;charset=UTF-8:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v3+json:
-              schema: {type: object}
-            application/vnd.spring-boot.actuator.v2+json:
-              schema: {type: object}
-            application/json:
-              schema: {type: object}
 components:
   schemas:
     AIJobDescriptionTranslationDTO:
@@ -2629,6 +2343,13 @@ components:
         researchGroupName: {type: string}
         supervisor: {$ref: '#/components/schemas/ProfessorDTO'}
         userBookingInfo: {$ref: '#/components/schemas/UserBookingInfoDTO'}
+    ConflictDataDTO:
+      type: object
+      properties:
+        currentProcessId: {type: string, format: uuid}
+        slots:
+          type: array
+          items: {$ref: '#/components/schemas/ExistingSlotDTO'}
     CreateSlotsDTO:
       type: object
       properties:
@@ -2798,6 +2519,14 @@ components:
       properties:
         professorName: {type: string, minLength: 1}
       required: [professorName]
+    ExistingSlotDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        interviewProcessId: {type: string, format: uuid}
+        isBooked: {type: boolean}
+        startDateTime: {type: string, format: date-time}
     GenderBiasAnalysisRequest:
       type: object
       properties:
@@ -3078,11 +2807,6 @@ components:
         lastName: {type: string}
         universityId: {type: string}
         username: {type: string}
-    Link:
-      type: object
-      properties:
-        href: {type: string}
-        templated: {type: boolean}
     LoginRequestDTO:
       type: object
       properties:
@@ -3394,6 +3118,17 @@ components:
         empty: {type: boolean}
         sorted: {type: boolean}
         unsorted: {type: boolean}
+    UpcomingInterviewDTO:
+      type: object
+      properties:
+        endDateTime: {type: string, format: date-time}
+        id: {type: string, format: uuid}
+        intervieweeId: {type: string, format: uuid}
+        intervieweeName: {type: string}
+        jobTitle: {type: string}
+        location: {type: string}
+        processId: {type: string, format: uuid}
+        startDateTime: {type: string, format: date-time}
     UpdateApplicationDTO:
       type: object
       properties:
