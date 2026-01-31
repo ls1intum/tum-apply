@@ -70,7 +70,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
@@ -145,7 +145,7 @@ class UserRetentionIntegrationTest {
     @Autowired
     private UserSettingRepository userSettingRepository;
 
-    @MockBean
+    @MockitoBean
     private AsyncEmailSender mockSender;
 
     private ResearchGroup researchGroup;
