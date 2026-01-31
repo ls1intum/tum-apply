@@ -3,6 +3,7 @@ package de.tum.cit.aet.core.retention;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.core.repository.ImageRepository;
@@ -13,8 +14,11 @@ import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
 import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.repository.JobRepository;
+import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.UserRole;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
@@ -36,9 +40,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserRetentionService {
 
+    private static final int DAYS_BEFORE_DELETION_WARNING = 28;
+
     private final UserRetentionProperties userRetentionProperties;
 
     private final UserRepository userRepository;
+
+    private final AsyncEmailSender sender;
 
     private final ApplicantRepository applicantRepository;
     private final ApplicationRepository applicationRepository;
@@ -108,6 +116,48 @@ public class UserRetentionService {
                 continue;
             }
             handleGeneralData(user, dryRun);
+        }
+    }
+
+    /**
+     * Warns users of impending data deletion by sending a warning email to inactive non-admin users
+     * whose data is scheduled for deletion after the specified cutoff date.
+     * <p>
+     * This method calculates a warning date by adding {@code DAYS_BEFORE_DELETION_WARNING} days to the cutoff.
+     * It then retrieves a list of inactive non-admin user IDs eligible for warning based on that date.
+     * For each user, it verifies their existence, classifies their retention category, and skips admins.
+     * Finally, it constructs and sends an asynchronous warning email to the user.
+     * </p>
+     *
+     * @param cutoff the LocalDateTime representing the cutoff date for data deletion;
+     *               users inactive beyond this point (adjusted by warning days) will be warned
+     */
+    public void warnUserOfDataDeletion(LocalDateTime cutoff) {
+        LocalDateTime warningDate = cutoff.plusDays(DAYS_BEFORE_DELETION_WARNING);
+        List<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForWarning(warningDate);
+
+        for (UUID userId : userIds) {
+            Optional<User> userOpt = userRepository.findById(userId);
+            if (userOpt.isEmpty()) {
+                log.error("User retention warning: candidate userId={} no longer exists (cutoff={})", userId, cutoff);
+                continue;
+            }
+
+            User user = userOpt.get();
+            RetentionCategory category = classify(user);
+
+            if (category == RetentionCategory.SKIP_ADMIN) {
+                // Safety-net; repository query already tries to exclude admins.
+                continue;
+            }
+
+            Email email = Email.builder()
+                .to(user)
+                .language(Language.fromCode(user.getSelectedLanguage()))
+                .emailType(EmailType.USER_DATA_DELETION_WARNING)
+                .build();
+
+            sender.sendAsync(email);
         }
     }
 

@@ -173,5 +173,19 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     )
     Page<UUID> findInactiveNonAdminUserIdsForRetention(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
-    String email(String email);
+    @Query(
+        """
+            SELECT u.userId
+            FROM User u
+            WHERE function('date', COALESCE(u.lastActivityAt, u.createdAt)) = function('date', :warningDate)
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM UserResearchGroupRole urgr
+                    WHERE urgr.user = u
+                        AND urgr.role = de.tum.cit.aet.usermanagement.constants.UserRole.ADMIN
+                )
+            ORDER BY COALESCE(u.lastActivityAt, u.createdAt) ASC
+        """
+    )
+    List<UUID> findInactiveNonAdminUserIdsForWarning(@Param("warningDate") LocalDateTime warningDate);
 }
