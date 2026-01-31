@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -163,9 +164,7 @@ public class MvcTestClient {
                 params.forEach(multiParams::add);
             }
 
-            ResultActions action = mockMvc.perform(
-                applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url).params(multiParams), accepts)
-            );
+            ResultActions action = mockMvc.perform(applyDefaults(MockMvcRequestBuilders.get(url).params(multiParams), accepts));
 
             MockHttpServletResponse response;
             switch (expectedStatus) {
@@ -175,6 +174,8 @@ public class MvcTestClient {
                 case 401 -> response = action.andExpect(status().isUnauthorized()).andReturn().getResponse();
                 case 403 -> response = action.andExpect(status().isForbidden()).andReturn().getResponse();
                 case 404 -> response = action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 409 -> response = action.andExpect(status().isConflict()).andReturn().getResponse();
+                case 429 -> response = action.andExpect(status().isTooManyRequests()).andReturn().getResponse();
                 case 500 -> response = action.andExpect(status().isInternalServerError()).andReturn().getResponse();
                 default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
             }
@@ -197,9 +198,7 @@ public class MvcTestClient {
                 params.forEach(multiParams::add);
             }
 
-            ResultActions action = mockMvc.perform(
-                applyDefaults(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(url).params(multiParams), accepts)
-            );
+            ResultActions action = mockMvc.perform(applyDefaults(MockMvcRequestBuilders.get(url).params(multiParams), accepts));
 
             return switch (expectedStatus) {
                 case 200 -> action.andExpect(status().isOk()).andReturn().getResponse();
@@ -208,6 +207,8 @@ public class MvcTestClient {
                 case 401 -> action.andExpect(status().isUnauthorized()).andReturn().getResponse();
                 case 403 -> action.andExpect(status().isForbidden()).andReturn().getResponse();
                 case 404 -> action.andExpect(status().isNotFound()).andReturn().getResponse();
+                case 409 -> action.andExpect(status().isConflict()).andReturn().getResponse();
+                case 429 -> action.andExpect(status().isTooManyRequests()).andReturn().getResponse();
                 case 500 -> action.andExpect(status().isInternalServerError()).andReturn().getResponse();
                 default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
             };
@@ -256,12 +257,14 @@ public class MvcTestClient {
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
             case 201 -> result = postCreated(url, body, accepts);
+            case 202 -> result = postAccepted(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             case 409 -> result = postConflict(url, body, accepts);
+            case 429 -> result = postTooManyRequests(url, body, accepts);
             case 500 -> result = postInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -281,12 +284,14 @@ public class MvcTestClient {
         switch (expectedStatus) {
             case 200 -> result = postOk(url, body, accepts);
             case 201 -> result = postCreated(url, body, accepts);
+            case 202 -> result = postAccepted(url, body, accepts);
             case 204 -> result = postNoContent(url, body, accepts);
             case 400 -> result = postInvalid(url, body, accepts);
             case 401 -> result = postUnauthorized(url, body, accepts);
             case 403 -> result = postForbidden(url, body, accepts);
             case 404 -> result = postNotFound(url, body, accepts);
             case 409 -> result = postConflict(url, body, accepts);
+            case 429 -> result = postTooManyRequests(url, body, accepts);
             case 500 -> result = postInternalServerError(url, body, accepts);
             default -> throw new IllegalArgumentException("Unsupported status: " + expectedStatus);
         }
@@ -547,6 +552,28 @@ public class MvcTestClient {
             return postJson(url, body, accepts).andExpect(status().isInternalServerError()).andReturn();
         } catch (Exception e) {
             throw new AssertionError("POST " + url + " failed with 500", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 429 Too Many Requests and returns the MvcResult.
+     */
+    private MvcResult postTooManyRequests(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isTooManyRequests()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed", e);
+        }
+    }
+
+    /**
+     * Low-level POST that asserts 202 Accepted and returns the MvcResult.
+     */
+    private MvcResult postAccepted(String url, Object body, MediaType... accepts) {
+        try {
+            return postJson(url, body, accepts).andExpect(status().isAccepted()).andReturn();
+        } catch (Exception e) {
+            throw new AssertionError("POST " + url + " failed", e);
         }
     }
 

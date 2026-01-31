@@ -52,6 +52,16 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
     );
 
     /**
+     * Finds the first {@link EmailTemplate} by email type.
+     * No collection fetch is used to avoid pagination+fetch join issues.
+     *
+     * @param emailType the type of email
+     * @return an {@link Optional} containing the matching email template, or empty if none found
+     */
+    @Query("SELECT et FROM EmailTemplate et WHERE et.emailType = :emailType ORDER BY et.emailTemplateId ASC")
+    Optional<EmailTemplate> findFirstByEmailType(@Param("emailType") EmailType emailType);
+
+    /**
      * Retrieves a paginated list of {@link EmailTemplateOverviewDTO} projections for the given research group,
      * filtering by the provided set of editable email types.
      *
