@@ -144,7 +144,27 @@
       "dev": "Development",
       "test": "Development"
     },
-    "item-count": "Showing {{first}} - {{second}} of {{total}} items."
+    "item-count": "Showing {{first}} - {{second}} of {{total}} items.",
+    "dataExport": {
+      "request": "TUMApply - Data Export Request",
+      "download": "TUMApply - Data Export Download",
+      "error": {
+        "downloadFailed": {
+          "summary": "Download Failed",
+          "detail": "Failed to download data export. The link may be expired or invalid."
+        },
+        "noToken": {
+          "summary": "Invalid Token",
+          "detail": "No download token provided."
+        }
+      },
+      "success": {
+        "downloadSuccess": {
+          "summary": "Download Successful",
+          "detail": "Your data export has been downloaded successfully."
+        }
+      }
+    }
   },
   "entity": {
     "action": {

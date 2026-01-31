@@ -144,7 +144,27 @@
       "dev": "Entwicklung",
       "test": "Entwicklung"
     },
-    "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
+    "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente.",
+    "dataExport": {
+      "request": "TUMApply - Datenexport Anfrage",
+      "download": "TUMApply - Datenexport Download",
+      "error": {
+        "downloadFailed": {
+          "summary": "Download fehlgeschlagen",
+          "detail": "Fehler beim Herunterladen des Datenexports. Der Link ist möglicherweise abgelaufen oder ungültig."
+        },
+        "noToken": {
+          "summary": "Ungültiges Token",
+          "detail": "Kein Download-Token bereitgestellt."
+        }
+      },
+      "success": {
+        "downloadSuccess": {
+          "summary": "Download erfolgreich",
+          "detail": "Ihr Datenexport wurde erfolgreich heruntergeladen."
+        }
+      }
+    }
   },
   "entity": {
     "action": {
