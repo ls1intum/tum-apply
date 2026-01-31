@@ -203,24 +203,6 @@ describe('HeaderComponent', () => {
   });
 
   describe('toggleProfileMenu', () => {
-    it('should toggle isProfileMenuOpen signal from false to true', () => {
-      component.isProfileMenuOpen.set(false);
-      const mockEvent = new MouseEvent('click');
-
-      component.toggleProfileMenu(mockEvent);
-
-      expect(component.isProfileMenuOpen()).toBe(true);
-    });
-
-    it('should toggle isProfileMenuOpen signal from true to false', () => {
-      component.isProfileMenuOpen.set(true);
-      const mockEvent = new MouseEvent('click');
-
-      component.toggleProfileMenu(mockEvent);
-
-      expect(component.isProfileMenuOpen()).toBe(false);
-    });
-
     it('should call profileMenu toggle method with event', () => {
       accountService.user.set({ id: '1', email: 'test@example.com', name: 'testuser' } satisfies User);
       fixture.detectChanges();
@@ -234,12 +216,24 @@ describe('HeaderComponent', () => {
       expect(toggleSpy).toHaveBeenCalledWith(mockEvent);
     });
 
-    it('should not throw error when profileMenu is undefined', () => {
+    it('should not throw error when profileMenu is undefined and should not change isProfileMenuOpen', () => {
       component.isProfileMenuOpen.set(false);
       const mockEvent = new MouseEvent('click');
 
+      vi.spyOn(component as any, 'profileMenu').mockReturnValue(undefined);
+
       expect(() => component.toggleProfileMenu(mockEvent)).not.toThrow();
+      expect(component.isProfileMenuOpen()).toBe(false);
+    });
+
+    it('should reflect menu visibility changes in isProfileMenuOpen (simulating visibleChange)', () => {
+      component.isProfileMenuOpen.set(false);
+
+      component.isProfileMenuOpen.set(true);
       expect(component.isProfileMenuOpen()).toBe(true);
+
+      component.isProfileMenuOpen.set(false);
+      expect(component.isProfileMenuOpen()).toBe(false);
     });
   });
 

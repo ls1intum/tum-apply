@@ -86,7 +86,7 @@
         />
       </button>
       <div class="absolute right-0 top-full mt-1 z-30">
-        <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" />
+        <jhi-menu #profileMenu [items]="profileMenuItems()" [shouldTranslate]="true" (visibleChange)="isProfileMenuOpen.set($event)" />
       </div>
     }
   </div>

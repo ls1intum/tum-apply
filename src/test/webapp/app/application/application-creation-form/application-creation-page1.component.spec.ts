@@ -142,7 +142,7 @@ describe('ApplicationPage1Component', () => {
 
     const page1 = getPage1FromApplication(fakeApp);
     expect(page1.firstName).toBe('John');
-    expect(page1.gender).toEqual(selectGender.find((g: any) => g.value === 'male'));
+    expect(page1.gender).toEqual(selectGender.find(g => g.value === 'male'));
     expect(page1.country?.value).toBe('us');
   });
 

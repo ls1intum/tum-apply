@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { By } from '@angular/platform-browser';
 import { Router, NavigationStart } from '@angular/router';
 import { Subject } from 'rxjs';
 
