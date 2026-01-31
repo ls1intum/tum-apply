@@ -37,6 +37,17 @@ public class ApplicantRetentionService {
 
     private final IntervieweeRepository intervieweeRepository;
 
+    /**
+     * Processes a page of application IDs for deletion based on the specified cutoff date.
+     * If dryRun is true, it logs the actions that would be performed without executing them.
+     * Otherwise, it deletes the application and all related data, including reviews, comments,
+     * document dictionaries, interviewees, and associated documents.
+     *
+     * @param applicationIds a page of UUIDs representing the application IDs to process
+     * @param dryRun if true, performs a dry run by logging actions without deleting data;
+     *               if false, actually deletes the applications and related data
+     * @param cutoff the cutoff LocalDateTime used for determining which applications to process
+     */
     @Transactional
     public void processApplications(Page<UUID> applicationIds, Boolean dryRun, LocalDateTime cutoff) {
         for (UUID applicationId : applicationIds) {
