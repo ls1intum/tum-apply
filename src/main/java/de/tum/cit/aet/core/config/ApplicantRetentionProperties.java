@@ -7,8 +7,10 @@
  */
 package de.tum.cit.aet.core.config;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Data
 @ConfigurationProperties(prefix = "applicant.retention", ignoreUnknownFields = false)
 public class ApplicantRetentionProperties {
 
@@ -22,43 +24,5 @@ public class ApplicantRetentionProperties {
 
     private Integer maxRuntimeMinutes;
 
-    public Integer getBatchSize() {
-        return batchSize;
-    }
-
-    public void setBatchSize(Integer batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    public Integer getDaysBeforeDeletion() {
-        return daysBeforeDeletion;
-    }
-
-    public void setDaysBeforeDeletion(Integer daysBeforeDeletion) {
-        this.daysBeforeDeletion = daysBeforeDeletion;
-    }
-
-    public Boolean getDryRun() {
-        return dryRun;
-    }
-
-    public void setDryRun(Boolean dryRun) {
-        this.dryRun = dryRun;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public Integer getMaxRuntimeMinutes() {
-        return maxRuntimeMinutes;
-    }
-
-    public void setMaxRuntimeMinutes(Integer maxRuntimeMinutes) {
-        this.maxRuntimeMinutes = maxRuntimeMinutes;
-    }
+    private String cron;
 }
