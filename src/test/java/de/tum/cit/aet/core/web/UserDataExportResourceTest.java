@@ -98,10 +98,11 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     void statusReflectsCooldownAndLatestRequest() {
         User user = savedUser("status-user@tum.de");
 
+        LocalDateTime lastRequested = LocalDateTime.now(ZoneOffset.UTC).minusDays(1);
         DataExportRequest request = new DataExportRequest();
         request.setUser(user);
         request.setStatus(DataExportState.REQUESTED);
-        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
+        request.setLastRequestedAt(lastRequested);
         dataExportRequestRepository.saveAndFlush(request);
 
         DataExportStatusDTO status = api
@@ -109,8 +110,8 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
             .getAndRead(STATUS_URL, Map.of(), DataExportStatusDTO.class, 200, MediaType.APPLICATION_JSON);
 
         assertThat(status.status()).isEqualTo(DataExportState.REQUESTED);
-        assertThat(status.lastRequestedAt()).isNotNull();
-        assertThat(status.nextAllowedAt()).isNotNull();
+        assertThat(status.lastRequestedAt()).isEqualTo(lastRequested);
+        assertThat(status.nextAllowedAt()).isEqualTo(lastRequested.plusDays(7));
         assertThat(status.cooldownSeconds()).isGreaterThan(0);
     }
 
@@ -172,8 +173,8 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
 
         DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
         assertThat(updated.getStatus()).isEqualTo(DataExportState.EMAIL_SENT);
-        assertThat(updated.getFilePath()).isNotBlank();
-        assertThat(updated.getDownloadToken()).isNotBlank();
+        assertThat(updated.getFilePath()).startsWith(exportRootConfig);
+        assertThat(updated.getDownloadToken()).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
         Path zipPath = Paths.get(updated.getFilePath());
         assertThat(Files.exists(zipPath)).isTrue();
