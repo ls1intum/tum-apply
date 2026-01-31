@@ -14,6 +14,10 @@ import de.tum.cit.aet.evaluation.domain.ApplicationReview;
 import de.tum.cit.aet.evaluation.domain.InternalComment;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
 import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
+import de.tum.cit.aet.interview.domain.InterviewProcess;
+import de.tum.cit.aet.interview.domain.Interviewee;
+import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -26,16 +30,14 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.utility.testdata.ApplicantTestData;
-import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.InternalCommentTestData;
-import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
-import de.tum.cit.aet.utility.testdata.UserTestData;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,6 +87,15 @@ class ApplicantRetentionServiceIntegrationTest {
     @Autowired
     private InternalCommentRepository internalCommentRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private IntervieweeRepository intervieweeRepository;
+
+    @Autowired
+    private InterviewProcessRepository interviewProcessRepository;
+
     private ResearchGroup researchGroup;
 
     @BeforeEach
@@ -95,7 +106,7 @@ class ApplicantRetentionServiceIntegrationTest {
 
     @Test
     void shouldDeleteApplicationAndAssociatedData() {
-        TestFixtures fixtures = createApplicationWithRelations();
+        TestFixtures fixtures = createApplicationWithRelations(null);
 
         Page<UUID> page = new PageImpl<>(List.of(fixtures.application.getApplicationId()));
         applicantRetentionService.processApplications(page, false, LocalDateTime.now());
@@ -104,11 +115,12 @@ class ApplicantRetentionServiceIntegrationTest {
         assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isNotPresent();
         assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isNotPresent();
         assertThat(documentDictionaryRepository.findById(fixtures.dictionary.getDocumentDictionaryId())).isNotPresent();
+        assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isNotPresent();
     }
 
     @Test
     void shouldNotDeleteAnythingInDryRun() {
-        TestFixtures fixtures = createApplicationWithRelations();
+        TestFixtures fixtures = createApplicationWithRelations(null);
 
         Page<UUID> page = new PageImpl<>(List.of(fixtures.application.getApplicationId()));
         applicantRetentionService.processApplications(page, true, LocalDateTime.now());
@@ -117,11 +129,12 @@ class ApplicantRetentionServiceIntegrationTest {
         assertThat(applicationReviewRepository.findById(fixtures.review.getApplicationReviewId())).isPresent();
         assertThat(internalCommentRepository.findById(fixtures.comment.getInternalCommentId())).isPresent();
         assertThat(documentDictionaryRepository.findById(fixtures.dictionary.getDocumentDictionaryId())).isPresent();
+        assertThat(intervieweeRepository.findById(fixtures.interviewee.getId())).isPresent();
     }
 
     @Test
     void shouldContinueWhenApplicationMissing() {
-        TestFixtures fixtures = createApplicationWithRelations();
+        TestFixtures fixtures = createApplicationWithRelations(null);
         UUID missingId = UUID.randomUUID();
 
         Page<UUID> page = new PageImpl<>(List.of(missingId, fixtures.application.getApplicationId()));
@@ -149,13 +162,43 @@ class ApplicantRetentionServiceIntegrationTest {
         assertThat(documentRepository.findById(fixtures.recentDictionary.getDocument().getDocumentId())).isPresent();
     }
 
-    private TestFixtures createApplicationWithRelations() {
-        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
-        User applicantUser = ApplicantTestData.saveApplicant("applicant-service-" + UUID.randomUUID() + "@test.local", userRepository);
-        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
+    // -------------------------
+    // Fixtures / Helpers
+    // -------------------------
 
-        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Retention Job", JobState.PUBLISHED, null);
-        Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.REJECTED);
+    private TestFixtures createApplicationWithRelations(LocalDateTime forceLastModifiedAt) {
+        User professor = createAndSaveUser("prof", true);
+        User applicantUser = createAndSaveUser("app", false);
+
+        Applicant applicant = new Applicant();
+        applicant.setUser(applicantUser);
+        applicant = applicantRepository.saveAndFlush(applicant);
+
+        Job job = new Job();
+        job.setTitle("Retention Job");
+        job.setState(JobState.PUBLISHED);
+        job.setSupervisingProfessor(professor);
+        job.setResearchGroup(researchGroup);
+        job = jobRepository.saveAndFlush(job);
+
+        InterviewProcess interviewProcess = new InterviewProcess();
+        interviewProcess.setJob(job);
+        interviewProcess = interviewProcessRepository.save(interviewProcess);
+
+        Application application = new Application();
+        application.setJob(job);
+        application.setApplicant(applicant);
+        application.setState(ApplicationState.REJECTED);
+        application = applicationRepository.saveAndFlush(application);
+
+        Interviewee interviewee = new Interviewee();
+        interviewee.setApplication(application);
+        interviewee.setInterviewProcess(interviewProcess);
+        interviewee = intervieweeRepository.save(interviewee);
+
+        if (forceLastModifiedAt != null) {
+            forceApplicationLastModified(application.getApplicationId(), forceLastModifiedAt);
+        }
 
         ApplicationReview review = new ApplicationReview();
         review.setApplication(application);
@@ -164,6 +207,7 @@ class ApplicantRetentionServiceIntegrationTest {
         review = applicationReviewRepository.save(review);
 
         InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
+
         DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
             documentRepository,
             documentDictionaryRepository,
@@ -174,51 +218,105 @@ class ApplicantRetentionServiceIntegrationTest {
             "cv.pdf"
         );
 
-        return new TestFixtures(application, review, comment, dictionary);
+        return new TestFixtures(application, review, comment, dictionary, interviewee);
     }
 
     private DualApplicationFixtures createTwoApplicationsForApplicant() {
-        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
-        User applicantUser = ApplicantTestData.saveApplicant("applicant-service-dual-" + UUID.randomUUID() + "@test.local", userRepository);
-        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
+        User professor = createAndSaveUser("prof", true);
 
-        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Retention Job", JobState.PUBLISHED, null);
+        User applicantUser = createAndSaveUser("app", false);
+        Applicant applicant = new Applicant();
+        applicant.setUser(applicantUser);
+        applicant = applicantRepository.saveAndFlush(applicant);
 
-        Application oldApplication = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.REJECTED);
+        Job job = new Job();
+        job.setTitle("Retention Job");
+        job.setState(JobState.PUBLISHED);
+        job.setSupervisingProfessor(professor);
+        job.setResearchGroup(researchGroup);
+        job = jobRepository.saveAndFlush(job);
+
+        // Old application
+        Application oldApp = new Application();
+        oldApp.setJob(job);
+        oldApp.setApplicant(applicant);
+        oldApp.setState(ApplicationState.REJECTED);
+        oldApp = applicationRepository.saveAndFlush(oldApp);
+
+        // Make it "old" in DB (optional, aber hilft falls Service intern nach lastModified filtert)
+        forceApplicationLastModified(oldApp.getApplicationId(), LocalDateTime.now(ZoneOffset.UTC).minusDays(3));
+
         ApplicationReview oldReview = new ApplicationReview();
-        oldReview.setApplication(oldApplication);
+        oldReview.setApplication(oldApp);
         oldReview.setReviewedBy(professor);
         oldReview.setReason("Outdated application");
         oldReview = applicationReviewRepository.save(oldReview);
-        DocumentDictionary oldDictionary = DocumentTestData.savedDictionaryWithMockDocument(
+
+        DocumentDictionary oldDict = DocumentTestData.savedDictionaryWithMockDocument(
             documentRepository,
             documentDictionaryRepository,
             professor,
-            oldApplication,
+            oldApp,
             applicant,
             DocumentType.CV,
             "old-cv.pdf"
         );
 
-        Application recentApplication = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.SENT);
-        DocumentDictionary recentDictionary = DocumentTestData.savedDictionaryWithMockDocument(
+        // Recent application
+        Application recentApp = new Application();
+        recentApp.setJob(job);
+        recentApp.setApplicant(applicant);
+        recentApp.setState(ApplicationState.SENT);
+        recentApp = applicationRepository.saveAndFlush(recentApp);
+
+        forceApplicationLastModified(recentApp.getApplicationId(), LocalDateTime.now(ZoneOffset.UTC).minusHours(6));
+
+        DocumentDictionary recentDict = DocumentTestData.savedDictionaryWithMockDocument(
             documentRepository,
             documentDictionaryRepository,
             professor,
-            recentApplication,
+            recentApp,
             applicant,
             DocumentType.CV,
             "recent-cv.pdf"
         );
 
-        return new DualApplicationFixtures(oldApplication, oldReview, oldDictionary, recentApplication, recentDictionary);
+        return new DualApplicationFixtures(oldApp, oldReview, oldDict, recentApp, recentDict);
+    }
+
+    private User createAndSaveUser(String prefix, boolean attachToResearchGroup) {
+        User u = new User();
+        u.setUserId(UUID.randomUUID());
+        u.setEmail(prefix + "-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
+        u.setFirstName(prefix.equals("prof") ? "Prof" : "App");
+        u.setLastName("Tester");
+        u.setSelectedLanguage("en");
+        u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+
+        if (attachToResearchGroup) {
+            u.setResearchGroup(researchGroup);
+        }
+
+        return userRepository.saveAndFlush(u);
+    }
+
+    private void forceApplicationLastModified(UUID applicationId, LocalDateTime ts) {
+        entityManager
+            .createNativeQuery("UPDATE applications SET last_modified_at = :date WHERE application_id = :id")
+            .setParameter("date", ts)
+            .setParameter("id", applicationId)
+            .executeUpdate();
+
+        entityManager.flush();
+        entityManager.clear();
     }
 
     private record TestFixtures(
         Application application,
         ApplicationReview review,
         InternalComment comment,
-        DocumentDictionary dictionary
+        DocumentDictionary dictionary,
+        Interviewee interviewee
     ) {}
 
     private record DualApplicationFixtures(

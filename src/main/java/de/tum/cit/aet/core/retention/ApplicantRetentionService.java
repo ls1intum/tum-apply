@@ -2,11 +2,19 @@ package de.tum.cit.aet.core.retention;
 
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
+import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.domain.DocumentDictionary;
+import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
+import de.tum.cit.aet.core.repository.DocumentRepository;
 import de.tum.cit.aet.evaluation.repository.ApplicationReviewRepository;
+import de.tum.cit.aet.evaluation.repository.InternalCommentRepository;
+import de.tum.cit.aet.interview.repository.IntervieweeRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +28,14 @@ public class ApplicantRetentionService {
     private final ApplicationRepository applicationRepository;
 
     private final ApplicationReviewRepository applicationReviewRepository;
+
+    private final InternalCommentRepository internalCommentRepository;
+
+    private final DocumentDictionaryRepository documentDictionaryRepository;
+
+    private final DocumentRepository documentRepository;
+
+    private final IntervieweeRepository intervieweeRepository;
 
     @Transactional
     public void processApplications(Page<UUID> applicationIds, Boolean dryRun, LocalDateTime cutoff) {
@@ -39,10 +55,24 @@ public class ApplicantRetentionService {
 
             log.info("Processing deletion for application with ID {}", applicationId);
 
+            // Collect documents to delete
+            List<Document> documentsToDelete = documentDictionaryRepository
+                .findAllByApplicationApplicationId(application.getApplicationId())
+                .stream()
+                .map(DocumentDictionary::getDocument)
+                .collect(Collectors.toList());
+
             // Delete related data first (no CASCADE)
             applicationReviewRepository.deleteByApplication(application);
+            internalCommentRepository.deleteByApplication(application);
+            documentDictionaryRepository.deleteByApplicationIdIn(List.of(application.getApplicationId()));
+            intervieweeRepository.deleteByApplicationIdIn(List.of(application.getApplicationId()));
 
-            // Delete the application (CASCADE will handle internal_comments, document_dictionary, interviewees)
+            // Delete associated documents
+            for (Document document : documentsToDelete) {
+                documentRepository.delete(document);
+            }
+
             applicationRepository.delete(application);
 
             log.info("Deleted application and related data for application ID {}", applicationId);

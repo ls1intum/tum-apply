@@ -23,30 +23,25 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
-import de.tum.cit.aet.utility.testdata.ApplicantTestData;
-import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
-import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
-import de.tum.cit.aet.utility.testdata.UserTestData;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @Transactional
 class ApplicantRetentionJobIntegrationTest {
+
+    private static final UUID DELETED_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000100");
 
     @Autowired
     private ApplicantRetentionJob applicantRetentionJob;
@@ -81,6 +76,9 @@ class ApplicantRetentionJobIntegrationTest {
     @Autowired
     private SchoolRepository schoolRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
     private ResearchGroup researchGroup;
 
     @BeforeEach
@@ -93,6 +91,21 @@ class ApplicantRetentionJobIntegrationTest {
 
         School school = SchoolTestData.savedDefault(schoolRepository);
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository, DepartmentTestData.savedDefault(departmentRepository, school));
+
+        ensureDeletedUserExists(); // safe
+    }
+
+    private void ensureDeletedUserExists() {
+        if (userRepository.existsById(DELETED_USER_ID)) return;
+
+        User deleted = new User();
+        deleted.setUserId(DELETED_USER_ID);
+        deleted.setEmail("deleted@user");
+        deleted.setFirstName("Deleted");
+        deleted.setLastName("User");
+        deleted.setSelectedLanguage("en");
+        deleted.setUniversityId("del" + UUID.randomUUID().toString().replace("-", "").substring(0, 4)); // avoid unique clash
+        userRepository.saveAndFlush(deleted);
     }
 
     @Test
@@ -104,12 +117,10 @@ class ApplicantRetentionJobIntegrationTest {
 
         properties.setDryRun(true);
         applicantRetentionJob.deleteApplicantData();
-
         assertThat(applicationRepository.existsById(oldApplication.getApplicationId())).isTrue();
 
         properties.setDryRun(false);
         applicantRetentionJob.deleteApplicantData();
-
         assertThat(applicationRepository.existsById(oldApplication.getApplicationId())).isFalse();
     }
 
@@ -129,17 +140,51 @@ class ApplicantRetentionJobIntegrationTest {
         assertThat(applicationRepository.existsById(oldApplication.application().getApplicationId())).isFalse();
         assertThat(applicationRepository.existsById(recentApplication.application().getApplicationId())).isTrue();
 
-        // Documents/dictionaries of the recent application must remain
         assertThat(documentDictionaryRepository.findById(recentApplication.dictionary().getDocumentDictionaryId())).isPresent();
         assertThat(documentRepository.findById(recentApplication.dictionary().getDocument().getDocumentId())).isPresent();
     }
 
     private ApplicationWithDocs createApplicationWithLastModified(LocalDateTime lastModifiedAt, String fileName) {
-        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
-        User applicantUser = ApplicantTestData.saveApplicant("applicant-job-" + UUID.randomUUID() + "@test.local", userRepository);
-        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
-        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job for applicant retention", JobState.PUBLISHED, null);
-        Application application = ApplicationTestData.saved(applicationRepository, job, applicant, ApplicationState.REJECTED);
+        // Professor (User hat bei euch KEIN @GeneratedValue, also ID setzen ist ok)
+        User professor = new User();
+        professor.setUserId(UUID.randomUUID());
+        professor.setEmail("prof-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
+        professor.setFirstName("Prof");
+        professor.setLastName("Tester");
+        professor.setSelectedLanguage("en");
+        professor.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        professor.setResearchGroup(researchGroup);
+        professor = userRepository.saveAndFlush(professor);
+
+        // Applicant User (auch ID setzen ok)
+        User applicantUser = new User();
+        applicantUser.setUserId(UUID.randomUUID());
+        applicantUser.setEmail("applicant-job-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
+        applicantUser.setFirstName("App");
+        applicantUser.setLastName("User");
+        applicantUser.setSelectedLanguage("en");
+        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
+        applicantUser = userRepository.saveAndFlush(applicantUser);
+
+        // Applicant entity (MapsId -> übernimmt userId)
+        Applicant applicant = new Applicant();
+        applicant.setUser(applicantUser);
+        applicant = applicantRepository.saveAndFlush(applicant);
+
+        // Job: WICHTIG -> KEINE ID setzen!
+        Job job = new Job();
+        job.setTitle("Job for applicant retention");
+        job.setState(JobState.PUBLISHED);
+        job.setSupervisingProfessor(professor);
+        job.setResearchGroup(researchGroup);
+        job = jobRepository.saveAndFlush(job);
+
+        // Application: WICHTIG -> KEINE ID setzen (falls generated)
+        Application application = new Application();
+        application.setJob(job);
+        application.setApplicant(applicant);
+        application.setState(ApplicationState.REJECTED);
+        application = applicationRepository.saveAndFlush(application);
 
         DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
             documentRepository,
@@ -151,8 +196,14 @@ class ApplicantRetentionJobIntegrationTest {
             fileName
         );
 
-        ReflectionTestUtils.setField(application, "lastModifiedAt", lastModifiedAt);
-        application = applicationRepository.saveAndFlush(application);
+        // Update lastModifiedAt in DB to the desired old date
+        entityManager
+            .createNativeQuery("UPDATE applications SET last_modified_at = :date WHERE application_id = :id")
+            .setParameter("date", lastModifiedAt)
+            .setParameter("id", application.getApplicationId())
+            .executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
 
         return new ApplicationWithDocs(application, dictionary);
     }
