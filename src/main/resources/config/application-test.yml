@@ -118,11 +118,5 @@ jhipster:
 
 # Application specific properties:
 aet:
-  client:
-    url: https://tumapply-test.aet.cit.tum.de
-  data-export:
-    root: /tmp/tum-apply-exports
-    expires-days: 1
-    cron: '*/45 * * * * *'
   email:
     enabled: true
