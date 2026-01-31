@@ -260,7 +260,7 @@ public class UserDataExportService {
 
     private void sendExportReadyEmail(DataExportRequest request) {
         User user = request.getUser();
-        String downloadLink = clientUrl + "/api/users/data-export/download/" + request.getDownloadToken();
+        String downloadLink = clientUrl + "/data-export/download/" + request.getDownloadToken();
 
         Email email = Email.builder()
             .to(user)
