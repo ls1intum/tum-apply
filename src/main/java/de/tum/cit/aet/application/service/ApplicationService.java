@@ -283,6 +283,8 @@ public class ApplicationService {
 
     /**
      * Syncs documents of a specific type from application to applicant profile.
+     * Replaces existing documents in the applicant profile with those from the application.
+     * This ensures that documents deleted or replaced in the application are also removed from the profile.
      *
      * @param application  the application containing the documents
      * @param applicant    the applicant whose profile should receive the documents
@@ -292,23 +294,20 @@ public class ApplicationService {
         Set<DocumentDictionary> applicationDocs = documentDictionaryService.getDocumentDictionaries(application, documentType);
         Set<DocumentDictionary> applicantDocs = documentDictionaryService.getDocumentDictionaries(applicant, documentType);
 
-        // Create a set of existing document IDs in applicant profile (by document ID + name)
-        Set<String> existingKeys = applicantDocs
-            .stream()
-            .map(dd -> dd.getDocument().getDocumentId() + ":" + dd.getName())
-            .collect(Collectors.toSet());
+        // Delete all existing documents of this type from applicant profile
+        // We use the repository directly because these are profile documents (not linked to an application)
+        for (DocumentDictionary applicantDoc : applicantDocs) {
+            documentDictionaryService.deleteApplicantProfileDocument(applicantDoc.getDocumentDictionaryId());
+        }
 
-        // Copy documents from application to applicant profile if they don't already exist
+        // Copy all documents from application to applicant profile
         for (DocumentDictionary appDoc : applicationDocs) {
-            String key = appDoc.getDocument().getDocumentId() + ":" + appDoc.getName();
-            if (!existingKeys.contains(key)) {
-                DocumentDictionary copy = new DocumentDictionary();
-                copy.setApplicant(applicant);
-                copy.setDocument(appDoc.getDocument());
-                copy.setName(appDoc.getName());
-                copy.setDocumentType(appDoc.getDocumentType());
-                documentDictionaryService.save(copy);
-            }
+            DocumentDictionary copy = new DocumentDictionary();
+            copy.setApplicant(applicant);
+            copy.setDocument(appDoc.getDocument());
+            copy.setName(appDoc.getName());
+            copy.setDocumentType(appDoc.getDocumentType());
+            documentDictionaryService.save(copy);
         }
     }
 

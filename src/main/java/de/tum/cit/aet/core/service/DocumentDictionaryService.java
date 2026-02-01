@@ -104,6 +104,16 @@ public class DocumentDictionaryService {
     }
 
     /**
+     * Deletes a DocumentDictionary entry from applicant profile (without authorization check).
+     * This method is intended for internal use when syncing documents from application to profile.
+     *
+     * @param documentDictionaryId the id of the document dictionary entry to delete
+     */
+    public void deleteApplicantProfileDocument(UUID documentDictionaryId) {
+        documentDictionaryRepository.deleteById(documentDictionaryId);
+    }
+
+    /**
      * Retrieves all DocumentDictionary entries for a given applicant and document
      * type.
      *
