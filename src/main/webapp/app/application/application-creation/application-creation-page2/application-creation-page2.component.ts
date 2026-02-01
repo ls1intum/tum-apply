@@ -238,6 +238,11 @@ export default class ApplicationCreationPage2Component {
 
   private detectNumericGrade(grade: string): GradingScaleLimits {
     const normalizedValue = grade.replace(',', '.');
+
+    // Ignore number with non-numeric formats
+    if (!/^[\d]+([.,][\d]+)?$/.test(grade)) {
+      return null;
+    }
     const numericValue = parseFloat(normalizedValue);
 
     // Ignore values below 1
