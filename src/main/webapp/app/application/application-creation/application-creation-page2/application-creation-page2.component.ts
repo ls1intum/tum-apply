@@ -94,6 +94,7 @@ export default class ApplicationCreationPage2Component {
   });
 
   hasInitialized = signal(false);
+  hasInitialLimitsSet = signal(false);
 
   bachelorGradeLimits = signal<GradingScaleLimits>(null);
   masterGradeLimits = signal<GradingScaleLimits>(null);
@@ -123,6 +124,10 @@ export default class ApplicationCreationPage2Component {
   private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {
     initialValue: this.page2Form.value,
   });
+
+  private bachelorGradeValue = toSignal(this.page2Form.get('bachelorGrade')!.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
+
+  private masterGradeValue = toSignal(this.page2Form.get('masterGrade')!.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
 
   private formStatus = toSignal(this.page2Form.statusChanges, {
     initialValue: this.page2Form.status,
@@ -157,25 +162,38 @@ export default class ApplicationCreationPage2Component {
       this.masterGradeLimits.set(masterLimits);
     }
 
+    this.hasInitialLimitsSet.set(true);
+
     this.page2Form.updateValueAndValidity();
     queueMicrotask(() => {
       this.changed.emit(false);
     });
   });
 
+  private bachelorGradeEffect = effect(() => {
+    if (!this.hasInitialLimitsSet()) return;
+
+    const grade = this.bachelorGradeValue();
+    if (grade === undefined) return;
+
+    const limits = this.detectGradingScale(grade ?? '');
+    this.bachelorGradeLimits.set(limits);
+  });
+
+  private masterGradeEffect = effect(() => {
+    if (!this.hasInitialLimitsSet()) return;
+
+    const grade = this.masterGradeValue();
+    if (grade === undefined) return;
+
+    const limits = this.detectGradingScale(grade ?? '');
+    this.masterGradeLimits.set(limits);
+  });
+
   private updateEffect = effect(() => {
     if (!this.hasInitialized()) return;
 
     const formData = this.formValue() as Partial<ApplicationCreationPage2Data>;
-
-    const baGrade = formData.bachelorGrade ?? '';
-    const bachelorLimits = this.detectGradingScale(baGrade);
-
-    const maGrade = formData.masterGrade ?? '';
-    const masterLimits = this.detectGradingScale(maGrade);
-
-    this.bachelorGradeLimits.set(bachelorLimits);
-    this.masterGradeLimits.set(masterLimits);
 
     const normalized = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v])) as ApplicationCreationPage2Data;
 
