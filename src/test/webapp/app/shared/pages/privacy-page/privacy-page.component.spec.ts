@@ -53,11 +53,11 @@ describe('PrivacyPageComponent', () => {
     component = fixture.componentInstance;
     mockTranslate = TestBed.inject(TranslateService);
     componentAccess = {
-      currentExportStatus: (component as any).currentExportStatus,
-      exportButtonDisabled: (component as any).exportButtonDisabled,
-      tooltip: (component as any).tooltip,
-      cooldownSeconds: (component as any).cooldownSeconds,
-      currentLang: (component as any).currentLang,
+      currentExportStatus: component.currentExportStatus,
+      exportButtonDisabled: component.exportButtonDisabled,
+      tooltip: component.tooltip,
+      cooldownSeconds: component.cooldownSeconds,
+      currentLang: component.currentLang,
     };
     fixture.detectChanges();
   });
@@ -146,7 +146,7 @@ describe('PrivacyPageComponent', () => {
     });
 
     it('should show cooldown tooltip when disabled due to cooldown', () => {
-      (component as any).cooldownSeconds.set(86400); // 1 day in seconds
+      component.cooldownSeconds.set(86400); // 1 day in seconds
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       expect(componentAccess.tooltip()).toBe('privacy.export.tooltip.cooldown');
     });
