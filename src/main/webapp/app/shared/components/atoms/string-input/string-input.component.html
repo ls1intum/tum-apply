@@ -55,9 +55,16 @@
         />
       }
     </div>
-    @if (helperText()) {
-      <div class="text-sm text-text-disabled">
-        {{ helperText() }}
+    @if (helperTextLeft() || helperTextRight()) {
+      <div class="flex justify-between items-center text-sm">
+        @if (helperTextLeft()) {
+          <span class="text-text-disabled">{{ helperTextLeft() }}</span>
+        } @else {
+          <span></span>
+        }
+        @if (helperTextRight()) {
+          <span class="text-info-default underline cursor-pointer">{{ helperTextRight() }}</span>
+        }
       </div>
     }
     @if (errorEnabled()) {
