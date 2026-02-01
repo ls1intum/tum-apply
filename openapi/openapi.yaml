@@ -2415,6 +2415,7 @@ components:
       type: object
       properties:
         cooldownSeconds: {type: integer, format: int64}
+        downloadToken: {type: string}
         lastRequestedAt: {type: string, format: date-time}
         nextAllowedAt: {type: string, format: date-time}
         status:
