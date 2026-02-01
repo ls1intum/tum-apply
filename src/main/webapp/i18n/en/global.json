@@ -354,7 +354,8 @@
         "masterGrade": "Final Master Grade"
       },
       "helperText": {
-        "gradingScale": "Scale: {{upperLimit}} (best) to {{lowerLimit}} (pass)"
+        "gradingScale": "Scale: {{upperLimit}} (best) to {{lowerLimit}} (pass)",
+        "changeScale": "Change Scale"
       },
       "tooltip": {
         "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
