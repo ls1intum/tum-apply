@@ -250,21 +250,23 @@ export default class ApplicationCreationPage2Component {
       maxValue: number;
       upperLimit: string;
       lowerLimit: string;
-      comment?: string;
+      inclusive?: boolean;
     }[] = [
       { maxValue: 4.0, upperLimit: '1.0', lowerLimit: '4.0' }, // Cover range from 1.0 to 4.0 (f.e. German system)
       { maxValue: 6.0, upperLimit: '6.0', lowerLimit: '4.0' }, // Cover range from 4.0 to 6.0 (f.e. Swiss system)
       { maxValue: 10.0, upperLimit: '10', lowerLimit: '5' }, // Cover range from 6.0 to 10.0 (f.e. Spanish system)
       { maxValue: 20.0, upperLimit: '20', lowerLimit: '10' }, // Cover range from 10.0 to 20.0 (f.e. French system)
-      { maxValue: 39.0, upperLimit: '40', lowerLimit: '20' }, // Cover range from 20.0 to 40.0 (no known systems, propose 40 - 20 for this range. Exclude 40 from this range as it's more likely to be the percentage range 100 - 40)
-      { maxValue: 49.0, upperLimit: '100', lowerLimit: '40' }, // Cover range from 40.0 to 50.0 (f.e. percentage based systems => percentage 100 to 50 is more likely which is why this range is limited to 50)
+      { maxValue: 40.0, upperLimit: '40', lowerLimit: '20', inclusive: false }, // Cover range from 20.0 to 40.0 (no known systems, propose 40 - 20 for this range. Exclude 40 from this range as it's more likely to be the percentage range 100 - 40)
+      { maxValue: 50.0, upperLimit: '100', lowerLimit: '40', inclusive: false }, // Cover range from 40.0 to 50.0 (f.e. percentage based systems => percentage 100 to 50 is more likely which is why this range is limited to 50)
       { maxValue: 100.0, upperLimit: '100', lowerLimit: '50' }, // Cover range from 50.0 to 100.0 (f.e. percentage based systems)
       { maxValue: 110.0, upperLimit: '110', lowerLimit: '66' }, // Cover range from 100.0 to 110.0 (f.e. Italian system)
     ];
 
     // Find the first matching scale
     for (const scale of gradingScales) {
-      if (numericValue <= scale.maxValue) {
+      const matches = scale.inclusive === false ? numericValue < scale.maxValue : numericValue <= scale.maxValue;
+
+      if (matches) {
         return { upperLimit: scale.upperLimit, lowerLimit: scale.lowerLimit };
       }
     }
