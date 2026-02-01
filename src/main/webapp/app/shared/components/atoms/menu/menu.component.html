@@ -1,5 +1,5 @@
 <div class="jhi-menu">
-  <p-menu #menu [model]="menuModel()" [popup]="popup()" [appendTo]="appendTo()">
+  <p-menu #menu [model]="menuModel()" [popup]="popup()" [appendTo]="appendTo()" (onShow)="onShow()" (onHide)="onHide()">
     <ng-template pTemplate="item" let-item>
       <div class="p-menu-item-content">
         <a class="p-menu-item-link" [ngClass]="item.styleClass">
