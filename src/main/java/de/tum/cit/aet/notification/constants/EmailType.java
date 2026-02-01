@@ -78,7 +78,13 @@ public enum EmailType {
      * Invitation to self-schedule an interview slot
      * To: Applicant
      */
-    INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true, false);
+    INTERVIEW_SELF_SCHEDULING_INVITATION("INTERVIEW_SELF_SCHEDULING_INVITATION", Set.of(UserRole.APPLICANT), true, false),
+
+    /**
+     * Data export ready notification
+     * To: User who requested the export
+     */
+    DATA_EXPORT_READY("DATA_EXPORT_READY", Set.of(UserRole.APPLICANT, UserRole.PROFESSOR, UserRole.EMPLOYEE, UserRole.ADMIN), false, false);
 
     private final String value;
 
