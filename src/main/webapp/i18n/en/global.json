@@ -353,6 +353,9 @@
         "masterDegreeUniversity": "University of your Master’s Degree",
         "masterGrade": "Final Master Grade"
       },
+      "helperText": {
+        "gradingScale": "Scale: {{upperLimit}} (best) to {{lowerLimit}} (pass)"
+      },
       "tooltip": {
         "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
         "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",

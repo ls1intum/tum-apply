@@ -353,6 +353,9 @@
         "masterDegreeUniversity": "Universität des Masters",
         "masterGrade": "Master-Abschlussnote"
       },
+      "helperText": {
+        "gradingScale": "Skala: {{upperLimit}} (beste) bis {{lowerLimit}} (bestanden)"
+      },
       "tooltip": {
         "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
         "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
