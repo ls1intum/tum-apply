@@ -49,7 +49,9 @@
           [control]="page2Form.controls.bachelorGrade"
           icon="circle-info"
           [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
-          [helperText]="helperTextBachelorGrade()"
+          [helperTextLeft]="helperTextBachelorGrade()"
+          ,
+          [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
         />
       </div>
     </div>
@@ -101,7 +103,8 @@
           [control]="page2Form.controls.masterGrade"
           icon="circle-info"
           [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
-          [helperText]="helperTextMasterGrade()"
+          [helperTextLeft]="helperTextMasterGrade()"
+          [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
         />
       </div>
     </div>
