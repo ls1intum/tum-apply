@@ -20,9 +20,9 @@ export class DownloadDataExportComponent {
   private readonly toastService = inject(ToastService);
 
   constructor() {
-    const token = this.route.snapshot.params['token'];
+    const token = this.route.snapshot.params.token;
     if (token) {
-      this.downloadDataExport(token);
+      void this.downloadDataExport(token);
     } else {
       this.toastService.showErrorKey('global.dataExport.error.noToken');
     }
