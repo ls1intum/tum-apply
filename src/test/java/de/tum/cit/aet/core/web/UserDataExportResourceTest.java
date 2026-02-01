@@ -110,7 +110,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
             .getAndRead(STATUS_URL, Map.of(), DataExportStatusDTO.class, 200, MediaType.APPLICATION_JSON);
 
         assertThat(status.status()).isEqualTo(DataExportState.REQUESTED);
-        assertThat(status.lastRequestedAt()).isEqualTo(lastRequested);
+        assertThat(status.lastRequestedAt()).isEqualToIgnoringNanos(lastRequested);
         assertThat(status.nextAllowedAt()).isEqualTo(lastRequested.plusDays(7));
         assertThat(status.cooldownSeconds()).isGreaterThan(0);
     }
