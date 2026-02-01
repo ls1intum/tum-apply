@@ -104,14 +104,15 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
         request.setStatus(DataExportState.REQUESTED);
         request.setLastRequestedAt(lastRequested);
         DataExportRequest savedRequest = dataExportRequestRepository.saveAndFlush(request);
+        DataExportRequest reloadedRequest = dataExportRequestRepository.findById(savedRequest.getExportRequestId()).orElseThrow();
 
         DataExportStatusDTO status = api
             .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
             .getAndRead(STATUS_URL, Map.of(), DataExportStatusDTO.class, 200, MediaType.APPLICATION_JSON);
 
         assertThat(status.status()).isEqualTo(DataExportState.REQUESTED);
-        assertThat(status.lastRequestedAt()).isEqualTo(savedRequest.getLastRequestedAt());
-        assertThat(status.nextAllowedAt()).isEqualTo(savedRequest.getLastRequestedAt().plusDays(7));
+        assertThat(status.lastRequestedAt()).isEqualTo(reloadedRequest.getLastRequestedAt());
+        assertThat(status.nextAllowedAt()).isEqualTo(reloadedRequest.getLastRequestedAt().plusDays(7));
         assertThat(status.cooldownSeconds()).isGreaterThan(0);
     }
 
