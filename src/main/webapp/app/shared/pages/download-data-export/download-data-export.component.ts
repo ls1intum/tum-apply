@@ -5,10 +5,11 @@ import { UserDataExportResourceApiService } from 'app/generated';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-download-data-export.component',
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule, TranslateDirective],
   templateUrl: './download-data-export.component.html',
 })
 export class DownloadDataExportComponent {
@@ -20,7 +21,7 @@ export class DownloadDataExportComponent {
   private readonly toastService = inject(ToastService);
 
   constructor() {
-    const token = this.route.snapshot.params.token;
+    const token = this.route.snapshot.paramMap.get('token');
     if (token) {
       void this.downloadDataExport(token);
     } else {
@@ -50,8 +51,7 @@ export class DownloadDataExportComponent {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
       this.downloadSuccess.set(true);
-    } catch (error) {
-      console.error('Download failed', error);
+    } catch {
       this.toastService.showErrorKey('global.dataExport.error.downloadFailed');
     } finally {
       this.isDownloading.set(false);

@@ -149,6 +149,11 @@
     },
     "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente.",
     "dataExport": {
+      "downloadSuccess": "Download erfolgreich!",
+      "downloadSuccessMessage": "Dein Datenexport wurde erfolgreich heruntergeladen.",
+      "downloadSuccessInfo": "Du kannst jetzt auf deine exportierten Daten in der heruntergeladenen Datei zugreifen.",
+      "downloading": "Download läuft...",
+      "downloadingInfo": "Dein Datenexport wird heruntergeladen.",
       "request": "TUMApply - Datenexport Anfrage",
       "download": "TUMApply - Datenexport Download",
       "error": {

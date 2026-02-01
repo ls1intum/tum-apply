@@ -34,13 +34,14 @@ export class PrivacyPageComponent {
     }
   });
 
+  readonly translateService = inject(TranslateService);
+  readonly currentLang = signal<string>(this.translateService.getCurrentLang());
+  readonly currentExportStatus = signal<ExportStatus>(null);
+  readonly cooldownSeconds = signal<number>(0);
+
   protected readonly userDataExportService = inject(UserDataExportResourceApiService);
   private readonly toastService = inject(ToastService);
-  private readonly translateService = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly currentLang = signal<string>(this.translateService.getCurrentLang());
-  private readonly currentExportStatus = signal<ExportStatus>(null);
-  private readonly cooldownSeconds = signal<number>(0);
 
   constructor() {
     void this.refreshStatus();

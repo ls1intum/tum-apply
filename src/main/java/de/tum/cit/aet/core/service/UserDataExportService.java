@@ -65,19 +65,6 @@ public class UserDataExportService {
      * Retrieves the current data export status for the given user, including the most recent request,
      * the last time an export was requested, the next allowed request time based on cooldown rules,
      * and the remaining cooldown in seconds.
-    private final List<UserDataSectionProvider> userDataSectionProviders;
-    private final UserExportZipWriter userExportZipWriter;
-
-    @Value("${aet.client.url}")
-    private String clientUrl;
-
-    @Value("${aet.data-export.expires-days:7}")
-    private long exportExpiresDays;
-
-    /**
-     * Retrieves the current data export status for the given user, including the most recent request,
-     * the last time an export was requested, the next allowed request time based on cooldown rules,
-     * and the remaining cooldown in seconds.
      *
      * @param userId the user's unique identifier
      * @return a {@link DataExportStatusDTO} containing status, last requested time, next allowed time,

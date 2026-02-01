@@ -6,9 +6,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { UserDataExportResourceApiService } from 'app/generated';
 import { DownloadDataExportComponent } from 'app/shared/pages/download-data-export/download-data-export.component';
-import { createActivatedRouteMock } from 'util/activated-route.mock';
+import { createActivatedRouteMock, provideActivatedRouteMock } from 'util/activated-route.mock';
 import { createToastServiceMock, provideToastServiceMock, ToastServiceMock } from 'util/toast-service.mock';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
+import { provideTranslateMock } from 'util/translate.mock';
 
 describe('DownloadDataExportComponent', () => {
   let component: DownloadDataExportComponent;
@@ -27,25 +28,11 @@ describe('DownloadDataExportComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DownloadDataExportComponent],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            paramMap: routeMock.paramMapSubject.asObservable(),
-            queryParamMap: routeMock.queryParamMapSubject.asObservable(),
-            url: routeMock.urlSubject.asObservable(),
-            get snapshot() {
-              return {
-                paramMap: routeMock.paramMapSubject.value,
-                queryParamMap: routeMock.queryParamMapSubject.value,
-                url: routeMock.urlSubject.value,
-                params: currentRouteParams,
-              };
-            },
-          },
-        },
+        provideActivatedRouteMock(routeMock),
         { provide: UserDataExportResourceApiService, useValue: exportServiceMock },
         provideToastServiceMock(toastServiceMock),
         provideFontAwesomeTesting(),
+        provideTranslateMock(),
       ],
     }).compileComponents();
   };
@@ -108,7 +95,7 @@ describe('DownloadDataExportComponent', () => {
     expect(exportServiceMock.downloadDataExport).toHaveBeenCalledWith('token-123', 'response');
     expect(anchor.download).toBe('export.zip');
     expect(anchor.href).toContain('blob:url');
-    expect(anchorClickSpy).toHaveBeenCalled();
+    expect(anchorClickSpy).toHaveBeenCalledTimes(1);
     expect(createObjectURLSpy).toHaveBeenCalledWith(blob);
     expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:url');
     expect(component.downloadSuccess()).toBe(true);
