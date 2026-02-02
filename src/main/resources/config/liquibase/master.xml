@@ -34,6 +34,7 @@
   <include file="changelog/00000000000022_merge_job_description_fields.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000023_add_assessment_to_interviewees.xml" relativeToChangelogFile="true"/>
   <include file="changelog/00000000000024_split_job_description_to_english_german.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/00000000000025_create_data_export_requests.xml" relativeToChangelogFile="true"/>
 
   <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
   <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints

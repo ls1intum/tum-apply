@@ -31,11 +31,6 @@ spring:
       enabled: false
     livereload:
       enabled: false
-  # jpa:
-  #   properties:
-  #     hibernate:
-  #       type:
-  #         preferred_uuid_jdbc_type: CHAR
   mail:
     host:
     port: 465

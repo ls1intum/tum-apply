@@ -16,6 +16,7 @@ import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
+import de.tum.cit.aet.interview.dto.UpcomingInterviewDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
@@ -61,6 +62,25 @@ public class InterviewResource {
         List<InterviewOverviewDTO> overview = interviewService.getInterviewOverview();
         log.info("Returning all interview processes");
         return ResponseEntity.ok(overview);
+    }
+
+    /**
+     * {@code GET /api/interviews/upcoming} : Get upcoming interviews for the
+     * dashboard.
+     * <p>
+     * Returns a list of strictly upcoming booked interviews for the logged-in
+     * professor.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     *         {@link UpcomingInterviewDTO}
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<UpcomingInterviewDTO>> getUpcomingInterviews() {
+        log.info("REST request to get upcoming interviews");
+        List<UpcomingInterviewDTO> upcomingCalls = interviewService.getUpcomingInterviews();
+        log.info("Returning {} upcoming interviews", upcomingCalls.size());
+        return ResponseEntity.ok(upcomingCalls);
     }
 
     /**
