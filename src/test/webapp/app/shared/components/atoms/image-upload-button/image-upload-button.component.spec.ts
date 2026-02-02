@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
-import { signal } from '@angular/core';
 
 import {
   ImageUploadButtonComponent,
@@ -61,7 +60,6 @@ describe('ImageUploadButtonComponent', () => {
   let validJpegFile: File;
   let largeJpegFile: File;
   let svgFile: File;
-  let smallPngFile: File;
 
   beforeEach(async () => {
     mockImageService = createImageResourceApiServiceMock();
@@ -79,7 +77,6 @@ describe('ImageUploadButtonComponent', () => {
     validJpegFile = createMockFile('test.jpg', 'image/jpeg', VALID_FILE_SIZE);
     largeJpegFile = createMockFile('large.jpg', 'image/jpeg', LARGE_FILE_SIZE);
     svgFile = createMockFile('test.svg', 'image/svg+xml', SMALL_FILE_SIZE);
-    smallPngFile = createMockFile('test.png', 'image/png', SMALL_FILE_SIZE);
   });
 
   describe('Component Initialization', () => {
