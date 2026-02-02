@@ -217,8 +217,8 @@ export default class ApplicationCreationPage2Component {
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
     const dialogRef = this.dialogService.open(GradingScaleEditDialogComponent, {
       header: this.translateService.instant('entity.applicationPage2.helperText.changeScale'),
-      width: '600px',
-      style: { background: 'var(--color-background-default)', width: '60rem' },
+      width: '40rem',
+      style: { background: 'var(--color-background-default)' },
       closable: true,
       draggable: false,
       modal: true,

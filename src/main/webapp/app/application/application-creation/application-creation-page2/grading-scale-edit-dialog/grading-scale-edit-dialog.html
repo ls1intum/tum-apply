@@ -2,7 +2,12 @@
   <div class="flex items-end gap-4">
     <!-- Upper Limit Input -->
     <div class="flex-1">
-      <jhi-string-input label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}" [(model)]="upperLimit" />
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
+        [(model)]="upperLimit"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeUpperLimit' | translate"
+      />
     </div>
 
     <!-- Exchange Icon Button -->
@@ -17,7 +22,12 @@
 
     <!-- Lower Limit Input -->
     <div class="flex-1">
-      <jhi-string-input label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}" [(model)]="lowerLimit" />
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
+        [(model)]="lowerLimit"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeLowerLimit' | translate"
+      />
     </div>
   </div>
 
