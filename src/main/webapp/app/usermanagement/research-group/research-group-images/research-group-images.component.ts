@@ -18,7 +18,7 @@ import {
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 
 interface ImageWithJobInfo extends ImageDTO {
-  jobId?: string;
+  isInUse?: boolean;
 }
 
 const I18N_BASE = 'researchGroup.imageLibrary';
@@ -45,9 +45,9 @@ export class ResearchGroupImagesComponent {
 
   readonly totalImages = computed(() => this.allImages().length);
 
-  readonly inUseImages = computed(() => this.allImages().filter(img => img.jobId !== undefined));
+  readonly inUseImages = computed(() => this.allImages().filter(img => img.isInUse === true));
 
-  readonly notInUseImages = computed(() => this.allImages().filter(img => img.jobId === undefined));
+  readonly notInUseImages = computed(() => this.allImages().filter(img => img.isInUse !== true));
 
   readonly inUseCount = computed(() => this.inUseImages().length);
   readonly notInUseCount = computed(() => this.notInUseImages().length);
@@ -61,19 +61,13 @@ export class ResearchGroupImagesComponent {
 
   /**
    * Load all images for the research group
-   * Note: Job assignment information would need additional API endpoints
-   * to properly link images to jobs. For now, we load just the images.
    */
   async loadImages(): Promise<void> {
     try {
       this.isLoading.set(true);
       const images = await firstValueFrom(this.imageService.getResearchGroupJobBanners());
 
-      // Convert to enriched format, optional: job information
-      const enrichedImages: ImageWithJobInfo[] = images.map(image => ({
-        ...image,
-        jobId: undefined,
-      }));
+      const enrichedImages: ImageWithJobInfo[] = images.map(image => Object.assign({}, image));
 
       this.allImages.set(enrichedImages);
     } catch {
@@ -87,11 +81,9 @@ export class ResearchGroupImagesComponent {
    * Handle successful image upload from the shared component
    */
   onImageUploaded(uploadedImage: ImageDTO): void {
-    const enrichedImage: ImageWithJobInfo = {
-      ...uploadedImage,
-    };
+    const enrichedImage: ImageWithJobInfo = Object.assign({}, uploadedImage);
 
-    this.allImages.update(images => [...images, enrichedImage]);
+    this.allImages.update(images => images.concat(enrichedImage));
     this.toastService.showSuccessKey(`${I18N_BASE}.success.imageUploaded`);
   }
 

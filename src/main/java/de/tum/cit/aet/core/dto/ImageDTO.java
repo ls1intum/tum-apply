@@ -1,24 +1,26 @@
 package de.tum.cit.aet.core.dto;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.exception.UnknownImageTypeException;
-import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ImageDTO(
-    UUID imageId,
-    UUID researchGroupId,
-    UUID departmentId,
-    String url,
-    ImageType imageType,
-    Long sizeBytes,
-    UUID uploadedById
-) {
+        UUID imageId,
+        UUID researchGroupId,
+        UUID departmentId,
+        String url,
+        ImageType imageType,
+        Long sizeBytes,
+        UUID uploadedById,
+        Boolean isInUse) {
     /**
      * Convert an Image entity to an ImageDTO
      *
@@ -49,13 +51,36 @@ public record ImageDTO(
         }
 
         return new ImageDTO(
-            image.getImageId(),
-            researchGroupId,
-            departmentId,
-            image.getUrl(),
-            imageType,
-            image.getSizeBytes(),
-            uploadedById
-        );
+                image.getImageId(),
+                researchGroupId,
+                departmentId,
+                image.getUrl(),
+                imageType,
+                image.getSizeBytes(),
+                uploadedById,
+                null);
+    }
+
+    /**
+     * Convert an Image entity to an ImageDTO with isInUse flag
+     *
+     * @param image   the Image entity to convert
+     * @param isInUse whether the image is currently used by any job
+     * @return the ImageDTO representation
+     */
+    public static ImageDTO fromEntity(Image image, boolean isInUse) {
+        ImageDTO dto = fromEntity(image);
+        if (dto == null) {
+            return null;
+        }
+        return new ImageDTO(
+                dto.imageId(),
+                dto.researchGroupId(),
+                dto.departmentId(),
+                dto.url(),
+                dto.imageType(),
+                dto.sizeBytes(),
+                dto.uploadedById(),
+                isInUse);
     }
 }
