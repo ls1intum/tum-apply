@@ -68,7 +68,6 @@ export class ImageUploadButtonComponent {
    * Handle image file selection and upload
    */
   async onImageSelected(event: Event): Promise<void> {
-    // codacy-disable-next-line
     const fileInput: HTMLInputElement = event.target as HTMLInputElement;
     if (!fileInput.files || fileInput.files.length === 0) {
       return;
