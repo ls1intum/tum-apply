@@ -73,20 +73,12 @@ public class UserDataExportService {
     public DataExportStatusDTO getDataExportStatus(@NonNull UUID userId) {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         DataExportRequest latest = dataExportRequestRepository.findTop1ByUserUserIdOrderByCreatedAtDesc(userId).orElse(null);
-        LocalDateTime lastRequestedAt = dataExportRequestRepository.findLastRequestedAtForUser(userId).orElse(null);
-
-        if (lastRequestedAt == null && latest != null) {
-            lastRequestedAt = latest.getCreatedAt();
-        }
-
+        LocalDateTime lastRequestedAt = calculateLastRequestedAt(userId, latest);
         LocalDateTime nextAllowedAt = lastRequestedAt != null ? lastRequestedAt.plusDays(7) : null;
-        long cooldownSeconds = 0;
-        if (nextAllowedAt != null && nextAllowedAt.isAfter(now)) {
-            cooldownSeconds = Duration.between(now, nextAllowedAt).getSeconds();
-        }
-
+        long cooldownSeconds = calculateCooldownSeconds(now, nextAllowedAt);
         DataExportState status = latest != null ? latest.getStatus() : null;
-        return new DataExportStatusDTO(status, lastRequestedAt, nextAllowedAt, cooldownSeconds);
+        String downloadToken = calculateDownloadToken(status, latest);
+        return new DataExportStatusDTO(status, lastRequestedAt, nextAllowedAt, cooldownSeconds, downloadToken);
     }
 
     /**
@@ -108,8 +100,8 @@ public class UserDataExportService {
             throw new TooManyRequestsException("Data export can only be requested once per week");
         }
 
-        Set<DataExportState> activeStates = Set.of(DataExportState.REQUESTED, DataExportState.IN_CREATION, DataExportState.EMAIL_SENT);
-        if (dataExportRequestRepository.existsByUserUserIdAndStatusIn(userId, activeStates)) {
+        Set<DataExportState> activeCreationStates = Set.of(DataExportState.REQUESTED, DataExportState.IN_CREATION);
+        if (dataExportRequestRepository.existsByUserUserIdAndStatusIn(userId, activeCreationStates)) {
             throw new TimeConflictException("A data export request is already in progress");
         }
 
@@ -295,5 +287,24 @@ public class UserDataExportService {
             return false;
         }
         return user.getResearchGroupRoles().stream().map(UserResearchGroupRole::getRole).anyMatch(role::equals);
+    }
+
+    private LocalDateTime calculateLastRequestedAt(UUID userId, DataExportRequest latest) {
+        LocalDateTime lastRequestedAt = dataExportRequestRepository.findLastRequestedAtForUser(userId).orElse(null);
+        if (lastRequestedAt == null && latest != null) {
+            lastRequestedAt = latest.getCreatedAt();
+        }
+        return lastRequestedAt;
+    }
+
+    private long calculateCooldownSeconds(LocalDateTime now, LocalDateTime nextAllowedAt) {
+        if (nextAllowedAt != null && nextAllowedAt.isAfter(now)) {
+            return Duration.between(now, nextAllowedAt).getSeconds();
+        }
+        return 0;
+    }
+
+    private String calculateDownloadToken(DataExportState status, DataExportRequest latest) {
+        return (status == DataExportState.EMAIL_SENT && latest != null) ? latest.getDownloadToken() : null;
     }
 }

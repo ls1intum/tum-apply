@@ -58,25 +58,6 @@
         "aquabloom": "Light AquaBloom",
         "system": "System"
       }
-    },
-
-    "privacy": {
-      "header": "Privacy",
-      "export": {
-        "header": "Your data",
-        "description": "Download a ZIP archive with a summary of your profile, settings and documents.",
-        "button": "Export my data",
-        "cooldown": "You can request another export in {{seconds}}s",
-        "inProgress": "Export in progress…",
-        "started": {
-          "summary": "Export started",
-          "detail": "You will receive an email when the archive is ready."
-        },
-        "failed": {
-          "summary": "Export failed",
-          "detail": "Please try again later."
-        }
-      }
     }
   }
 }
