@@ -10,10 +10,13 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { deepEqual } from 'app/core/util/deepequal-util';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
+
+import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
 export type ApplicationCreationPage2Data = {
   bachelorDegreeName: string;
@@ -77,6 +80,7 @@ export default class ApplicationCreationPage2Component {
 
   formbuilder = inject(FormBuilder);
   translateService = inject(TranslateService);
+  dialogService = inject(DialogService);
 
   currentLang = toSignal(this.translateService.onLangChange);
 
@@ -209,6 +213,40 @@ export default class ApplicationCreationPage2Component {
 
     this.valid.emit(this.page2Form.valid);
   });
+
+  onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
+    const dialogRef = this.dialogService.open(GradingScaleEditDialogComponent, {
+      header: this.translateService.instant('entity.applicationPage2.helperText.changeScale'),
+      width: '600px',
+      style: { background: 'var(--color-background-default)', width: '60rem' },
+      closable: true,
+      draggable: false,
+      modal: true,
+      data: {
+        gradeType,
+        currentGrade: gradeType === 'bachelor' ? this.data()?.bachelorGrade : this.data()?.masterGrade,
+        currentUpperLimit: gradeType === 'bachelor' ? this.data()?.bachelorGradeUpperLimit : this.data()?.masterGradeUpperLimit,
+        currentLowerLimit: gradeType === 'bachelor' ? this.data()?.bachelorGradeLowerLimit : this.data()?.masterGradeLowerLimit,
+      },
+    });
+    dialogRef?.onClose.subscribe((result?: { upperLimit: string; lowerLimit: string }) => {
+      if (result) {
+        if (gradeType === 'bachelor') {
+          this.page2Form.patchValue({
+            bachelorGradeUpperLimit: result.upperLimit,
+            bachelorGradeLowerLimit: result.lowerLimit,
+          });
+          this.bachelorGradeLimits.set({ upperLimit: result.upperLimit, lowerLimit: result.lowerLimit });
+        } else {
+          this.page2Form.patchValue({
+            masterGradeUpperLimit: result.upperLimit,
+            masterGradeLowerLimit: result.lowerLimit,
+          });
+          this.masterGradeLimits.set({ upperLimit: result.upperLimit, lowerLimit: result.lowerLimit });
+        }
+      }
+    });
+  }
 
   detectGradingScale(grade: string): GradingScaleLimits {
     if (!grade || grade.trim() === '') {

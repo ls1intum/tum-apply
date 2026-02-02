@@ -25,6 +25,7 @@ export abstract class BaseInputDirective<T> {
   customErrorKey = input<string | undefined>(undefined);
   helperTextLeft = input<string | undefined>(undefined);
   helperTextRight = input<string | undefined>(undefined);
+  helperTextRightClick = output();
 
   readonly formValidityVersion = signal(0);
   isFocused = signal(false);
