@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.DataExportState;
@@ -33,7 +34,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -77,7 +77,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     void setup() {
         databaseCleaner.clean();
         api.withoutPostProcessors();
-        AsyncEmailSender asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+        AsyncEmailSender asyncEmailSenderMock = mock(AsyncEmailSender.class);
         ReflectionTestUtils.setField(userDataExportService, "sender", asyncEmailSenderMock);
         cleanExportRoot();
     }
