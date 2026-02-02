@@ -598,7 +598,7 @@
       },
       "invalidFileType": {
         "summary": "Ungültiger Dateityp",
-        "detail": "Bitte laden Sie nur JPG- oder PNG-Bilder hoch"
+        "detail": "Bitte lade nur JPG- oder PNG-Bilder hoch"
       },
       "dimensionsTooLarge": {
         "summary": "Bild zu groß",
@@ -610,7 +610,7 @@
       },
       "uploadFailed": {
         "summary": "Upload fehlgeschlagen",
-        "detail": "Bild-Upload fehlgeschlagen. Bitte versuchen Sie es erneut"
+        "detail": "Bild-Upload fehlgeschlagen. Bitte versuche es erneut"
       }
     }
   }
