@@ -31,7 +31,7 @@
   } @else {
     <!-- In Use Section -->
     <div class="mb-8">
-      <h3 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.inUse">In Use</h3>
+      <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.inUse"></h2>
       @if (inUseImages().length === 0) {
         <div class="mb-4">
           <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noInUse' | translate" severity="primary" />
@@ -47,7 +47,7 @@
 
     <!-- Not In Use Section -->
     <div class="mb-8">
-      <h3 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.notInUse">Not In Use</h3>
+      <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.imageLibrary.section.notInUse"></h2>
       @if (notInUseImages().length === 0 && allImages().length === 0) {
         <div class="mb-4">
           <jhi-info-box [message]="'researchGroup.imageLibrary.empty.noImages' | translate" severity="primary" />
@@ -76,7 +76,7 @@
       <fa-icon [icon]="['fas', icon]" size="lg" />
     </div>
     <div>
-      <div class="text-2xl font-bold leading-none mb-1">{{ count }}</div>
+      <div class="text-2xl leading-none mb-1">{{ count }}</div>
       <div class="text-sm" [jhiTranslate]="labelKey"></div>
     </div>
   </div>
@@ -85,7 +85,7 @@
 <!-- Reusable Image Card Template -->
 <ng-template #imageCard let-image="image" let-showDelete="showDelete">
   <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
-    <div class="relative rounded-lg overflow-hidden border-[0.2rem] transition-colors aspect-video border-transparent">
+    <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
       <img [src]="image.url" [alt]="image.jobTitle || 'Job banner image'" class="w-full h-full object-cover" />
       <!-- Delete Button (only when showDelete is true) -->
       @if (showDelete) {
