@@ -185,3 +185,10 @@ p-step[data-p-active='true'] .p-step-title {
 .tooltip-top .p-tooltip-right {
   top: -0.5rem !important;
 }
+
+/* -------------------------------
+   Progress Spinner Color Override
+---------------------------------- */
+.p-progress-spinner-circle {
+  stroke: var(--p-primary-color) !important;
+}
