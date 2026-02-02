@@ -157,10 +157,6 @@
         "summary": "Upload Successful",
         "detail": "Image uploaded successfully"
       },
-      "uploadFailed": {
-        "summary": "Upload Failed",
-        "detail": "Failed to upload image. Please try again."
-      },
       "deleteImageSuccess": {
         "summary": "Image Deleted",
         "detail": "Image deleted successfully"
@@ -169,25 +165,9 @@
         "summary": "Delete Failed",
         "detail": "Failed to delete image. Please try again."
       },
-      "fileTooLarge": {
-        "summary": "File Too Large",
-        "detail": "Image must be smaller than 5MB"
-      },
-      "invalidFileType": {
-        "summary": "Invalid File Type",
-        "detail": "Please select an image file (JPG, JPEG, PNG)"
-      },
       "loadImagesFailed": {
         "summary": "Load Failed",
         "detail": "Failed to load images. Please refresh the page."
-      },
-      "dimensionsTooLarge": {
-        "summary": "Image Too Large",
-        "detail": "Image dimensions must not exceed 4096x4096 pixels"
-      },
-      "invalidImage": {
-        "summary": "Invalid Image",
-        "detail": "Unable to read image file. Please select a valid image."
       },
       "uploadNew": "Upload New Image",
       "uploading": "Uploading...",

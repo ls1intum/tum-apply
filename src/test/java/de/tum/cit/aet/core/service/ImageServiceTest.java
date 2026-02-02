@@ -11,6 +11,7 @@ import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
+import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
@@ -44,6 +45,9 @@ class ImageServiceTest {
     private ImageRepository imageRepository;
 
     @Mock
+    private JobRepository jobRepository;
+
+    @Mock
     private DepartmentRepository departmentRepository;
 
     @Mock
@@ -73,6 +77,7 @@ class ImageServiceTest {
     void setUp() {
         imageService = new ImageService(
             imageRepository,
+            jobRepository,
             departmentRepository,
             schoolRepository,
             currentUserService,
