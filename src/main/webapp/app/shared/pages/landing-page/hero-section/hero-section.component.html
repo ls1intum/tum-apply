@@ -8,7 +8,7 @@
     [value]="imagesWithBackgroundClass"
   >
     <ng-template #item let-image>
-      <div class="hero-slide" [class]="image.backgroundClass" class="hero-container h-[32rem] md:h-[28rem] lg:h-[20rem]"></div>
+      <div class="hero-slide" [class]="image.backgroundClass" class="hero-container h-[29rem]"></div>
     </ng-template>
   </p-carousel>
 
@@ -16,6 +16,13 @@
     <div class="hero-content flex flex-col items-center gap-10 md:gap-8 lg:gap-10 w-full max-w-[75rem] px-4">
       <h1 class="title" jhiTranslate="landingPage.hero.headline"></h1>
       <p class="subtitle" jhiTranslate="landingPage.hero.subline"></p>
+      <div class="pointer-events-auto">
+        <jhi-button
+          (click)="navigateToPositionsOverview()"
+          label="{{ 'professorLandingPage.hero.button' | translate }}"
+          severity="primary"
+        />
+      </div>
     </div>
   </div>
 </div>

@@ -41,6 +41,7 @@ export class SelectComponent {
   showClear = input<boolean>(false);
   appendTo = input<string | undefined>(undefined);
   dataKey = input<string | undefined>(undefined);
+  errorEnabled = input<boolean>(false);
 
   selectedChange = output<SelectOption>();
 
