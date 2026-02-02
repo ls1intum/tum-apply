@@ -11,6 +11,7 @@ import { TabItem, TabPanelTemplateDirective, TabViewComponent } from '../compone
 
 import { EmailSettingsComponent } from './email-settings/email-settings.component';
 import { PersonalInformationSettingsComponent } from './personal-information-settings';
+import { SettingsDocumentsComponent } from './settings-documents/settings-documents.component';
 
 type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'documents';
 @Component({
@@ -19,6 +20,7 @@ type SettingsTab = 'general' | 'notifications' | 'personal-information' | 'docum
     TranslateDirective,
     EmailSettingsComponent,
     PersonalInformationSettingsComponent,
+    SettingsDocumentsComponent,
     SelectComponent,
     TabViewComponent,
     TabPanelTemplateDirective,

@@ -733,6 +733,80 @@ export class ApplicationResourceApiService extends BaseService {
         );
     }
 
+        /**
+         * Upload applicant-level documents (profile)
+         * @param documentType 
+         * @param files List of documents to upload
+         */
+        public uploadApplicantDocuments(documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<DocumentInformationHolderDTO>>;
+        public uploadApplicantDocuments(documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<DocumentInformationHolderDTO>>>;
+        public uploadApplicantDocuments(documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<DocumentInformationHolderDTO>>>;
+        public uploadApplicantDocuments(documentType: 'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM', files?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+            if (documentType === null || documentType === undefined) {
+                throw new Error('Required parameter documentType was null or undefined when calling uploadApplicantDocuments.');
+            }
+
+            let localVarHeaders = this.defaultHeaders;
+
+            const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+                'application/json'
+            ]);
+            if (localVarHttpHeaderAcceptSelected !== undefined) {
+                localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+            }
+
+            const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+            const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+            // to determine the Content-Type header
+            const consumes: string[] = [
+                'multipart/form-data',
+                'application/json'
+            ];
+
+            const canConsumeForm = this.canConsumeForm(consumes);
+
+            let localVarFormParams: { append(param: string, value: any): any; };
+            let localVarUseForm = false;
+            let localVarConvertFormParamsToString = false;
+            localVarUseForm = canConsumeForm;
+            if (localVarUseForm) {
+                localVarFormParams = new FormData();
+            } else {
+                localVarFormParams = new HttpParams({encoder: this.encoder});
+            }
+
+            if (files !== undefined) {
+                localVarFormParams = localVarFormParams.append('files', <any>files) as any || localVarFormParams;
+            }
+
+            let responseType_: 'text' | 'json' | 'blob' = 'json';
+            if (localVarHttpHeaderAcceptSelected) {
+                if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                    responseType_ = 'text';
+                } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                    responseType_ = 'json';
+                } else {
+                    responseType_ = 'blob';
+                }
+            }
+
+            let localVarPath = `/api/applications/profile/upload-documents/${this.configuration.encodeParam({name: "documentType", value: documentType, in: "path", style: "simple", explode: false, dataType: "'BACHELOR_TRANSCRIPT' | 'MASTER_TRANSCRIPT' | 'REFERENCE' | 'CV' | 'CUSTOM'", dataFormat: undefined})}`;
+            return this.httpClient.request<Array<DocumentInformationHolderDTO>>('post', `${this.configuration.basePath}${localVarPath}`,
+                {
+                    context: localVarHttpContext,
+                    body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
+                    responseType: <any>responseType_,
+                    withCredentials: this.configuration.withCredentials,
+                    headers: localVarHeaders,
+                    observe: observe,
+                    transferCache: localVarTransferCache,
+                    reportProgress: reportProgress
+                }
+            );
+        }
+
     /**
      * @param applicationId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
