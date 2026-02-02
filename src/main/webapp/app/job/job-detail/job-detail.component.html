@@ -109,17 +109,8 @@
         <section>
           <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
           @if (isProfessorOrEmployee()) {
-            <div class="flex items-center gap-2">
-              <h2 class="section-title">
-                <span jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></span>
-              </h2>
-              <fa-icon
-                class="icon"
-                [icon]="['fas', 'circle-info']"
-                [pTooltip]="'jobDetailPage.tooltips.applicantLanguageInfo' | translate"
-                tooltipPosition="top"
-              ></fa-icon>
-            </div>
+            <jhi-info-box class="mb-6 block" [message]="'jobDetailPage.tooltips.applicantLanguageInfo' | translate" />
+            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
             <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
             <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
