@@ -306,6 +306,18 @@ const routes: Routes = [
   },
 
   // ======================================================================================
+  // Data Export
+  // ======================================================================================
+  {
+    path: 'data-export/download/:token',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () =>
+      import('./shared/pages/download-data-export/download-data-export.component').then(m => m.DownloadDataExportComponent),
+    title: 'global.routes.dataExport.download',
+  },
+
+  // ======================================================================================
   // Error Handling
   // ======================================================================================
   ...errorRoute,
