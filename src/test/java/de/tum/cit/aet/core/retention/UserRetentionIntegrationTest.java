@@ -69,8 +69,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
@@ -145,7 +147,6 @@ class UserRetentionIntegrationTest {
     @Autowired
     private UserSettingRepository userSettingRepository;
 
-    @MockitoBean
     private AsyncEmailSender mockSender;
 
     private ResearchGroup researchGroup;
@@ -155,6 +156,9 @@ class UserRetentionIntegrationTest {
         reset(mockSender);
         userRetentionProperties.setDeletedUserId(DELETED_USER_ID);
         ensureDeletedUserExists();
+
+        mockSender = Mockito.mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(userRetentionService, "emailSender", mockSender);
 
         School school = SchoolTestData.savedDefault(schoolRepository);
         Department department = DepartmentTestData.savedDefault(departmentRepository, school);
