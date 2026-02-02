@@ -109,7 +109,7 @@ public class DocumentDictionaryService {
      *
      * @param documentDictionaryId the id of the document dictionary entry to delete
      */
-    public void deleteApplicantProfileDocument(UUID documentDictionaryId) {
+    public void deleteApplicantDocumentDictionary(UUID documentDictionaryId) {
         documentDictionaryRepository.deleteById(documentDictionaryId);
     }
 
