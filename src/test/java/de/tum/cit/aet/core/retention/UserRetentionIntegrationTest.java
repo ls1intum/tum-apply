@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.retention;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 import de.tum.cit.aet.IntegrationTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
@@ -8,6 +9,7 @@ import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
 import de.tum.cit.aet.core.constants.DocumentType;
+import de.tum.cit.aet.core.constants.Language;
 import de.tum.cit.aet.core.domain.ProfileImage;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
@@ -32,13 +34,13 @@ import de.tum.cit.aet.notification.domain.EmailSetting;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.repository.EmailSettingRepository;
 import de.tum.cit.aet.notification.repository.EmailTemplateRepository;
-import de.tum.cit.aet.usermanagement.constants.UserRole;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.School;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.domain.UserResearchGroupRole;
 import de.tum.cit.aet.usermanagement.domain.UserSetting;
 import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
@@ -60,12 +62,16 @@ import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
@@ -140,10 +146,14 @@ class UserRetentionIntegrationTest {
     @Autowired
     private UserSettingRepository userSettingRepository;
 
+    private AsyncEmailSender mockSender;
+
     private ResearchGroup researchGroup;
 
     @BeforeEach
     void setUp() {
+        mockSender = Mockito.mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(userRetentionService, "sender", mockSender);
         userRetentionProperties.setDeletedUserId(DELETED_USER_ID);
         ensureDeletedUserExists();
 
@@ -369,6 +379,39 @@ class UserRetentionIntegrationTest {
 
         assertThat(userRepository.existsById(unknownId)).isTrue();
         assertThat(jobRepository.findById(job.getJobId())).isPresent();
+    }
+
+    @Test
+    void shouldSendWarningEmailToUsersInWarningWindow() {
+        userRetentionProperties.setInactiveDaysBeforeDeletion(30);
+
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+
+        // With 30-day deletion cutoff, warn exactly 28 days before deletion => inactivity of 2 days
+        User userToWarn = ApplicantTestData.saveApplicantWithLastActivity(
+            "warning@test.local",
+            applicantRepository,
+            userRepository,
+            now.minusDays(2)
+        );
+
+        // Too recent (not yet at warning day)
+        ApplicantTestData.saveApplicantWithLastActivity("recent@test.local", applicantRepository, userRepository, now.minusDays(1));
+
+        // Too old (already past the warning day)
+        ApplicantTestData.saveApplicantWithLastActivity("old@test.local", applicantRepository, userRepository, now.minusDays(10));
+
+        LocalDateTime cutoff = now.minusDays(30);
+
+        userRetentionService.warnUserOfDataDeletion(cutoff);
+
+        ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+        verify(mockSender, times(1)).sendAsync(emailCaptor.capture());
+
+        Email sentEmail = emailCaptor.getValue();
+        assertThat(sentEmail.getEmailType()).isEqualTo(EmailType.USER_DATA_DELETION_WARNING);
+        assertThat(sentEmail.getLanguage()).isEqualTo(Language.fromCode(userToWarn.getSelectedLanguage()));
+        assertThat(sentEmail.getTo()).extracting(User::getUserId).containsExactly(userToWarn.getUserId());
     }
 
     private void ensureDeletedUserExists() {

@@ -1964,18 +1964,67 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOKeycloakUserDTO'}
-  /api/users/export:
+  /api/users/data-export:
+    post:
+      tags: [user-data-export-resource]
+      summary: Request a data export for the current user
+      operationId: requestDataExport
+      responses:
+        '202': {description: Data export request accepted}
+        '409': {description: Data export request already exists or is in progress}
+        '429': {description: Data export request rate limit exceeded}
+        '500':
+          description: Internal server error while creating data export request
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
+  /api/users/data-export/download/{token}:
     get:
       tags: [user-data-export-resource]
-      summary: Export user data
-      operationId: exportUserData
+      summary: Download a prepared data export
+      operationId: downloadDataExport
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema: {type: string}
       responses:
         '200':
-          description: OK
+          description: Data export download
           content:
-            application/zip:
+            application/json:
               schema: {type: string, format: binary}
-        '500': {description: Internal Server Error}
+        '404':
+          description: Export not found
+          content:
+            application/json:
+              schema: {type: string, format: binary}
+        '409':
+          description: Export not ready or expired
+          content:
+            application/json:
+              schema: {type: string, format: binary}
+        '500':
+          description: Internal server error while downloading data export
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
+  /api/users/data-export/status:
+    get:
+      tags: [user-data-export-resource]
+      summary: Get data export status for the current user
+      operationId: getDataExportStatus
+      responses:
+        '200':
+          description: Current data export status
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DataExportStatusDTO'}
+        '500':
+          description: Internal server error while loading data export status
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserDataExportException'}
   /api/users/me:
     get:
       tags: [user-resource]
@@ -2362,6 +2411,17 @@ components:
           type: array
           items: {$ref: '#/components/schemas/DocumentDTO'}
     CustomFieldDTO: {}
+    DataExportStatusDTO:
+      type: object
+      properties:
+        cooldownSeconds: {type: integer, format: int64}
+        downloadToken: {type: string}
+        lastRequestedAt: {type: string, format: date-time}
+        nextAllowedAt: {type: string, format: date-time}
+        status:
+          type: string
+          enum: [REQUESTED, IN_CREATION, EMAIL_SENT, DOWNLOADED, DOWNLOADED_DELETED,
+            DELETED, FAILED]
     Department:
       type: object
       properties:
@@ -2404,7 +2464,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
         user: {$ref: '#/components/schemas/User'}
     EmailSettingDTO:
@@ -2415,7 +2476,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         enabled: {type: boolean}
     EmailTemplateDTO:
       type: object
@@ -2426,7 +2488,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         english: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         german: {$ref: '#/components/schemas/EmailTemplateTranslationDTO'}
         isDefault: {type: boolean}
@@ -2440,7 +2503,8 @@ components:
           enum: [APPLICATION_ACCEPTED, APPLICATION_REJECTED, APPLICATION_RECEIVED,
             APPLICATION_SENT, APPLICATION_WITHDRAWN, INTERVIEW_INVITATION, RESEARCH_GROUP_MEMBER_ADDED,
             RESEARCH_GROUP_APPROVED, INTERVIEW_BOOKED_APPLICANT, INTERVIEW_BOOKED_PROFESSOR,
-            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION]
+            INTERVIEW_ASSIGNED_PROFESSOR, INTERVIEW_SELF_SCHEDULING_INVITATION, DATA_EXPORT_READY,
+            USER_DATA_DELETION_WARNING]
         firstName: {type: string}
         isDefault: {type: boolean}
         lastName: {type: string}
@@ -3149,6 +3213,62 @@ components:
         selectedLanguage: {type: string}
         userId: {type: string, format: uuid}
         website: {type: string}
+    UserDataExportException:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName: {type: string}
+                  moduleName: {type: string}
+                  moduleVersion: {type: string}
+                  methodName: {type: string}
+                  fileName: {type: string}
+                  lineNumber: {type: integer, format: int32}
+                  className: {type: string}
+                  nativeMethod: {type: boolean}
+            message: {type: string}
+            localizedMessage: {type: string}
+        localizedMessage: {type: string}
+        message: {type: string}
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName: {type: string}
+              moduleName: {type: string}
+              moduleVersion: {type: string}
+              methodName: {type: string}
+              fileName: {type: string}
+              lineNumber: {type: integer, format: int32}
+              className: {type: string}
+              nativeMethod: {type: boolean}
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName: {type: string}
+                    moduleName: {type: string}
+                    moduleVersion: {type: string}
+                    methodName: {type: string}
+                    fileName: {type: string}
+                    lineNumber: {type: integer, format: int32}
+                    className: {type: string}
+                    nativeMethod: {type: boolean}
+              message: {type: string}
+              localizedMessage: {type: string}
     UserForApplicationDetailDTO:
       type: object
       properties:

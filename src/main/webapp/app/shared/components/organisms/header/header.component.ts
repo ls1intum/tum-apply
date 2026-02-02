@@ -215,7 +215,6 @@ export class HeaderComponent {
   }
 
   toggleProfileMenu(event: Event): void {
-    this.isProfileMenuOpen.update(state => !state);
     this.profileMenu()?.toggle(event);
   }
 
