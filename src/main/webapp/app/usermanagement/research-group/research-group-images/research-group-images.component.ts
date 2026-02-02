@@ -17,10 +17,6 @@ import {
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 
-interface ImageWithJobInfo extends ImageDTO {
-  isInUse?: boolean;
-}
-
 const I18N_BASE = 'researchGroup.imageLibrary';
 
 @Component({
@@ -40,7 +36,7 @@ const I18N_BASE = 'researchGroup.imageLibrary';
   templateUrl: './research-group-images.component.html',
 })
 export class ResearchGroupImagesComponent {
-  readonly allImages = signal<ImageWithJobInfo[]>([]);
+  readonly allImages = signal<ImageDTO[]>([]);
   readonly isLoading = signal<boolean>(true);
 
   readonly totalImages = computed(() => this.allImages().length);
@@ -67,9 +63,7 @@ export class ResearchGroupImagesComponent {
       this.isLoading.set(true);
       const images = await firstValueFrom(this.imageService.getResearchGroupJobBanners());
 
-      const enrichedImages: ImageWithJobInfo[] = images.map(image => Object.assign({}, image));
-
-      this.allImages.set(enrichedImages);
+      this.allImages.set(images);
     } catch {
       this.toastService.showErrorKey(`${I18N_BASE}.error.loadFailed`);
     } finally {
@@ -81,9 +75,7 @@ export class ResearchGroupImagesComponent {
    * Handle successful image upload from the shared component
    */
   onImageUploaded(uploadedImage: ImageDTO): void {
-    const enrichedImage: ImageWithJobInfo = Object.assign({}, uploadedImage);
-
-    this.allImages.update(images => images.concat(enrichedImage));
+    this.allImages.update(images => images.concat(uploadedImage));
     this.toastService.showSuccessKey(`${I18N_BASE}.success.imageUploaded`);
   }
 
