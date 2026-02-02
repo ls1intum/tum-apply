@@ -63,16 +63,7 @@
         }
 
         <!-- Upload New Image Button -->
-        <div [class]="uploadContainerClasses()" (click)="fileInput.click()">
-          <input type="file" [accept]="acceptedImageTypes" (change)="onImageSelected($event)" #fileInput class="hidden" />
-          <div [class]="uploadInnerClasses()">
-            @if (isUploadingImage()) {
-              <jhi-progress-spinner styleClass="w-12 h-12" strokeWidth="4" />
-            } @else {
-              <fa-icon [icon]="['fas', 'plus']" [size]="'3x'" class="text-primary" />
-            }
-          </div>
-        </div>
+        <jhi-image-upload-button (imageUploaded)="onImageUploaded($event)" (uploadError)="onUploadError($event)" />
       </div>
     </div>
   }

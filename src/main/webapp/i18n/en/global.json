@@ -589,5 +589,29 @@
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
     }
+  },
+  "imageUpload": {
+    "error": {
+      "fileTooLarge": {
+        "summary": "File Too Large",
+        "detail": "Image file exceeds the maximum size of 5MB"
+      },
+      "invalidFileType": {
+        "summary": "Invalid File Type",
+        "detail": "Please upload JPG or PNG images only"
+      },
+      "dimensionsTooLarge": {
+        "summary": "Image Too Large",
+        "detail": "Image dimensions exceed the maximum allowed (4096×4096 pixels)"
+      },
+      "invalidImage": {
+        "summary": "Invalid Image",
+        "detail": "The file is corrupted or not a valid image"
+      },
+      "uploadFailed": {
+        "summary": "Upload Failed",
+        "detail": "Failed to upload image. Please try again"
+      }
+    }
   }
 }
