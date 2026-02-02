@@ -925,11 +925,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         void uploadDocumentsUploadsSuccessfully() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
-            MockMultipartFile file = DocumentTestData.createMockPdfFile(
-                "files",
-                "bachelor_transcript.pdf",
-                "PDF content here"
-            );
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "bachelor_transcript.pdf", "PDF content here");
 
             Set<DocumentInformationHolderDTO> uploadedDocs = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
