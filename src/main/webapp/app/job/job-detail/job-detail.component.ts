@@ -13,6 +13,7 @@ import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
@@ -42,7 +43,7 @@ export interface JobDetails {
   contractDuration: string;
   fundingType: string;
   jobDescriptionEN: string;
-  jobDescriptionDE?: string;
+  jobDescriptionDE: string;
   startDate: string;
   endDate: string;
   createdAt: string;
@@ -66,6 +67,7 @@ export interface JobDetails {
   selector: 'jhi-job-detail',
   imports: [
     ButtonComponent,
+    BackButtonComponent,
     FontAwesomeModule,
     TranslateModule,
     TranslateDirective,
@@ -205,6 +207,19 @@ export class JobDetailComponent {
     return this.jobDetails()?.jobState;
   });
 
+  // Returns the job description in the currently selected language. Falls back to the other language if empty.
+  readonly jobDescriptionForCurrentLang = computed<string>(() => {
+    this.langChange();
+    const job = this.jobDetails();
+    if (!job) return '';
+    const isEnglish = this.translate.getCurrentLang() === 'en';
+
+    if (isEnglish) {
+      return job.jobDescriptionEN.trim() || job.jobDescriptionDE;
+    }
+    return job.jobDescriptionDE.trim() || job.jobDescriptionEN;
+  });
+
   readonly jobStateText = computed<string>(() => {
     const jobState = this.currentJobState();
     return jobState ? (this.stateTextMap.get(jobState) ?? 'jobState.unknown') : 'Unknown';
@@ -273,10 +288,6 @@ export class JobDetailComponent {
       void this.init();
     }
   });
-
-  onBack(): void {
-    this.location.back();
-  }
 
   isProfessorOrEmployee(): boolean {
     return this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee]);

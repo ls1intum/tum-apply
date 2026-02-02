@@ -26,67 +26,80 @@
       <form [formGroup]="basicInfoForm" class="w-full">
         <p jhiTranslate="jobCreationForm.basicInformationSection.description"></p>
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section1"></span> </p-divider>
-        <div class="form-field">
-          <jhi-string-input
-            [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.jobTitle.placeholder' | translate"
-            [required]="true"
-            [model]="basicInfoForm.get('title')?.value"
-            [control]="basicInfoForm.get('title') ?? undefined"
-          />
-        </div>
-
-        <div class="form-row">
-          <div class="form-field">
-            <jhi-string-input
-              [label]="'jobCreationForm.basicInformationSection.researchArea.label' | translate"
-              [placeholder]="'jobCreationForm.basicInformationSection.researchArea.placeholder' | translate"
-              [required]="true"
-              icon="circle-info"
-              [model]="basicInfoForm.get('researchArea')?.value"
-              [control]="basicInfoForm.get('researchArea') ?? undefined"
-              [tooltipText]="'jobCreationForm.basicInformationSection.researchArea.toolTipText' | translate"
-            />
-          </div>
-
-          <div class="form-field">
-            <jhi-select
-              [selected]="basicInfoForm.get('fieldOfStudies')?.value"
-              (selectedChange)="basicInfoForm.get('fieldOfStudies')?.setValue($event)"
-              [items]="translatedFieldsOfStudies()"
-              [label]="'jobCreationForm.basicInformationSection.fieldOfStudies.label' | translate"
-              [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
-              [required]="true"
-              [width]="'100%'"
-              [filter]="true"
-              [dataKey]="'value'"
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-field input-with-icon">
-            <label for="supervisingProfessor" jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
-              <span class="required">*</span>
-            </label>
-            <div class="icon-input-wrapper mb-6">
-              <fa-icon [icon]="['fas', 'user-tie']" class="input-icon" />
-              <input [disabled]="true" [value]="basicInfoForm.get('supervisingProfessor')?.value" id="supervisingProfessor" type="text" />
+        <div class="flex flex-col">
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-string-input
+                [label]="'jobCreationForm.basicInformationSection.jobTitle.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.jobTitle.placeholder' | translate"
+                [required]="true"
+                [model]="basicInfoForm.get('title')?.value"
+                [control]="basicInfoForm.get('title') ?? undefined"
+              />
             </div>
           </div>
 
-          <div class="form-field">
-            <jhi-select
-              [selected]="basicInfoForm.get('location')?.value"
-              (selectedChange)="basicInfoForm.get('location')?.setValue($event)"
-              [items]="translatedLocations()"
-              [label]="'jobCreationForm.basicInformationSection.location.label' | translate"
-              [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
-              [required]="true"
-              [width]="'100%'"
-              [filter]="true"
-              [dataKey]="'value'"
-            />
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-string-input
+                [label]="'jobCreationForm.basicInformationSection.researchArea.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.researchArea.placeholder' | translate"
+                [required]="true"
+                icon="circle-info"
+                [model]="basicInfoForm.get('researchArea')?.value"
+                [control]="basicInfoForm.get('researchArea') ?? undefined"
+                [tooltipText]="'jobCreationForm.basicInformationSection.researchArea.toolTipText' | translate"
+              />
+            </div>
+
+            <div class="flex-1">
+              <jhi-select
+                [selected]="basicInfoForm.get('fieldOfStudies')?.value"
+                (selectedChange)="basicInfoForm.get('fieldOfStudies')?.setValue($event)"
+                [items]="translatedFieldsOfStudies()"
+                [label]="'jobCreationForm.basicInformationSection.fieldOfStudies.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.fieldOfStudies.placeholder' | translate"
+                [required]="true"
+                [width]="'100%'"
+                [filter]="true"
+                [dataKey]="'value'"
+                [errorEnabled]="true"
+              />
+            </div>
+          </div>
+
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1 input-with-icon">
+              <label for="supervisingProfessor" jhiTranslate="jobCreationForm.basicInformationSection.supervisingProfessor.label">
+                <span class="required">*</span>
+              </label>
+              <div class="icon-input-wrapper">
+                <fa-icon [icon]="['fas', 'user-tie']" class="input-icon" />
+                <input
+                  [disabled]="true"
+                  [value]="basicInfoForm.get('supervisingProfessor')?.value"
+                  id="supervisingProfessor"
+                  type="text"
+                  class="w-full px-3 py-2 border border-border-default rounded-md text-base focus:outline-none focus:border-primary disabled:text-text-disabled disabled:bg-background-disabled"
+                />
+              </div>
+              <div class="error-text"></div>
+            </div>
+
+            <div class="flex-1">
+              <jhi-select
+                [selected]="basicInfoForm.get('location')?.value"
+                (selectedChange)="basicInfoForm.get('location')?.setValue($event)"
+                [items]="translatedLocations()"
+                [label]="'jobCreationForm.basicInformationSection.location.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.location.placeholder' | translate"
+                [required]="true"
+                [width]="'100%'"
+                [filter]="true"
+                [dataKey]="'value'"
+                [errorEnabled]="true"
+              />
+            </div>
           </div>
         </div>
 
@@ -119,20 +132,20 @@
           </div>
 
           <div class="flex items-center gap-2 sm:justify-end">
-            <jhi-toggle-switch [(model)]="aiToggleSignal" />
+            <jhi-toggle-switch [(model)]="aiToggleSignal" class="flex" />
             <label class="text-sm whitespace-nowrap" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiToggle"></label>
           </div>
         </div>
 
-        <div class="form-row mb-6 flex flex-col gap-2">
+        <div class="flex flex-col gap-2 mb-6">
           <div class="grid gap-4 items-start" [class.lg:grid-cols-[1fr_auto_220px]]="showAiPanel()">
             <!-- Editor -->
-            <div class="form-field">
+            <div>
               <jhi-editor
                 #jobDescriptionEditor
                 fieldId="jobDescription"
                 label="jobCreationForm.positionDetailsSection.jobDescription.label"
-                placeholder="jobCreationForm.positionDetailsSection.jobDescription.placeholder"
+                [placeholder]="jobDescriptionPlaceholder()"
                 helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
                 tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
                 [required]="true"
@@ -191,80 +204,87 @@
     </div>
   </ng-template>
 
-  <!-- Step 2: Position Details -->
+  <!-- Step 2: Employment Terms -->
   <ng-template #panel2>
     <div class="h-full min-h-[calc(100vh-300px)] flex flex-column px-4 xl:px-32 2xl:px-64">
       <form [formGroup]="positionDetailsForm" class="w-full">
         <p-divider layout="horizontal"><span jhiTranslate="jobCreationForm.header.basicInfo.section2"></span> </p-divider>
-        <div class="form-row mb-6">
-          <div class="form-field">
-            <jhi-datepicker
-              [selectedDate]="positionDetailsForm.get('applicationDeadline')?.value"
-              (selectedDateChange)="positionDetailsForm.get('applicationDeadline')?.setValue($event)"
-              [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
-              [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
-              icon="circle-info"
-              tooltipText="jobCreationForm.basicInformationSection.applicationDeadline.toolTipText"
-              [shouldTranslate]="true"
-              [width]="'100%'"
-            />
+        <div class="flex flex-col">
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-datepicker
+                [selectedDate]="positionDetailsForm.get('applicationDeadline')?.value"
+                (selectedDateChange)="positionDetailsForm.get('applicationDeadline')?.setValue($event)"
+                [label]="'jobCreationForm.basicInformationSection.applicationDeadline.label'"
+                [placeholder]="'jobCreationForm.basicInformationSection.applicationDeadline.placeholder'"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.applicationDeadline.toolTipText"
+                [shouldTranslate]="true"
+                [width]="'100%'"
+                [errorEnabled]="true"
+              />
+            </div>
+            <div class="flex-1">
+              <jhi-datepicker
+                [selectedDate]="positionDetailsForm.get('startDate')?.value"
+                (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
+                [label]="'jobCreationForm.basicInformationSection.startDate.label'"
+                [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
+                icon="circle-info"
+                tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
+                [shouldTranslate]="true"
+                [width]="'100%'"
+                [errorEnabled]="true"
+              />
+            </div>
           </div>
-          <div class="form-field">
-            <jhi-datepicker
-              [selectedDate]="positionDetailsForm.get('startDate')?.value"
-              (selectedDateChange)="positionDetailsForm.get('startDate')?.setValue($event)"
-              [label]="'jobCreationForm.basicInformationSection.startDate.label'"
-              [placeholder]="'jobCreationForm.basicInformationSection.startDate.placeholder'"
-              icon="circle-info"
-              tooltipText="jobCreationForm.basicInformationSection.startDate.toolTipText"
-              [shouldTranslate]="true"
-              [width]="'100%'"
-            />
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-field">
-            <jhi-number-input
-              [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
-              [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
-              [model]="positionDetailsForm.get('workload')?.value"
-              [control]="positionDetailsForm.get('workload') ?? undefined"
-              [min]="1"
-              [max]="40"
-              [minFractionDigits]="0"
-              [maxFractionDigits]="0"
-              icon="circle-info"
-              [tooltipText]="'jobCreationForm.basicInformationSection.workload.toolTipText' | translate"
-            />
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-number-input
+                [label]="'jobCreationForm.basicInformationSection.workload.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.workload.placeholder' | translate"
+                [model]="positionDetailsForm.get('workload')?.value"
+                [control]="positionDetailsForm.get('workload') ?? undefined"
+                [min]="1"
+                [max]="40"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="0"
+                icon="circle-info"
+                [tooltipText]="'jobCreationForm.basicInformationSection.workload.toolTipText' | translate"
+              />
+            </div>
+            <div class="flex-1">
+              <jhi-number-input
+                [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.contractDuration.placeholder' | translate"
+                [model]="positionDetailsForm.get('contractDuration')?.value"
+                [control]="positionDetailsForm.get('contractDuration') ?? undefined"
+                [min]="1"
+                [max]="6"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="2"
+                icon="circle-info"
+                [tooltipText]="'jobCreationForm.basicInformationSection.contractDuration.toolTipText' | translate"
+              />
+            </div>
           </div>
-          <div class="form-field">
-            <jhi-number-input
-              [label]="'jobCreationForm.basicInformationSection.contractDuration.label' | translate"
-              [placeholder]="'jobCreationForm.basicInformationSection.contractDuration.placeholder' | translate"
-              [model]="positionDetailsForm.get('contractDuration')?.value"
-              [control]="positionDetailsForm.get('contractDuration') ?? undefined"
-              [min]="1"
-              [max]="6"
-              [minFractionDigits]="0"
-              [maxFractionDigits]="2"
-              icon="circle-info"
-              [tooltipText]="'jobCreationForm.basicInformationSection.contractDuration.toolTipText' | translate"
-            />
+
+          <div class="flex flex-col lg:flex-row lg:gap-8">
+            <div class="flex-1">
+              <jhi-select
+                [selected]="positionDetailsForm.get('fundingType')?.value"
+                (selectedChange)="positionDetailsForm.get('fundingType')?.setValue($event)"
+                [items]="translatedFundingTypes()"
+                [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
+                [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
+                [width]="'100%'"
+                [filter]="true"
+                [showClear]="true"
+                [dataKey]="'value'"
+              />
+            </div>
           </div>
-        </div>
-        <div class="form-field">
-          <jhi-select
-            [selected]="positionDetailsForm.get('fundingType')?.value"
-            (selectedChange)="positionDetailsForm.get('fundingType')?.setValue($event)"
-            [items]="translatedFundingTypes()"
-            [label]="'jobCreationForm.basicInformationSection.fundingType.label' | translate"
-            [placeholder]="'jobCreationForm.basicInformationSection.fundingType.placeholder' | translate"
-            [width]="'100%'"
-            [filter]="true"
-            [showClear]="true"
-            [dataKey]="'value'"
-          />
         </div>
       </form>
     </div>

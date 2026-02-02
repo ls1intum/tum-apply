@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { of, throwError, Subject } from 'rxjs';
-import { ActivatedRoute, UrlSegment } from '@angular/router';
-import { Location } from '@angular/common';
+import { of, throwError } from 'rxjs';
+import { UrlSegment } from '@angular/router';
 import { signal, TemplateRef } from '@angular/core';
 
 import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation-form.component';
@@ -13,6 +12,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import * as DropdownOptions from 'app/job/dropdown-options';
+import { unescapeJsonString } from 'app/shared/util/util';
 
 import { provideTranslateMock } from '../../../util/translate.mock';
 import { provideFontAwesomeTesting } from '../../../util/fontawesome.testing';
@@ -106,7 +106,6 @@ type ComponentPrivate = {
   savingStatePanel: () => object;
   extractJobDescriptionFromStream: (content: string) => string | null;
   unescapeJsonString: (str: string) => string;
-  loadTranslatedDescription: (targetLang: 'en' | 'de', maxRetries?: number, delayMs?: number) => Promise<void>;
 };
 
 function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
@@ -151,7 +150,7 @@ describe('JobCreationFormComponent', () => {
     mockLocation = createLocationMock();
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
     mockAiStreamingService = createAiStreamingServiceMock();
-    mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+    mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
@@ -760,7 +759,7 @@ describe('JobCreationFormComponent', () => {
       component.basicInfoValid.set(false);
       component.positionDetailsValid.set(false);
       let steps = getPrivate(component).buildStepData();
-      expect(steps.find(s => s.name.includes('positionDetails'))?.disabled).toBe(true);
+      expect(steps.find(s => s.name.includes('employmentTerms'))?.disabled).toBe(true);
       expect(steps.find(s => s.name.includes('summary'))?.disabled).toBe(true);
       expect(steps[0].buttonGroupNext?.[0].disabled).toBe(true);
 
@@ -881,118 +880,41 @@ describe('JobCreationFormComponent', () => {
 
     describe('unescapeJsonString', () => {
       it('should unescape newline characters', () => {
-        const result = getPrivate(component).unescapeJsonString('Line1\\nLine2');
+        const result = unescapeJsonString('Line1\\nLine2');
         expect(result).toBe('Line1\nLine2');
       });
 
       it('should unescape carriage return characters', () => {
-        const result = getPrivate(component).unescapeJsonString('Line1\\rLine2');
+        const result = unescapeJsonString('Line1\\rLine2');
         expect(result).toBe('Line1\rLine2');
       });
 
       it('should unescape tab characters', () => {
-        const result = getPrivate(component).unescapeJsonString('Col1\\tCol2');
+        const result = unescapeJsonString('Col1\\tCol2');
         expect(result).toBe('Col1\tCol2');
       });
 
       it('should unescape escaped quotes', () => {
-        const result = getPrivate(component).unescapeJsonString('He said \\"Hi\\"');
+        const result = unescapeJsonString('He said \\"Hi\\"');
         expect(result).toBe('He said "Hi"');
       });
 
       it('should handle multiple escape sequences', () => {
-        const result = getPrivate(component).unescapeJsonString('Line1\\nLine2\\tTabbed\\rReturn');
+        const result = unescapeJsonString('Line1\\nLine2\\tTabbed\\rReturn');
         expect(result).toBe('Line1\nLine2\tTabbed\rReturn');
       });
 
       it('should return unchanged string if no escapes', () => {
-        const result = getPrivate(component).unescapeJsonString('Plain text');
+        const result = unescapeJsonString('Plain text');
         expect(result).toBe('Plain text');
-      });
-    });
-
-    describe('loadTranslatedDescription', () => {
-      it('should update jobDescriptionDE signal when loading German translation', async () => {
-        component.jobId.set('job123');
-        mockJobService.getJobById.mockReturnValue(
-          of({
-            jobId: 'job123',
-            jobDescriptionEN: '<p>English</p>',
-            jobDescriptionDE: '<p>Deutsch</p>',
-          }),
-        );
-
-        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
-
-        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
-      });
-
-      it('should update jobDescriptionEN signal when loading English translation', async () => {
-        component.jobId.set('job123');
-        mockJobService.getJobById.mockReturnValue(
-          of({
-            jobId: 'job123',
-            jobDescriptionEN: '<p>English</p>',
-            jobDescriptionDE: '<p>Deutsch</p>',
-          }),
-        );
-
-        await getPrivate(component).loadTranslatedDescription('en', 1, 10);
-
-        expect(component.jobDescriptionEN()).toBe('<p>English</p>');
-      });
-
-      it('should not update signals if jobId is not set', async () => {
-        component.jobId.set('');
-        const originalEN = component.jobDescriptionEN();
-        const originalDE = component.jobDescriptionDE();
-
-        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
-
-        expect(component.jobDescriptionEN()).toBe(originalEN);
-        expect(component.jobDescriptionDE()).toBe(originalDE);
-        expect(mockJobService.getJobById).not.toHaveBeenCalled();
-      });
-
-      it('should retry when translation is empty', async () => {
-        component.jobId.set('job123');
-        let callCount = 0;
-        mockJobService.getJobById.mockImplementation(() => {
-          callCount++;
-          if (callCount < 2) {
-            return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '' });
-          }
-          return of({ jobId: 'job123', jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' });
-        });
-
-        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
-
-        expect(callCount).toBe(2);
-        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
-      });
-
-      it('should retry on API error', async () => {
-        component.jobId.set('job123');
-        let callCount = 0;
-        mockJobService.getJobById.mockImplementation(() => {
-          callCount++;
-          if (callCount < 2) {
-            return throwError(() => new Error('API Error'));
-          }
-          return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '<p>Deutsch</p>' });
-        });
-
-        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
-
-        expect(callCount).toBe(2);
       });
     });
 
     describe('generateJobApplicationDraft', () => {
       beforeEach(() => {
         // Reset the mock before each test
-        mockAiStreamingService.generateJobDescriptionStream.mockReset();
-        mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+        mockAiStreamingService.generateJobApplicationDraftStream.mockReset();
+        mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
       });
 
       it('should show error toast on generation failure', async () => {
@@ -1005,11 +927,11 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('HTTP error'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('Generic error'));
 
         await component.generateJobApplicationDraft();
 
-        expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.toastMessages.aiGenerationFailed');
+        expect(mockToastService.showErrorKey).toHaveBeenCalledWith('jobCreationForm.toastMessages.saveFailed');
       });
 
       it('should restore original content on error', async () => {
@@ -1025,7 +947,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('HTTP error'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('HTTP error'));
 
         await component.generateJobApplicationDraft();
 
@@ -1044,7 +966,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('fail'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('fail'));
 
         await component.generateJobApplicationDraft();
 

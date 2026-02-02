@@ -1,6 +1,20 @@
 <div class="page-container">
-  <div class="page-header">
-    <h1 jhiTranslate="researchGroup.emailTemplatesHeader"></h1>
+  <div class="header-container !items-center">
+    <div class="page-header">
+      <div class="flex items-center gap-2">
+        <jhi-back-button />
+        <h1 jhiTranslate="researchGroup.emailTemplatesHeader"></h1>
+      </div>
+    </div>
+    <div
+      class="flex items-center gap-2"
+      [class.text-positive-default]="savingState() === 'SAVED'"
+      [class.text-warning-default]="savingState() === 'SAVING'"
+      [class.text-negative-default]="savingState() === 'UNSAVED'"
+    >
+      <fa-icon icon="floppy-disk" />
+      <span [jhiTranslate]="'researchGroup.emailTemplates.' + savingState().toLocaleLowerCase()"></span>
+    </div>
   </div>
   <div class="meta-info">
     <jhi-string-input
@@ -88,19 +102,4 @@
       </div>
     </p-tabpanel>
   </p-tabs>
-
-  <div class="actions mt-16">
-    <jhi-button
-      label="button.back"
-      severity="primary"
-      [shouldTranslate]="true"
-      icon="arrow-left"
-      variant="outlined"
-      (click)="navigateBack()"
-    />
-    <div class="saving-state" [ngClass]="savingState().toLowerCase()">
-      <fa-icon icon="floppy-disk" />
-      <span [jhiTranslate]="'researchGroup.emailTemplates.' + savingState().toLocaleLowerCase()"></span>
-    </div>
-  </div>
 </div>

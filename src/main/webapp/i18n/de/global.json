@@ -40,6 +40,9 @@
         "overview": "TUMApply - Interviewübersicht",
         "detail": "Interview - {{jobTitle}}",
         "assessment": "TUMApply - Interview Bewertung"
+      },
+      "dataExport": {
+        "download": "TUMApply - Datenexport Download"
       }
     },
     "menu": {
@@ -106,6 +109,9 @@
         }
       }
     },
+    "stepper": {
+      "progress": "Schritt {{ current }} von {{ total }}"
+    },
     "input": {
       "error": {
         "required": "Dieses Feld ist ein Pflichtfeld.",
@@ -141,7 +147,32 @@
       "dev": "Entwicklung",
       "test": "Entwicklung"
     },
-    "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente."
+    "item-count": "Ergebnis {{first}} - {{second}} von {{total}} Elemente.",
+    "dataExport": {
+      "downloadSuccess": "Download erfolgreich!",
+      "downloadSuccessMessage": "Dein Datenexport wurde erfolgreich heruntergeladen.",
+      "downloadSuccessInfo": "Du kannst jetzt auf deine exportierten Daten in der heruntergeladenen Datei zugreifen.",
+      "downloading": "Download läuft...",
+      "downloadingInfo": "Dein Datenexport wird heruntergeladen.",
+      "request": "TUMApply - Datenexport Anfrage",
+      "download": "TUMApply - Datenexport Download",
+      "error": {
+        "downloadFailed": {
+          "summary": "Download fehlgeschlagen",
+          "detail": "Fehler beim Herunterladen des Datenexports. Der Link ist möglicherweise abgelaufen oder ungültig."
+        },
+        "noToken": {
+          "summary": "Ungültiges Token",
+          "detail": "Kein Download-Token bereitgestellt."
+        }
+      },
+      "success": {
+        "downloadSuccess": {
+          "summary": "Download erfolgreich",
+          "detail": "Ihr Datenexport wurde erfolgreich heruntergeladen."
+        }
+      }
+    }
   },
   "entity": {
     "action": {
