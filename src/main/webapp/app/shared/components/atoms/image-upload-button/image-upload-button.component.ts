@@ -2,7 +2,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import { ProgressSpinnerComponent } from 'app/shared/components/atoms/progress-spinner/progress-spinner.component';
@@ -26,6 +26,7 @@ export interface ImageUploadError {
 export class ImageUploadButtonComponent {
   // Inputs
   config = input<ImageUploadConfig>({});
+  uploadFn = input<(file: File) => Observable<ImageDTO>>();
 
   // Outputs
   imageUploaded = output<ImageDTO>();
@@ -120,7 +121,8 @@ export class ImageUploadButtonComponent {
     // Upload the image
     try {
       this.isUploading.set(true);
-      const uploadedImage = await firstValueFrom(this.imageService.uploadJobBanner(file));
+      const uploadObservable = this.uploadFn() ? this.uploadFn()!(file) : this.imageService.uploadJobBanner(file);
+      const uploadedImage = await firstValueFrom(uploadObservable);
       this.imageUploaded.emit(uploadedImage);
     } catch {
       this.uploadError.emit({
