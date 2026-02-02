@@ -1,8 +1,15 @@
 package de.tum.cit.aet.core.web;
 
+import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.dto.ImageDTO;
+import de.tum.cit.aet.core.security.annotations.Admin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
+import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
 import java.util.UUID;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,15 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import de.tum.cit.aet.core.domain.Image;
-import de.tum.cit.aet.core.dto.ImageDTO;
-import de.tum.cit.aet.core.security.annotations.Admin;
-import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
-import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
-import de.tum.cit.aet.core.service.ImageService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -138,10 +136,10 @@ public class ImageResource {
     @Admin
     @PostMapping(value = "/upload/default-job-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadDefaultJobBanner(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("departmentId") UUID departmentId) {
-        log.info("POST /api/images/upload/default-job-banner filename={} departmentId={}", file.getOriginalFilename(),
-                departmentId);
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("departmentId") UUID departmentId
+    ) {
+        log.info("POST /api/images/upload/default-job-banner filename={} departmentId={}", file.getOriginalFilename(), departmentId);
         Image image = imageService.uploadDefaultImage(file, departmentId);
         return ResponseEntity.status(201).body(ImageDTO.fromEntity(image));
     }

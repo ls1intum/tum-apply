@@ -1,17 +1,5 @@
 package de.tum.cit.aet.job.repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.JobState;
@@ -19,6 +7,16 @@ import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.dto.CreatedJobDTO;
 import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.domain.User;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * Spring Data JPA repository for the {@link Job} entity.
@@ -37,30 +35,33 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param pageable    pagination and sorting information
      * @return a page of {@link CreatedJobDTO} matching the criteria
      */
-    @Query("""
-                SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
-                    j.jobId,
-                    j.supervisingProfessor.avatar,
-                    CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
-                    j.state,
-                    j.title,
-                    j.startDate,
-                    j.createdAt,
-                    j.lastModifiedAt
-                )
-                FROM Job j
-                WHERE j.supervisingProfessor.userId = :userId
-                AND (:states IS NULL OR j.state IN :states)
-                AND (:searchQuery IS NULL OR
-                     j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                     CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE CONCAT('%', :searchQuery, '%')
-                )
-            """)
+    @Query(
+        """
+            SELECT new de.tum.cit.aet.job.dto.CreatedJobDTO(
+                j.jobId,
+                j.supervisingProfessor.avatar,
+                CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName),
+                j.state,
+                j.title,
+                j.startDate,
+                j.createdAt,
+                j.lastModifiedAt
+            )
+            FROM Job j
+            WHERE j.supervisingProfessor.userId = :userId
+            AND (:states IS NULL OR j.state IN :states)
+            AND (:searchQuery IS NULL OR
+                 j.title LIKE CONCAT('%', :searchQuery, '%') OR
+                 CONCAT(j.supervisingProfessor.firstName, ' ', j.supervisingProfessor.lastName) LIKE CONCAT('%', :searchQuery, '%')
+            )
+        """
+    )
     Page<CreatedJobDTO> findAllJobsByProfessor(
-            @Param("userId") UUID userId,
-            @Param("states") List<JobState> states,
-            @Param("searchQuery") String searchQuery,
-            Pageable pageable);
+        @Param("userId") UUID userId,
+        @Param("states") List<JobState> states,
+        @Param("searchQuery") String searchQuery,
+        Pageable pageable
+    );
 
     /**
      * Finds all available job postings with optional filtering and custom sorting
@@ -84,65 +85,68 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param pageable       pagination information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    @Query("""
-            SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
-              j.jobId as jobId,
-              j.title as title,
-              j.location as location,
-              CONCAT(p.firstName, ' ', p.lastName) as professorName,
-              COALESCE(d.name, 'No Department') as departmentName,
-              a.applicationId as applicationId,
-              a.state as applicationState,
-              j.workload as workload,
-              j.startDate as startDate,
-              j.endDate as endDate,
-              j.contractDuration as contractDuration,
-              i.url as imageUrl
-            )
-            FROM Job j
-            JOIN j.supervisingProfessor p
-            LEFT JOIN j.researchGroup rg
-            LEFT JOIN rg.department d
-            LEFT JOIN j.image i
-            LEFT JOIN j.applications a
-                   WITH (:userId IS NOT NULL
-                     AND a.applicant.userId = :userId
-                     AND a.createdAt = (
-                          SELECT MAX(a2.createdAt)
-                          FROM Application a2
-                          WHERE a2.job = j AND a2.applicant.userId = :userId
-                     ))
-            WHERE j.state = :state
-              AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-              AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
-              AND (:locations IS NULL OR j.location IN :locations)
-              AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
-              AND (:searchQuery IS NULL OR
-                       j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                       j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
-                       CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
-                  )
-            ORDER BY
-                CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName'
-                     THEN j.supervisingProfessor.lastName END ASC,
-                CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName'
-                     THEN j.supervisingProfessor.firstName END ASC,
-                CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName'
-                     THEN j.supervisingProfessor.lastName END DESC,
-                CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName'
-                     THEN j.supervisingProfessor.firstName END DESC,
-                j.createdAt DESC
-                      """)
+    @Query(
+        """
+        SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
+          j.jobId as jobId,
+          j.title as title,
+          j.location as location,
+          CONCAT(p.firstName, ' ', p.lastName) as professorName,
+          COALESCE(d.name, 'No Department') as departmentName,
+          a.applicationId as applicationId,
+          a.state as applicationState,
+          j.workload as workload,
+          j.startDate as startDate,
+          j.endDate as endDate,
+          j.contractDuration as contractDuration,
+          i.url as imageUrl
+        )
+        FROM Job j
+        JOIN j.supervisingProfessor p
+        LEFT JOIN j.researchGroup rg
+        LEFT JOIN rg.department d
+        LEFT JOIN j.image i
+        LEFT JOIN j.applications a
+               WITH (:userId IS NOT NULL
+                 AND a.applicant.userId = :userId
+                 AND a.createdAt = (
+                      SELECT MAX(a2.createdAt)
+                      FROM Application a2
+                      WHERE a2.job = j AND a2.applicant.userId = :userId
+                 ))
+        WHERE j.state = :state
+          AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+          AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
+          AND (:locations IS NULL OR j.location IN :locations)
+          AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
+          AND (:searchQuery IS NULL OR
+                   j.title LIKE CONCAT('%', :searchQuery, '%') OR
+                   j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
+                   CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
+              )
+        ORDER BY
+            CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName'
+                 THEN j.supervisingProfessor.lastName END ASC,
+            CASE WHEN :sortDirection = 'ASC'  AND :sortBy = 'professorName'
+                 THEN j.supervisingProfessor.firstName END ASC,
+            CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName'
+                 THEN j.supervisingProfessor.lastName END DESC,
+            CASE WHEN :sortDirection = 'DESC' AND :sortBy = 'professorName'
+                 THEN j.supervisingProfessor.firstName END DESC,
+            j.createdAt DESC
+                  """
+    )
     Page<JobCardDTO> findAllJobCardsByState(
-            @Param("state") JobState state,
-            @Param("fieldOfStudies") List<String> fieldOfStudies,
-            @Param("locations") List<Campus> locations,
-            @Param("professorNames") List<String> professorNames,
-            @Param("sortBy") String sortBy,
-            @Param("sortDirection") String sortDirection,
-            @Param("userId") UUID userId,
-            @Param("searchQuery") String searchQuery,
-            Pageable pageable);
+        @Param("state") JobState state,
+        @Param("fieldOfStudies") List<String> fieldOfStudies,
+        @Param("locations") List<Campus> locations,
+        @Param("professorNames") List<String> professorNames,
+        @Param("sortBy") String sortBy,
+        @Param("sortDirection") String sortDirection,
+        @Param("userId") UUID userId,
+        @Param("searchQuery") String searchQuery,
+        Pageable pageable
+    );
 
     /**
      * Finds all available job postings with optional filtering options. Sorting is
@@ -163,53 +167,56 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param pageable       pagination and sorting information
      * @return a page of {@link JobCardDTO} matching the criteria
      */
-    @Query("""
-              SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
-                j.jobId as jobId,
-                j.title as title,
-                j.location as location,
-                CONCAT(p.firstName, ' ', p.lastName) as professorName,
-                COALESCE(d.name, 'No Department') as departmentName,
-                a.applicationId as applicationId,
-                a.state as applicationState,
-                j.workload as workload,
-                j.startDate as startDate,
-                j.endDate as endDate,
-                j.contractDuration as contractDuration,
-                i.url as imageUrl
-              )
-              FROM Job j
-              JOIN j.supervisingProfessor p
-              LEFT JOIN j.researchGroup rg
-              LEFT JOIN rg.department d
-              LEFT JOIN j.image i
-              LEFT JOIN j.applications a
-                     WITH (:userId IS NOT NULL
-                       AND a.applicant.userId = :userId
-                       AND a.createdAt = (
-                            SELECT MAX(a2.createdAt)
-                            FROM Application a2
-                            WHERE a2.job = j AND a2.applicant.userId = :userId
-                       ))
-              WHERE j.state = :state
-                AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-                AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
-                AND (:locations IS NULL OR j.location IN :locations)
-                AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
-                AND (:searchQuery IS NULL OR
-                       j.title LIKE CONCAT('%', :searchQuery, '%') OR
-                       j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
-                       CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
-                )
-            """)
+    @Query(
+        """
+          SELECT new de.tum.cit.aet.job.dto.JobCardDTO(
+            j.jobId as jobId,
+            j.title as title,
+            j.location as location,
+            CONCAT(p.firstName, ' ', p.lastName) as professorName,
+            COALESCE(d.name, 'No Department') as departmentName,
+            a.applicationId as applicationId,
+            a.state as applicationState,
+            j.workload as workload,
+            j.startDate as startDate,
+            j.endDate as endDate,
+            j.contractDuration as contractDuration,
+            i.url as imageUrl
+          )
+          FROM Job j
+          JOIN j.supervisingProfessor p
+          LEFT JOIN j.researchGroup rg
+          LEFT JOIN rg.department d
+          LEFT JOIN j.image i
+          LEFT JOIN j.applications a
+                 WITH (:userId IS NOT NULL
+                   AND a.applicant.userId = :userId
+                   AND a.createdAt = (
+                        SELECT MAX(a2.createdAt)
+                        FROM Application a2
+                        WHERE a2.job = j AND a2.applicant.userId = :userId
+                   ))
+          WHERE j.state = :state
+            AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+            AND (:fieldOfStudies IS NULL OR j.fieldOfStudies IN :fieldOfStudies)
+            AND (:locations IS NULL OR j.location IN :locations)
+            AND (:professorNames IS NULL OR CONCAT(p.firstName, ' ', p.lastName) IN :professorNames)
+            AND (:searchQuery IS NULL OR
+                   j.title LIKE CONCAT('%', :searchQuery, '%') OR
+                   j.fieldOfStudies LIKE CONCAT('%', :searchQuery, '%') OR
+                   CONCAT(p.firstName, ' ', p.lastName) LIKE CONCAT('%', :searchQuery, '%')
+            )
+        """
+    )
     Page<JobCardDTO> findAllJobCardsByState(
-            @Param("state") JobState state,
-            @Param("fieldOfStudies") List<String> fieldOfStudies,
-            @Param("locations") List<Campus> locations,
-            @Param("professorNames") List<String> professorNames,
-            @Param("userId") UUID userId,
-            @Param("searchQuery") String searchQuery,
-            Pageable pageable);
+        @Param("state") JobState state,
+        @Param("fieldOfStudies") List<String> fieldOfStudies,
+        @Param("locations") List<Campus> locations,
+        @Param("professorNames") List<String> professorNames,
+        @Param("userId") UUID userId,
+        @Param("searchQuery") String searchQuery,
+        Pageable pageable
+    );
 
     /**
      * Finds all available fields of study
@@ -217,13 +224,15 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param state the job state (typically PUBLISHED)
      * @return a List of String with all unique, available fields of study
      */
-    @Query("""
-            SELECT DISTINCT j.fieldOfStudies
-            FROM Job j
-            WHERE j.state = :state
-              AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-            ORDER BY j.fieldOfStudies ASC
-            """)
+    @Query(
+        """
+        SELECT DISTINCT j.fieldOfStudies
+        FROM Job j
+        WHERE j.state = :state
+          AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+        ORDER BY j.fieldOfStudies ASC
+        """
+    )
     List<String> findAllUniqueFieldOfStudies(@Param("state") JobState state);
 
     /**
@@ -232,14 +241,16 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param state the job state (typically PUBLISHED)
      * @return a List of String with all unique, available supervisor names
      */
-    @Query("""
-            SELECT DISTINCT CONCAT(p.firstName, ' ', p.lastName)
-            FROM Job j
-            JOIN j.supervisingProfessor p
-            WHERE j.state = :state
-              AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
-            ORDER BY CONCAT(p.firstName, ' ', p.lastName) ASC
-            """)
+    @Query(
+        """
+        SELECT DISTINCT CONCAT(p.firstName, ' ', p.lastName)
+        FROM Job j
+        JOIN j.supervisingProfessor p
+        WHERE j.state = :state
+          AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)
+        ORDER BY CONCAT(p.firstName, ' ', p.lastName) ASC
+        """
+    )
     List<String> findAllUniqueSupervisorNames(@Param("state") JobState state);
 
     /**
@@ -257,7 +268,9 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      * @param state the job state
      * @return list of jobs with images loaded
      */
-    @Query("SELECT DISTINCT j FROM Job j LEFT JOIN FETCH j.image WHERE j.state = :state AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)")
+    @Query(
+        "SELECT DISTINCT j FROM Job j LEFT JOIN FETCH j.image WHERE j.state = :state AND (j.endDate IS NULL OR j.endDate >= CURRENT_DATE)"
+    )
     List<Job> findAllByStateWithImages(@Param("state") JobState state);
 
     /**
@@ -269,8 +282,7 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Job j SET j.supervisingProfessor = :deletedUser, j.state = :state WHERE j.supervisingProfessor = :user")
-    void anonymiseJobByUserId(@Param("user") User user, @Param("deletedUser") User deletedUser,
-            @Param("state") JobState state);
+    void anonymiseJobByUserId(@Param("user") User user, @Param("deletedUser") User deletedUser, @Param("state") JobState state);
 
     /**
      * Checks if an image is referenced by any job

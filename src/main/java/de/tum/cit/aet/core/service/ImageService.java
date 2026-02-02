@@ -1,25 +1,5 @@
 package de.tum.cit.aet.core.service;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import de.tum.cit.aet.core.constants.ImageType;
 import de.tum.cit.aet.core.domain.DepartmentImage;
 import de.tum.cit.aet.core.domain.Image;
@@ -36,7 +16,24 @@ import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -55,15 +52,15 @@ public class ImageService {
     private final int maxHeight;
 
     public ImageService(
-            ImageRepository imageRepository,
-            JobRepository jobRepository,
-            DepartmentRepository departmentRepository,
-            SchoolRepository schoolRepository,
-            CurrentUserService currentUserService,
-            @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
-            @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
-            @Value("${aet.storage.max-image-width:4096}") int maxWidth, // 4096px width default
-            @Value("${aet.storage.max-image-height:4096}") int maxHeight // 4096px height default
+        ImageRepository imageRepository,
+        JobRepository jobRepository,
+        DepartmentRepository departmentRepository,
+        SchoolRepository schoolRepository,
+        CurrentUserService currentUserService,
+        @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
+        @Value("${aet.storage.max-image-size-bytes:5242880}") long maxFileSize, // 5MB default
+        @Value("${aet.storage.max-image-width:4096}") int maxWidth, // 4096px width default
+        @Value("${aet.storage.max-image-height:4096}") int maxHeight // 4096px height default
     ) {
         this.imageRepository = imageRepository;
         this.jobRepository = jobRepository;
@@ -108,8 +105,8 @@ public class ImageService {
     public DepartmentImage uploadDefaultImage(MultipartFile file, UUID departmentId) {
         User uploader = currentUserService.getUser();
         Department department = departmentRepository
-                .findById(departmentId)
-                .orElseThrow(() -> EntityNotFoundException.forId("Department", departmentId));
+            .findById(departmentId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Department", departmentId));
 
         String relativePath = storeImageFile(file, ImageType.DEFAULT_JOB_BANNER);
 
@@ -333,12 +330,13 @@ public class ImageService {
         Set<UUID> inUseImageIds = jobRepository.findInUseImageIds(imageIds);
 
         // Map images to DTOs with isInUse flag
-        return images.stream()
-                .map(image -> {
-                    boolean isInUse = inUseImageIds.contains(image.getImageId());
-                    return ImageDTO.fromEntity(image, isInUse);
-                })
-                .toList();
+        return images
+            .stream()
+            .map(image -> {
+                boolean isInUse = inUseImageIds.contains(image.getImageId());
+                return ImageDTO.fromEntity(image, isInUse);
+            })
+            .toList();
     }
 
     /**
@@ -362,8 +360,7 @@ public class ImageService {
         User currentUser = currentUserService.getUser();
         boolean isAdmin = currentUserService.isAdmin();
 
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
 
         validateDeletePermission(image, currentUser, isAdmin);
 
@@ -409,8 +406,7 @@ public class ImageService {
             throw new AccessDeniedException("You do not have permission to delete this image");
         }
 
-        if (!image.getResearchGroup().getResearchGroupId()
-                .equals(currentUser.getResearchGroup().getResearchGroupId())) {
+        if (!image.getResearchGroup().getResearchGroupId().equals(currentUser.getResearchGroup().getResearchGroupId())) {
             throw new AccessDeniedException("You can only delete job banners from your research group");
         }
     }
@@ -440,8 +436,7 @@ public class ImageService {
      */
     @Transactional
     public void deleteWithoutChecks(UUID imageId) {
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
 
         if (image instanceof DepartmentImage) {
             log.warn("Attempted to delete default department image: {}", imageId);
@@ -488,10 +483,12 @@ public class ImageService {
     public Image replaceImage(Image oldImage, Image newImage) {
         // Don't auto-delete default images or research group job banners (they're part
         // of the reusable library)
-        if (oldImage != null &&
-                !(oldImage instanceof DepartmentImage) &&
-                !(oldImage instanceof ResearchGroupImage) &&
-                (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))) {
+        if (
+            oldImage != null &&
+            !(oldImage instanceof DepartmentImage) &&
+            !(oldImage instanceof ResearchGroupImage) &&
+            (newImage == null || !oldImage.getImageId().equals(newImage.getImageId()))
+        ) {
             try {
                 deleteWithoutChecks(oldImage.getImageId());
             } catch (Exception e) {
@@ -538,8 +535,8 @@ public class ImageService {
 
         if (width > maxWidth || height > maxHeight) {
             throw new UploadException(
-                    String.format("Image dimensions (%dx%d) exceed maximum allowed dimensions (%dx%d)", width, height,
-                            maxWidth, maxHeight));
+                String.format("Image dimensions (%dx%d) exceed maximum allowed dimensions (%dx%d)", width, height, maxWidth, maxHeight)
+            );
         }
     }
 
