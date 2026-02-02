@@ -447,21 +447,9 @@
           "summary": "Failed to load images",
           "detail": "Failed to load images. Please try again."
         },
-        "uploadFailed": {
-          "summary": "Upload failed",
-          "detail": "Failed to upload image. Please try again."
-        },
         "deleteFailed": {
           "summary": "Delete failed",
           "detail": "Failed to delete image. Please try again."
-        },
-        "fileTooLarge": {
-          "summary": "File too large",
-          "detail": "File size must be less than 5 MB"
-        },
-        "invalidFileType": {
-          "summary": "Invalid file type",
-          "detail": "Please upload a valid image file (JPEG, JPG, PNG, or WebP)"
         }
       }
     }

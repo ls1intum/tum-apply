@@ -157,10 +157,6 @@
         "summary": "Upload erfolgreich",
         "detail": "Bild erfolgreich hochgeladen"
       },
-      "uploadFailed": {
-        "summary": "Upload fehlgeschlagen",
-        "detail": "Bild konnte nicht hochgeladen werden. Bitte versuche es erneut."
-      },
       "deleteImageSuccess": {
         "summary": "Bild gelöscht",
         "detail": "Bild erfolgreich gelöscht"
@@ -169,25 +165,9 @@
         "summary": "Löschen fehlgeschlagen",
         "detail": "Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
       },
-      "fileTooLarge": {
-        "summary": "Datei zu groß",
-        "detail": "Das Bild muss kleiner als 5MB sein"
-      },
-      "invalidFileType": {
-        "summary": "Ungültiger Dateityp",
-        "detail": "Bitte wähle eine Bilddatei (JPG, JPEG, PNG)"
-      },
       "loadImagesFailed": {
         "summary": "Laden fehlgeschlagen",
         "detail": "Bilder konnten nicht geladen werden. Bitte lade die Seite neu."
-      },
-      "dimensionsTooLarge": {
-        "summary": "Bild zu groß",
-        "detail": "Bildabmessungen dürfen 4096x4096 Pixel nicht überschreiten"
-      },
-      "invalidImage": {
-        "summary": "Ungültiges Bild",
-        "detail": "Bilddatei kann nicht gelesen werden. Bitte wähle ein gültiges Bild."
       },
       "uploadNew": "Neues Bild hochladen",
       "uploading": "Wird hochgeladen...",

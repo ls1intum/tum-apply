@@ -447,21 +447,9 @@
           "summary": "Laden fehlgeschlagen",
           "detail": "Bilder konnten nicht geladen werden. Bitte versuche es erneut."
         },
-        "uploadFailed": {
-          "summary": "Upload fehlgeschlagen",
-          "detail": "Bild konnte nicht hochgeladen werden. Bitte versuche es erneut."
-        },
         "deleteFailed": {
           "summary": "Löschen fehlgeschlagen",
           "detail": "Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
-        },
-        "fileTooLarge": {
-          "summary": "Datei zu groß",
-          "detail": "Die Dateigröße muss kleiner als 5 MB sein"
-        },
-        "invalidFileType": {
-          "summary": "Ungültiger Dateityp",
-          "detail": "Bitte lade eine gültige Bilddatei hoch (JPEG, JPG, PNG oder WebP)"
         }
       }
     }
