@@ -26,7 +26,14 @@
     <!-- Header Section -->
     <div class="header-container mb-8 border-b border-divider-default">
       <div class="flex flex-col gap-4">
-        <h1 class="page-header">{{ job.title }}</h1>
+        @if (!previewData()) {
+          <div class="flex items-center gap-2">
+            <jhi-back-button />
+            <h1 class="page-header">{{ job.title }}</h1>
+          </div>
+        } @else {
+          <h1 class="page-header">{{ job.title }}</h1>
+        }
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
@@ -242,20 +249,5 @@
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
       ></div>
     </section>
-
-    @if (!previewData()) {
-      <section class="mt-8 pt-8 border-t border-divider-default">
-        <div class="flex justify-start">
-          <jhi-button
-            label="button.back"
-            icon="arrow-left"
-            severity="info"
-            variant="outlined"
-            (click)="onBack()"
-            [shouldTranslate]="true"
-          />
-        </div>
-      </section>
-    }
   </div>
 }

@@ -178,7 +178,9 @@ class InterviewResourceTest extends AbstractResourceTest {
         assertThat(details.jobId()).isEqualTo(job.getJobId());
         assertThat(details.jobTitle()).isEqualTo(job.getTitle());
         // Stats reflects the testInterviewee created in setup
-        assertThat(details.totalInterviews()).isEqualTo(1);
+        // Total interviews only counts SCHEDULED or COMPLETED. Setup creates
+        // UNCONTACTED, so total is 0.
+        assertThat(details.totalInterviews()).isEqualTo(0);
     }
 
     @Test

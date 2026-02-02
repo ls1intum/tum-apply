@@ -171,7 +171,18 @@ export class JobCreationFormComponent {
   showAiPanel = computed(() => this.aiToggleSignal());
 
   /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
+  templateText = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
+      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
+  );
+
+  /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
+  jobDescriptionPlaceholder = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? 'jobCreationForm.positionDetailsSection.jobDescription.placeholderEN'
+      : 'jobCreationForm.positionDetailsSection.jobDescription.placeholderDE',
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD SIGNALS
@@ -769,7 +780,7 @@ export class JobCreationFormComponent {
 
       let lastRendered = '';
       // Use the AiStreamingService with live updates during streaming
-      const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(language, request, this.jobId(), content => {
+      const accumulatedContent = await this.aiStreamingService.generateJobApplicationDraftStream(language, request, content => {
         // Try to extract content from the partial JSON
         const extractedContent = this.extractJobDescriptionFromStream(content);
         if (!extractedContent?.startsWith('<')) return;
@@ -801,9 +812,6 @@ export class JobCreationFormComponent {
           } else {
             this.jobDescriptionDE.set(finalContent);
           }
-
-          // We need to fetch the translated version from the server
-          await this.loadTranslatedDescription(language === 'en' ? 'de' : 'en');
         } else {
           // Extraction failed - show error and restore original content
           this.jobDescriptionEditor()?.forceUpdate(originalContent);
@@ -904,42 +912,6 @@ export class JobCreationFormComponent {
     return unescapeJsonString(rawValue);
   }
 
-  /**
-   * Loads the translated job description from the server after AI generation.
-   * This is needed because the server translates asynchronously after streaming.
-   * Uses retry logic with delay to wait for the translation to complete.
-   *
-   * @param targetLang The language to load ('en' or 'de')
-   * @param maxRetries Maximum number of retry attempts (default: 5)
-   * @param delayMs Delay between retries in milliseconds (default: 2000)
-   */
-  private async loadTranslatedDescription(targetLang: 'en' | 'de', maxRetries = 5, delayMs = 2000): Promise<void> {
-    const jobId = this.jobId();
-    if (!jobId) return;
-
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        // Wait before checking (translation needs time to complete)
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-
-        const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
-        const translatedContent = targetLang === 'en' ? job.jobDescriptionEN : job.jobDescriptionDE;
-
-        if (translatedContent && translatedContent.trim().length > 0) {
-          // Translation found - update the signal
-          if (targetLang === 'en') {
-            this.jobDescriptionEN.set(translatedContent);
-          } else {
-            this.jobDescriptionDE.set(translatedContent);
-          }
-          return; // Success - exit
-        }
-        // Error translating, will retry
-      } catch {
-        // Error fetching job, will retry
-      }
-    }
-  }
   /**
    * Automatically scrolls the editor to the bottom during AI streaming.
    * Runs every 200ms while isAutoScrolling is true.
