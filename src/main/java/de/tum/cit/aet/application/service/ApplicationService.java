@@ -136,35 +136,18 @@ public class ApplicationService {
 
     /**
      * Copies document references from the applicant's profile to the newly created application.
-     * This includes CVs, references, bachelor transcripts, and master transcripts.
+     * This includes CVs, references, bachelor transcripts, master transcripts, and custom documents.
      *
      * @param applicant   the applicant whose documents should be copied
      * @param application the newly created application to receive the document references
      */
     private void prefillDocumentsFromApplicantProfile(Applicant applicant, Application application) {
-        Set<DocumentDictionary> applicantCVs = documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CV);
-        copyDocumentsToApplication(applicantCVs, application);
-
-        Set<DocumentDictionary> applicantReferences = documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.REFERENCE);
-        copyDocumentsToApplication(applicantReferences, application);
-
-        Set<DocumentDictionary> applicantBachelorTranscripts = documentDictionaryService.getDocumentDictionaries(
-            applicant,
-            DocumentType.BACHELOR_TRANSCRIPT
-        );
-        copyDocumentsToApplication(applicantBachelorTranscripts, application);
-
-        Set<DocumentDictionary> applicantMasterTranscripts = documentDictionaryService.getDocumentDictionaries(
-            applicant,
-            DocumentType.MASTER_TRANSCRIPT
-        );
-        copyDocumentsToApplication(applicantMasterTranscripts, application);
-
-        Set<DocumentDictionary> applicantCustomDocuments = documentDictionaryService.getDocumentDictionaries(
-            applicant,
-            DocumentType.CUSTOM
-        );
-        copyDocumentsToApplication(applicantCustomDocuments, application);
+        Set<DocumentDictionary> applicantDocuments = documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CV);
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT));
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT));
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.REFERENCE));
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CUSTOM));
+        copyDocumentsToApplication(applicantDocuments, application);
     }
 
     /**
@@ -296,13 +279,12 @@ public class ApplicationService {
         Set<DocumentDictionary> applicationDocs = documentDictionaryService.getDocumentDictionaries(application, documentType);
         Set<DocumentDictionary> applicantDocs = documentDictionaryService.getDocumentDictionaries(applicant, documentType);
 
-        // Delete all existing documents of this type from applicant profile
-        // We use the repository directly because these are profile documents (not linked to an application)
+        // Delete all existing documents from applicant profile
         for (DocumentDictionary applicantDoc : applicantDocs) {
             documentDictionaryService.deleteApplicantProfileDocument(applicantDoc.getDocumentDictionaryId());
         }
 
-        // Copy all documents from application to applicant profile
+        // Copy all documents from application dictionary to applicant profile
         for (DocumentDictionary appDoc : applicationDocs) {
             DocumentDictionary copy = new DocumentDictionary();
             copy.setApplicant(applicant);

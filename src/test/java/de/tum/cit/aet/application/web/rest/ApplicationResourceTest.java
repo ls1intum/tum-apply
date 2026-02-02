@@ -925,11 +925,10 @@ class ApplicationResourceTest extends AbstractResourceTest {
         void uploadDocumentsUploadsSuccessfully() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
-            MockMultipartFile file = new MockMultipartFile(
+            MockMultipartFile file = DocumentTestData.createMockPdfFile(
                 "files",
                 "bachelor_transcript.pdf",
-                "application/pdf",
-                "PDF content here".getBytes()
+                "PDF content here"
             );
 
             Set<DocumentInformationHolderDTO> uploadedDocs = api
@@ -950,7 +949,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void uploadDocumentsForNonexistentApplicationThrowsNotFound() {
-            MockMultipartFile file = new MockMultipartFile("files", "transcript.pdf", "application/pdf", "PDF content".getBytes());
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -965,7 +964,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void uploadDocumentsWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            MockMultipartFile file = new MockMultipartFile("files", "transcript.pdf", "application/pdf", "PDF content".getBytes());
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
             api.multipartPostAndRead(
                 "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
