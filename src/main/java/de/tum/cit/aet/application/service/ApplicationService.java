@@ -142,29 +142,24 @@ public class ApplicationService {
      * @param application the newly created application to receive the document references
      */
     private void prefillDocumentsFromApplicantProfile(Applicant applicant, Application application) {
-        // Copy CVs
         Set<DocumentDictionary> applicantCVs = documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CV);
         copyDocumentsToApplication(applicantCVs, application);
 
-        // Copy references
         Set<DocumentDictionary> applicantReferences = documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.REFERENCE);
         copyDocumentsToApplication(applicantReferences, application);
 
-        // Copy bachelor transcripts
         Set<DocumentDictionary> applicantBachelorTranscripts = documentDictionaryService.getDocumentDictionaries(
             applicant,
             DocumentType.BACHELOR_TRANSCRIPT
         );
         copyDocumentsToApplication(applicantBachelorTranscripts, application);
 
-        // Copy master transcripts
         Set<DocumentDictionary> applicantMasterTranscripts = documentDictionaryService.getDocumentDictionaries(
             applicant,
             DocumentType.MASTER_TRANSCRIPT
         );
         copyDocumentsToApplication(applicantMasterTranscripts, application);
 
-        // Copy custom documents
         Set<DocumentDictionary> applicantCustomDocuments = documentDictionaryService.getDocumentDictionaries(
             applicant,
             DocumentType.CUSTOM
