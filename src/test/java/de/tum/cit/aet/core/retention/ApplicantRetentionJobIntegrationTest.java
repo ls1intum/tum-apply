@@ -143,8 +143,7 @@ class ApplicantRetentionJobIntegrationTest {
         assertThat(documentRepository.findById(recentApplication.dictionary().getDocument().getDocumentId())).isPresent();
     }
 
-    private ApplicationWithDocs createApplicationWithLastModified(LocalDateTime lastModifiedAt, String fileName) {
-        // Professor (User hat bei euch KEIN @GeneratedValue, also ID setzen ist ok)
+    private User createProfessorUser() {
         User professor = new User();
         professor.setUserId(UUID.randomUUID());
         professor.setEmail("prof-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
@@ -153,9 +152,10 @@ class ApplicantRetentionJobIntegrationTest {
         professor.setSelectedLanguage("en");
         professor.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
         professor.setResearchGroup(researchGroup);
-        professor = userRepository.saveAndFlush(professor);
+        return userRepository.saveAndFlush(professor);
+    }
 
-        // Applicant User (auch ID setzen ok)
+    private User createApplicantUser() {
         User applicantUser = new User();
         applicantUser.setUserId(UUID.randomUUID());
         applicantUser.setEmail("applicant-job-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
@@ -163,29 +163,34 @@ class ApplicantRetentionJobIntegrationTest {
         applicantUser.setLastName("User");
         applicantUser.setSelectedLanguage("en");
         applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        applicantUser = userRepository.saveAndFlush(applicantUser);
+        return userRepository.saveAndFlush(applicantUser);
+    }
 
-        // Applicant entity (MapsId -> übernimmt userId)
+    private Applicant createApplicant(User applicantUser) {
         Applicant applicant = new Applicant();
         applicant.setUser(applicantUser);
-        applicant = applicantRepository.saveAndFlush(applicant);
+        return applicantRepository.saveAndFlush(applicant);
+    }
 
-        // Job: WICHTIG -> KEINE ID setzen!
+    private Job createJob(User professor) {
         Job job = new Job();
         job.setTitle("Job for applicant retention");
         job.setState(JobState.PUBLISHED);
         job.setSupervisingProfessor(professor);
         job.setResearchGroup(researchGroup);
-        job = jobRepository.saveAndFlush(job);
+        return jobRepository.saveAndFlush(job);
+    }
 
-        // Application: WICHTIG -> KEINE ID setzen (falls generated)
+    private Application createApplication(Job job, Applicant applicant) {
         Application application = new Application();
         application.setJob(job);
         application.setApplicant(applicant);
         application.setState(ApplicationState.REJECTED);
-        application = applicationRepository.saveAndFlush(application);
+        return applicationRepository.saveAndFlush(application);
+    }
 
-        DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+    private DocumentDictionary createDocumentDictionary(User professor, Application application, Applicant applicant, String fileName) {
+        return DocumentTestData.savedDictionaryWithMockDocument(
             documentRepository,
             documentDictionaryRepository,
             professor,
@@ -194,6 +199,15 @@ class ApplicantRetentionJobIntegrationTest {
             DocumentType.CV,
             fileName
         );
+    }
+
+    private ApplicationWithDocs createApplicationWithLastModified(LocalDateTime lastModifiedAt, String fileName) {
+        User professor = createProfessorUser();
+        User applicantUser = createApplicantUser();
+        Applicant applicant = createApplicant(applicantUser);
+        Job job = createJob(professor);
+        Application application = createApplication(job, applicant);
+        DocumentDictionary dictionary = createDocumentDictionary(professor, application, applicant, fileName);
 
         // Update lastModifiedAt in DB to the desired old date
         entityManager
