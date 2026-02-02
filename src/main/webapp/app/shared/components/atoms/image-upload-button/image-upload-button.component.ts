@@ -26,7 +26,7 @@ export interface ImageUploadError {
 export class ImageUploadButtonComponent {
   // Inputs
   config = input<ImageUploadConfig>({});
-  uploadFn = input<(file: File) => Observable<ImageDTO>>();
+  uploadFn = input<(_: File) => Observable<ImageDTO>>();
 
   // Outputs
   imageUploaded = output<ImageDTO>();
@@ -121,7 +121,7 @@ export class ImageUploadButtonComponent {
     // Upload the image
     try {
       this.isUploading.set(true);
-      const uploadObservable = this.uploadFn() ? this.uploadFn()!(file) : this.imageService.uploadJobBanner(file);
+      const uploadObservable = this.uploadFn()?.(file) ?? this.imageService.uploadJobBanner(file);
       const uploadedImage = await firstValueFrom(uploadObservable);
       this.imageUploaded.emit(uploadedImage);
     } catch {
