@@ -342,11 +342,11 @@ user:
 
 applicant:
   retention:
-    days-before-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
-    enabled: ${USER_RETENTION_ENABLED:false}
-    dry-run: ${USER_RETENTION_DRY_RUN:true}
-    batch-size: ${USER_RETENTION_BATCH_SIZE:300}
-    max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:10}
+    days-before-deletion: ${APPLICANT_RETENTION_DAYS_BEFORE_DELETION:188}
+    enabled: ${APPLICANT_RETENTION_ENABLED:false}
+    dry-run: ${APPLICANT_RETENTION_DRY_RUN:true}
+    batch-size: ${APPLICANT_RETENTION_BATCH_SIZE:300}
+    max-runtime-minutes: ${APPLICANT_RETENTION_MAX_RUNTIME_MINUTES:10}
     cron: ${APPLICANT_RETENTION_CRON:0 37 2 * * *}
 
 # ===================================================================

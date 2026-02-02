@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,18 +38,18 @@ public class ApplicantRetentionService {
     private final IntervieweeRepository intervieweeRepository;
 
     /**
-     * Processes a page of application IDs for deletion based on the specified cutoff date.
+     * Processes a slice of application IDs for deletion based on the specified cutoff date.
      * If dryRun is true, it logs the actions that would be performed without executing them.
      * Otherwise, it deletes the application and all related data, including reviews, comments,
      * document dictionaries, interviewees, and associated documents.
      *
-     * @param applicationIds a page of UUIDs representing the application IDs to process
+     * @param applicationIds a slice of UUIDs representing the application IDs to process
      * @param dryRun if true, performs a dry run by logging actions without deleting data;
      *               if false, actually deletes the applications and related data
      * @param cutoff the cutoff LocalDateTime used for determining which applications to process
      */
     @Transactional
-    public void processApplications(Page<UUID> applicationIds, Boolean dryRun, LocalDateTime cutoff) {
+    public void processApplications(Slice<UUID> applicationIds, Boolean dryRun, LocalDateTime cutoff) {
         for (UUID applicationId : applicationIds) {
             if (dryRun) {
                 log.info("Dry run: would process application with ID {} (cutoff={})", applicationId, cutoff);
@@ -67,11 +67,7 @@ public class ApplicantRetentionService {
             log.info("Processing deletion for application with ID {}", applicationId);
 
             // Collect documents to delete
-            List<Document> documentsToDelete = documentDictionaryRepository
-                .findAllByApplicationApplicationId(application.getApplicationId())
-                .stream()
-                .map(DocumentDictionary::getDocument)
-                .collect(Collectors.toList());
+            List<UUID> documentIdsToDelete = documentDictionaryRepository.findDocumentIdsByApplicationId(application.getApplicationId());
 
             // Delete related data first (no CASCADE)
             applicationReviewRepository.deleteByApplication(application);
@@ -80,8 +76,8 @@ public class ApplicantRetentionService {
             intervieweeRepository.deleteByApplicationIdIn(List.of(application.getApplicationId()));
 
             // Delete associated documents
-            for (Document document : documentsToDelete) {
-                documentRepository.delete(document);
+            for (UUID documentId : documentIdsToDelete) {
+                documentRepository.deleteById(documentId);
             }
 
             applicationRepository.delete(application);

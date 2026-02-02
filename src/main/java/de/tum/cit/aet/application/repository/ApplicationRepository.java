@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -260,5 +260,5 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             AND a.state IN ('WITHDRAWN', 'REJECTED', 'JOB_CLOSED', 'ACCEPTED')
         """
     )
-    Page<UUID> findApplicationsToBeDeletedBeforeCutoff(LocalDateTime cutoff, Pageable pageable);
+    Slice<UUID> findApplicationsToBeDeletedBeforeCutoff(LocalDateTime cutoff, Pageable pageable);
 }
