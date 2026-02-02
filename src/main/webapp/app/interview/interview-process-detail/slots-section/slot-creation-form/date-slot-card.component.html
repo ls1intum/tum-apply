@@ -234,10 +234,6 @@
                         message="interview.slots.create.validation.endBeforeStart"
                         styleClass="inline-message"
                       />
-                    } @else if (range.type === 'range' && (!range.startTime || !range.endTime)) {
-                      <span class="mt-1 text-xs font-medium text-text-secondary">
-                        {{ 'interview.slots.create.addStartAndEndTime' | translate }}
-                      </span>
                     } @else if (range.type === 'range' && range.startTime && range.endTime && range.slots.length === 0) {
                       <jhi-message
                         severity="error"
