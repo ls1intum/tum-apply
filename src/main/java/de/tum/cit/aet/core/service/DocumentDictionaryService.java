@@ -104,7 +104,7 @@ public class DocumentDictionaryService {
     }
 
     /**
-     * Deletes a DocumentDictionary entry from applicant profile (without authorization check).
+     * Deletes a DocumentDictionary entry from applicant profile.
      * This method is intended for internal use when syncing documents from application to profile.
      *
      * @param documentDictionaryId the id of the document dictionary entry to delete

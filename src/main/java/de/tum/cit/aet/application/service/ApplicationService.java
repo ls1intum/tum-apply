@@ -163,6 +163,13 @@ public class ApplicationService {
             DocumentType.MASTER_TRANSCRIPT
         );
         copyDocumentsToApplication(applicantMasterTranscripts, application);
+
+        // Copy custom documents
+        Set<DocumentDictionary> applicantCustomDocuments = documentDictionaryService.getDocumentDictionaries(
+            applicant,
+            DocumentType.CUSTOM
+        );
+        copyDocumentsToApplication(applicantCustomDocuments, application);
     }
 
     /**
@@ -266,8 +273,7 @@ public class ApplicationService {
 
     /**
      * Syncs documents from application to the applicant's profile.
-     * This ensures documents uploaded during application creation are available for future applications.
-     * Only copies documents that don't already exist in the applicant's profile.
+     * This ensures documents uploaded during application creation are available for future applications
      *
      * @param application the application containing the documents to sync
      */
@@ -279,6 +285,7 @@ public class ApplicationService {
         syncDocumentsByType(application, applicant, DocumentType.REFERENCE);
         syncDocumentsByType(application, applicant, DocumentType.BACHELOR_TRANSCRIPT);
         syncDocumentsByType(application, applicant, DocumentType.MASTER_TRANSCRIPT);
+        syncDocumentsByType(application, applicant, DocumentType.CUSTOM);
     }
 
     /**

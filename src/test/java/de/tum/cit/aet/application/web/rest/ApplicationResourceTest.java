@@ -518,6 +518,97 @@ class ApplicationResourceTest extends AbstractResourceTest {
         }
 
         @Test
+        void sendingApplicationSyncsDocumentsToApplicantProfile() throws Exception {
+            // Create application in SAVED state
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
+
+            // Attach a CV document to the application (not to the applicant profile)
+            DocumentDictionary appCv = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                professor,
+                application,
+                null,
+                DocumentType.CV,
+                "application_cv.pdf"
+            );
+
+            // Sanity: applicant profile initially has no CVs
+            assertThat(documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV)).isEmpty();
+
+            // Send the application (update state to SENT)
+            UpdateApplicationDTO updatePayload = new UpdateApplicationDTO(
+                application.getApplicationId(),
+                ApplicantDTO.getFromEntity(applicant),
+                null,
+                ApplicationState.SENT,
+                null,
+                null,
+                null
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
+
+            // After sending, the applicant profile should contain the CV from the application
+            Set<DocumentDictionary> applicantCvs = documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV);
+            assertThat(applicantCvs).hasSize(1);
+            assertThat(applicantCvs.iterator().next().getDocument().getDocumentId()).isEqualTo(appCv.getDocument().getDocumentId());
+        }
+
+        @Test
+        void sendingApplicationReplacesOldApplicantDocuments() throws Exception {
+            // Create an applicant profile CV that should be replaced
+            DocumentDictionary existingProfileCv = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                professor,
+                null,
+                applicant,
+                DocumentType.CV,
+                "profile_cv_old.pdf"
+            );
+
+            // Create application with a different CV
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
+            DocumentDictionary appCv = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                professor,
+                application,
+                null,
+                DocumentType.CV,
+                "application_cv_new.pdf"
+            );
+
+            // Confirm pre-conditions
+            assertThat(documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV)).hasSize(1);
+
+            // Send the application
+            UpdateApplicationDTO updatePayload = new UpdateApplicationDTO(
+                application.getApplicationId(),
+                ApplicantDTO.getFromEntity(applicant),
+                null,
+                ApplicationState.SENT,
+                null,
+                null,
+                null
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
+
+            // After sending, profile CVs should contain only the application's CV
+            Set<DocumentDictionary> applicantCvs = documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV);
+            assertThat(applicantCvs).hasSize(1);
+            assertThat(applicantCvs.iterator().next().getDocument().getDocumentId()).isEqualTo(appCv.getDocument().getDocumentId());
+            // Old profile doc should no longer exist in the profile
+            assertThat(documentDictionaryRepository.existsById(existingProfileCv.getDocumentDictionaryId())).isFalse();
+        }
+
+        @Test
         void updateApplicationWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
