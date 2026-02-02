@@ -430,7 +430,9 @@
       },
       "delete": {
         "title": "Bild löschen",
-        "message": "Bist du sicher, dass du dieses Bild löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
+        "message": "Bist du sicher, dass du dieses Bild löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "titleInUse": "Bild löschen",
+        "messageInUse": "Dieses Bild wird derzeit von einer oder mehreren Stellen verwendet. Bist du sicher, dass du dieses Bild löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
       },
       "success": {
         "imageUploaded": {

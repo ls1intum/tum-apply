@@ -39,7 +39,7 @@
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
           @for (image of inUseImages(); track image.imageId) {
-            <ng-container *ngTemplateOutlet="imageCard; context: { image: image, showDelete: false }" />
+            <ng-container *ngTemplateOutlet="imageCard; context: { image: image, showDelete: true, isInUse: true }" />
           }
         </div>
       }
@@ -59,7 +59,7 @@
       }
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
         @for (image of notInUseImages(); track image.imageId) {
-          <ng-container *ngTemplateOutlet="imageCard; context: { image: image, showDelete: true }" />
+          <ng-container *ngTemplateOutlet="imageCard; context: { image: image, showDelete: true, isInUse: false }" />
         }
 
         <!-- Upload New Image Button -->
@@ -83,7 +83,7 @@
 </ng-template>
 
 <!-- Reusable Image Card Template -->
-<ng-template #imageCard let-image="image" let-showDelete="showDelete">
+<ng-template #imageCard let-image="image" let-showDelete="showDelete" let-isInUse="isInUse">
   <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
     <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
       <img [src]="image.url" [alt]="image.jobTitle || 'Job banner image'" class="w-full h-full object-cover" />
@@ -94,8 +94,16 @@
             #deleteDialog
             [label]="'button.delete' | translate"
             [confirmIcon]="'trash'"
-            [header]="'researchGroup.imageLibrary.delete.title' | translate"
-            [message]="'researchGroup.imageLibrary.delete.message' | translate"
+            [header]="
+              isInUse
+                ? ('researchGroup.imageLibrary.delete.titleInUse' | translate)
+                : ('researchGroup.imageLibrary.delete.title' | translate)
+            "
+            [message]="
+              isInUse
+                ? ('researchGroup.imageLibrary.delete.messageInUse' | translate)
+                : ('researchGroup.imageLibrary.delete.message' | translate)
+            "
             [data]="image.imageId"
             (confirmed)="deleteImage($any($event))"
             severity="danger"

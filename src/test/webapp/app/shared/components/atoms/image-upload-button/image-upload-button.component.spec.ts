@@ -7,11 +7,10 @@ import {
   ImageUploadConfig,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
-import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 
-import { provideTranslateMock } from '../../../../../util/translate.mock';
-import { provideFontAwesomeTesting } from '../../../../../util/fontawesome.testing';
+import { provideTranslateMock } from 'util/translate.mock';
+import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
 import { createImageResourceApiServiceMock, provideImageResourceApiServiceMock } from '../../../../../util/image-resource-api.service.mock';
 
 // Helper functions
