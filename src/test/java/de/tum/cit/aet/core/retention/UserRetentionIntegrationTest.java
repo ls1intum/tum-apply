@@ -157,7 +157,7 @@ class UserRetentionIntegrationTest {
         ensureDeletedUserExists();
 
         mockSender = Mockito.mock(AsyncEmailSender.class);
-        ReflectionTestUtils.setField(userRetentionService, "emailSender", mockSender);
+        ReflectionTestUtils.setField(userRetentionService, "sender", mockSender);
 
         School school = SchoolTestData.savedDefault(schoolRepository);
         Department department = DepartmentTestData.savedDefault(departmentRepository, school);
