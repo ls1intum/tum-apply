@@ -1243,6 +1243,10 @@ paths:
         in: query
         required: false
         schema: {type: integer, format: int32}
+      - name: futureOnly
+        in: query
+        required: false
+        schema: {type: boolean, default: true}
       - name: page
         in: query
         required: false
@@ -1257,6 +1261,21 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/PageResponseDTOInterviewSlotDTO'}
+  /api/interviews/processes/{processId}/slots/available-count:
+    get:
+      tags: [interview-resource]
+      operationId: countAvailableFutureSlots
+      parameters:
+      - name: processId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {type: integer, format: int64}
   /api/interviews/processes/{processId}/slots/conflict-data:
     get:
       tags: [interview-resource]
@@ -1276,21 +1295,6 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ConflictDataDTO'}
-  /api/interviews/processes/{processId}/slots/available-count:
-    get:
-      tags: [interview-resource]
-      operationId: countAvailableFutureSlots
-      parameters:
-      - name: processId
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: {type: integer, format: int64}
   /api/interviews/processes/{processId}/slots/create:
     post:
       tags: [interview-resource]
