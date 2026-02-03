@@ -87,13 +87,13 @@ public class ApplicantRetentionService {
     }
 
     /**
-     * Warns applicants whose data is scheduled for deletion by sending them an email notification.
-     * This method retrieves a list of user IDs for applicants who need to be warned before their data is deleted,
-     * based on the provided warning cutoff date and time. For each valid user, it constructs and sends an asynchronous
-     * email of type APPLICANT_DATA_DELETION_WARNING in the user's selected language. If a user is not found,
-     * a warning is logged and the process continues for the next user.
+     * Sends a one-time warning email to applicants whose closed application was last modified on the given warning day.
+     * <p>
+     * The repository query matches only the calendar date of {@code warningCutoff} (time ignored) and filters to closed states,
+     * so each eligible applicant is warned exactly on that day. Missing users are logged and skipped.
+     * </p>
      *
-     * @param warningCutoff the cutoff date and time used to determine which applicants should be warned
+     * @param warningCutoff the day on which to send warnings (time component is ignored in the query)
      */
     public void warnApplicantOfDataDeletion(LocalDateTime warningCutoff) {
         List<UUID> userIds = applicationRepository.findApplicantsToBeWarnedBeforeDeletion(warningCutoff);

@@ -383,26 +383,25 @@ class UserRetentionIntegrationTest {
     }
 
     @Test
-    void shouldSendWarningEmailToUsersInWarningWindow() {
-        userRetentionProperties.setInactiveDaysBeforeDeletion(30);
+    void shouldSendWarningEmailOnlyOnWarningDay() {
+        userRetentionProperties.setInactiveDaysBeforeDeletion(60);
 
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        // Job logic: warningDate = now - (inactiveDaysBeforeDeletion - 28)
         LocalDateTime warningDate = now.minusDays(userRetentionProperties.getInactiveDaysBeforeDeletion() - 28);
 
-        // Match warning date exactly (repository uses date equality)
+        // Matches warning date exactly
         User userToWarn = ApplicantTestData.saveApplicantWithLastActivity(
             "warning@test.local",
             applicantRepository,
             userRepository,
-            warningDate
+            warningDate.withHour(1).withMinute(0).withSecond(0).withNano(0)
         );
 
-        // Too recent (date after warning date)
+        // Too recent (day after warning date)
         ApplicantTestData.saveApplicantWithLastActivity("recent@test.local", applicantRepository, userRepository, warningDate.plusDays(1));
 
-        // Too old (date before warning date)
-        ApplicantTestData.saveApplicantWithLastActivity("old@test.local", applicantRepository, userRepository, warningDate.minusDays(5));
+        // Too old (day before warning date)
+        ApplicantTestData.saveApplicantWithLastActivity("old@test.local", applicantRepository, userRepository, warningDate.minusDays(1));
 
         userRetentionService.warnUserOfDataDeletion(warningDate);
 

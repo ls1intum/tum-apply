@@ -265,9 +265,9 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
     @Query(
         """
             SELECT DISTINCT a.applicant.user.userId FROM Application a
-            WHERE a.lastModifiedAt < :cutoff
-            AND a.state IN ('WITHDRAWN', 'REJECTED', 'JOB_CLOSED', 'ACCEPTED')
+            WHERE function('date', a.lastModifiedAt) = function('date', :warningCutoff)
+              AND a.state IN ('WITHDRAWN', 'REJECTED', 'JOB_CLOSED', 'ACCEPTED')
         """
     )
-    List<UUID> findApplicantsToBeWarnedBeforeDeletion(LocalDateTime cutoff);
+    List<UUID> findApplicantsToBeWarnedBeforeDeletion(LocalDateTime warningCutoff);
 }

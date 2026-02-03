@@ -115,7 +115,7 @@ class ApplicantRetentionWarningIntegrationTest {
             null
         );
         Application oldClosedApplication = createApplication(job, warnedApplicant, ApplicationState.REJECTED);
-        setLastModified(oldClosedApplication, warningCutoff.minusDays(1));
+        setLastModified(oldClosedApplication, warningCutoff.withHour(2).withMinute(0).withSecond(0).withNano(0));
 
         applicantRetentionJob.warnApplicantOfDataDeletion();
 

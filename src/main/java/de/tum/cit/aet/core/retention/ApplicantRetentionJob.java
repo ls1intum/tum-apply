@@ -63,16 +63,26 @@ public class ApplicantRetentionJob {
     }
 
     /**
-     * Scheduled job that warns applicants about impending data deletion.
-     * This method is executed based on a cron schedule defined by the property {@code applicant.retention.cron},
-     * defaulting to run at 3:27 AM UTC daily. It calculates a warning cutoff date by subtracting the configured
-     * days before deletion minus the days before deletion warning from the current UTC time, and then delegates
-     * to the applicant retention service to send warnings to eligible applicants.
+     * Warns applicants exactly 28 days before their data deletion date.
+     * <p>
+     * Runs daily (configurable via {@code applicant.retention.cron}), computes the warning date as
+     * {@code nowUtc - (daysBeforeDeletion - 28)}, and invokes
+     * {@link ApplicantRetentionService#warnApplicantOfDataDeletion(LocalDateTime)}.
+     * The repository compares only the calendar date (ignoring time), so warnings fire once on that day.
+     * Skips execution when {@code daysBeforeDeletion} is not set or below the 28-day warning offset.
+     * </p>
      */
     @Scheduled(cron = "${applicant.retention.cron:0 27 3 * * *}", zone = "UTC")
     public void warnApplicantOfDataDeletion() {
         LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
-        LocalDateTime warningCutoff = nowUtc.minusDays(properties.getDaysBeforeDeletion() - DAYS_BEFORE_DELETION_WARNING);
+        Integer daysBeforeDeletion = properties.getDaysBeforeDeletion();
+        if (daysBeforeDeletion == null || daysBeforeDeletion <= DAYS_BEFORE_DELETION_WARNING) {
+            log.warn("Applicant retention warning skipped: invalid daysBeforeDeletion value={}", daysBeforeDeletion);
+            return;
+        }
+
+        LocalDateTime warningCutoff = nowUtc.minusDays(daysBeforeDeletion - DAYS_BEFORE_DELETION_WARNING);
+
         applicantRetentionService.warnApplicantOfDataDeletion(warningCutoff);
     }
 

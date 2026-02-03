@@ -118,17 +118,13 @@ public class UserRetentionService {
     }
 
     /**
-     * Warns users of impending data deletion by sending a warning email to inactive non-admin users
-     * whose data is scheduled for deletion after the specified cutoff date.
+     * Sends a one-time warning email to inactive non-admin users whose inactivity date matches the given warning day.
      * <p>
-     * This method calculates a warning date by adding {@code DAYS_BEFORE_DELETION_WARNING} days to the cutoff.
-     * It then retrieves a list of inactive non-admin user IDs eligible for warning based on that date.
-     * For each user, it verifies their existence, classifies their retention category, and skips admins.
-     * Finally, it constructs and sends an asynchronous warning email to the user.
+     * The repository compares only the calendar date (ignoring time) against {@code warningDate}, so users are warned
+     * exactly on that day. Admins are still filtered out defensively.
      * </p>
      *
-     * @param warningDate the LocalDateTime representing the warning date for data deletion;
-     *               users inactive beyond this point (adjusted by warning days) will be warned
+     * @param warningDate the day on which to send warnings (time component is ignored in the query)
      */
     public void warnUserOfDataDeletion(LocalDateTime warningDate) {
         List<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForWarning(warningDate);
