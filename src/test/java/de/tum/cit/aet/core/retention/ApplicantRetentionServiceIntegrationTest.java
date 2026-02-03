@@ -243,7 +243,7 @@ class ApplicantRetentionServiceIntegrationTest {
         oldApp.setState(ApplicationState.REJECTED);
         oldApp = applicationRepository.saveAndFlush(oldApp);
 
-        // Make it "old" in DB (optional, aber hilft falls Service intern nach lastModified filtert)
+        // Make it "old" in DB
         forceApplicationLastModified(oldApp.getApplicationId(), LocalDateTime.now(ZoneOffset.UTC).minusDays(3));
 
         ApplicationReview oldReview = new ApplicationReview();
