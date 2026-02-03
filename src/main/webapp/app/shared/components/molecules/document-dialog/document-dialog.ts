@@ -30,11 +30,17 @@ export class DocumentDialog {
   });
 
   selectedDocument = computed<DocumentInformationHolderDTO | undefined>(() => {
+    const list = this.documentHolders();
     const id = this.selectedId();
-    if (id === undefined) {
-      return undefined;
+
+    // Auto-select first document if none selected and list is available
+    if (id === undefined && list.length > 0) {
+      // Use queueMicrotask to avoid signal write during read
+      queueMicrotask(() => this.selectedId.set(list[0].document.id));
+      return list[0].document;
     }
-    return this.documentHolders().find(d => d.document.id === id)?.document ?? undefined;
+
+    return list.find(d => d.document.id === id)?.document ?? undefined;
   });
 
   isSelected: (documentId: string) => Signal<boolean> = (documentId: string) => computed(() => this.selectedDocument()?.id === documentId);
