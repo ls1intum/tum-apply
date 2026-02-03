@@ -155,6 +155,7 @@ class UserRetentionIntegrationTest {
         mockSender = Mockito.mock(AsyncEmailSender.class);
         ReflectionTestUtils.setField(userRetentionService, "sender", mockSender);
         userRetentionProperties.setDeletedUserId(DELETED_USER_ID);
+        userRetentionProperties.setInactiveDaysBeforeDeletion(28);
         ensureDeletedUserExists();
 
         School school = SchoolTestData.savedDefault(schoolRepository);
@@ -386,24 +387,24 @@ class UserRetentionIntegrationTest {
         userRetentionProperties.setInactiveDaysBeforeDeletion(30);
 
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        // Job logic: warningDate = now - (inactiveDaysBeforeDeletion - 28)
+        LocalDateTime warningDate = now.minusDays(userRetentionProperties.getInactiveDaysBeforeDeletion() - 28);
 
-        // With 30-day deletion cutoff, warn exactly 28 days before deletion => inactivity of 2 days
+        // Match warning date exactly (repository uses date equality)
         User userToWarn = ApplicantTestData.saveApplicantWithLastActivity(
             "warning@test.local",
             applicantRepository,
             userRepository,
-            now.minusDays(2)
+            warningDate
         );
 
-        // Too recent (not yet at warning day)
-        ApplicantTestData.saveApplicantWithLastActivity("recent@test.local", applicantRepository, userRepository, now.minusDays(1));
+        // Too recent (date after warning date)
+        ApplicantTestData.saveApplicantWithLastActivity("recent@test.local", applicantRepository, userRepository, warningDate.plusDays(1));
 
-        // Too old (already past the warning day)
-        ApplicantTestData.saveApplicantWithLastActivity("old@test.local", applicantRepository, userRepository, now.minusDays(10));
+        // Too old (date before warning date)
+        ApplicantTestData.saveApplicantWithLastActivity("old@test.local", applicantRepository, userRepository, warningDate.minusDays(5));
 
-        LocalDateTime cutoff = now.minusDays(30);
-
-        userRetentionService.warnUserOfDataDeletion(cutoff);
+        userRetentionService.warnUserOfDataDeletion(warningDate);
 
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
         verify(mockSender, times(1)).sendAsync(emailCaptor.capture());
