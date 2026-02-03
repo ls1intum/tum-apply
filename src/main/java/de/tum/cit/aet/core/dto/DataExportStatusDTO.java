@@ -9,5 +9,6 @@ public record DataExportStatusDTO(
     DataExportState status,
     LocalDateTime lastRequestedAt,
     LocalDateTime nextAllowedAt,
-    long cooldownSeconds
+    long cooldownSeconds,
+    String downloadToken
 ) {}

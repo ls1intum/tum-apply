@@ -1,6 +1,7 @@
 package de.tum.cit.aet.core.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.constants.DataExportState;
@@ -19,8 +20,6 @@ import de.tum.cit.aet.utility.security.JwtPostProcessors;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +34,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -79,7 +77,7 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     void setup() {
         databaseCleaner.clean();
         api.withoutPostProcessors();
-        AsyncEmailSender asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+        AsyncEmailSender asyncEmailSenderMock = mock(AsyncEmailSender.class);
         ReflectionTestUtils.setField(userDataExportService, "sender", asyncEmailSenderMock);
         cleanExportRoot();
     }
@@ -333,22 +331,5 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
             }
         }
         return entries;
-    }
-
-    private String extractSummaryJson(byte[] zipBytes) throws Exception {
-        String summaryJson = null;
-        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                if ("user_data_summary.json".equals(entry.getName())) {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    zis.transferTo(out);
-                    summaryJson = out.toString(StandardCharsets.UTF_8);
-                }
-                zis.closeEntry();
-            }
-        }
-        assertThat(summaryJson).isNotNull();
-        return summaryJson;
     }
 }

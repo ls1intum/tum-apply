@@ -33,6 +33,7 @@
         "templates": "TUMApply - My Templates",
         "templateCreation": "TUMApply - New Template",
         "templateEdit": "TUMApply - Edit Template",
+        "images": "TUMApply - My Images",
         "info": "TUMApply - My Group"
       },
       "about-us": "TumApply - About Us",
@@ -40,6 +41,9 @@
         "overview": "TUMApply - Interview Overview",
         "detail": "Interview - {{jobTitle}}",
         "assessment": "TUMApply - Interview Assessment"
+      },
+      "dataExport": {
+        "download": "TUMApply - Data Export Download"
       }
     },
     "menu": {
@@ -144,7 +148,32 @@
       "dev": "Development",
       "test": "Development"
     },
-    "item-count": "Showing {{first}} - {{second}} of {{total}} items."
+    "item-count": "Showing {{first}} - {{second}} of {{total}} items.",
+    "dataExport": {
+      "downloadSuccess": "Download successful!",
+      "downloadSuccessMessage": "Your data export has been downloaded successfully.",
+      "downloadSuccessInfo": "You can now access your exported data from the downloaded file.",
+      "downloading": "Downloading...",
+      "downloadingInfo": "Downloading your data export.",
+      "request": "TUMApply - Data Export Request",
+      "download": "TUMApply - Data Export Download",
+      "error": {
+        "downloadFailed": {
+          "summary": "Download Failed",
+          "detail": "Failed to download data export. The link may be expired or invalid."
+        },
+        "noToken": {
+          "summary": "Invalid Token",
+          "detail": "No download token provided."
+        }
+      },
+      "success": {
+        "downloadSuccess": {
+          "summary": "Download Successful",
+          "detail": "Your data export has been downloaded successfully."
+        }
+      }
+    }
   },
   "entity": {
     "action": {
@@ -587,6 +616,30 @@
     "file": {
       "could.not.extract": "Could not extract file",
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
+    }
+  },
+  "imageUpload": {
+    "error": {
+      "fileTooLarge": {
+        "summary": "File Too Large",
+        "detail": "Image file exceeds the maximum size of 5MB"
+      },
+      "invalidFileType": {
+        "summary": "Invalid File Type",
+        "detail": "Please upload JPG or PNG images only"
+      },
+      "dimensionsTooLarge": {
+        "summary": "Image Too Large",
+        "detail": "Image dimensions exceed the maximum allowed (4096×4096 pixels)"
+      },
+      "invalidImage": {
+        "summary": "Invalid Image",
+        "detail": "The file is corrupted or not a valid image"
+      },
+      "uploadFailed": {
+        "summary": "Upload Failed",
+        "detail": "Failed to upload image. Please try again"
+      }
     }
   }
 }
