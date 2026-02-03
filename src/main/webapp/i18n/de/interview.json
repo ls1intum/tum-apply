@@ -250,7 +250,7 @@
         },
         "insufficientSlots": {
           "header": "Zu wenige Termine",
-          "message": "Du bist dabei Bewerber:innen einzuladen, aber es sind möglicherweise nicht genügend zukünftige Termine verfügbar. Bitte füge erst weitere Termine hinzu.",
+          "message": "Du bist dabei Bewerber:innen einzuladen, aber es sind nicht genügend zukünftige Termine verfügbar. Bitte füge erst weitere Termine hinzu.",
           "addSlots": "Termine hinzufügen"
         }
       }

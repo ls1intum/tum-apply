@@ -35,7 +35,7 @@
 
       <!-- Applicant Name + Location -->
       <div class="flex items-center justify-between gap-2">
-        <span class="text-xs font-medium text-text-primary">{{ applicantName() }}</span>
+        <span class="text-xs text-text-primary font-medium">{{ applicantName() }}</span>
         <div class="flex items-center gap-1 text-xs text-text-secondary">
           <fa-icon [icon]="isVirtual() ? 'video' : 'location-dot'" class="text-[10px]" />
           <span [jhiTranslate]="isVirtual() ? 'interview.slots.location.virtual' : 'interview.slots.location.inPerson'">

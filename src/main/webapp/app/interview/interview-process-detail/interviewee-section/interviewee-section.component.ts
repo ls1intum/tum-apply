@@ -260,10 +260,6 @@ export class IntervieweeSectionComponent {
     this.requestAddSlots.emit();
   }
 
-  cancelInsufficientSlots(): void {
-    // User cancelled. Do nothing.
-  }
-
   onConfirmResend(): void {
     const id = this.pendingResendId();
     const processId = this.processId();

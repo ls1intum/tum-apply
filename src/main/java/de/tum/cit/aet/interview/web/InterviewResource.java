@@ -113,7 +113,8 @@ public class InterviewResource {
      */
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/slots/create")
-    public ResponseEntity<List<InterviewSlotDTO>> createSlots(@PathVariable UUID processId, @Valid @RequestBody CreateSlotsDTO dto) {
+    public ResponseEntity<List<InterviewSlotDTO>> createSlots(@PathVariable UUID processId,
+            @Valid @RequestBody CreateSlotsDTO dto) {
         log.info("REST request to create {} slots for interview process: {}", dto.slots().size(), processId);
         List<InterviewSlotDTO> slots = interviewService.createSlots(processId, dto);
         log.info("Successfully created {} slots for interview process: {}", slots.size(), processId);
@@ -132,6 +133,7 @@ public class InterviewResource {
      * @param year       optional year filter
      * @param month      optional month filter
      * @param futureOnly if true (default), only return slots in the future
+     * @param pastOnly   if true, only return slots in the past
      * @param page       zero-based page index (default: 0)
      * @param size       the size of the page (default: 20)
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and page of
@@ -142,23 +144,24 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots")
     public ResponseEntity<PageResponseDTO<InterviewSlotDTO>> getSlotsByProcessId(
-        @PathVariable UUID processId,
-        @RequestParam(required = false) Integer year,
-        @RequestParam(required = false) Integer month,
-        @RequestParam(defaultValue = "true") boolean futureOnly,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size
-    ) {
+            @PathVariable UUID processId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(defaultValue = "true") boolean futureOnly,
+            @RequestParam(defaultValue = "false") boolean pastOnly,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
         log.info(
-            "REST request to get slots for process: {}, year: {}, month: {}, futureOnly: {}, page: {}",
-            processId,
-            year,
-            month,
-            futureOnly,
-            page
-        );
+                "REST request to get slots for process: {}, year: {}, month: {}, futureOnly: {}, pastOnly: {}, page: {}",
+                processId,
+                year,
+                month,
+                futureOnly,
+                pastOnly,
+                page);
         PageDTO pageDTO = new PageDTO(size, page);
-        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO, futureOnly);
+        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO,
+                futureOnly, pastOnly);
         log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
         return ResponseEntity.ok(slots);
     }
@@ -182,9 +185,8 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/slots/conflict-data")
     public ResponseEntity<ConflictDataDTO> getConflictDataForDate(
-        @PathVariable UUID processId,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
+            @PathVariable UUID processId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         log.info("REST request to get conflict data for process: {} on date: {}", processId, date);
         ConflictDataDTO conflictData = interviewService.getConflictDataForDate(processId, date);
         log.info("Returning {} slots for conflict checking", conflictData.slots().size());
@@ -225,9 +227,8 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/interviewees")
     public ResponseEntity<List<IntervieweeDTO>> addApplicantsToInterview(
-        @PathVariable UUID processId,
-        @Valid @RequestBody AddIntervieweesDTO dto
-    ) {
+            @PathVariable UUID processId,
+            @Valid @RequestBody AddIntervieweesDTO dto) {
         log.info("REST request to add {} applicants to interview process: {}", dto.applicationIds().size(), processId);
 
         List<IntervieweeDTO> result = interviewService.addApplicantsToInterview(processId, dto);
@@ -303,7 +304,8 @@ public class InterviewResource {
      */
     @ProfessorOrEmployee
     @GetMapping("/processes/{processId}/interviewees/{intervieweeId}")
-    public ResponseEntity<IntervieweeDetailDTO> getIntervieweeDetails(@PathVariable UUID processId, @PathVariable UUID intervieweeId) {
+    public ResponseEntity<IntervieweeDetailDTO> getIntervieweeDetails(@PathVariable UUID processId,
+            @PathVariable UUID intervieweeId) {
         log.info("REST request to get interviewee details: {} in process: {}", intervieweeId, processId);
         IntervieweeDetailDTO details = interviewService.getIntervieweeDetails(processId, intervieweeId);
         log.info("Returning details for interviewee: {}", intervieweeId);
@@ -328,10 +330,9 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @PutMapping("/processes/{processId}/interviewees/{intervieweeId}/assessment")
     public ResponseEntity<IntervieweeDetailDTO> updateAssessment(
-        @PathVariable UUID processId,
-        @PathVariable UUID intervieweeId,
-        @Valid @RequestBody UpdateAssessmentDTO dto
-    ) {
+            @PathVariable UUID processId,
+            @PathVariable UUID intervieweeId,
+            @Valid @RequestBody UpdateAssessmentDTO dto) {
         log.info("REST request to update assessment for interviewee: {} in process: {}", intervieweeId, processId);
         IntervieweeDetailDTO updated = interviewService.updateAssessment(processId, intervieweeId, dto);
         log.info("Successfully updated assessment for interviewee: {}", intervieweeId);
@@ -355,9 +356,8 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @PostMapping("/slots/{slotId}/assign")
     public ResponseEntity<InterviewSlotDTO> assignSlotToInterviewee(
-        @PathVariable UUID slotId,
-        @Valid @RequestBody AssignSlotRequestDTO dto
-    ) {
+            @PathVariable UUID slotId,
+            @Valid @RequestBody AssignSlotRequestDTO dto) {
         log.info("REST request to assign slot {} to application {}", slotId, dto.applicationId());
         InterviewSlotDTO result = interviewService.assignSlotToInterviewee(slotId, dto.applicationId());
         log.info("Successfully assigned slot {} to interviewee", slotId);
@@ -380,9 +380,8 @@ public class InterviewResource {
     @ProfessorOrEmployee
     @PostMapping("/processes/{processId}/send-invitations")
     public ResponseEntity<SendInvitationsResultDTO> sendInvitations(
-        @PathVariable UUID processId,
-        @RequestBody SendInvitationsRequestDTO dto
-    ) {
+            @PathVariable UUID processId,
+            @RequestBody SendInvitationsRequestDTO dto) {
         log.info("REST request to send invitations for process: {}", processId);
         SendInvitationsResultDTO result = interviewService.sendSelfSchedulingInvitations(processId, dto);
         log.info("Sent {} invitations for process: {}", result.sentCount(), processId);

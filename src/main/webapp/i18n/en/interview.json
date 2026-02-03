@@ -250,7 +250,7 @@
         },
         "insufficientSlots": {
           "header": "Insufficient Slots",
-          "message": "You are about to invite applicants, but there might not be enough future slots available. Please add more slots first.",
+          "message": "You are about to invite applicants, but there not be enough future slots available. Please add more slots first.",
           "addSlots": "Add Slots"
         }
       }

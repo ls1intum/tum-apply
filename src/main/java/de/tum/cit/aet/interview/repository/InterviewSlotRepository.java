@@ -21,374 +21,344 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UUID> {
-    /**
-     * Finds all interview slots for a given interview process with pagination.
-     * Results are ordered by start time ascending.
-     *
-     * @param processId the ID of the interview process
-     * @param pageable  pagination information
-     * @return a page of {@link InterviewSlot} entities
-     */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
-    @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
-    Page<InterviewSlot> findByInterviewProcessId(@Param("processId") UUID processId, Pageable pageable);
+  /**
+   * Finds all interview slots for a given interview process with pagination.
+   * Results are ordered by start time ascending.
+   *
+   * @param processId the ID of the interview process
+   * @param pageable  pagination information
+   * @return a page of {@link InterviewSlot} entities
+   */
+  @EntityGraph(attributePaths = {
+      "interviewee", "interviewee.application", "interviewee.application.applicant",
+      "interviewee.application.applicant.user",
+  })
+  @Query("SELECT s FROM InterviewSlot s WHERE s.interviewProcess.id = :processId ORDER BY s.startDateTime")
+  Page<InterviewSlot> findByInterviewProcessId(@Param("processId") UUID processId, Pageable pageable);
 
-    /**
-     * Finds a slot by ID with job and research group.
-     *
-     * @param slotId the ID of the slot to find
-     * @return Optional containing the slot with job loaded, or empty if not found
-     */
-    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewProcess.job.researchGroup" })
-    @Query("SELECT s FROM InterviewSlot s WHERE s.id = :slotId")
-    Optional<InterviewSlot> findByIdWithJob(@Param("slotId") UUID slotId);
+  /**
+   * Finds a slot by ID with job and research group.
+   *
+   * @param slotId the ID of the slot to find
+   * @return Optional containing the slot with job loaded, or empty if not found
+   */
+  @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job",
+      "interviewProcess.job.researchGroup" })
+  @Query("SELECT s FROM InterviewSlot s WHERE s.id = :slotId")
+  Optional<InterviewSlot> findByIdWithJob(@Param("slotId") UUID slotId);
 
-    /**
-     * Finds all slots for the given interview process ids with job data.
-     *
-     * @param processIds interview process ids
-     * @return list of slots ordered by start time
-     */
-    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job" })
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id IN :processIds
-        ORDER BY s.startDateTime ASC
-        """
-    )
-    List<InterviewSlot> findByInterviewProcessIdInWithJob(@Param("processIds") List<UUID> processIds);
+  /**
+   * Finds all slots for the given interview process ids with job data.
+   *
+   * @param processIds interview process ids
+   * @return list of slots ordered by start time
+   */
+  @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job" })
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      WHERE s.interviewProcess.id IN :processIds
+      ORDER BY s.startDateTime ASC
+      """)
+  List<InterviewSlot> findByInterviewProcessIdInWithJob(@Param("processIds") List<UUID> processIds);
 
-    /**
-     * Counts all interview slots associated with a specific interview process.
-     * Finds all interview slots of a given professor that overlap with a specified
-     * time range.
-     * This is used to check for scheduling conflicts when creating or updating
-     * interview slots.
-     *
-     * @param processId the ID of the interview process
-     * @return the number of slots linked to the given process
-     */
-    long countByInterviewProcessId(UUID processId);
+  /**
+   * Counts all interview slots associated with a specific interview process.
+   * Finds all interview slots of a given professor that overlap with a specified
+   * time range.
+   * This is used to check for scheduling conflicts when creating or updating
+   * interview slots.
+   *
+   * @param processId the ID of the interview process
+   * @return the number of slots linked to the given process
+   */
+  long countByInterviewProcessId(UUID processId);
 
-    /**
-     * Checks if a professor has any conflicting slots within the given time range.
-     * For the same process: blocks any overlapping slot.
-     * For other processes: only blocks BOOKED overlapping slots.
-     *
-     * @param professor     the professor to check
-     * @param processId     the current process ID (to distinguish same vs other
-     *                      process)
-     * @param startDateTime start of the time range
-     * @param endDateTime   end of the time range
-     * @return true if at least one conflicting slot exists, false otherwise
-     */
-    @Query(
-        """
-        SELECT COUNT(s) > 0 FROM InterviewSlot s
-            JOIN s.interviewProcess ip
-            JOIN ip.job j
-            WHERE j.supervisingProfessor = :professor
-            AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
-            AND (ip.id = :processId OR s.isBooked = true)
-            """
-    )
-    boolean hasConflictingSlots(
-        @Param("professor") User professor,
-        @Param("processId") UUID processId,
-        @Param("startDateTime") Instant startDateTime,
-        @Param("endDateTime") Instant endDateTime
-    );
+  /**
+   * Checks if a professor has any conflicting slots within the given time range.
+   * For the same process: blocks any overlapping slot.
+   * For other processes: only blocks BOOKED overlapping slots.
+   *
+   * @param professor     the professor to check
+   * @param processId     the current process ID (to distinguish same vs other
+   *                      process)
+   * @param startDateTime start of the time range
+   * @param endDateTime   end of the time range
+   * @return true if at least one conflicting slot exists, false otherwise
+   */
+  @Query("""
+      SELECT COUNT(s) > 0 FROM InterviewSlot s
+          JOIN s.interviewProcess ip
+          JOIN ip.job j
+          WHERE j.supervisingProfessor = :professor
+          AND (s.startDateTime < :endDateTime AND s.endDateTime > :startDateTime)
+          AND (ip.id = :processId OR s.isBooked = true)
+          """)
+  boolean hasConflictingSlots(
+      @Param("professor") User professor,
+      @Param("processId") UUID processId,
+      @Param("startDateTime") Instant startDateTime,
+      @Param("endDateTime") Instant endDateTime);
 
-    @Query(
-        """
-            SELECT slot
-            FROM InterviewSlot slot
-            JOIN slot.interviewProcess process
-            JOIN process.job job
-            WHERE job.supervisingProfessor = :professor
-              AND slot.startDateTime < :endTime
-              AND slot.endDateTime > :startTime
-            ORDER BY slot.startDateTime ASC
-            LIMIT 1
-        """
-    )
-    Optional<InterviewSlot> findFirstConflictingSlot(
-        @Param("professor") User professor,
-        @Param("startTime") Instant startTime,
-        @Param("endTime") Instant endTime
-    );
+  @Query("""
+          SELECT slot
+          FROM InterviewSlot slot
+          JOIN slot.interviewProcess process
+          JOIN process.job job
+          WHERE job.supervisingProfessor = :professor
+            AND slot.startDateTime < :endTime
+            AND slot.endDateTime > :startTime
+          ORDER BY slot.startDateTime ASC
+          LIMIT 1
+      """)
+  Optional<InterviewSlot> findFirstConflictingSlot(
+      @Param("professor") User professor,
+      @Param("startTime") Instant startTime,
+      @Param("endTime") Instant endTime);
 
-    /**
-     * Checks if a slot exists and belongs to a specific professor.
-     *
-     * @param slotId      the ID of the slot
-     * @param professorId the ID of the supervising professor
-     * @return true if the slot exists and belongs to the professor
-     */
-    @Query(
-        """
-            SELECT COUNT(s) > 0
-            FROM InterviewSlot s
-            WHERE s.id = :slotId
-              AND s.interviewProcess.job.supervisingProfessor.userId = :professorId
-        """
-    )
-    boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId, @Param("professorId") UUID professorId);
+  /**
+   * Checks if a slot exists and belongs to a specific professor.
+   *
+   * @param slotId      the ID of the slot
+   * @param professorId the ID of the supervising professor
+   * @return true if the slot exists and belongs to the professor
+   */
+  @Query("""
+          SELECT COUNT(s) > 0
+          FROM InterviewSlot s
+          WHERE s.id = :slotId
+            AND s.interviewProcess.job.supervisingProfessor.userId = :professorId
+      """)
+  boolean existsByIdAndSupervisingProfessorId(@Param("slotId") UUID slotId,
+      @Param("professorId") UUID professorId);
 
-    /**
-     * Finds all interview slots for a given interview process within a specific
-     * month.
-     * Results are paginated and ordered by start time.
-     *
-     * @param processId  the ID of the interview process
-     * @param monthStart the start of the month (inclusive)
-     * @param monthEnd   the end of the month (exclusive)
-     * @param pageable   pagination information
-     * @return a page of {@link InterviewSlot} entities for the specified month
-     */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
-        ORDER BY s.startDateTime
-        """
-    )
-    Page<InterviewSlot> findByProcessIdAndMonth(
-        @Param("processId") UUID processId,
-        @Param("monthStart") Instant monthStart,
-        @Param("monthEnd") Instant monthEnd,
-        Pageable pageable
-    );
+  /**
+   * Finds all interview slots for a given interview process within a specific
+   * month.
+   * Results are paginated and ordered by start time.
+   *
+   * @param processId  the ID of the interview process
+   * @param monthStart the start of the month (inclusive)
+   * @param monthEnd   the end of the month (exclusive)
+   * @param pageable   pagination information
+   * @return a page of {@link InterviewSlot} entities for the specified month
+   */
+  @EntityGraph(attributePaths = {
+      "interviewee", "interviewee.application", "interviewee.application.applicant",
+      "interviewee.application.applicant.user",
+  })
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      WHERE s.interviewProcess.id = :processId
+      AND s.startDateTime >= :monthStart
+      AND s.startDateTime < :monthEnd
+      ORDER BY s.startDateTime
+      """)
+  Page<InterviewSlot> findByProcessIdAndMonth(
+      @Param("processId") UUID processId,
+      @Param("monthStart") Instant monthStart,
+      @Param("monthEnd") Instant monthEnd,
+      Pageable pageable);
 
-    /**
-     * Finds interview slots for a given process within a month, with optional
-     * future-only filter.
-     * When futureOnly is true, only slots with startDateTime > now are returned.
-     *
-     * @param processId  the ID of the interview process
-     * @param monthStart start of the month (inclusive)
-     * @param monthEnd   end of the month (exclusive)
-     * @param futureOnly if true, only return slots in the future
-     * @param now        the current timestamp
-     * @param pageable   pagination information
-     * @return a page of {@link InterviewSlot} entities
-     */
-    @EntityGraph(
-        attributePaths = {
-            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
-        }
-    )
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
-        AND (:futureOnly = false OR s.startDateTime > :now)
-        ORDER BY s.startDateTime
-        """
-    )
-    Page<InterviewSlot> findByProcessIdAndMonthWithFutureFilter(
-        @Param("processId") UUID processId,
-        @Param("monthStart") Instant monthStart,
-        @Param("monthEnd") Instant monthEnd,
-        @Param("futureOnly") boolean futureOnly,
-        @Param("now") Instant now,
-        Pageable pageable
-    );
+  /**
+   * Finds interview slots for a given process within a month, with optional
+   * future-only filter.
+   * When futureOnly is true, only slots with startDateTime > now are returned.
+   *
+   * @param processId  the ID of the interview process
+   * @param monthStart start of the month (inclusive)
+   * @param monthEnd   end of the month (exclusive)
+   * @param futureOnly if true, only return slots in the future
+   * @param now        the current timestamp
+   * @param pageable   pagination information
+   * @return a page of {@link InterviewSlot} entities
+   */
+  @EntityGraph(attributePaths = {
+      "interviewee", "interviewee.application", "interviewee.application.applicant",
+      "interviewee.application.applicant.user",
+  })
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      WHERE s.interviewProcess.id = :processId
+      AND s.startDateTime >= :monthStart
+      AND s.startDateTime < :monthEnd
+      AND (:futureOnly = false OR s.startDateTime > :now)
+      AND (:pastOnly = false OR s.startDateTime <= :now)
+      ORDER BY s.startDateTime
+      """)
+  Page<InterviewSlot> findByProcessIdAndMonthWithDateFilter(
+      @Param("processId") UUID processId,
+      @Param("monthStart") Instant monthStart,
+      @Param("monthEnd") Instant monthEnd,
+      @Param("futureOnly") boolean futureOnly,
+      @Param("pastOnly") boolean pastOnly,
+      @Param("now") Instant now,
+      Pageable pageable);
 
-    /**
-     * Finds all unbooked, future interview slots for a given interview process.
-     * Used for the applicant booking page to display available time slots.
-     *
-     * @param processId the ID of the interview process
-     * @param now       the current timestamp to filter out past slots
-     * @return list of available slots ordered by start time ascending
-     */
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.isBooked = false
-        AND s.startDateTime >= :now
-        ORDER BY s.startDateTime ASC
-        """
-    )
-    List<InterviewSlot> findAvailableSlotsByProcessId(@Param("processId") UUID processId, @Param("now") Instant now);
+  /**
+   * Finds all unbooked, future interview slots for a given interview process.
+   * Used for the applicant booking page to display available time slots.
+   *
+   * @param processId the ID of the interview process
+   * @param now       the current timestamp to filter out past slots
+   * @return list of available slots ordered by start time ascending
+   */
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      WHERE s.interviewProcess.id = :processId
+      AND s.isBooked = false
+      AND s.startDateTime >= :now
+      ORDER BY s.startDateTime ASC
+      """)
+  List<InterviewSlot> findAvailableSlotsByProcessId(@Param("processId") UUID processId,
+      @Param("now") Instant now);
 
-    /**
-     * Finds all unbooked future interview slots for a given process within a
-     * specific month.
-     * Only returns slots that are both within the month AND in the future.
-     * Used for server-side pagination on the applicant booking page.
-     *
-     * @param processId  the ID of the interview process
-     * @param now        the current time (to filter out past slots)
-     * @param monthStart the start of the month (inclusive)
-     * @param monthEnd   the end of the month (exclusive)
-     * @param pageable   pagination information
-     * @return page of available future slots ordered by start time ascending
-     */
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.isBooked = false
-        AND s.startDateTime >= :now
-        AND s.startDateTime >= :monthStart
-        AND s.startDateTime < :monthEnd
-        ORDER BY s.startDateTime ASC
-        """
-    )
-    Page<InterviewSlot> findAvailableSlotsByProcessIdAndMonth(
-        @Param("processId") UUID processId,
-        @Param("now") Instant now,
-        @Param("monthStart") Instant monthStart,
-        @Param("monthEnd") Instant monthEnd,
-        Pageable pageable
-    );
+  /**
+   * Finds all unbooked future interview slots for a given process within a
+   * specific month.
+   * Only returns slots that are both within the month AND in the future.
+   * Used for server-side pagination on the applicant booking page.
+   *
+   * @param processId  the ID of the interview process
+   * @param now        the current time (to filter out past slots)
+   * @param monthStart the start of the month (inclusive)
+   * @param monthEnd   the end of the month (exclusive)
+   * @param pageable   pagination information
+   * @return page of available future slots ordered by start time ascending
+   */
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      WHERE s.interviewProcess.id = :processId
+      AND s.isBooked = false
+      AND s.startDateTime >= :now
+      AND s.startDateTime >= :monthStart
+      AND s.startDateTime < :monthEnd
+      ORDER BY s.startDateTime ASC
+      """)
+  Page<InterviewSlot> findAvailableSlotsByProcessIdAndMonth(
+      @Param("processId") UUID processId,
+      @Param("now") Instant now,
+      @Param("monthStart") Instant monthStart,
+      @Param("monthEnd") Instant monthEnd,
+      Pageable pageable);
 
-    /**
-     * Finds all booked future interview slots for a given professor.
-     * Used for the professor dashboard to display upcoming interviews.
-     *
-     * @param professorId the professor to find slots for
-     * @param now         the current time (to filter out past slots)
-     * @param pageable    pagination information
-     * @return page of upcoming booked slots ordered by start time ascending
-     */
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.job.supervisingProfessor.userId = :professorId
-        AND s.isBooked = true
-        AND s.endDateTime > :now
-        ORDER BY s.startDateTime ASC
-        """
-    )
-    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee", "interviewee.application.applicant" })
-    Page<InterviewSlot> findUpcomingBookedSlotsForProfessor(
-        @Param("professorId") UUID professorId,
-        @Param("now") Instant now,
-        Pageable pageable
-    );
+  /**
+   * Finds all booked future interview slots for a given professor.
+   * Used for the professor dashboard to display upcoming interviews.
+   *
+   * @param professorId the professor to find slots for
+   * @param now         the current time (to filter out past slots)
+   * @param pageable    pagination information
+   * @return page of upcoming booked slots ordered by start time ascending
+   */
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      WHERE s.interviewProcess.job.supervisingProfessor.userId = :professorId
+      AND s.isBooked = true
+      AND s.endDateTime > :now
+      ORDER BY s.startDateTime ASC
+      """)
+  @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee",
+      "interviewee.application.applicant" })
+  Page<InterviewSlot> findUpcomingBookedSlotsForProfessor(
+      @Param("professorId") UUID professorId,
+      @Param("now") Instant now,
+      Pageable pageable);
 
-    void deleteByIntervieweeApplication(Application application);
+  void deleteByIntervieweeApplication(Application application);
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("DELETE FROM InterviewSlot s WHERE s.interviewee.application.applicationId IN :applicationIds")
-    void deleteByIntervieweeApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("DELETE FROM InterviewSlot s WHERE s.interviewee.application.applicationId IN :applicationIds")
+  void deleteByIntervieweeApplicationIdIn(@Param("applicationIds") List<UUID> applicationIds);
 
-    /**
-     * Finds all slots relevant for conflict detection on a specific date.
-     * Returns:
-     * - All slots (booked + unbooked) from the current interview process
-     * - All BOOKED slots from other processes of the same professor
-     *
-     * @param processId   the current interview process ID
-     * @param professorId the supervising professor's user ID
-     * @param dayStart    start of the day (inclusive)
-     * @param dayEnd      end of the day (exclusive)
-     * @return list of slots for conflict checking, ordered by start time
-     */
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        JOIN s.interviewProcess ip
-        JOIN ip.job j
-        WHERE s.startDateTime >= :dayStart
-        AND s.startDateTime < :dayEnd
-        AND (
-            ip.id = :processId
-            OR (s.isBooked = true AND j.supervisingProfessor.userId = :professorId)
-        )
-        ORDER BY s.startDateTime
-        """
-    )
-    List<InterviewSlot> findConflictDataByDate(
-        @Param("processId") UUID processId,
-        @Param("professorId") UUID professorId,
-        @Param("dayStart") Instant dayStart,
-        @Param("dayEnd") Instant dayEnd
-    );
+  /**
+   * Finds all slots relevant for conflict detection on a specific date.
+   * Returns:
+   * - All slots (booked + unbooked) from the current interview process
+   * - All BOOKED slots from other processes of the same professor
+   *
+   * @param processId   the current interview process ID
+   * @param professorId the supervising professor's user ID
+   * @param dayStart    start of the day (inclusive)
+   * @param dayEnd      end of the day (exclusive)
+   * @return list of slots for conflict checking, ordered by start time
+   */
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      JOIN s.interviewProcess ip
+      JOIN ip.job j
+      WHERE s.startDateTime >= :dayStart
+      AND s.startDateTime < :dayEnd
+      AND (
+          ip.id = :processId
+          OR (s.isBooked = true AND j.supervisingProfessor.userId = :professorId)
+      )
+      ORDER BY s.startDateTime
+      """)
+  List<InterviewSlot> findConflictDataByDate(
+      @Param("processId") UUID processId,
+      @Param("professorId") UUID professorId,
+      @Param("dayStart") Instant dayStart,
+      @Param("dayEnd") Instant dayEnd);
 
-    /**
-     * Finds overlapping unbooked slots from other processes to auto-delete when a
-     * slot is booked.
-     * Used to prevent professors from being double-booked across different
-     * interview processes.
-     *
-     * @param professorId      the supervising professor's user ID
-     * @param excludeProcessId the current process ID to exclude from results
-     * @param startDateTime    start of the time range to check
-     * @param endDateTime      end of the time range to check
-     * @return list of overlapping unbooked slots from other processes
-     */
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        JOIN s.interviewProcess ip
-        JOIN ip.job j
-        WHERE j.supervisingProfessor.userId = :professorId
-        AND ip.id != :excludeProcessId
-        AND s.isBooked = false
-        AND s.startDateTime < :endDateTime
-        AND s.endDateTime > :startDateTime
-        """
-    )
-    List<InterviewSlot> findOverlappingUnbookedSlots(
-        @Param("professorId") UUID professorId,
-        @Param("excludeProcessId") UUID excludeProcessId,
-        @Param("startDateTime") Instant startDateTime,
-        @Param("endDateTime") Instant endDateTime
-    );
+  /**
+   * Finds overlapping unbooked slots from other processes to auto-delete when a
+   * slot is booked.
+   * Used to prevent professors from being double-booked across different
+   * interview processes.
+   *
+   * @param professorId      the supervising professor's user ID
+   * @param excludeProcessId the current process ID to exclude from results
+   * @param startDateTime    start of the time range to check
+   * @param endDateTime      end of the time range to check
+   * @return list of overlapping unbooked slots from other processes
+   */
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      JOIN s.interviewProcess ip
+      JOIN ip.job j
+      WHERE j.supervisingProfessor.userId = :professorId
+      AND ip.id != :excludeProcessId
+      AND s.isBooked = false
+      AND s.startDateTime < :endDateTime
+      AND s.endDateTime > :startDateTime
+      """)
+  List<InterviewSlot> findOverlappingUnbookedSlots(
+      @Param("professorId") UUID professorId,
+      @Param("excludeProcessId") UUID excludeProcessId,
+      @Param("startDateTime") Instant startDateTime,
+      @Param("endDateTime") Instant endDateTime);
 
-    /**
-     * Counts the number of availble (unbooked) future slots for a process.
-     * Used to warn professors if they invite more applicants than available slots.
-     *
-     * @param processId the ID of the interview process
-     * @param now       the current timestamp to filter out past slots
-     * @return the count of available future slots
-     */
-    @Query(
-        """
-        SELECT COUNT(s) FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime > :now
-        AND s.isBooked = false
-        """
-    )
-    long countFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now);
+  /**
+   * Counts the number of availble (unbooked) future slots for a process.
+   * Used to warn professors if they invite more applicants than available slots.
+   *
+   * @param processId the ID of the interview process
+   * @param now       the current timestamp to filter out past slots
+   * @return the count of available future slots
+   */
+  @Query("""
+      SELECT COUNT(s) FROM InterviewSlot s
+      WHERE s.interviewProcess.id = :processId
+      AND s.startDateTime > :now
+      AND s.isBooked = false
+      """)
+  long countFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now);
 
-    /**
-     * Finds the first future slot for a given process.
-     * Including booked slots (as we just want to know where to jump to).
-     *
-     * @param processId the ID of the interview process
-     * @param now       the current timestamp
-     * @param pageable  pagination (use PageRequest.of(0, 1))
-     * @return page containing the first future slot
-     */
-    @Query(
-        """
-        SELECT s FROM InterviewSlot s
-        WHERE s.interviewProcess.id = :processId
-        AND s.startDateTime >= :now
-        ORDER BY s.startDateTime ASC
-        """
-    )
-    Page<InterviewSlot> findFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now, Pageable pageable);
+  /**
+   * Finds the first future slot for a given process.
+   * Including booked slots (as we just want to know where to jump to).
+   *
+   * @param processId the ID of the interview process
+   * @param now       the current timestamp
+   * @param pageable  pagination (use PageRequest.of(0, 1))
+   * @return page containing the first future slot
+   */
+  @Query("""
+      SELECT s FROM InterviewSlot s
+      WHERE s.interviewProcess.id = :processId
+      AND s.startDateTime >= :now
+      ORDER BY s.startDateTime ASC
+      """)
+  Page<InterviewSlot> findFutureSlots(@Param("processId") UUID processId, @Param("now") Instant now,
+      Pageable pageable);
 }
