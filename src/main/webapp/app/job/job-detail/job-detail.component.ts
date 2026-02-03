@@ -25,6 +25,7 @@ import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { createMenuActionSignals } from 'app/shared/util/util';
@@ -76,6 +77,7 @@ export interface JobDetails {
     TooltipModule,
     MenuComponent,
     LocalizedDatePipe,
+    InfoBoxComponent,
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
