@@ -164,13 +164,10 @@
 
               <!-- AI Panel -->
               <!-- span full width when stacked (small screens), keep constrained on lg+ -->
-              <div class="mt-0 w-full lg:max-w-[200px] col-span-full lg:col-auto text-center flex flex-col items-center">
-                <h3
-                  class="mb-3 font-bold text-center"
-                  jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
-                ></h3>
+              <div class="lg:max-w-[200px] col-span-full lg:col-auto text-center flex flex-col">
+                <h3 class="mb-3 font-bold" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
                 <h4
-                  class="whitespace-pre-line mb-4 text-base text-center"
+                  class="whitespace-pre-line mb-4 text-base"
                   jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
                 ></h4>
 
@@ -194,7 +191,7 @@
                         "
                         [shouldTranslate]="true"
                         severity="primary"
-                        class="w-full lg:w-auto min-w-0 lg:min-w-[160px]"
+                        class="w-auto min-w-[160px]"
                         (click)="generateJobApplicationDraft()"
                       />
                     </div>
