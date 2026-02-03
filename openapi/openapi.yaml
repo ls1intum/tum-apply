@@ -1247,6 +1247,10 @@ paths:
         in: query
         required: false
         schema: {type: boolean, default: true}
+      - name: pastOnly
+        in: query
+        required: false
+        schema: {type: boolean, default: false}
       - name: page
         in: query
         required: false
