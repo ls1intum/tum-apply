@@ -1,5 +1,7 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -12,6 +14,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { SlotCreationFormComponent } from 'app/interview/interview-process-detail/slots-section/slot-creation-form/slot-creation-form.component';
 import { getLocale } from 'app/shared/util/date-time.util';
+import { BREAKPOINTS } from 'app/shared/constants/breakpoints';
 
 import { MonthNavigationComponent } from './month-navigation/month-navigation.component';
 import { DateHeaderComponent } from './date-header/date-header.component';
@@ -66,6 +69,8 @@ export class SlotsSectionComponent {
   futureSlotsCount = signal<number>(0);
 
   // Computed
+  datesPerPage = computed(() => this.breakpointState());
+
   hasFutureSlots = computed(() => this.futureSlotsCount() > 0);
   groupedSlots = computed<GroupedSlots[]>(() => {
     const slotsData = this.slots();
@@ -93,17 +98,18 @@ export class SlotsSectionComponent {
   });
 
   targetDate = computed(() => dayjs().add(this.currentMonthOffset(), 'month'));
-
   currentYear = computed(() => this.targetDate().year());
-
   currentMonthNumber = computed(() => this.targetDate().month() + 1);
-
   currentMonthSlots = computed(() => this.groupedSlots());
 
   paginatedSlots = computed(() => {
     const monthDates = this.currentMonthSlots();
+    const pageSize = this.datesPerPage();
     const anchor = this.paginationAnchorIndex();
     const page = this.currentDatePage();
+    const start = page * pageSize;
+    const end = start + pageSize;
+    return monthDates.slice(start, end);
 
     // Relative Pagination: Page 0 starts at anchor.
     // Negative pages go backwards from anchor.
@@ -135,9 +141,11 @@ export class SlotsSectionComponent {
   });
 
   totalDatePages = computed(() => {
-    return Math.ceil(this.currentMonthSlots().length / this.DATES_PER_PAGE);
+    return Math.ceil(this.currentMonthSlots().length / this.datesPerPage());
   });
 
+  canGoPreviousDate = computed(() => this.currentDatePage() > 0);
+  canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
   canGoPreviousDate = computed(() => {
     const anchor = this.paginationAnchorIndex();
     const page = this.currentDatePage();
@@ -161,18 +169,41 @@ export class SlotsSectionComponent {
 
   // Constants
   private readonly MAX_VISIBLE_SLOTS = 3;
-  private readonly DATES_PER_PAGE = 5;
+  private readonly DEFAULT_DATES_PER_PAGE = 5;
 
   // Services
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly translateService = inject(TranslateService);
   private readonly toastService = inject(ToastService);
+  private readonly breakpointObserver = inject(BreakpointObserver);
 
-  // Private signals
+  // Private Signals & Computed
   private readonly langChangeSignal = toSignal(this.translateService.onLangChange);
   private readonly currentLangSignal = signal(this.translateService.getBrowserCultureLang() ?? 'en');
 
-  private locale = computed(() => {
+  private readonly breakpointState = toSignal(
+    this.breakpointObserver
+      .observe([
+        `(min-width: ${BREAKPOINTS.ultraWide}px)`, // 5 columns (2048px)
+        '(min-width: 1700px)', // 4 columns
+        `(min-width: ${BREAKPOINTS.xl}px)`, // 3 columns (1300px)
+        `(min-width: ${BREAKPOINTS.lg}px)`, // 2 columns (1024px)
+      ])
+      .pipe(
+        map(result => {
+          if (result.matches) {
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.ultraWide}px)`]) return 5;
+            if (result.breakpoints['(min-width: 1700px)']) return 4;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.xl}px)`]) return 3;
+            if (result.breakpoints[`(min-width: ${BREAKPOINTS.lg}px)`]) return 2;
+          }
+          return 1;
+        }),
+      ),
+    { initialValue: this.DEFAULT_DATES_PER_PAGE },
+  );
+
+  private readonly locale = computed(() => {
     this.currentLangSignal();
     return getLocale(this.translateService);
   });
@@ -184,6 +215,14 @@ export class SlotsSectionComponent {
       this.currentLangSignal.set(langEvent.lang);
     }
   });
+
+  private readonly pageSizeChangeEffect = effect(
+    () => {
+      this.datesPerPage();
+      this.currentDatePage.set(0);
+    },
+    { allowSignalWrites: true },
+  );
 
   private readonly loadSlotsEffect = effect(() => {
     const id = this.processId();

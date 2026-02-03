@@ -40,31 +40,18 @@
         (nextMonth)="nextMonth()"
         (addSlots)="openCreateSlotsModal()"
       />
-
       @if (groupedSlots().length > 0) {
-        <div class="flex flex-col gap-12">
-          <div class="flex items-start gap-4">
-            <!-- Left Pagination Arrow -->
+        <div [class]="datesPerPage() === 1 ? 'flex flex-col gap-4' : 'flex items-start gap-4'">
+          <!-- Left Pagination Arrow (Desktop) -->
+          @if (datesPerPage() > 1) {
             <div class="flex-shrink-0 pt-8">
               <jhi-button [icon]="'chevron-left'" [variant]="'text'" [disabled]="!canGoPreviousDate()" (click)="previousDatePage()" />
             </div>
+          }
 
-            <!-- Date Grid (max 5 dates visible) -->
-            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
-              @if (paginatedSlots().length === 0) {
-                <div class="col-span-full flex flex-col items-center gap-3 text-center py-12">
-                  <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
-                  <div class="space-y-1">
-                    <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">
-                      No future slots available
-                    </h3>
-                    <p class="text-text-primary" jhiTranslate="interview.slots.noFutureSlots.description">
-                      Add new slots to invite applicants.
-                    </p>
-                  </div>
-                  <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus" (click)="openCreateSlotsModal()" />
-                </div>
-              }
+          <!-- Date Grid (visible dates depend on screen size) -->
+          <div class="flex-1 min-w-0 overflow-hidden" [class.w-full]="datesPerPage() === 1">
+            <div class="grid gap-3" [style.grid-template-columns]="'repeat(' + datesPerPage() + ', 1fr)'">
               @for (group of paginatedSlots(); track group.date) {
                 <div class="flex flex-col gap-2">
                   <!-- Date Header -->
@@ -102,12 +89,37 @@
                 </div>
               }
             </div>
+          </div>
 
-            <!-- Right Pagination Arrow -->
+          <!-- Right Pagination Arrow (Desktop) -->
+          @if (datesPerPage() > 1) {
             <div class="flex-shrink-0 pt-8">
               <jhi-button [icon]="'chevron-right'" [variant]="'text'" [disabled]="!canGoNextDate()" (click)="nextDatePage()" />
             </div>
-          </div>
+          }
+
+          <!-- Mobile Pagination (Bottom) -->
+          @if (datesPerPage() === 1) {
+            <div class="flex justify-center items-center w-full pt-4 gap-6">
+              <jhi-button
+                [icon]="'chevron-left'"
+                [variant]="'text'"
+                [size]="'sm'"
+                [disabled]="!canGoPreviousDate()"
+                (click)="previousDatePage()"
+              />
+              <span class="text-sm font-medium text-text-secondary min-w-[3rem] text-center">
+                {{ currentDatePage() + 1 }} / {{ totalDatePages() }}
+              </span>
+              <jhi-button
+                [icon]="'chevron-right'"
+                [variant]="'text'"
+                [size]="'sm'"
+                [disabled]="!canGoNextDate()"
+                (click)="nextDatePage()"
+              />
+            </div>
+          }
         </div>
       } @else {
         <!-- Monthly Empty State -->

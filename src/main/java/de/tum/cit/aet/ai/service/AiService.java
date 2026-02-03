@@ -1,8 +1,13 @@
 package de.tum.cit.aet.ai.service;
 
+import static de.tum.cit.aet.core.constants.GenderBiasWordLists.*;
+
 import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
+import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+import java.time.Duration;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
@@ -51,47 +56,37 @@ public class AiService {
      *
      * @param jobFormDTO          the job form data containing description, requirements, and tasks
      * @param descriptionLanguage the language for the generated job description ("de" or "en")
-     * @param jobId               optional job ID - if provided, auto-translates to the other language after streaming
      * @return Flux of content chunks as they are generated
      */
-    public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage, String jobId) {
+    public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
-        Flux<String> contentFlux = chatClient
+        Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
+        Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+        final String locationText = UiTextFormatter.formatEnumValue(jobFormDTO.location());
+
+        return chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
             .user(u ->
                 u
                     .text(jobGenerationResource)
+                    .param("descriptionLanguage", descriptionLanguage)
                     .param("jobDescription", input)
                     .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
                     .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
                     .param("fieldOfStudies", jobFormDTO.fieldOfStudies() != null ? jobFormDTO.fieldOfStudies() : "")
-                    .param("location", jobFormDTO.location() != null ? jobFormDTO.location().toString() : "")
+                    .param("location", locationText)
+                    .param("inclusiveWords", String.join(", ", inclusive))
+                    .param("nonInclusiveWords", String.join(", ", nonInclusive))
             )
             .stream()
-            .content();
-
-        if (jobId != null) {
-            StringBuilder contentBuilder = new StringBuilder();
-            String targetLang = "de".equals(descriptionLanguage) ? "en" : "de";
-
-            return contentFlux
-                .doOnNext(contentBuilder::append)
-                .doOnComplete(() -> {
-                    String fullContent = contentBuilder.toString();
-                    if (!fullContent.isBlank()) {
-                        translateAndPersistJobDescription(jobId, targetLang, fullContent);
-                    }
-                });
-        }
-
-        return contentFlux;
+            .content()
+            .delayElements(Duration.ofMillis(35));
     }
 
     /**
      * Translates the provided text between German and English.
-     * Automatically detects the source language and translates to the other language.
      * The translation preserves the original text structure and formatting.
      *
      * @param text the text to translate (German or English)

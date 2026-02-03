@@ -1,17 +1,18 @@
 <jhi-section [titleKey]="'interview.interviewees.title'">
   <!-- Actions Slot -->
-  <div actions class="flex gap-2 ml-auto">
+  <div actions class="flex flex-wrap gap-2 lg:ml-auto items-center">
     <jhi-button
       (click)="sendAllInvitations()"
       [disabled]="sendingBulk() || sendingInvitationId() !== null || uncontactedCount() === 0"
       [loading]="sendingBulk()"
       [shouldTranslate]="true"
-      [tooltip]="uncontactedCount() === 0 ? ('interview.interviewees.allInvited' | translate) : ''"
+      [tooltip]="allInvitedTooltip()"
       icon="paper-plane"
       label="interview.interviewees.sendAllInvitations"
       severity="primary"
       size="sm"
       variant="outlined"
+      styleClass="whitespace-nowrap"
     />
     <jhi-button
       icon="plus"
@@ -20,6 +21,7 @@
       size="sm"
       [shouldTranslate]="true"
       (click)="openAddModal()"
+      styleClass="whitespace-nowrap"
     />
   </div>
 
@@ -100,10 +102,9 @@
 </jhi-dialog>
 
 <jhi-confirm-dialog
-  #resendDialog
-  [header]="'interview.interviewees.resendConfirmation.header' | translate"
-  [message]="'interview.interviewees.resendConfirmation.message' | translate"
-  [label]="'interview.interviewees.resendInvitation' | translate"
+  [header]="resendConfirmation().header"
+  [message]="resendConfirmation().message"
+  [label]="resendConfirmation().label"
   severity="primary"
   (confirmed)="onConfirmResend()"
   [showOpenButton]="false"

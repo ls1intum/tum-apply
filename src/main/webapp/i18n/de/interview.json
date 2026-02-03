@@ -1,7 +1,7 @@
 {
   "interview": {
     "overview": {
-      "title": "Interviews",
+      "title": "Übersicht der Interviews",
       "positions": {
         "title": "Positionen"
       },
@@ -23,7 +23,7 @@
       },
       "upcoming": {
         "title": "Anstehend",
-        "empty": "Keine anstehenden Interviews geplant"
+        "empty": "Keine anstehenden Interviews"
       },
       "error": {
         "failedToLoad": "Interview Prozesse konnten nicht geladen werden."
@@ -112,6 +112,9 @@
           "required": "Dieses Feld ist erforderlich",
           "endBeforeStart": "Endzeit muss nach Startzeit liegen",
           "conflict": "Zeitkonflikt mit einem anderen Termin",
+          "conflictSameProcess": "Konflikt mit bestehendem Termin ({{time}}) in diesem Interviewprozess",
+          "conflictBookedOther": "Konflikt mit einem gebuchten Termin ({{time}}) in einem anderen Interviewprozess",
+          "hasConflicts": "Bitte behebe alle Zeitkonflikte vor dem Speichern",
           "streamLinkRequired": "Meeting-Link ist für virtuelle Termine erforderlich",
           "durationPositive": "Die Dauer muss mindestens 1 Minute betragen",
           "breakPositive": "Pausendauer darf nicht negativ sein",

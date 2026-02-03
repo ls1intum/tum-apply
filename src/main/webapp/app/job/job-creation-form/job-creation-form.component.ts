@@ -36,6 +36,11 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
+import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
+import {
+  ImageUploadButtonComponent,
+  ImageUploadError,
+} from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -86,6 +91,7 @@ type JobFormMode = 'create' | 'edit';
     InfoBoxComponent,
     MessageComponent,
     SegmentedToggleComponent,
+    ImageUploadButtonComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -170,7 +176,18 @@ export class JobCreationFormComponent {
   showAiPanel = computed(() => this.aiToggleSignal());
 
   /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
+  templateText = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
+      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
+  );
+
+  /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
+  jobDescriptionPlaceholder = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? 'jobCreationForm.positionDetailsSection.jobDescription.placeholderEN'
+      : 'jobCreationForm.positionDetailsSection.jobDescription.placeholderDE',
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD SIGNALS
@@ -192,21 +209,6 @@ export class JobCreationFormComponent {
   hasCustomImage = computed(() => {
     const image = this.selectedImage();
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
-  });
-
-  /** Computed: CSS classes for the upload container based on upload state */
-  uploadContainerClasses = computed(() => {
-    if (this.isUploadingImage()) {
-      return 'relative rounded-lg transition-all opacity-50 pointer-events-none';
-    }
-    return 'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
-  });
-
-  /** Computed: CSS classes for the inner upload area */
-  uploadInnerClasses = computed(() => {
-    const base = 'aspect-video border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-all';
-    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
-    return `${base} border-border-default ${hover}`.trim();
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -437,21 +439,7 @@ export class JobCreationFormComponent {
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // IMAGE UPLOAD CONSTRAINTS
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /** Allowed MIME types for image uploads */
-  private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
-
-  /** Formatted string of allowed types for the file input accept attribute */
-  readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
-
-  /** Maximum file size for uploads: 5MB */
-  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-
-  /** Maximum image dimension (width or height): 4096px */
-  private readonly MAX_IMAGE_DIMENSION_PX = 4096;
+  private isAutoScrolling = false;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CONSTRUCTOR
@@ -596,59 +584,28 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Handles image file selection and upload.
-   * Validates file type, size, and dimensions before uploading.
-   *
-   * @param event - The file input change event
+   * Handle successful image upload from the shared component
    */
-  async onImageSelected(event: Event): Promise<void> {
-    const target = event.target;
-    if (!(target instanceof HTMLInputElement)) return;
-
-    const input = target;
-    if (!input.files || input.files.length === 0) return;
-
-    const file = input.files[0];
-
-    if (file.size > this.MAX_FILE_SIZE_BYTES) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
-      return;
-    }
-
-    if (!this.ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
-      return;
-    }
+  async onImageUploaded(uploadedImage: ImageDTO): Promise<void> {
+    this.selectedImage.set(uploadedImage);
+    this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
     try {
-      const dimensions = await this.getImageDimensions(file);
-      if (dimensions.width > this.MAX_IMAGE_DIMENSION_PX || dimensions.height > this.MAX_IMAGE_DIMENSION_PX) {
-        this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
-        return;
-      }
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidImage');
-      return;
-    }
-
-    this.isUploadingImage.set(true);
-
-    try {
-      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
-
-      this.selectedImage.set(uploadedImage);
-      this.imageForm.patchValue({ imageId: uploadedImage.imageId });
-
       const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
-
-      this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
     } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
-    } finally {
-      this.isUploadingImage.set(false);
-      input.value = '';
+      // If refresh fails, add to local array
+      this.researchGroupImages.update(images => [...images, uploadedImage]);
     }
+
+    this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
+  }
+
+  /**
+   * Handle upload errors from the shared component
+   */
+  onUploadError(error: ImageUploadError): void {
+    this.toastService.showErrorKey(error.errorKey);
   }
 
   /**
@@ -739,6 +696,7 @@ export class JobCreationFormComponent {
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
+    this.isAutoScrolling = true;
 
     // Show "Generating" message in the editor while AI is working
     this.jobDescriptionEditor()?.forceUpdate(
@@ -761,17 +719,23 @@ export class JobCreationFormComponent {
 
         state: JobFormDTO.StateEnum.Draft,
       };
+      this.autoScrollStreaming();
 
+      let lastRendered = '';
       // Use the AiStreamingService with live updates during streaming
-      const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(language, request, this.jobId(), content => {
+      const accumulatedContent = await this.aiStreamingService.generateJobApplicationDraftStream(language, request, content => {
         // Try to extract content from the partial JSON
         const extractedContent = this.extractJobDescriptionFromStream(content);
-        this.jobDescriptionEditor()?.forceUpdate(
-          extractedContent ??
-            `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
-        );
-      });
+        if (!extractedContent?.startsWith('<')) return;
 
+        const safeHtml = extractCompleteHtmlTags(extractedContent);
+        // Only update if we have new content
+        if (safeHtml && safeHtml !== lastRendered) {
+          lastRendered = safeHtml;
+          this.jobDescriptionEditor()?.forceUpdate(safeHtml);
+        }
+      });
+      this.isAutoScrolling = false;
       // Final update after streaming completes - parse the complete JSON
       if (accumulatedContent) {
         // Extract final content from complete JSON
@@ -791,9 +755,6 @@ export class JobCreationFormComponent {
           } else {
             this.jobDescriptionDE.set(finalContent);
           }
-
-          // We need to fetch the translated version from the server
-          await this.loadTranslatedDescription(language === 'en' ? 'de' : 'en');
         } else {
           // Extraction failed - show error and restore original content
           this.jobDescriptionEditor()?.forceUpdate(originalContent);
@@ -802,6 +763,7 @@ export class JobCreationFormComponent {
       }
     } catch (error) {
       this.jobDescriptionEditor()?.forceUpdate(originalContent);
+      this.isAutoScrolling = false;
       // Show error toast with appropriate message
       if (error instanceof Error && error.message.includes('HTTP error')) {
         this.toastService.showErrorKey('jobCreationForm.toastMessages.aiGenerationFailed');
@@ -809,6 +771,7 @@ export class JobCreationFormComponent {
         this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
       }
     } finally {
+      this.isAutoScrolling = false;
       this.isGeneratingDraft.set(false);
     }
   }
@@ -884,56 +847,36 @@ export class JobCreationFormComponent {
         extracted = extracted.slice(0, -2);
       }
       // Unescape
-      return this.unescapeJsonString(extracted);
+      return unescapeJsonString(extracted);
     }
 
     // Extract the value between quotes
     const rawValue = trimmed.substring(valueStart, valueEnd);
-    return this.unescapeJsonString(rawValue);
+    return unescapeJsonString(rawValue);
   }
 
   /**
-   * Unescapes a JSON string value (handles \n, \r, \t, \", \\)
+   * Automatically scrolls the editor to the bottom during AI streaming.
+   * Runs every 200ms while isAutoScrolling is true.
    */
-  private unescapeJsonString(str: string): string {
-    return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-  }
+  private autoScrollStreaming(): void {
+    const editorContainer = document.querySelector('.ql-editor') as HTMLElement;
+    let lastScrollTop = editorContainer.scrollTop;
 
-  /**
-   * Loads the translated job description from the server after AI generation.
-   * This is needed because the server translates asynchronously after streaming.
-   * Uses retry logic with delay to wait for the translation to complete.
-   *
-   * @param targetLang The language to load ('en' or 'de')
-   * @param maxRetries Maximum number of retry attempts (default: 5)
-   * @param delayMs Delay between retries in milliseconds (default: 2000)
-   */
-  private async loadTranslatedDescription(targetLang: 'en' | 'de', maxRetries = 5, delayMs = 2000): Promise<void> {
-    const jobId = this.jobId();
-    if (!jobId) return;
-
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        // Wait before checking (translation needs time to complete)
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-
-        const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
-        const translatedContent = targetLang === 'en' ? job.jobDescriptionEN : job.jobDescriptionDE;
-
-        if (translatedContent && translatedContent.trim().length > 0) {
-          // Translation found - update the signal
-          if (targetLang === 'en') {
-            this.jobDescriptionEN.set(translatedContent);
-          } else {
-            this.jobDescriptionDE.set(translatedContent);
-          }
-          return; // Success - exit
-        }
-        // Error translating, will retry
-      } catch {
-        // Error fetching job, will retry
+    const smoothScroll = (): void => {
+      if (!this.isAutoScrolling) return;
+      if (editorContainer.scrollTop < lastScrollTop) {
+        this.isAutoScrolling = false;
+        return;
       }
-    }
+      editorContainer.scrollTo({
+        top: editorContainer.scrollHeight,
+        behavior: 'smooth',
+      });
+      lastScrollTop = editorContainer.scrollTop;
+      setTimeout(() => requestAnimationFrame(smoothScroll), 200);
+    };
+    requestAnimationFrame(smoothScroll);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1362,7 +1305,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel2) {
       steps.push({
-        name: 'jobCreationForm.header.steps.positionDetails',
+        name: 'jobCreationForm.header.steps.employmentTerms',
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1465,30 +1408,6 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   // UTILITY METHODS
   // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Gets the dimensions of an image file before upload.
-   * Used for validation against MAX_IMAGE_DIMENSION_PX.
-   *
-   * @param file - The image file to measure
-   * @returns Promise resolving to width and height in pixels
-   */
-  private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-
-      img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        resolve({ width: img.width, height: img.height });
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        reject(new Error('Failed to load image'));
-      };
-      img.src = objectUrl;
-    });
-  }
 
   /**
    * Finds a dropdown option by its value.

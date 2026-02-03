@@ -27,11 +27,14 @@
       <!-- Header Section -->
       <div class="header-container">
         <div class="flex flex-col gap-2">
-          <h1
-            class="page-header"
-            jhiTranslate="entity.application_detail.applicant.header"
-            [translateValues]="{ jobTitle: application.jobTitle }"
-          ></h1>
+          <div class="flex items-center gap-2">
+            <jhi-back-button />
+            <h1
+              class="page-header"
+              jhiTranslate="entity.application_detail.applicant.header"
+              [translateValues]="{ jobTitle: application.jobTitle }"
+            ></h1>
+          </div>
           <jhi-application-state-for-applicants [state]="application.applicationState" />
         </div>
         <div class="flex items-center gap-2">
@@ -339,12 +342,6 @@
             }
           }
         </div>
-      </section>
-    }
-
-    @if (!previewDetailData()) {
-      <section class="mt-8 pt-8 border-t border-divider-default">
-        <jhi-button icon="arrow-left" label="button.back" [shouldTranslate]="true" severity="info" variant="outlined" (click)="onBack()" />
       </section>
     }
   } @else {

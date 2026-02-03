@@ -1,9 +1,10 @@
-import { Component, TemplateRef, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
+import { Component, TemplateRef, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { ApplicationEvaluationResourceApiService, InterviewResourceApiService } from 'app/generated';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { AddIntervieweesDTO } from 'app/generated/model/addIntervieweesDTO';
@@ -49,7 +50,7 @@ interface ApplicantRow {
   templateUrl: './interviewee-section.component.html',
 })
 export class IntervieweeSectionComponent {
-  // Inputs
+  // Component Inputs
   processId = input.required<string>();
   jobTitle = input.required<string>();
   refreshKey = input<number>(0);
@@ -137,11 +138,29 @@ export class IntervieweeSectionComponent {
   // Computed: Selection Count
   selectedCount = computed(() => this.selectedIds().size);
 
+  allInvitedTooltip = computed(() => {
+    this.currentLang(); // Dependency for reactivity
+    return this.uncontactedCount() === 0 ? this.translateService.instant('interview.interviewees.allInvited') : '';
+  });
+
+  resendConfirmation = computed(() => {
+    this.currentLang(); // Dependency
+    return {
+      header: this.translateService.instant('interview.interviewees.resendConfirmation.header'),
+      message: this.translateService.instant('interview.interviewees.resendConfirmation.message'),
+      label: this.translateService.instant('interview.interviewees.resendInvitation'),
+    };
+  });
+
   // Services
   private readonly interviewService = inject(InterviewResourceApiService);
   private readonly applicationService = inject(ApplicationEvaluationResourceApiService);
   private readonly toastService = inject(ToastService);
   private readonly translateService = inject(TranslateService);
+
+  private readonly currentLang = toSignal(this.translateService.onLangChange.pipe(map((event: LangChangeEvent) => event.lang)), {
+    initialValue: this.translateService.getCurrentLang(),
+  });
 
   // Effect: Auto load Interviewees when processId or refreshKey changes
   private readonly loadEffect = effect(() => {
@@ -154,7 +173,7 @@ export class IntervieweeSectionComponent {
   // Add Selected Applicants as Interviewees
   async addInterviewees(): Promise<void> {
     const processId = this.processId();
-    if (!processId) return;
+    if (processId === '') return;
 
     const dto: AddIntervieweesDTO = {
       applicationIds: Array.from(this.selectedIds()),
@@ -176,7 +195,7 @@ export class IntervieweeSectionComponent {
   // Data Loading: Interviewees
   async loadInterviewees(): Promise<void> {
     const processId = this.processId();
-    if (!processId) return;
+    if (processId === '') return;
 
     try {
       this.loadingInterviewees.set(true);
@@ -215,7 +234,7 @@ export class IntervieweeSectionComponent {
   // Send bulk invitations to all uncontacted
   async sendAllInvitations(): Promise<void> {
     const processId = this.processId();
-    if (!processId) return;
+    if (processId === '') return;
 
     const count = this.uncontactedCount();
     if (count === 0) return;
@@ -315,6 +334,15 @@ export class IntervieweeSectionComponent {
   closeAddModal(): void {
     this.selectedIds.set(new Set());
     this.showAddModal.set(false);
+  }
+
+  onConfirmResend(): void {
+    const id = this.pendingResendId();
+    const processId = this.processId();
+    if (id !== null && processId !== '') {
+      void this.performSendInvitation(processId, id);
+      this.pendingResendId.set(null);
+    }
   }
 
   // Private Methods

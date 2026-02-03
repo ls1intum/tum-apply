@@ -1,29 +1,27 @@
-import { Component, ElementRef, computed, inject, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InterviewSlotDTO } from 'app/generated/model/interviewSlotDTO';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
+import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { formatTimeRange } from 'app/shared/util/date-time.util';
 
 @Component({
   selector: 'jhi-slot-card',
   standalone: true,
-  imports: [TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule, ConfirmDialog],
+  imports: [TranslateModule, TranslateDirective, ButtonComponent, FontAwesomeModule, ConfirmDialog, MenuComponent],
   templateUrl: './slot-card.component.html',
-  host: {
-    '(document:click)': 'handleOutsideClick($event)',
-  },
 })
 export class SlotCardComponent {
   slot = input.required<InterviewSlotDTO>();
 
-  showMenu = signal(false);
-
   editSlot = output<InterviewSlotDTO>();
   deleteSlot = output<InterviewSlotDTO>();
   assignApplicant = output<InterviewSlotDTO>();
+
+  readonly deleteDialog = viewChild.required<ConfirmDialog>('deleteDialog');
 
   // Computed values
   timeRange = computed(() => formatTimeRange(this.slot().startDateTime, this.slot().endDateTime));
@@ -35,39 +33,23 @@ export class SlotCardComponent {
     return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
   });
 
-  isPast = computed(() => {
-    const dateTime = this.slot().startDateTime;
-    if (!dateTime) return false;
-    const now = new Date();
-    const start = new Date(dateTime);
-    return start < now;
-  });
-
-  private readonly elementRef = inject(ElementRef);
-
-  handleOutsideClick(event: Event): void {
-    if (event.target && !this.elementRef.nativeElement.contains(event.target as Node)) {
-      this.showMenu.set(false);
-    }
-  }
-
-  toggleMenu(): void {
-    this.showMenu.update(v => !v);
-  }
+  // Menu items for kebab menu
+  readonly menuItems = computed<JhiMenuItem[]>(() => [
+    // TODO: Uncomment when edit functionality is implemented
+    // { label: 'button.edit', icon: 'pencil', command: () => this.onEdit() },
+    { label: 'button.delete', icon: 'trash', command: () => this.deleteDialog().confirm(), severity: 'danger' },
+  ]);
 
   onEdit(): void {
     this.editSlot.emit(this.slot());
-    this.showMenu.set(false);
     // TODO: Open Edit Modal
   }
 
   onDelete(): void {
     this.deleteSlot.emit(this.slot());
-    this.showMenu.set(false);
   }
 
   onAssign(): void {
     this.assignApplicant.emit(this.slot());
-    this.showMenu.set(false);
   }
 }

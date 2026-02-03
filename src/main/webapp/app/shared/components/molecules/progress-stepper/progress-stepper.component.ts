@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StepperModule } from 'primeng/stepper';
+import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateDirective } from 'app/shared/language';
 
@@ -39,7 +40,7 @@ export type StepData = {
 
 @Component({
   selector: 'jhi-progress-stepper',
-  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, TranslateDirective],
+  imports: [CommonModule, StepperModule, ButtonGroupComponent, TranslateModule, TranslateDirective, TooltipModule],
   templateUrl: './progress-stepper.component.html',
   styleUrl: './progress-stepper.component.scss',
   standalone: true,
@@ -89,6 +90,7 @@ export class ProgressStepperComponent {
   goToStep(index: number): void {
     if (index > 0 && index <= this.steps().length) {
       this.currentStep.set(index);
+      this.scrollToTop();
     }
   }
 
@@ -111,5 +113,12 @@ export class ProgressStepperComponent {
         };
       }),
     };
+  }
+
+  private scrollToTop(): void {
+    // Uses timeout to allow the view to update before scrolling.
+    setTimeout(() => {
+      document.querySelector('.content')?.scrollTo({ top: 0, behavior: 'instant' });
+    }, 0);
   }
 }
