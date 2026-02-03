@@ -346,7 +346,7 @@
       "fullTime": "Full-time",
       "partTime": "Part-time ({{percentage}}%)"
     },
-    "tooltips": {
+    "infos": {
       "applicantLanguageInfo": "Applicants only see the job description in the language they have selected."
     },
     "dataPrivacy": {

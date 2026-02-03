@@ -109,7 +109,7 @@
         <section>
           <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
           @if (isProfessorOrEmployee()) {
-            <jhi-info-box class="mb-6 block" [message]="'jobDetailPage.tooltips.applicantLanguageInfo' | translate" />
+            <jhi-info-box class="mb-6 block" [message]="'jobDetailPage.infos.applicantLanguageInfo' | translate" />
             <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
             <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 

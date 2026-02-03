@@ -346,7 +346,7 @@
       "fullTime": "Vollzeit",
       "partTime": "Teilzeit ({{percentage}}%)"
     },
-    "tooltips": {
+    "infos": {
       "applicantLanguageInfo": "Bewerber sehen die Stellenbeschreibung nur in der von ihnen gewählten Sprache."
     },
     "dataPrivacy": {
