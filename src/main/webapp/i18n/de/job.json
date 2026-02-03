@@ -186,7 +186,7 @@
         "title": "Zusätzliches",
         "description": "Füge benutzerdefinierte Fragen hinzu, die den Bewerbern im Bewerbungsformular angezeigt werden."
       },
-      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt."
+      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München wird automatisch dieser Stelle beigefügt."
     },
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
