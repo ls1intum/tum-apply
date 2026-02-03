@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -550,6 +551,7 @@ public class InterviewService {
      * @throws AccessDeniedException   if the user is not the job owner
      * @throws BadRequestException     if any application belongs to a different job
      */
+    @Transactional
     public List<IntervieweeDTO> addApplicantsToInterview(UUID processId, AddIntervieweesDTO dto) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
@@ -571,6 +573,9 @@ public class InterviewService {
                 continue;
             }
 
+            // Update application status to INTERVIEW
+            application.setApplicationState(ApplicationState.INTERVIEW);
+
             // Create new Interviewee
             Interviewee interviewee = new Interviewee();
             interviewee.setInterviewProcess(process);
@@ -580,7 +585,8 @@ public class InterviewService {
             createdInterviewees.add(interviewee);
         }
 
-        // 6. Save all
+        // 6. Save all applications and interviewees
+        applicationRepository.saveAll(applications);
         List<Interviewee> savedInterviewees = intervieweeRepository.saveAll(createdInterviewees);
 
         // 7. Return DTOs
