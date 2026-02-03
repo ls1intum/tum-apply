@@ -261,4 +261,13 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         """
     )
     Slice<UUID> findApplicationsToBeDeletedBeforeCutoff(LocalDateTime cutoff, Pageable pageable);
+
+    @Query(
+        """
+            SELECT DISTINCT a.applicant.user.userId FROM Application a
+            WHERE a.lastModifiedAt < :cutoff
+            AND a.state IN ('WITHDRAWN', 'REJECTED', 'JOB_CLOSED', 'ACCEPTED')
+        """
+    )
+    List<UUID> findApplicantsToBeWarnedBeforeDeletion(LocalDateTime cutoff);
 }

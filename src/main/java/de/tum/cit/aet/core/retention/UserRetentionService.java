@@ -40,8 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserRetentionService {
 
-    private static final int DAYS_BEFORE_DELETION_WARNING = 28;
-
     private final UserRetentionProperties userRetentionProperties;
 
     private final UserRepository userRepository;
@@ -129,17 +127,16 @@ public class UserRetentionService {
      * Finally, it constructs and sends an asynchronous warning email to the user.
      * </p>
      *
-     * @param cutoff the LocalDateTime representing the cutoff date for data deletion;
+     * @param warningDate the LocalDateTime representing the warning date for data deletion;
      *               users inactive beyond this point (adjusted by warning days) will be warned
      */
-    public void warnUserOfDataDeletion(LocalDateTime cutoff) {
-        LocalDateTime warningDate = cutoff.plusDays(DAYS_BEFORE_DELETION_WARNING);
+    public void warnUserOfDataDeletion(LocalDateTime warningDate) {
         List<UUID> userIds = userRepository.findInactiveNonAdminUserIdsForWarning(warningDate);
 
         for (UUID userId : userIds) {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                log.error("User retention warning: candidate userId={} no longer exists (cutoff={})", userId, cutoff);
+                log.error("User retention warning: candidate userId={} no longer exists (warningDate={})", userId, warningDate);
                 continue;
             }
 

@@ -1,6 +1,5 @@
 package de.tum.cit.aet.core.config;
 
-import jakarta.validation.constraints.Min;
 import java.util.UUID;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

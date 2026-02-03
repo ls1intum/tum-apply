@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ApplicantRetentionJob {
 
+    private static final int DAYS_BEFORE_DELETION_WARNING = 28;
+
     private final ApplicantRetentionProperties properties;
     private final ApplicantRetentionService applicantRetentionService;
     private final ApplicationRepository applicationRepository;
@@ -59,6 +61,22 @@ public class ApplicantRetentionJob {
             config.maxRuntimeMinutes()
         );
     }
+
+    /**
+     * Scheduled job that warns applicants about impending data deletion.
+     * This method is executed based on a cron schedule defined by the property {@code applicant.retention.cron},
+     * defaulting to run at 3:27 AM UTC daily. It calculates a warning cutoff date by subtracting the configured
+     * days before deletion minus the days before deletion warning from the current UTC time, and then delegates
+     * to the applicant retention service to send warnings to eligible applicants.
+     */
+    @Scheduled(cron = "${applicant.retention.cron:0 27 3 * * *}", zone = "UTC")
+    public void warnApplicantOfDataDeletion() {
+        LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime warningCutoff = nowUtc.minusDays(properties.getDaysBeforeDeletion() - DAYS_BEFORE_DELETION_WARNING);
+        applicantRetentionService.warnApplicantOfDataDeletion(warningCutoff);
+    }
+
+    // ------------ Helper methods ------------
 
     private ApplicationRunConfig buildRunConfig() {
         Integer daysBeforeDeletion = properties.getDaysBeforeDeletion();

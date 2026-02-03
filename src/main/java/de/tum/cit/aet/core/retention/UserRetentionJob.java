@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class UserRetentionJob {
 
+    private static final int DAYS_BEFORE_DELETION_WARNING = 28;
+
     private final UserRetentionProperties properties;
     private final UserRepository userRepository;
     private final UserRetentionService userRetentionService;
@@ -71,8 +73,8 @@ public class UserRetentionJob {
     public void warnUserOfDataDeletion() {
         Integer inactiveDays = properties.getInactiveDaysBeforeDeletion();
         LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
-        LocalDateTime cutoff = nowUtc.minusDays(inactiveDays);
-        userRetentionService.warnUserOfDataDeletion(cutoff);
+        LocalDateTime warningDate = nowUtc.minusDays(inactiveDays - DAYS_BEFORE_DELETION_WARNING);
+        userRetentionService.warnUserOfDataDeletion(warningDate);
     }
 
     // ------------ Helper methods ------------
