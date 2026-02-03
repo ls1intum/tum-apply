@@ -1,34 +1,37 @@
 <div
-  class="flex items-center justify-between p-3 bg-background-default border rounded border-border-default h-16 cursor-pointer hover:bg-background-surface transition-colors"
+  class="flex flex-col lg:flex-row lg:items-center justify-between p-3 bg-background-default border rounded border-border-default min-h-[4rem] h-auto cursor-pointer hover:bg-background-surface transition-colors gap-3"
   (click)="navigateToAssessment()"
 >
-  <div class="flex items-center">
-    <!-- Name -->
-    <span class="text-sm font-bold text-text-primary w-24 md:w-48 lg:w-64 truncate">
-      {{ interviewee().user?.firstName }} {{ interviewee().user?.lastName }}
-    </span>
+  <div class="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-0 flex-1 min-w-0">
+    <!-- Identity Group (Name + Status) - Kept together for alignment -->
+    <div class="flex items-center">
+      <!-- Name (Fixed width for alignment) -->
+      <span class="text-sm font-bold text-text-primary w-32 sm:w-48 lg:w-48 xl:w-64 flex-shrink-0 truncate">
+        {{ interviewee().user?.firstName }} {{ interviewee().user?.lastName }}
+      </span>
 
-    <!-- Status Group -->
-    <div class="flex items-end gap-3 mr-8">
-      <!-- Status Bar -->
-      <div
-        class="w-1 h-6 rounded-full"
-        [class.bg-primary-200]="interviewee().state === IntervieweeState.UNCONTACTED"
-        [class.bg-primary-300]="interviewee().state === IntervieweeState.INVITED"
-        [class.bg-primary-400]="interviewee().state === IntervieweeState.SCHEDULED"
-        [class.bg-primary-default]="interviewee().state === IntervieweeState.COMPLETED"
-      ></div>
+      <!-- Status Group -->
+      <div class="flex items-end gap-3 mr-4 lg:mr-8 flex-shrink-0">
+        <!-- Status Bar -->
+        <div
+          class="w-1 h-6 rounded-full"
+          [class.bg-primary-200]="interviewee().state === IntervieweeState.UNCONTACTED"
+          [class.bg-primary-300]="interviewee().state === IntervieweeState.INVITED"
+          [class.bg-primary-400]="interviewee().state === IntervieweeState.SCHEDULED"
+          [class.bg-primary-default]="interviewee().state === IntervieweeState.COMPLETED"
+        ></div>
 
-      <!-- Status Text -->
-      <span
-        class="text-text-secondary text-sm whitespace-nowrap"
-        [jhiTranslate]="'interview.interviewees.filter.' + interviewee().state"
-      ></span>
+        <!-- Status Text -->
+        <span
+          class="text-text-secondary text-sm whitespace-nowrap"
+          [jhiTranslate]="'interview.interviewees.filter.' + interviewee().state"
+        ></span>
+      </div>
     </div>
 
     <!-- Schedule Details (only for SCHEDULED state) -->
     @if (interviewee().state === IntervieweeState.SCHEDULED && interviewee().scheduledSlot) {
-      <div class="flex items-center self-end gap-8 text-sm text-text-secondary">
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-text-secondary mt-1 lg:mt-0">
         <!-- Date -->
         <div class="flex items-center gap-2">
           <fa-icon icon="calendar" class="text-xs text-icon-disabled" />
@@ -52,19 +55,23 @@
 
   <!-- Actions for UNCONTACTED or INVITED state -->
   @if (interviewee().state === IntervieweeState.UNCONTACTED || interviewee().state === IntervieweeState.INVITED) {
-    <jhi-button
-      (click)="$event.stopPropagation(); sendInvitation.emit(interviewee())"
-      [shouldTranslate]="true"
-      [icon]="interviewee().state === IntervieweeState.INVITED ? 'rotate-right' : 'paper-plane'"
-      variant="outlined"
-      severity="primary"
-      [disabled]="sending()"
-      [loading]="sending()"
-      [label]="
-        interviewee().state === IntervieweeState.INVITED
-          ? 'interview.interviewees.resendInvitation'
-          : 'interview.interviewees.sendInvitation'
-      "
-    />
+    <div class="flex-shrink-0 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0">
+      <jhi-button
+        (click)="$event.stopPropagation(); sendInvitation.emit(interviewee())"
+        [shouldTranslate]="true"
+        [icon]="interviewee().state === IntervieweeState.INVITED ? 'rotate-right' : 'paper-plane'"
+        variant="outlined"
+        severity="primary"
+        [disabled]="sending()"
+        [loading]="sending()"
+        [fullWidth]="true"
+        [label]="
+          interviewee().state === IntervieweeState.INVITED
+            ? 'interview.interviewees.resendInvitation'
+            : 'interview.interviewees.sendInvitation'
+        "
+        styleClass="lg:w-auto w-full justify-center"
+      />
+    </div>
   }
 </div>

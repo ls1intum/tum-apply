@@ -41,13 +41,12 @@
   .filter-button {
     display: flex;
     align-items: center;
-    padding: 0.75rem;
+    padding: 0.5rem 0.75rem;
     border: var(--p-border-default) solid 0.1rem;
     background: var(--p-background-default);
     border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: all 0.2s ease;
-    height: 3rem;
 
     span {
       margin-right: 1rem;

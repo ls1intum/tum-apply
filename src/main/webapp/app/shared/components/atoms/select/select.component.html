@@ -54,7 +54,7 @@
     </ng-template>
 
     <ng-template pTemplate="dropdownicon">
-      <fa-icon [icon]="isOpen ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']" />
+      <fa-icon class="text-text-primary" [icon]="isOpen ? ['fas', 'chevron-up'] : ['fas', 'chevron-down']" />
     </ng-template>
 
     <ng-template pTemplate="clearicon">
@@ -63,4 +63,7 @@
       </div>
     </ng-template>
   </p-select>
+  @if (errorEnabled()) {
+    <div class="error-text"></div>
+  }
 </div>
