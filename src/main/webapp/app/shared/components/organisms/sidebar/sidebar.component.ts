@@ -103,8 +103,7 @@ export class SidebarComponent {
             { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
             { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
             { icon: 'create-job', text: 'sidebar.manage.createposition', link: '/job/create' },
-            // TODO: Uncomment when interview feature is fully implemented
-            // { icon: 'calendar-check', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
+            { icon: 'interviews', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
           ],
         },
         {
@@ -138,6 +137,7 @@ export class SidebarComponent {
           buttons: [
             { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
             { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
+            { icon: 'interviews', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
           ],
         },
         {

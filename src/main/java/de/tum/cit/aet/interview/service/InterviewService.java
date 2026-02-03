@@ -574,7 +574,7 @@ public class InterviewService {
             }
 
             // Update application status to INTERVIEW
-            application.setApplicationState(ApplicationState.INTERVIEW);
+            application.setState(ApplicationState.INTERVIEW);
 
             // Create new Interviewee
             Interviewee interviewee = new Interviewee();
