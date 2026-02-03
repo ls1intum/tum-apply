@@ -33,6 +33,7 @@
         "templates": "TUMApply - Meine Vorlagen",
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
+        "images": "TUMApply - Meine Bilder",
         "info": "TUMApply - Meine Gruppe"
       },
       "about-us": "TumApply - Über uns",
@@ -615,6 +616,30 @@
     "file": {
       "could.not.extract": "Datei konnte nicht extrahiert werden",
       "not.image": "Es wird erwartet, dass die Datei ein Bild ist. Die Datei ist jedoch vom Typ \"{{ fileType }}\""
+    }
+  },
+  "imageUpload": {
+    "error": {
+      "fileTooLarge": {
+        "summary": "Datei zu groß",
+        "detail": "Bilddatei überschreitet die maximale Größe von 5MB"
+      },
+      "invalidFileType": {
+        "summary": "Ungültiger Dateityp",
+        "detail": "Bitte lade nur JPG- oder PNG-Bilder hoch"
+      },
+      "dimensionsTooLarge": {
+        "summary": "Bild zu groß",
+        "detail": "Bildabmessungen überschreiten das zulässige Maximum (4096×4096 Pixel)"
+      },
+      "invalidImage": {
+        "summary": "Ungültiges Bild",
+        "detail": "Die Datei ist beschädigt oder kein gültiges Bild"
+      },
+      "uploadFailed": {
+        "summary": "Upload fehlgeschlagen",
+        "detail": "Bild-Upload fehlgeschlagen. Bitte versuche es erneut"
+      }
     }
   }
 }

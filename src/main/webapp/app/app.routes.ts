@@ -204,6 +204,16 @@ const routes: Routes = [
     title: 'global.routes.researchGroup.templates',
   },
   {
+    path: 'research-group/images',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-images/research-group-images.component').then(
+        m => m.ResearchGroupImagesComponent,
+      ),
+    title: 'global.routes.researchGroup.images',
+  },
+  {
     path: 'research-group/template/new',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },

@@ -17,7 +17,8 @@ public record ImageDTO(
     String url,
     ImageType imageType,
     Long sizeBytes,
-    UUID uploadedById
+    UUID uploadedById,
+    Boolean isInUse
 ) {
     /**
      * Convert an Image entity to an ImageDTO
@@ -55,7 +56,32 @@ public record ImageDTO(
             image.getUrl(),
             imageType,
             image.getSizeBytes(),
-            uploadedById
+            uploadedById,
+            null
+        );
+    }
+
+    /**
+     * Convert an Image entity to an ImageDTO with isInUse flag
+     *
+     * @param image   the Image entity to convert
+     * @param isInUse whether the image is currently used by any job
+     * @return the ImageDTO representation
+     */
+    public static ImageDTO fromEntity(Image image, boolean isInUse) {
+        ImageDTO dto = fromEntity(image);
+        if (dto == null) {
+            return null;
+        }
+        return new ImageDTO(
+            dto.imageId(),
+            dto.researchGroupId(),
+            dto.departmentId(),
+            dto.url(),
+            dto.imageType(),
+            dto.sizeBytes(),
+            dto.uploadedById(),
+            isInUse
         );
     }
 }

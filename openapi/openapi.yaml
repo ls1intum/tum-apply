@@ -2559,6 +2559,7 @@ components:
         imageType:
           type: string
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
+        isInUse: {type: boolean}
         researchGroupId: {type: string, format: uuid}
         sizeBytes: {type: integer, format: int64}
         uploadedById: {type: string, format: uuid}
