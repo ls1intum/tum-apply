@@ -32,6 +32,11 @@ export class SlotCardComponent {
     if (!interviewee) return '';
     return `${interviewee.firstName ?? ''} ${interviewee.lastName ?? ''}`.trim();
   });
+  isPast = computed(() => {
+    const dateTime = this.slot().startDateTime;
+    if (!dateTime) return false;
+    return new Date(dateTime) < new Date();
+  });
 
   // Menu items for kebab menu
   readonly menuItems = computed<JhiMenuItem[]>(() => [

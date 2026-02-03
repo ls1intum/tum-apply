@@ -130,7 +130,6 @@
               <fa-icon icon="calendar-xmark" class="text-4xl text-text-tertiary" />
               <h3 class="font-semibold text-text-primary" jhiTranslate="interview.slots.noFutureSlots.title">No future slots available</h3>
               <p class="text-text-primary" jhiTranslate="interview.slots.noFutureSlots.description">Add new slots to invite applicants.</p>
-              <jhi-button [label]="'interview.slots.addSlots'" [shouldTranslate]="true" icon="plus" (click)="openCreateSlotsModal()" />
             </div>
           } @else {
             <!-- Has future slots other months, just not here -->

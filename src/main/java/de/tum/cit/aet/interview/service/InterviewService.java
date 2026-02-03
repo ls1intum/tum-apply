@@ -444,16 +444,24 @@ public class InterviewService {
      * Otherwise, returns all slots for the process.
      * Slots are returned ordered by start time (ascending).
      *
-     * @param processId the ID of the interview process
-     * @param year      optional year to filter by (e.g., 2025)
-     * @param month     optional month to filter by (1-12)
-     * @param pageDTO   pagination information
+     * @param processId  the ID of the interview process
+     * @param year       optional year to filter by (e.g., 2025)
+     * @param month      optional month to filter by (1-12)
+     * @param pageDTO    pagination information
+     * @param futureOnly if true, only return slots in the future (startDateTime >
+     *                   now)
      * @return a page of interview slots ordered by start time
      * @throws EntityNotFoundException if the interview process is not found
      * @throws AccessDeniedException   if the user is not authorized to view these
      *                                 slots
      */
-    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessId(UUID processId, Integer year, Integer month, PageDTO pageDTO) {
+    public PageResponseDTO<InterviewSlotDTO> getSlotsByProcessId(
+        UUID processId,
+        Integer year,
+        Integer month,
+        PageDTO pageDTO,
+        boolean futureOnly
+    ) {
         // 1. Load Interview Process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
@@ -466,12 +474,20 @@ public class InterviewService {
         // 3. Convert PageDTO to Pageable
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
 
-        // 4. Query slots - with or without month filter
+        // 4. Query slots - with or without month/future filter
         Page<InterviewSlot> slotsPage;
+        Instant now = Instant.now();
         if (year != null && month != null) {
             ZonedDateTime monthStart = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, CET_TIMEZONE);
             ZonedDateTime monthEnd = monthStart.plusMonths(1);
-            slotsPage = interviewSlotRepository.findByProcessIdAndMonth(processId, monthStart.toInstant(), monthEnd.toInstant(), pageable);
+            slotsPage = interviewSlotRepository.findByProcessIdAndMonthWithFutureFilter(
+                processId,
+                monthStart.toInstant(),
+                monthEnd.toInstant(),
+                futureOnly,
+                now,
+                pageable
+            );
         } else {
             slotsPage = interviewSlotRepository.findByInterviewProcessId(processId, pageable);
         }

@@ -126,13 +126,14 @@ public class InterviewResource {
      *
      * Retrieves all interview slots for the specified interview process,
      * ordered by start time (ascending). Supports optional filtering by year and
-     * month.
+     * month. By default, only future slots are returned.
      *
-     * @param processId the ID of the interview process
-     * @param year      optional year filter
-     * @param month     optional month filter
-     * @param page      zero-based page index (default: 0)
-     * @param size      the size of the page (default: 20)
+     * @param processId  the ID of the interview process
+     * @param year       optional year filter
+     * @param month      optional month filter
+     * @param futureOnly if true (default), only return slots in the future
+     * @param page       zero-based page index (default: 0)
+     * @param size       the size of the page (default: 20)
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and page of
      *         {@link InterviewSlotDTO}
      * @throws EntityNotFoundException if the interview process is not found
@@ -144,12 +145,20 @@ public class InterviewResource {
         @PathVariable UUID processId,
         @RequestParam(required = false) Integer year,
         @RequestParam(required = false) Integer month,
+        @RequestParam(defaultValue = "true") boolean futureOnly,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        log.info("REST request to get slots for process: {}, year: {}, month: {}, page: {}", processId, year, month, page);
+        log.info(
+            "REST request to get slots for process: {}, year: {}, month: {}, futureOnly: {}, page: {}",
+            processId,
+            year,
+            month,
+            futureOnly,
+            page
+        );
         PageDTO pageDTO = new PageDTO(size, page);
-        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
+        PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO, futureOnly);
         log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
         return ResponseEntity.ok(slots);
     }

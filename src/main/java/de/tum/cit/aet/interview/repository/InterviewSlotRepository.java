@@ -173,6 +173,43 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     );
 
     /**
+     * Finds interview slots for a given process within a month, with optional
+     * future-only filter.
+     * When futureOnly is true, only slots with startDateTime > now are returned.
+     *
+     * @param processId  the ID of the interview process
+     * @param monthStart start of the month (inclusive)
+     * @param monthEnd   end of the month (exclusive)
+     * @param futureOnly if true, only return slots in the future
+     * @param now        the current timestamp
+     * @param pageable   pagination information
+     * @return a page of {@link InterviewSlot} entities
+     */
+    @EntityGraph(
+        attributePaths = {
+            "interviewee", "interviewee.application", "interviewee.application.applicant", "interviewee.application.applicant.user",
+        }
+    )
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.id = :processId
+        AND s.startDateTime >= :monthStart
+        AND s.startDateTime < :monthEnd
+        AND (:futureOnly = false OR s.startDateTime > :now)
+        ORDER BY s.startDateTime
+        """
+    )
+    Page<InterviewSlot> findByProcessIdAndMonthWithFutureFilter(
+        @Param("processId") UUID processId,
+        @Param("monthStart") Instant monthStart,
+        @Param("monthEnd") Instant monthEnd,
+        @Param("futureOnly") boolean futureOnly,
+        @Param("now") Instant now,
+        Pageable pageable
+    );
+
+    /**
      * Finds all unbooked, future interview slots for a given interview process.
      * Used for the applicant booking page to display available time slots.
      *

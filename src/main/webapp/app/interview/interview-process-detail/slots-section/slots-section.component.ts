@@ -105,24 +105,10 @@ export class SlotsSectionComponent {
   paginatedSlots = computed(() => {
     const monthDates = this.currentMonthSlots();
     const pageSize = this.datesPerPage();
-    const anchor = this.paginationAnchorIndex();
     const page = this.currentDatePage();
     const start = page * pageSize;
     const end = start + pageSize;
     return monthDates.slice(start, end);
-
-    // Relative Pagination: Page 0 starts at anchor.
-    // Negative pages go backwards from anchor.
-    const start = anchor + page * this.DATES_PER_PAGE;
-
-    // Ensure we don't slice before 0
-    const sliceStart = Math.max(0, start);
-    const sliceEnd = start + this.DATES_PER_PAGE;
-
-    // If start is beyond length (empty future page), return empty array
-    if (sliceStart >= monthDates.length) return [];
-
-    return monthDates.slice(sliceStart, sliceEnd);
   });
 
   currentMonth = computed(() => {
@@ -146,26 +132,6 @@ export class SlotsSectionComponent {
 
   canGoPreviousDate = computed(() => this.currentDatePage() > 0);
   canGoNextDate = computed(() => this.currentDatePage() < this.totalDatePages() - 1);
-  canGoPreviousDate = computed(() => {
-    const anchor = this.paginationAnchorIndex();
-    const page = this.currentDatePage();
-    const start = anchor + page * this.DATES_PER_PAGE;
-    return start > 0;
-  });
-
-  canGoNextDate = computed(() => {
-    const monthDates = this.currentMonthSlots();
-    const anchor = this.paginationAnchorIndex();
-    const page = this.currentDatePage();
-    const startNext = anchor + (page + 1) * this.DATES_PER_PAGE;
-
-    if (startNext >= monthDates.length) {
-      // Allow creating the "Empty Future" page if we are viewing past
-      const currentStart = anchor + page * this.DATES_PER_PAGE;
-      return currentStart < monthDates.length;
-    }
-    return true;
-  });
 
   // Constants
   private readonly MAX_VISIBLE_SLOTS = 3;
