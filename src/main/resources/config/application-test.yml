@@ -120,8 +120,3 @@ jhipster:
 aet:
   email:
     enabled: true
-
-user:
-  retention:
-    dry-run: ${USER_RETENTION_DRY_RUN:true}
-    cron: ${USER_RETENTION_CRON:*/20 * * * * *}
