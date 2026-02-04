@@ -160,14 +160,25 @@
 
             @if (showAiPanel()) {
               <!-- Divider -->
-              <p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
+              <p-divider layout="vertical" styleClass="mx-2 hidden lg:block custom-divider" class="custom-divider" />
 
               <!-- AI Panel -->
               <!-- span full width when stacked (small screens), keep constrained on lg+ -->
-              <div class="lg:max-w-[200px] col-span-full lg:col-auto text-center flex flex-col">
-                <h3 class="mb-3 font-bold" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
+              <div class="lg:max-w-[200px] col-span-full lg:col-auto flex flex-col lg:pt-10">
+                <div class="flex gap-2">
+                  <h3
+                    class="mb-3 bold text-text-secondary"
+                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
+                  ></h3>
+                  <fa-icon
+                    class="icon"
+                    [icon]="['fas', 'circle-info']"
+                    [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
+                    tooltipPosition="top"
+                  />
+                </div>
                 <h4
-                  class="whitespace-pre-line mb-4 text-base"
+                  class="whitespace-pre-line mb-4 text-base text-sm text-text-tertiary"
                   jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
                 ></h4>
 
@@ -181,7 +192,7 @@
                       ></span>
                     </div>
                   } @else {
-                    <div class="w-full flex justify-center">
+                    <div class="w-full flex">
                       <jhi-button
                         type="button"
                         [label]="
@@ -191,7 +202,8 @@
                         "
                         [shouldTranslate]="true"
                         severity="primary"
-                        class="w-auto min-w-[160px]"
+                        icon="custom-sparkle"
+                        class="w-auto"
                         (click)="generateJobApplicationDraft()"
                       />
                     </div>
