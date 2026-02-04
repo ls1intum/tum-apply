@@ -202,19 +202,18 @@ export class UploadButtonComponent {
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
-    } catch (err) {
-      console.error('Failed to rename document', err);
+    } catch {
       this.toastService.showErrorKey('entity.upload.error.rename_failed');
     }
   }
 
   formatSize(bytes: number): string {
     if (bytes === 0) return '0 B';
-    const k = 1000; // Use decimal units (1000) instead of binary (1024) to match OS file sizes
+    const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
     const size = bytes / Math.pow(k, i);
-    return size.toFixed(1) + ' ' + sizes[i];
+    return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
   }
 
   private isDuplicateFilename(filename: string): boolean {
