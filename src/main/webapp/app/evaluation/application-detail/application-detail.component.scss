@@ -13,7 +13,7 @@
       flex-direction: column;
       gap: 0.5rem;
       width: fit-content;
-
+      //TODO: Remove the ::ng-deep
       ::ng-deep .w-full {
         width: 100%;
 
