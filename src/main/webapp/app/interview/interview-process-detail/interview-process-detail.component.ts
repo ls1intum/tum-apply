@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
@@ -39,6 +40,8 @@ export class InterviewProcessDetailComponent {
     }
   });
 
+  private readonly location = inject(Location);
+
   constructor() {
     const id = this.route.snapshot.paramMap.get('processId');
     if (id) {
@@ -52,7 +55,7 @@ export class InterviewProcessDetailComponent {
   }
 
   navigateBack(): void {
-    this.router.navigate(['/interviews/overview']);
+    this.location.back();
   }
 
   private updateTabTitle(jobTitle: string): void {

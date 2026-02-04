@@ -569,20 +569,20 @@ public class InterviewService {
         List<Interviewee> createdInterviewees = new ArrayList<>();
         for (Application application : applications) {
             // Check if already exists
-            if (intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
-                continue;
+            if (!intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
+                // Create new Interviewee
+                Interviewee interviewee = new Interviewee();
+                interviewee.setInterviewProcess(process);
+                interviewee.setApplication(application);
+                interviewee.setLastInvited(null);
+
+                createdInterviewees.add(interviewee);
             }
 
-            // Update application status to INTERVIEW
-            application.setState(ApplicationState.INTERVIEW);
-
-            // Create new Interviewee
-            Interviewee interviewee = new Interviewee();
-            interviewee.setInterviewProcess(process);
-            interviewee.setApplication(application);
-            interviewee.setLastInvited(null);
-
-            createdInterviewees.add(interviewee);
+            // Always update application status to INTERVIEW
+            if (application.getState() != ApplicationState.INTERVIEW) {
+                application.setState(ApplicationState.INTERVIEW);
+            }
         }
 
         // 6. Save all applications and interviewees
