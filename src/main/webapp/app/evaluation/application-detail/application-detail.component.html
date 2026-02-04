@@ -68,36 +68,42 @@
       </div>
     </div>
 
-    <jhi-dialog
-      [visible]="addToInterviewDialogVisible()"
-      (visibleChange)="addToInterviewDialogVisible.set($event)"
-      header="evaluation.addToInterviewDialog.header"
-      [shouldTranslateHeader]="true"
-      width="34rem"
+    <p-dialog
+      [modal]="true"
+      [(visible)]="addToInterviewDialogVisible"
+      styleClass="review-dialog"
+      [dismissableMask]="true"
+      [closeOnEscape]="true"
+      [draggable]="false"
+      appendTo="body"
     >
-      <div class="flex flex-col gap-4">
-        <p class="m-0" jhiTranslate="evaluation.addToInterviewDialog.message"></p>
-        <div class="flex items-center gap-2">
-          <p-checkbox [(ngModel)]="goToManagementAfterAdd" inputId="goToManagement" [binary]="true" size="small" />
-          <label for="goToManagement" class="cursor-pointer mb-0" jhiTranslate="evaluation.addToInterviewDialog.goToManagement"></label>
+      <!-- Header (applicant + job title) - matches review-dialog style -->
+      <ng-template #header>
+        <div class="info">
+          <span class="applicant-name">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
+          <div class="job-name">
+            <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+            <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
+          </div>
         </div>
-        <div class="flex justify-end gap-2 pt-2">
-          <jhi-button
-            label="entity.action.cancel"
-            [shouldTranslate]="true"
-            variant="text"
-            severity="secondary"
-            (click)="addToInterviewDialogVisible.set(false)"
-          />
-          <jhi-button
-            label="evaluation.addToInterviewDialog.confirm"
-            [shouldTranslate]="true"
-            severity="primary"
-            (click)="onAddToInterview()"
-          />
+      </ng-template>
+
+      <!-- Checkbox section -->
+      <ul class="review-checkboxes">
+        <li>
+          <p-checkbox [(ngModel)]="goToManagementAfterAdd" inputId="goToManagement" [binary]="true" />
+          <label for="goToManagement" class="cursor-pointer" jhiTranslate="evaluation.addToInterviewDialog.goToManagement"></label>
+        </li>
+      </ul>
+
+      <!-- Footer buttons -->
+      <ng-template pTemplate="footer">
+        <div class="footer-buttons">
+          <jhi-button [label]="'entity.action.cancel' | translate" variant="text" (click)="addToInterviewDialogVisible.set(false)" />
+          <jhi-button [label]="'evaluation.addToInterviewDialog.confirm' | translate" severity="primary" (click)="onAddToInterview()" />
         </div>
-      </div>
-    </jhi-dialog>
+      </ng-template>
+    </p-dialog>
 
     <jhi-review-dialog
       [application]="currentApplication()"

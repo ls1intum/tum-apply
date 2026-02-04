@@ -5,9 +5,10 @@ import { firstValueFrom } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
-import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
@@ -47,9 +48,10 @@ const CAROUSEL_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     DividerModule,
-    DialogComponent,
+    DialogModule,
     CheckboxModule,
     FormsModule,
+    FontAwesomeModule,
     SearchFilterSortBar,
     TranslateModule,
     ButtonComponent,
@@ -319,6 +321,10 @@ export class ApplicationDetailComponent {
     this.updateUrlQueryParams();
   }
 
+  openAddToInterviewDialog(): void {
+    this.addToInterviewDialogVisible.set(true);
+    this.goToManagementAfterAdd.set(false);
+  }
   openAcceptDialog(): void {
     this.reviewDialogMode.set('ACCEPT');
     this.reviewDialogVisible.set(true);
@@ -329,6 +335,48 @@ export class ApplicationDetailComponent {
     this.reviewDialogVisible.set(true);
   }
 
+  async onAddToInterview(): Promise<void> {
+    const application = this.currentApplication();
+    if (!application?.jobId) {
+      this.toastService.showErrorKey('evaluation.errors.noJobId');
+      return;
+    }
+
+    try {
+      const processes = await firstValueFrom(this.interviewResourceService.getInterviewOverview());
+      const matchingProcess = processes.find(p => p.jobId === application.jobId);
+
+      if (!matchingProcess) {
+        this.toastService.showErrorKey('evaluation.errors.noProcessFound');
+        return;
+      }
+
+      // 2. Add applicant to the found process
+      await firstValueFrom(
+        this.interviewResourceService.addApplicantsToInterview(matchingProcess.processId, {
+          applicationIds: [application.applicationDetailDTO.applicationId],
+        }),
+      );
+
+      // 3. Update local state
+      this.updateCurrentApplicationState(ApplicationStateEnum.Interview);
+      this.toastService.showSuccess({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),
+      });
+      this.addToInterviewDialogVisible.set(false);
+
+      // 4. Navigate if requested
+      if (this.goToManagementAfterAdd()) {
+        await this.router.navigate(['/interviews', matchingProcess.processId]);
+      }
+    } catch {
+      this.toastService.showError({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.error.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.error.detail'),
+      });
+    }
+  }
   async acceptApplication(acceptDTO: AcceptDTO): Promise<void> {
     const application = this.currentApplication();
 
@@ -418,54 +466,6 @@ export class ApplicationDetailComponent {
           : application,
       ),
     );
-  }
-
-  async onAddToInterview(): Promise<void> {
-    const application = this.currentApplication();
-    if (!application?.jobId) {
-      this.toastService.showErrorKey('evaluation.errors.noJobId');
-      return;
-    }
-
-    try {
-      const processes = await firstValueFrom(this.interviewResourceService.getInterviewOverview());
-      const matchingProcess = processes.find(p => p.jobId === application.jobId);
-
-      if (!matchingProcess) {
-        this.toastService.showErrorKey('evaluation.errors.noProcessFound');
-        return;
-      }
-
-      // 2. Add applicant to the found process
-      await firstValueFrom(
-        this.interviewResourceService.addApplicantsToInterview(matchingProcess.processId, {
-          applicationIds: [application.applicationDetailDTO.applicationId],
-        }),
-      );
-
-      // 3. Update local state
-      this.updateCurrentApplicationState(ApplicationStateEnum.Interview);
-      this.toastService.showSuccess({
-        summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
-        detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),
-      });
-      this.addToInterviewDialogVisible.set(false);
-
-      // 4. Navigate if requested
-      if (this.goToManagementAfterAdd()) {
-        await this.router.navigate(['/interviews', matchingProcess.processId]);
-      }
-    } catch {
-      this.toastService.showError({
-        summary: this.translateService.instant('evaluation.addToInterviewDialog.error.summary'),
-        detail: this.translateService.instant('evaluation.addToInterviewDialog.error.detail'),
-      });
-    }
-  }
-
-  openAddToInterviewDialog(): void {
-    this.addToInterviewDialogVisible.set(true);
-    this.goToManagementAfterAdd.set(false);
   }
 
   private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
