@@ -93,19 +93,21 @@
 
       <!-- Footer buttons -->
       <ng-template pTemplate="footer">
-        <div class="footer-buttons">
-          <jhi-button [label]="'entity.action.cancel' | translate" variant="text" (click)="addToInterviewDialogVisible.set(false)" />
-          <jhi-button
-            [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
-            severity="primary"
-            (click)="onAddToInterview(true)"
-          />
+        <div class="footer-buttons !justify-between !w-full">
           <jhi-button
             [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
             variant="outlined"
             severity="primary"
             (click)="onAddToInterview(false)"
           />
+          <div class="flex gap-2">
+            <jhi-button [label]="'entity.action.cancel' | translate" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
+            <jhi-button
+              [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
+              severity="primary"
+              (click)="onAddToInterview(true)"
+            />
+          </div>
         </div>
       </ng-template>
     </p-dialog>
