@@ -1,4 +1,5 @@
 import { IconDefinition, IconName, IconPack, IconPrefix } from '@fortawesome/fontawesome-svg-core';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 
 export const facWithdraw: IconDefinition = {
   prefix: 'fas' as IconPrefix,
@@ -130,5 +131,6 @@ export const tumApplyIconPack: IconPack = {
   facFindPositions,
   facSun,
   facSunMoon,
+  faCalendar,
   facSparkle,
 };
