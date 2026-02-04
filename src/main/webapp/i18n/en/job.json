@@ -138,7 +138,7 @@
         "aiButton1": "Write with TUMApply",
         "aiButton2": "Rewrite with TUMApply",
         "aiHelperText": "Specify the most important information and let TUMApply AI write it for you.",
-        "aiTooltipText": "For better results, fill in the fields above. AI generation may take a moment.",
+        "aiTooltipText": "For better results, fill in the fields above.\nAI generation may take a moment.",
         "aiFillerText": "Generating...",
         "aiToggle": "Enable AI",
         "languageEnglish": "English",

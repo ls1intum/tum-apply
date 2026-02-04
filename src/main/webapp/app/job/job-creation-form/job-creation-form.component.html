@@ -165,14 +165,20 @@
               <!-- AI Panel -->
               <!-- span full width when stacked (small screens), keep constrained on lg+ -->
               <div class="lg:max-w-[200px] col-span-full lg:col-auto flex flex-col pt-10">
-                <h3
-                  class="mb-3 bold"
-                  jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
-                  [style.color]="'var(--p-text-secondary)'"
-                ></h3>
+                <div class="flex gap-2">
+                  <h3
+                    class="mb-3 bold text-text-secondary"
+                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
+                  ></h3>
+                  <fa-icon
+                    class="icon"
+                    [icon]="['fas', 'circle-info']"
+                    [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
+                    tooltipPosition="top"
+                  />
+                </div>
                 <h4
-                  class="whitespace-pre-line mb-4 text-base text-sm"
-                  [style.color]="'var(--p-text-tertiary)'"
+                  class="whitespace-pre-line mb-4 text-base text-sm text-text-tertiary"
                   jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
                 ></h4>
 
