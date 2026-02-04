@@ -148,11 +148,15 @@ p-step[data-p-active='true'] .p-step-title {
 // Round the header separately for visual consistency
 .p-dialog-header {
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0 !important;
+  background: var(--p-surface-card, #ffffff) !important;
+  color: var(--p-text-primary) !important;
 }
 
 // Round the content area
 .p-dialog-content {
   border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl) !important;
+  background: var(--p-surface-card, #ffffff) !important;
+  color: var(--p-text-primary) !important;
 }
 
 /* -------------------------------

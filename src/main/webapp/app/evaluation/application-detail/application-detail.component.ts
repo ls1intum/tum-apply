@@ -2,9 +2,12 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
+import { DialogComponent } from 'app/shared/components/atoms/dialog/dialog.component';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FormsModule } from '@angular/forms';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
@@ -14,6 +17,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
 import { ApplicationEvaluationResourceApiService } from 'app/generated/api/applicationEvaluationResourceApi.service';
 import { ApplicationResourceApiService } from 'app/generated/api/applicationResourceApi.service';
+import { InterviewResourceApiService } from 'app/generated/api/interviewResourceApi.service';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { AcceptDTO } from 'app/generated/model/acceptDTO';
 import { RejectDTO } from 'app/generated/model/rejectDTO';
@@ -43,6 +47,9 @@ const CAROUSEL_SIZE = 7;
   imports: [
     ApplicationCarouselComponent,
     DividerModule,
+    DialogComponent,
+    CheckboxModule,
+    FormsModule,
     SearchFilterSortBar,
     TranslateModule,
     ButtonComponent,
@@ -89,6 +96,10 @@ export class ApplicationDetailComponent {
   reviewDialogVisible = signal<boolean>(false);
   reviewDialogMode = signal<'ACCEPT' | 'REJECT'>('ACCEPT');
 
+  // add to interview dialog
+  addToInterviewDialogVisible = signal<boolean>(false);
+  goToManagementAfterAdd = signal<boolean>(false);
+
   half = Math.floor(CAROUSEL_SIZE / 2); // Half the carousel size, used for centering
 
   canReview = computed(() => {
@@ -98,6 +109,11 @@ export class ApplicationDetailComponent {
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
     return state !== 'ACCEPTED' && state !== 'REJECTED';
+  });
+
+  isAlreadyInInterview = computed(() => {
+    const currentApplication = this.currentApplication();
+    return currentApplication?.applicationDetailDTO.applicationState === ApplicationStateEnum.Interview;
   });
 
   currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
@@ -116,9 +132,11 @@ export class ApplicationDetailComponent {
 
   private readonly evaluationResourceService = inject(ApplicationEvaluationResourceApiService);
   private readonly applicationResourceService = inject(ApplicationResourceApiService);
+  private readonly interviewResourceService = inject(InterviewResourceApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private toastService = inject(ToastService);
+  private readonly translateService = inject(TranslateService);
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
 
@@ -570,5 +588,53 @@ export class ApplicationDetailComponent {
         this.currentDocumentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+  }
+
+  private openAddToInterviewDialog(): void {
+    this.addToInterviewDialogVisible.set(true);
+    this.goToManagementAfterAdd.set(false);
+  }
+
+  private async onAddToInterview(): Promise<void> {
+    const application = this.currentApplication();
+    if (!application?.jobId) {
+      this.toastService.showErrorKey('evaluation.errors.noJobId');
+      return;
+    }
+
+    try {
+      const processes = await firstValueFrom(this.interviewResourceService.getInterviewOverview());
+      const matchingProcess = processes.find(p => p.jobId === application.jobId);
+
+      if (!matchingProcess) {
+        this.toastService.showErrorKey('evaluation.errors.noProcessFound');
+        return;
+      }
+
+      // 2. Add applicant to the found process
+      await firstValueFrom(
+        this.interviewResourceService.addApplicantsToInterview(matchingProcess.processId, {
+          applicationIds: [application.applicationDetailDTO.applicationId],
+        }),
+      );
+
+      // 3. Update local state
+      this.updateCurrentApplicationState(ApplicationStateEnum.Interview);
+      this.toastService.showSuccess({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),
+      });
+      this.addToInterviewDialogVisible.set(false);
+
+      // 4. Navigate if requested
+      if (this.goToManagementAfterAdd()) {
+        await this.router.navigate(['/interviews', matchingProcess.processId]);
+      }
+    } catch {
+      this.toastService.showError({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.error.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.error.detail'),
+      });
+    }
   }
 }

@@ -37,24 +37,67 @@
       (next)="onNext()"
       (prev)="onPrev()"
     />
-    <div class="review-actions">
+    <div class="action-buttons-wrapper">
       <jhi-button
-        [label]="'evaluation.accept' | translate"
+        class="w-full"
+        [styleClass]="'w-full'"
+        [label]="'evaluation.addToInterview' | translate"
         variant="outlined"
-        severity="success"
-        icon="check"
-        [disabled]="!canReview()"
-        (click)="openAcceptDialog()"
+        severity="primary"
+        icon="calendar"
+        [disabled]="!canReview() || isAlreadyInInterview()"
+        (click)="openAddToInterviewDialog()"
       />
-      <jhi-button
-        [label]="'evaluation.reject' | translate"
-        variant="outlined"
-        severity="danger"
-        icon="xmark"
-        [disabled]="!canReview()"
-        (click)="openRejectDialog()"
-      />
+      <div class="review-actions">
+        <jhi-button
+          [label]="'evaluation.accept' | translate"
+          variant="outlined"
+          severity="success"
+          icon="check"
+          [disabled]="!canReview()"
+          (click)="openAcceptDialog()"
+        />
+        <jhi-button
+          [label]="'evaluation.reject' | translate"
+          variant="outlined"
+          severity="danger"
+          icon="xmark"
+          [disabled]="!canReview()"
+          (click)="openRejectDialog()"
+        />
+      </div>
     </div>
+
+    <jhi-dialog
+      [visible]="addToInterviewDialogVisible()"
+      (visibleChange)="addToInterviewDialogVisible.set($event)"
+      header="evaluation.addToInterviewDialog.header"
+      [shouldTranslateHeader]="true"
+      width="34rem"
+    >
+      <div class="flex flex-col gap-4">
+        <p class="m-0" jhiTranslate="evaluation.addToInterviewDialog.message"></p>
+        <div class="flex items-center gap-2">
+          <p-checkbox [(ngModel)]="goToManagementAfterAdd" inputId="goToManagement" [binary]="true" size="small" />
+          <label for="goToManagement" class="cursor-pointer mb-0" jhiTranslate="evaluation.addToInterviewDialog.goToManagement"></label>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <jhi-button
+            label="entity.action.cancel"
+            [shouldTranslate]="true"
+            variant="text"
+            severity="secondary"
+            (click)="addToInterviewDialogVisible.set(false)"
+          />
+          <jhi-button
+            label="evaluation.addToInterviewDialog.confirm"
+            [shouldTranslate]="true"
+            severity="primary"
+            (click)="onAddToInterview()"
+          />
+        </div>
+      </div>
+    </jhi-dialog>
 
     <jhi-review-dialog
       [application]="currentApplication()"
