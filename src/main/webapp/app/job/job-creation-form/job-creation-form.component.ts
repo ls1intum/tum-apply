@@ -127,9 +127,6 @@ export class JobCreationFormComponent {
   /** Snapshot of the last successfully saved job data (used for change detection) */
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
 
-  /** Tracks if the user has attempted to publish (triggers validation display) */
-  publishAttempted = signal<boolean>(false);
-
   // ═══════════════════════════════════════════════════════════════════════════
   // JOB DESCRIPTION SIGNALS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -240,9 +237,6 @@ export class JobCreationFormComponent {
   /** Step 3: Image selection for job banner */
   imageForm = this.createImageForm();
 
-  /** Step 4: Additional info including privacy consent */
-  additionalInfoForm = this.createAdditionalInfoForm();
-
   // ═══════════════════════════════════════════════════════════════════════════
   // TEMPLATE REFERENCES (ViewChild)
   // ═══════════════════════════════════════════════════════════════════════════
@@ -293,11 +287,6 @@ export class JobCreationFormComponent {
 
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
-
-  /** Signal tracking the privacy consent checkbox state */
-  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
-    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
-  });
 
   /**
    * Effect: Updates validity signals whenever form status changes.
@@ -541,12 +530,7 @@ export class JobCreationFormComponent {
    */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
-    this.publishAttempted.set(true);
 
-    if (!Boolean(this.privacyAcceptedSignal())) {
-      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
-      return;
-    }
     if (!jobData) return;
 
     try {
@@ -923,16 +907,6 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Creates the Step 4 form group for additional information.
-   * Contains the required privacy consent checkbox.
-   */
-  private createAdditionalInfoForm(): FormGroup {
-    return this.fb.group({
-      privacyAccepted: [false, [Validators.required]],
-    });
-  }
-
-  /**
    * Constructs a JobFormDTO from all form values.
    * Combines data from all steps into a single DTO for API submission.
    *
@@ -1093,10 +1067,6 @@ export class JobCreationFormComponent {
         imageType: imageType as 'JOB_BANNER' | 'DEFAULT_JOB_BANNER' | 'PROFILE_PICTURE',
       });
     }
-
-    this.additionalInfoForm.patchValue({
-      privacyAccepted: false,
-    });
 
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
   }
