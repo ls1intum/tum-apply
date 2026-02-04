@@ -32,7 +32,7 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType];
   standalone: true,
 })
 export class UploadButtonComponent {
-  readonly maxUploadSizeInMb = 1;
+  readonly maxUploadSizeInMb = 25;
 
   fileUploadComponent = viewChild<FileUpload>(FileUpload);
 
@@ -202,8 +202,7 @@ export class UploadButtonComponent {
             : doc,
         ) ?? [];
       this.documentIds.set(updatedDocs);
-    } catch (err) {
-      console.error('Failed to rename document', err);
+    } catch {
       this.toastService.showErrorKey('entity.upload.error.rename_failed');
     }
   }
@@ -212,8 +211,9 @@ export class UploadButtonComponent {
     if (bytes === 0) return '0 B';
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)).toString() + ' ' + sizes[i];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
+    const size = bytes / Math.pow(k, i);
+    return `${parseFloat(size.toFixed(1))} ${sizes[i]}`;
   }
 
   private isDuplicateFilename(filename: string): boolean {
@@ -222,19 +222,47 @@ export class UploadButtonComponent {
   }
 
   private async processFiles(files: File[]): Promise<void> {
+    const maxSizeBytes = this.maxUploadSizeInMb * 1024 * 1024;
+    const maxTotalSizeMb = 25;
+    const maxTotalSizeBytes = maxTotalSizeMb * 1024 * 1024;
+
+    // If single file upload
+    if (files.length === 1) {
+      const file = files[0];
+      if (file.size > maxSizeBytes) {
+        this.toastService.showErrorKey('entity.upload.error.too_large_detailed', {
+          maxSize: this.maxUploadSizeInMb.toString(),
+          totalSize: `${file.name} (${this.formatSize(file.size)})`,
+        });
+        this.fileUploadComponent()?.clear();
+        this.resetNativeFileInput();
+        return;
+      }
+    }
+
+    // If multiple files upload
+    if (files.length > 1) {
+      const oversizedFiles = files.filter(file => file.size > maxSizeBytes);
+      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
+      // Show total error if any file is too large OR total exceeds limit
+      if (oversizedFiles.length > 0 || totalSize > maxTotalSizeBytes) {
+        this.toastService.showErrorKey('entity.upload.error.total_too_large', {
+          maxTotal: maxTotalSizeMb.toString(),
+          actualTotal: this.formatSize(totalSize),
+        });
+        this.fileUploadComponent()?.clear();
+        this.resetNativeFileInput();
+        return;
+      }
+    }
+
+    // Only add files if validation passes
     const selectedFile = this.selectedFiles();
     if (selectedFile === undefined) {
       this.selectedFiles.set(files);
     } else {
       this.selectedFiles.set([...selectedFile, ...files]);
-    }
-
-    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-    if (totalSize > this.maxUploadSizeInMb * 1024 * 1024) {
-      this.toastService.showErrorKey('entity.upload.error.too_large');
-      this.selectedFiles.set(undefined);
-      this.resetNativeFileInput();
-      return;
     }
 
     this.fileUploadComponent()?.clear();

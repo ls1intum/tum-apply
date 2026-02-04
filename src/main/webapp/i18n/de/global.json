@@ -293,7 +293,14 @@
       },
       "error": {
         "replace_failed": "Dokument konnte nicht ersetzt werden",
-        "too_large": "Dateien sind zu groß",
+        "too_large_detailed": {
+          "summary": "Dateien zu groß",
+          "detail": "Maximale Upload-Größe ist {{maxSize}} MB pro Datei. Zu große Datei: {{totalSize}}"
+        },
+        "total_too_large": {
+          "summary": "Gesamtgröße überschreitet Limit",
+          "detail": "Maximale Gesamtgröße ist {{maxTotal}} MB.\nDeine Dateien insgesamt: {{actualTotal}}"
+        },
         "upload_failed": "Upload fehlgeschlagen",
         "delete_failed": "Dokument konnte nicht gelöscht werden",
         "rename_failed": "Dokument konnte nicht umbenannt werden"
