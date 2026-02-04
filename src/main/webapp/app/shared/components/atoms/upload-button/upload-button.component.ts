@@ -212,7 +212,7 @@ export class UploadButtonComponent {
     if (bytes === 0) return '0 B';
     const k = 1000; // Use decimal units (1000) instead of binary (1024) to match OS file sizes
     const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
     const size = bytes / Math.pow(k, i);
     return size.toFixed(1) + ' ' + sizes[i];
   }
