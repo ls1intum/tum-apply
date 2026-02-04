@@ -418,6 +418,54 @@ export class ApplicationDetailComponent {
     );
   }
 
+  async onAddToInterview(): Promise<void> {
+    const application = this.currentApplication();
+    if (!application?.jobId) {
+      this.toastService.showErrorKey('evaluation.errors.noJobId');
+      return;
+    }
+
+    try {
+      const processes = await firstValueFrom(this.interviewResourceService.getInterviewOverview());
+      const matchingProcess = processes.find(p => p.jobId === application.jobId);
+
+      if (!matchingProcess) {
+        this.toastService.showErrorKey('evaluation.errors.noProcessFound');
+        return;
+      }
+
+      // 2. Add applicant to the found process
+      await firstValueFrom(
+        this.interviewResourceService.addApplicantsToInterview(matchingProcess.processId, {
+          applicationIds: [application.applicationDetailDTO.applicationId],
+        }),
+      );
+
+      // 3. Update local state
+      this.updateCurrentApplicationState(ApplicationStateEnum.Interview);
+      this.toastService.showSuccess({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),
+      });
+      this.addToInterviewDialogVisible.set(false);
+
+      // 4. Navigate if requested
+      if (this.goToManagementAfterAdd()) {
+        await this.router.navigate(['/interviews', matchingProcess.processId]);
+      }
+    } catch {
+      this.toastService.showError({
+        summary: this.translateService.instant('evaluation.addToInterviewDialog.error.summary'),
+        detail: this.translateService.instant('evaluation.addToInterviewDialog.error.detail'),
+      });
+    }
+  }
+
+  openAddToInterviewDialog(): void {
+    this.addToInterviewDialogVisible.set(true);
+    this.goToManagementAfterAdd.set(false);
+  }
+
   private mapTranslationKeysToEnumValues(translationKeys: string[]): string[] {
     const keyMap = new Map(this.availableStatusOptions.map(option => [option.label, option.key]));
     return translationKeys.map(key => keyMap.get(key) ?? key);
@@ -588,53 +636,5 @@ export class ApplicationDetailComponent {
         this.currentDocumentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
-  }
-
-  private openAddToInterviewDialog(): void {
-    this.addToInterviewDialogVisible.set(true);
-    this.goToManagementAfterAdd.set(false);
-  }
-
-  private async onAddToInterview(): Promise<void> {
-    const application = this.currentApplication();
-    if (!application?.jobId) {
-      this.toastService.showErrorKey('evaluation.errors.noJobId');
-      return;
-    }
-
-    try {
-      const processes = await firstValueFrom(this.interviewResourceService.getInterviewOverview());
-      const matchingProcess = processes.find(p => p.jobId === application.jobId);
-
-      if (!matchingProcess) {
-        this.toastService.showErrorKey('evaluation.errors.noProcessFound');
-        return;
-      }
-
-      // 2. Add applicant to the found process
-      await firstValueFrom(
-        this.interviewResourceService.addApplicantsToInterview(matchingProcess.processId, {
-          applicationIds: [application.applicationDetailDTO.applicationId],
-        }),
-      );
-
-      // 3. Update local state
-      this.updateCurrentApplicationState(ApplicationStateEnum.Interview);
-      this.toastService.showSuccess({
-        summary: this.translateService.instant('evaluation.addToInterviewDialog.success.summary'),
-        detail: this.translateService.instant('evaluation.addToInterviewDialog.success.detail'),
-      });
-      this.addToInterviewDialogVisible.set(false);
-
-      // 4. Navigate if requested
-      if (this.goToManagementAfterAdd()) {
-        await this.router.navigate(['/interviews', matchingProcess.processId]);
-      }
-    } catch {
-      this.toastService.showError({
-        summary: this.translateService.instant('evaluation.addToInterviewDialog.error.summary'),
-        detail: this.translateService.instant('evaluation.addToInterviewDialog.error.detail'),
-      });
-    }
   }
 }
