@@ -299,7 +299,7 @@
         },
         "total_too_large": {
           "summary": "Gesamtgröße überschreitet Limit",
-          "detail": "Maximale Gesamtgröße ist {{maxTotal}} MB. Deine Dateien insgesamt: {{actualTotal}}"
+          "detail": "Maximale Gesamtgröße ist {{maxTotal}} MB.\nDeine Dateien insgesamt: {{actualTotal}}"
         },
         "upload_failed": "Upload fehlgeschlagen",
         "delete_failed": "Dokument konnte nicht gelöscht werden",
