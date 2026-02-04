@@ -8,14 +8,14 @@
     <modifyDataType
       tableName="applicants"
       columnName="master_grade"
-      newDataType="VARCHAR(50)"/>
+      newDataType="VARCHAR(255)"/>
   </changeSet>
 
   <changeSet id="015-expand-bachelor-grade" author="aniruddh">
     <modifyDataType
       tableName="applicants"
       columnName="bachelor_grade"
-      newDataType="VARCHAR(50)"/>
+      newDataType="VARCHAR(255)"/>
   </changeSet>
 
 </databaseChangeLog>

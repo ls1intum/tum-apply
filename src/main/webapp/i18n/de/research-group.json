@@ -410,6 +410,50 @@
         "header": "Department löschen",
         "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
       }
+    },
+    "imageLibrary": {
+      "title": "Forschungsgruppen-Bildbibliothek",
+      "stats": {
+        "totalImages": "Bilder insgesamt",
+        "inUse": "In Verwendung",
+        "notInUse": "Nicht in Verwendung"
+      },
+      "loading": "Bilder werden geladen...",
+      "empty": {
+        "noInUse": "Derzeit sind keine Bilder in Verwendung",
+        "noNotInUse": "Alle Bilder sind derzeit in Verwendung",
+        "noImages": "Noch keine Bilder hochgeladen"
+      },
+      "section": {
+        "inUse": "In Verwendung",
+        "notInUse": "Nicht in Verwendung"
+      },
+      "delete": {
+        "title": "Bild löschen",
+        "message": "Bist du sicher, dass du dieses Bild löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "titleInUse": "Bild löschen",
+        "messageInUse": "Dieses Bild wird derzeit von einer oder mehreren Stellen verwendet. Bist du sicher, dass du dieses Bild löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
+      },
+      "success": {
+        "imageUploaded": {
+          "summary": "Bild hochgeladen",
+          "detail": "Bild erfolgreich hochgeladen"
+        },
+        "imageDeleted": {
+          "summary": "Bild gelöscht",
+          "detail": "Bild erfolgreich gelöscht"
+        }
+      },
+      "error": {
+        "loadFailed": {
+          "summary": "Laden fehlgeschlagen",
+          "detail": "Bilder konnten nicht geladen werden. Bitte versuche es erneut."
+        },
+        "deleteFailed": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
+        }
+      }
     }
   }
 }

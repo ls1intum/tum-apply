@@ -13,6 +13,7 @@ import { Location } from '@angular/common';
 import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { trimWebsiteUrl } from 'app/shared/util/util';
 import { ButtonColor, ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { getJobPDFLabels } from 'app/shared/language/pdf-labels';
@@ -24,6 +25,7 @@ import { JobDetailDTO } from 'app/generated/model/jobDetailDTO';
 import { PdfExportResourceApiService } from 'app/generated/api/pdfExportResourceApi.service';
 import { JobPreviewRequest, UserShortDTO } from 'app/generated';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { createMenuActionSignals } from 'app/shared/util/util';
@@ -66,6 +68,7 @@ export interface JobDetails {
   selector: 'jhi-job-detail',
   imports: [
     ButtonComponent,
+    BackButtonComponent,
     FontAwesomeModule,
     TranslateModule,
     TranslateDirective,
@@ -74,6 +77,7 @@ export interface JobDetails {
     TooltipModule,
     MenuComponent,
     LocalizedDatePipe,
+    InfoBoxComponent,
   ],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss',
@@ -286,10 +290,6 @@ export class JobDetailComponent {
       void this.init();
     }
   });
-
-  onBack(): void {
-    this.location.back();
-  }
 
   isProfessorOrEmployee(): boolean {
     return this.accountService.hasAnyAuthority([UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee]);
