@@ -6,8 +6,10 @@ import de.tum.cit.aet.ai.dto.AIJobDescriptionTranslationDTO;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.job.dto.JobFormDTO;
 import de.tum.cit.aet.job.service.JobService;
+
 import java.time.Duration;
 import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.azure.openai.AzureOpenAiChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
@@ -93,10 +95,17 @@ public class AiService {
      * @return The translated text response with detected and target language info
      */
     private AIJobDescriptionTranslationDTO translateText(String text, String toLang) {
+        Set<String> inclusive = "de".equals(toLang) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
+        Set<String> nonInclusive = "de".equals(toLang) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
+
         return chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
-            .user(u -> u.text(translationResource).param("text", text).param("targetLanguage", toLang))
+            .user(u -> u.text(translationResource)
+                .param("text", text)
+                .param("targetLanguage", toLang)
+                .param("inclusiveWords", String.join(", ", inclusive))
+                .param("nonInclusiveWords", String.join(", ", nonInclusive)))
             .call()
             .entity(AIJobDescriptionTranslationDTO.class);
     }
