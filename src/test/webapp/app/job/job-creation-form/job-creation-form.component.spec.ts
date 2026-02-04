@@ -52,7 +52,6 @@ function fillValidJobForm(component: JobCreationFormComponent) {
     contractDuration: 3,
     fundingType: { value: 'FULLY_FUNDED', name: 'Fully Funded' },
   });
-  component.additionalInfoForm.patchValue({ privacyAccepted: true });
 
   component.basicInfoForm.updateValueAndValidity();
   component.positionDetailsForm.updateValueAndValidity();
@@ -318,13 +317,6 @@ describe('JobCreationFormComponent', () => {
   describe('Job Publishing', () => {
     it.each([
       {
-        name: 'reject when privacy not accepted',
-        setup: (comp: JobCreationFormComponent) => comp.additionalInfoForm.patchValue({ privacyAccepted: false }),
-        expectations: () => {
-          expect(mockToastService.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
-        },
-      },
-      {
         name: 'publish successfully and navigate',
         setup: (comp: JobCreationFormComponent) => {
           fillValidJobForm(comp);
@@ -351,7 +343,6 @@ describe('JobCreationFormComponent', () => {
       {
         name: 'skip when form data invalid',
         setup: (comp: JobCreationFormComponent) => {
-          comp.additionalInfoForm.patchValue({ privacyAccepted: true });
           comp.basicInfoForm.patchValue({ title: '' });
           comp.positionDetailsForm.patchValue({ description: '' });
         },

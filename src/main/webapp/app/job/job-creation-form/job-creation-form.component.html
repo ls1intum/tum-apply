@@ -414,19 +414,6 @@
     <div class="data-privacy-notice">
       <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
     </div>
-    <div [formGroup]="additionalInfoForm">
-      <div class="flex align-items-start">
-        <div class="relative mr-2">
-          <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
-          <span class="required">*</span>
-        </div>
-        <label jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></label>
-      </div>
-
-      @if (privacyAcceptedSignal() === false && publishAttempted()) {
-        <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
-      }
-    </div>
   </ng-template>
 
   <!-- Saving State Panel -->
