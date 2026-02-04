@@ -171,7 +171,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             JOIN a.applicant ap
             WHERE a.job.jobId = :jobId
-            AND a.state IN ('SENT', 'IN_REVIEW')
+            AND a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW')
         """
     )
     Set<Application> findApplicantsToNotify(@Param("jobId") UUID jobId);
@@ -184,8 +184,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             SET a.state =
                 CASE
                     WHEN a.state = 'SAVED' THEN 'JOB_CLOSED'
-                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
-                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
                     ELSE a.state
                 END
             WHERE a.job.jobId = :jobId

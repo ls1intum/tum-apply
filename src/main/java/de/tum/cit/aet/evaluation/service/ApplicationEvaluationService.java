@@ -38,9 +38,11 @@ import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ApplicationEvaluationService {
 
     private final JobService jobService;
@@ -59,7 +61,11 @@ public class ApplicationEvaluationService {
         ApplicationState.INTERVIEW
     );
 
-    private static final Set<ApplicationState> REVIEW_STATES = Set.of(ApplicationState.SENT, ApplicationState.IN_REVIEW);
+    private static final Set<ApplicationState> REVIEW_STATES = Set.of(
+        ApplicationState.SENT,
+        ApplicationState.IN_REVIEW,
+        ApplicationState.INTERVIEW
+    );
 
     private static final Set<String> SORTABLE_FIELDS = Set.of("appliedAt", "name", "status", "job");
 

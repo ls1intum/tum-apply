@@ -405,7 +405,9 @@ export class ApplicationDetailComponent {
     this.applications.update(apps =>
       apps.map(application =>
         application.jobId === jobId &&
-        (application.applicationDetailDTO.applicationState === 'SENT' || application.applicationDetailDTO.applicationState === 'IN_REVIEW')
+        (application.applicationDetailDTO.applicationState === 'SENT' ||
+          application.applicationDetailDTO.applicationState === 'IN_REVIEW' ||
+          application.applicationDetailDTO.applicationState === 'INTERVIEW')
           ? {
               ...application,
               applicationDetailDTO: {
