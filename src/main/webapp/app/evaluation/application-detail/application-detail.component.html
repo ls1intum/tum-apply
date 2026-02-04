@@ -88,19 +88,24 @@
         </div>
       </ng-template>
 
-      <!-- Checkbox section -->
-      <ul class="review-checkboxes">
-        <li>
-          <p-checkbox [(ngModel)]="goToManagementAfterAdd" inputId="goToManagement" [binary]="true" />
-          <label for="goToManagement" class="cursor-pointer" jhiTranslate="evaluation.addToInterviewDialog.goToManagement"></label>
-        </li>
-      </ul>
+      <!-- Confirmation text -->
+      <p jhiTranslate="evaluation.addToInterviewDialog.confirmationText"></p>
 
       <!-- Footer buttons -->
       <ng-template pTemplate="footer">
         <div class="footer-buttons">
           <jhi-button [label]="'entity.action.cancel' | translate" variant="text" (click)="addToInterviewDialogVisible.set(false)" />
-          <jhi-button [label]="'evaluation.addToInterviewDialog.confirm' | translate" severity="primary" (click)="onAddToInterview()" />
+          <jhi-button
+            [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
+            severity="primary"
+            (click)="onAddToInterview(true)"
+          />
+          <jhi-button
+            [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
+            variant="outlined"
+            severity="primary"
+            (click)="onAddToInterview(false)"
+          />
         </div>
       </ng-template>
     </p-dialog>

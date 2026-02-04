@@ -6,8 +6,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 import { DialogModule } from 'primeng/dialog';
-import { CheckboxModule } from 'primeng/checkbox';
-import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
@@ -49,8 +47,6 @@ const CAROUSEL_SIZE = 7;
     ApplicationCarouselComponent,
     DividerModule,
     DialogModule,
-    CheckboxModule,
-    FormsModule,
     FontAwesomeModule,
     SearchFilterSortBar,
     TranslateModule,
@@ -100,7 +96,6 @@ export class ApplicationDetailComponent {
 
   // add to interview dialog
   addToInterviewDialogVisible = signal<boolean>(false);
-  goToManagementAfterAdd = signal<boolean>(false);
 
   half = Math.floor(CAROUSEL_SIZE / 2); // Half the carousel size, used for centering
 
@@ -323,7 +318,6 @@ export class ApplicationDetailComponent {
 
   openAddToInterviewDialog(): void {
     this.addToInterviewDialogVisible.set(true);
-    this.goToManagementAfterAdd.set(false);
   }
   openAcceptDialog(): void {
     this.reviewDialogMode.set('ACCEPT');
@@ -335,7 +329,7 @@ export class ApplicationDetailComponent {
     this.reviewDialogVisible.set(true);
   }
 
-  async onAddToInterview(): Promise<void> {
+  async onAddToInterview(navigate: boolean): Promise<void> {
     const application = this.currentApplication();
     if (!application?.jobId) {
       this.toastService.showErrorKey('evaluation.errors.noJobId');
@@ -367,7 +361,7 @@ export class ApplicationDetailComponent {
       this.addToInterviewDialogVisible.set(false);
 
       // 4. Navigate if requested
-      if (this.goToManagementAfterAdd()) {
+      if (navigate) {
         await this.router.navigate(['/interviews', matchingProcess.processId]);
       }
     } catch {

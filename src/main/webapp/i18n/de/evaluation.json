@@ -60,9 +60,9 @@
     "addToInterview": "Zum Interview einladen",
     "addToInterviewDialog": {
       "header": "Bewerber:in zum Interview einladen",
-      "message": "Möchten Sie diese/n Bewerber:in zum Interviewprozess hinzufügen?",
-      "goToManagement": "Nach dem Hinzufügen zum Interview-Management wechseln",
-      "confirm": "Bestätigen",
+      "confirmationText": "Möchten Sie diese/n Bewerber:in wirklich zum Interviewprozess hinzufügen?",
+      "confirmAndNavigate": "Bestätigen & Navigieren",
+      "confirmAndStay": "Bestätigen & Hier bleiben",
       "success": {
         "summary": "Erfolg",
         "detail": "Bewerber:in zum Interviewprozess hinzugefügt"

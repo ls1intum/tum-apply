@@ -60,9 +60,9 @@
     "addToInterview": "Add to Interview",
     "addToInterviewDialog": {
       "header": "Add Applicant to Interview",
-      "message": "Do you want to add this applicant to the interview process?",
-      "goToManagement": "Go to Interview Management after adding",
-      "confirm": "Confirm",
+      "confirmationText": "Are you sure you want to add this applicant to the interview process?",
+      "confirmAndNavigate": "Confirm & Navigate",
+      "confirmAndStay": "Confirm & Stay",
       "success": {
         "summary": "Success",
         "detail": "Applicant added to interview process"
