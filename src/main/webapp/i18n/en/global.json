@@ -293,7 +293,14 @@
       },
       "error": {
         "replace_failed": "Failed to replace document",
-        "too_large": "Files are too large",
+        "too_large_detailed": {
+          "summary": "Files Too Large",
+          "detail": "Maximum upload size is {{maxSize}} MB per file. Oversized file: {{totalSize}}"
+        },
+        "total_too_large": {
+          "summary": "Total Size Exceeds Limit",
+          "detail": "Maximum total upload size is {{maxTotal}} MB.\nYour files total: {{actualTotal}}"
+        },
         "upload_failed": "Upload failed",
         "delete_failed": "Failed to delete document",
         "rename_failed": "Failed to rename document"
