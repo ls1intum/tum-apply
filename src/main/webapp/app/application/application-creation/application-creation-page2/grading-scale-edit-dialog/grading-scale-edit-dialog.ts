@@ -7,7 +7,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { GradingScaleLimitsData } from 'app/shared/util/grading-scale.utils';
 
-import { gradingScaleRangeValidator, gradingScaleTypeValidator } from './grading-scale-validators';
+import { gradingScaleRangeValidator, gradingScaleTypeValidator } from '../../../../shared/validators/grading-scale-validators';
 
 @Component({
   selector: 'jhi-grading-scale-edit-dialog',
