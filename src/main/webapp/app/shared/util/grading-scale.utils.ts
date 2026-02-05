@@ -1,9 +1,13 @@
+import { AbstractControl } from '@angular/forms';
+
 export type GradeType = 'letter' | 'numeric' | 'invalid';
 
-export type GradingScaleLimits = {
+export type GradingScaleLimitsData = {
   upperLimit: string;
   lowerLimit: string;
-} | null;
+};
+
+export type GradingScaleLimitsResult = GradingScaleLimitsData | null;
 
 /**
  * Determines the type of a grade (letter, numeric, or invalid)
@@ -87,7 +91,7 @@ export function isNumericInRange(grade: string, upper: string, lower: string): b
 /**
  * Detects if a grade is a letter grade
  */
-export function detectLetterGrade(grade: string): GradingScaleLimits {
+export function detectLetterGrade(grade: string): GradingScaleLimitsResult {
   const letterMatch = grade.match(/^([A-Z])([+\-*])?$/);
   if (!letterMatch) {
     return null;
@@ -126,7 +130,7 @@ const NUMERIC_GRADING_SCALES = [
 /**
  * Detects if a grade is a numeric grade and returns appropriate limits
  */
-export function detectNumericGrade(grade: string): GradingScaleLimits {
+export function detectNumericGrade(grade: string): GradingScaleLimitsResult {
   const normalizedValue = grade.replace(',', '.');
 
   // Validate format: only numbers with optional comma/dot
@@ -158,7 +162,7 @@ export function detectNumericGrade(grade: string): GradingScaleLimits {
 /**
  * Detects the grading scale based on a grade input
  */
-export function detectGradingScale(grade: string): GradingScaleLimits {
+export function detectGradingScale(grade: string): GradingScaleLimitsResult {
   if (!grade || grade.trim() === '') {
     return null;
   }
@@ -178,4 +182,20 @@ export function detectGradingScale(grade: string): GradingScaleLimits {
 
   // Check for numeric grades
   return detectNumericGrade(trimmedGrade);
+}
+
+/**
+ * Sets or removes a specific error on a FormControl without affecting other errors
+ */
+export function setControlError(control: AbstractControl, errorKey: string, hasError: boolean): void {
+  const currentErrors = control.errors ?? {};
+
+  if (hasError) {
+    // Add the error
+    control.setErrors({ ...currentErrors, [errorKey]: true });
+  } else {
+    // Remove the error
+    const errors = { ...currentErrors };
+    control.setErrors(Object.keys(errors).length > 0 ? errors : null);
+  }
 }
