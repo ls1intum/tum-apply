@@ -15,6 +15,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
+import { detectGradingScale } from '../../../shared/util/grading-scale.utils';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
@@ -158,11 +159,11 @@ export default class ApplicationCreationPage2Component {
     this.hasInitialized.set(true);
 
     if (data.bachelorGrade) {
-      const bachelorLimits = this.detectGradingScale(data.bachelorGrade);
+      const bachelorLimits = detectGradingScale(data.bachelorGrade);
       this.bachelorGradeLimits.set(bachelorLimits);
     }
     if (data.masterGrade) {
-      const masterLimits = this.detectGradingScale(data.masterGrade);
+      const masterLimits = detectGradingScale(data.masterGrade);
       this.masterGradeLimits.set(masterLimits);
     }
 
@@ -180,7 +181,7 @@ export default class ApplicationCreationPage2Component {
     const grade = this.bachelorGradeValue();
     if (grade === undefined) return;
 
-    const limits = this.detectGradingScale(grade ?? '');
+    const limits = detectGradingScale(grade ?? '');
     this.bachelorGradeLimits.set(limits);
   });
 
@@ -190,7 +191,7 @@ export default class ApplicationCreationPage2Component {
     const grade = this.masterGradeValue();
     if (grade === undefined) return;
 
-    const limits = this.detectGradingScale(grade ?? '');
+    const limits = detectGradingScale(grade ?? '');
     this.masterGradeLimits.set(limits);
   });
 
@@ -246,94 +247,5 @@ export default class ApplicationCreationPage2Component {
         }
       }
     });
-  }
-
-  detectGradingScale(grade: string): GradingScaleLimits {
-    if (!grade || grade.trim() === '') {
-      return null;
-    }
-
-    const trimmedGrade = grade.trim().toUpperCase();
-
-    // Ignore multiple letters without modifiers
-    if (/^[A-Z]{2,}$/.test(trimmedGrade)) {
-      return null;
-    }
-
-    // Check for letter grades
-    const letterResult = this.detectLetterGrade(trimmedGrade);
-    if (letterResult) {
-      return letterResult;
-    }
-
-    // Check for numeric grades
-    return this.detectNumericGrade(trimmedGrade);
-  }
-
-  private detectLetterGrade(grade: string): GradingScaleLimits {
-    const letterMatch = grade.match(/^([A-Z])([+\-*])?$/);
-    if (!letterMatch) {
-      return null;
-    }
-
-    const letter = letterMatch[1];
-    const modifier = letterMatch[2];
-
-    // If letter contains a modifier, add + to the upper bound
-    const hasModifier = modifier === '+' || modifier === '-' || modifier === '*';
-    const upperBound = hasModifier ? 'A+' : 'A';
-
-    // If letter is between A and E, propose common range A to E
-    if (letter >= 'A' && letter <= 'E') {
-      return { upperLimit: upperBound, lowerLimit: 'E' };
-    }
-
-    // All other letters are uncommon, propose range A to the letter itself
-    return { upperLimit: upperBound, lowerLimit: letter };
-  }
-
-  private detectNumericGrade(grade: string): GradingScaleLimits {
-    const normalizedValue = grade.replace(',', '.');
-
-    // Ignore number with non-numeric formats
-    if (!/^[\d]+([.,][\d]+)?$/.test(grade)) {
-      return null;
-    }
-    const numericValue = parseFloat(normalizedValue);
-
-    // Ignore values below 1
-    if (isNaN(numericValue) || numericValue < 1) {
-      return null;
-    }
-
-    // Define grading scale ranges (order matters!)
-    const gradingScales: {
-      maxValue: number;
-      upperLimit: string;
-      lowerLimit: string;
-      inclusive?: boolean;
-    }[] = [
-      { maxValue: 4.0, upperLimit: '1.0', lowerLimit: '4.0' }, // Cover range from 1.0 to 4.0 (f.e. German system)
-      { maxValue: 6.0, upperLimit: '6.0', lowerLimit: '4.0' }, // Cover range from 4.0 to 6.0 (f.e. Swiss system)
-      { maxValue: 10.0, upperLimit: '10', lowerLimit: '5' }, // Cover range from 6.0 to 10.0 (f.e. Spanish system)
-      { maxValue: 20.0, upperLimit: '20', lowerLimit: '10' }, // Cover range from 10.0 to 20.0 (f.e. French system)
-      { maxValue: 40.0, upperLimit: '40', lowerLimit: '20', inclusive: false }, // Cover range from 20.0 to 40.0 (no known systems, propose 40 - 20 for this range. Exclude 40 from this range as it's more likely to be the percentage range 100 - 40)
-      { maxValue: 50.0, upperLimit: '100', lowerLimit: '40', inclusive: false }, // Cover range from 40.0 to 50.0 (f.e. percentage based systems => percentage 100 to 50 is more likely which is why this range is limited to 50)
-      { maxValue: 100.0, upperLimit: '100', lowerLimit: '50' }, // Cover range from 50.0 to 100.0 (f.e. percentage based systems)
-      { maxValue: 110.0, upperLimit: '110', lowerLimit: '66' }, // Cover range from 100.0 to 110.0 (f.e. Italian system)
-    ];
-
-    // Find the first matching scale
-    for (const scale of gradingScales) {
-      const matches = scale.inclusive === false ? numericValue < scale.maxValue : numericValue <= scale.maxValue;
-
-      if (matches) {
-        return { upperLimit: scale.upperLimit, lowerLimit: scale.lowerLimit };
-      }
-    }
-
-    // Values above 110: Propose range from value to value/2
-    const lowerLimit = Math.round(numericValue / 2);
-    return { upperLimit: numericValue.toString(), lowerLimit: lowerLimit.toString() };
   }
 }
