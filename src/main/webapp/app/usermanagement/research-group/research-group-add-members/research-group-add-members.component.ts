@@ -54,7 +54,7 @@ export class ResearchGroupAddMembersComponent {
   private readonly LOADER_DELAY_MS = 250;
   private loaderTimeout: number | null = null;
 
-  // Local mock users for UI testing without Keycloak/backend
+  // Local mock users for UI testing without Keycloak/server
   private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
   private readonly MOCK_USERS: KeycloakUserDTO[] = [
     {
