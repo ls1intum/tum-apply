@@ -1,39 +1,39 @@
-<div class="flex flex-col gap-4">
-  <div class="flex items-end gap-4">
-    <!-- Upper Limit Input -->
-    <div class="flex-1">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
-        [(model)]="upperLimit"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeUpperLimit' | translate"
-      />
+<form [formGroup]="limitsForm()">
+  <div class="flex flex-col gap-4">
+    <div class="flex items-start gap-4">
+      <!-- Upper Limit Input -->
+      <div class="flex-1">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
+          [control]="limitsForm().controls.upperLimit"
+          [(model)]="data().upperLimit"
+        />
+      </div>
+
+      <!-- Exchange Icon Button -->
+      <button
+        type="button"
+        class="mt-7 p-2 rounded-lg hover:bg-background-surface-alt transition-colors"
+        (click)="onSwap()"
+        [attr.aria-label]="'entity.applicationPage2.gradingScaleDialog.swap' | translate"
+      >
+        <fa-icon [icon]="['fas', 'arrow-right-arrow-left']" class="text-info-default text-xl" />
+      </button>
+
+      <!-- Lower Limit Input -->
+      <div class="flex-1">
+        <jhi-string-input
+          label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
+          [control]="limitsForm().controls.lowerLimit"
+          [(model)]="data().lowerLimit"
+        />
+      </div>
     </div>
 
-    <!-- Exchange Icon Button -->
-    <button
-      type="button"
-      class="mb-6 p-2 rounded-lg hover:bg-background-surface-alt transition-colors"
-      (click)="onSwap()"
-      [attr.aria-label]="'entity.applicationPage2.gradingScaleDialog.swap' | translate"
-    >
-      <fa-icon [icon]="['fas', 'arrow-right-arrow-left']" class="text-info-default text-xl" />
-    </button>
-
-    <!-- Lower Limit Input -->
-    <div class="flex-1">
-      <jhi-string-input
-        label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
-        [(model)]="lowerLimit"
-        icon="circle-info"
-        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGradeLowerLimit' | translate"
-      />
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-2 mt-4">
+      <jhi-button label="button.cancel" severity="secondary" [shouldTranslate]="true" (click)="onCancel()" />
+      <jhi-button label="button.save" severity="primary" [shouldTranslate]="true" [disabled]="!isValid()" (click)="onSave()" />
     </div>
   </div>
-
-  <!-- Action Buttons -->
-  <div class="flex justify-end gap-2 mt-4">
-    <jhi-button label="button.cancel" severity="secondary" variant="outlined" [shouldTranslate]="true" (click)="onCancel()" />
-    <jhi-button label="button.save" severity="primary" [shouldTranslate]="true" [disabled]="!isValid()" (click)="onSave()" />
-  </div>
-</div>
+</form>
