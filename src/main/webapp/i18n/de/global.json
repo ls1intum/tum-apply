@@ -123,7 +123,7 @@
         "min": "Dieses Feld muss mind. {{min}} sein.",
         "max": "Dieses Feld darf max. {{max}} sein.",
         "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
-        "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
+        "invalidLimitType": "Bitte verwende dasselbe Format wie die Note.",
         "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
         "boundaryMismatch": "Die höchstmögliche Note muss besser sein als die niedrigste Note zum Bestehen.",
         "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."

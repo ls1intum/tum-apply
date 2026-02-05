@@ -83,7 +83,7 @@ export abstract class BaseInputDirective<T> {
       min: this.translate.instant('global.input.error.min', { min: val?.min }),
       max: this.translate.instant('global.input.error.max', { max: val?.max }),
       tooManyDecimals: this.translate.instant('global.input.error.tooManyDecimals'),
-      invalidGrade: this.translate.instant('global.input.error.invalidGrade'),
+      invalidLimitType: this.translate.instant('global.input.error.invalidLimitType'),
       formatMismatch: this.translate.instant('global.input.error.formatMismatch'),
       boundaryMismatch: this.translate.instant('global.input.error.boundaryMismatch'),
       outOfRange: this.translate.instant('global.input.error.outOfRange'),
