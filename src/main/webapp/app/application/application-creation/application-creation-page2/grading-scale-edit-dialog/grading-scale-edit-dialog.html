@@ -7,6 +7,8 @@
           label="{{ 'entity.applicationPage2.label.gradeUpperLimit' | translate }}"
           [control]="limitsForm().controls.upperLimit"
           [(model)]="data().upperLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.gradeUpperLimit' | translate"
         />
       </div>
 
@@ -26,6 +28,8 @@
           label="{{ 'entity.applicationPage2.label.gradeLowerLimit' | translate }}"
           [control]="limitsForm().controls.lowerLimit"
           [(model)]="data().lowerLimit"
+          icon="circle-info"
+          [tooltipText]="'entity.applicationPage2.tooltip.gradeLowerLimit' | translate"
         />
       </div>
     </div>

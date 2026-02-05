@@ -390,8 +390,8 @@
         "changeScale": "Change Scale"
       },
       "tooltip": {
-        "bachelorGradeUpperLimit": "Enter the highest achievable grade in your Bachelor's degree grading system (e.g. 1.0 in Germany).",
-        "bachelorGradeLowerLimit": "Enter the lowest passing grade in your Bachelor's degree grading system (e.g. 4.0 in Germany)",
+        "gradeUpperLimit": "Enter the highest achievable grade in your degree grading system (e.g. 1.0 in Germany).",
+        "gradeLowerLimit": "Enter the lowest passing grade in your degree grading system (e.g. 4.0 in Germany).",
         "bachelorGrade": "Enter your final Bachelor's Grade according to your institution's grading system.",
         "masterGradeUpperLimit": "Enter the highest achievable grade in your Master's degree grading system (e.g. 1.0 in Germany).",
         "masterGradeLowerLimit": "Enter the lowest passing grade in your Master's degree grading system (e.g. 4.0 in Germany)",

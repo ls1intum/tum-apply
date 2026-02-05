@@ -390,8 +390,8 @@
         "changeScale": "Skala ändern"
       },
       "tooltip": {
-        "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
-        "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
+        "gradeUpperLimit": "Gib die bestmögliche Note in deinem Notensystem an (z. B. 1,0 in Deutschland).",
+        "gradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Notensystem an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterGradeUpperLimit": "Gib die bestmögliche Note in deinem Master-Notensystem an (z. B. 1,0 in Deutschland).",
         "masterGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Master-Notensystem an (z. B. 4,0 in Deutschland).",
