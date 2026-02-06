@@ -38,6 +38,52 @@
       (prev)="onPrev()"
     />
 
+    <!-- TODO: Replace p-dialog with jhi-dialog -->
+    <p-dialog
+      [modal]="true"
+      [(visible)]="addToInterviewDialogVisible"
+      styleClass="review-dialog"
+      [dismissableMask]="true"
+      [closeOnEscape]="true"
+      [draggable]="false"
+      appendTo="body"
+    >
+      <!-- Header (applicant + job title) - matches review-dialog style -->
+      <ng-template #header>
+        <div class="info">
+          <span class="applicant-name">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
+          <div class="job-name">
+            <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+            <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Confirmation text -->
+      <p jhiTranslate="evaluation.addToInterviewDialog.confirmationText"></p>
+
+      <!-- Footer buttons -->
+      <ng-template pTemplate="footer">
+        <div class="flex justify-between w-full pt-4 gap-2">
+          <jhi-button [label]="'entity.action.cancel' | translate" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
+
+          <div class="flex gap-2">
+            <jhi-button
+              [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
+              variant="outlined"
+              severity="primary"
+              (click)="onAddToInterview(false)"
+            />
+            <jhi-button
+              [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
+              severity="primary"
+              (click)="onAddToInterview(true)"
+            />
+          </div>
+        </div>
+      </ng-template>
+    </p-dialog>
+
     <jhi-review-dialog
       [application]="currentApplication()"
       [(visible)]="reviewDialogVisible"
@@ -47,66 +93,90 @@
     />
 
     @if (currentApplication(); as application) {
-      <div class="w-full flex flex-col md:flex-row justify-between items-end p-2 gap-4 border-b border-border-default overflow-hidden">
-        <div class="flex flex-col">
-          <div class="flex gap-1 flex-wrap items-center">
-            <span class="text-xl font-semibold">{{ application.applicationDetailDTO.applicant?.user?.name }}</span>
-            <div class="flex gap-2 ml-2">
-              @if (application.applicationDetailDTO.applicant?.user?.website) {
-                <a
-                  [href]="application.applicationDetailDTO.applicant?.user?.website"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-primary hover:text-primary-dark"
-                >
-                  <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
-                </a>
-              }
-              @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
-                <a
-                  [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-primary hover:text-primary-dark"
-                >
-                  <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
-                </a>
-              }
-            </div>
-          </div>
-          <div class="flex gap-3 flex-wrap text-sm">
-            <!-- Bachelor's Degree -->
-            @if (bachelorItemsComputed()[0]?.value || bachelorItemsComputed()[1]?.value) {
-              <div class="flex gap-1">
-                <span class="font-medium" jhiTranslate="evaluation.details.bachelorDegree">Bachelor's:</span>
-                <span>
-                  {{ bachelorItemsComputed()[0]?.value || '—' }}
-                  @if (bachelorItemsComputed()[1]?.value) {
-                    <span>, {{ bachelorItemsComputed()[1]?.value }}</span>
-                  }
-                  @if (bachelorItemsComputed()[2]?.value) {
-                    <span> (<span jhiTranslate="evaluation.details.grade">Grade</span>: {{ bachelorItemsComputed()[2]?.value }})</span>
-                  }
-                </span>
-              </div>
-              <span>&middot;</span>
+      <div
+        class="w-full flex flex-col xl:flex-row justify-between items-start xl:items-end p-2 gap-4 border-b border-border-default overflow-hidden"
+      >
+        <div class="flex gap-3">
+          <!-- Profile Image Placeholder / replace it with profile image component later on -->
+          <div
+            class="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-text-on-primary font-semibold text-lg flex-shrink-0"
+            [attr.aria-label]="'Profile picture placeholder for ' + application.applicationDetailDTO.applicant?.user?.name"
+          >
+            @if (application.applicationDetailDTO.applicant?.user?.name; as fullName) {
+              @let nameParts = fullName.trim().split(' ');
+              {{ nameParts[0]?.charAt(0)?.toUpperCase() || '' }}{{ nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '' }}
+            } @else {
+              ?
             }
-            <!-- Nationality -->
-            <span>{{
-              application.applicationDetailDTO.applicant?.user?.nationality
-                ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
-                : '—'
-            }}</span>
-            <!-- Gender (de-emphasized) -->
-            <span>&middot;</span>
-            <span>{{
-              application.applicationDetailDTO.applicant?.user?.gender
-                ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
-                : '—'
-            }}</span>
+          </div>
+
+          <div class="flex flex-col">
+            <div class="flex gap-1 flex-wrap items-center">
+              <span class="text-xl font-semibold">{{ application.applicationDetailDTO.applicant?.user?.name }}</span>
+              <div class="flex gap-2 ml-2">
+                @if (application.applicationDetailDTO.applicant?.user?.website) {
+                  <a
+                    [href]="application.applicationDetailDTO.applicant?.user?.website"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary hover:text-primary-dark"
+                  >
+                    <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
+                  </a>
+                }
+                @if (application.applicationDetailDTO.applicant?.user?.linkedinUrl) {
+                  <a
+                    [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary hover:text-primary-dark"
+                  >
+                    <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
+                  </a>
+                }
+              </div>
+            </div>
+            <div class="flex gap-3 flex-wrap text-sm">
+              <!-- Bachelor's Degree -->
+              @if (bachelorItemsComputed()[0]?.value || bachelorItemsComputed()[1]?.value) {
+                <div class="flex gap-1">
+                  <span>
+                    {{ bachelorItemsComputed()[0]?.value || '—' }}
+                    @if (bachelorItemsComputed()[1]?.value) {
+                      <span>, {{ bachelorItemsComputed()[1]?.value }}</span>
+                    }
+                    @if (bachelorItemsComputed()[2]?.value) {
+                      <span> (<span jhiTranslate="evaluation.details.grade">Grade</span>: {{ bachelorItemsComputed()[2]?.value }})</span>
+                    }
+                  </span>
+                </div>
+                <span>&middot;</span>
+              }
+              <!-- Nationality -->
+              <span>{{
+                application.applicationDetailDTO.applicant?.user?.nationality
+                  ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
+                  : '—'
+              }}</span>
+              <!-- Gender (de-emphasized) -->
+              <span>&middot;</span>
+              <span>{{
+                application.applicationDetailDTO.applicant?.user?.gender
+                  ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
+                  : '—'
+              }}</span>
+            </div>
           </div>
         </div>
         <div class="flex gap-3 flex-shrink-0">
+          <jhi-button
+            [label]="'evaluation.addToInterview' | translate"
+            variant="outlined"
+            severity="primary"
+            icon="calendar"
+            [disabled]="!canReview() || isAlreadyInInterview()"
+            (click)="openAddToInterviewDialog()"
+          />
           <jhi-button
             [label]="'evaluation.accept' | translate"
             variant="outlined"
