@@ -28,26 +28,12 @@ export abstract class BaseInputDirective<T> {
   helperTextRightClick = output();
 
   readonly formValidityVersion = signal(0);
+  isTouched = signal(false);
   isFocused = signal(false);
 
   formControl = computed(() => {
     const ctrl = this.control();
     return ctrl instanceof FormControl ? ctrl : new FormControl('');
-  });
-
-  isTouched = computed(() => {
-    this.formValidityVersion();
-    const ctrl = this.formControl();
-
-    if (this._isTouched()) return true;
-
-    if (ctrl.touched && ctrl.errors) {
-      const errorKeys = Object.keys(ctrl.errors);
-      const hasNonRequiredErrors = errorKeys.some(key => key !== 'required');
-      return hasNonRequiredErrors;
-    }
-
-    return false;
   });
 
   inputId = computed(() => this.id() ?? `jhi-input-${nextId++}`);
@@ -82,10 +68,7 @@ export abstract class BaseInputDirective<T> {
       invalidPostalCode: this.translate.instant('entity.applicationPage1.validation.postalCode'),
       min: this.translate.instant('global.input.error.min', { min: val?.min }),
       max: this.translate.instant('global.input.error.max', { max: val?.max }),
-      tooManyDecimals: this.translate.instant('global.input.error.tooManyDecimals'),
       invalidLimitType: this.translate.instant('global.input.error.invalidLimitType'),
-      formatMismatch: this.translate.instant('global.input.error.formatMismatch'),
-      boundaryMismatch: this.translate.instant('global.input.error.boundaryMismatch'),
       outOfRange: this.translate.instant('global.input.error.outOfRange'),
     };
     if (Object.prototype.hasOwnProperty.call(defaults, key)) {
@@ -93,8 +76,6 @@ export abstract class BaseInputDirective<T> {
     }
     return `Invalid: ${key}`;
   });
-
-  private _isTouched = signal(false);
 
   constructor() {
     effect(onCleanup => {
@@ -106,7 +87,7 @@ export abstract class BaseInputDirective<T> {
   }
 
   onBlur(): void {
-    this._isTouched.set(true);
+    this.isTouched.set(true);
     this.isFocused.set(false);
   }
 
@@ -115,7 +96,7 @@ export abstract class BaseInputDirective<T> {
   }
 
   protected markAsTouchedManually(): void {
-    this._isTouched.set(true);
+    this.isTouched.set(true);
   }
 
   // TODO: Add optional tooltip handling

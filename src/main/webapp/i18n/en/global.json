@@ -122,10 +122,7 @@
         "email": "Invalid email.",
         "min": "This field should be at least {{ min }}.",
         "max": "This field cannot be more than {{ max }}.",
-        "tooManyDecimals": "Please enter at most two decimal places.",
         "invalidLimitType": "Please use the same format as the grade.",
-        "formatMismatch": "Please enter all values in the same format.",
-        "boundaryMismatch": "The highest achievable grade must be better than the lowest passing grade.",
         "outOfRange": "The grade must be between the highest achievable and lowest passing grades."
       }
     },
