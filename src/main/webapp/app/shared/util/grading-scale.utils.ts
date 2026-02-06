@@ -1,16 +1,17 @@
 import { AbstractControl } from '@angular/forms';
 
-export type GradeType = 'letter' | 'numeric' | 'invalid';
+export type GradeType = 'letter' | 'numeric' | 'percentage' | 'invalid';
 
 export type GradingScaleLimitsData = {
   upperLimit: string;
   lowerLimit: string;
+  isPercentage?: boolean;
 };
 
 export type GradingScaleLimitsResult = GradingScaleLimitsData | null;
 
 /**
- * Determines the type of a grade (letter, numeric, or invalid)
+ * Determines the type of a grade (letter, numeric, percentage or invalid)
  */
 export function getGradeType(value: string): GradeType {
   if (!value || value.trim() === '') {
@@ -24,12 +25,32 @@ export function getGradeType(value: string): GradeType {
     return 'letter';
   }
 
+  // Check for percentage (digits with optional comma/dot followed by %)
+  if (/^[\d]+([.,][\d]+)?%$/.test(trimmed)) {
+    return 'percentage';
+  }
+
   // Check for numeric grade (digits with optional comma/dot)
   if (/^[\d]+([.,][\d]+)?$/.test(trimmed)) {
     return 'numeric';
   }
 
   return 'invalid';
+}
+
+/**
+ * Strips the % sign from a percentage value
+ */
+export function stripPercentage(value: string): string {
+  return value.replace('%', '').trim();
+}
+
+/**
+ * Adds % sign to a value
+ */
+export function addPercentage(value: string): string {
+  if (value.endsWith('%')) return value;
+  return `${value}%`;
 }
 
 /**
@@ -70,12 +91,13 @@ export function isLetterInRange(grade: string, upper: string, lower: string): bo
 }
 
 /**
- * Checks if a numeric grade is within the specified range
+ * Checks if a numeric/percentage grade is within the specified range
  */
 export function isNumericInRange(grade: string, upper: string, lower: string): boolean {
-  const gradeValue = parseFloat(grade.replace(',', '.'));
-  const upperValue = parseFloat(upper.replace(',', '.'));
-  const lowerValue = parseFloat(lower.replace(',', '.'));
+  // Strip % for comparison
+  const gradeValue = parseFloat(stripPercentage(grade).replace(',', '.'));
+  const upperValue = parseFloat(stripPercentage(upper).replace(',', '.'));
+  const lowerValue = parseFloat(stripPercentage(lower).replace(',', '.'));
 
   if (isNaN(gradeValue) || isNaN(upperValue) || isNaN(lowerValue)) {
     return false;
@@ -133,12 +155,16 @@ const NUMERIC_GRADING_SCALES = [
 export function detectNumericGrade(grade: string): GradingScaleLimitsResult {
   const normalizedValue = grade.replace(',', '.');
 
+  // Check if it's a percentage
+  const isPercentage = grade.endsWith('%');
+  const valueToCheck = isPercentage ? stripPercentage(grade) : grade;
+
   // Validate format: only numbers with optional comma/dot
-  if (!/^[\d]+([.,][\d]+)?$/.test(grade)) {
+  if (!/^[\d]+([.,][\d]+)?$/.test(valueToCheck)) {
     return null;
   }
 
-  const numericValue = parseFloat(normalizedValue);
+  const numericValue = parseFloat(isPercentage ? stripPercentage(normalizedValue) : normalizedValue);
 
   // Ignore values below 1
   if (isNaN(numericValue) || numericValue < 1) {
@@ -150,13 +176,22 @@ export function detectNumericGrade(grade: string): GradingScaleLimitsResult {
     const matches = !scale.inclusive ? numericValue < scale.maxValue : numericValue <= scale.maxValue;
 
     if (matches) {
-      return { upperLimit: scale.upperLimit, lowerLimit: scale.lowerLimit };
+      // Add % if original grade had it
+      return {
+        upperLimit: isPercentage ? addPercentage(scale.upperLimit) : scale.upperLimit,
+        lowerLimit: isPercentage ? addPercentage(scale.lowerLimit) : scale.lowerLimit,
+        isPercentage,
+      };
     }
   }
 
   // Values above 110: Propose range from value to value/2
   const lowerLimit = Math.round(numericValue / 2);
-  return { upperLimit: numericValue.toString(), lowerLimit: lowerLimit.toString() };
+  return {
+    upperLimit: isPercentage ? addPercentage(numericValue.toString()) : numericValue.toString(),
+    lowerLimit: isPercentage ? addPercentage(lowerLimit.toString()) : lowerLimit.toString(),
+    isPercentage,
+  };
 }
 
 /**
@@ -180,8 +215,33 @@ export function detectGradingScale(grade: string): GradingScaleLimitsResult {
     return letterResult;
   }
 
-  // Check for numeric grades
+  // Check for numeric/percentage grades
   return detectNumericGrade(trimmedGrade);
+}
+/**
+ * Normalizes grading scale limits based on the format of the given grade.
+ *
+ * If the grade is a percentage, ensures both limits include a '%' sign.
+ * If the grade is not a percentage, removes any '%' sign from the limits.
+ */
+export function normalizeLimitsForGrade(grade: string, limits: GradingScaleLimitsData): GradingScaleLimitsData {
+  const gradeType = getGradeType(grade);
+
+  if (gradeType !== 'percentage') {
+    return {
+      ...limits,
+      upperLimit: stripPercentage(limits.upperLimit),
+      lowerLimit: stripPercentage(limits.lowerLimit),
+      isPercentage: false,
+    };
+  }
+
+  return {
+    ...limits,
+    upperLimit: addPercentage(stripPercentage(limits.upperLimit)),
+    lowerLimit: addPercentage(stripPercentage(limits.lowerLimit)),
+    isPercentage: true,
+  };
 }
 
 /**

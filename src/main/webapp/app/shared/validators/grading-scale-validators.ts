@@ -19,8 +19,17 @@ export function gradingScaleTypeValidator(getCurrentGrade: () => string): Valida
     const gradeType = getGradeType(grade);
     const limitType = getGradeType(limit);
 
-    if (limitType !== gradeType) {
-      return { invalidLimitType: true };
+    if (gradeType === 'numeric') {
+      return limitType === 'numeric' ? null : { invalidLimitType: true };
+    }
+
+    // accept numeric values for percentage grades, but add the percentage for
+    if (gradeType === 'percentage' && (limitType === 'percentage' || limitType === 'numeric')) {
+      return null;
+    }
+
+    if (gradeType === 'letter') {
+      return limitType === 'letter' ? null : { invalidLimitType: true };
     }
 
     return null;
@@ -63,7 +72,7 @@ export function gradingScaleRangeValidator(getCurrentGrade: () => string): Valid
     let inRange = false;
     if (type === 'letter') {
       inRange = isLetterInRange(grade, upper, lower);
-    } else if (type === 'numeric') {
+    } else if (type === 'numeric' || type === 'percentage') {
       inRange = isNumericInRange(grade, upper, lower);
     }
 

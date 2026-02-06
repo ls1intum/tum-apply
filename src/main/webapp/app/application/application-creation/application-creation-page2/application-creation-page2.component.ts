@@ -15,7 +15,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { detectGradingScale } from '../../../shared/util/grading-scale.utils';
+import { detectGradingScale, normalizeLimitsForGrade } from '../../../shared/util/grading-scale.utils';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
@@ -168,10 +168,12 @@ export default class ApplicationCreationPage2Component {
       this.lastBachelorGrade.set(data.bachelorGrade);
 
       if (data.bachelorGradeUpperLimit && data.bachelorGradeLowerLimit) {
-        this.bachelorGradeLimits.set({
+        const normalized = normalizeLimitsForGrade(data.bachelorGrade, {
           upperLimit: data.bachelorGradeUpperLimit,
           lowerLimit: data.bachelorGradeLowerLimit,
         });
+
+        this.bachelorGradeLimits.set(normalized);
         this.bachelorLimitsManuallySet.set(true);
       } else {
         const bachelorLimits = detectGradingScale(data.bachelorGrade);
@@ -182,10 +184,12 @@ export default class ApplicationCreationPage2Component {
       this.lastMasterGrade.set(data.masterGrade);
 
       if (data.masterGradeUpperLimit && data.masterGradeLowerLimit) {
-        this.masterGradeLimits.set({
+        const normalized = normalizeLimitsForGrade(data.masterGrade, {
           upperLimit: data.masterGradeUpperLimit,
           lowerLimit: data.masterGradeLowerLimit,
         });
+
+        this.masterGradeLimits.set(normalized);
         this.masterLimitsManuallySet.set(true);
       } else {
         const masterLimits = detectGradingScale(data.masterGrade);

@@ -5,7 +5,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { StringInputComponent } from 'app/shared/components/atoms/string-input/string-input.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { GradingScaleLimitsData } from 'app/shared/util/grading-scale.utils';
+import { GradingScaleLimitsData, addPercentage, getGradeType, stripPercentage } from 'app/shared/util/grading-scale.utils';
 
 import { gradingScaleRangeValidator, gradingScaleTypeValidator } from '../../../../shared/validators/grading-scale-validators';
 
@@ -21,12 +21,18 @@ export class GradingScaleEditDialogComponent {
   formBuilder = inject(FormBuilder);
 
   currentGrade = this.dialogConfig.data?.currentGrade ?? '';
+
+  isPercentageGrade = computed(() => {
+    return getGradeType(this.currentGrade) === 'percentage';
+  });
+
   originalUpperLimit = this.dialogConfig.data?.currentUpperLimit ?? '';
   originalLowerLimit = this.dialogConfig.data?.currentLowerLimit ?? '';
 
   data = signal<GradingScaleLimitsData>({
     upperLimit: this.originalUpperLimit,
     lowerLimit: this.originalLowerLimit,
+    isPercentage: (this.originalUpperLimit?.includes('%') ?? false) === true || (this.originalLowerLimit?.includes('%') ?? false) === true,
   });
 
   limitsForm = computed(() => {
@@ -59,11 +65,10 @@ export class GradingScaleEditDialogComponent {
     const form = this.limitsForm();
 
     const sub = form.valueChanges.subscribe(value => {
-      const normalizedValue = Object.fromEntries(Object.entries(value).map(([key, val]) => [key, val ?? ''])) as GradingScaleLimitsData;
-
       this.data.set({
-        ...this.data(),
-        ...normalizedValue,
+        upperLimit: value.upperLimit ?? '',
+        lowerLimit: value.lowerLimit ?? '',
+        isPercentage: this.data().isPercentage,
       });
     });
 
@@ -82,9 +87,17 @@ export class GradingScaleEditDialogComponent {
 
   onSave(): void {
     if (this.isValid()) {
+      let upperLimit = this.data().upperLimit;
+      let lowerLimit = this.data().lowerLimit;
+
+      if (this.isPercentageGrade()) {
+        upperLimit = addPercentage(stripPercentage(upperLimit));
+        lowerLimit = addPercentage(stripPercentage(lowerLimit));
+      }
+
       this.dialogRef.close({
-        upperLimit: this.data().upperLimit,
-        lowerLimit: this.data().lowerLimit,
+        upperLimit,
+        lowerLimit,
       });
     }
   }
