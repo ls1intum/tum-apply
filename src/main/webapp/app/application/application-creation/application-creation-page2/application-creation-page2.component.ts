@@ -15,7 +15,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { detectGradingScale, normalizeLimitsForGrade } from '../../../shared/util/grading-scale.utils';
+import { GradingScaleLimitsResult, detectGradingScale, normalizeLimitsForGrade } from '../../../shared/util/grading-scale.utils';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
@@ -46,11 +46,6 @@ export const getPage2FromApplication = (application: ApplicationForApplicantDTO)
     masterGrade: application.applicant?.masterGrade ?? '',
   };
 };
-
-type GradingScaleLimits = {
-  upperLimit: string;
-  lowerLimit: string;
-} | null;
 
 @Component({
   selector: 'jhi-application-creation-page2',
@@ -101,8 +96,8 @@ export default class ApplicationCreationPage2Component {
   hasInitialized = signal(false);
   hasInitialLimitsSet = signal(false);
 
-  bachelorGradeLimits = signal<GradingScaleLimits>(null);
-  masterGradeLimits = signal<GradingScaleLimits>(null);
+  bachelorGradeLimits = signal<GradingScaleLimitsResult>(null);
+  masterGradeLimits = signal<GradingScaleLimitsResult>(null);
 
   bachelorLimitsManuallySet = signal(false);
   masterLimitsManuallySet = signal(false);
