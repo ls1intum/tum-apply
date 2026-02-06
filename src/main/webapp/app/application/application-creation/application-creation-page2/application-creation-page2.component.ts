@@ -215,15 +215,13 @@ export default class ApplicationCreationPage2Component {
       const limits = detectGradingScale(grade ?? '');
       this.bachelorGradeLimits.set(limits);
 
-      if (limits) {
-        this.page2Form.patchValue(
-          {
-            bachelorGradeUpperLimit: limits.upperLimit,
-            bachelorGradeLowerLimit: limits.lowerLimit,
-          },
-          { emitEvent: false },
-        );
-      }
+      this.page2Form.patchValue(
+        {
+          bachelorGradeUpperLimit: limits?.upperLimit ?? '',
+          bachelorGradeLowerLimit: limits?.lowerLimit ?? '',
+        },
+        { emitEvent: true },
+      );
     }
   });
 
@@ -242,15 +240,13 @@ export default class ApplicationCreationPage2Component {
       const limits = detectGradingScale(grade ?? '');
       this.masterGradeLimits.set(limits);
 
-      if (limits) {
-        this.page2Form.patchValue(
-          {
-            masterGradeUpperLimit: limits.upperLimit,
-            masterGradeLowerLimit: limits.lowerLimit,
-          },
-          { emitEvent: false },
-        );
-      }
+      this.page2Form.patchValue(
+        {
+          masterGradeUpperLimit: limits?.upperLimit ?? '',
+          masterGradeLowerLimit: limits?.lowerLimit ?? '',
+        },
+        { emitEvent: true },
+      );
     }
   });
 
