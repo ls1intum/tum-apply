@@ -32,7 +32,7 @@ export class GradingScaleEditDialogComponent {
   data = signal<GradingScaleLimitsData>({
     upperLimit: this.originalUpperLimit,
     lowerLimit: this.originalLowerLimit,
-    isPercentage: (this.originalUpperLimit?.includes('%') ?? false) === true || (this.originalLowerLimit?.includes('%') ?? false) === true,
+    isPercentage: [this.originalUpperLimit, this.originalLowerLimit].some(v => v?.includes('%') === true),
   });
 
   limitsForm = computed(() => {
