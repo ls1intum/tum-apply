@@ -104,6 +104,12 @@ export default class ApplicationCreationPage2Component {
   bachelorGradeLimits = signal<GradingScaleLimits>(null);
   masterGradeLimits = signal<GradingScaleLimits>(null);
 
+  bachelorLimitsManuallySet = signal(false);
+  masterLimitsManuallySet = signal(false);
+
+  lastBachelorGrade = signal<string>('');
+  lastMasterGrade = signal<string>('');
+
   helperTextBachelorGrade = computed(() => {
     this.currentLang();
     const limits = this.bachelorGradeLimits();
@@ -159,12 +165,32 @@ export default class ApplicationCreationPage2Component {
     this.hasInitialized.set(true);
 
     if (data.bachelorGrade) {
-      const bachelorLimits = detectGradingScale(data.bachelorGrade);
-      this.bachelorGradeLimits.set(bachelorLimits);
+      this.lastBachelorGrade.set(data.bachelorGrade);
+
+      if (data.bachelorGradeUpperLimit && data.bachelorGradeLowerLimit) {
+        this.bachelorGradeLimits.set({
+          upperLimit: data.bachelorGradeUpperLimit,
+          lowerLimit: data.bachelorGradeLowerLimit,
+        });
+        this.bachelorLimitsManuallySet.set(true);
+      } else {
+        const bachelorLimits = detectGradingScale(data.bachelorGrade);
+        this.bachelorGradeLimits.set(bachelorLimits);
+      }
     }
     if (data.masterGrade) {
-      const masterLimits = detectGradingScale(data.masterGrade);
-      this.masterGradeLimits.set(masterLimits);
+      this.lastMasterGrade.set(data.masterGrade);
+
+      if (data.masterGradeUpperLimit && data.masterGradeLowerLimit) {
+        this.masterGradeLimits.set({
+          upperLimit: data.masterGradeUpperLimit,
+          lowerLimit: data.masterGradeLowerLimit,
+        });
+        this.masterLimitsManuallySet.set(true);
+      } else {
+        const masterLimits = detectGradingScale(data.masterGrade);
+        this.masterGradeLimits.set(masterLimits);
+      }
     }
 
     this.hasInitialLimitsSet.set(true);
@@ -181,8 +207,25 @@ export default class ApplicationCreationPage2Component {
     const grade = this.bachelorGradeValue();
     if (grade === undefined) return;
 
-    const limits = detectGradingScale(grade ?? '');
-    this.bachelorGradeLimits.set(limits);
+    const gradeChanged = grade !== this.lastBachelorGrade();
+
+    if (gradeChanged) {
+      this.lastBachelorGrade.set(grade ?? '');
+      this.bachelorLimitsManuallySet.set(false);
+
+      const limits = detectGradingScale(grade ?? '');
+      this.bachelorGradeLimits.set(limits);
+
+      if (limits) {
+        this.page2Form.patchValue(
+          {
+            bachelorGradeUpperLimit: limits.upperLimit,
+            bachelorGradeLowerLimit: limits.lowerLimit,
+          },
+          { emitEvent: false },
+        );
+      }
+    }
   });
 
   private masterGradeEffect = effect(() => {
@@ -191,8 +234,25 @@ export default class ApplicationCreationPage2Component {
     const grade = this.masterGradeValue();
     if (grade === undefined) return;
 
-    const limits = detectGradingScale(grade ?? '');
-    this.masterGradeLimits.set(limits);
+    const gradeChanged = grade !== this.lastMasterGrade();
+
+    if (gradeChanged) {
+      this.lastMasterGrade.set(grade ?? '');
+      this.masterLimitsManuallySet.set(false);
+
+      const limits = detectGradingScale(grade ?? '');
+      this.masterGradeLimits.set(limits);
+
+      if (limits) {
+        this.page2Form.patchValue(
+          {
+            masterGradeUpperLimit: limits.upperLimit,
+            masterGradeLowerLimit: limits.lowerLimit,
+          },
+          { emitEvent: false },
+        );
+      }
+    }
   });
 
   private updateEffect = effect(() => {
@@ -216,6 +276,16 @@ export default class ApplicationCreationPage2Component {
   });
 
   onChangeGradingScale(gradeType: 'bachelor' | 'master'): void {
+    const currentUpperLimit =
+      gradeType === 'bachelor'
+        ? (this.page2Form.get('bachelorGradeUpperLimit')?.value ?? '')
+        : (this.page2Form.get('masterGradeUpperLimit')?.value ?? '');
+
+    const currentLowerLimit =
+      gradeType === 'bachelor'
+        ? (this.page2Form.get('bachelorGradeLowerLimit')?.value ?? '')
+        : (this.page2Form.get('masterGradeLowerLimit')?.value ?? '');
+
     const dialogRef = this.dialogService.open(GradingScaleEditDialogComponent, {
       header: this.translateService.instant('entity.applicationPage2.helperText.changeScale'),
       width: '40rem',
@@ -226,8 +296,8 @@ export default class ApplicationCreationPage2Component {
       data: {
         gradeType,
         currentGrade: gradeType === 'bachelor' ? this.data()?.bachelorGrade : this.data()?.masterGrade,
-        currentUpperLimit: gradeType === 'bachelor' ? this.data()?.bachelorGradeUpperLimit : this.data()?.masterGradeUpperLimit,
-        currentLowerLimit: gradeType === 'bachelor' ? this.data()?.bachelorGradeLowerLimit : this.data()?.masterGradeLowerLimit,
+        currentUpperLimit,
+        currentLowerLimit,
       },
     });
     dialogRef?.onClose.subscribe((result?: { upperLimit: string; lowerLimit: string }) => {
@@ -238,12 +308,14 @@ export default class ApplicationCreationPage2Component {
             bachelorGradeLowerLimit: result.lowerLimit,
           });
           this.bachelorGradeLimits.set({ upperLimit: result.upperLimit, lowerLimit: result.lowerLimit });
+          this.bachelorLimitsManuallySet.set(true);
         } else {
           this.page2Form.patchValue({
             masterGradeUpperLimit: result.upperLimit,
             masterGradeLowerLimit: result.lowerLimit,
           });
           this.masterGradeLimits.set({ upperLimit: result.upperLimit, lowerLimit: result.lowerLimit });
+          this.masterLimitsManuallySet.set(true);
         }
       }
     });
