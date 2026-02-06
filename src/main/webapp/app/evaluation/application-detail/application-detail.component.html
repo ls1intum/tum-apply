@@ -94,7 +94,7 @@
 
     @if (currentApplication(); as application) {
       <div
-        class="w-full flex flex-col xl:flex-row justify-between items-start xl:items-end p-2 gap-4 border-b border-border-default overflow-hidden"
+        class="w-full flex flex-col xl:flex-row justify-between items-start xl:items-end py-2 gap-4 border-b border-border-default overflow-hidden"
       >
         <div class="flex gap-3">
           <!-- Profile Image Placeholder / replace it with profile image component later on -->
@@ -168,8 +168,10 @@
             </div>
           </div>
         </div>
-        <div class="flex gap-3 flex-shrink-0">
+        <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0 w-full sm:w-auto">
           <jhi-button
+            class="w-full sm:w-auto"
+            [styleClass]="'w-full sm:w-auto'"
             [label]="'evaluation.addToInterview' | translate"
             variant="outlined"
             severity="primary"
@@ -178,6 +180,8 @@
             (click)="openAddToInterviewDialog()"
           />
           <jhi-button
+            class="w-full sm:w-auto"
+            [styleClass]="'w-full sm:w-auto'"
             [label]="'evaluation.accept' | translate"
             variant="outlined"
             severity="success"
@@ -186,6 +190,8 @@
             (click)="openAcceptDialog()"
           />
           <jhi-button
+            class="w-full sm:w-auto"
+            [styleClass]="'w-full sm:w-auto'"
             [label]="'evaluation.reject' | translate"
             variant="outlined"
             severity="danger"
