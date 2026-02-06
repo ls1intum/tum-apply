@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, model } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
@@ -21,10 +21,12 @@ export class GradingScaleEditDialogComponent {
   formBuilder = inject(FormBuilder);
 
   currentGrade = this.dialogConfig.data?.currentGrade ?? '';
+  originalUpperLimit = this.dialogConfig.data?.currentUpperLimit ?? '';
+  originalLowerLimit = this.dialogConfig.data?.currentLowerLimit ?? '';
 
-  data = model<GradingScaleLimitsData>({
-    upperLimit: this.dialogConfig.data?.currentUpperLimit ?? '',
-    lowerLimit: this.dialogConfig.data?.currentLowerLimit ?? '',
+  data = signal<GradingScaleLimitsData>({
+    upperLimit: this.originalUpperLimit,
+    lowerLimit: this.originalLowerLimit,
   });
 
   limitsForm = computed(() => {
@@ -45,7 +47,7 @@ export class GradingScaleEditDialogComponent {
     const upper = this.data().upperLimit.trim();
     const lower = this.data().lowerLimit.trim();
 
-    // At least one field must be filled
+    // Both fields must be filled
     if (upper === '' || lower === '') {
       return false;
     }
