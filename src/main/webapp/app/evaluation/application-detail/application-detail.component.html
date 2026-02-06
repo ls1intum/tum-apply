@@ -94,7 +94,7 @@
 
     @if (currentApplication(); as application) {
       <div
-        class="w-full flex flex-col xl:flex-row justify-between items-start xl:items-end py-2 gap-4 border-b border-border-default overflow-hidden"
+        class="w-full flex flex-col xl:flex-row justify-between items-start xl:items-end py-2 gap-3 border-b border-border-default overflow-hidden"
       >
         <div class="flex gap-3">
           <!-- Profile Image Placeholder / replace it with profile image component later on -->
@@ -136,31 +136,29 @@
                 }
               </div>
             </div>
-            <div class="flex gap-3 flex-wrap text-sm">
+            <div class="flex gap-2 flex-wrap text-sm items-center">
               <!-- Bachelor's Degree -->
               @if (bachelorItemsComputed()[0]?.value || bachelorItemsComputed()[1]?.value) {
-                <div class="flex gap-1">
-                  <span>
-                    {{ bachelorItemsComputed()[0]?.value || '—' }}
-                    @if (bachelorItemsComputed()[1]?.value) {
-                      <span>, {{ bachelorItemsComputed()[1]?.value }}</span>
-                    }
-                    @if (bachelorItemsComputed()[2]?.value) {
-                      <span> (<span jhiTranslate="evaluation.details.grade">Grade</span>: {{ bachelorItemsComputed()[2]?.value }})</span>
-                    }
-                  </span>
-                </div>
+                <span class="whitespace-nowrap">
+                  {{ bachelorItemsComputed()[0]?.value || '—' }}
+                  @if (bachelorItemsComputed()[1]?.value) {
+                    , {{ bachelorItemsComputed()[1]?.value }}
+                  }
+                  @if (bachelorItemsComputed()[2]?.value) {
+                    (<span jhiTranslate="evaluation.details.grade">Grade</span>: {{ bachelorItemsComputed()[2]?.value }})
+                  }
+                </span>
                 <span>&middot;</span>
               }
               <!-- Nationality -->
-              <span>{{
+              <span class="whitespace-nowrap">{{
                 application.applicationDetailDTO.applicant?.user?.nationality
                   ? ('nationalities.' + application.applicationDetailDTO.applicant?.user?.nationality?.toLowerCase() | translate)
                   : '—'
               }}</span>
               <!-- Gender (de-emphasized) -->
               <span>&middot;</span>
-              <span>{{
+              <span class="whitespace-nowrap">{{
                 application.applicationDetailDTO.applicant?.user?.gender
                   ? ('genders.' + application.applicationDetailDTO.applicant?.user?.gender?.toLowerCase() | translate)
                   : '—'
@@ -182,22 +180,22 @@
           <jhi-button
             class="w-full sm:w-auto"
             [styleClass]="'w-full sm:w-auto'"
-            [label]="'evaluation.accept' | translate"
-            variant="outlined"
-            severity="success"
-            icon="check"
-            [disabled]="!canReview()"
-            (click)="openAcceptDialog()"
-          />
-          <jhi-button
-            class="w-full sm:w-auto"
-            [styleClass]="'w-full sm:w-auto'"
             [label]="'evaluation.reject' | translate"
             variant="outlined"
             severity="danger"
             icon="xmark"
             [disabled]="!canReview()"
             (click)="openRejectDialog()"
+          />
+          <jhi-button
+            class="w-full sm:w-auto"
+            [styleClass]="'w-full sm:w-auto'"
+            [label]="'evaluation.accept' | translate"
+            variant="outlined"
+            severity="success"
+            icon="check"
+            [disabled]="!canReview()"
+            (click)="openAcceptDialog()"
           />
         </div>
       </div>
