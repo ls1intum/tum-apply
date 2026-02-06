@@ -111,7 +111,7 @@
           </div>
 
           <div class="flex flex-col">
-            <div class="flex gap-1 flex-wrap items-center">
+            <div class="flex flex-wrap items-center">
               <span class="text-xl font-semibold">{{ application.applicationDetailDTO.applicant?.user?.name }}</span>
               <div class="flex gap-2 ml-2">
                 @if (application.applicationDetailDTO.applicant?.user?.website) {
@@ -119,7 +119,7 @@
                     [href]="application.applicationDetailDTO.applicant?.user?.website"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-primary hover:text-primary-dark"
+                    class="text-primary"
                   >
                     <fa-icon [icon]="['fas', 'link']" [fixedWidth]="true" />
                   </a>
@@ -129,14 +129,14 @@
                     [href]="application.applicationDetailDTO.applicant?.user?.linkedinUrl"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-primary hover:text-primary-dark"
+                    class="text-primary"
                   >
                     <fa-icon [icon]="['fab', 'linkedin']" [fixedWidth]="true" />
                   </a>
                 }
               </div>
             </div>
-            <div class="flex gap-2 flex-wrap text-sm items-center">
+            <div class="flex gap-2 flex-wrap text-sm">
               <!-- Bachelor's Degree -->
               @if (bachelorItemsComputed()[0]?.value || bachelorItemsComputed()[1]?.value) {
                 <span class="whitespace-nowrap">
