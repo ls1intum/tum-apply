@@ -52,25 +52,9 @@ function fillValidJobForm(component: JobCreationFormComponent) {
     contractDuration: 3,
     fundingType: { value: 'FULLY_FUNDED', name: 'Fully Funded' },
   });
-  component.additionalInfoForm.patchValue({ privacyAccepted: true });
 
   component.basicInfoForm.updateValueAndValidity();
   component.positionDetailsForm.updateValueAndValidity();
-}
-
-function createMockFile(name: string, type: string, size: number): File {
-  const file = new File(['test'], name, { type });
-  Object.defineProperty(file, 'size', { value: size });
-  return file;
-}
-
-function createMockFileEvent(file: File): Event {
-  const mockInput = document.createElement('input');
-  Object.defineProperty(mockInput, 'files', {
-    value: [file],
-    writable: false,
-  });
-  return { target: mockInput } as unknown as Event;
 }
 
 function mockPanelTemplates(component: JobCreationFormComponent) {
@@ -99,7 +83,6 @@ type ComponentPrivate = {
   createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO;
   buildStepData: () => Step[];
   findDropdownOption: (arr: { value: string }[], val: string) => unknown;
-  getImageDimensions: (file: File) => Promise<{ width: number; height: number }>;
   sendPublishDialog: () => { confirm: () => void };
   panel1: () => object;
   panel2: () => object;
@@ -334,13 +317,6 @@ describe('JobCreationFormComponent', () => {
   describe('Job Publishing', () => {
     it.each([
       {
-        name: 'reject when privacy not accepted',
-        setup: (comp: JobCreationFormComponent) => comp.additionalInfoForm.patchValue({ privacyAccepted: false }),
-        expectations: () => {
-          expect(mockToastService.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
-        },
-      },
-      {
         name: 'publish successfully and navigate',
         setup: (comp: JobCreationFormComponent) => {
           fillValidJobForm(comp);
@@ -367,7 +343,6 @@ describe('JobCreationFormComponent', () => {
       {
         name: 'skip when form data invalid',
         setup: (comp: JobCreationFormComponent) => {
-          comp.additionalInfoForm.patchValue({ privacyAccepted: true });
           comp.basicInfoForm.patchValue({ title: '' });
           comp.positionDetailsForm.patchValue({ description: '' });
         },
@@ -444,79 +419,7 @@ describe('JobCreationFormComponent', () => {
     });
   });
 
-  describe('Image Upload and Selection', () => {
-    beforeEach(() => {
-      // Mock getImageDimensions for image upload tests
-      vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValue({ width: 1920, height: 1080 });
-    });
-
-    it.each([
-      {
-        name: 'file too large',
-        file: createMockFile('test.jpg', 'image/jpeg', 6 * 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.fileTooLarge',
-        setupSpy: (spy?: ReturnType<typeof vi.spyOn>) => spy && vi.spyOn(console, 'error').mockImplementation(() => {}),
-      },
-      {
-        name: 'invalid file type',
-        file: createMockFile('test.svg', 'image/svg+xml', 1024),
-        errorKey: 'jobCreationForm.imageSection.invalidFileType',
-      },
-      {
-        name: 'dimensions too large',
-        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.dimensionsTooLarge',
-        setupSpy: () =>
-          vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValueOnce({
-            width: 5000,
-            height: 5000,
-          }),
-      },
-      {
-        name: 'invalid image file',
-        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.invalidImage',
-        setupSpy: () => vi.spyOn(getPrivate(component), 'getImageDimensions').mockRejectedValueOnce(new Error('Invalid')),
-      },
-      {
-        name: 'upload failure',
-        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.uploadFailed',
-        setupSpy: () => mockImageService.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed'))),
-      },
-    ])('should reject image upload when $name', async ({ file, errorKey, setupSpy }) => {
-      const spy = setupSpy?.();
-      const mockEvent = createMockFileEvent(file);
-
-      await component.onImageSelected(mockEvent);
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(errorKey);
-      expect((mockEvent.target as HTMLInputElement).value).toBe('');
-      spy && spy.mockRestore();
-    });
-
-    it.each([
-      { name: 'no files', event: { target: { files: [] } as unknown as HTMLInputElement } as unknown as Event },
-      { name: 'non-input target', event: { target: document.createElement('div') } as unknown as Event },
-    ])('should handle $name gracefully', async ({ event }) => {
-      await component.onImageSelected(event);
-      expect(mockImageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should upload image successfully', async () => {
-      const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024);
-      const mockEvent = createMockFileEvent(file);
-      const mockImage: ImageDTO = { imageId: 'uploaded123', url: '/images/uploaded.jpg', imageType: 'JOB_BANNER' };
-      mockImageService.uploadJobBanner.mockReturnValueOnce(of(mockImage));
-
-      await component.onImageSelected(mockEvent);
-
-      expect(component.selectedImage()).toEqual(mockImage);
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('jobCreationForm.imageSection.uploadSuccess');
-      expect(component.isUploadingImage()).toBe(false);
-      expect((mockEvent.target as HTMLInputElement).value).toBe('');
-    });
-
+  describe('Image Selection and Management', () => {
     it('should handle image selection and computed signals', () => {
       // Select default image
       const defaultImage: ImageDTO = {

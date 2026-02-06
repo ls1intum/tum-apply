@@ -1,43 +1,31 @@
 package de.tum.cit.aet.core.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import de.tum.cit.aet.AbstractResourceTest;
-import de.tum.cit.aet.application.constants.ApplicationState;
-import de.tum.cit.aet.application.domain.Application;
-import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.constants.DocumentType;
-import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
+import de.tum.cit.aet.core.constants.DataExportState;
+import de.tum.cit.aet.core.domain.DataExportRequest;
+import de.tum.cit.aet.core.domain.Document;
+import de.tum.cit.aet.core.dto.DataExportStatusDTO;
+import de.tum.cit.aet.core.repository.DataExportRequestRepository;
 import de.tum.cit.aet.core.repository.DocumentRepository;
-import de.tum.cit.aet.interview.domain.InterviewProcess;
-import de.tum.cit.aet.interview.domain.InterviewSlot;
-import de.tum.cit.aet.interview.domain.Interviewee;
-import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
-import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
-import de.tum.cit.aet.interview.repository.IntervieweeRepository;
-import de.tum.cit.aet.job.constants.JobState;
-import de.tum.cit.aet.job.domain.Job;
-import de.tum.cit.aet.job.repository.JobRepository;
-import de.tum.cit.aet.usermanagement.domain.Applicant;
-import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.core.service.UserDataExportService;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.usermanagement.domain.User;
-import de.tum.cit.aet.usermanagement.repository.ApplicantRepository;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
-import de.tum.cit.aet.utility.testdata.ApplicantTestData;
-import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
-import de.tum.cit.aet.utility.testdata.JobTestData;
-import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDate;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -50,43 +38,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Integration tests for {@link UserDataExportResource}.
  */
 public class UserDataExportResourceTest extends AbstractResourceTest {
 
-    private static final String API_URL = "/api/users/export";
+    private static final String STATUS_URL = "/api/users/data-export/status";
+    private static final String REQUEST_URL = "/api/users/data-export";
+    private static final String DOWNLOAD_URL = "/api/users/data-export/download/%s";
 
     @Autowired
     UserRepository userRepository;
 
     @Autowired
-    ApplicantRepository applicantRepository;
-
-    @Autowired
-    ResearchGroupRepository researchGroupRepository;
-
-    @Autowired
-    JobRepository jobRepository;
-
-    @Autowired
-    ApplicationRepository applicationRepository;
+    DataExportRequestRepository dataExportRequestRepository;
 
     @Autowired
     DocumentRepository documentRepository;
 
     @Autowired
-    DocumentDictionaryRepository documentDictionaryRepository;
-
-    @Autowired
-    InterviewProcessRepository interviewProcessRepository;
-
-    @Autowired
-    InterviewSlotRepository interviewSlotRepository;
-
-    @Autowired
-    IntervieweeRepository intervieweeRepository;
+    UserDataExportService userDataExportService;
 
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -97,233 +70,266 @@ public class UserDataExportResourceTest extends AbstractResourceTest {
     @Value("${aet.storage.root}")
     private String storageRootConfig;
 
+    @Value("${aet.data-export.root}")
+    private String exportRootConfig;
+
     @BeforeEach
     void setup() {
         databaseCleaner.clean();
         api.withoutPostProcessors();
+        AsyncEmailSender asyncEmailSenderMock = mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(userDataExportService, "sender", asyncEmailSenderMock);
+        cleanExportRoot();
     }
 
     @Test
-    void exportRequiresAuthentication() {
-        api.getAndReturnBytes(API_URL, Map.of(), 401, MediaType.ALL);
+    void statusRequiresAuthentication() {
+        api.getAndReturnBytes(STATUS_URL, Map.of(), 401, MediaType.ALL);
     }
 
     @Test
-    void exportReturnsZipWithSummaryForExistingUser() throws Exception {
-        User user = UserTestData.createUserWithoutResearchGroup(userRepository, "export-user@tum.de", "Export", "User", "ab123cd");
+    void requestRequiresAuthentication() {
+        api.postAndRead(REQUEST_URL, Map.of(), Void.class, 401, MediaType.ALL);
+    }
 
-        byte[] zipBytes = api
+    @Test
+    void statusReflectsCooldownAndLatestRequest() {
+        User user = savedUser("status-user@tum.de");
+
+        LocalDateTime lastRequested = LocalDateTime.now(ZoneOffset.UTC).minusDays(1);
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(lastRequested);
+        DataExportRequest savedRequest = dataExportRequestRepository.saveAndFlush(request);
+        DataExportRequest reloadedRequest = dataExportRequestRepository.findById(savedRequest.getExportRequestId()).orElseThrow();
+
+        DataExportStatusDTO status = api
             .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
-            .getAndReturnBytes(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
+            .getAndRead(STATUS_URL, Map.of(), DataExportStatusDTO.class, 200, MediaType.APPLICATION_JSON);
 
-        assertThat(zipBytes).isNotNull().isNotEmpty().hasSizeGreaterThan(50);
-
-        Set<String> entries = new HashSet<>();
-        String summaryJson = null;
-
-        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                entries.add(entry.getName());
-                if ("user_data_summary.json".equals(entry.getName())) {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    zis.transferTo(out);
-                    summaryJson = out.toString(StandardCharsets.UTF_8);
-                }
-                zis.closeEntry();
-            }
-        }
-
-        assertThat(entries).contains("user_data_summary.json");
-        assertThat(summaryJson).isNotNull().contains(user.getEmail());
+        assertThat(status.status()).isEqualTo(DataExportState.REQUESTED);
+        assertThat(status.lastRequestedAt()).isEqualTo(reloadedRequest.getLastRequestedAt());
+        assertThat(status.nextAllowedAt()).isEqualTo(reloadedRequest.getLastRequestedAt().plusDays(7));
+        assertThat(status.cooldownSeconds()).isGreaterThan(0);
     }
 
     @Test
-    void exportSetsZipHeaders() {
-        User user = UserTestData.createUserWithoutResearchGroup(userRepository, "export-headers@tum.de", "Export", "Headers", "cd456ef");
+    void requestCreatesPendingExport() {
+        User user = savedUser("request-user@tum.de");
+
+        api
+            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(REQUEST_URL, Map.of(), Void.class, 202, MediaType.APPLICATION_JSON);
+
+        DataExportRequest latest = dataExportRequestRepository.findTop1ByUserUserIdOrderByCreatedAtDesc(user.getUserId()).orElseThrow();
+
+        assertThat(latest.getStatus()).isEqualTo(DataExportState.REQUESTED);
+        assertThat(latest.getLastRequestedAt()).isNotNull();
+    }
+
+    @Test
+    void requestRejectsWhenActiveExists() {
+        User user = savedUser("active-request@tum.de");
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(8));
+        dataExportRequestRepository.saveAndFlush(request);
+
+        api
+            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(REQUEST_URL, Map.of(), Void.class, 409, MediaType.APPLICATION_JSON);
+    }
+
+    @Test
+    void requestRejectsWhenRateLimited() {
+        User user = savedUser("rate-limit@tum.de");
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.DOWNLOADED);
+        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(2));
+        dataExportRequestRepository.saveAndFlush(request);
+
+        api
+            .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(REQUEST_URL, Map.of(), Void.class, 429, MediaType.APPLICATION_JSON);
+    }
+
+    @Test
+    void pendingExportIsProcessedAndZipCreated() throws Exception {
+        User user = savedUser("process-export@tum.de");
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+        request = dataExportRequestRepository.saveAndFlush(request);
+
+        userDataExportService.processPendingDataExports();
+
+        DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+        assertThat(updated.getStatus()).isEqualTo(DataExportState.EMAIL_SENT);
+        assertThat(updated.getFilePath()).startsWith(exportRootConfig);
+        assertThat(updated.getDownloadToken()).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+
+        Path zipPath = Paths.get(updated.getFilePath());
+        assertThat(Files.exists(zipPath)).isTrue();
+
+        Set<String> entries = readZipEntries(zipPath);
+        assertThat(entries).contains("data_export_summary.json");
+    }
+
+    @Test
+    void downloadRequiresAuthenticationAndUpdatesStatus() throws Exception {
+        User user = savedUser("download-user@tum.de");
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+        request = dataExportRequestRepository.saveAndFlush(request);
+
+        userDataExportService.processPendingDataExports();
+
+        DataExportRequest ready = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+        String url = String.format(DOWNLOAD_URL, ready.getDownloadToken());
 
         MockHttpServletResponse response = api
             .with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR"))
-            .getAndReturnResponse(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
+            .getAndReturnResponse(url, Map.of(), 200, MediaType.valueOf("application/zip"));
 
         assertThat(response.getContentType()).isEqualTo("application/zip");
-        assertThat(response.getHeader("Content-Disposition"))
-            .isNotNull()
-            .contains("attachment")
-            .contains("user-data-export-" + user.getUserId())
-            .contains(".zip");
+        assertThat(response.getHeader("Content-Disposition")).isNotNull().contains("attachment");
+
+        DataExportRequest downloaded = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+        assertThat(downloaded.getStatus()).isEqualTo(DataExportState.DOWNLOADED);
     }
 
     @Test
-    void exportIncludesApplicantDocumentsInZip() throws Exception {
-        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
-        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
+    void downloadRejectsInvalidToken() {
+        User user = savedUser("invalid-token@tum.de");
+        String url = String.format(DOWNLOAD_URL, UUID.randomUUID());
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 404, MediaType.ALL);
+    }
 
-        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
-        User applicantUser = applicant.getUser();
+    @Test
+    void downloadRejectsExpiredToken() {
+        User user = savedUser("expired-token@tum.de");
 
-        Job publishedJob = JobTestData.saved(
-            jobRepository,
-            professor,
-            researchGroup,
-            "Published Role",
-            JobState.PUBLISHED,
-            LocalDate.now().plusDays(7)
-        );
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.EMAIL_SENT);
+        request.setDownloadToken(UUID.randomUUID().toString());
+        request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(1));
+        request.setFilePath("/tmp/nonexistent.zip");
+        dataExportRequestRepository.saveAndFlush(request);
 
-        Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SENT);
+        String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
+    }
 
-        String unsafeName = "cv:my?file.pdf";
-        String expectedSanitized = "cv_my_file.pdf";
-        DocumentTestData.savedDictionaryWithDocument(
+    @Test
+    void downloadRejectsNotReadyStatus() {
+        User user = savedUser("not-ready@tum.de");
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setDownloadToken(UUID.randomUUID().toString());
+        request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+        request.setFilePath("/tmp/nonexistent.zip");
+        dataExportRequestRepository.saveAndFlush(request);
+
+        String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 409, MediaType.ALL);
+    }
+
+    @Test
+    void downloadRejectsMissingFile() {
+        User user = savedUser("missing-file@tum.de");
+
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.EMAIL_SENT);
+        request.setDownloadToken(UUID.randomUUID().toString());
+        request.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusDays(1));
+        request.setFilePath("/tmp/does-not-exist.zip");
+        dataExportRequestRepository.saveAndFlush(request);
+
+        String url = String.format(DOWNLOAD_URL, request.getDownloadToken());
+        api.with(JwtPostProcessors.jwtUser(user.getUserId(), "ROLE_PROFESSOR")).getAndReturnBytes(url, Map.of(), 500, MediaType.ALL);
+    }
+
+    @Test
+    void exportIncludesUploadedDocumentsWithPdfExtension() throws Exception {
+        User user = savedUser("documents-user@tum.de");
+
+        Document document = DocumentTestData.savedDocument(
             storageRootConfig,
             documentRepository,
-            documentDictionaryRepository,
-            professor,
-            application,
-            applicant,
+            user,
             "/testdocs/test-doc1.pdf",
-            "export-test-doc1.pdf",
-            DocumentType.CV,
-            unsafeName
+            "export-test-doc1.pdf"
         );
 
-        byte[] zipBytes = api
-            .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
-            .getAndReturnBytes(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
+        DataExportRequest request = new DataExportRequest();
+        request.setUser(user);
+        request.setStatus(DataExportState.REQUESTED);
+        request.setLastRequestedAt(LocalDateTime.now(ZoneOffset.UTC));
+        request = dataExportRequestRepository.saveAndFlush(request);
 
-        assertThat(zipBytes).isNotNull().isNotEmpty().hasSizeGreaterThan(50);
+        userDataExportService.processPendingDataExports();
 
+        DataExportRequest updated = dataExportRequestRepository.findById(request.getExportRequestId()).orElseThrow();
+        Set<String> entries = readZipEntries(Paths.get(updated.getFilePath()));
+
+        String expectedEntry = "documents/uploaded/" + document.getDocumentId() + ".pdf";
+        assertThat(entries).contains(expectedEntry);
+    }
+
+    private User savedUser(String email) {
+        User user = UserTestData.newUser();
+        user.setEmail(email);
+        user.setSelectedLanguage("en");
+        return userRepository.saveAndFlush(user);
+    }
+
+    private void cleanExportRoot() {
+        Path root = Paths.get(exportRootConfig).toAbsolutePath().normalize();
+        if (Files.exists(root)) {
+            try (var stream = Files.walk(root)) {
+                stream
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            Files.deleteIfExists(path);
+                        } catch (Exception ignored) {
+                            // best-effort cleanup
+                        }
+                    });
+            } catch (Exception ignored) {
+                // best-effort cleanup
+            }
+        }
+        try {
+            Files.createDirectories(root);
+        } catch (Exception ignored) {
+            // best-effort cleanup
+        }
+    }
+
+    private Set<String> readZipEntries(Path zipPath) throws Exception {
         Set<String> entries = new HashSet<>();
-        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(Files.readAllBytes(zipPath)))) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 entries.add(entry.getName());
                 zis.closeEntry();
             }
         }
-
-        assertThat(entries).contains("user_data_summary.json");
-        assertThat(entries).contains("documents/" + expectedSanitized);
-    }
-
-    @Test
-    void exportIncludesIntervieweesForApplicant() throws Exception {
-        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
-        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
-
-        Applicant applicant = ApplicantTestData.savedWithNewUser(applicantRepository);
-        User applicantUser = applicant.getUser();
-
-        Job job = JobTestData.saved(
-            jobRepository,
-            professor,
-            researchGroup,
-            "Interview Role",
-            JobState.PUBLISHED,
-            LocalDate.now().plusDays(7)
-        );
-        Application application = ApplicationTestData.savedSent(applicationRepository, job, applicant);
-
-        InterviewProcess process = new InterviewProcess();
-        process.setJob(job);
-        process = interviewProcessRepository.save(process);
-
-        Interviewee interviewee = new Interviewee();
-        interviewee.setInterviewProcess(process);
-        interviewee.setApplication(application);
-        interviewee.setLastInvited(Instant.parse("2025-01-01T10:00:00Z"));
-        interviewee = intervieweeRepository.save(interviewee);
-
-        InterviewSlot slot = new InterviewSlot();
-        slot.setInterviewProcess(process);
-        slot.setInterviewee(interviewee);
-        slot.setStartDateTime(Instant.now().plusSeconds(3600));
-        slot.setEndDateTime(Instant.now().plusSeconds(7200));
-        slot.setLocation("Room 101");
-        slot.setStreamLink("https://stream.test/slot");
-        slot.setIsBooked(true);
-        interviewSlotRepository.save(slot);
-
-        byte[] zipBytes = api
-            .with(JwtPostProcessors.jwtUser(applicantUser.getUserId(), "ROLE_APPLICANT"))
-            .getAndReturnBytes(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
-
-        String summaryJson = extractSummaryJson(zipBytes);
-
-        assertThat(summaryJson).contains("\"interviewees\"").contains("\"Interview Role\"").contains("\"lastInvited\"");
-        assertThat(summaryJson).doesNotContain("\"interviewProcessId\"").doesNotContain("\"interviewSlotId\"").doesNotContain("\"jobId\"");
-    }
-
-    @Test
-    void exportIncludesInterviewProcessesAndSlotsForStaff() throws Exception {
-        ResearchGroup researchGroup = ResearchGroupTestData.saved(researchGroupRepository);
-        User professor = UserTestData.savedProfessor(userRepository, researchGroup);
-
-        Job job = JobTestData.saved(
-            jobRepository,
-            professor,
-            researchGroup,
-            "Staff Interview Role",
-            JobState.PUBLISHED,
-            LocalDate.now().plusDays(7)
-        );
-
-        InterviewProcess process = new InterviewProcess();
-        process.setJob(job);
-        process = interviewProcessRepository.save(process);
-
-        InterviewSlot slot = new InterviewSlot();
-        slot.setInterviewProcess(process);
-        slot.setStartDateTime(Instant.now().plusSeconds(3600));
-        slot.setEndDateTime(Instant.now().plusSeconds(7200));
-        slot.setLocation("Room 202");
-        slot.setStreamLink("https://stream.test/staff-slot");
-        slot.setIsBooked(false);
-        interviewSlotRepository.save(slot);
-
-        byte[] zipBytes = api
-            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
-            .getAndReturnBytes(API_URL, Map.of(), 200, MediaType.valueOf("application/zip"));
-
-        String summaryJson = extractSummaryJson(zipBytes);
-
-        assertThat(summaryJson)
-            .contains("\"interviewProcesses\"")
-            .contains("\"Staff Interview Role\"")
-            .contains("\"interviewSlots\"")
-            .contains("\"Room 202\"")
-            .doesNotContain("\"interviewProcessId\"")
-            .doesNotContain("\"interviewSlotId\"")
-            .doesNotContain("\"jobId\"");
-    }
-
-    @Test
-    void exportReturns500WhenUserDoesNotExist() {
-        UUID missingUserId = UUID.randomUUID();
-
-        byte[] body = api
-            .with(JwtPostProcessors.jwtUser(missingUserId, "ROLE_PROFESSOR"))
-            .getAndReturnBytes(API_URL, Map.of(), 500, MediaType.ALL);
-
-        String bodyString = new String(body, StandardCharsets.UTF_8);
-        assertThat(bodyString).contains("User data export failed");
-    }
-
-    private String extractSummaryJson(byte[] zipBytes) throws Exception {
-        String summaryJson = null;
-        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                if ("user_data_summary.json".equals(entry.getName())) {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    zis.transferTo(out);
-                    summaryJson = out.toString(StandardCharsets.UTF_8);
-                }
-                zis.closeEntry();
-            }
-        }
-        assertThat(summaryJson).isNotNull();
-        return summaryJson;
+        return entries;
     }
 }

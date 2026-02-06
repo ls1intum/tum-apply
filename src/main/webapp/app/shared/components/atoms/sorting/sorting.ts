@@ -53,9 +53,9 @@ export class Sorting {
     const asc = this.isAsc();
 
     if (type === 'NUMBER') {
-      return asc ? 'arrow-up-1-9' : 'arrow-down-9-1';
+      return asc ? 'arrow-up-9-1' : 'arrow-down-9-1';
     } else {
-      return asc ? 'arrow-up-a-z' : 'arrow-down-z-a';
+      return asc ? 'arrow-up-z-a' : 'arrow-down-z-a';
     }
   }
 

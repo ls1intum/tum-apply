@@ -59,6 +59,7 @@ model/createdJobDTO.ts
 model/customField.ts
 model/customFieldAnswer.ts
 model/customFieldAnswerDTO.ts
+model/dataExportStatusDTO.ts
 model/department.ts
 model/departmentCreationDTO.ts
 model/departmentDTO.ts
@@ -125,6 +126,7 @@ model/sendInvitationsRequestDTO.ts
 model/sendInvitationsResultDTO.ts
 model/slotInput.ts
 model/sortObject.ts
+model/upcomingInterviewDTO.ts
 model/updateApplicationDTO.ts
 model/updateAssessmentDTO.ts
 model/updatePasswordDTO.ts
@@ -133,6 +135,9 @@ model/uploadDocumentsRequest.ts
 model/user.ts
 model/userBookingInfoDTO.ts
 model/userDTO.ts
+model/userDataExportException.ts
+model/userDataExportExceptionCause.ts
+model/userDataExportExceptionCauseStackTraceInner.ts
 model/userForApplicationDetailDTO.ts
 model/userProfileDTO.ts
 model/userResearchGroupRole.ts

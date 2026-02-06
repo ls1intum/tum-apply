@@ -176,6 +176,7 @@ export class ResearchGroupMembersComponent {
       closable: true,
       draggable: false,
       modal: true,
+      data: { researchGroupId: this.researchGroupId() },
     });
 
     ref?.onClose.subscribe((added: boolean) => {

@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -126,7 +127,8 @@ public class InterviewService {
                 long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
 
                 // Calculate total number of all interviewees in this interview process
-                long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+                // Only count interviewees who have a decided slot (SCHEDULED or COMPLETED)
+                long totalInterviews = completedCount + scheduledCount;
 
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
@@ -140,6 +142,49 @@ public class InterviewService {
                     totalInterviews
                 );
             })
+            .toList();
+    }
+
+    /**
+     * Retrieves upcoming booked interviews for the currently logged-in professor.
+     * Shows strictly TODAY + FUTURE booked interviews from all jobs of the
+     * professor.
+     *
+     * @return list of {@link UpcomingInterviewDTO} for the dashboard
+     */
+    public List<UpcomingInterviewDTO> getUpcomingInterviews() {
+        // 1. Get current professor ID
+        UUID professorId = currentUserService.getUserId();
+
+        // 2. Fetch upcoming slots (pagination max 5)
+        Pageable limit = PageRequest.of(0, 5);
+        Page<InterviewSlot> slots = interviewSlotRepository.findUpcomingBookedSlotsForProfessor(professorId, Instant.now(), limit);
+
+        // 3. Map to DTO
+        return slots
+            .stream()
+            .map(slot -> {
+                Interviewee interviewee = slot.getInterviewee();
+                // safe check
+                if (interviewee == null) {
+                    return null;
+                }
+
+                User applicantUser = interviewee.getApplication().getApplicant().getUser();
+                String applicantName = applicantUser.getFirstName() + " " + applicantUser.getLastName();
+
+                return new UpcomingInterviewDTO(
+                    slot.getId(),
+                    slot.getStartDateTime(),
+                    slot.getEndDateTime(),
+                    applicantName,
+                    slot.getInterviewProcess().getJob().getTitle(),
+                    slot.getLocation(),
+                    slot.getInterviewProcess().getId(),
+                    interviewee.getId()
+                );
+            })
+            .filter(java.util.Objects::nonNull)
             .toList();
     }
 
@@ -174,7 +219,7 @@ public class InterviewService {
         long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
         long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
         long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
-        long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+        long totalInterviews = completedCount + scheduledCount;
 
         return new InterviewOverviewDTO(
             job.getJobId(),
@@ -506,6 +551,7 @@ public class InterviewService {
      * @throws AccessDeniedException   if the user is not the job owner
      * @throws BadRequestException     if any application belongs to a different job
      */
+    @Transactional
     public List<IntervieweeDTO> addApplicantsToInterview(UUID processId, AddIntervieweesDTO dto) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
@@ -523,20 +569,24 @@ public class InterviewService {
         List<Interviewee> createdInterviewees = new ArrayList<>();
         for (Application application : applications) {
             // Check if already exists
-            if (intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
-                continue;
+            if (!intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
+                // Create new Interviewee
+                Interviewee interviewee = new Interviewee();
+                interviewee.setInterviewProcess(process);
+                interviewee.setApplication(application);
+                interviewee.setLastInvited(null);
+
+                createdInterviewees.add(interviewee);
             }
 
-            // Create new Interviewee
-            Interviewee interviewee = new Interviewee();
-            interviewee.setInterviewProcess(process);
-            interviewee.setApplication(application);
-            interviewee.setLastInvited(null);
-
-            createdInterviewees.add(interviewee);
+            // Always update application status to INTERVIEW
+            if (application.getState() != ApplicationState.INTERVIEW) {
+                application.setState(ApplicationState.INTERVIEW);
+            }
         }
 
-        // 6. Save all
+        // 6. Save all applications and interviewees
+        applicationRepository.saveAll(applications);
         List<Interviewee> savedInterviewees = intervieweeRepository.saveAll(createdInterviewees);
 
         // 7. Return DTOs

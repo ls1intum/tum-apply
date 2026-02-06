@@ -172,8 +172,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 10MB
+      max-request-size: 25MB
   security:
     oauth2:
       resourceserver:
@@ -282,6 +282,10 @@ aet:
     enabled: ${AET_EMAIL_ENABLED:false}
     from: ${AET_EMAIL_FROM:tum-apply.aet@xcit.tum.de}
     from-name: ${AET_EMAIL_FROM_NAME:TUMApply}
+  data-export:
+    root: /tmp/tum-apply-exports
+    expires-days: 1
+    cron: '*/15 * * * * *'
   storage:
     root: ${AET_STORAGE_ROOT:storage/docs}
     max-size-bytes: 26214400
