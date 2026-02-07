@@ -244,14 +244,12 @@
     </section>
 
     <!-- Data Protection Information -->
-    @if (!isSummaryPage()) {
-      <section class="mb-8">
-        <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
-        <div
-          class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere"
-          [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
-        ></div>
-      </section>
-    }
+    <section class="mb-8">
+      <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
+      <div
+        class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere"
+        [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
+      ></div>
+    </section>
   </div>
 }

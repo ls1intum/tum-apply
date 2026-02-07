@@ -41,6 +41,7 @@ import {
   ImageUploadButtonComponent,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -92,6 +93,7 @@ type JobFormMode = 'create' | 'edit';
     MessageComponent,
     SegmentedToggleComponent,
     ImageUploadButtonComponent,
+    CheckboxComponent,
   ],
   providers: [JobResourceApiService],
 })

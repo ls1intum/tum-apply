@@ -187,7 +187,6 @@
         "title": "Extras",
         "description": "Add custom questions that applicants will see in the application form."
       },
-      "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich will automatically be attached to this job posting.",
       "suitableForDisabled": {
         "label": "This position is suitable for persons with severe disabilities",
         "tooltip": "Only deselect if there are objective job-related reasons that exclude suitability for persons with severe disabilities"

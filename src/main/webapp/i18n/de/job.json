@@ -187,7 +187,6 @@
         "title": "Zusätzliches",
         "description": "Füge benutzerdefinierte Fragen hinzu, die den Bewerbern im Bewerbungsformular angezeigt werden."
       },
-      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München wird automatisch dieser Stelle beigefügt.",
       "suitableForDisabled": {
         "label": "Diese Stelle ist für schwerbehinderte Menschen geeignet",
         "tooltip": "Nur abwählen, wenn objektive stellenbezogene Gründe gegen die Eignung für schwerbehinderte Menschen sprechen"
