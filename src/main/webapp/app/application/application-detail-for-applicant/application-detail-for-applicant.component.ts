@@ -104,7 +104,7 @@ export default class ApplicationDetailForApplicantComponent {
         icon: 'file-pdf',
         severity: 'primary',
         command: () => {
-          this.onDownloadPDF();
+          void this.onDownloadPDF();
         },
       });
     }
