@@ -188,8 +188,8 @@
         "description": "Add custom questions that applicants will see in the application form."
       },
       "suitableForDisabled": {
-        "label": "This position is suitable for persons with severe disabilities",
-        "tooltip": "Only deselect if there are objective job-related reasons that exclude suitability for persons with severe disabilities"
+        "label": "This position is suitable for persons with disabilities",
+        "tooltip": "Only deselect if there are objective job-related reasons that exclude suitability for persons with disabilities"
       }
     },
     "confirmDialog": {
@@ -356,8 +356,8 @@
     },
     "equalOpportunities": {
       "title": "Equal Opportunities Statement",
-      "baseText": "TUM is committed to equal opportunities and explicitly welcomes applications from women and from persons with severe disabilities. Applicants with severe disabilities will be given preferential consideration in the case of equal suitability, qualifications, and professional performance.",
-      "suitableText": "This position is suitable for persons with severe disabilities."
+      "baseText": "TUM is committed to equal opportunities and explicitly welcomes applications from women and from persons with disabilities. Applicants with disabilities will be given preferential consideration in the case of equal suitability, qualifications, and professional performance.",
+      "suitableText": "This position is suitable for persons with disabilities."
     },
     "noData": "No data available"
   },
