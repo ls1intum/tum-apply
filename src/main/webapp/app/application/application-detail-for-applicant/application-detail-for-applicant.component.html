@@ -212,6 +212,10 @@
                 <span jhiTranslate="entity.detail_card.university"></span>
                 <span class="value">{{ application.applicant?.bachelorUniversity || '-' }}</span>
               </div>
+              <div class="info-row">
+                <span jhiTranslate="entity.detail_card.grade"></span>
+                <span class="value">{{ application.applicant?.bachelorGrade || '-' }}</span>
+              </div>
               @if (application.applicant?.bachelorGradeUpperLimit && application.applicant?.bachelorGradeLowerLimit) {
                 <div class="info-row">
                   <span jhiTranslate="entity.detail_card.upper_passing_limit"></span>
@@ -222,10 +226,6 @@
                   <span class="value">{{ application.applicant?.bachelorGradeLowerLimit }}</span>
                 </div>
               }
-              <div class="info-row">
-                <span jhiTranslate="entity.detail_card.grade"></span>
-                <span class="value">{{ application.applicant?.bachelorGrade || '-' }}</span>
-              </div>
             </div>
           </div>
         </div>
@@ -245,6 +245,10 @@
                 <span jhiTranslate="entity.detail_card.university"></span>
                 <span class="value">{{ application.applicant?.masterUniversity || '-' }}</span>
               </div>
+              <div class="info-row">
+                <span jhiTranslate="entity.detail_card.grade"></span>
+                <span class="value">{{ application.applicant?.masterGrade || '-' }}</span>
+              </div>
               @if (application.applicant?.masterGradeUpperLimit && application.applicant?.masterGradeLowerLimit) {
                 <div class="info-row">
                   <span jhiTranslate="entity.detail_card.upper_passing_limit"></span>
@@ -255,11 +259,6 @@
                   <span class="value">{{ application.applicant?.masterGradeLowerLimit || '-' }}</span>
                 </div>
               }
-
-              <div class="info-row">
-                <span jhiTranslate="entity.detail_card.grade"></span>
-                <span class="value">{{ application.applicant?.masterGrade || '-' }}</span>
-              </div>
             </div>
           </div>
         </div>
