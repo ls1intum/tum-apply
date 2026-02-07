@@ -261,7 +261,13 @@ describe('ApplicationDetailForApplicantComponent', () => {
 
     component.onDownloadPDF();
 
-    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalled();
+    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalledWith(
+      expect.objectContaining({
+        application: expect.any(Object),
+        labels: expect.any(Object),
+      }),
+      'response',
+    );
     expect(clickSpy).toHaveBeenCalled();
     expect((globalThis as unknown as { URL: { createObjectURL: Function } }).URL.createObjectURL).toHaveBeenCalled();
   });
@@ -276,8 +282,22 @@ describe('ApplicationDetailForApplicantComponent', () => {
     vi.spyOn(document, 'createElement').mockImplementation((tag: string) =>
       tag === 'a' ? (anchor as unknown as HTMLElement) : document.createElement(tag),
     );
-    pdfExportService.exportApplicationToPDF.mockReturnValue(of({ headers: { get: () => null }, body: new Blob(['c']) }));
+
+    const response = {
+      headers: { get: () => null },
+      body: new Blob(['c']),
+    };
+    pdfExportService.exportApplicationToPDF.mockReturnValue(of(response));
+
     component.onDownloadPDF();
+
+    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalledWith(
+      expect.objectContaining({
+        application: expect.any(Object),
+        labels: expect.any(Object),
+      }),
+      'response',
+    );
     expect(anchor.download).toBe('application.pdf');
   });
 
