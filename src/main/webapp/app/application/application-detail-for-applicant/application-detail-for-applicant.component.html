@@ -103,6 +103,25 @@
           </div>
         </div>
       </section>
+    } @else {
+      <!-- Header Section for Summary/Preview -->
+      <div class="header-container mb-8 border-b border-divider-default">
+        <div></div>
+        <div class="flex flex-col items-start gap-4 md:flex-col md:items-end">
+          <div class="flex items-center gap-2">
+            @if (showPdfButtonForPreview()) {
+              <jhi-button
+                label="button.downloadPDF"
+                severity="primary"
+                variant="outlined"
+                icon="file-pdf"
+                [shouldTranslate]="true"
+                (click)="onDownloadPDF()"
+              />
+            }
+          </div>
+        </div>
+      </div>
     }
 
     <!-- Main Content Grid -->
