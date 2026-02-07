@@ -187,7 +187,11 @@
         "title": "Extras",
         "description": "Add custom questions that applicants will see in the application form."
       },
-      "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich will automatically be attached to this job."
+      "dataPrivacyText": "A Data Privacy Statement from the Technical University of Munich will automatically be attached to this job posting.",
+      "suitableForDisabled": {
+        "label": "This position is suitable for persons with severe disabilities",
+        "tooltip": "Only deselect if there are objective job-related reasons that exclude suitability for persons with severe disabilities"
+      }
     },
     "confirmDialog": {
       "header": "Publish Doctorate Position",
@@ -350,6 +354,11 @@
     },
     "dataPrivacy": {
       "dataProtectionText": "When you apply for a position with the Technical University of Munich (TUM), you are submitting personal information. Please take note of the <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/#English\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Data protection information for processing personal data in relation to your application</a>. By submitting your application, you confirm that you have acknowledged the above data protection information of TUM."
+    },
+    "equalOpportunities": {
+      "title": "Equal Opportunities Statement",
+      "baseText": "TUM is committed to equal opportunities and explicitly welcomes applications from women and from persons with severe disabilities. Applicants with severe disabilities will be given preferential consideration in the case of equal suitability, qualifications, and professional performance.",
+      "suitableText": "This position is suitable for persons with severe disabilities."
     },
     "noData": "No data available"
   },

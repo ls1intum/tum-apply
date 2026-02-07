@@ -232,6 +232,17 @@
       </div>
     </div>
 
+    <!-- Equal Opportunities Statement -->
+    <section class="mb-8">
+      <h2 class="section-title" jhiTranslate="jobDetailPage.equalOpportunities.title"></h2>
+      <div class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere">
+        <span jhiTranslate="jobDetailPage.equalOpportunities.baseText"></span>
+        @if (job.suitableForDisabled) {
+          <strong class="block mt-2" jhiTranslate="jobDetailPage.equalOpportunities.suitableText"></strong>
+        }
+      </div>
+    </section>
+
     <!-- Data Protection Information -->
     @if (!isSummaryPage()) {
       <section class="mb-8">

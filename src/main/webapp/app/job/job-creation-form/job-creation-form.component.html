@@ -298,6 +298,28 @@
               />
             </div>
           </div>
+
+          <!-- Equal Opportunities Checkbox -->
+          <div class="flex flex-col mt-8">
+            <div class="flex items-center gap-2">
+              <p-checkbox
+                [binary]="true"
+                [formControl]="$any(positionDetailsForm.get('suitableForDisabled'))"
+                inputId="suitableForDisabled"
+              />
+              <label
+                for="suitableForDisabled"
+                class="cursor-pointer"
+                jhiTranslate="jobCreationForm.additionalInformationSection.suitableForDisabled.label"
+              ></label>
+              <fa-icon
+                class="icon text-text-secondary"
+                [icon]="['fas', 'circle-info']"
+                [pTooltip]="'jobCreationForm.additionalInformationSection.suitableForDisabled.tooltip' | translate"
+                tooltipPosition="top"
+              />
+            </div>
+          </div>
         </div>
       </form>
     </div>
