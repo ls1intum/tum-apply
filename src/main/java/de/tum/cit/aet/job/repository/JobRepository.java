@@ -9,6 +9,7 @@ import de.tum.cit.aet.job.dto.JobCardDTO;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -275,11 +276,29 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     /**
      * Reassigns jobs supervised by a specific user to a deleted user.
      *
-     * @param user the user whose jobs are to be reassigned
+     * @param user        the user whose jobs are to be reassigned
      * @param deletedUser the deleted user to whom the jobs will be reassigned
-     * @param state the job state to apply after reassignment
+     * @param state       the job state to apply after reassignment
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Job j SET j.supervisingProfessor = :deletedUser, j.state = :state WHERE j.supervisingProfessor = :user")
     void anonymiseJobByUserId(@Param("user") User user, @Param("deletedUser") User deletedUser, @Param("state") JobState state);
+
+    /**
+     * Checks if an image is referenced by any job
+     *
+     * @param imageId the image ID to check
+     * @return true if at least one job references this image, false otherwise
+     */
+    @Query("SELECT COUNT(j) > 0 FROM Job j WHERE j.image.imageId = :imageId")
+    boolean existsByImageId(@Param("imageId") UUID imageId);
+
+    /**
+     * Finds all image IDs that are currently referenced by at least one job
+     *
+     * @param imageIds the list of image IDs to check
+     * @return set of image IDs that are in use
+     */
+    @Query("SELECT DISTINCT j.image.imageId FROM Job j WHERE j.image.imageId IN :imageIds")
+    Set<UUID> findInUseImageIds(@Param("imageIds") List<UUID> imageIds);
 }

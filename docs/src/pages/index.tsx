@@ -13,7 +13,6 @@ function FAQSection() {
         maxWidth: 800,
         margin: '2rem auto',
         padding: '2rem',
-        background: 'rgba(255,255,255,0.95)',
         borderRadius: 12,
       }}
     >

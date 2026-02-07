@@ -37,6 +37,10 @@ import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
+import {
+  ImageUploadButtonComponent,
+  ImageUploadError,
+} from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -87,6 +91,7 @@ type JobFormMode = 'create' | 'edit';
     InfoBoxComponent,
     MessageComponent,
     SegmentedToggleComponent,
+    ImageUploadButtonComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -121,9 +126,6 @@ export class JobCreationFormComponent {
 
   /** Snapshot of the last successfully saved job data (used for change detection) */
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
-
-  /** Tracks if the user has attempted to publish (triggers validation display) */
-  publishAttempted = signal<boolean>(false);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // JOB DESCRIPTION SIGNALS
@@ -206,21 +208,6 @@ export class JobCreationFormComponent {
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
   });
 
-  /** Computed: CSS classes for the upload container based on upload state */
-  uploadContainerClasses = computed(() => {
-    if (this.isUploadingImage()) {
-      return 'relative rounded-lg transition-all opacity-50 pointer-events-none';
-    }
-    return 'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
-  });
-
-  /** Computed: CSS classes for the inner upload area */
-  uploadInnerClasses = computed(() => {
-    const base = 'aspect-video border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-all';
-    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
-    return `${base} border-border-default ${hover}`.trim();
-  });
-
   // ═══════════════════════════════════════════════════════════════════════════
   // DEPENDENCY INJECTION
   // ═══════════════════════════════════════════════════════════════════════════
@@ -249,9 +236,6 @@ export class JobCreationFormComponent {
 
   /** Step 3: Image selection for job banner */
   imageForm = this.createImageForm();
-
-  /** Step 4: Additional info including privacy consent */
-  additionalInfoForm = this.createAdditionalInfoForm();
 
   // ═══════════════════════════════════════════════════════════════════════════
   // TEMPLATE REFERENCES (ViewChild)
@@ -303,11 +287,6 @@ export class JobCreationFormComponent {
 
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
-
-  /** Signal tracking the privacy consent checkbox state */
-  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
-    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
-  });
 
   /**
    * Effect: Updates validity signals whenever form status changes.
@@ -452,22 +431,6 @@ export class JobCreationFormComponent {
   private isAutoScrolling = false;
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // IMAGE UPLOAD CONSTRAINTS
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /** Allowed MIME types for image uploads */
-  private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
-
-  /** Formatted string of allowed types for the file input accept attribute */
-  readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
-
-  /** Maximum file size for uploads: 5MB */
-  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-
-  /** Maximum image dimension (width or height): 4096px */
-  private readonly MAX_IMAGE_DIMENSION_PX = 4096;
-
-  // ═══════════════════════════════════════════════════════════════════════════
   // CONSTRUCTOR
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -567,12 +530,7 @@ export class JobCreationFormComponent {
    */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
-    this.publishAttempted.set(true);
 
-    if (!Boolean(this.privacyAcceptedSignal())) {
-      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
-      return;
-    }
     if (!jobData) return;
 
     try {
@@ -610,59 +568,28 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Handles image file selection and upload.
-   * Validates file type, size, and dimensions before uploading.
-   *
-   * @param event - The file input change event
+   * Handle successful image upload from the shared component
    */
-  async onImageSelected(event: Event): Promise<void> {
-    const target = event.target;
-    if (!(target instanceof HTMLInputElement)) return;
-
-    const input = target;
-    if (!input.files || input.files.length === 0) return;
-
-    const file = input.files[0];
-
-    if (file.size > this.MAX_FILE_SIZE_BYTES) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
-      return;
-    }
-
-    if (!this.ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
-      return;
-    }
+  async onImageUploaded(uploadedImage: ImageDTO): Promise<void> {
+    this.selectedImage.set(uploadedImage);
+    this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
     try {
-      const dimensions = await this.getImageDimensions(file);
-      if (dimensions.width > this.MAX_IMAGE_DIMENSION_PX || dimensions.height > this.MAX_IMAGE_DIMENSION_PX) {
-        this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
-        return;
-      }
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidImage');
-      return;
-    }
-
-    this.isUploadingImage.set(true);
-
-    try {
-      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
-
-      this.selectedImage.set(uploadedImage);
-      this.imageForm.patchValue({ imageId: uploadedImage.imageId });
-
       const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
-
-      this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
     } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
-    } finally {
-      this.isUploadingImage.set(false);
-      input.value = '';
+      // If refresh fails, add to local array
+      this.researchGroupImages.update(images => [...images, uploadedImage]);
     }
+
+    this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
+  }
+
+  /**
+   * Handle upload errors from the shared component
+   */
+  onUploadError(error: ImageUploadError): void {
+    this.toastService.showErrorKey(error.errorKey);
   }
 
   /**
@@ -980,16 +907,6 @@ export class JobCreationFormComponent {
   }
 
   /**
-   * Creates the Step 4 form group for additional information.
-   * Contains the required privacy consent checkbox.
-   */
-  private createAdditionalInfoForm(): FormGroup {
-    return this.fb.group({
-      privacyAccepted: [false, [Validators.required]],
-    });
-  }
-
-  /**
    * Constructs a JobFormDTO from all form values.
    * Combines data from all steps into a single DTO for API submission.
    *
@@ -1150,10 +1067,6 @@ export class JobCreationFormComponent {
         imageType: imageType as 'JOB_BANNER' | 'DEFAULT_JOB_BANNER' | 'PROFILE_PICTURE',
       });
     }
-
-    this.additionalInfoForm.patchValue({
-      privacyAccepted: false,
-    });
 
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
   }
@@ -1465,30 +1378,6 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   // UTILITY METHODS
   // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Gets the dimensions of an image file before upload.
-   * Used for validation against MAX_IMAGE_DIMENSION_PX.
-   *
-   * @param file - The image file to measure
-   * @returns Promise resolving to width and height in pixels
-   */
-  private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-
-      img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        resolve({ width: img.width, height: img.height });
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        reject(new Error('Failed to load image'));
-      };
-      img.src = objectUrl;
-    });
-  }
 
   /**
    * Finds a dropdown option by its value.

@@ -134,10 +134,11 @@
         "toolTipText": "Hilf den Bewerbern, den Forschungsschwerpunkt, die Aufgaben und die erwarteten Qualifikationen und Ziele der Position zu verstehen.",
         "templateEN": "<p><strong>Description</strong></p><p>TODO: Describe the research context, goals, and scope of the position.</p><br><p><strong>Tasks & Responsibilities</strong></p><p>TODO: List the main responsibilities of the candidate.</p><br><p><strong>Eligibility Criteria</strong></p><p>TODO: Specify the minimum requirements (degree, skills, language, etc.)</p>",
         "templateDE": "<p><strong>Beschreibung</strong></p><p>TODO: Beschreibe den Forschungskontext, die Ziele und den Umfang der Position.</p><br><p><strong>Aufgaben & Verantwortlichkeiten</strong></p><p>TODO: Liste die wichtigsten Aufgaben der Kandidatin / des Kandidaten auf.</p><br><p><strong>Zulassungsvoraussetzungen</strong></p><p>TODO: Gib die Mindestanforderungen an (z.B. Abschluss, Fähigkeiten, Sprachkenntnisse).</p>",
-        "aiHeaderText": "KI Assistent",
-        "aiButton1": "Mit KI schreiben",
-        "aiButton2": "Mit KI umschreiben",
-        "aiHelperText": "Füge Stichpunkte hinzu und erhalte einen ersten Entwurf.\nFür bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
+        "aiHeaderText": "TUMApply KI Assistent",
+        "aiButton1": "Schreib mit TUMApply",
+        "aiButton2": "Schreib neu mit TUMApply",
+        "aiHelperText": "Gib die wichtigsten Informationen an und TUMApply KI schreibt es für dich.",
+        "aiTooltipText": "Für bessere Ergebnisse, fülle die Felder oben aus. Die KI-Generierung kann einen Moment dauern.",
         "aiFillerText": "Generiert...",
         "aiToggle": "KI aktivieren",
         "languageEnglish": "Englisch",
@@ -157,10 +158,6 @@
         "summary": "Upload erfolgreich",
         "detail": "Bild erfolgreich hochgeladen"
       },
-      "uploadFailed": {
-        "summary": "Upload fehlgeschlagen",
-        "detail": "Bild konnte nicht hochgeladen werden. Bitte versuche es erneut."
-      },
       "deleteImageSuccess": {
         "summary": "Bild gelöscht",
         "detail": "Bild erfolgreich gelöscht"
@@ -169,25 +166,9 @@
         "summary": "Löschen fehlgeschlagen",
         "detail": "Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
       },
-      "fileTooLarge": {
-        "summary": "Datei zu groß",
-        "detail": "Das Bild muss kleiner als 5MB sein"
-      },
-      "invalidFileType": {
-        "summary": "Ungültiger Dateityp",
-        "detail": "Bitte wähle eine Bilddatei (JPG, JPEG, PNG)"
-      },
       "loadImagesFailed": {
         "summary": "Laden fehlgeschlagen",
         "detail": "Bilder konnten nicht geladen werden. Bitte lade die Seite neu."
-      },
-      "dimensionsTooLarge": {
-        "summary": "Bild zu groß",
-        "detail": "Bildabmessungen dürfen 4096x4096 Pixel nicht überschreiten"
-      },
-      "invalidImage": {
-        "summary": "Ungültiges Bild",
-        "detail": "Bilddatei kann nicht gelesen werden. Bitte wähle ein gültiges Bild."
       },
       "uploadNew": "Neues Bild hochladen",
       "uploading": "Wird hochgeladen...",
@@ -206,9 +187,7 @@
         "title": "Zusätzliches",
         "description": "Füge benutzerdefinierte Fragen hinzu, die den Bewerbern im Bewerbungsformular angezeigt werden."
       },
-      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München (TUM) wird automatisch dieser Stelle beigefügt. Weitere Informationen findest du unter: <a class=\"link\" href=\"https://www.community.tum.de/en/privacy-policy/\">TUM Datenschutzinformationen</a>.",
-      "dataPrivacyConfirmationText": "Ich habe die Datenschutzerklärung gelesen und verstanden und willige in die Verarbeitung meiner personenbezogenen Daten gemäß dieser Erklärung ein.",
-      "dataPrivacyErrorText": "Bitte bestätige, dass du die Datenschutzerklärung gelesen und verstanden hast und in die Verarbeitung deiner personenbezogenen Daten einwilligst, um fortzufahren."
+      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München wird automatisch dieser Stelle beigefügt."
     },
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
@@ -366,8 +345,11 @@
       "fullTime": "Vollzeit",
       "partTime": "Teilzeit ({{percentage}}%)"
     },
+    "infos": {
+      "applicantLanguageInfo": "Bewerber sehen die Stellenbeschreibung nur in der von ihnen gewählten Sprache."
+    },
     "dataPrivacy": {
-      "dataProtectionText": "Im Rahmen Ihrer Bewerbung um eine Stelle an der Technischen Universität München (TUM) übermitteln Sie personenbezogene Daten. Beachten Sie bitte hierzu unsere <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise gemäß Art. 13 Datenschutz-Grundverordnung (DSGVO) zur Erhebung und Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung. </a> Durch die Übermittlung Ihrer Bewerbung bestätigen Sie, dass Sie die Datenschutzhinweise der TUM zur Kenntnis genommen haben."
+      "dataProtectionText": "Im Rahmen Ihrer Bewerbung um eine Stelle an der Technischen Universität München (TUM) übermitteln Sie personenbezogene Daten. Beachten Sie bitte hierzu unsere <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise zur Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung</a>. Durch die Übermittlung Ihrer Bewerbung bestätigen Sie, dass Sie die Datenschutzhinweise der TUM zur Kenntnis genommen haben."
     },
     "noData": "Keine Daten verfügbar"
   },

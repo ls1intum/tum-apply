@@ -2190,7 +2190,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationDetailDTO:
       type: object
       properties:
@@ -2199,7 +2199,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation: {type: string}
@@ -2254,7 +2254,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -2270,7 +2270,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
@@ -2288,7 +2288,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
@@ -2559,6 +2559,7 @@ components:
         imageType:
           type: string
           enum: [JOB_BANNER, PROFILE_PICTURE, DEFAULT_JOB_BANNER]
+        isInUse: {type: boolean}
         researchGroupId: {type: string, format: uuid}
         sizeBytes: {type: integer, format: int64}
         uploadedById: {type: string, format: uuid}
@@ -2685,7 +2686,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         departmentName: {type: string}
         imageUrl: {type: string}
@@ -2733,7 +2734,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
@@ -3137,7 +3138,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}
