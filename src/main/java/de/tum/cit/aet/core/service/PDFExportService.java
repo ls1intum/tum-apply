@@ -41,8 +41,8 @@ public class PDFExportService {
     /**
      * Exports application details to PDF
      *
-     * @param applicationId the application ID
-     * @param labels        translation labels for PDF content
+     * @param app    the ApplicationDetailDTO containing application data
+     * @param labels translation labels for PDF content
      * @return the PDF file as Resource
      */
     public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels) {
@@ -304,7 +304,7 @@ public class PDFExportService {
     /**
      * Generates filename for application PDF
      *
-     * @param applicationId    the application ID
+     * @param jobTitle         the title of the job of the application
      * @param applicationLabel label for application used as ending of the filename
      * @return sanitized filename for the PDF
      */
