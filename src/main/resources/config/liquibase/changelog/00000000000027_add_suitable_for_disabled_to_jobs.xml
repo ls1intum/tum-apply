@@ -7,7 +7,7 @@
   <changeSet id="027_add_suitable_for_disabled_to_jobs" author="aniruddh">
     <comment>Add suitable_for_disabled column to jobs table for equal opportunities statement</comment>
     <addColumn tableName="jobs">
-      <column name="suitable_for_disabled" type="BOOLEAN" defaultValueBoolean="false">
+      <column name="suitable_for_disabled" type="BOOLEAN" defaultValueBoolean="true">
         <constraints nullable="true"/>
       </column>
     </addColumn>

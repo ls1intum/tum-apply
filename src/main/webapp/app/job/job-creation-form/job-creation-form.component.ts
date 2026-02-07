@@ -944,7 +944,7 @@ export class JobCreationFormComponent {
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       imageId: imageValue.imageId ?? null,
-      suitableForDisabled: positionDetailsValue.suitableForDisabled ?? false,
+      suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
     };
   }
@@ -1057,7 +1057,7 @@ export class JobCreationFormComponent {
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
-      suitableForDisabled: job?.suitableForDisabled ?? false,
+      suitableForDisabled: job?.suitableForDisabled ?? true,
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {
