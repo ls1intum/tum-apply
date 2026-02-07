@@ -1,5 +1,5 @@
 <div
-  class="mt-6 flex flex-col flex-1 gap-2 p-4 w-54 md:w-80 lg:w-104 xl:w-104 border-2 rounded-lg"
+  class="mt-4 flex flex-col flex-1 gap-1 p-4 w-54 md:w-80 lg:w-104 xl:w-112 border-2 rounded-lg"
   [class.border-primary]="!disabled() && !placeholder()"
   [class.opacity-50]="disabled()"
   [class.border-gray-300]="disabled()"
@@ -25,6 +25,11 @@
       />
     </div>
 
+    <!-- Average Rating -->
+    <div class="flex flex-col gap-1">
+      <jhi-star-rating [rating]="displayRating()" size="small" [showValue]="true" />
+    </div>
+
     <!-- Job Title -->
     <div class="flex items-start gap-2">
       <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
@@ -38,14 +43,14 @@
       <div class="flex flex-col gap-1 border-b border-border-default pb-2">
         <span class="text-xs font-medium text-text-secondary uppercase tracking-wide" jhiTranslate="evaluation.masterDegree">Master</span>
         <span class="break-words">{{ masterDegree()!.name }}</span>
-        <div class="flex flex-wrap gap-x-2 gap-y-1 text-sm">
-          <span class="break-words">{{ masterDegree()!.university }}</span>
+        <div class="flex flex-wrap gap-1 text-sm">
+          <span class="break-words line-clamp-1">{{ masterDegree()!.university }}</span>
           <span class="whitespace-nowrap">&middot; {{ 'evaluation.grade' | translate }}: {{ masterDegree()!.grade }}</span>
         </div>
       </div>
     }
 
-    <div class="flex justify-between">
+    <div class="flex justify-between pt-2">
       <!-- Applied Date -->
       @if (application()?.appliedAt) {
         <div class="flex items-start gap-2">

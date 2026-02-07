@@ -6,6 +6,8 @@
     "start": "Start",
     "grade": "Note",
     "masterDegree": "Master",
+    "averageRating": "Durchschnittliche Bewertung",
+    "noRatingsYet": "Noch keine Bewertungen",
     "searchFilterSortBar": {
       "searchText": "Bewerbungen suchen..."
     },

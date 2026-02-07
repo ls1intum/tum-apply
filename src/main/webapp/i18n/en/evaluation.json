@@ -6,6 +6,8 @@
     "start": "Start",
     "grade": "Grade",
     "masterDegree": "Master",
+    "averageRating": "Average Rating",
+    "noRatingsYet": "No ratings yet",
     "searchFilterSortBar": {
       "searchText": "Search Applications..."
     },

@@ -1,3 +1,4 @@
+import { convertLikertToStandardRating } from 'app/shared/util/rating.util';
 import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
@@ -5,12 +6,12 @@ import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationE
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { DividerModule } from 'primeng/divider';
-
-import { TagComponent } from '../../atoms/tag/tag.component';
+import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
+import { StarRatingComponent } from 'app/shared/components/atoms/star-rating/star-rating.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule, LocalizedDatePipe, DividerModule],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule, LocalizedDatePipe, DividerModule, StarRatingComponent],
   templateUrl: './application-card.component.html',
   host: {
     class: 'flex flex-col h-full',
@@ -65,5 +66,16 @@ export class ApplicationCardComponent {
       university: university ?? '—',
       grade: applicant.masterGrade ?? '—',
     };
+  });
+
+  /**
+   * Converts the average rating from Likert scale (-2 to +2) to standard 1-5 scale
+   */
+  readonly displayRating = computed<number | undefined>(() => {
+    const avgRating = this.application()?.averageRating;
+    if (avgRating === null || avgRating === undefined) {
+      return undefined;
+    }
+    return convertLikertToStandardRating(avgRating);
   });
 }
