@@ -242,7 +242,7 @@ export class UploadButtonComponent {
     // Consider already selected files when calculating the total size
     const selectedFile = this.selectedFiles() ?? [];
 
-    const combinedFiles = [...selectedFile, ...files];
+    const combinedFiles = selectedFile.concat(files);
     const combinedFilesTotal = combinedFiles.reduce((sum, file) => sum + file.size, 0);
 
     // Also include already uploaded documents (persisted on the server) in the total size
