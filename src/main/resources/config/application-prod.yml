@@ -137,6 +137,5 @@ user:
 
 applicant:
   retention:
-    days-before-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
-    enabled: ${USER_RETENTION_ENABLED:true}
-    dry-run: ${USER_RETENTION_DRY_RUN:false}
+    enabled: ${APPLICANT_RETENTION_ENABLED:true}
+    dry-run: ${APPLICANT_RETENTION_DRY_RUN:false}
