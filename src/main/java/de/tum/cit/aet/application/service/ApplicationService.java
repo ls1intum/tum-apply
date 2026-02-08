@@ -127,7 +127,44 @@ public class ApplicationService {
         newApplication.setApplicantMasterUniversity(applicant.getMasterUniversity());
 
         Application savedApplication = applicationRepository.save(newApplication);
+
+        // Prefill documents from applicant profile to the new application
+        prefillDocumentsFromApplicantProfile(applicant, savedApplication);
+
         return getFromEntity(savedApplication);
+    }
+
+    /**
+     * Copies document references from the applicant's profile to the newly created application.
+     * This includes CVs, references, bachelor transcripts, master transcripts, and custom documents.
+     *
+     * @param applicant   the applicant whose documents should be copied
+     * @param application the newly created application to receive the document references
+     */
+    private void prefillDocumentsFromApplicantProfile(Applicant applicant, Application application) {
+        Set<DocumentDictionary> applicantDocuments = documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CV);
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.BACHELOR_TRANSCRIPT));
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.MASTER_TRANSCRIPT));
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.REFERENCE));
+        applicantDocuments.addAll(documentDictionaryService.getDocumentDictionaries(applicant, DocumentType.CUSTOM));
+        copyDocumentsToApplication(applicantDocuments, application);
+    }
+
+    /**
+     * Creates new DocumentDictionary entries for the application, referencing the same documents.
+     *
+     * @param sourceDictionaries the source DocumentDictionary entries from the applicant profile
+     * @param application        the application to associate the new entries with
+     */
+    private void copyDocumentsToApplication(Set<DocumentDictionary> sourceDictionaries, Application application) {
+        for (DocumentDictionary source : sourceDictionaries) {
+            DocumentDictionary copy = new DocumentDictionary();
+            copy.setApplication(application);
+            copy.setDocument(source.getDocument());
+            copy.setName(source.getName());
+            copy.setDocumentType(source.getDocumentType());
+            documentDictionaryService.save(copy);
+        }
     }
 
     /**
@@ -192,6 +229,7 @@ public class ApplicationService {
         // When application is sent, sync snapshot data back to applicant profile
         if (ApplicationState.SENT.equals(updateApplicationDTO.applicationState())) {
             syncSnapshotDataToApplicant(application);
+            syncDocumentsToApplicantProfile(application);
             confirmApplicationToApplicant(application);
             confirmApplicationToProfessor(application);
         }
@@ -209,6 +247,52 @@ public class ApplicationService {
         User user = applicant.getUser();
 
         applyApplicantData(user, applicant, ApplicantDTO.getFromApplicationSnapshot(application));
+    }
+
+    /**
+     * Syncs documents from application to the applicant's profile.
+     * This ensures documents uploaded during application creation are available for future applications
+     *
+     * @param application the application containing the documents to sync
+     */
+    private void syncDocumentsToApplicantProfile(Application application) {
+        Applicant applicant = application.getApplicant();
+
+        // Sync all document types
+        syncDocumentsByType(application, applicant, DocumentType.CV);
+        syncDocumentsByType(application, applicant, DocumentType.REFERENCE);
+        syncDocumentsByType(application, applicant, DocumentType.BACHELOR_TRANSCRIPT);
+        syncDocumentsByType(application, applicant, DocumentType.MASTER_TRANSCRIPT);
+        syncDocumentsByType(application, applicant, DocumentType.CUSTOM);
+    }
+
+    /**
+     * Syncs documents of a specific type from application to applicant profile.
+     * Replaces existing documents in the applicant profile with those from the application.
+     * This ensures that documents deleted or replaced in the application are also removed from the profile.
+     *
+     * @param application  the application containing the documents
+     * @param applicant    the applicant whose profile should receive the documents
+     * @param documentType the type of documents to sync
+     */
+    private void syncDocumentsByType(Application application, Applicant applicant, DocumentType documentType) {
+        Set<DocumentDictionary> applicationDocs = documentDictionaryService.getDocumentDictionaries(application, documentType);
+        Set<DocumentDictionary> applicantDocs = documentDictionaryService.getDocumentDictionaries(applicant, documentType);
+
+        // Delete all existing documents from applicant profile
+        for (DocumentDictionary applicantDoc : applicantDocs) {
+            documentDictionaryService.deleteApplicantDocumentDictionary(applicantDoc.getDocumentDictionaryId());
+        }
+
+        // Copy all documents from application dictionary to applicant profile
+        for (DocumentDictionary appDoc : applicationDocs) {
+            DocumentDictionary copy = new DocumentDictionary();
+            copy.setApplicant(applicant);
+            copy.setDocument(appDoc.getDocument());
+            copy.setName(appDoc.getName());
+            copy.setDocumentType(appDoc.getDocumentType());
+            documentDictionaryService.save(copy);
+        }
     }
 
     private void confirmApplicationToApplicant(Application application) {
