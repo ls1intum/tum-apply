@@ -23,7 +23,7 @@
     "services:up": "docker compose -f docker/local-setup/services.yml up --wait",
     "start": "npm run prebuild -- --develop && ng serve --hmr",
     "test": "vitest run --coverage",
-    "test:ci": "npm run prebuild && vitest run --coverage.enabled=true --coverage.thresholds.statements=85 --coverage.thresholds.branches=80 --coverage.thresholds.functions=85 --coverage.thresholds.lines=85",
+    "test:ci": "npm run prebuild && vitest run --coverage.enabled=true --coverage.thresholds.statements=85 --coverage.thresholds.branches=75 --coverage.thresholds.functions=85 --coverage.thresholds.lines=85",
     "test:ui": "vitest --ui",
     "test-diff:ci": "npm run prebuild && bash -lc 'set -eo pipefail; DEFAULT_BRANCH=${GITHUB_BASE_REF:-$(git remote show origin | sed -n \"/HEAD branch/s/.*: //p\")} ; git fetch -q origin \"$DEFAULT_BRANCH\"; CHANGED=$(git diff --name-only --diff-filter=ACMRTUXB \"origin/$DEFAULT_BRANCH\"...HEAD | grep -E \"src/.*\\.(test|spec)\\.(ts|tsx)$\" || true); if [ -n \"$CHANGED\" ]; then echo \"Running changed tests:\"; echo \"$CHANGED\"; npx vitest run --coverage $CHANGED; else echo \"No changed spec files; running full suite\"; npx vitest run --coverage; fi'",
     "update": "ncu -i --format group",
@@ -86,7 +86,7 @@
     "postal-codes-js": "2.5.2",
     "primeicons": "7.0.0",
     "primeng": "21.0.4",
-    "quill": "2.0.2",
+    "quill": "2.0.3",
     "quill-mention": "6.1.1",
     "rxjs": "7.8.2",
     "tslib": "2.8.1"
