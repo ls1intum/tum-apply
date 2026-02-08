@@ -122,8 +122,3 @@ jhipster:
 aet:
   email:
     enabled: true
-
-applicant:
-  retention:
-    enabled: ${APPLICANT_RETENTION_ENABLED:true}
-    dry-run: ${APPLICANT_RETENTION_DRY_RUN:false}
