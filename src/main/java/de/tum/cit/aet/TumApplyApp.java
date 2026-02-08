@@ -1,5 +1,6 @@
 package de.tum.cit.aet;
 
+import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.CRLFLogConverter;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
@@ -21,7 +22,9 @@ import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class, UserRetentionProperties.class })
+@EnableConfigurationProperties(
+    { LiquibaseProperties.class, ApplicationProperties.class, UserRetentionProperties.class, ApplicantRetentionProperties.class }
+)
 public class TumApplyApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(TumApplyApp.class);
