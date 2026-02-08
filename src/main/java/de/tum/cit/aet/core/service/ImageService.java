@@ -565,4 +565,31 @@ public class ImageService {
             case DEFAULT_JOB_BANNER -> "defaults";
         };
     }
+
+    /**
+     * Retrieves the raw bytes of an image file for embedding in documents (e.g.,
+     * PDF export).
+     *
+     * @param imageId the ID of the image to retrieve
+     * @return the image file contents as a byte array
+     * @throws EntityNotFoundException if the image is not found
+     * @throws RuntimeException        if the image file cannot be read
+     */
+    public byte[] getImageBytes(UUID imageId) {
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
+
+        String relativePath = image.getUrl().replace("/images/", "");
+        Path imagePath = imageRoot.resolve(relativePath).normalize();
+        Path normalizedRoot = imageRoot.normalize();
+
+        if (!imagePath.startsWith(normalizedRoot)) {
+            throw new IllegalStateException("Image path lies outside storage root: " + imagePath);
+        }
+
+        try {
+            return Files.readAllBytes(imagePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read image file: " + imageId, e);
+        }
+    }
 }
