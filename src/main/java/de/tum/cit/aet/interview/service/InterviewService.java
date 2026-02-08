@@ -80,11 +80,11 @@ public class InterviewService {
      */
 
     public List<InterviewOverviewDTO> getInterviewOverview() {
-        // 1. Get the ID of the currently logged-in professor
-        UUID professorId = currentUserService.getUserId();
+        // 1. Get the ID of the currently logged-in user
+        UUID currentUserId = currentUserService.getUserId();
 
-        // 2. Load all active interview processes for this professor
-        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
+        // 2. Load all active interview processes accessible to this user
+        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByUserAccess(currentUserId);
 
         // 3. If no interview processes exist, return an empty list
         if (interviewProcesses.isEmpty()) {
