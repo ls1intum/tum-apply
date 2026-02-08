@@ -4,11 +4,8 @@
       @for (index of starIndices; track index) {
         <fa-icon
           [icon]="isStarHalf(index) ? ['fas', 'star-half-stroke'] : ['fas', 'star']"
-          [class]="
-            (isStarFilled(index) || isStarHalf(index) ? 'text-primary' : 'text-background-surface-alt') +
-            ' ' +
-            (size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base')
-          "
+          [class]="size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base'"
+          [style.color]="isStarFilled(index) || isStarHalf(index) ? getStarColor() : 'var(--p-background-surface-alt)'"
         />
       }
     </div>

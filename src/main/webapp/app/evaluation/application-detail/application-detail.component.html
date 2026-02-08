@@ -99,15 +99,10 @@
         <div class="flex gap-3">
           <!-- Profile Image Placeholder / replace it with profile image component later on -->
           <div
-            class="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-text-on-primary font-semibold text-lg flex-shrink-0"
+            class="flex md:hidden items-center justify-center w-12 h-12 rounded-full bg-primary text-text-on-primary font-semibold text-lg flex-shrink-0"
             [attr.aria-label]="'Profile picture placeholder for ' + application.applicationDetailDTO.applicant?.user?.name"
           >
-            @if (application.applicationDetailDTO.applicant?.user?.name; as fullName) {
-              @let nameParts = fullName.trim().split(' ');
-              {{ nameParts[0]?.charAt(0)?.toUpperCase() || '' }}{{ nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '' }}
-            } @else {
-              ?
-            }
+            {{ initials() }}
           </div>
 
           <div class="flex flex-col">

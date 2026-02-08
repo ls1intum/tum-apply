@@ -51,6 +51,20 @@ export class ApplicationCardComponent {
     return { first, last };
   });
 
+  readonly initials = computed<string>(() => {
+    const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim();
+    if (!fullName) {
+      return '?';
+    }
+    const nameParts = fullName.split(' ').filter(p => p.length > 0);
+    if (nameParts.length === 0) {
+      return '?';
+    }
+    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
+    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
+    return firstInitial + lastInitial;
+  });
+
   readonly masterDegree = computed(() => {
     const applicant = this.applicationDetails()?.applicant;
     if (!applicant) {
