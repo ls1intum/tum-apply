@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.exception.UploadException;
+import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.repository.JobRepository;
 import de.tum.cit.aet.usermanagement.domain.Department;
@@ -589,7 +590,7 @@ public class ImageService {
         try {
             return Files.readAllBytes(imagePath);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to read image file: " + imageId, e);
+            throw new InternalServerException("Failed to read image file: " + imageId, e);
         }
     }
 }
