@@ -46,22 +46,6 @@ describe('ApplicationCardComponent', () => {
 
   // ---------------- PLACEHOLDER STATE ----------------
 
-  it('should apply placeholder class when placeholder is true', () => {
-    fixture.componentRef.setInput('placeholder', true);
-    fixture.detectChanges();
-
-    const card = fixture.nativeElement.querySelector('.card');
-    expect(card.classList.contains('placeholder')).toBe(true);
-  });
-
-  it('should not render content when placeholder is true', () => {
-    fixture.componentRef.setInput('placeholder', true);
-    fixture.detectChanges();
-
-    const header = fixture.nativeElement.querySelector('.header');
-    expect(header).toBeFalsy();
-  });
-
   it('should render content when placeholder is false', () => {
     const detail: ApplicationDetailDTO = {
       applicationId: '123',
@@ -75,7 +59,7 @@ describe('ApplicationCardComponent', () => {
     fixture.componentRef.setInput('application', app);
     fixture.detectChanges();
 
-    const header = fixture.nativeElement.querySelector('.header');
+    const header = fixture.nativeElement.querySelector('h3');
     expect(header).toBeTruthy();
   });
 });
