@@ -14,10 +14,18 @@ import {
   createBreakpointObserverMock,
   provideBreakpointObserverMock,
 } from '../../../../../util/breakpoint-observer.mock';
+import { signal } from '@angular/core';
+import { AuthOrchestratorService } from 'app/core/auth/auth-orchestrator.service';
 
 describe('AuthIdpButtons', () => {
   let authFacadeMock: AuthFacadeServiceMock;
   let breakpointObserverMock: BreakpointObserverMock;
+
+  // Mock Orchestrator with just the signal we need
+  const authOrchestratorMock = {
+    redirectUri: signal<string | null>(null),
+    showSocialLogin: signal<boolean>(false),
+  } as unknown as AuthOrchestratorService;
 
   function createComponent() {
     const fixture = TestBed.createComponent(AuthIdpButtons);
@@ -35,6 +43,7 @@ describe('AuthIdpButtons', () => {
         provideFontAwesomeTesting(),
         provideAuthFacadeServiceMock(authFacadeMock),
         provideBreakpointObserverMock(breakpointObserverMock),
+        { provide: AuthOrchestratorService, useValue: authOrchestratorMock },
       ],
     }).compileComponents();
   });
