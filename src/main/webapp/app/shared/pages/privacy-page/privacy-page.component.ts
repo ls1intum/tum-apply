@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { UserDataExportResourceApiService } from 'app/generated/api/api';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { AccountService } from 'app/core/auth/account.service';
 
 import TranslateDirective from '../../language/translate.directive';
 
@@ -20,13 +21,17 @@ type ExportStatus = 'REQUESTED' | 'IN_CREATION' | 'EMAIL_SENT' | 'COMPLETED' | n
   encapsulation: ViewEncapsulation.None,
 })
 export class PrivacyPageComponent {
-  readonly exportButtonDisabled = computed(() => this.currentExportStatus() === 'IN_CREATION' || this.cooldownSeconds() > 0);
+  readonly exportButtonDisabled = computed(
+    () => !this.signedIn() || this.currentExportStatus() === 'IN_CREATION' || this.cooldownSeconds() > 0,
+  );
 
   readonly tooltip = computed(() => {
     this.currentLang(); // re-run when language changes to update translation
     if (!this.exportButtonDisabled()) return undefined;
 
-    if (this.currentExportStatus() === 'IN_CREATION') {
+    if (!this.signedIn()) {
+      return this.translateService.instant('privacy.export.tooltip.notLoggedIn');
+    } else if (this.currentExportStatus() === 'IN_CREATION') {
       return this.translateService.instant('privacy.export.tooltip.inCreation');
     } else if (this.cooldownSeconds() > 0) {
       const days = Math.ceil(this.cooldownSeconds() / (24 * 60 * 60));
@@ -38,8 +43,10 @@ export class PrivacyPageComponent {
   readonly currentLang = signal<string>(this.translateService.getCurrentLang());
   readonly currentExportStatus = signal<ExportStatus>(null);
   readonly cooldownSeconds = signal<number>(0);
+  readonly signedIn = computed(() => this.accountService.signedIn());
 
   protected readonly userDataExportService = inject(UserDataExportResourceApiService);
+  private readonly accountService = inject(AccountService);
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -85,6 +92,9 @@ export class PrivacyPageComponent {
   }
 
   private async refreshStatus(): Promise<void> {
+    if (!this.accountService.signedIn()) {
+      return;
+    }
     try {
       const status = await firstValueFrom(this.userDataExportService.getDataExportStatus());
       this.currentExportStatus.set((status.status as ExportStatus) ?? null);

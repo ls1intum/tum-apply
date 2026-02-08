@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -550,6 +551,7 @@ public class InterviewService {
      * @throws AccessDeniedException   if the user is not the job owner
      * @throws BadRequestException     if any application belongs to a different job
      */
+    @Transactional
     public List<IntervieweeDTO> addApplicantsToInterview(UUID processId, AddIntervieweesDTO dto) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
@@ -567,20 +569,24 @@ public class InterviewService {
         List<Interviewee> createdInterviewees = new ArrayList<>();
         for (Application application : applications) {
             // Check if already exists
-            if (intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
-                continue;
+            if (!intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
+                // Create new Interviewee
+                Interviewee interviewee = new Interviewee();
+                interviewee.setInterviewProcess(process);
+                interviewee.setApplication(application);
+                interviewee.setLastInvited(null);
+
+                createdInterviewees.add(interviewee);
             }
 
-            // Create new Interviewee
-            Interviewee interviewee = new Interviewee();
-            interviewee.setInterviewProcess(process);
-            interviewee.setApplication(application);
-            interviewee.setLastInvited(null);
-
-            createdInterviewees.add(interviewee);
+            // Always update application status to INTERVIEW
+            if (application.getState() != ApplicationState.INTERVIEW) {
+                application.setState(ApplicationState.INTERVIEW);
+            }
         }
 
-        // 6. Save all
+        // 6. Save all applications and interviewees
+        applicationRepository.saveAll(applications);
         List<Interviewee> savedInterviewees = intervieweeRepository.saveAll(createdInterviewees);
 
         // 7. Return DTOs

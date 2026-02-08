@@ -2190,7 +2190,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationDetailDTO:
       type: object
       properties:
@@ -2199,7 +2199,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         jobId: {type: string, format: uuid}
         jobLocation: {type: string}
@@ -2254,7 +2254,7 @@ components:
         state:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
     ApplicationEvaluationOverviewListDTO:
       type: object
       properties:
@@ -2270,7 +2270,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         customFields:
           type: array
           items: {$ref: '#/components/schemas/CustomFieldAnswerDTO'}
@@ -2288,7 +2288,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         createdAt: {type: string, format: date-time}
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
@@ -2676,6 +2676,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {$ref: '#/components/schemas/User'}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2686,7 +2687,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         departmentName: {type: string}
         imageUrl: {type: string}
@@ -2723,6 +2724,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2734,7 +2736,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         contractDuration: {type: integer, format: int32}
         createdAt: {type: string, format: date-time}
         endDate: {type: string, format: date}
@@ -2751,6 +2753,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2788,6 +2791,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -3138,7 +3142,7 @@ components:
         applicationState:
           type: string
           enum: [SAVED, SENT, ACCEPTED, IN_REVIEW, REJECTED, WITHDRAWN, JOB_CLOSED,
-            INVITED, SCHEDULED, COMPLETED]
+            INTERVIEW]
         desiredDate: {type: string, format: date}
         motivation: {type: string}
         projects: {type: string}

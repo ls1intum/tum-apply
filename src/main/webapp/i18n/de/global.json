@@ -290,10 +290,26 @@
       },
       "error": {
         "replace_failed": "Dokument konnte nicht ersetzt werden",
-        "too_large": "Dateien sind zu groß",
-        "upload_failed": "Upload fehlgeschlagen",
-        "delete_failed": "Dokument konnte nicht gelöscht werden",
-        "rename_failed": "Dokument konnte nicht umbenannt werden"
+        "too_large_detailed": {
+          "summary": "Dateien zu groß",
+          "detail": "Maximale Upload-Größe ist {{maxSize}} MB pro Datei. Zu große Datei: {{totalSize}}"
+        },
+        "total_too_large": {
+          "summary": "Gesamtgröße überschreitet Limit",
+          "detail": "Maximale Gesamtgröße ist {{maxTotal}} MB.\nDeine Dateien insgesamt: {{actualTotal}}"
+        },
+        "upload_failed": {
+          "summary": "Upload fehlgeschlagen",
+          "detail": "Ein Fehler ist während des Uploads aufgetreten. Bitte versuche es erneut."
+        },
+        "delete_failed": {
+          "summary": "Löschen fehlgeschlagen",
+          "detail": "Ein Fehler ist während des Löschens des Dokuments aufgetreten. Bitte versuche es erneut."
+        },
+        "rename_failed": {
+          "summary": "Umbenennen fehlgeschlagen",
+          "detail": "Ein Fehler ist während des Umbenennens des Dokuments aufgetreten. Bitte versuche es erneut."
+        }
       }
     },
     "application_overview": {

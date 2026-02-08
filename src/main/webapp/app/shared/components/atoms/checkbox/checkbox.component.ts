@@ -8,7 +8,6 @@ import TranslateDirective from 'app/shared/language/translate.directive';
 
 import { BaseInputDirective } from '../base-input/base-input.component';
 
-// Custom checkbox component wrapping PrimeNG Checkbox
 @Component({
   selector: 'jhi-checkbox',
   templateUrl: './checkbox.component.html',
