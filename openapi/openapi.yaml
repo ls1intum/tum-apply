@@ -2231,6 +2231,7 @@ components:
       properties:
         applicationDetailDTO: {$ref: '#/components/schemas/ApplicationDetailDTO'}
         appliedAt: {type: string, format: date-time}
+        averageRating: {type: number, format: double}
         jobId: {type: string, format: uuid}
         professor: {$ref: '#/components/schemas/ProfessorDTO'}
       required: [applicationDetailDTO]
