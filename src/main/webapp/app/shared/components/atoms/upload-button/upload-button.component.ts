@@ -223,12 +223,11 @@ export class UploadButtonComponent {
 
   private async processFiles(files: File[]): Promise<void> {
     const maxSizeBytes = this.maxUploadSizeInMb * 1024 * 1024;
-    const maxTotalSizeMb = 25;
+    const maxTotalSizeMb = this.maxUploadSizeInMb; // total limit (MB) — same as per-file by design
     const maxTotalSizeBytes = maxTotalSizeMb * 1024 * 1024;
 
-    // If single file upload
-    if (files.length === 1) {
-      const file = files[0];
+    // Validate incoming files individually first (always enforce per-file limit)
+    for (const file of files) {
       if (file.size > maxSizeBytes) {
         this.toastService.showErrorKey('entity.upload.error.too_large_detailed', {
           maxSize: this.maxUploadSizeInMb.toString(),
@@ -240,29 +239,34 @@ export class UploadButtonComponent {
       }
     }
 
-    // If multiple files upload
-    if (files.length > 1) {
-      const oversizedFiles = files.filter(file => file.size > maxSizeBytes);
-      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    // Consider already selected files when calculating the total size
+    const selectedFile = this.selectedFiles() ?? [];
 
-      // Show total error if any file is too large OR total exceeds limit
-      if (oversizedFiles.length > 0 || totalSize > maxTotalSizeBytes) {
-        this.toastService.showErrorKey('entity.upload.error.total_too_large', {
-          maxTotal: maxTotalSizeMb.toString(),
-          actualTotal: this.formatSize(totalSize),
-        });
-        this.fileUploadComponent()?.clear();
-        this.resetNativeFileInput();
-        return;
-      }
+    // Also include already uploaded documents (persisted on the server) in the total size
+    const existingDocs = this.documentIds() ?? [];
+    const existingDocsTotal = existingDocs.reduce((sum, doc) => sum + (doc.size ?? 0), 0);
+
+    const combinedFiles = [...selectedFile, ...files];
+    const combinedFilesTotal = combinedFiles.reduce((sum, file) => sum + file.size, 0);
+
+    const totalSize = existingDocsTotal + combinedFilesTotal;
+
+    // Enforce combined total size limit
+    if (totalSize > maxTotalSizeBytes) {
+      this.toastService.showErrorKey('entity.upload.error.total_too_large', {
+        maxTotal: maxTotalSizeMb.toString(),
+        actualTotal: this.formatSize(totalSize),
+      });
+      this.fileUploadComponent()?.clear();
+      this.resetNativeFileInput();
+      return;
     }
 
     // Only add files if validation passes
-    const selectedFile = this.selectedFiles();
     if (selectedFile === undefined) {
       this.selectedFiles.set(files);
     } else {
-      this.selectedFiles.set([...selectedFile, ...files]);
+      this.selectedFiles.set(combinedFiles);
     }
 
     this.fileUploadComponent()?.clear();
