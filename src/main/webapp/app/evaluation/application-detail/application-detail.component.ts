@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
@@ -101,9 +101,14 @@ export class ApplicationDetailComponent {
   });
 
   currentApplicationApplicant = computed(() => this.currentApplication()?.applicationDetailDTO.applicant);
-  bachelorItemsComputed = computed(() => this.getBachelorItems(this.currentApplicationApplicant()));
-  masterItemsComputed = computed(() => this.getMasterItems(this.currentApplicationApplicant()));
-
+  bachelorItemsComputed = computed(() => {
+    this.currentLang();
+    return this.getBachelorItems(this.currentApplicationApplicant());
+  });
+  masterItemsComputed = computed(() => {
+    this.currentLang();
+    return this.getMasterItems(this.currentApplicationApplicant());
+  });
   protected currentApplicationId = computed(() => {
     return this.currentApplication()?.applicationDetailDTO.applicationId;
   });
@@ -118,9 +123,12 @@ export class ApplicationDetailComponent {
   private readonly applicationResourceService = inject(ApplicationResourceApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly translateService = inject(TranslateService);
   private toastService = inject(ToastService);
+  private translate = inject(TranslateService);
 
   private readonly qpSignal = toSignal(this.route.queryParamMap, { initialValue: this.route.snapshot.queryParamMap });
+  private currentLang = toSignal(this.translateService.onLangChange);
 
   private _queryParamEffect = effect(() => {
     const qp = this.qpSignal();
@@ -185,7 +193,7 @@ export class ApplicationDetailComponent {
       {
         labelKey: 'evaluation.details.educationGrade',
         value: gradeDisplay.displayValue,
-        tooltipText: gradeDisplay.wasConverted ? 'evaluation.details.converterTooltip' : undefined,
+        tooltipText: gradeDisplay.tooltipText,
       },
     ];
   }
@@ -205,7 +213,7 @@ export class ApplicationDetailComponent {
       {
         labelKey: 'evaluation.details.educationGrade',
         value: gradeDisplay.displayValue,
-        tooltipText: gradeDisplay.wasConverted ? 'evaluation.details.converterTooltip' : undefined,
+        tooltipText: gradeDisplay.tooltipText,
       },
     ];
   }
@@ -214,13 +222,13 @@ export class ApplicationDetailComponent {
    * Formats a grade with conversion info inline.
    * Returns converted grade with original in parentheses if conversion happened.
    *
-   * @returns Object with displayValue and wasConverted flag
+   * @returns Object with displayValue, wasConverted flag, and interpolated tooltipText
    */
   formatGradeWithConversion(
     grade: string | undefined,
     upperLimit: string | undefined,
     lowerLimit: string | undefined,
-  ): { displayValue: string; wasConverted: boolean } {
+  ): { displayValue: string; wasConverted: boolean; tooltipText?: string } {
     const originalGrade = grade ?? '';
 
     if (originalGrade === '') {
@@ -229,22 +237,25 @@ export class ApplicationDetailComponent {
 
     const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
 
-    // Check if conversion actually happened
     const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
     const roundedOriginal = Math.floor(numericOriginal * 10) / 10;
 
     const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
     const roundedConverted = Math.floor(numericConverted * 10) / 10;
 
-    // If no conversion or conversion failed, show original only
     if (convertedGrade === '' || roundedOriginal === roundedConverted) {
       return { displayValue: originalGrade, wasConverted: false };
     }
 
-    // Show converted grade with original in parentheses
+    const tooltipText = this.translateService.instant('evaluation.details.converterTooltip', {
+      upperLimit: upperLimit ?? '',
+      lowerLimit: lowerLimit ?? '',
+    });
+
     return {
       displayValue: `${convertedGrade} (${originalGrade})`,
       wasConverted: true,
+      tooltipText,
     };
   }
 
