@@ -172,65 +172,80 @@ export class ApplicationDetailComponent {
 
   getBachelorItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
     if (!applicant) return [];
-    const items: DescItem[] = [
-      { labelKey: 'evaluation.details.educationDegree', value: applicant.bachelorDegreeName },
-      { labelKey: 'evaluation.details.educationUniversity', value: applicant.bachelorUniversity },
-      { labelKey: 'evaluation.details.educationGrade', value: applicant.bachelorGrade },
-    ];
 
-    const converted = this.getGradeItem(
+    const gradeDisplay = this.formatGradeWithConversion(
       applicant.bachelorGrade,
       applicant.bachelorGradeUpperLimit,
       applicant.bachelorGradeLowerLimit,
-      'evaluation.details.educationGradeConverted',
-      'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);
-    return items;
+    return [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.bachelorDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.bachelorUniversity },
+      {
+        labelKey: 'evaluation.details.educationGrade',
+        value: gradeDisplay.displayValue,
+        tooltipText: gradeDisplay.wasConverted ? 'evaluation.details.converterTooltip' : undefined,
+      },
+    ];
   }
 
   getMasterItems(applicant?: ApplicantForApplicationDetailDTO): DescItem[] {
     if (!applicant) return [];
-    const items: DescItem[] = [
-      { labelKey: 'evaluation.details.educationDegree', value: applicant.masterDegreeName },
-      { labelKey: 'evaluation.details.educationUniversity', value: applicant.masterUniversity },
-      { labelKey: 'evaluation.details.educationGrade', value: applicant.masterGrade },
-    ];
 
-    const converted = this.getGradeItem(
+    const gradeDisplay = this.formatGradeWithConversion(
       applicant.masterGrade,
       applicant.masterGradeUpperLimit,
       applicant.masterGradeLowerLimit,
-      'evaluation.details.educationGradeConverted',
-      'evaluation.details.converterTooltip',
     );
 
-    items.push(...converted);
-    return items;
+    return [
+      { labelKey: 'evaluation.details.educationDegree', value: applicant.masterDegreeName },
+      { labelKey: 'evaluation.details.educationUniversity', value: applicant.masterUniversity },
+      {
+        labelKey: 'evaluation.details.educationGrade',
+        value: gradeDisplay.displayValue,
+        tooltipText: gradeDisplay.wasConverted ? 'evaluation.details.converterTooltip' : undefined,
+      },
+    ];
   }
 
-  getGradeItem(
+  /**
+   * Formats a grade with conversion info inline.
+   * Returns converted grade with original in parentheses if conversion happened.
+   *
+   * @returns Object with displayValue and wasConverted flag
+   */
+  formatGradeWithConversion(
     grade: string | undefined,
     upperLimit: string | undefined,
     lowerLimit: string | undefined,
-    convertedLabel: string,
-    tooltipText?: string,
-  ): DescItem[] {
+  ): { displayValue: string; wasConverted: boolean } {
     const originalGrade = grade ?? '';
+
+    if (originalGrade === '') {
+      return { displayValue: '', wasConverted: false };
+    }
+
     const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
 
+    // Check if conversion actually happened
     const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
     const roundedOriginal = Math.floor(numericOriginal * 10) / 10;
 
     const numericConverted = parseFloat(convertedGrade.replace(',', '.'));
     const roundedConverted = Math.floor(numericConverted * 10) / 10;
 
-    if (!convertedGrade || roundedOriginal === roundedConverted) {
-      return [];
+    // If no conversion or conversion failed, show original only
+    if (convertedGrade === '' || roundedOriginal === roundedConverted) {
+      return { displayValue: originalGrade, wasConverted: false };
     }
 
-    return [{ labelKey: convertedLabel, value: convertedGrade, tooltipText }];
+    // Show converted grade with original in parentheses
+    return {
+      displayValue: `${convertedGrade} (${originalGrade})`,
+      wasConverted: true,
+    };
   }
 
   onSearchEmit(searchQuery: string): void {
