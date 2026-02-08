@@ -131,9 +131,9 @@ export default class ApplicationCreationPage2Component {
     initialValue: this.page2Form.value,
   });
 
-  private bachelorGradeValue = toSignal(this.page2Form.get('bachelorGrade')!.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
+  private bachelorGradeValue = toSignal(this.page2Form.controls.bachelorGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
 
-  private masterGradeValue = toSignal(this.page2Form.get('masterGrade')!.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
+  private masterGradeValue = toSignal(this.page2Form.controls.masterGrade.valueChanges.pipe(debounceTime(500), distinctUntilChanged()));
 
   private formStatus = toSignal(this.page2Form.statusChanges, {
     initialValue: this.page2Form.status,
@@ -209,19 +209,7 @@ export default class ApplicationCreationPage2Component {
     const gradeChanged = grade !== this.lastBachelorGrade();
 
     if (gradeChanged) {
-      this.lastBachelorGrade.set(grade ?? '');
-      this.bachelorLimitsManuallySet.set(false);
-
-      const limits = detectGradingScale(grade ?? '');
-      this.bachelorGradeLimits.set(limits);
-
-      this.page2Form.patchValue(
-        {
-          bachelorGradeUpperLimit: limits?.upperLimit ?? '',
-          bachelorGradeLowerLimit: limits?.lowerLimit ?? '',
-        },
-        { emitEvent: true },
-      );
+      this.updateBachelorGradeLimits(grade ?? '');
     }
   });
 
@@ -234,19 +222,7 @@ export default class ApplicationCreationPage2Component {
     const gradeChanged = grade !== this.lastMasterGrade();
 
     if (gradeChanged) {
-      this.lastMasterGrade.set(grade ?? '');
-      this.masterLimitsManuallySet.set(false);
-
-      const limits = detectGradingScale(grade ?? '');
-      this.masterGradeLimits.set(limits);
-
-      this.page2Form.patchValue(
-        {
-          masterGradeUpperLimit: limits?.upperLimit ?? '',
-          masterGradeLowerLimit: limits?.lowerLimit ?? '',
-        },
-        { emitEvent: true },
-      );
+      this.updateMasterGradeLimits(grade ?? '');
     }
   });
 
@@ -314,5 +290,37 @@ export default class ApplicationCreationPage2Component {
         }
       }
     });
+  }
+
+  private updateBachelorGradeLimits(grade: string): void {
+    this.lastBachelorGrade.set(grade);
+    this.bachelorLimitsManuallySet.set(false);
+
+    const limits = detectGradingScale(grade);
+    this.bachelorGradeLimits.set(limits);
+
+    this.page2Form.patchValue(
+      {
+        bachelorGradeUpperLimit: limits?.upperLimit ?? '',
+        bachelorGradeLowerLimit: limits?.lowerLimit ?? '',
+      },
+      { emitEvent: true },
+    );
+  }
+
+  private updateMasterGradeLimits(grade: string): void {
+    this.lastMasterGrade.set(grade);
+    this.masterLimitsManuallySet.set(false);
+
+    const limits = detectGradingScale(grade);
+    this.masterGradeLimits.set(limits);
+
+    this.page2Form.patchValue(
+      {
+        masterGradeUpperLimit: limits?.upperLimit ?? '',
+        masterGradeLowerLimit: limits?.lowerLimit ?? '',
+      },
+      { emitEvent: true },
+    );
   }
 }

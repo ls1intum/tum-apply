@@ -1,5 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { getGradeType, isLetterInRange, isNumericInRange, setControlError } from 'app/shared/util/grading-scale.utils';
+import { GradeType, getGradeType, isLetterInRange, isNumericInRange, setControlError } from 'app/shared/util/grading-scale.utils';
 
 /**
  * Validator for a single grading scale limit (upper or lower).
@@ -19,21 +19,24 @@ export function gradingScaleTypeValidator(getCurrentGrade: () => string): Valida
     const gradeType = getGradeType(grade);
     const limitType = getGradeType(limit);
 
-    if (gradeType === 'numeric') {
-      return limitType === 'numeric' ? null : { invalidLimitType: true };
-    }
-
-    // accept numeric values for percentage grades, but add the percentage for
-    if (gradeType === 'percentage' && (limitType === 'percentage' || limitType === 'numeric')) {
-      return null;
-    }
-
-    if (gradeType === 'letter') {
-      return limitType === 'letter' ? null : { invalidLimitType: true };
-    }
-
-    return null;
+    return validateGradeTypesMatch(gradeType, limitType);
   };
+}
+
+function validateGradeTypesMatch(gradeType: GradeType, limitType: GradeType): ValidationErrors | null {
+  if (gradeType === 'numeric') {
+    return limitType === 'numeric' ? null : { invalidLimitType: true };
+  }
+
+  if (gradeType === 'percentage' && (limitType === 'percentage' || limitType === 'numeric')) {
+    return null;
+  }
+
+  if (gradeType === 'letter') {
+    return limitType === 'letter' ? null : { invalidLimitType: true };
+  }
+
+  return null;
 }
 
 /**
@@ -52,8 +55,7 @@ export function gradingScaleRangeValidator(getCurrentGrade: () => string): Valid
     }
 
     if (upperCtrl.hasError('invalidLimitType') || lowerCtrl.hasError('invalidLimitType')) {
-      setControlError(upperCtrl, 'outOfRange', false);
-      setControlError(lowerCtrl, 'outOfRange', false);
+      clearRangeErrors(upperCtrl, lowerCtrl);
       return null;
     }
 
@@ -62,33 +64,42 @@ export function gradingScaleRangeValidator(getCurrentGrade: () => string): Valid
     const grade = getCurrentGrade().trim();
 
     if (!upper || !lower || !grade) {
-      setControlError(upperCtrl, 'outOfRange', false);
-      setControlError(lowerCtrl, 'outOfRange', false);
+      clearRangeErrors(upperCtrl, lowerCtrl);
       return null;
     }
 
     const type = getGradeType(grade);
-
-    let inRange = false;
-    if (type === 'letter') {
-      inRange = isLetterInRange(grade, upper, lower);
-    } else if (type === 'numeric' || type === 'percentage') {
-      inRange = isNumericInRange(grade, upper, lower);
-    }
+    const inRange = checkGradeInRange(type, grade, upper, lower);
 
     if (!inRange) {
-      const currentUpperErrors = upperCtrl.errors ?? {};
-      const currentLowerErrors = lowerCtrl.errors ?? {};
-
-      upperCtrl.setErrors({ ...currentUpperErrors, outOfRange: true });
-      lowerCtrl.setErrors({ ...currentLowerErrors, outOfRange: true });
-
+      setRangeErrors(upperCtrl, lowerCtrl);
       return { outOfRange: true };
-    } else {
-      setControlError(upperCtrl, 'outOfRange', false);
-      setControlError(lowerCtrl, 'outOfRange', false);
     }
 
+    clearRangeErrors(upperCtrl, lowerCtrl);
     return null;
   };
+}
+
+function clearRangeErrors(upperCtrl: AbstractControl, lowerCtrl: AbstractControl): void {
+  setControlError(upperCtrl, 'outOfRange', false);
+  setControlError(lowerCtrl, 'outOfRange', false);
+}
+
+function setRangeErrors(upperCtrl: AbstractControl, lowerCtrl: AbstractControl): void {
+  const currentUpperErrors = upperCtrl.errors ?? {};
+  const currentLowerErrors = lowerCtrl.errors ?? {};
+
+  upperCtrl.setErrors({ ...currentUpperErrors, outOfRange: true });
+  lowerCtrl.setErrors({ ...currentLowerErrors, outOfRange: true });
+}
+
+function checkGradeInRange(type: GradeType, grade: string, upper: string, lower: string): boolean {
+  if (type === 'letter') {
+    return isLetterInRange(grade, upper, lower);
+  }
+  if (type === 'numeric' || type === 'percentage') {
+    return isNumericInRange(grade, upper, lower);
+  }
+  return false;
 }

@@ -2,11 +2,11 @@ import { AbstractControl } from '@angular/forms';
 
 export type GradeType = 'letter' | 'numeric' | 'percentage' | 'invalid';
 
-export type GradingScaleLimitsData = {
+export interface GradingScaleLimitsData {
   upperLimit: string;
   lowerLimit: string;
   isPercentage?: boolean;
-};
+}
 
 export type GradingScaleLimitsResult = GradingScaleLimitsData | null;
 
@@ -26,12 +26,12 @@ export function getGradeType(value: string): GradeType {
   }
 
   // Check for percentage (digits with optional comma/dot followed by %)
-  if (/^[\d]+([.,][\d]+)?%$/.test(trimmed)) {
+  if (/^[\d]{1,10}([.,][\d]{1,2})?%$/.test(trimmed)) {
     return 'percentage';
   }
 
   // Check for numeric grade (digits with optional comma/dot)
-  if (/^[\d]+([.,][\d]+)?$/.test(trimmed)) {
+  if (/^[\d]{1,10}([.,][\d]{1,2})?$/.test(trimmed)) {
     return 'numeric';
   }
 
@@ -160,7 +160,7 @@ export function detectNumericGrade(grade: string): GradingScaleLimitsResult {
   const valueToCheck = isPercentage ? stripPercentage(grade) : grade;
 
   // Validate format: only numbers with optional comma/dot
-  if (!/^[\d]+([.,][\d]+)?$/.test(valueToCheck)) {
+  if (!/^[\d]{1,10}([.,][\d]{1,2})?$/.test(valueToCheck)) {
     return null;
   }
 
