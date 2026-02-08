@@ -3,7 +3,6 @@
   [multiple]="allowMultiple()"
   accept="application/pdf"
   mode="advanced"
-  [maxFileSize]="maxUploadSizeInMb * 1024 * 1024"
   (onClear)="onClear()"
   (onSelect)="onFileSelected($event)"
   #fileupload_component

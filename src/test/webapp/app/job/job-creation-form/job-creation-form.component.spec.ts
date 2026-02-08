@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { of, throwError, Subject } from 'rxjs';
-import { ActivatedRoute, UrlSegment } from '@angular/router';
-import { Location } from '@angular/common';
+import { of, throwError } from 'rxjs';
+import { UrlSegment } from '@angular/router';
 import { signal, TemplateRef } from '@angular/core';
 
 import { JobCreationFormComponent } from 'app/job/job-creation-form/job-creation-form.component';
@@ -53,25 +52,9 @@ function fillValidJobForm(component: JobCreationFormComponent) {
     contractDuration: 3,
     fundingType: { value: 'FULLY_FUNDED', name: 'Fully Funded' },
   });
-  component.additionalInfoForm.patchValue({ privacyAccepted: true });
 
   component.basicInfoForm.updateValueAndValidity();
   component.positionDetailsForm.updateValueAndValidity();
-}
-
-function createMockFile(name: string, type: string, size: number): File {
-  const file = new File(['test'], name, { type });
-  Object.defineProperty(file, 'size', { value: size });
-  return file;
-}
-
-function createMockFileEvent(file: File): Event {
-  const mockInput = document.createElement('input');
-  Object.defineProperty(mockInput, 'files', {
-    value: [file],
-    writable: false,
-  });
-  return { target: mockInput } as unknown as Event;
 }
 
 function mockPanelTemplates(component: JobCreationFormComponent) {
@@ -100,14 +83,12 @@ type ComponentPrivate = {
   createJobDTO: (state?: JobFormDTO.StateEnum) => JobFormDTO;
   buildStepData: () => Step[];
   findDropdownOption: (arr: { value: string }[], val: string) => unknown;
-  getImageDimensions: (file: File) => Promise<{ width: number; height: number }>;
   sendPublishDialog: () => { confirm: () => void };
   panel1: () => object;
   panel2: () => object;
   savingStatePanel: () => object;
   extractJobDescriptionFromStream: (content: string) => string | null;
   unescapeJsonString: (str: string) => string;
-  loadTranslatedDescription: (targetLang: 'en' | 'de', maxRetries?: number, delayMs?: number) => Promise<void>;
 };
 
 function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
@@ -152,7 +133,7 @@ describe('JobCreationFormComponent', () => {
     mockLocation = createLocationMock();
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
     mockAiStreamingService = createAiStreamingServiceMock();
-    mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+    mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
@@ -336,13 +317,6 @@ describe('JobCreationFormComponent', () => {
   describe('Job Publishing', () => {
     it.each([
       {
-        name: 'reject when privacy not accepted',
-        setup: (comp: JobCreationFormComponent) => comp.additionalInfoForm.patchValue({ privacyAccepted: false }),
-        expectations: () => {
-          expect(mockToastService.showErrorKey).toHaveBeenCalledWith('privacy.privacyConsent.toastError');
-        },
-      },
-      {
         name: 'publish successfully and navigate',
         setup: (comp: JobCreationFormComponent) => {
           fillValidJobForm(comp);
@@ -369,7 +343,6 @@ describe('JobCreationFormComponent', () => {
       {
         name: 'skip when form data invalid',
         setup: (comp: JobCreationFormComponent) => {
-          comp.additionalInfoForm.patchValue({ privacyAccepted: true });
           comp.basicInfoForm.patchValue({ title: '' });
           comp.positionDetailsForm.patchValue({ description: '' });
         },
@@ -446,79 +419,7 @@ describe('JobCreationFormComponent', () => {
     });
   });
 
-  describe('Image Upload and Selection', () => {
-    beforeEach(() => {
-      // Mock getImageDimensions for image upload tests
-      vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValue({ width: 1920, height: 1080 });
-    });
-
-    it.each([
-      {
-        name: 'file too large',
-        file: createMockFile('test.jpg', 'image/jpeg', 6 * 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.fileTooLarge',
-        setupSpy: (spy?: ReturnType<typeof vi.spyOn>) => spy && vi.spyOn(console, 'error').mockImplementation(() => {}),
-      },
-      {
-        name: 'invalid file type',
-        file: createMockFile('test.svg', 'image/svg+xml', 1024),
-        errorKey: 'jobCreationForm.imageSection.invalidFileType',
-      },
-      {
-        name: 'dimensions too large',
-        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.dimensionsTooLarge',
-        setupSpy: () =>
-          vi.spyOn(getPrivate(component), 'getImageDimensions').mockResolvedValueOnce({
-            width: 5000,
-            height: 5000,
-          }),
-      },
-      {
-        name: 'invalid image file',
-        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.invalidImage',
-        setupSpy: () => vi.spyOn(getPrivate(component), 'getImageDimensions').mockRejectedValueOnce(new Error('Invalid')),
-      },
-      {
-        name: 'upload failure',
-        file: createMockFile('test.jpg', 'image/jpeg', 1024 * 1024),
-        errorKey: 'jobCreationForm.imageSection.uploadFailed',
-        setupSpy: () => mockImageService.uploadJobBanner.mockReturnValueOnce(throwError(() => new Error('Upload failed'))),
-      },
-    ])('should reject image upload when $name', async ({ file, errorKey, setupSpy }) => {
-      const spy = setupSpy?.();
-      const mockEvent = createMockFileEvent(file);
-
-      await component.onImageSelected(mockEvent);
-
-      expect(mockToastService.showErrorKey).toHaveBeenCalledWith(errorKey);
-      expect((mockEvent.target as HTMLInputElement).value).toBe('');
-      spy && spy.mockRestore();
-    });
-
-    it.each([
-      { name: 'no files', event: { target: { files: [] } as unknown as HTMLInputElement } as unknown as Event },
-      { name: 'non-input target', event: { target: document.createElement('div') } as unknown as Event },
-    ])('should handle $name gracefully', async ({ event }) => {
-      await component.onImageSelected(event);
-      expect(mockImageService.uploadJobBanner).not.toHaveBeenCalled();
-    });
-
-    it('should upload image successfully', async () => {
-      const file = createMockFile('test.jpg', 'image/jpeg', 1024 * 1024);
-      const mockEvent = createMockFileEvent(file);
-      const mockImage: ImageDTO = { imageId: 'uploaded123', url: '/images/uploaded.jpg', imageType: 'JOB_BANNER' };
-      mockImageService.uploadJobBanner.mockReturnValueOnce(of(mockImage));
-
-      await component.onImageSelected(mockEvent);
-
-      expect(component.selectedImage()).toEqual(mockImage);
-      expect(mockToastService.showSuccessKey).toHaveBeenCalledWith('jobCreationForm.imageSection.uploadSuccess');
-      expect(component.isUploadingImage()).toBe(false);
-      expect((mockEvent.target as HTMLInputElement).value).toBe('');
-    });
-
+  describe('Image Selection and Management', () => {
     it('should handle image selection and computed signals', () => {
       // Select default image
       const defaultImage: ImageDTO = {
@@ -912,88 +813,11 @@ describe('JobCreationFormComponent', () => {
       });
     });
 
-    describe('loadTranslatedDescription', () => {
-      it('should update jobDescriptionDE signal when loading German translation', async () => {
-        component.jobId.set('job123');
-        mockJobService.getJobById.mockReturnValue(
-          of({
-            jobId: 'job123',
-            jobDescriptionEN: '<p>English</p>',
-            jobDescriptionDE: '<p>Deutsch</p>',
-          }),
-        );
-
-        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
-
-        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
-      });
-
-      it('should update jobDescriptionEN signal when loading English translation', async () => {
-        component.jobId.set('job123');
-        mockJobService.getJobById.mockReturnValue(
-          of({
-            jobId: 'job123',
-            jobDescriptionEN: '<p>English</p>',
-            jobDescriptionDE: '<p>Deutsch</p>',
-          }),
-        );
-
-        await getPrivate(component).loadTranslatedDescription('en', 1, 10);
-
-        expect(component.jobDescriptionEN()).toBe('<p>English</p>');
-      });
-
-      it('should not update signals if jobId is not set', async () => {
-        component.jobId.set('');
-        const originalEN = component.jobDescriptionEN();
-        const originalDE = component.jobDescriptionDE();
-
-        await getPrivate(component).loadTranslatedDescription('de', 1, 10);
-
-        expect(component.jobDescriptionEN()).toBe(originalEN);
-        expect(component.jobDescriptionDE()).toBe(originalDE);
-        expect(mockJobService.getJobById).not.toHaveBeenCalled();
-      });
-
-      it('should retry when translation is empty', async () => {
-        component.jobId.set('job123');
-        let callCount = 0;
-        mockJobService.getJobById.mockImplementation(() => {
-          callCount++;
-          if (callCount < 2) {
-            return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '' });
-          }
-          return of({ jobId: 'job123', jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' });
-        });
-
-        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
-
-        expect(callCount).toBe(2);
-        expect(component.jobDescriptionDE()).toBe('<p>Deutsch</p>');
-      });
-
-      it('should retry on API error', async () => {
-        component.jobId.set('job123');
-        let callCount = 0;
-        mockJobService.getJobById.mockImplementation(() => {
-          callCount++;
-          if (callCount < 2) {
-            return throwError(() => new Error('API Error'));
-          }
-          return of({ jobId: 'job123', jobDescriptionEN: '', jobDescriptionDE: '<p>Deutsch</p>' });
-        });
-
-        await getPrivate(component).loadTranslatedDescription('de', 3, 10);
-
-        expect(callCount).toBe(2);
-      });
-    });
-
     describe('generateJobApplicationDraft', () => {
       beforeEach(() => {
         // Reset the mock before each test
-        mockAiStreamingService.generateJobDescriptionStream.mockReset();
-        mockAiStreamingService.generateJobDescriptionStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+        mockAiStreamingService.generateJobApplicationDraftStream.mockReset();
+        mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
       });
 
       it('should show error toast on generation failure', async () => {
@@ -1006,7 +830,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('Generic error'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('Generic error'));
 
         await component.generateJobApplicationDraft();
 
@@ -1026,7 +850,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('HTTP error'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('HTTP error'));
 
         await component.generateJobApplicationDraft();
 
@@ -1045,7 +869,7 @@ describe('JobCreationFormComponent', () => {
           configurable: true,
         });
 
-        mockAiStreamingService.generateJobDescriptionStream.mockRejectedValue(new Error('fail'));
+        mockAiStreamingService.generateJobApplicationDraftStream.mockRejectedValue(new Error('fail'));
 
         await component.generateJobApplicationDraft();
 

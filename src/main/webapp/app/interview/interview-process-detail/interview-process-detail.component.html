@@ -1,8 +1,8 @@
 <div class="page-container">
   <!-- Header -->
-  <div class="page-header flex flex-row items-center">
-    <jhi-button [icon]="'arrow-left'" [variant]="'text'" [severity]="'secondary'" (click)="navigateBack()" />
-    <h1 class="h1-text">{{ jobTitle() }}</h1>
+  <div class="page-header flex flex-row items-center gap-2">
+    <jhi-back-button />
+    <h1 class="h1-text hyphens-none">{{ jobTitle() }}</h1>
   </div>
 
   <!-- Slots Section -->

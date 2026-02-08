@@ -14,6 +14,7 @@ p-step[data-p-active='true'] .p-step-title {
   font-weight: 700 !important;
   color: var(--p-text-primary) !important;
 }
+
 /* -------------------------------
    Custom Global Styles for Login
 ---------------------------------- */
@@ -142,14 +143,83 @@ p-step[data-p-active='true'] .p-step-title {
 ---------------------------------- */
 .p-dialog {
   border-radius: var(--border-radius-xl) !important;
+  background: var(--p-dialog-background) !important;
+  color: var(--p-dialog-color) !important;
 }
 
 // Round the header separately for visual consistency
 .p-dialog-header {
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0 !important;
+  background: var(--p-dialog-background) !important;
+  color: var(--p-dialog-color) !important;
 }
 
 // Round the content area
 .p-dialog-content {
   border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl) !important;
+  background: var(--p-dialog-background) !important;
+  color: var(--p-dialog-color) !important;
+}
+
+/* -------------------------------
+   Compact Inline Message Style
+   Usage: <jhi-message styleClass="inline-message" ... />
+---------------------------------- */
+.inline-message.p-message {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+
+  .p-message-content {
+    padding: 0 !important;
+    gap: 0.25rem !important;
+  }
+
+  .p-message-text,
+  p {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    line-height: 1.25 !important;
+  }
+}
+
+/* -------------------------------
+   Custom Tooltip Styles
+---------------------------------- */
+// Adjust tooltip positioning on the right side to avoid a cramped appearance
+// Usage: [tooltipOptions]="{ tooltipStyleClass: 'tooltip-top'}"
+.tooltip-top .p-tooltip-right {
+  top: -0.5rem !important;
+}
+
+/* -------------------------------
+   Progress Spinner Color Override
+---------------------------------- */
+.p-progress-spinner-circle {
+  stroke: var(--p-primary-color) !important;
+}
+/* -------------------------------
+TODO: Check and adjust Custom Stylings for AI Panel and TUMApply AI and remove unncessary styling regarding icon placement
+---------------------------------- */
+/* -------------------------------
+   Custom Divider for AI panel
+---------------------------------- */
+.custom-divider.p-divider-vertical {
+  min-height: 200px !important;
+  max-height: 200px !important;
+  margin-top: 30px;
+}
+/* -------------------------------
+   Custom Button for TUMApply AI
+---------------------------------- */
+.lg\:max-w-\[200px\] jhi-button button,
+.lg\:max-w-\[200px\] jhi-button .p-button {
+  min-width: 180px !important;
+  width: 100% !important;
+  font-size: 0.9rem !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+  gap: 0.25rem !important;
 }

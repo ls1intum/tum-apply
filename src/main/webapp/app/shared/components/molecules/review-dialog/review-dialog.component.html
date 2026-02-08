@@ -23,7 +23,7 @@
 
   <ng-template pTemplate="footer">
     <div class="footer-buttons">
-      <jhi-button [label]="'button.cancel' | translate" variant="text" (click)="this.visible.set(false)" />
+      <jhi-button [label]="'button.cancel' | translate" variant="outlined" (click)="this.visible.set(false)" />
       @if (mode() === 'ACCEPT') {
         <jhi-button [label]="'evaluation.accept' | translate" severity="success" [disabled]="!canAccept()" (click)="onAccept()" />
       } @else {
