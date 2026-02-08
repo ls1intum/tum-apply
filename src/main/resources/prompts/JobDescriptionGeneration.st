@@ -10,7 +10,7 @@ TASK: Generate a polished job posting paragraph in {descriptionLanguage} based o
 - Ensure the text is AGG compliant.
 
 ---
-### 2. COMPRESSION & STRUCTURE (MAX 1200 CHARS)
+### 2. COMPRESSION & STRUCTURE (MAX 2000 CHARS)
 You are an EXECUTIVE EDITOR. If the input is long, MERGE and DISTILL information.
 - Description: MAX 3 short sentences.  -> Offers/Benefits (research context, goals, and scope)
 - Tasks: EXACTLY 3 concise bullet points. Group similar technical terms together. -> Duties/Activities (tasks, responsibilities)
