@@ -208,14 +208,18 @@ class PDFExportResourceTest extends AbstractResourceTest {
         assertThat(pdfBytes.length).isGreaterThan(MIN_PDF_SIZE);
     }
 
+    private ApplicationPDFRequest createApplicationPdfRequest(Application application, Job job) {
+        Map<String, String> labels = createCompleteLabelsMap();
+        ApplicationDetailDTO appDto = ApplicationDetailDTO.getFromEntity(application, job);
+        return new ApplicationPDFRequest(appDto, labels);
+    }
+
     @Nested
     class ExportApplicationToPDF {
 
         @Test
         void exportApplicationToPDFReturnsPdfForAuthenticatedUser() {
-            Map<String, String> labels = createCompleteLabelsMap();
-            ApplicationDetailDTO appDto = ApplicationDetailDTO.getFromEntity(application, job);
-            ApplicationPDFRequest request = new ApplicationPDFRequest(appDto, labels);
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             byte[] result = asApplicant(applicant).postAndReturnBytes(
                 BASE_URL + "/application/pdf",
@@ -228,9 +232,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
         @Test
         void exportApplicationToPDFReturns401ForUnauthenticatedUser() {
-            Map<String, String> labels = createCompleteLabelsMap();
-            ApplicationDetailDTO appDto = ApplicationDetailDTO.getFromEntity(application, job);
-            ApplicationPDFRequest request = new ApplicationPDFRequest(appDto, labels);
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             Void result = api
                 .withoutPostProcessors()
@@ -240,9 +242,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
 
         @Test
         void shouldExportApplicationWithWebsiteAndLinkedIn() {
-            Map<String, String> labels = createCompleteLabelsMap();
-            ApplicationDetailDTO appDto = ApplicationDetailDTO.getFromEntity(applicationWithWebsiteAndLinkedin, job);
-            ApplicationPDFRequest request = new ApplicationPDFRequest(appDto, labels);
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             byte[] result = asApplicant(applicantWithWebsiteAndLinkedin).postAndReturnBytes(
                 BASE_URL + "/application/pdf",
@@ -268,10 +268,7 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 "Test",
                 "Test"
             );
-
-            Map<String, String> labels = createCompleteLabelsMap();
-            ApplicationDetailDTO appDto = ApplicationDetailDTO.getFromEntity(appWithMaster, job);
-            ApplicationPDFRequest request = new ApplicationPDFRequest(appDto, labels);
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             byte[] result = asApplicant(applicantWithMasterNameNull).postAndReturnBytes(
                 BASE_URL + "/application/pdf",
