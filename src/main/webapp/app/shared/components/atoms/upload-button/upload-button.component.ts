@@ -242,12 +242,12 @@ export class UploadButtonComponent {
     // Consider already selected files when calculating the total size
     const selectedFile = this.selectedFiles() ?? [];
 
-    // Also include already uploaded documents (persisted on the server) in the total size
-    const existingDocs = this.documentIds() ?? [];
-    const existingDocsTotal = existingDocs.reduce((sum, doc) => sum + (doc.size ?? 0), 0);
-
     const combinedFiles = [...selectedFile, ...files];
     const combinedFilesTotal = combinedFiles.reduce((sum, file) => sum + file.size, 0);
+
+    // Also include already uploaded documents (persisted on the server) in the total size
+    const existingDocs = this.documentIds() ?? [];
+    const existingDocsTotal = existingDocs.reduce((sum, doc) => sum + doc.size, 0);
 
     const totalSize = existingDocsTotal + combinedFilesTotal;
 
@@ -263,11 +263,7 @@ export class UploadButtonComponent {
     }
 
     // Only add files if validation passes
-    if (selectedFile === undefined) {
-      this.selectedFiles.set(files);
-    } else {
-      this.selectedFiles.set(combinedFiles);
-    }
+    this.selectedFiles.set(combinedFiles);
 
     this.fileUploadComponent()?.clear();
     this.resetNativeFileInput();
