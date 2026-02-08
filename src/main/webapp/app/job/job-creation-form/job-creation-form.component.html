@@ -160,13 +160,25 @@
 
             @if (showAiPanel()) {
               <!-- Divider -->
-              <p-divider layout="vertical" styleClass="mx-2 hidden lg:block" />
+              <p-divider layout="vertical" styleClass="mx-2 hidden lg:block custom-divider" class="custom-divider" />
 
               <!-- AI Panel -->
-              <div class="mt-0 max-w-[200px]">
-                <h3 class="mb-3 font-bold" jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"></h3>
+              <!-- span full width when stacked (small screens), keep constrained on lg+ -->
+              <div class="lg:max-w-[200px] col-span-full lg:col-auto flex flex-col lg:pt-10">
+                <div class="flex gap-2">
+                  <h3
+                    class="mb-3 bold text-text-secondary"
+                    jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHeaderText"
+                  ></h3>
+                  <fa-icon
+                    class="icon"
+                    [icon]="['fas', 'circle-info']"
+                    [pTooltip]="'jobCreationForm.positionDetailsSection.jobDescription.aiTooltipText' | translate"
+                    tooltipPosition="top"
+                  />
+                </div>
                 <h4
-                  class="whitespace-pre-line mb-4 text-base"
+                  class="whitespace-pre-line mb-4 text-base text-sm text-text-tertiary"
                   jhiTranslate="jobCreationForm.positionDetailsSection.jobDescription.aiHelperText"
                 ></h4>
 
@@ -180,7 +192,7 @@
                       ></span>
                     </div>
                   } @else {
-                    <div class="w-full flex justify-center">
+                    <div class="w-full flex">
                       <jhi-button
                         type="button"
                         [label]="
@@ -190,7 +202,8 @@
                         "
                         [shouldTranslate]="true"
                         severity="primary"
-                        class="w-auto min-w-[160px]"
+                        icon="custom-sparkle"
+                        class="w-auto"
                         (click)="generateJobApplicationDraft()"
                       />
                     </div>
@@ -284,6 +297,17 @@
                 [dataKey]="'value'"
               />
             </div>
+          </div>
+
+          <!-- Equal Opportunities Checkbox -->
+          <div class="flex flex-col mt-8">
+            <jhi-checkbox
+              label="jobCreationForm.additionalInformationSection.suitableForDisabled.label"
+              [model]="positionDetailsForm.get('suitableForDisabled')?.value"
+              (modelChange)="positionDetailsForm.get('suitableForDisabled')?.setValue($event)"
+              tooltipText="jobCreationForm.additionalInformationSection.suitableForDisabled.tooltip"
+              [shouldTranslate]="true"
+            />
           </div>
         </div>
       </form>
@@ -398,22 +422,6 @@
   <ng-template #panel4>
     <jhi-message severity="warn" styleClass="mb-3" message="jobCreationForm.reviewPageSection.message" [shouldTranslate]="true" />
     <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
-    <div class="data-privacy-notice">
-      <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-    </div>
-    <div [formGroup]="additionalInfoForm">
-      <div class="flex align-items-start">
-        <div class="relative mr-2">
-          <p-checkbox formControlName="privacyAccepted" [binary]="true" size="small" />
-          <span class="required">*</span>
-        </div>
-        <label jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyConfirmationText"></label>
-      </div>
-
-      @if (privacyAcceptedSignal() === false && publishAttempted()) {
-        <div class="error-text" jhiTranslate="jobCreationForm.additionalInformationSection.dataPrivacyErrorText"></div>
-      }
-    </div>
   </ng-template>
 
   <!-- Saving State Panel -->

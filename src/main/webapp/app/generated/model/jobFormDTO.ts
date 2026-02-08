@@ -22,6 +22,7 @@ export interface JobFormDTO {
     researchArea?: string;
     startDate?: string;
     state: JobFormDTO.StateEnum;
+    suitableForDisabled?: boolean;
     supervisingProfessor: string;
     title: string;
     workload?: number;

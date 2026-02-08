@@ -41,6 +41,7 @@ import {
   ImageUploadButtonComponent,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -92,6 +93,7 @@ type JobFormMode = 'create' | 'edit';
     MessageComponent,
     SegmentedToggleComponent,
     ImageUploadButtonComponent,
+    CheckboxComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -126,9 +128,6 @@ export class JobCreationFormComponent {
 
   /** Snapshot of the last successfully saved job data (used for change detection) */
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
-
-  /** Tracks if the user has attempted to publish (triggers validation display) */
-  publishAttempted = signal<boolean>(false);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // JOB DESCRIPTION SIGNALS
@@ -240,9 +239,6 @@ export class JobCreationFormComponent {
   /** Step 3: Image selection for job banner */
   imageForm = this.createImageForm();
 
-  /** Step 4: Additional info including privacy consent */
-  additionalInfoForm = this.createAdditionalInfoForm();
-
   // ═══════════════════════════════════════════════════════════════════════════
   // TEMPLATE REFERENCES (ViewChild)
   // ═══════════════════════════════════════════════════════════════════════════
@@ -293,11 +289,6 @@ export class JobCreationFormComponent {
 
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
-
-  /** Signal tracking the privacy consent checkbox state */
-  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
-    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
-  });
 
   /**
    * Effect: Updates validity signals whenever form status changes.
@@ -541,12 +532,7 @@ export class JobCreationFormComponent {
    */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
-    this.publishAttempted.set(true);
 
-    if (!Boolean(this.privacyAcceptedSignal())) {
-      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
-      return;
-    }
     if (!jobData) return;
 
     try {
@@ -910,6 +896,7 @@ export class JobCreationFormComponent {
       applicationDeadline: [''],
       workload: [undefined],
       contractDuration: [undefined],
+      suitableForDisabled: [true],
     });
   }
 
@@ -919,16 +906,6 @@ export class JobCreationFormComponent {
   private createImageForm(): FormGroup {
     return this.fb.group({
       imageId: [undefined],
-    });
-  }
-
-  /**
-   * Creates the Step 4 form group for additional information.
-   * Contains the required privacy consent checkbox.
-   */
-  private createAdditionalInfoForm(): FormGroup {
-    return this.fb.group({
-      privacyAccepted: [false, [Validators.required]],
     });
   }
 
@@ -967,6 +944,7 @@ export class JobCreationFormComponent {
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       imageId: imageValue.imageId ?? null,
+      suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
     };
   }
@@ -1079,6 +1057,7 @@ export class JobCreationFormComponent {
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
+      suitableForDisabled: job?.suitableForDisabled ?? true,
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {
@@ -1093,10 +1072,6 @@ export class JobCreationFormComponent {
         imageType: imageType as 'JOB_BANNER' | 'DEFAULT_JOB_BANNER' | 'PROFILE_PICTURE',
       });
     }
-
-    this.additionalInfoForm.patchValue({
-      privacyAccepted: false,
-    });
 
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
   }
