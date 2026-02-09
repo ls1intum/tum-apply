@@ -57,7 +57,7 @@
     <!-- Job Title -->
     <div class="flex items-center gap-2">
       <fa-icon class="text-primary" [icon]="['fas', 'briefcase']" />
-      <span class="text-sm sm:text-base">
+      <span class="text-sm sm:text-base line-clamp-1" [title]="applicationDetails()?.jobTitle || ''">
         {{ applicationDetails()?.jobTitle }}
       </span>
     </div>
