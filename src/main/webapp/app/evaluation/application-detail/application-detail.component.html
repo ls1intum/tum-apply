@@ -138,7 +138,7 @@
                     , {{ bachelorItemsComputed()[1]?.value }}
                   }
                   @if (bachelorItemsComputed()[2]?.value) {
-                    (<span jhiTranslate="evaluation.details.grade">Grade</span>: {{ bachelorItemsComputed()[2]?.value }})
+                    (<span jhiTranslate="evaluation.details.grade"></span>: {{ bachelorItemsComputed()[2]?.value }})
                   }
                 </span>
                 <span> &middot; </span>
@@ -162,8 +162,8 @@
         <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0 w-full sm:w-auto">
           <jhi-button
             class="w-full sm:w-auto"
-            [styleClass]="'w-full sm:w-auto'"
-            [label]="'evaluation.addToInterview' | translate"
+            label="evaluation.addToInterview"
+            [shouldTranslate]="true"
             variant="outlined"
             severity="primary"
             icon="calendar"
@@ -172,8 +172,8 @@
           />
           <jhi-button
             class="w-full sm:w-auto"
-            [styleClass]="'w-full sm:w-auto'"
-            [label]="'evaluation.reject' | translate"
+            label="evaluation.reject"
+            [shouldTranslate]="true"
             variant="outlined"
             severity="danger"
             icon="xmark"
@@ -182,8 +182,8 @@
           />
           <jhi-button
             class="w-full sm:w-auto"
-            [styleClass]="'w-full sm:w-auto'"
-            [label]="'evaluation.accept' | translate"
+            label="evaluation.accept"
+            [shouldTranslate]="true"
             variant="outlined"
             severity="success"
             icon="check"
@@ -215,7 +215,7 @@
                     @if (application.appliedAt) {
                       <div class="flex flex-col">
                         <span class="text-text-secondary uppercase tracking-wide text-xs">
-                          <span jhiTranslate="evaluation.applied">Applied</span>
+                          <span jhiTranslate="evaluation.details.applied"></span>
                         </span>
                         <span>{{ application.appliedAt | localizedDate }}</span>
                       </div>
@@ -223,7 +223,7 @@
                     @if (application.applicationDetailDTO.desiredDate) {
                       <div class="flex flex-col">
                         <span class="text-text-secondary uppercase tracking-wide text-xs">
-                          <span jhiTranslate="evaluation.start">Start</span>
+                          <span jhiTranslate="evaluation.deatils.start"></span>
                         </span>
                         <span>{{ application.applicationDetailDTO.desiredDate | localizedDate }}</span>
                       </div>

@@ -72,6 +72,26 @@ export class ApplicationCardComponent {
     return convertLikertToStandardRating(avgRating);
   });
 
+  /**
+   * Dynamic font size for applicant name based on length
+   */
+  readonly nameFontSize = computed<string>(() => {
+    const name = this.application()?.applicationDetailDTO.applicant?.user.name ?? '';
+    if (name.length > 40) return 'text-sm';
+    if (name.length > 30) return 'text-base';
+    return 'text-lg';
+  });
+
+  /**
+   * Dynamic font size for job title based on length
+   */
+  readonly jobFontSize = computed<string>(() => {
+    const jobTitle = this.applicationDetails()?.jobTitle ?? '';
+    if (jobTitle.length > 60) return 'text-xs';
+    if (jobTitle.length > 40) return 'text-sm';
+    return 'text-sm';
+  });
+
   private calculateInitials(fullName: string | undefined): string {
     if (fullName === undefined || fullName === '') {
       return '?';
