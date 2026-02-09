@@ -48,7 +48,7 @@ export class StarRatingComponent {
       const diff = rating - index;
       const icon = diff >= 1 ? 'star' : diff >= 0.5 ? 'star-half-stroke' : 'star';
       return {
-        filled: rating > index,
+        filled: diff >= 1,
         half: diff >= 0.5 && diff < 1,
         icon,
       };
