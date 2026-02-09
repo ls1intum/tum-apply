@@ -18,6 +18,7 @@ export interface JobDetailDTO {
     endDate?: string;
     fieldOfStudies?: string;
     fundingType?: string;
+    imageId?: string;
     jobDescriptionDE?: string;
     jobDescriptionEN?: string;
     jobId: string;
