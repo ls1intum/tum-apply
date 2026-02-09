@@ -2743,6 +2743,7 @@ components:
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
+        imageId: {type: string, format: uuid}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}
