@@ -574,7 +574,7 @@ public class ImageService {
      * @param imageId the ID of the image to retrieve
      * @return the image file contents as a byte array
      * @throws EntityNotFoundException if the image is not found
-     * @throws RuntimeException        if the image file cannot be read
+     * @throws InternalServerException        if the image file cannot be read
      */
     public byte[] getImageBytes(UUID imageId) {
         Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
