@@ -2677,6 +2677,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {$ref: '#/components/schemas/User'}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2724,6 +2725,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2752,6 +2754,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessorName: {type: string}
         title: {type: string}
         workload: {type: integer, format: int32}
@@ -2789,6 +2792,7 @@ components:
         state:
           type: string
           enum: [DRAFT, PUBLISHED, CLOSED, APPLICANT_FOUND]
+        suitableForDisabled: {type: boolean}
         supervisingProfessor: {type: string, format: uuid}
         title: {type: string}
         workload: {type: integer, format: int32}

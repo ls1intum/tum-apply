@@ -66,7 +66,8 @@
       },
       "tooltip": {
         "inCreation": "Ein Export wird derzeit vorbereitet. Du erhältst eine E-Mail, sobald er bereit ist.",
-        "cooldown": "Du kannst einen weiteren Export in {{days}} Tagen anfordern. Eine E-Mail wurde mit deinen Daten versendet."
+        "cooldown": "Du kannst einen weiteren Export in {{days}} Tagen anfordern. Eine E-Mail wurde mit deinen Daten versendet.",
+        "notLoggedIn": "Bitte melde dich an, um deine Daten zu exportieren."
       }
     },
     "privacyConsent": {
