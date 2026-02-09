@@ -1,20 +1,5 @@
 package de.tum.cit.aet.evaluation.service;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.zip.Deflater;
-import java.util.zip.ZipOutputStream;
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -49,7 +34,20 @@ import de.tum.cit.aet.usermanagement.domain.Applicant;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.zip.Deflater;
+import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -65,16 +63,18 @@ public class ApplicationEvaluationService {
     private final RatingRepository ratingRepository;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
-            ApplicationState.SENT,
-            ApplicationState.IN_REVIEW,
-            ApplicationState.ACCEPTED,
-            ApplicationState.REJECTED,
-            ApplicationState.INTERVIEW);
+        ApplicationState.SENT,
+        ApplicationState.IN_REVIEW,
+        ApplicationState.ACCEPTED,
+        ApplicationState.REJECTED,
+        ApplicationState.INTERVIEW
+    );
 
     private static final Set<ApplicationState> REVIEW_STATES = Set.of(
-            ApplicationState.SENT,
-            ApplicationState.IN_REVIEW,
-            ApplicationState.INTERVIEW);
+        ApplicationState.SENT,
+        ApplicationState.IN_REVIEW,
+        ApplicationState.INTERVIEW
+    );
 
     private static final Set<String> SORTABLE_FIELDS = Set.of("appliedAt", "name", "status", "job");
 
@@ -87,8 +87,8 @@ public class ApplicationEvaluationService {
      */
     public void acceptApplication(UUID applicationId, AcceptDTO acceptDTO, User reviewingUser) {
         Application application = applicationEvaluationRepository
-                .findById(applicationId)
-                .orElseThrow(() -> new EntityNotFoundException("Application not found"));
+            .findById(applicationId)
+            .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
         currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
@@ -111,14 +111,14 @@ public class ApplicationEvaluationService {
             User supervisingProfessor = job.getSupervisingProfessor();
 
             Email email = Email.builder()
-                    .to(applicant.getUser())
-                    .bcc(supervisingProfessor)
-                    .customBody(acceptDTO.message())
-                    .emailType(EmailType.APPLICATION_ACCEPTED)
-                    .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
-                    .customBody(acceptDTO.message())
-                    .researchGroup(job.getResearchGroup())
-                    .build();
+                .to(applicant.getUser())
+                .bcc(supervisingProfessor)
+                .customBody(acceptDTO.message())
+                .emailType(EmailType.APPLICATION_ACCEPTED)
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
+                .customBody(acceptDTO.message())
+                .researchGroup(job.getResearchGroup())
+                .build();
             sender.sendAsync(email);
         }
     }
@@ -132,8 +132,8 @@ public class ApplicationEvaluationService {
      */
     public void rejectApplication(UUID applicationId, RejectDTO rejectDTO, User reviewingUser) {
         Application application = applicationEvaluationRepository
-                .findById(applicationId)
-                .orElseThrow(() -> new EntityNotFoundException("Application not found"));
+            .findById(applicationId)
+            .orElseThrow(() -> new EntityNotFoundException("Application not found"));
 
         currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
@@ -151,13 +151,13 @@ public class ApplicationEvaluationService {
             ResearchGroup researchGroup = job.getResearchGroup();
 
             Email email = Email.builder()
-                    .to(applicant.getUser())
-                    .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
-                    .emailType(EmailType.APPLICATION_REJECTED)
-                    .templateName(rejectDTO.reason().getValue())
-                    .content(application)
-                    .researchGroup(researchGroup)
-                    .build();
+                .to(applicant.getUser())
+                .language(Language.fromCode(applicant.getUser().getSelectedLanguage()))
+                .emailType(EmailType.APPLICATION_REJECTED)
+                .templateName(rejectDTO.reason().getValue())
+                .content(application)
+                .researchGroup(researchGroup)
+                .build();
             sender.sendAsync(email);
         }
     }
@@ -193,15 +193,14 @@ public class ApplicationEvaluationService {
      *         and the total number of matching records
      */
     public ApplicationEvaluationOverviewListDTO getAllApplicationsOverviews(
-            UUID researchGroupId,
-            OffsetPageDTO offsetPageDTO,
-            SortDTO sortDTO,
-            EvaluationFilterDTO filterDTO) {
-        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(),
-                sortDTO.toSpringSort(SORTABLE_FIELDS));
+        UUID researchGroupId,
+        OffsetPageDTO offsetPageDTO,
+        SortDTO sortDTO,
+        EvaluationFilterDTO filterDTO
+    ) {
+        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                searchQuery);
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
 
         return ApplicationEvaluationOverviewListDTO.fromApplications(applicationsPage, totalRecords);
@@ -228,22 +227,24 @@ public class ApplicationEvaluationService {
      *                                  integer
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetailsWindow(
-            UUID applicationId,
-            Integer windowSize,
-            UUID researchGroupId,
-            SortDTO sortDTO,
-            EvaluationFilterDTO filterDTO) {
+        UUID applicationId,
+        Integer windowSize,
+        UUID researchGroupId,
+        SortDTO sortDTO,
+        EvaluationFilterDTO filterDTO
+    ) {
         String searchQuery = filterDTO.getSearch();
 
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
 
         long idx = applicationEvaluationRepository.findIndexOfApplication(
-                applicationId,
-                researchGroupId,
-                VIEWABLE_STATES,
-                sortDTO.toSpringSort(SORTABLE_FIELDS),
-                filterDTO.getFilters(),
-                searchQuery);
+            applicationId,
+            researchGroupId,
+            VIEWABLE_STATES,
+            sortDTO.toSpringSort(SORTABLE_FIELDS),
+            filterDTO.getFilters(),
+            searchQuery
+        );
 
         // Calculate how many items to include before and after the target application
         int half = (int) Math.floor((double) windowSize / 2);
@@ -262,10 +263,14 @@ public class ApplicationEvaluationService {
         // sort criteria
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
 
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                searchQuery);
-        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx,
-                windowIndex, this::calculateAverageRating);
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
+        return ApplicationEvaluationDetailListDTO.fromApplications(
+            applicationsPage,
+            totalRecords,
+            (int) idx,
+            windowIndex,
+            this::calculateAverageRating
+        );
     }
 
     /**
@@ -282,18 +287,22 @@ public class ApplicationEvaluationService {
      *         applications and total record count
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetails(
-            UUID researchGroupId,
-            OffsetPageDTO offsetPageDTO,
-            SortDTO sortDTO,
-            EvaluationFilterDTO filterDTO) {
-        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(),
-                sortDTO.toSpringSort(SORTABLE_FIELDS));
+        UUID researchGroupId,
+        OffsetPageDTO offsetPageDTO,
+        SortDTO sortDTO,
+        EvaluationFilterDTO filterDTO
+    ) {
+        Pageable pageable = new OffsetPageRequest(offsetPageDTO.offset(), offsetPageDTO.limit(), sortDTO.toSpringSort(SORTABLE_FIELDS));
         String searchQuery = filterDTO.getSearch();
-        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(),
-                searchQuery);
+        List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
-        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null,
-                this::calculateAverageRating);
+        return ApplicationEvaluationDetailListDTO.fromApplications(
+            applicationsPage,
+            totalRecords,
+            null,
+            null,
+            this::calculateAverageRating
+        );
     }
 
     /**
@@ -303,8 +312,8 @@ public class ApplicationEvaluationService {
      */
     public void markApplicationAsInReview(UUID applicationId) {
         Application application = applicationEvaluationRepository
-                .findById(applicationId)
-                .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
         currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
         applicationEvaluationRepository.markApplicationAsInReview(applicationId);
@@ -320,8 +329,7 @@ public class ApplicationEvaluationService {
      * @param response      the HTTP response used to write the ZIP content
      * @throws IOException if an I/O error occurs while writing to the response
      */
-    public void downloadAllDocumentsForApplication(UUID applicationId, HttpServletResponse response)
-            throws IOException {
+    public void downloadAllDocumentsForApplication(UUID applicationId, HttpServletResponse response) throws IOException {
         Application application = getApplication(applicationId);
         currentUserService.assertAccessTo(application.getJob().getResearchGroup());
 
@@ -329,23 +337,25 @@ public class ApplicationEvaluationService {
 
         User user = application.getApplicant().getUser();
         String zipName = FileUtil.sanitizeFilename(
-                user.getFirstName() + " " + user.getLastName() + " - " + application.getJob().getTitle());
+            user.getFirstName() + " " + user.getLastName() + " - " + application.getJob().getTitle()
+        );
 
         zipExportService.initZipResponse(response, zipName);
 
         // Count per type to decide if numbering is needed
         Map<DocumentType, Long> typeCounts = documentDictionaries
-                .stream()
-                .collect(
-                        Collectors.groupingBy(DocumentDictionary::getDocumentType,
-                                () -> new EnumMap<>(DocumentType.class), Collectors.counting()));
+            .stream()
+            .collect(
+                Collectors.groupingBy(DocumentDictionary::getDocumentType, () -> new EnumMap<>(DocumentType.class), Collectors.counting())
+            );
 
         // Per-type index used only when count > 1
         Map<DocumentType, Integer> typeIndex = new EnumMap<>(DocumentType.class);
 
         try (
-                BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
-                ZipOutputStream zos = new ZipOutputStream(bos)) {
+            BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
+            ZipOutputStream zos = new ZipOutputStream(bos)
+        ) {
             zos.setLevel(Deflater.BEST_SPEED);
 
             for (DocumentDictionary dd : documentDictionaries) {
@@ -392,8 +402,8 @@ public class ApplicationEvaluationService {
      */
     public Application getApplication(UUID applicationId) {
         return applicationEvaluationRepository
-                .findById(applicationId)
-                .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
+            .findById(applicationId)
+            .orElseThrow(() -> EntityNotFoundException.forId("Application", applicationId));
     }
 
     /**
@@ -409,12 +419,12 @@ public class ApplicationEvaluationService {
      * @return a list of matching {@link Application} entities
      */
     private List<Application> getApplicationsDetails(
-            UUID researchGroupId,
-            Pageable pageable,
-            Map<String, List<?>> dynamicFilters,
-            String searchQuery) {
-        return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable,
-                dynamicFilters, searchQuery);
+        UUID researchGroupId,
+        Pageable pageable,
+        Map<String, List<?>> dynamicFilters,
+        String searchQuery
+    ) {
+        return applicationEvaluationRepository.findApplications(researchGroupId, VIEWABLE_STATES, pageable, dynamicFilters, searchQuery);
     }
 
     /**
@@ -428,8 +438,7 @@ public class ApplicationEvaluationService {
      * @return the total count of matching applications
      */
     private long getTotalRecords(UUID researchGroupId, Map<String, List<?>> dynamicFilters, String searchQuery) {
-        return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters,
-                searchQuery);
+        return applicationEvaluationRepository.countApplications(researchGroupId, VIEWABLE_STATES, dynamicFilters, searchQuery);
     }
 
     /**
@@ -456,16 +465,18 @@ public class ApplicationEvaluationService {
             return null;
         }
 
-        double sum = ratings.stream()
-                .map(rating -> rating.getRating())
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .sum();
+        double sum = ratings
+            .stream()
+            .map(rating -> rating.getRating())
+            .filter(Objects::nonNull)
+            .mapToInt(Integer::intValue)
+            .sum();
 
-        long count = ratings.stream()
-                .map(rating -> rating.getRating())
-                .filter(Objects::nonNull)
-                .count();
+        long count = ratings
+            .stream()
+            .map(rating -> rating.getRating())
+            .filter(Objects::nonNull)
+            .count();
 
         return count > 0 ? sum / count : null;
     }

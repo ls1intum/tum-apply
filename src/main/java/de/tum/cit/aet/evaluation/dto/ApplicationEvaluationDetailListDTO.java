@@ -1,16 +1,16 @@
 package de.tum.cit.aet.evaluation.dto;
 
+import de.tum.cit.aet.application.domain.Application;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import de.tum.cit.aet.application.domain.Application;
-
 public record ApplicationEvaluationDetailListDTO(
-        List<ApplicationEvaluationDetailDTO> applications,
-        long totalRecords,
-        Integer currentIndex,
-        Integer windowIndex) {
+    List<ApplicationEvaluationDetailDTO> applications,
+    long totalRecords,
+    Integer currentIndex,
+    Integer windowIndex
+) {
     /**
      * Creates an {@link ApplicationEvaluationDetailListDTO} from a collection of
      * {@link Application} entities.
@@ -25,10 +25,11 @@ public record ApplicationEvaluationDetailListDTO(
      *         converted details and metadata
      */
     public static ApplicationEvaluationDetailListDTO fromApplications(
-            Collection<Application> applications,
-            long totalRecords,
-            Integer currentIndex,
-            Integer windowIndex) {
+        Collection<Application> applications,
+        long totalRecords,
+        Integer currentIndex,
+        Integer windowIndex
+    ) {
         return fromApplications(applications, totalRecords, currentIndex, windowIndex, null);
     }
 
@@ -49,23 +50,26 @@ public record ApplicationEvaluationDetailListDTO(
      *         converted details and metadata
      */
     public static ApplicationEvaluationDetailListDTO fromApplications(
-            Collection<Application> applications,
-            long totalRecords,
-            Integer currentIndex,
-            Integer windowIndex,
-            Function<Application, Double> ratingCalculator) {
+        Collection<Application> applications,
+        long totalRecords,
+        Integer currentIndex,
+        Integer windowIndex,
+        Function<Application, Double> ratingCalculator
+    ) {
         return new ApplicationEvaluationDetailListDTO(
-                applications.stream()
-                        .map(app -> {
-                            ApplicationEvaluationDetailDTO dto = ApplicationEvaluationDetailDTO.fromApplication(app);
-                            if (ratingCalculator != null) {
-                                return dto.withAverageRating(ratingCalculator.apply(app));
-                            }
-                            return dto;
-                        })
-                        .toList(),
-                totalRecords,
-                currentIndex,
-                windowIndex);
+            applications
+                .stream()
+                .map(app -> {
+                    ApplicationEvaluationDetailDTO dto = ApplicationEvaluationDetailDTO.fromApplication(app);
+                    if (ratingCalculator != null) {
+                        return dto.withAverageRating(ratingCalculator.apply(app));
+                    }
+                    return dto;
+                })
+                .toList(),
+            totalRecords,
+            currentIndex,
+            windowIndex
+        );
     }
 }
