@@ -66,7 +66,7 @@ export class ApplicationCardComponent {
    */
   readonly displayRating = computed<number | undefined>(() => {
     const avgRating = this.application()?.averageRating;
-    if (avgRating === null || avgRating === undefined) {
+    if (avgRating === undefined) {
       return undefined;
     }
     return convertLikertToStandardRating(avgRating);
