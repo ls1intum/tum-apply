@@ -1,17 +1,17 @@
 <div class="flex items-center gap-2">
   @if (rating() !== undefined) {
     <div class="flex gap-0.5">
-      @for (index of starIndices; track index) {
+      @for (star of starStates(); track $index) {
         <fa-icon
-          [icon]="isStarHalf(index) ? ['fas', 'star-half-stroke'] : ['fas', 'star']"
+          [icon]="star.half ? ['fas', 'star-half-stroke'] : ['fas', 'star']"
           [class]="size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base'"
-          [style.color]="isStarFilled(index) || isStarHalf(index) ? getStarColor() : 'var(--p-background-surface-alt)'"
+          [style.color]="star.filled || star.half ? starColor() : 'var(--p-background-surface-alt)'"
         />
       }
     </div>
     @if (showValue()) {
       <span [class]="'text-text-primary ' + (size() === 'small' ? 'text-sm' : size() === 'large' ? 'text-xl' : 'text-base')">{{
-        formattedRating
+        formattedRating()
       }}</span>
     }
   } @else {

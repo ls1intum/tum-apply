@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -34,69 +34,38 @@ export class StarRatingComponent {
   showValue = input<boolean>(true);
 
   /**
-   * Gets the array of star indices for iteration
+   * Calculates filled/half state for each star only when rating or maxStars changes.
    */
-  get starIndices(): number[] {
-    return Array.from({ length: this.maxStars() }, (_, i) => i);
-  }
-
-  /**
-   * Determines which icon to show for a star at the given index.
-   * Returns 'star' (filled), 'star-half-stroke' (half), or 'star' with empty class (empty)
-   */
-  getStarIcon(index: number): string {
+  starStates = computed(() => {
     const rating = this.rating();
-    if (rating === undefined) {
-      return 'star';
-    }
+    const maxStars = this.maxStars();
 
-    const diff = rating - index;
+    return Array.from({ length: maxStars }, (_, index) => {
+      if (rating === undefined) {
+        return { filled: false, half: false, icon: 'star' };
+      }
 
-    if (diff >= 1) {
-      return 'star'; // filled star
-    } else if (diff >= 0.5) {
-      return 'star-half-stroke'; // half star
-    } else {
-      return 'star'; // empty star
-    }
-  }
-
-  /**
-   * Determines if the star should be filled or empty
-   */
-  isStarFilled(index: number): boolean {
-    const rating = this.rating();
-    if (rating === undefined) {
-      return false;
-    }
-
-    return rating > index;
-  }
-
-  /**
-   * Checks if the star should be half-filled
-   */
-  isStarHalf(index: number): boolean {
-    const rating = this.rating();
-    if (rating === undefined) {
-      return false;
-    }
-
-    const diff = rating - index;
-    return diff >= 0.5 && diff < 1;
-  }
+      const diff = rating - index;
+      const icon = diff >= 1 ? 'star' : diff >= 0.5 ? 'star-half-stroke' : 'star';
+      return {
+        filled: rating > index,
+        half: diff >= 0.5 && diff < 1,
+        icon,
+      };
+    });
+  });
 
   /**
    * Formats the rating value for display
    */
-  get formattedRating(): string | undefined {
+  formattedRating = computed<string | undefined>(() => {
     const rating = this.rating();
     if (rating === undefined) {
       return undefined;
     }
 
     return rating.toFixed(1);
-  }
+  });
 
   /**
    * Gets the color for filled/half stars based on the rating value.
@@ -107,7 +76,7 @@ export class StarRatingComponent {
    * 3.5-4.49 → light green (positive-hover)
    * 4.5-5 → dark green (positive-active)
    */
-  getStarColor(): string {
+  starColor = computed<string>(() => {
     const rating = this.rating();
     if (rating === undefined) {
       return 'var(--p-primary-color)';
@@ -127,5 +96,5 @@ export class StarRatingComponent {
     } else {
       return 'var(--color-positive-active)'; // 4.5-5 → 2 (dark green)
     }
-  }
+  });
 }
