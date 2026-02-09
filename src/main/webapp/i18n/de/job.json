@@ -187,7 +187,10 @@
         "title": "Zusätzliches",
         "description": "Füge benutzerdefinierte Fragen hinzu, die den Bewerbern im Bewerbungsformular angezeigt werden."
       },
-      "dataPrivacyText": "Eine Datenschutzerklärung der Technischen Universität München wird automatisch dieser Stelle beigefügt."
+      "suitableForDisabled": {
+        "label": "Diese Stelle ist für schwerbehinderte Menschen geeignet",
+        "tooltip": "Nur abwählen, wenn objektive stellenbezogene Gründe gegen die Eignung für schwerbehinderte Menschen sprechen"
+      }
     },
     "confirmDialog": {
       "header": "Doktorandenstelle veröffentlichen",
@@ -350,6 +353,11 @@
     },
     "dataPrivacy": {
       "dataProtectionText": "Im Rahmen Ihrer Bewerbung um eine Stelle an der Technischen Universität München (TUM) übermitteln Sie personenbezogene Daten. Beachten Sie bitte hierzu unsere <a href=\"https://portal.mytum.de/kompass/datenschutz/Bewerbung/\" class=\"link\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzhinweise zur Verarbeitung von personenbezogenen Daten im Rahmen Ihrer Bewerbung</a>. Durch die Übermittlung Ihrer Bewerbung bestätigen Sie, dass Sie die Datenschutzhinweise der TUM zur Kenntnis genommen haben."
+    },
+    "equalOpportunities": {
+      "title": "Hinweis zur Chancengleichheit",
+      "baseText": "Die TUM setzt sich für Chancengleichheit ein und begrüßt ausdrücklich Bewerbungen von Frauen sowie von Personen mit Schwerbehinderung. Personen mit Schwerbehinderung werden bei gleicher Eignung, Qualifikation und fachlicher Leistung bevorzugt berücksichtigt.",
+      "suitableText": "Diese Stelle ist für schwerbehinderte Menschen geeignet."
     },
     "noData": "Keine Daten verfügbar"
   },

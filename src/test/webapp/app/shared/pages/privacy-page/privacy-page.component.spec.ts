@@ -6,11 +6,11 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PrivacyPageComponent } from 'app/shared/pages/privacy-page/privacy-page.component';
 import { UserDataExportResourceApiService } from 'app/generated/api/api';
-import { DataExportStatusDTO } from 'app/generated/model/models';
 
 import { createToastServiceMock, provideToastServiceMock } from 'src/test/webapp/util/toast-service.mock';
 import { provideTranslateMock } from 'src/test/webapp/util/translate.mock';
 import { WritableSignal } from '@angular/core';
+import { createAccountServiceMock, provideAccountServiceMock } from 'src/test/webapp/util/account.service.mock';
 
 type ExportStatus = 'REQUESTED' | 'IN_CREATION' | 'EMAIL_SENT' | 'COMPLETED' | null;
 
@@ -27,6 +27,7 @@ describe('PrivacyPageComponent', () => {
   let component: PrivacyPageComponent;
   let mockTranslate: TranslateService;
   let componentAccess: TestComponentAccess;
+  let accountServiceMock: ReturnType<typeof createAccountServiceMock>;
 
   const mockToast = createToastServiceMock();
   const serviceMocks = {
@@ -39,11 +40,13 @@ describe('PrivacyPageComponent', () => {
     mockToast.showInfoKey = vi.fn();
     serviceMocks.getDataExportStatus.mockReturnValue(of({ status: null, cooldownSeconds: 0 }));
     serviceMocks.requestDataExport.mockReturnValue(of({}));
+    accountServiceMock = createAccountServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [PrivacyPageComponent],
       providers: [
         { provide: UserDataExportResourceApiService, useValue: serviceMocks },
+        provideAccountServiceMock(accountServiceMock),
         provideToastServiceMock(mockToast),
         provideTranslateMock(),
       ],
@@ -92,6 +95,15 @@ describe('PrivacyPageComponent', () => {
       expect(componentAccess.exportButtonDisabled()).toBe(true);
       await component.exportUserData();
       expect(serviceMocks.requestDataExport).toHaveBeenCalledTimes(1);
+    });
+
+    it('should no-op when not signed in', async () => {
+      const prevCalls = serviceMocks.getDataExportStatus.mock.calls.length;
+      vi.spyOn(accountServiceMock, 'signedIn').mockReturnValue(false);
+
+      await (component as any).refreshStatus();
+
+      expect(serviceMocks.getDataExportStatus).toHaveBeenCalledTimes(prevCalls);
     });
 
     it('should show 409 toast on conflict', async () => {
@@ -145,6 +157,15 @@ describe('PrivacyPageComponent', () => {
       expect(componentAccess.exportButtonDisabled()).toBe(false);
     });
 
+    it('should show notLoggedIn tooltip when user not signed in', () => {
+      (accountServiceMock.signedIn as WritableSignal<boolean>).set(false);
+      const instantSpy = vi.spyOn(mockTranslate, 'instant').mockReturnValue('not logged in');
+
+      expect(componentAccess.exportButtonDisabled()).toBe(true);
+      expect(componentAccess.tooltip()).toBe('not logged in');
+      expect(instantSpy).toHaveBeenCalledWith('privacy.export.tooltip.notLoggedIn');
+    });
+
     it('should show cooldown tooltip when disabled due to cooldown', () => {
       component.cooldownSeconds.set(86400); // 1 day in seconds
       expect(componentAccess.exportButtonDisabled()).toBe(true);
@@ -169,6 +190,29 @@ describe('PrivacyPageComponent', () => {
       expect(componentAccess.tooltip()).toBe('inCreation tooltip');
       // Should call instant again
       expect(instantSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should pass the days parameter to translate for the cooldown tooltip', () => {
+      const instantSpy = vi.spyOn(mockTranslate, 'instant').mockReturnValue('cooldown tooltip');
+      componentAccess.cooldownSeconds.set(90000); // 25 hours in seconds
+      expect(componentAccess.tooltip()).toBe('cooldown tooltip');
+      expect(instantSpy).toHaveBeenCalledWith('privacy.export.tooltip.cooldown', { days: '2' });
+    });
+
+    it('should update currentLang when TranslateService emits onLangChange', () => {
+      mockTranslate.use('de');
+      expect(componentAccess.currentLang()).toBe('de');
+    });
+
+    it('should set cooldownSeconds to 0 when API returns explicit undefined cooldownSeconds', async () => {
+      // API returns cooldownSeconds explicitly set to undefined
+      serviceMocks.getDataExportStatus.mockReturnValue(of({ status: 'COMPLETED', cooldownSeconds: undefined } as any));
+      (accountServiceMock.signedIn as WritableSignal<boolean>).set(true);
+
+      await (component as any).refreshStatus();
+
+      expect(componentAccess.currentExportStatus()).toBe('COMPLETED');
+      expect(componentAccess.cooldownSeconds()).toBe(0);
     });
   });
 });
