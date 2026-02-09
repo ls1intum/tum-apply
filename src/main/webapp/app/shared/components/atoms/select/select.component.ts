@@ -24,7 +24,7 @@ export type SelectOption = {
 })
 export class SelectComponent {
   items = input<SelectOption[]>([]);
-  selected = input<SelectOption | undefined>(undefined);
+  selected = input<SelectOption | string | number | undefined>(undefined);
   label = input<string>('');
   required = input<boolean>(false);
   placeholder = input<string>('Select...');
@@ -47,7 +47,13 @@ export class SelectComponent {
 
   isOpen = false;
 
-  onSelectionChange(value: SelectOption): void {
-    this.selectedChange.emit(value);
+  onSelectionChange(value: SelectOption | string | number | null | undefined): void {
+    const list = this.items();
+    const isOption = typeof value === 'object' && value !== null && 'value' in value;
+    const resolved = isOption
+      ? value
+      : (list.find(item => item.value === value) ?? { name: value == null ? '' : String(value), value: value ?? '' });
+
+    this.selectedChange.emit(resolved);
   }
 }

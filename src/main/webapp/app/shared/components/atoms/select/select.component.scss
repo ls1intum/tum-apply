@@ -67,7 +67,7 @@
 .p-select-overlay {
   margin-top: 0.25rem;
   .p-select-list {
-    padding: 0;
+    padding: 0.35rem 0 0;
   }
 
   .p-select-list-container {
@@ -80,6 +80,7 @@
 
   .p-select-option {
     background: var(--p-background-default);
+    padding: 0.55rem 0.85rem;
 
     &:hover {
       background-color: var(--p-primary-color);

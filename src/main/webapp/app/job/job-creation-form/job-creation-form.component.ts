@@ -36,6 +36,7 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
 import {
   ImageUploadButtonComponent,
@@ -225,6 +226,7 @@ export class JobCreationFormComponent {
   private toastService = inject(ToastService);
   private aiService = inject(AiResourceApiService);
   private aiStreamingService = inject(AiStreamingService);
+  private researchGroupService = inject(ResearchGroupResourceApiService);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -392,6 +394,13 @@ export class JobCreationFormComponent {
       .map(option => ({ value: option.value, name: this.translate.instant(option.name) }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SUPERVISING PROFESSOR OPTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Professors belonging to the current research group */
+  supervisingProfessorOptions = signal<{ value: string; name: string }[]>([]);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM VALUE SIGNALS (for change detection)
@@ -871,7 +880,7 @@ export class JobCreationFormComponent {
 
   /**
    * Creates the Step 1 form group with validation rules.
-   * Required fields: title, research area, field of studies, location, job description
+   * Required fields: title, research area, field of studies, location, supervising professor, job description
    */
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
@@ -879,7 +888,7 @@ export class JobCreationFormComponent {
       researchArea: ['', [Validators.required]],
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
-      supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
+      supervisingProfessor: [undefined, Validators.required],
       jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(3000)]],
     });
   }
@@ -925,6 +934,14 @@ export class JobCreationFormComponent {
     const lang = this.currentDescriptionLanguage();
     const currentText = (basicInfoValue.jobDescription ?? '').trim();
 
+    const supervisingProfessorRaw = basicInfoValue.supervisingProfessor;
+    const supervisingProfessorId =
+      (typeof supervisingProfessorRaw === 'object' && supervisingProfessorRaw !== null
+        ? (supervisingProfessorRaw as { value?: string }).value
+        : supervisingProfessorRaw) ??
+      this.preferredSupervisingProfessorId() ??
+      this.userId();
+
     const jobDescriptionEN = lang === 'en' ? currentText : this.jobDescriptionEN();
     const jobDescriptionDE = lang === 'de' ? currentText : this.jobDescriptionDE();
 
@@ -932,7 +949,7 @@ export class JobCreationFormComponent {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
       fieldOfStudies: basicInfoValue.fieldOfStudies?.value !== undefined ? String(basicInfoValue.fieldOfStudies.value) : '',
-      supervisingProfessor: this.userId(),
+      supervisingProfessor: supervisingProfessorId ?? '',
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
@@ -996,6 +1013,7 @@ export class JobCreationFormComponent {
 
       if (mode === 'create') {
         this.mode.set('create');
+        await this.loadSupervisingProfessors();
         this.populateForm();
       } else {
         this.mode.set('edit');
@@ -1008,6 +1026,7 @@ export class JobCreationFormComponent {
 
         this.jobId.set(jobId);
         const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
+        await this.loadSupervisingProfessors(job.supervisingProfessor);
         this.populateForm(job);
 
         // prevent autosave from firing immediately after patching
@@ -1024,17 +1043,18 @@ export class JobCreationFormComponent {
   /**
    * Populates all forms with initial/existing job data.
    * Sets up dual-language description signals.
+   * Also applies the preselected supervising professor when available.
    *
    * @param job - Optional existing job data (undefined for create mode)
    */
   private populateForm(job?: JobDTO): void {
-    const user = this.accountService.loadedUser();
-
     // Default tab EN
     this.currentDescriptionLanguage.set('en');
 
     const en = job?.jobDescriptionEN ?? '';
     const de = job?.jobDescriptionDE ?? '';
+
+    const supervisingProfessorId = job?.supervisingProfessor ?? this.basicInfoForm.get('supervisingProfessor')?.value;
 
     this.jobDescriptionEN.set(en);
     this.jobDescriptionDE.set(de);
@@ -1042,11 +1062,13 @@ export class JobCreationFormComponent {
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
-      supervisingProfessor: user?.name,
+      supervisingProfessor: supervisingProfessorId,
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: en,
     });
+
+    this.setDefaultSupervisingProfessor(supervisingProfessorId);
 
     this.jobDescriptionSignal.set(en);
     this.jobDescriptionEditor()?.forceUpdate(en);
@@ -1074,6 +1096,70 @@ export class JobCreationFormComponent {
     }
 
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
+  }
+
+  /**
+   * Loads professors of the current research group for the supervising professor select.
+   * Applies a preselected supervisor when provided.
+   */
+  private async loadSupervisingProfessors(preselectId?: string): Promise<void> {
+    try {
+      const response = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(100, 0));
+      const options = (response.content ?? [])
+        .filter(member => (member.roles ?? []).includes('PROFESSOR') && member.userId)
+        .map(member => {
+          const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
+          const fallback = (member.email ?? member.userId ?? '').trim();
+          const name = displayName !== '' ? displayName : fallback !== '' ? fallback : 'Unnamed Professor';
+          return { value: member.userId as string, name };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      this.supervisingProfessorOptions.set(options);
+      this.setDefaultSupervisingProfessor(preselectId);
+    } catch {
+      this.toastService.showErrorKey('toast.loadFailed');
+    }
+  }
+
+  /**
+   * Selects a sensible default supervising professor (preselect, current user if professor, otherwise first option).
+   */
+  private setDefaultSupervisingProfessor(preselectId?: string): void {
+    const options = this.supervisingProfessorOptions();
+    const control = this.basicInfoForm.get('supervisingProfessor');
+    if (!control) return;
+
+    const rawValue = control.value as unknown;
+    const currentValue =
+      typeof rawValue === 'object' && rawValue !== null ? (rawValue as { value?: string }).value : (rawValue as string | undefined);
+    const matchedPreselect = preselectId && options.some(option => option.value === preselectId) ? preselectId : undefined;
+    const fallbackId = this.preferredSupervisingProfessorId();
+    const nextValue = matchedPreselect ?? currentValue ?? fallbackId;
+
+    if (nextValue && currentValue !== nextValue) {
+      control.setValue(nextValue);
+    }
+  }
+
+  /**
+   * Determines the preferred supervising professor ID based on the logged-in professor or first option.
+   */
+  private preferredSupervisingProfessorId(): string | undefined {
+    const options = this.supervisingProfessorOptions();
+    if (!options.length) return undefined;
+
+    const currentUserId = this.userId();
+    const isCurrentUserProfessor = this.accountService.userAuthorities?.includes('PROFESSOR');
+
+    if (isCurrentUserProfessor && currentUserId) {
+      const match = options.find(option => option.value === currentUserId);
+      if (match) {
+        return match.value;
+      }
+    }
+
+    return options[0]?.value;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════

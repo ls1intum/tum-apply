@@ -5,7 +5,7 @@
   class="label-top select-wrapper"
 >
   @if (label()) {
-    <label class="custom-label"
+    <label class="custom-label" [for]="selectId"
       >{{ label() }}
       @if (required()) {
         <span class="required">*</span>
@@ -24,8 +24,10 @@
     (onHide)="isOpen = false"
     (onShow)="isOpen = true"
     [disabled]="disabled()"
+    [inputId]="selectId"
     [ngModel]="selected()"
     [optionLabel]="labelField()"
+    [optionValue]="valueField()"
     [options]="items()"
     [placeholder]="placeholder()"
     [style]="{ width: width() }"
