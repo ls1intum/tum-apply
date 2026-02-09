@@ -889,9 +889,10 @@ public class InterviewService {
         Interviewee interviewee = intervieweeRepository
             .findByIdAndProcessId(intervieweeId, processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewee.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Build and return detail DTO
         return mapIntervieweeToDetailDTO(interviewee, job);
@@ -920,9 +921,10 @@ public class InterviewService {
             .findByIdAndProcessId(intervieweeId, processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
 
-        // 3. Security: Verify current user has job access
+        // 3. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewee.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 4. Update fields if provided
         if (Boolean.TRUE.equals(dto.clearRating())) {
