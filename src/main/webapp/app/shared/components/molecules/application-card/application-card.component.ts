@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
+import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
 import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { DividerModule } from 'primeng/divider';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
@@ -53,33 +54,12 @@ export class ApplicationCardComponent {
 
   readonly initials = computed<string>(() => {
     const fullName = this.application()?.applicationDetailDTO.applicant?.user.name?.trim();
-    if (!fullName) {
-      return '?';
-    }
-    const nameParts = fullName.split(' ').filter(p => p.length > 0);
-    if (nameParts.length === 0) {
-      return '?';
-    }
-    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
-    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
-    return firstInitial + lastInitial;
+    return this.calculateInitials(fullName);
   });
 
   readonly masterDegree = computed(() => {
     const applicant = this.applicationDetails()?.applicant;
-    if (!applicant) {
-      return null;
-    }
-    const degreeName = applicant.masterDegreeName;
-    const university = applicant.masterUniversity;
-    if (degreeName === undefined && university === undefined) {
-      return null;
-    }
-    return {
-      name: degreeName ?? '—',
-      university: university ?? '—',
-      grade: applicant.masterGrade ?? '—',
-    };
+    return this.calculateMasterDegree(applicant);
   });
 
   /**
@@ -92,4 +72,35 @@ export class ApplicationCardComponent {
     }
     return convertLikertToStandardRating(avgRating);
   });
+
+  private calculateInitials(fullName: string | undefined): string {
+    if (fullName === undefined || fullName === '') {
+      return '?';
+    }
+    const nameParts = fullName.split(' ').filter(p => p.length > 0);
+    if (nameParts.length === 0) {
+      return '?';
+    }
+    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
+    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
+    return firstInitial + lastInitial;
+  }
+
+  private calculateMasterDegree(
+    applicant: ApplicantForApplicationDetailDTO | undefined,
+  ): { name: string; university: string; grade: string } | null {
+    if (applicant === undefined) {
+      return null;
+    }
+    const degreeName = applicant.masterDegreeName;
+    const university = applicant.masterUniversity;
+    if (degreeName === undefined && university === undefined) {
+      return null;
+    }
+    return {
+      name: degreeName ?? '—',
+      university: university ?? '—',
+      grade: applicant.masterGrade ?? '—',
+    };
+  }
 }

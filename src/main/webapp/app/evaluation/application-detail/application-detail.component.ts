@@ -106,16 +106,7 @@ export class ApplicationDetailComponent {
 
   readonly initials = computed<string>(() => {
     const fullName = this.currentApplication()?.applicationDetailDTO.applicant?.user.name?.trim();
-    if (!fullName) {
-      return '?';
-    }
-    const nameParts = fullName.split(' ').filter(p => p.length > 0);
-    if (nameParts.length === 0) {
-      return '?';
-    }
-    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
-    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
-    return firstInitial + lastInitial;
+    return this.calculateInitials(fullName);
   });
 
   isAlreadyInInterview = computed(() => {
@@ -173,7 +164,7 @@ export class ApplicationDetailComponent {
     await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
-    if (id) {
+    if (id !== null && id !== '') {
       void this.loadCarousel(id);
     } else {
       // Load initial batch of applications
@@ -341,7 +332,8 @@ export class ApplicationDetailComponent {
 
   async onAddToInterview(navigate: boolean): Promise<void> {
     const application = this.currentApplication();
-    if (!application?.jobId) {
+    const jobId = application?.jobId;
+    if (jobId === undefined || jobId === '' || application === undefined) {
       this.toastService.showErrorKey('evaluation.errors.noJobId');
       return;
     }
@@ -642,5 +634,18 @@ export class ApplicationDetailComponent {
         this.currentDocumentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+  }
+
+  private calculateInitials(fullName: string | undefined): string {
+    if (fullName === undefined || fullName === '') {
+      return '?';
+    }
+    const nameParts = fullName.split(' ').filter(p => p.length > 0);
+    if (nameParts.length === 0) {
+      return '?';
+    }
+    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
+    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
+    return firstInitial + lastInitial;
   }
 }
