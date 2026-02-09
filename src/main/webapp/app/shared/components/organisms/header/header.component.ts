@@ -90,11 +90,17 @@ export class HeaderComponent {
   );
   isProfessorPage = computed(() => {
     const auths = this.routeAuthorities();
-    return (
-      (this.router.url === '/professor' && !this.accountService.hasAnyAuthority(['APPLICANT'])) ||
-      this.accountService.hasAnyAuthority(['PROFESSOR']) ||
-      (Array.isArray(auths) && auths.includes(UserShortDTO.RolesEnum.Professor))
-    );
+    const user = this.accountService.user();
+
+    // When user is signed in, check their authorities
+    if (user) {
+      return (
+        this.accountService.hasAnyAuthority(['PROFESSOR']) || (Array.isArray(auths) && auths.includes(UserShortDTO.RolesEnum.Professor))
+      );
+    }
+
+    // When not signed in, check if we're on professor page and not explicitly an applicant route
+    return this.router.url === '/professor';
   });
 
   readonly headerButtonClass =
