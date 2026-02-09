@@ -47,13 +47,14 @@ export class SelectComponent {
 
   isOpen = false;
 
-  onSelectionChange(value: SelectOption | string | number | null | undefined): void {
-    const list = this.items();
-    const isOption = typeof value === 'object' && value !== null && 'value' in value;
-    const resolved = isOption
-      ? value
-      : (list.find(item => item.value === value) ?? { name: value == null ? '' : String(value), value: value ?? '' });
+  onSelectionChange(value: SelectOption | string | number): void {
+    if (typeof value === 'string' || typeof value === 'number') {
+      const list = this.items();
+      const resolved = list.find(item => item.value === value) ?? { name: String(value), value };
+      this.selectedChange.emit(resolved);
+      return;
+    }
 
-    this.selectedChange.emit(resolved);
+    this.selectedChange.emit(value);
   }
 }
