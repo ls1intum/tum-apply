@@ -9,7 +9,7 @@
 >
   @if (!placeholder()) {
     <!-- Top Section with Avatar and Details -->
-    <div class="flex flex-col md:flex-row gap-3 sm:gap-4">
+    <div class="flex flex-col md:flex-row gap-4">
       <!-- Avatar/Image Placeholder (hidden on mobile) -->
       <div
         class="hidden md:flex shrink-0 w-14 h-14 bg-primary text-text-on-primary rounded-full items-center justify-center overflow-hidden font-bold text-2xl"
@@ -20,7 +20,7 @@
       <!-- Content Section -->
       <div class="flex flex-col flex-1 gap-1">
         <!-- Header with Name and Status -->
-        <div class="flex justify-between items-start gap-2">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
           <div class="flex flex-col">
             <h3 class="text-lg font-semibold">
               {{ application()?.applicationDetailDTO?.applicant?.user?.name }}
@@ -28,7 +28,7 @@
           </div>
 
           <jhi-tag
-            class="shrink-0"
+            class="shrink-0 self-start"
             [text]="'evaluation.statusBadge.' + (applicationDetails()?.applicationState || '') | translate"
             [color]="stateSeverityMap[applicationDetails()?.applicationState!] || 'info'"
             [tooltipText]="'evaluation.statusBadge.tooltips.' + (applicationDetails()?.applicationState || '')"
@@ -55,33 +55,11 @@
     <hr class="border-border-default" />
 
     <!-- Job Title -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-start gap-2">
       <fa-icon class="text-primary" [icon]="['fas', 'briefcase']" />
-      <span class="text-sm sm:text-base line-clamp-1" [title]="applicationDetails()?.jobTitle || ''">
+      <span class="text-sm sm:text-base">
         {{ applicationDetails()?.jobTitle }}
       </span>
-    </div>
-
-    <!-- Dates -->
-    <div class="flex justify-between gap-2 sm:gap-4 text-xs md:text-sm">
-      <!-- Applied Date -->
-      @if (application()?.appliedAt) {
-        <div class="flex flex-col">
-          <span class="uppercase text-text-secondary tracking-wide">
-            {{ 'evaluation.applied' | translate }}
-          </span>
-          <span>{{ application()?.appliedAt | localizedDate }}</span>
-        </div>
-      }
-      <!-- Preferred Start Date -->
-      @if (applicationDetails()?.desiredDate) {
-        <div class="flex flex-col">
-          <span class="text-text-secondary uppercase tracking-wide">
-            {{ 'evaluation.start' | translate }}
-          </span>
-          <span>{{ applicationDetails()?.desiredDate | localizedDate }}</span>
-        </div>
-      }
     </div>
   }
 </div>

@@ -5,14 +5,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ApplicationEvaluationDetailDTO } from 'app/generated/model/applicationEvaluationDetailDTO';
 import { ApplicationDetailDTO } from 'app/generated/model/applicationDetailDTO';
 import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
-import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { DividerModule } from 'primeng/divider';
 import { TagComponent } from 'app/shared/components/atoms/tag/tag.component';
 import { StarRatingComponent } from 'app/shared/components/atoms/star-rating/star-rating.component';
 
 @Component({
   selector: 'jhi-application-card',
-  imports: [FontAwesomeModule, TagComponent, TranslateModule, LocalizedDatePipe, DividerModule, StarRatingComponent],
+  imports: [FontAwesomeModule, TagComponent, TranslateModule, DividerModule, StarRatingComponent],
   templateUrl: './application-card.component.html',
   host: {
     class: 'flex flex-col h-full',

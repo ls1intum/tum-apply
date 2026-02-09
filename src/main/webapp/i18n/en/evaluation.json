@@ -2,8 +2,6 @@
   "evaluation": {
     "overviewHeader": "Applications - Overview",
     "reviewHeader": "Applications - Review",
-    "applied": "Applied",
-    "start": "Start",
     "grade": "Grade",
     "masterDegree": "Master",
     "averageRating": "Average Rating",
@@ -86,6 +84,9 @@
       "applicationMotivation": "Motivation",
       "applicationSkills": "Skills",
       "applicationProjects": "Projects",
+      "applicationDates": "Dates",
+      "applied": "Applied",
+      "start": "Start",
       "documentTitle": "Documents",
       "documentTypeBachelor": "Bachelor Transcript",
       "documentTypeMaster": "Master Transcript",

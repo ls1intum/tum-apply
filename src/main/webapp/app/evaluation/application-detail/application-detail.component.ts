@@ -24,6 +24,7 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
 import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
@@ -58,6 +59,7 @@ const CAROUSEL_SIZE = 7;
     CommentSection,
     RatingSection,
     FontAwesomeModule,
+    LocalizedDatePipe,
   ],
   templateUrl: './application-detail.component.html',
   styleUrl: './application-detail.component.scss',

@@ -51,11 +51,9 @@
       <!-- Header (applicant + job title) - matches review-dialog style -->
       <ng-template #header>
         <div class="info">
-          <span class="applicant-name">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
-          <div class="job-name">
-            <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
-            <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
-          </div>
+          <span>{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
+          <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+          <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
         </div>
       </ng-template>
 
@@ -210,6 +208,29 @@
               <jhi-sub-section titleKey="evaluation.details.applicationProjects">
                 <jhi-prose [text]="application.applicationDetailDTO.projects" />
               </jhi-sub-section>
+
+              @if (application.appliedAt || application.applicationDetailDTO.desiredDate) {
+                <jhi-sub-section titleKey="evaluation.details.applicationDates">
+                  <div class="flex flex-wrap gap-4 text-sm">
+                    @if (application.appliedAt) {
+                      <div class="flex flex-col">
+                        <span class="text-text-secondary uppercase tracking-wide text-xs">
+                          <span jhiTranslate="evaluation.applied">Applied</span>
+                        </span>
+                        <span>{{ application.appliedAt | localizedDate }}</span>
+                      </div>
+                    }
+                    @if (application.applicationDetailDTO.desiredDate) {
+                      <div class="flex flex-col">
+                        <span class="text-text-secondary uppercase tracking-wide text-xs">
+                          <span jhiTranslate="evaluation.start">Start</span>
+                        </span>
+                        <span>{{ application.applicationDetailDTO.desiredDate | localizedDate }}</span>
+                      </div>
+                    }
+                  </div>
+                </jhi-sub-section>
+              }
             </jhi-section>
           </div>
 

@@ -2,8 +2,6 @@
   "evaluation": {
     "overviewHeader": "Bewerbungen - Übersicht",
     "reviewHeader": "Bewerbungen - Prüfen",
-    "applied": "Beworben",
-    "start": "Start",
     "grade": "Note",
     "masterDegree": "Master",
     "averageRating": "Durchschnittliche Bewertung",
@@ -86,6 +84,9 @@
       "applicationMotivation": "Motivation",
       "applicationSkills": "Fähigkeiten",
       "applicationProjects": "Projekte",
+      "applicationDates": "Daten",
+      "applied": "Beworben",
+      "start": "Start",
       "documentTitle": "Dokumente",
       "documentTypeBachelor": "Bachelorzeugnis",
       "documentTypeMaster": "Masterzeugnis",
