@@ -59,7 +59,7 @@ describe('ApplicationCardComponent', () => {
     fixture.componentRef.setInput('application', app);
     fixture.detectChanges();
 
-    const header = fixture.nativeElement.querySelector('h3');
+    const header = fixture.nativeElement.querySelector('h2');
     expect(header).toBeTruthy();
   });
 });
