@@ -381,6 +381,9 @@ public class JobService {
 
     /**
      * Returns the supervising professor's user ID for a given job ID.
+     *
+     * @param jobId the job ID
+     * @return the supervising professor's user ID
      */
     public UUID getSupervisingProfessorUserId(UUID jobId) {
         return jobRepository.findSupervisingProfessorUserIdByJobId(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));

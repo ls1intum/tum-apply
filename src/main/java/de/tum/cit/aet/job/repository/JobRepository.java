@@ -26,6 +26,12 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
     /**
      * Finds all jobs that belong to a given research group, with optional state and title/professor search filters.
      * Results are paginated.
+     *
+     * @param researchGroupId the research group ID to filter by
+     * @param states          the optional list of job states to include
+     * @param searchQuery     the optional search string for job title or professor name
+     * @param pageable        the pagination configuration
+     * @return a page of matching jobs
      */
     @Query(
         """
@@ -142,6 +148,9 @@ public interface JobRepository extends TumApplyJpaRepository<Job, UUID> {
 
     /**
      * Returns the supervising professor's user ID for the given job.
+     *
+     * @param jobId the job ID
+     * @return the supervising professor's user ID
      */
     @Query("SELECT j.supervisingProfessor.userId FROM Job j WHERE j.jobId = :jobId")
     Optional<UUID> findSupervisingProfessorUserIdByJobId(@Param("jobId") UUID jobId);
