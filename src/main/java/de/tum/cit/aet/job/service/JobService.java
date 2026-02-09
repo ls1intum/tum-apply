@@ -299,7 +299,7 @@ public class JobService {
     }
 
     /**
-     * Returns a paginated list of jobs created by a given professor.
+     * Returns a paginated list of jobs for the current user's research group (professor or employee).
      * Supports optional filtering and dynamic sorting.
      *
      * @param pageDTO                pagination configuration
@@ -307,7 +307,7 @@ public class JobService {
      * @param sortDTO                sorting configuration
      * @param searchQuery            search string for supervising professor or job
      *                               title
-     * @return a page of {@link CreatedJobDTO} for the professor's jobs
+     * @return a page of {@link CreatedJobDTO} for the research group's jobs
      */
     public Page<CreatedJobDTO> getJobsByProfessor(
         PageDTO pageDTO,
@@ -315,14 +315,14 @@ public class JobService {
         SortDTO sortDTO,
         String searchQuery
     ) {
-        UUID userId = currentUserService.getUserId();
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
         Pageable pageable = PageUtil.createPageRequest(pageDTO, sortDTO, PageUtil.ColumnMapping.PROFESSOR_JOBS, true);
         List<JobState> enumStates = null;
         if (professorJobsFilterDTO.states() != null && !professorJobsFilterDTO.states().isEmpty()) {
             enumStates = professorJobsFilterDTO.states().stream().map(JobState::fromValue).filter(Objects::nonNull).toList();
         }
         String normalizedSearchQuery = StringUtil.normalizeSearchQuery(searchQuery);
-        return jobRepository.findAllJobsByProfessor(userId, enumStates, normalizedSearchQuery, pageable);
+        return jobRepository.findAllJobsByResearchGroup(researchGroupId, enumStates, normalizedSearchQuery, pageable);
     }
 
     private JobFormDTO updateJobEntity(Job job, JobFormDTO dto) {
@@ -377,6 +377,13 @@ public class JobService {
         Job job = jobRepository.findById(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
         currentUserService.isAdminOrMemberOf(job.getResearchGroup());
         return job;
+    }
+
+    /**
+     * Returns the supervising professor's user ID for a given job ID.
+     */
+    public UUID getSupervisingProfessorUserId(UUID jobId) {
+        return jobRepository.findSupervisingProfessorUserIdByJobId(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
     }
 
     /**
