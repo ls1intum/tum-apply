@@ -400,6 +400,8 @@ public class ResearchGroupService {
     /**
      * Creates a research group request from a professor during onboarding.
      * The research group starts in DRAFT state and needs admin approval.
+     * The professor is associated with the research group using the provided universityId and assigned the APPLICANT role.
+     * An email notification is sent to support/administrators to review the new research group request.
      *
      * @param request the professor's research group request
      * @return the created research group in DRAFT state
