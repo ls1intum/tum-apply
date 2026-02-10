@@ -68,26 +68,6 @@ describe('SelectComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith(next);
   });
 
-  it('should resolve primitive values to matching options before emitting', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    const emitSpy = vi.spyOn(comp.selectedChange, 'emit');
-
-    comp.onSelectionChange('opt2');
-
-    expect(emitSpy).toHaveBeenCalledWith(mockItems[1]);
-  });
-
-  it('should emit fallback option when primitive does not match any item', () => {
-    const fixture = createFixture();
-    const comp = fixture.componentInstance;
-    const emitSpy = vi.spyOn(comp.selectedChange, 'emit');
-
-    comp.onSelectionChange('missing');
-
-    expect(emitSpy).toHaveBeenCalledWith({ name: 'missing', value: 'missing' });
-  });
-
   it('should apply disabled styles when disabled', () => {
     const fixture = createFixture();
     fixture.componentRef.setInput('disabled', true);

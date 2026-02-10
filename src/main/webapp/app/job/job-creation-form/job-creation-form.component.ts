@@ -1062,7 +1062,12 @@ export class JobCreationFormComponent {
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
-      supervisingProfessor: supervisingProfessorId,
+      // Prefill supervising professor with job value, then fallback to form value (which may be preselected), then to preferred professor
+      supervisingProfessor: (() => {
+        if (!supervisingProfessorId) return supervisingProfessorId;
+        const match = this.supervisingProfessorOptions().find(opt => opt.value === supervisingProfessorId);
+        return match ?? supervisingProfessorId;
+      })(),
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: en,
@@ -1138,7 +1143,10 @@ export class JobCreationFormComponent {
     const nextValue = matchedPreselect ?? currentValue ?? fallbackId;
 
     if (nextValue && currentValue !== nextValue) {
-      control.setValue(nextValue);
+      // Prefer setting the full option object (value + name) so the select shows
+      // the label. If no matching option is found, fall back to the raw ID.
+      const match = options.find(opt => opt.value === nextValue);
+      control.setValue(match ?? nextValue);
     }
   }
 
@@ -1482,3 +1490,5 @@ export class JobCreationFormComponent {
     return options.find(opt => opt.value === value);
   }
 }
+
+
