@@ -2,7 +2,12 @@
   <div class="header-container">
     <div class="page-header">
       @if (researchGroupId()) {
-        <h1 jhiTranslate="researchGroup.memberHeaderAdmin"></h1>
+        <h1>
+          <span jhiTranslate="researchGroup.memberHeaderAdmin"></span>
+          @if (researchGroupName()) {
+            <span> - {{ researchGroupName() }}</span>
+          }
+        </h1>
       } @else {
         <h1 jhiTranslate="researchGroup.memberHeader"></h1>
       }
