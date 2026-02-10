@@ -18,6 +18,12 @@ export default defineConfig(({ mode }) => ({
     include: ['src/test/webapp/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default', 'junit'],
     outputFile: 'junit.xml',
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        memoryLimit: '4096MB',
+      },
+    },
     coverage: {
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: 'build/test-results/lcov-report',
