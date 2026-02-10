@@ -889,7 +889,7 @@ export class JobCreationFormComponent {
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
       supervisingProfessor: [undefined, Validators.required],
-      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(3000)]],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(4000)]],
     });
   }
 
