@@ -13,6 +13,7 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 
 import { DynamicTableColumn, DynamicTableComponent } from '../../../shared/components/organisms/dynamic-table/dynamic-table.component';
 import { ConfirmDialog } from '../../../shared/components/atoms/confirm-dialog/confirm-dialog';
@@ -49,6 +50,7 @@ interface MembersRow {
     IconFieldModule,
     InputIconModule,
     ConfirmDialog,
+    BackButtonComponent,
   ],
   templateUrl: './research-group-members.component.html',
   styleUrl: './research-group-members.component.scss',

@@ -2,7 +2,10 @@
   <div class="header-container">
     <div class="page-header">
       @if (researchGroupId()) {
-        <h1 jhiTranslate="researchGroup.memberHeaderAdmin"></h1>
+        <div class="flex items-center gap-2">
+          <jhi-back-button />
+          <h1 jhiTranslate="researchGroup.memberHeaderAdmin"></h1>
+        </div>
       } @else {
         <h1 jhiTranslate="researchGroup.memberHeader"></h1>
       }
@@ -51,8 +54,4 @@
       />
     }
   </ng-template>
-
-  @if (researchGroupId()) {
-    <jhi-button [label]="'button.back'" severity="info" variant="outlined" [shouldTranslate]="true" icon="arrow-left" (click)="goBack()" />
-  }
 </div>

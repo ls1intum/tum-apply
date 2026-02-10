@@ -16,6 +16,7 @@ import { SelectComponent, SelectOption } from 'app/shared/components/atoms/selec
 import { DividerModule } from 'primeng/divider';
 import { firstValueFrom } from 'rxjs';
 import { TranslateDirective } from 'app/shared/language';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 
 @Component({
   selector: 'jhi-research-group-detail-view.component',
@@ -29,6 +30,7 @@ import { TranslateDirective } from 'app/shared/language';
     DividerModule,
     EditorComponent,
     InfoBoxComponent,
+    BackButtonComponent,
   ],
   templateUrl: './research-group-detail-view.component.html',
 })
