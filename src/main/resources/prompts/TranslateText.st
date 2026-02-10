@@ -13,7 +13,7 @@ OUTPUT CONSTRAINTS - CRITICAL:
 5. Terminology: Ensure legal requirements (e.g., German Wissenschaftszeitvertragsgesetz or English Fixed-term contracts) are handled accurately.
 6. Technical Terms: Keep all industry-standard terminology (e.g., "Java", "Scrum", "Stakeholder", "Python", "fMRI", "TV-L E13", "PyTorch", etc.) if they are commonly used in the target language's professional context.
 7. Keep proper nouns (names, places, organizations) unchanged.
-8. Maximum length: 2500 characters total
+8. Maximum length: 3750 characters total
 9. ALWAYS translate these words as specified:
   - If the target language is German: "Description" -> "Beschreibung", "Tasks & Responsibilities" -> "Aufgaben & Verantwortlichkeiten", "Eligibility Criteria" -> "Zulassungsvoraussetzungen"
   - If the target language is English: "Beschreibung" -> "Description", "Aufgaben & Verantwortlichkeiten" -> "Tasks & Responsibilities", "Zulassungsvoraussetzungen" -> "Eligibility Criteria"
