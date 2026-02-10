@@ -431,7 +431,7 @@ public class ResearchGroupService {
 
         ensureUserRoleInGroup(currentUser, saved, UserRole.APPLICANT);
 
-        notifySupportOfNewResearchGroupRequest(currentUser, saved);
+        notifySupportOfNewResearchGroupRequest(saved);
 
         return saved;
     }
@@ -639,7 +639,7 @@ public class ResearchGroupService {
         }
     }
 
-    private void notifySupportOfNewResearchGroupRequest(User user, ResearchGroup rg) {
+    private void notifySupportOfNewResearchGroupRequest(ResearchGroup rg) {
         String emailBody = String.format(
             """
             <html>
