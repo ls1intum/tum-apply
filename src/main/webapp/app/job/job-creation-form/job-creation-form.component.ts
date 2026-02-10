@@ -1490,5 +1490,3 @@ export class JobCreationFormComponent {
     return options.find(opt => opt.value === value);
   }
 }
-
-
