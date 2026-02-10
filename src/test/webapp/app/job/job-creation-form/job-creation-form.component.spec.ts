@@ -449,7 +449,7 @@ describe('JobCreationFormComponent', () => {
         { value: 'p1', name: 'Alpha Professor' },
         { value: 'p2', name: 'Beta Professor' },
       ]);
-      expect(component.basicInfoForm.get('supervisingProfessor')?.value).toBe('p1');
+      expect(component.basicInfoForm.get('supervisingProfessor')).toEqual({ value: 'p1', name: 'Alpha Professor' });
     });
 
     it('should honor preselected supervising professor when provided', () => {
@@ -461,7 +461,7 @@ describe('JobCreationFormComponent', () => {
 
       getPrivate(component).setDefaultSupervisingProfessor('p2');
 
-      expect(component.basicInfoForm.get('supervisingProfessor')?.value).toBe('p2');
+      expect(component.basicInfoForm.get('supervisingProfessor')).toEqual({ value: 'p2', name: 'Beta' });
     });
 
     it('should prefer logged-in professor user when available in options', () => {
@@ -474,7 +474,7 @@ describe('JobCreationFormComponent', () => {
 
       getPrivate(component).setDefaultSupervisingProfessor();
 
-      expect(component.basicInfoForm.get('supervisingProfessor')?.value).toBe('u1');
+      expect(component.basicInfoForm.get('supervisingProfessor')).toEqual({ value: 'u1', name: 'Prof User' });
     });
   });
 
