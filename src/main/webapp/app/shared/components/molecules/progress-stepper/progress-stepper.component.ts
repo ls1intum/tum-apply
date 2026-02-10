@@ -71,7 +71,7 @@ export class ProgressStepperComponent {
   constructor() {
     afterNextRender(() => {
       const sentinel = this.bottomSentinel()?.nativeElement;
-      if (sentinel && typeof IntersectionObserver !== 'undefined') {
+      if (sentinel) {
         const observer = new IntersectionObserver(
           entries => {
             // When sentinel is visible, sticky bottom is at actual bottom
