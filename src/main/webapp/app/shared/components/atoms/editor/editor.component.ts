@@ -18,7 +18,7 @@ import { viewChild } from '@angular/core';
 import { BaseInputDirective } from '../base-input/base-input.component';
 
 const STANDARD_CHARACTER_LIMIT = 500;
-const STANDARD_CHARACTER_BUFFER = 50;
+const STANDARD_CHARACTER_BUFFER = 300;
 
 @Component({
   selector: 'jhi-editor',
