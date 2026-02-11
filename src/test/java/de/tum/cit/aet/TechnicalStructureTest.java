@@ -11,8 +11,6 @@ import com.tngtech.archunit.lang.ArchRule;
 import de.tum.cit.aet.core.config.ApplicationProperties;
 import de.tum.cit.aet.core.config.Constants;
 import de.tum.cit.aet.core.config.UserRetentionProperties;
-import de.tum.cit.aet.core.retention.ApplicantRetentionJob;
-import de.tum.cit.aet.core.retention.ApplicantRetentionService;
 import de.tum.cit.aet.interview.domain.InterviewProcess;
 import de.tum.cit.aet.interview.domain.Interviewee;
 
@@ -43,11 +41,5 @@ class TechnicalStructureTest {
             Constants.class,
             ApplicationProperties.class,
             UserRetentionProperties.class
-        ))
-        .ignoreDependency(belongToAnyOf(Interviewee.class, InterviewProcess.class), alwaysTrue())
-        .ignoreDependency(alwaysTrue(), belongToAnyOf(Interviewee.class, InterviewProcess.class))
-        .ignoreDependency(belongToAnyOf(ApplicantRetentionService.class), alwaysTrue())
-        .ignoreDependency(alwaysTrue(), belongToAnyOf(ApplicantRetentionService.class))
-        .ignoreDependency(belongToAnyOf(ApplicantRetentionJob.class), alwaysTrue())
-        .ignoreDependency(alwaysTrue(), belongToAnyOf(ApplicantRetentionJob.class));
+        ));
 }

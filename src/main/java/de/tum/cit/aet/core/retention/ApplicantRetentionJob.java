@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.retention;
 
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;

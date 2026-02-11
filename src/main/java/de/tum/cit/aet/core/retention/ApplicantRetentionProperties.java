@@ -5,7 +5,7 @@
  * configuration into this class. Unknown fields are not allowed to ensure strict
  * configuration validation.</p>
  */
-package de.tum.cit.aet.core.config;
+package de.tum.cit.aet.core.retention;
 
 import jakarta.validation.constraints.Min;
 import lombok.Data;

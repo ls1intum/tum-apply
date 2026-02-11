@@ -6,7 +6,6 @@ import de.tum.cit.aet.IntegrationTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
-import de.tum.cit.aet.core.config.ApplicantRetentionProperties;
 import de.tum.cit.aet.core.constants.DocumentType;
 import de.tum.cit.aet.core.domain.DocumentDictionary;
 import de.tum.cit.aet.core.repository.DocumentDictionaryRepository;
