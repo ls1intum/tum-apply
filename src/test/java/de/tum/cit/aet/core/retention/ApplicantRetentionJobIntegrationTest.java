@@ -22,10 +22,12 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
+import de.tum.cit.aet.utility.testdata.UserTestData;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -124,11 +126,22 @@ class ApplicantRetentionJobIntegrationTest {
 
     @Test
     void shouldOnlyDeleteApplicationsBeforeCutoff() {
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+        User applicantUser = ApplicantTestData.saveApplicant("applicant-job@test.local", userRepository);
+        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
+        Job job = createJob(professor);
+
         ApplicationWithDocs oldApplication = createApplicationWithLastModified(
+            professor,
+            applicant,
+            job,
             LocalDateTime.now(ZoneOffset.UTC).minusDays(3),
             "old-cv.pdf"
         );
         ApplicationWithDocs recentApplication = createApplicationWithLastModified(
+            professor,
+            applicant,
+            job,
             LocalDateTime.now(ZoneOffset.UTC).minusHours(6),
             "recent-cv.pdf"
         );
@@ -140,35 +153,6 @@ class ApplicantRetentionJobIntegrationTest {
 
         assertThat(documentDictionaryRepository.findById(recentApplication.dictionary().getDocumentDictionaryId())).isPresent();
         assertThat(documentRepository.findById(recentApplication.dictionary().getDocument().getDocumentId())).isPresent();
-    }
-
-    private User createProfessorUser() {
-        User professor = new User();
-        professor.setUserId(UUID.randomUUID());
-        professor.setEmail("prof-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
-        professor.setFirstName("Prof");
-        professor.setLastName("Tester");
-        professor.setSelectedLanguage("en");
-        professor.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        professor.setResearchGroup(researchGroup);
-        return userRepository.saveAndFlush(professor);
-    }
-
-    private User createApplicantUser() {
-        User applicantUser = new User();
-        applicantUser.setUserId(UUID.randomUUID());
-        applicantUser.setEmail("applicant-job-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
-        applicantUser.setFirstName("App");
-        applicantUser.setLastName("User");
-        applicantUser.setSelectedLanguage("en");
-        applicantUser.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-        return userRepository.saveAndFlush(applicantUser);
-    }
-
-    private Applicant createApplicant(User applicantUser) {
-        Applicant applicant = new Applicant();
-        applicant.setUser(applicantUser);
-        return applicantRepository.saveAndFlush(applicant);
     }
 
     private Job createJob(User professor) {
@@ -201,10 +185,20 @@ class ApplicantRetentionJobIntegrationTest {
     }
 
     private ApplicationWithDocs createApplicationWithLastModified(LocalDateTime lastModifiedAt, String fileName) {
-        User professor = createProfessorUser();
-        User applicantUser = createApplicantUser();
-        Applicant applicant = createApplicant(applicantUser);
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+        User applicantUser = ApplicantTestData.saveApplicant("applicant-job@test.local", userRepository);
+        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
         Job job = createJob(professor);
+        return createApplicationWithLastModified(professor, applicant, job, lastModifiedAt, fileName);
+    }
+
+    private ApplicationWithDocs createApplicationWithLastModified(
+        User professor,
+        Applicant applicant,
+        Job job,
+        LocalDateTime lastModifiedAt,
+        String fileName
+    ) {
         Application application = createApplication(job, applicant);
         DocumentDictionary dictionary = createDocumentDictionary(professor, application, applicant, fileName);
 
