@@ -18,7 +18,7 @@ import { viewChild } from '@angular/core';
 import { BaseInputDirective } from '../base-input/base-input.component';
 
 const STANDARD_CHARACTER_LIMIT = 500;
-const STANDARD_CHARACTER_BUFFER = 50;
+const STANDARD_CHARACTER_BUFFER = 300;
 
 @Component({
   selector: 'jhi-editor',
@@ -150,9 +150,17 @@ export class EditorComponent extends BaseInputDirective<string> {
     // Only check limit if it is defined
     if (limit !== undefined) {
       const maxChars = limit + STANDARD_CHARACTER_BUFFER;
-      if (source !== 'user') return;
+      if (source !== 'user') {
+        // Allow programmatic changes but still update htmlValue
+        const html = editor.root.innerHTML;
+        this.htmlValue.set(html);
+        return;
+      }
+      const oldTextLength = extractTextFromHtml(this.htmlValue()).length;
       const newTextLength = extractTextFromHtml(editor.root.innerHTML).length;
-      if (newTextLength > maxChars) {
+      // Only block if user is adding text and exceeds limit
+      // Always allow deletions (newTextLength < oldTextLength)
+      if (newTextLength > maxChars && newTextLength > oldTextLength) {
         const range = editor.getSelection();
         editor.setContents(oldDelta, 'silent');
         if (range) {
