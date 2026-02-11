@@ -109,18 +109,17 @@
       }
     },
     "members": {
-      "loading": "Mitglieder werden geladen...",
-      "retry": "Erneut versuchen",
-      "noMembers": "Keine Mitglieder in dieser Forschungsgruppe gefunden.",
       "noUsers": "Keine verfügbaren Benutzer:innen gefunden.",
       "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
       "me": "Ich",
-      "manageMembers": "Mitglieder verwalten",
+      "notice": "Die Mitglieder werden per E-Mail benachrichtigt, wenn sie zur Forschungsgruppe hinzugefügt werden.",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
       "singleEntity": "Benutzer:in",
       "multipleEntities": "Benutzer:innen",
+      "selectedCountSingle": "{{count}} Mitglied ausgewählt",
+      "selectedCountMultiple": "{{count}} Mitglieder ausgewählt",
       "tableColumns": {
         "name": "Name",
         "email": "E-Mail",
@@ -167,10 +166,6 @@
           "summary": "Fehler beim Entfernen",
           "detail": "Fehler beim Entfernen. Bitte versuche es erneut oder kontaktiere einen Admin."
         }
-      },
-      "confirmDialog": {
-        "header": "Mitglieder hinzufügen",
-        "message": "Möchtest du die ausgewählten Mitglieder wirklich zur Forschungsgruppe hinzufügen? Sie werden per E-Mail benachrichtigt."
       },
       "noRole": "Keine Rolle"
     },
