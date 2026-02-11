@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
@@ -38,6 +39,7 @@ interface MembersRow {
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
+    BackButtonComponent,
     ButtonComponent,
     TranslateDirective,
     FontAwesomeModule,
@@ -183,10 +185,6 @@ export class ResearchGroupMembersComponent {
         void this.loadMembers();
       }
     });
-  }
-
-  goBack(): void {
-    void this.router.navigate(['/research-group/admin-view']);
   }
 
   /** Internal methods */

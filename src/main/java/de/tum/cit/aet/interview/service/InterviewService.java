@@ -80,11 +80,11 @@ public class InterviewService {
      */
 
     public List<InterviewOverviewDTO> getInterviewOverview() {
-        // 1. Get the ID of the currently logged-in professor
-        UUID professorId = currentUserService.getUserId();
+        // 1. Get the Research Group ID of the current user (Professor or Employee)
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
-        // 2. Load all active interview processes for this professor
-        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
+        // 2. Load all active interview processes for this research group
+        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByResearchGroupId(researchGroupId);
 
         // 3. If no interview processes exist, return an empty list
         if (interviewProcesses.isEmpty()) {
@@ -146,19 +146,20 @@ public class InterviewService {
     }
 
     /**
-     * Retrieves upcoming booked interviews for the currently logged-in professor.
+     * Retrieves upcoming booked interviews for the currently logged-in user
+     * (Professor or Employee).
      * Shows strictly TODAY + FUTURE booked interviews from all jobs of the
-     * professor.
+     * user's research group.
      *
      * @return list of {@link UpcomingInterviewDTO} for the dashboard
      */
     public List<UpcomingInterviewDTO> getUpcomingInterviews() {
-        // 1. Get current professor ID
-        UUID professorId = currentUserService.getUserId();
+        // 1. Get current Research Group ID
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
         // 2. Fetch upcoming slots (pagination max 5)
         Pageable limit = PageRequest.of(0, 5);
-        Page<InterviewSlot> slots = interviewSlotRepository.findUpcomingBookedSlotsForProfessor(professorId, Instant.now(), limit);
+        Page<InterviewSlot> slots = interviewSlotRepository.findUpcomingBookedSlotsForResearchGroup(researchGroupId, Instant.now(), limit);
 
         // 3. Map to DTO
         return slots
@@ -201,9 +202,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewProcess.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Fetch interviewees for this process and calculate state counts
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdInWithSlots(List.of(processId));
@@ -296,9 +298,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
         User professor = job.getSupervisingProfessor();
 
         // 3. Convert DTOs to entities
@@ -362,9 +365,10 @@ public class InterviewService {
             .findByIdWithJob(slotId)
             .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = slot.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
@@ -460,9 +464,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Convert PageDTO to Pageable
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
@@ -515,8 +520,9 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
 
-        // 2. Security: Verify current user has job access
-        currentUserService.verifyJobAccess(process.getJob());
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
+        verifyResearchGroupAccess(process.getJob());
 
         // 3. Calculate day boundaries in CET timezone
         UUID professorId = process.getJob().getSupervisingProfessor().getUserId();
@@ -558,9 +564,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
@@ -608,9 +615,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
@@ -637,9 +645,10 @@ public class InterviewService {
             .findByIdWithJob(slotId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview slot", slotId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = slot.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Check if slot is already booked
         if (slot.getIsBooked()) {
@@ -741,9 +750,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Fetch interviewees based on filter
         List<Interviewee> interviewees;
@@ -879,9 +889,10 @@ public class InterviewService {
         Interviewee interviewee = intervieweeRepository
             .findByIdAndProcessId(intervieweeId, processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewee.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Build and return detail DTO
         return mapIntervieweeToDetailDTO(interviewee, job);
@@ -910,9 +921,10 @@ public class InterviewService {
             .findByIdAndProcessId(intervieweeId, processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
 
-        // 3. Security: Verify current user has job access
+        // 3. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewee.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 4. Update fields if provided
         if (Boolean.TRUE.equals(dto.clearRating())) {
@@ -962,5 +974,19 @@ public class InterviewService {
     public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
         List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
         return processes == null ? List.of() : processes;
+    }
+
+    /**
+     * Verifies that the current user has access to the research group of the given
+     * job.
+     * This allows both professors and employees of the research group to access the
+     * job's interview data.
+     *
+     * @param job the job to check access for
+     * @throws AccessDeniedException if the user is not a member of the research
+     *                               group
+     */
+    private void verifyResearchGroupAccess(Job job) {
+        currentUserService.isAdminOrMemberOf(job.getResearchGroup());
     }
 }
