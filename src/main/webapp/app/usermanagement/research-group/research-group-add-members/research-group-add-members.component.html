@@ -13,12 +13,10 @@
         (searchOutput)="onSearch($event)"
       >
         <span records-extra class="text-sm text-text-secondary">
-          @if (totalRecords() > pageSize()) {
-            @if (selectedUserCount() === 1) {
-              {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
-            } @else if (selectedUserCount() > 1) {
-              {{ 'researchGroup.members.selectedCountMultiple' | translate: { count: selectedUserCount() } }}
-            }
+          @if (selectedUserCount() === 1) {
+            {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
+          } @else if (selectedUserCount() > 1) {
+            {{ 'researchGroup.members.selectedCountMultiple' | translate: { count: selectedUserCount() } }}
           }
         </span>
       </jhi-search-filter-sort-bar>
