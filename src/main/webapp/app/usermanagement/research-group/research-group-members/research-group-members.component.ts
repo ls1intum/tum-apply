@@ -78,14 +78,11 @@ export class ResearchGroupMembersComponent {
 
   // Transform members data for display
   readonly tableData = computed<MembersRow[]>(() => {
-    const currentUserAuthorities = this.accountService.userAuthorities;
-    const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
-
     return this.members().map((member): MembersRow => {
       const isCurrentUser = this.isCurrentUser(member);
       let canRemove = !isCurrentUser;
 
-      if (isEmployee) {
+      if (this.isEmployee()) {
         canRemove = false;
       }
 
@@ -103,6 +100,8 @@ export class ResearchGroupMembersComponent {
       };
     });
   });
+
+  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false);
 
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private toastService = inject(ToastService);
