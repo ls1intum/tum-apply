@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
+import de.tum.cit.aet.application.domain.dto.ApplicationPDFRequest;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
@@ -206,51 +208,48 @@ class PDFExportResourceTest extends AbstractResourceTest {
         assertThat(pdfBytes.length).isGreaterThan(MIN_PDF_SIZE);
     }
 
+    private ApplicationPDFRequest createApplicationPdfRequest(Application application, Job job) {
+        Map<String, String> labels = createCompleteLabelsMap();
+        ApplicationDetailDTO appDto = ApplicationDetailDTO.getFromEntity(application, job);
+        return new ApplicationPDFRequest(appDto, labels);
+    }
+
     @Nested
     class ExportApplicationToPDF {
 
         @Test
         void exportApplicationToPDFReturnsPdfForAuthenticatedUser() {
-            Map<String, String> labels = createCompleteLabelsMap();
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             byte[] result = asApplicant(applicant).postAndReturnBytes(
-                BASE_URL + "/application/" + application.getApplicationId() + "/pdf",
-                labels,
+                BASE_URL + "/application/pdf",
+                request,
                 200,
                 MediaType.APPLICATION_PDF
             );
-
             assertValidPdf(result);
         }
 
         @Test
         void exportApplicationToPDFReturns401ForUnauthenticatedUser() {
-            Map<String, String> labels = createCompleteLabelsMap();
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             Void result = api
                 .withoutPostProcessors()
-                .postAndRead(
-                    BASE_URL + "/application/" + application.getApplicationId() + "/pdf",
-                    labels,
-                    Void.class,
-                    401,
-                    MediaType.APPLICATION_PDF
-                );
-
+                .postAndRead(BASE_URL + "/application/pdf", request, Void.class, 401, MediaType.APPLICATION_PDF);
             assertThat(result).isNull();
         }
 
         @Test
         void shouldExportApplicationWithWebsiteAndLinkedIn() {
-            Map<String, String> labels = createCompleteLabelsMap();
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             byte[] result = asApplicant(applicantWithWebsiteAndLinkedin).postAndReturnBytes(
-                BASE_URL + "/application/" + applicationWithWebsiteAndLinkedin.getApplicationId() + "/pdf",
-                labels,
+                BASE_URL + "/application/pdf",
+                request,
                 200,
                 MediaType.APPLICATION_PDF
             );
-
             assertValidPdf(result);
         }
 
@@ -259,7 +258,6 @@ class PDFExportResourceTest extends AbstractResourceTest {
             Applicant applicantWithMasterNameNull = ApplicantTestData.savedWithNewUser(applicantRepository);
             applicantWithMasterNameNull.setMasterDegreeName(null);
             applicantRepository.save(applicantWithMasterNameNull);
-
             Application appWithMaster = ApplicationTestData.savedAll(
                 applicationRepository,
                 job,
@@ -270,16 +268,14 @@ class PDFExportResourceTest extends AbstractResourceTest {
                 "Test",
                 "Test"
             );
-
-            Map<String, String> labels = createCompleteLabelsMap();
+            ApplicationPDFRequest request = createApplicationPdfRequest(application, job);
 
             byte[] result = asApplicant(applicantWithMasterNameNull).postAndReturnBytes(
-                BASE_URL + "/application/" + appWithMaster.getApplicationId() + "/pdf",
-                labels,
+                BASE_URL + "/application/pdf",
+                request,
                 200,
                 MediaType.APPLICATION_PDF
             );
-
             assertValidPdf(result);
         }
     }
