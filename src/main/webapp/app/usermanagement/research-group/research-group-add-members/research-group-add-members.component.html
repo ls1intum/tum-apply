@@ -11,17 +11,15 @@
         [singleEntity]="'researchGroup.members.singleEntity' | translate"
         [multipleEntities]="'researchGroup.members.multipleEntities' | translate"
         (searchOutput)="onSearch($event)"
-      />
-
-      <div>
-        <span class="text-sm text-text-secondary">
+      >
+        <span records-extra class="text-sm text-text-secondary">
           @if (selectedUserCount() === 1) {
             {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
           } @else if (selectedUserCount() > 1) {
             {{ 'researchGroup.members.selectedCountMultiple' | translate: { count: selectedUserCount() } }}
           }
         </span>
-      </div>
+      </jhi-search-filter-sort-bar>
     </div>
 
     <!-- User List -->
@@ -81,7 +79,7 @@
   </div>
 
   <!-- Pagination -->
-  @if (totalRecords() > 0) {
+  @if (totalRecords() > 0 && totalRecords() > pageSize()) {
     <div class="flex justify-center">
       <p-paginator
         [rows]="pageSize()"
