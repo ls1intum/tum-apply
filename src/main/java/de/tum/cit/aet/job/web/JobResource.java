@@ -2,7 +2,6 @@ package de.tum.cit.aet.job.web;
 
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
-import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.job.constants.JobState;
@@ -88,7 +87,7 @@ public class JobResource {
      * @param jobForm the job posting data.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)}.
      */
-    @ProfessorOrAdmin
+    @ProfessorOrEmployeeOrAdmin
     @PostMapping("/create")
     public ResponseEntity<JobFormDTO> createJob(@RequestBody JobFormDTO jobForm) {
         JobFormDTO createdJob = jobService.createJob(jobForm);
