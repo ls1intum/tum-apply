@@ -8,6 +8,7 @@ import { DepartmentResourceApiService } from 'app/generated/api/departmentResour
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
@@ -24,6 +25,7 @@ import { TranslateDirective } from 'app/shared/language';
     TranslateDirective,
     StringInputComponent,
     SelectComponent,
+    BackButtonComponent,
     ButtonComponent,
     ReactiveFormsModule,
     DividerModule,
@@ -79,10 +81,6 @@ export class ResearchGroupDetailViewComponent implements OnInit {
   ngOnInit(): void {
     void this.loadDepartments();
     void this.init();
-  }
-
-  goBack(): void {
-    void this.router.navigate(['/research-group/admin-view']);
   }
 
   async loadDepartments(): Promise<void> {
