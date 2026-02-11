@@ -12,13 +12,15 @@
         <h1 jhiTranslate="researchGroup.memberHeader"></h1>
       }
     </div>
-    <jhi-button
-      [label]="'researchGroup.members.addMembers'"
-      icon="user-plus"
-      [shouldTranslate]="true"
-      severity="primary"
-      (click)="openAddMembersModal()"
-    />
+    @if (!isEmployee()) {
+      <jhi-button
+        [label]="'researchGroup.members.addMembers'"
+        icon="user-plus"
+        [shouldTranslate]="true"
+        severity="primary"
+        (click)="openAddMembersModal()"
+      />
+    }
   </div>
 
   <!-- Members Table -->

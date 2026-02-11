@@ -24,6 +24,10 @@ import { createActivatedRouteMock, provideActivatedRouteMock } from '../../../ut
 import { createJobResourceApiServiceMock, provideJobResourceApiServiceMock } from '../../../util/job-resource-api.service.mock';
 import { createImageResourceApiServiceMock, provideImageResourceApiServiceMock } from '../../../util/image-resource-api.service.mock';
 import { createAiStreamingServiceMock, provideAiStreamingServiceMock } from '../../../util/ai-streaming.service.mock';
+import {
+  createResearchGroupResourceApiServiceMock,
+  provideResearchGroupResourceApiServiceMock,
+} from '../../../util/research-group-resource-api.service.mock';
 
 interface Step {
   name: string;
@@ -89,6 +93,9 @@ type ComponentPrivate = {
   savingStatePanel: () => object;
   extractJobDescriptionFromStream: (content: string) => string | null;
   unescapeJsonString: (str: string) => string;
+  loadSupervisingProfessors: (preselectId?: string) => Promise<void>;
+  setDefaultSupervisingProfessor: (preselectId?: string) => void;
+  preferredSupervisingProfessorId: () => string | undefined;
 };
 
 function getPrivate(component: JobCreationFormComponent): ComponentPrivate {
@@ -106,6 +113,7 @@ describe('JobCreationFormComponent', () => {
   let mockLocation: ReturnType<typeof createLocationMock>;
   let mockActivatedRoute: ReturnType<typeof createActivatedRouteMock>;
   let mockAiStreamingService: ReturnType<typeof createAiStreamingServiceMock>;
+  let mockResearchGroupService: ReturnType<typeof createResearchGroupResourceApiServiceMock>;
 
   beforeEach(async () => {
     mockJobService = createJobResourceApiServiceMock();
@@ -134,6 +142,8 @@ describe('JobCreationFormComponent', () => {
     mockActivatedRoute = createActivatedRouteMock({}, {}, [new UrlSegment('job', {}), new UrlSegment('create', {})]);
     mockAiStreamingService = createAiStreamingServiceMock();
     mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
+    mockResearchGroupService = createResearchGroupResourceApiServiceMock();
+    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of({ content: [] }));
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
@@ -148,6 +158,7 @@ describe('JobCreationFormComponent', () => {
         provideTranslateMock(),
         provideFontAwesomeTesting(),
         provideAiStreamingServiceMock(mockAiStreamingService),
+        provideResearchGroupResourceApiServiceMock(mockResearchGroupService),
       ],
     })
       .overrideComponent(JobCreationFormComponent, {
@@ -419,6 +430,54 @@ describe('JobCreationFormComponent', () => {
     });
   });
 
+  describe('Supervising Professor Selection', () => {
+    it('should load research group professors, sort them, and preselect the first option', async () => {
+      mockResearchGroupService.getResearchGroupMembers.mockReturnValueOnce(
+        of({
+          content: [
+            { userId: 'p2', firstName: 'Beta', lastName: 'Professor', roles: ['PROFESSOR'] },
+            { userId: 'p1', firstName: 'Alpha', lastName: 'Professor', roles: ['PROFESSOR'] },
+            { userId: 's1', firstName: 'Student', lastName: 'Member', roles: ['STUDENT'] },
+          ],
+        }),
+      );
+
+      await getPrivate(component).loadSupervisingProfessors();
+
+      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(100, 0);
+      expect(component.supervisingProfessorOptions()).toEqual([
+        { value: 'p1', name: 'Alpha Professor' },
+        { value: 'p2', name: 'Beta Professor' },
+      ]);
+      expect(component.basicInfoForm.get('supervisingProfessor')?.value).toEqual({ value: 'p1', name: 'Alpha Professor' });
+    });
+
+    it('should honor preselected supervising professor when provided', () => {
+      component.supervisingProfessorOptions.set([
+        { value: 'p1', name: 'Alpha' },
+        { value: 'p2', name: 'Beta' },
+      ]);
+      component.basicInfoForm.get('supervisingProfessor')?.setValue(undefined);
+
+      getPrivate(component).setDefaultSupervisingProfessor('p2');
+
+      expect(component.basicInfoForm.get('supervisingProfessor')?.value).toEqual({ value: 'p2', name: 'Beta' });
+    });
+
+    it('should prefer logged-in professor user when available in options', () => {
+      mockAccountService.user.set({ id: 'u1', name: 'Prof User', authorities: ['PROFESSOR'] } as User);
+      component.supervisingProfessorOptions.set([
+        { value: 'u1', name: 'Prof User' },
+        { value: 'p2', name: 'Other' },
+      ]);
+      component.basicInfoForm.get('supervisingProfessor')?.setValue(undefined);
+
+      getPrivate(component).setDefaultSupervisingProfessor();
+
+      expect(component.basicInfoForm.get('supervisingProfessor')?.value).toEqual({ value: 'u1', name: 'Prof User' });
+    });
+  });
+
   describe('Image Selection and Management', () => {
     it('should handle image selection and computed signals', () => {
       // Select default image
@@ -583,6 +642,27 @@ describe('JobCreationFormComponent', () => {
       expect(dto.researchArea).toBe('AI Research');
       expect(dto.jobDescriptionEN).toBe('Some description');
       expect(dto.jobDescriptionDE).toBe('Beschreibung');
+    });
+
+    it('should normalize supervisingProfessor option objects to an ID', () => {
+      component.basicInfoForm.patchValue({ supervisingProfessor: { value: 'prof-123', name: 'Prof A' } });
+
+      const dto = getPrivate(component).createJobDTO('DRAFT');
+
+      expect(dto.supervisingProfessor).toBe('prof-123');
+    });
+
+    it('should fall back to preferred supervising professor when control is empty', () => {
+      mockAccountService.user.set({ id: 'prof-1', name: 'Prof User', authorities: ['PROFESSOR'] } as User);
+      component.supervisingProfessorOptions.set([
+        { value: 'prof-1', name: 'Prof User' },
+        { value: 'prof-2', name: 'Prof Two' },
+      ]);
+      component.basicInfoForm.patchValue({ supervisingProfessor: undefined });
+
+      const dto = getPrivate(component).createJobDTO('DRAFT');
+
+      expect(dto.supervisingProfessor).toBe('prof-1');
     });
 
     it.each([
