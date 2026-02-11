@@ -173,7 +173,8 @@ public class JobService {
             job.getJobDescriptionDE(),
             job.getState(),
             job.getImage() != null ? job.getImage().getImageId() : null,
-            job.getImage() != null ? job.getImage().getUrl() : null
+            job.getImage() != null ? job.getImage().getUrl() : null,
+            job.getSuitableForDisabled()
         );
     }
 
@@ -216,7 +217,9 @@ public class JobService {
             job.getLastModifiedAt(),
             job.getState(),
             applicationId,
-            applicationState
+            applicationState,
+            job.getSuitableForDisabled(),
+            job.getImage() != null ? job.getImage().getImageId() : null
         );
     }
 
@@ -343,6 +346,7 @@ public class JobService {
         job.setJobDescriptionEN(dto.jobDescriptionEN());
         job.setJobDescriptionDE(dto.jobDescriptionDE());
         job.setState(dto.state());
+        job.setSuitableForDisabled(dto.suitableForDisabled());
 
         // Handle image update (replace old image if changed)
         if (dto.imageId() != null) {

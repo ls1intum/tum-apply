@@ -149,7 +149,7 @@
                 helperText="jobCreationForm.positionDetailsSection.jobDescription.descriptionHelper"
                 tooltipText="jobCreationForm.positionDetailsSection.jobDescription.toolTipText"
                 [required]="true"
-                [characterLimit]="1500"
+                [characterLimit]="3000"
                 [model]="jobDescriptionSignal()"
                 [control]="basicInfoForm.get('jobDescription') ?? undefined"
                 icon="circle-info"
@@ -298,6 +298,17 @@
               />
             </div>
           </div>
+
+          <!-- Equal Opportunities Checkbox -->
+          <div class="flex flex-col mt-8">
+            <jhi-checkbox
+              label="jobCreationForm.additionalInformationSection.suitableForDisabled.label"
+              [model]="positionDetailsForm.get('suitableForDisabled')?.value"
+              (modelChange)="positionDetailsForm.get('suitableForDisabled')?.setValue($event)"
+              tooltipText="jobCreationForm.additionalInformationSection.suitableForDisabled.tooltip"
+              [shouldTranslate]="true"
+            />
+          </div>
         </div>
       </form>
     </div>
@@ -411,9 +422,6 @@
   <ng-template #panel4>
     <jhi-message severity="warn" styleClass="mb-3" message="jobCreationForm.reviewPageSection.message" [shouldTranslate]="true" />
     <jhi-job-detail [previewData]="currentJobData" [isSummaryPage]="true" class="w-full" />
-    <div class="data-privacy-notice">
-      <p [innerHTML]="'jobCreationForm.additionalInformationSection.dataPrivacyText' | translate"></p>
-    </div>
   </ng-template>
 
   <!-- Saving State Panel -->

@@ -33,6 +33,7 @@ public class PDFExportService {
 
     private final JobService jobService;
     private final CurrentUserService currentUserService;
+    private final ImageService imageService;
 
     private final UserRepository userRepository;
 
@@ -146,6 +147,16 @@ public class PDFExportService {
 
         PDFBuilder builder = new PDFBuilder(job.title());
 
+        // Add banner image if available
+        if (job.imageId() != null) {
+            try {
+                byte[] imageBytes = imageService.getImageBytes(job.imageId());
+                builder.setBannerImage(imageBytes);
+            } catch (Exception e) {
+                log.debug("Could not load banner image for job PDF export: {}", e.getMessage());
+            }
+        }
+
         builder.addHeaderItem(labels.get("jobBy") + job.supervisingProfessorName() + labels.get("forJob") + "'" + job.title() + "'");
         try {
             if (currentUserService.isProfessor() || currentUserService.isEmployee()) {
@@ -197,6 +208,16 @@ public class PDFExportService {
      */
     public Resource exportJobPreviewToPDF(JobFormDTO jobFormDTO, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(jobFormDTO.title());
+
+        // Add banner image if available
+        if (jobFormDTO.imageId() != null) {
+            try {
+                byte[] imageBytes = imageService.getImageBytes(jobFormDTO.imageId());
+                builder.setBannerImage(imageBytes);
+            } catch (Exception e) {
+                log.debug("Could not load banner image for job preview PDF export: {}", e.getMessage());
+            }
+        }
 
         String supervisingProfessorName = userRepository
             .findById(jobFormDTO.supervisingProfessor())

@@ -62,6 +62,8 @@ export interface JobDetails {
 
   applicationId?: string;
   applicationState?: ApplicationStateEnum;
+
+  suitableForDisabled?: boolean;
 }
 
 @Component({
@@ -539,6 +541,8 @@ export class JobDetailComponent {
 
       applicationId: jobDetailDTO.applicationId ?? undefined,
       applicationState: jobDetailDTO.applicationState ?? undefined,
+
+      suitableForDisabled: isForm ? (data as JobFormDTO).suitableForDisabled : jobDetailDTO.suitableForDisabled,
     };
   }
 
