@@ -113,6 +113,7 @@
       "emptySearch": "Bitte gib mindestens {{minLength}} Zeichen ein, um zu suchen.",
       "me": "Ich",
       "notice": "Die Mitglieder werden per E-Mail benachrichtigt, wenn sie zur Forschungsgruppe hinzugefügt werden.",
+      "manageMembers": "Mitglieder verwalten",
       "addMembers": "Mitglieder hinzufügen",
       "addMembersButton": "Mitglieder hinzufügen",
       "searchPlaceholder": "Suche nach einem Mitglied mit Namen oder E-Mail...",
