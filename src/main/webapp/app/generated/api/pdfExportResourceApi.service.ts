@@ -16,6 +16,8 @@ import { HttpClient,
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { ApplicationPDFRequest } from '../model/applicationPDFRequest';
+// @ts-ignore
 import { JobPreviewRequest } from '../model/jobPreviewRequest';
 
 // @ts-ignore
@@ -35,20 +37,16 @@ export class PdfExportResourceApiService extends BaseService {
     }
 
     /**
-     * @param id 
-     * @param requestBody 
+     * @param applicationPDFRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public exportApplicationToPDF(id: string, requestBody: { [key: string]: string; }, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public exportApplicationToPDF(id: string, requestBody: { [key: string]: string; }, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public exportApplicationToPDF(id: string, requestBody: { [key: string]: string; }, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public exportApplicationToPDF(id: string, requestBody: { [key: string]: string; }, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling exportApplicationToPDF.');
-        }
-        if (requestBody === null || requestBody === undefined) {
-            throw new Error('Required parameter requestBody was null or undefined when calling exportApplicationToPDF.');
+    public exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
+    public exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
+    public exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
+    public exportApplicationToPDF(applicationPDFRequest: ApplicationPDFRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (applicationPDFRequest === null || applicationPDFRequest === undefined) {
+            throw new Error('Required parameter applicationPDFRequest was null or undefined when calling exportApplicationToPDF.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -74,11 +72,11 @@ export class PdfExportResourceApiService extends BaseService {
             localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
         }
 
-        let localVarPath = `/api/export/application/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: "uuid"})}/pdf`;
+        let localVarPath = `/api/export/application/pdf`;
         return this.httpClient.request('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: requestBody,
+                body: applicationPDFRequest,
                 responseType: "blob",
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

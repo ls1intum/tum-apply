@@ -38,7 +38,7 @@ const routes: Routes = [
   {
     path: 'job/create',
     canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
     loadComponent: () => import('./job/job-creation-form/job-creation-form.component').then(m => m.JobCreationFormComponent),
     title: 'global.routes.job.creation',
   },
