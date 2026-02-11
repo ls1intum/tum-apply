@@ -344,4 +344,41 @@ describe('ResearchGroupMembersComponent', () => {
     component.goBack();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/admin-view']);
   });
+
+  it('should load and set the research group name', async () => {
+    mockResearchGroupService.getResearchGroup.mockReturnValue(of({ name: 'AI Lab' } as any));
+
+    await (component as any).loadResearchGroupName('group-1');
+
+    expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledWith('group-1');
+    expect(component.researchGroupName()).toBe('AI Lab');
+  });
+
+  it('should clear research group name when loading fails', async () => {
+    mockResearchGroupService.getResearchGroup.mockReturnValue(throwError(() => new Error('API Error')));
+    component.researchGroupName.set('Existing Name');
+
+    await (component as any).loadResearchGroupName('group-2');
+
+    expect(mockResearchGroupService.getResearchGroup).toHaveBeenCalledWith('group-2');
+    expect(component.researchGroupName()).toBeUndefined();
+  });
+
+  it('should mark employee as true when user has Employee role', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Employee] } : u));
+
+    expect(component.isEmployee()).toBe(true);
+  });
+
+  it('should mark employee as false when user lacks Employee role', () => {
+    mockAccountService.user.update(u => (u ? { ...u, authorities: [UserShortDTO.RolesEnum.Professor] } : u));
+
+    expect(component.isEmployee()).toBe(false);
+  });
+
+  it('should mark employee as false when authorities are undefined', () => {
+    mockAccountService.user.set(undefined);
+
+    expect(component.isEmployee()).toBe(false);
+  });
 });
