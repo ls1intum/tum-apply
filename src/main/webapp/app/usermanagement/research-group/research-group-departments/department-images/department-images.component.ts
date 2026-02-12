@@ -9,7 +9,7 @@ import {
   ImageUploadButtonComponent,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
-import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
+import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
@@ -18,11 +18,7 @@ import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
-interface DepartmentSelectOption {
-  name: string;
-  value: string;
-  icon?: string;
-}
+type DepartmentSelectOption = SelectOption & { value: string };
 
 @Component({
   selector: 'jhi-department-images',
@@ -80,8 +76,12 @@ export class DepartmentImages {
     }
   }
 
-  onDepartmentChange(selection: DepartmentSelectOption | undefined): void {
-    this.selectedDepartment.set(selection);
+  onDepartmentChange(selection: SelectOption | undefined): void {
+    if (!selection || typeof selection.value !== 'string') {
+      this.selectedDepartment.set(undefined);
+      return;
+    }
+    this.selectedDepartment.set(selection as DepartmentSelectOption);
     void this.loadDefaultImages();
   }
 
