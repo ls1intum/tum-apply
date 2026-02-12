@@ -112,7 +112,9 @@ export class ResearchGroupDepartmentsComponent {
         icon: 'image',
         severity: 'primary',
         command: () => {
-          void this.router.navigate(['/research-group/departments/images']);
+          void this.router.navigate(['/research-group/departments/images'], {
+            queryParams: { departmentId: department.departmentId },
+          });
         },
       },
       {
