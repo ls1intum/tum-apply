@@ -40,8 +40,7 @@ type DepartmentSelectOption = {
 export class DepartmentImages {
   readonly defaultImages = signal<ImageDTO[]>([]);
   readonly departments = signal<DepartmentDTO[]>([]);
-  readonly emptyDepartmentOption: DepartmentSelectOption = { name: '', value: '' };
-  readonly selectedDepartment = signal<DepartmentSelectOption>(this.emptyDepartmentOption);
+  readonly selectedDepartment = signal<DepartmentSelectOption | undefined>(undefined);
 
   readonly departmentOptions = computed<DepartmentSelectOption[]>(() =>
     this.departments()
@@ -53,7 +52,7 @@ export class DepartmentImages {
       .sort((a, b) => a.name.localeCompare(b.name)),
   );
 
-  readonly selectedDepartmentId = computed(() => String(this.selectedDepartment().value));
+  readonly selectedDepartmentId = computed(() => String(this.selectedDepartment()?.value ?? ''));
   readonly canUpload = computed(() => this.selectedDepartmentId() !== '');
   readonly inUseImages = computed(() => this.defaultImages().filter(image => image.isInUse === true));
   readonly notInUseImages = computed(() => this.defaultImages().filter(image => image.isInUse !== true));
@@ -80,7 +79,7 @@ export class DepartmentImages {
     }
   }
 
-  onDepartmentChange(selection: DepartmentSelectOption): void {
+  onDepartmentChange(selection: DepartmentSelectOption | undefined): void {
     this.selectedDepartment.set(selection);
     void this.loadDefaultImages();
   }

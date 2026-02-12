@@ -142,7 +142,7 @@ describe('DepartmentImages', () => {
     it('clears images when no department is selected', async () => {
       await createComponent();
       component.defaultImages.set([imageInUse]);
-      component.selectedDepartment.set(component.emptyDepartmentOption);
+      component.selectedDepartment.set(undefined);
 
       await component.loadDefaultImages();
 
@@ -178,7 +178,7 @@ describe('DepartmentImages', () => {
   describe('uploading', () => {
     it('blocks upload when no department is selected', async () => {
       await createComponent();
-      component.selectedDepartment.set(component.emptyDepartmentOption);
+      component.selectedDepartment.set(undefined);
       const result = component.uploadDefaultImage(createFile());
       let completed = false;
 
