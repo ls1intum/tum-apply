@@ -7,6 +7,7 @@ export type ImageResourceApiServiceMock = {
   getDefaultJobBanners: ReturnType<typeof vi.fn>;
   getResearchGroupJobBanners: ReturnType<typeof vi.fn>;
   uploadJobBanner: ReturnType<typeof vi.fn>;
+  uploadDefaultJobBanner: ReturnType<typeof vi.fn>;
   deleteImage: ReturnType<typeof vi.fn>;
   getDefaultJobBannersBySchool: ReturnType<typeof vi.fn>;
 };
@@ -17,6 +18,7 @@ export function createImageResourceApiServiceMock(): ImageResourceApiServiceMock
     getDefaultJobBanners: vi.fn(),
     getResearchGroupJobBanners: vi.fn(),
     uploadJobBanner: vi.fn(),
+    uploadDefaultJobBanner: vi.fn(),
     deleteImage: vi.fn(),
     getDefaultJobBannersBySchool: vi.fn(),
   };

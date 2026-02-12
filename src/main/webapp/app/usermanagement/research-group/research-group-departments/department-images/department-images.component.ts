@@ -39,11 +39,11 @@ export class DepartmentImages {
 
   readonly departmentOptions = computed<SelectOption[]>(() =>
     this.departments()
-      .filter(department => department.departmentId && department.name)
       .map(department => ({
         name: department.name ?? '',
         value: department.departmentId ?? '',
       }))
+      .filter(option => option.value !== '' && option.name !== '')
       .sort((a, b) => a.name.localeCompare(b.name)),
   );
 
