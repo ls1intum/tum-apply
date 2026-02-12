@@ -47,15 +47,17 @@
         (click)="onEditDepartment(department.departmentId)"
       />
       <jhi-confirm-dialog
-        [iconOnly]="true"
+        #deleteDialog
         [header]="'researchGroup.departments.deleteDialog.header' | translate"
         [message]="'researchGroup.departments.deleteDialog.message' | translate"
         confirmIcon="trash"
         (confirmed)="onDeleteDepartment(department.departmentId)"
         severity="danger"
         [label]="'button.delete' | translate"
-        [tooltip]="'button.delete' | translate"
+        [showOpenButton]="false"
       />
+      <jhi-button severity="primary" variant="text" icon="ellipsis-vertical" [shouldTranslate]="true" (click)="menu.toggle($event)" />
+      <jhi-menu #menu [items]="menuItems(department, deleteDialog)" [shouldTranslate]="true" />
     </div>
   </ng-template>
 </div>

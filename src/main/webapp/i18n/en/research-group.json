@@ -409,6 +409,9 @@
       "deleteDialog": {
         "header": "Delete Department",
         "message": "Are you sure you want to delete this department?"
+      },
+      "images": {
+        "title": "Manage Department Images"
       }
     },
     "imageLibrary": {

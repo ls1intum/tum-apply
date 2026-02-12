@@ -409,6 +409,9 @@
       "deleteDialog": {
         "header": "Department löschen",
         "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
+      },
+      "images": {
+        "title": "Department-Bilder verwalten"
       }
     },
     "imageLibrary": {
