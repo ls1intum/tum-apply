@@ -136,18 +136,6 @@ describe('DepartmentImages', () => {
       expect(component.selectedDepartment()).toEqual(option);
       expect(loadSpy).toHaveBeenCalled();
     });
-
-    it('clears selection when option value is not a string', async () => {
-      await createComponent();
-
-      component.selectedDepartment.set({ name: 'Dept 1', value: 'd1' });
-      const loadSpy = vi.spyOn(component, 'loadDefaultImages').mockResolvedValue();
-
-      component.onDepartmentChange({ name: 'Dept 2', value: 2 });
-
-      expect(component.selectedDepartment()).toBeUndefined();
-      expect(loadSpy).not.toHaveBeenCalled();
-    });
   });
 
   describe('loadDefaultImages', () => {

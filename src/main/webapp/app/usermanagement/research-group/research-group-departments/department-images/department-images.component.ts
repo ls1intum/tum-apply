@@ -18,8 +18,6 @@ import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
-type DepartmentSelectOption = SelectOption & { value: string };
-
 @Component({
   selector: 'jhi-department-images',
   imports: [
@@ -37,9 +35,9 @@ type DepartmentSelectOption = SelectOption & { value: string };
 export class DepartmentImages {
   readonly defaultImages = signal<ImageDTO[]>([]);
   readonly departments = signal<DepartmentDTO[]>([]);
-  readonly selectedDepartment = signal<DepartmentSelectOption | undefined>(undefined);
+  readonly selectedDepartment = signal<SelectOption | undefined>(undefined);
 
-  readonly departmentOptions = computed<DepartmentSelectOption[]>(() =>
+  readonly departmentOptions = computed<SelectOption[]>(() =>
     this.departments()
       .map(department => ({
         name: department.name ?? '',
@@ -49,7 +47,10 @@ export class DepartmentImages {
       .sort((a, b) => a.name.localeCompare(b.name)),
   );
 
-  readonly selectedDepartmentId = computed(() => this.selectedDepartment()?.value ?? '');
+  readonly selectedDepartmentId = computed(() => {
+    const value = this.selectedDepartment()?.value;
+    return value === undefined ? '' : String(value);
+  });
   readonly canUpload = computed(() => this.selectedDepartmentId() !== '');
   readonly inUseImages = computed(() => this.defaultImages().filter(image => image.isInUse === true));
   readonly notInUseImages = computed(() => this.defaultImages().filter(image => image.isInUse !== true));
@@ -77,11 +78,7 @@ export class DepartmentImages {
   }
 
   onDepartmentChange(selection: SelectOption | undefined): void {
-    if (!selection || typeof selection.value !== 'string') {
-      this.selectedDepartment.set(undefined);
-      return;
-    }
-    this.selectedDepartment.set(selection as DepartmentSelectOption);
+    this.selectedDepartment.set(selection);
     void this.loadDefaultImages();
   }
 
