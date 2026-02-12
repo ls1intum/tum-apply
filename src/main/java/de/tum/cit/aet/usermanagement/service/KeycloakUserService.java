@@ -71,7 +71,7 @@ public class KeycloakUserService {
 
         List<KeycloakUserDTO> filtered = users
             .stream()
-            .filter(u -> isLDAPUser(u) && !containsCurrentUser(u) && !isPartOfResearchGroup(u))
+            .filter(u -> isLDAPUser(u) && !isCurrentUser(u))
             .map(user ->
                 new KeycloakUserDTO(
                     UUID.fromString(user.getId()),
@@ -108,7 +108,7 @@ public class KeycloakUserService {
         }
         return users
             .stream()
-            .filter(u -> isLDAPUser(u) && !containsCurrentUser(u) && !isPartOfResearchGroup(u))
+            .filter(u -> isLDAPUser(u) && !isCurrentUser(u))
             .count();
     }
 
@@ -121,18 +121,13 @@ public class KeycloakUserService {
         return values != null && !values.isEmpty();
     }
 
-    private boolean containsCurrentUser(UserRepresentation user) {
+    private boolean isCurrentUser(UserRepresentation user) {
         User currentUser = currentUserService.getUser();
         if (currentUser == null) {
             return false;
         }
         String universityId = currentUser.getUniversityId();
         return universityId != null && universityId.equalsIgnoreCase(user.getAttributes().get("LDAP_ID").get(0));
-    }
-
-    private boolean isPartOfResearchGroup(UserRepresentation user) {
-        String universityId = user.getAttributes().get("LDAP_ID").get(0);
-        return universityId != null && researchGroupRepository.findByUniversityId(universityId).isPresent();
     }
 
     /**
