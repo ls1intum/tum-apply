@@ -235,6 +235,10 @@ export class ResearchGroupDepartmentsComponent {
     });
   }
 
+  onViewDepartmentImages(): void {
+    void this.router.navigate(['/research-group/departments/images']);
+  }
+
   private async loadSchools(): Promise<void> {
     try {
       const schools = await firstValueFrom(this.schoolResourceApiService.getAllSchools());
