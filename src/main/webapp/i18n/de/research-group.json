@@ -411,7 +411,49 @@
         "message": "Bist du sicher, dass du dieses Department löschen möchtest?"
       },
       "images": {
-        "title": "Department-Bilder verwalten"
+        "button": "Bilder verwalten",
+        "title": "Department-Bilder verwalten",
+        "filters": {
+          "department": "Department",
+          "departmentPlaceholder": "Department wählen..."
+        },
+        "section": {
+          "inUse": "Default-Bilder in Verwendung",
+          "upload": "Default-Bilder hochladen"
+        },
+        "empty": {
+          "inUse": "Derzeit sind keine Default-Bilder in Verwendung",
+          "upload": "Noch keine Default-Bilder hochgeladen",
+          "selectDepartment": "Bitte ein Department wählen, um Default-Bilder zu verwalten"
+        },
+        "delete": {
+          "title": "Bild löschen",
+          "message": "Möchtest du dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+        },
+        "success": {
+          "imageDeleted": {
+            "summary": "Bild gelöscht",
+            "detail": "Default-Bild erfolgreich gelöscht."
+          }
+        },
+        "error": {
+          "loadDepartments": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Departments konnten nicht geladen werden. Bitte versuche es erneut."
+          },
+          "loadImages": {
+            "summary": "Laden fehlgeschlagen",
+            "detail": "Default-Bilder konnten nicht geladen werden. Bitte versuche es erneut."
+          },
+          "deleteFailed": {
+            "summary": "Löschen fehlgeschlagen",
+            "detail": "Default-Bild konnte nicht gelöscht werden. Bitte versuche es erneut."
+          },
+          "noDepartment": {
+            "summary": "Department fehlt",
+            "detail": "Bitte zuerst ein Department wählen, bevor ein Default-Bild hochgeladen wird."
+          }
+        }
       }
     },
     "imageLibrary": {

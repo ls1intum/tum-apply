@@ -411,7 +411,49 @@
         "message": "Are you sure you want to delete this department?"
       },
       "images": {
-        "title": "Manage Department Images"
+        "button": "Manage Images",
+        "title": "Manage Department Images",
+        "filters": {
+          "department": "Department",
+          "departmentPlaceholder": "Select department..."
+        },
+        "section": {
+          "inUse": "Default images in use",
+          "upload": "Upload default images"
+        },
+        "empty": {
+          "inUse": "No default images are currently in use",
+          "upload": "No default images uploaded yet",
+          "selectDepartment": "Select a department to manage default images"
+        },
+        "delete": {
+          "title": "Delete image",
+          "message": "Are you sure you want to delete this image? This action cannot be undone."
+        },
+        "success": {
+          "imageDeleted": {
+            "summary": "Image deleted",
+            "detail": "Default image deleted successfully."
+          }
+        },
+        "error": {
+          "loadDepartments": {
+            "summary": "Load failed",
+            "detail": "Departments could not be loaded. Please try again."
+          },
+          "loadImages": {
+            "summary": "Load failed",
+            "detail": "Default images could not be loaded. Please try again."
+          },
+          "deleteFailed": {
+            "summary": "Delete failed",
+            "detail": "Default image could not be deleted. Please try again."
+          },
+          "noDepartment": {
+            "summary": "Department missing",
+            "detail": "Select a department before uploading a default image."
+          }
+        }
       }
     },
     "imageLibrary": {

@@ -5,4 +5,105 @@
       <h1 class="page-header" jhiTranslate="researchGroup.departments.images.title"></h1>
     </div>
   </div>
+
+  <div class="mb-8 max-w-xl">
+    <jhi-select
+      [items]="departmentOptions()"
+      [selected]="selectedDepartment()"
+      [label]="'researchGroup.departments.images.filters.department' | translate"
+      [placeholder]="'researchGroup.departments.images.filters.departmentPlaceholder' | translate"
+      [filter]="true"
+      [showClear]="true"
+      (selectedChange)="onDepartmentChange($event)"
+    />
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.departments.images.section.inUse"></h2>
+    @if (inUseImages().length === 0) {
+      <div class="mb-4">
+        <jhi-info-box [message]="'researchGroup.departments.images.empty.inUse' | translate" severity="primary" />
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+        @for (image of inUseImages(); track image.imageId ?? $index) {
+          <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
+            <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
+              <img [src]="image.url" [alt]="'Department image'" class="w-full h-full object-cover" />
+              <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
+                <jhi-confirm-dialog
+                  #deleteDialogInUse
+                  [label]="'button.delete' | translate"
+                  [confirmIcon]="'trash'"
+                  [header]="'researchGroup.departments.images.delete.title' | translate"
+                  [message]="'researchGroup.departments.images.delete.message' | translate"
+                  [data]="image.imageId"
+                  (confirmed)="onDeleteImage($any($event))"
+                  severity="danger"
+                  [showOpenButton]="false"
+                />
+                <jhi-button
+                  icon="trash"
+                  size="sm"
+                  [severity]="'danger'"
+                  (click)="deleteDialogInUse.confirm()"
+                  class="opacity-0 group-hover:opacity-100 transition-opacity"
+                />
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="mb-8">
+    <h2 class="text-lg font-semibold mb-4" jhiTranslate="researchGroup.departments.images.section.upload"></h2>
+    @if (!canUpload()) {
+      <div class="mb-4">
+        <jhi-info-box [message]="'researchGroup.departments.images.empty.selectDepartment' | translate" severity="primary" />
+      </div>
+    } @else if (notInUseImages().length === 0) {
+      <div class="mb-4">
+        <jhi-info-box [message]="'researchGroup.departments.images.empty.upload' | translate" severity="primary" />
+      </div>
+    }
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+      @for (image of notInUseImages(); track image.imageId ?? $index) {
+        <div class="relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1 group">
+          <div class="relative rounded-lg overflow-hidden transition-colors aspect-video">
+            <img [src]="image.url" [alt]="'Department image'" class="w-full h-full object-cover" />
+            <div class="absolute top-2 right-2" (click)="$event.stopPropagation()">
+              <jhi-confirm-dialog
+                #deleteDialog
+                [label]="'button.delete' | translate"
+                [confirmIcon]="'trash'"
+                [header]="'researchGroup.departments.images.delete.title' | translate"
+                [message]="'researchGroup.departments.images.delete.message' | translate"
+                [data]="image.imageId"
+                (confirmed)="onDeleteImage($any($event))"
+                severity="danger"
+                [showOpenButton]="false"
+              />
+              <jhi-button
+                icon="trash"
+                size="sm"
+                [severity]="'danger'"
+                (click)="deleteDialog.confirm()"
+                class="opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (canUpload()) {
+        <jhi-image-upload-button
+          [uploadFn]="uploadDefaultImage"
+          (imageUploaded)="onImageUploaded($event)"
+          (uploadError)="onUploadError($event)"
+        />
+      }
+    </div>
+  </div>
 </div>
