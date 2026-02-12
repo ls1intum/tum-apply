@@ -4,7 +4,6 @@ import { of, throwError } from 'rxjs';
 import { DepartmentImages } from 'app/usermanagement/research-group/research-group-departments/department-images/department-images.component';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
-import { SelectOption } from 'app/shared/components/atoms/select/select.component';
 import { ImageUploadError } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
 import { provideTranslateMock } from 'util/translate.mock';
 import { provideToastServiceMock, createToastServiceMock } from 'util/toast-service.mock';
@@ -101,7 +100,7 @@ describe('DepartmentImages', () => {
       routeMock.setQueryParams({ departmentId: 'd1' });
       await createComponent();
 
-      const option: SelectOption = { name: 'Dept 2', value: 'd2' };
+      const option = { name: 'Dept 2', value: 'd2' };
       component.selectedDepartment.set(option);
       mockImageService.getDefaultJobBanners.mockClear();
 
@@ -129,7 +128,7 @@ describe('DepartmentImages', () => {
     it('updates selection and loads images on department change', async () => {
       await createComponent();
 
-      const option: SelectOption = { name: 'Dept 1', value: 'd1' };
+      const option = { name: 'Dept 1', value: 'd1' };
       const loadSpy = vi.spyOn(component, 'loadDefaultImages').mockResolvedValue();
 
       component.onDepartmentChange(option);
@@ -153,7 +152,7 @@ describe('DepartmentImages', () => {
 
     it('loads images for the selected department', async () => {
       await createComponent();
-      const option: SelectOption = { name: 'Dept 1', value: 'd1' };
+      const option = { name: 'Dept 1', value: 'd1' };
       component.selectedDepartment.set(option);
       mockImageService.getDefaultJobBanners.mockReturnValue(of([imageInUse, imageNotInUse]));
 
@@ -165,7 +164,7 @@ describe('DepartmentImages', () => {
 
     it('shows an error toast when loading images fails', async () => {
       await createComponent();
-      const option: SelectOption = { name: 'Dept 1', value: 'd1' };
+      const option = { name: 'Dept 1', value: 'd1' };
       component.selectedDepartment.set(option);
       mockImageService.getDefaultJobBanners.mockReturnValue(throwError(() => new Error('Error')));
 
@@ -192,7 +191,7 @@ describe('DepartmentImages', () => {
 
     it('uploads a default image for the selected department', async () => {
       await createComponent();
-      const option: SelectOption = { name: 'Dept 1', value: 'd1' };
+      const option = { name: 'Dept 1', value: 'd1' };
       const file = createFile();
       component.selectedDepartment.set(option);
 

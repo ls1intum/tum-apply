@@ -18,11 +18,11 @@ import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
-type DepartmentSelectOption = {
+interface DepartmentSelectOption {
   name: string;
   value: string;
   icon?: string;
-};
+}
 
 @Component({
   selector: 'jhi-department-images',
