@@ -16,10 +16,12 @@ import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.serv
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
+import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 
 @Component({
   selector: 'jhi-department-images',
   imports: [
+    ButtonComponent,
     BackButtonComponent,
     TranslateDirective,
     TranslateModule,
