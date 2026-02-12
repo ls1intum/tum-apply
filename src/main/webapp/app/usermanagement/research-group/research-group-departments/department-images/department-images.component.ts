@@ -9,7 +9,7 @@ import {
   ImageUploadButtonComponent,
   ImageUploadError,
 } from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
-import { SelectComponent, SelectOption } from 'app/shared/components/atoms/select/select.component';
+import { SelectComponent } from 'app/shared/components/atoms/select/select.component';
 import TranslateDirective from 'app/shared/language/translate.directive';
 import { ImageDTO } from 'app/generated/model/imageDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
@@ -17,6 +17,11 @@ import { DepartmentResourceApiService } from 'app/generated/api/departmentResour
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { ToastService } from 'app/service/toast-service';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+
+type DepartmentSelectOption = {
+  name: string;
+  value: string | number;
+};
 
 @Component({
   selector: 'jhi-department-images',
@@ -35,9 +40,10 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 export class DepartmentImages {
   readonly defaultImages = signal<ImageDTO[]>([]);
   readonly departments = signal<DepartmentDTO[]>([]);
-  readonly selectedDepartment = signal<SelectOption | undefined>(undefined);
+  readonly emptyDepartmentOption: DepartmentSelectOption = { name: '', value: '' };
+  readonly selectedDepartment = signal<DepartmentSelectOption>(this.emptyDepartmentOption);
 
-  readonly departmentOptions = computed<SelectOption[]>(() =>
+  readonly departmentOptions = computed<DepartmentSelectOption[]>(() =>
     this.departments()
       .map(department => ({
         name: department.name ?? '',
@@ -47,10 +53,7 @@ export class DepartmentImages {
       .sort((a, b) => a.name.localeCompare(b.name)),
   );
 
-  readonly selectedDepartmentId = computed(() => {
-    const value = this.selectedDepartment()?.value;
-    return value === undefined ? '' : String(value);
-  });
+  readonly selectedDepartmentId = computed(() => String(this.selectedDepartment().value));
   readonly canUpload = computed(() => this.selectedDepartmentId() !== '');
   readonly inUseImages = computed(() => this.defaultImages().filter(image => image.isInUse === true));
   readonly notInUseImages = computed(() => this.defaultImages().filter(image => image.isInUse !== true));
@@ -77,7 +80,7 @@ export class DepartmentImages {
     }
   }
 
-  onDepartmentChange(selection: SelectOption | undefined): void {
+  onDepartmentChange(selection: DepartmentSelectOption): void {
     this.selectedDepartment.set(selection);
     void this.loadDefaultImages();
   }
@@ -130,7 +133,7 @@ export class DepartmentImages {
 
   private applyPreselectedDepartment(): void {
     const departmentId = this.preselectedDepartmentId();
-    if (departmentId === '' || this.selectedDepartment() != null) {
+    if (departmentId === '' || this.selectedDepartmentId() !== '') {
       return;
     }
 

@@ -84,7 +84,7 @@ describe('DepartmentImages', () => {
 
       await createComponent();
 
-      expect(component.selectedDepartment()).toBeUndefined();
+      expect(component.selectedDepartmentId()).toBe('');
       expect(mockImageService.getDefaultJobBanners).not.toHaveBeenCalled();
     });
 
@@ -142,7 +142,7 @@ describe('DepartmentImages', () => {
     it('clears images when no department is selected', async () => {
       await createComponent();
       component.defaultImages.set([imageInUse]);
-      component.selectedDepartment.set(undefined);
+      component.selectedDepartment.set(component.emptyDepartmentOption);
 
       await component.loadDefaultImages();
 
@@ -178,7 +178,7 @@ describe('DepartmentImages', () => {
   describe('uploading', () => {
     it('blocks upload when no department is selected', async () => {
       await createComponent();
-      component.selectedDepartment.set(undefined);
+      component.selectedDepartment.set(component.emptyDepartmentOption);
       const result = component.uploadDefaultImage(createFile());
       let completed = false;
 
