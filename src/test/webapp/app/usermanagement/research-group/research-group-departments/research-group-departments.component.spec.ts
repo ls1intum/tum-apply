@@ -260,7 +260,9 @@ describe('ResearchGroupDepartmentsComponent', () => {
       expect(items.length).toBe(2);
 
       items[0].command?.();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/departments/images']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/departments/images'], {
+        queryParams: { departmentId: '1' },
+      });
 
       items[1].command?.();
       expect(deleteDialog.confirm).toHaveBeenCalled();
