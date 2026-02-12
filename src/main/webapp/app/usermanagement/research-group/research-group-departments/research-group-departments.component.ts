@@ -108,7 +108,7 @@ export class ResearchGroupDepartmentsComponent {
 
     return [
       {
-        label: `${this.translationKey}.images.title`,
+        label: `${this.translationKey}.images.button`,
         icon: 'image',
         severity: 'primary',
         command: () => {
