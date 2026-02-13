@@ -17,5 +17,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NoUserDataExportRequired {
+    /**
+     * Provides the reason why a field or entity is excluded from user data export.
+     *
+     * @return a string describing the justification for excluding this element from data export
+     */
     String reason();
 }

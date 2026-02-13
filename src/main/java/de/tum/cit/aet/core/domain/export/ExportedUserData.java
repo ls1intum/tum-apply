@@ -17,5 +17,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExportedUserData {
+    /**
+     * Specifies the type of user data export provider that generated this exported user data.
+     *
+     * @return the export provider type
+     */
     UserDataExportProviderType by();
 }
