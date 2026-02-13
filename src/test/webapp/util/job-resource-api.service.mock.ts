@@ -10,6 +10,7 @@ export type JobResourceApiServiceMock = {
   createJob: ReturnType<typeof vi.fn>;
   updateJob: ReturnType<typeof vi.fn>;
   deleteJob: ReturnType<typeof vi.fn>;
+  changeJobState: ReturnType<typeof vi.fn>;
 };
 
 export function createJobResourceApiServiceMock(): JobResourceApiServiceMock {
@@ -21,6 +22,7 @@ export function createJobResourceApiServiceMock(): JobResourceApiServiceMock {
     createJob: vi.fn(),
     updateJob: vi.fn(),
     deleteJob: vi.fn(),
+    changeJobState: vi.fn(),
   };
 }
 
