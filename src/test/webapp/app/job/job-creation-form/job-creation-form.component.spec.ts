@@ -93,7 +93,7 @@ type ComponentPrivate = {
   savingStatePanel: () => object;
   extractJobDescriptionFromStream: (content: string) => string | null;
   unescapeJsonString: (str: string) => string;
-  loadSupervisingProfessors: (preselectId?: string) => Promise<void>;
+  loadSupervisingProfessors: () => Promise<void>;
   setDefaultSupervisingProfessor: (preselectId?: string) => void;
   preferredSupervisingProfessorId: () => string | undefined;
 };
@@ -143,7 +143,7 @@ describe('JobCreationFormComponent', () => {
     mockAiStreamingService = createAiStreamingServiceMock();
     mockAiStreamingService.generateJobApplicationDraftStream.mockResolvedValue('{"jobDescription":"<p>Generated content</p>"}');
     mockResearchGroupService = createResearchGroupResourceApiServiceMock();
-    mockResearchGroupService.getResearchGroupMembers.mockReturnValue(of({ content: [] }));
+    mockResearchGroupService.getResearchGroupProfessors.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [JobCreationFormComponent],
@@ -431,24 +431,35 @@ describe('JobCreationFormComponent', () => {
   });
 
   describe('Supervising Professor Selection', () => {
-    it('should load research group professors, sort them, and preselect the first option', async () => {
-      mockResearchGroupService.getResearchGroupMembers.mockReturnValueOnce(
-        of({
-          content: [
-            { userId: 'p2', firstName: 'Beta', lastName: 'Professor', roles: ['PROFESSOR'] },
-            { userId: 'p1', firstName: 'Alpha', lastName: 'Professor', roles: ['PROFESSOR'] },
-            { userId: 's1', firstName: 'Student', lastName: 'Member', roles: ['STUDENT'] },
-          ],
-        }),
+    it('should load research group professors and sort them', async () => {
+      mockResearchGroupService.getResearchGroupProfessors.mockReturnValueOnce(
+        of([
+          { userId: 'p2', firstName: 'Beta', lastName: 'Professor', roles: ['PROFESSOR'] },
+          { userId: 'p1', firstName: 'Alpha', lastName: 'Professor', roles: ['PROFESSOR'] },
+          { userId: 's1', firstName: 'Student', lastName: 'Member', roles: ['STUDENT'] },
+        ]),
       );
 
       await getPrivate(component).loadSupervisingProfessors();
 
-      expect(mockResearchGroupService.getResearchGroupMembers).toHaveBeenCalledWith(100, 0);
+      expect(mockResearchGroupService.getResearchGroupProfessors).toHaveBeenCalled();
       expect(component.supervisingProfessorOptions()).toEqual([
         { value: 'p1', name: 'Alpha Professor' },
         { value: 'p2', name: 'Beta Professor' },
       ]);
+    });
+
+    it('should preselect the first option when applying default selection', async () => {
+      mockResearchGroupService.getResearchGroupProfessors.mockReturnValueOnce(
+        of([
+          { userId: 'p2', firstName: 'Beta', lastName: 'Professor', roles: ['PROFESSOR'] },
+          { userId: 'p1', firstName: 'Alpha', lastName: 'Professor', roles: ['PROFESSOR'] },
+        ]),
+      );
+
+      await getPrivate(component).loadSupervisingProfessors();
+      getPrivate(component).setDefaultSupervisingProfessor();
+
       expect(component.basicInfoForm.get('supervisingProfessor')?.value).toEqual({ value: 'p1', name: 'Alpha Professor' });
     });
 

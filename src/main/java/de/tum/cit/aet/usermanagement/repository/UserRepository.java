@@ -62,6 +62,21 @@ public interface UserRepository extends TumApplyJpaRepository<User, UUID> {
     Page<UUID> findUserIdsByResearchGroupId(@Param("researchGroupId") UUID researchGroupId, Pageable pageable);
 
     /**
+     * Finds all user IDs by research group ID.
+     *
+     * @param researchGroupId the research group ID
+     * @return list of user IDs in the research group
+     */
+    @Query(
+        """
+            SELECT DISTINCT u.userId FROM User u
+            JOIN u.researchGroupRoles rgr
+            WHERE rgr.researchGroup.researchGroupId = :researchGroupId
+        """
+    )
+    List<UUID> findUserIdsByResearchGroupId(@Param("researchGroupId") UUID researchGroupId);
+
+    /**
      * Finds users by their IDs with eagerly loaded research group roles and research group.
      * If a currentUserId is provided (non-null), the result will order that user first
      * and then the rest alphabetically by first and last name. If currentUserId is null,

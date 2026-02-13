@@ -1006,15 +1006,15 @@ export class JobCreationFormComponent {
       }
       this.userId.set(userId);
 
-      await this.loadImages();
-
       const segments = await firstValueFrom(this.route.url);
       const mode = segments[1]?.path as JobFormMode;
+      const loadImagesPromise = this.loadImages();
 
       if (mode === 'create') {
         this.mode.set('create');
-        await this.loadSupervisingProfessors();
+        await Promise.all([loadImagesPromise, this.loadSupervisingProfessors()]);
         this.populateForm();
+        this.setDefaultSupervisingProfessor();
       } else {
         this.mode.set('edit');
         const jobId = this.route.snapshot.paramMap.get('job_id') ?? '';
@@ -1025,9 +1025,13 @@ export class JobCreationFormComponent {
         }
 
         this.jobId.set(jobId);
-        const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
-        await this.loadSupervisingProfessors(job.supervisingProfessor);
+        const [job] = await Promise.all([
+          firstValueFrom(this.jobResourceService.getJobById(jobId)),
+          loadImagesPromise,
+          this.loadSupervisingProfessors(),
+        ]);
         this.populateForm(job);
+        this.setDefaultSupervisingProfessor(job.supervisingProfessor);
 
         // prevent autosave from firing immediately after patching
         this.autoSaveInitialized = false;
@@ -1043,7 +1047,6 @@ export class JobCreationFormComponent {
   /**
    * Populates all forms with initial/existing job data.
    * Sets up dual-language description signals.
-   * Also applies the preselected supervising professor when available.
    *
    * @param job - Optional existing job data (undefined for create mode)
    */
@@ -1062,18 +1065,11 @@ export class JobCreationFormComponent {
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
-      // Prefill supervising professor with job value, then fallback to form value (which may be preselected), then to preferred professor
-      supervisingProfessor: (() => {
-        if (!supervisingProfessorId) return supervisingProfessorId;
-        const match = this.supervisingProfessorOptions().find(opt => opt.value === supervisingProfessorId);
-        return match ?? supervisingProfessorId;
-      })(),
+      supervisingProfessor: supervisingProfessorId,
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: en,
     });
-
-    this.setDefaultSupervisingProfessor(supervisingProfessorId);
 
     this.jobDescriptionSignal.set(en);
     this.jobDescriptionEditor()?.forceUpdate(en);
@@ -1105,12 +1101,11 @@ export class JobCreationFormComponent {
 
   /**
    * Loads professors of the current research group for the supervising professor select.
-   * Applies a preselected supervisor when provided.
    */
-  private async loadSupervisingProfessors(preselectId?: string): Promise<void> {
+  private async loadSupervisingProfessors(): Promise<void> {
     try {
-      const response = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(100, 0));
-      const options = (response.content ?? [])
+      const response = await firstValueFrom(this.researchGroupService.getResearchGroupProfessors());
+      const options = response
         .filter(member => (member.roles ?? []).includes('PROFESSOR') && member.userId)
         .map(member => {
           const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
@@ -1121,7 +1116,6 @@ export class JobCreationFormComponent {
         .sort((a, b) => a.name.localeCompare(b.name));
 
       this.supervisingProfessorOptions.set(options);
-      this.setDefaultSupervisingProfessor(preselectId);
     } catch {
       this.toastService.showErrorKey('toast.loadFailed');
     }

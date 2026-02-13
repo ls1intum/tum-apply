@@ -9,6 +9,7 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.PageDTO;
 import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.UserNotFoundException;
 import de.tum.cit.aet.core.service.CurrentUserService;
 import de.tum.cit.aet.core.service.ImageService;
 import de.tum.cit.aet.core.util.PageUtil;
@@ -309,7 +310,7 @@ public class JobService {
      *                               title
      * @return a page of {@link CreatedJobDTO} for the research group's jobs
      */
-    public Page<CreatedJobDTO> getJobsByProfessor(
+    public Page<CreatedJobDTO> getJobsForCurrentResearchGroup(
         PageDTO pageDTO,
         ProfessorJobsFilterDTO professorJobsFilterDTO,
         SortDTO sortDTO,
@@ -386,7 +387,7 @@ public class JobService {
      * @return the supervising professor's user ID
      */
     public UUID getSupervisingProfessorUserId(UUID jobId) {
-        return jobRepository.findSupervisingProfessorUserIdByJobId(jobId).orElseThrow(() -> EntityNotFoundException.forId("Job", jobId));
+        return jobRepository.findSupervisingProfessorUserIdByJobId(jobId).orElseThrow(() -> UserNotFoundException.forJobId(jobId));
     }
 
     /**
