@@ -1,5 +1,6 @@
 package de.tum.cit.aet.usermanagement.domain;
 
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Types;
@@ -18,6 +19,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Getter
 @Setter
 @Entity
+@NoUserDataExportRequired(reason = "Security one-time codes are not exported to users")
 @Table(
     name = "email_verification_otp",
     indexes = {

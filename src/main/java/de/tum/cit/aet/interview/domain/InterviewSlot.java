@@ -1,6 +1,8 @@
 package de.tum.cit.aet.interview.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
@@ -13,6 +15,7 @@ import lombok.Setter;
  * Each slot can be booked by exactly one interviewee.
  */
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.STAFF)
 @Table(name = "interview_slots")
 @Getter
 @Setter

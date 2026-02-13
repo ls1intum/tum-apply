@@ -3,6 +3,8 @@ package de.tum.cit.aet.job.domain;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
 import de.tum.cit.aet.core.domain.Image;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.constants.Campus;
 import de.tum.cit.aet.job.constants.FundingType;
 import de.tum.cit.aet.job.constants.JobState;
@@ -22,6 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.STAFF)
 @Table(name = "jobs")
 public class Job extends AbstractAuditingEntity {
 

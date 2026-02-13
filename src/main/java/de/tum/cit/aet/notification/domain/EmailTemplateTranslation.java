@@ -1,12 +1,14 @@
 package de.tum.cit.aet.notification.domain;
 
 import de.tum.cit.aet.core.constants.Language;
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@NoUserDataExportRequired(reason = "System template translations are not user-personal export data")
 @Table(
     name = "email_template_translations",
     uniqueConstraints = @UniqueConstraint(name = "uk_template_language", columnNames = { "email_template_id", "language" })

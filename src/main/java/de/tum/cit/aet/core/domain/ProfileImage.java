@@ -1,5 +1,6 @@
 package de.tum.cit.aet.core.domain;
 
+import de.tum.cit.aet.core.domain.export.NoUserDataExportRequired;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.Setter;
  * These images are personal and not shared with any group or department.
  */
 @Entity
+@NoUserDataExportRequired(reason = "Images are exported as binary files by UserExportZipWriter")
 @Getter
 @Setter
 @DiscriminatorValue("PROFILE_PICTURE")

@@ -1,5 +1,7 @@
 package de.tum.cit.aet.notification.domain;
 
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.persistence.*;
@@ -8,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.USER_SETTINGS)
 @Getter
 @Setter
 @Table(name = "email_settings", uniqueConstraints = { @UniqueConstraint(columnNames = { "user", "email_type" }) })
