@@ -29,6 +29,12 @@ import org.springframework.stereotype.Component;
 @AnalyzeClasses(packagesOf = TumApplyApp.class, importOptions = DoNotIncludeTests.class)
 class TechnicalStructureTest {
 
+    /**
+     * Enforces the layered architecture boundaries of the backend.
+     *
+     * This rule prevents unintended coupling between technical layers (Config, Web, Service, Security,
+     * Persistence, Domain, Dto) and keeps dependencies directional.
+     */
     // prettier-ignore
     @ArchTest
     static final ArchRule respectsTechnicalArchitectureLayers = layeredArchitecture()
@@ -55,6 +61,12 @@ class TechnicalStructureTest {
             UserRetentionProperties.class
         ));
 
+    /**
+     * Requires each JPA entity to explicitly decide whether it participates in user data export.
+     *
+     * Entities must declare exactly one intent via @ExportedUserData (included in export) or
+     * @NoUserDataExportRequired (explicitly excluded). This avoids silently missing entities in data exports.
+     */
     @ArchTest
     static final ArchRule entitiesMustDeclareDataExportDecision = classes()
         .that()
@@ -78,6 +90,12 @@ class TechnicalStructureTest {
             }
         );
 
+    /**
+     * Ensures exported entities reference a valid, executable export provider.
+     *
+     * For every entity annotated with @ExportedUserData, the configured provider type must resolve to a
+     * Spring @Component that implements UserDataSectionProvider.
+     */
     @ArchTest
     static final ArchRule exportedEntitiesMustReferenceComponentProvider = classes()
         .that()
