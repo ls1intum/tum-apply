@@ -3,14 +3,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ToastService } from 'app/service/toast-service';
 import { DividerModule } from 'primeng/divider';
 import { DialogModule } from 'primeng/dialog';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 import { FilterChange } from 'app/shared/components/atoms/filter-multiselect/filter-multiselect';
 import { Sort } from 'app/shared/components/atoms/sorting/sorting';
-import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 import { ApplicationCarouselComponent } from 'app/shared/components/organisms/application-carousel/application-carousel.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { ReviewDialogComponent } from 'app/shared/components/molecules/review-dialog/review-dialog.component';
@@ -25,12 +24,12 @@ import { ApplicationForApplicantDTO } from 'app/generated/model/applicationForAp
 import { ApplicationDocumentIdsDTO } from 'app/generated/model/applicationDocumentIdsDTO';
 import { ApplicantForApplicationDetailDTO } from 'app/generated/model/applicantForApplicationDetailDTO';
 import { displayGradeWithConversion } from 'app/core/util/grade-conversion';
+import LocalizedDatePipe from 'app/shared/pipes/localized-date.pipe';
 
 import TranslateDirective from '../../shared/language/translate.directive';
 import { Section } from '../../shared/components/atoms/section/section';
 import { SubSection } from '../../shared/components/atoms/sub-section/sub-section';
-import { DescItem, DescriptionList } from '../../shared/components/atoms/description-list/description-list';
-import { LinkList } from '../../shared/components/atoms/link-list/link-list';
+import { DescItem } from '../../shared/components/atoms/description-list/description-list';
 import { Prose } from '../../shared/components/atoms/prose/prose';
 import { DocumentSection } from '../../shared/components/organisms/document-section/document-section';
 import { availableStatusOptions, sortableFields } from '../filterSortOptions';
@@ -55,12 +54,11 @@ const CAROUSEL_SIZE = 7;
     TranslateDirective,
     Section,
     SubSection,
-    DescriptionList,
-    LinkList,
     Prose,
     DocumentSection,
     CommentSection,
     RatingSection,
+    FontAwesomeModule,
     LocalizedDatePipe,
   ],
   templateUrl: './application-detail.component.html',
@@ -105,7 +103,12 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
-    return state !== 'ACCEPTED' && state !== 'REJECTED';
+    return state === 'SENT' || state === 'IN_REVIEW';
+  });
+
+  readonly initials = computed<string>(() => {
+    const fullName = this.currentApplication()?.applicationDetailDTO.applicant?.user.name?.trim();
+    return this.calculateInitials(fullName);
   });
 
   isAlreadyInInterview = computed(() => {
@@ -163,7 +166,7 @@ export class ApplicationDetailComponent {
     await this.loadAllJobNames();
 
     const id = this.qpSignal().get('applicationId');
-    if (id) {
+    if (id !== null && id !== '') {
       void this.loadCarousel(id);
     } else {
       // Load initial batch of applications
@@ -331,7 +334,8 @@ export class ApplicationDetailComponent {
 
   async onAddToInterview(navigate: boolean): Promise<void> {
     const application = this.currentApplication();
-    if (!application?.jobId) {
+    const jobId = application?.jobId;
+    if (jobId === undefined || jobId === '' || application === undefined) {
       this.toastService.showErrorKey('evaluation.errors.noJobId');
       return;
     }
@@ -632,5 +636,18 @@ export class ApplicationDetailComponent {
         this.currentDocumentIds.set(ids);
       })
       .catch(() => this.toastService.showError({ summary: 'Error', detail: 'fetching the document ids for this application' }));
+  }
+
+  private calculateInitials(fullName: string | undefined): string {
+    if (fullName === undefined || fullName === '') {
+      return '?';
+    }
+    const nameParts = fullName.split(' ').filter(p => p.length > 0);
+    if (nameParts.length === 0) {
+      return '?';
+    }
+    const firstInitial = nameParts[0]?.charAt(0)?.toUpperCase() || '';
+    const lastInitial = nameParts[nameParts.length - 1]?.charAt(0)?.toUpperCase() || '';
+    return firstInitial + lastInitial;
   }
 }

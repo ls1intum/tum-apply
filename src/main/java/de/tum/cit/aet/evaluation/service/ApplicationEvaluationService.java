@@ -17,8 +17,13 @@ import de.tum.cit.aet.core.service.ZipExportService;
 import de.tum.cit.aet.core.util.FileUtil;
 import de.tum.cit.aet.core.util.OffsetPageRequest;
 import de.tum.cit.aet.evaluation.domain.ApplicationReview;
-import de.tum.cit.aet.evaluation.dto.*;
+import de.tum.cit.aet.evaluation.dto.AcceptDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationDetailListDTO;
+import de.tum.cit.aet.evaluation.dto.ApplicationEvaluationOverviewListDTO;
+import de.tum.cit.aet.evaluation.dto.EvaluationFilterDTO;
+import de.tum.cit.aet.evaluation.dto.RejectDTO;
 import de.tum.cit.aet.evaluation.repository.ApplicationEvaluationRepository;
+import de.tum.cit.aet.evaluation.repository.RatingRepository;
 import de.tum.cit.aet.job.constants.JobState;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.job.service.JobService;
@@ -31,14 +36,18 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +60,7 @@ public class ApplicationEvaluationService {
     private final ApplicationEvaluationRepository applicationEvaluationRepository;
     private final CurrentUserService currentUserService;
     private final ZipExportService zipExportService;
+    private final RatingRepository ratingRepository;
 
     private static final Set<ApplicationState> VIEWABLE_STATES = Set.of(
         ApplicationState.SENT,
@@ -254,7 +264,13 @@ public class ApplicationEvaluationService {
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
 
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
-        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, (int) idx, windowIndex);
+        return ApplicationEvaluationDetailListDTO.fromApplications(
+            applicationsPage,
+            totalRecords,
+            (int) idx,
+            windowIndex,
+            this::calculateAverageRating
+        );
     }
 
     /**
@@ -280,7 +296,13 @@ public class ApplicationEvaluationService {
         String searchQuery = filterDTO.getSearch();
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
         long totalRecords = getTotalRecords(researchGroupId, filterDTO.getFilters(), searchQuery);
-        return ApplicationEvaluationDetailListDTO.fromApplications(applicationsPage, totalRecords, null, null);
+        return ApplicationEvaluationDetailListDTO.fromApplications(
+            applicationsPage,
+            totalRecords,
+            null,
+            null,
+            this::calculateAverageRating
+        );
     }
 
     /**
@@ -429,5 +451,33 @@ public class ApplicationEvaluationService {
      */
     public List<String> getAllJobNames(UUID researchGroupId) {
         return applicationEvaluationRepository.findAllUniqueJobNames(researchGroupId);
+    }
+
+    /**
+     * Calculates the average rating for the given application.
+     *
+     * @param application the application for which to calculate the average rating
+     * @return the average rating, or null if no ratings exist
+     */
+    private Double calculateAverageRating(Application application) {
+        var ratings = ratingRepository.findByApplicationApplicationId(application.getApplicationId());
+        if (ratings.isEmpty()) {
+            return null;
+        }
+
+        double sum = ratings
+            .stream()
+            .map(rating -> rating.getRating())
+            .filter(Objects::nonNull)
+            .mapToInt(Integer::intValue)
+            .sum();
+
+        long count = ratings
+            .stream()
+            .map(rating -> rating.getRating())
+            .filter(Objects::nonNull)
+            .count();
+
+        return count > 0 ? sum / count : null;
     }
 }
