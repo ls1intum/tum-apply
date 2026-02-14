@@ -229,13 +229,12 @@
     "filters": {
       "filter": "Filter",
       "selected": "Selected",
+      "clearAll": "Clear All",
       "noResults": "No results found",
       "numberSelected": "{{selected}} selected",
       "apply": "Apply",
       "recordsFound": "{{count}} {{entity}} found"
     },
-    "filterBy": "Filter By:",
-    "sortBy": "Sort By:",
     "sorting": {
       "ascending": {
         "text": "Ascending (A-Z)",

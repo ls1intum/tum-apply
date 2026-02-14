@@ -1,36 +1,44 @@
 <div class="search-filter-sort-bar">
-  <div class="functionality-bar">
-    <p-iconfield iconPosition="left" class="min-w-[15%] flex-1">
-      <p-inputicon>
-        <fa-icon class="icon" [icon]="['fas', 'search']" />
-      </p-inputicon>
-      <input class="focus:ring-0" type="text" pInputText [placeholder]="searchText()" [(ngModel)]="inputText" (input)="onSearch()" />
-    </p-iconfield>
-    @if (filters().length > 0 || sortableFields()?.length) {
-      <div class="filter-sort flex items-center flex-wrap gap-4">
-        @if (filters().length > 0) {
-          <div class="group">
-            <span jhiTranslate="entity.filterBy"></span>
-            @for (filter of filters(); track filter.filterLabel) {
-              <jhi-filter-multiselect
-                [filterId]="filter.filterId"
-                [filterLabel]="filter.filterLabel"
-                [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
-                [filterOptions]="filter.filterOptions"
-                (filterChange)="onFilterChange($event)"
-                [shouldTranslateOptions]="filter.shouldTranslateOptions ?? false"
-              />
-            }
-          </div>
-        }
-        @if (sortableFields(); as fields) {
-          <div class="group">
-            <span jhiTranslate="entity.sortBy"></span>
-            <jhi-sorting [sortableFields]="fields" (sortChange)="onSortChange($event)" />
-          </div>
-        }
-      </div>
-    }
+  <div class="functionality-bar justify-between items-center">
+    <div class="flex flex-row items-center gap-2 flex-wrap">
+      <p-iconfield iconPosition="left">
+        <p-inputicon>
+          <fa-icon class="icon" size="sm" [icon]="['fas', 'search']" />
+        </p-inputicon>
+        <input
+          class="focus:ring-0"
+          type="text"
+          pInputText
+          [placeholder]="searchText()"
+          [(ngModel)]="inputText"
+          (input)="onSearch()"
+          pSize="small"
+        />
+      </p-iconfield>
+      @if (filters().length > 0 || sortableFields()?.length) {
+        <div class="filter-sort flex items-center flex-wrap sm:justify-between">
+          @if (filters().length > 0) {
+            <div class="flex gap-2">
+              @for (filter of filters(); track filter.filterLabel) {
+                <jhi-filter-multiselect
+                  [filterId]="filter.filterId"
+                  [filterLabel]="filter.filterLabel"
+                  [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
+                  [filterOptions]="filter.filterOptions"
+                  (filterChange)="onFilterChange($event)"
+                  [shouldTranslateOptions]="filter.shouldTranslateOptions ?? false"
+                />
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+    <div class="flex flex-row items-center gap-2">
+      @if (sortableFields(); as fields) {
+        <jhi-sorting [sortableFields]="fields" (sortChange)="onSortChange($event)" />
+      }
+    </div>
   </div>
   <div class="flex items-center gap-2">
     <div

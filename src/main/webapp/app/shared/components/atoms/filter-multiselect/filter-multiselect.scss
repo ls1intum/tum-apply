@@ -12,13 +12,31 @@
 
       .p-divider-content {
         background: var(--p-background-default);
+        width: 100%;
       }
     }
 
     .divider-text {
       font-size: 0.75rem;
       color: var(--p-text-primary);
+
+      &.clear-button {
+        cursor: pointer;
+        color: var(--p-primary-color);
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
+  }
+
+  .divider-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    width: 100%;
   }
 
   .p-checkbox {
@@ -30,6 +48,7 @@
       .p-checkbox-box {
         background: var(--p-primary-color);
         border-color: #fff;
+        border-radius: 0.25rem;
       }
 
       .p-checkbox-icon {
@@ -41,12 +60,14 @@
   .filter-button {
     display: flex;
     align-items: center;
-    padding: 0.5rem 0.75rem;
+    padding: 0.375rem 0.75rem;
     border: var(--p-border-default) solid 0.1rem;
     background: var(--p-background-default);
     border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: all 0.2s ease;
+    color: var(--p-text-secondary);
+    font-size: var(--p-select-sm-font-size);
 
     span {
       margin-right: 1rem;
@@ -61,13 +82,13 @@
     }
 
     &:hover {
-      border-color: var(--p-primary-color);
+      border-color: var(--p-neutral-hover-color-outlined);
     }
   }
 
   .filter-dropdown {
     position: absolute;
-    min-width: 12rem;
+    min-width: max-content;
     max-width: calc(100vw - 2rem);
     width: 100%;
     box-sizing: border-box;
@@ -109,14 +130,19 @@
         }
 
         .option-item {
+          margin: 0.25rem;
+          border-radius: 0.5rem;
           display: flex;
           align-items: center;
           padding: 0.5rem;
           cursor: pointer;
 
+          &.focused {
+            background: var(--p-primary-hover-color-outlined);
+          }
+
           &:hover {
-            background: var(--p-primary-color);
-            color: var(--p-text-on-primary);
+            background: var(--p-primary-hover-color-outlined);
           }
 
           .option-label {
@@ -164,5 +190,22 @@
         right: 0;
       }
     }
+  }
+}
+
+.compact-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  max-height: 1.1rem;
+  margin-left: -0.25rem;
+  margin-right: 0.25rem;
+  cursor: default;
+  color: var(--p-text-primary);
+  .p-chip-remove-icon {
+    width: 0.7rem;
+    height: 0.7rem;
+    cursor: pointer;
   }
 }

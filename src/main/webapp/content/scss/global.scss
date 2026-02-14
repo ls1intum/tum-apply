@@ -85,6 +85,9 @@
   background: var(--p-background-default);
   color: var(--p-datatable-row-color);
 }
+.p-datatable .p-datatable-thead {
+  position: inherit !important;
+}
 
 .selection-col {
   width: 5rem;
