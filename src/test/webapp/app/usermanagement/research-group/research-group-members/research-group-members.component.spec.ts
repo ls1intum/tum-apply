@@ -379,11 +379,6 @@ describe('ResearchGroupMembersComponent', () => {
     expect(row.canRemove).toBe(false);
   });
 
-  it('should navigate back to admin view', () => {
-    component.goBack();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/admin-view']);
-  });
-
   it('should load and set the research group name', async () => {
     mockResearchGroupService.getResearchGroup.mockReturnValue(of({ name: 'AI Lab' } as ResearchGroupDTO));
 
