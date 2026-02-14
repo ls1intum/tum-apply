@@ -31,12 +31,16 @@
 
   .p-select {
     background: var(--p-background-default);
+
+    &:hover {
+      border-color: var(--p-neutral-hover-color-outlined);
+    }
   }
 
   // Override primeng styling of border color when clicking on select field
   .p-select:not(.p-disabled).p-focus {
     box-shadow: none;
-    border: 0.1rem solid var(--p-primary-color);
+    border-color: var(--p-border-default);
   }
 
   // Override PrimeNG positioning and size of the clear ("X") icon
@@ -79,29 +83,28 @@
   }
 
   .p-select-option {
+    margin: 0.1rem 0.25rem;
+    border-radius: 0.5rem;
     background: var(--p-background-default);
 
     &:hover {
-      background-color: var(--p-primary-color);
-      color: var(--p-text-on-primary);
+      background: var(--p-primary-hover-color-outlined);
     }
 
     &.p-focus:not(.p-select-option-selected) {
       background: var(--p-background-default);
 
       &:hover {
-        background-color: var(--p-primary-color);
-        color: var(--p-text-on-primary);
+        background: var(--p-primary-hover-color-outlined);
       }
     }
 
     &.p-select-option-selected {
-      background: var(--p-background-surface-alt);
+      background: var(--p-primary-hover-color-outlined);
       color: var(--p-text-primary);
 
       &:hover {
-        background-color: var(--p-primary-color);
-        color: var(--p-text-on-primary);
+        background: var(--p-primary-hover-color-outlined);
       }
     }
   }

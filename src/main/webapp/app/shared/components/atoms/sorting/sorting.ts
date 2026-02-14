@@ -1,5 +1,6 @@
 import { Component, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { InputGroupModule } from 'primeng/inputgroup';
 
 import { SelectComponent, SelectOption } from '../select/select.component';
 import { ButtonComponent } from '../button/button.component';
@@ -19,7 +20,7 @@ export type SortDirection = 'ASC' | 'DESC';
 
 @Component({
   selector: 'jhi-sorting',
-  imports: [SelectComponent, ButtonComponent],
+  imports: [SelectComponent, ButtonComponent, InputGroupModule],
   templateUrl: './sorting.html',
   styleUrl: './sorting.scss',
   encapsulation: ViewEncapsulation.None,
