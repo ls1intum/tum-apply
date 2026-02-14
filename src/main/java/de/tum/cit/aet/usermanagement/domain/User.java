@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.core.domain.AbstractAuditingEntity;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import de.tum.cit.aet.job.domain.Job;
 import de.tum.cit.aet.notification.domain.EmailSetting;
 import jakarta.persistence.*;
@@ -20,6 +22,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.USER_SETTINGS)
 @Table(name = "users")
 public class User extends AbstractAuditingEntity {
 

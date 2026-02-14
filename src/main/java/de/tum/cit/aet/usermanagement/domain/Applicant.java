@@ -1,6 +1,8 @@
 package de.tum.cit.aet.usermanagement.domain;
 
 import de.tum.cit.aet.application.domain.Application;
+import de.tum.cit.aet.core.domain.export.ExportedUserData;
+import de.tum.cit.aet.core.domain.export.UserDataExportProviderType;
 import jakarta.persistence.*;
 import java.util.Set;
 import java.util.UUID;
@@ -13,6 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@ExportedUserData(by = UserDataExportProviderType.APPLICANT)
 @Table(name = "applicants")
 public class Applicant {
 
