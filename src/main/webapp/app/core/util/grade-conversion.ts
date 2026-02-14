@@ -1,4 +1,4 @@
-import { isLetter, isNumeric, isPercentage, parseNumeric } from './grade-format.validator';
+import { getGradeType, stripPercentage } from 'app/shared/util/grading-scale.utils';
 
 /**
  * Converts a grade to the German grading system (1.0 - 4.0) using the modified Bavarian formula.
@@ -16,26 +16,28 @@ import { isLetter, isNumeric, isPercentage, parseNumeric } from './grade-format.
  * @returns The converted grade in German system (1.0 - 4.0) or null if conversion fails
  */
 export function convertToGermanGrade(upperLimit: string, lowerLimit: string, grade: string): number | null {
-  if (!upperLimit || !lowerLimit || !grade) {
+  if (!upperLimit.trim() || !lowerLimit.trim() || !grade.trim()) {
     return null;
   }
+
+  const gradeType = getGradeType(grade);
 
   // Determine the format type
   let nMax: number;
   let nMin: number;
   let nd: number;
 
-  if (isPercentage(upperLimit) && isPercentage(lowerLimit) && isPercentage(grade)) {
+  if (gradeType === 'percentage') {
     // Percentage format (e.g., 100%, 50%)
-    nMax = parseNumeric(upperLimit);
-    nMin = parseNumeric(lowerLimit);
-    nd = parseNumeric(grade);
-  } else if (isNumeric(upperLimit) && isNumeric(lowerLimit) && isNumeric(grade)) {
+    nMax = parseFloat(stripPercentage(upperLimit).replace(',', '.'));
+    nMin = parseFloat(stripPercentage(lowerLimit).replace(',', '.'));
+    nd = parseFloat(stripPercentage(grade).replace(',', '.'));
+  } else if (gradeType === 'numeric') {
     // Numeric format (e.g., 1.0, 4.0 or 100, 40)
-    nMax = parseNumeric(upperLimit);
-    nMin = parseNumeric(lowerLimit);
-    nd = parseNumeric(grade);
-  } else if (isLetter(grade)) {
+    nMax = parseFloat(upperLimit.replace(',', '.'));
+    nMin = parseFloat(lowerLimit.replace(',', '.'));
+    nd = parseFloat(grade.replace(',', '.'));
+  } else if (gradeType === 'letter') {
     // Letter format (e.g., A+, A, B)
     // Convert letters to numerical values
     const letterValues = convertLettersToNumerical(upperLimit, lowerLimit, grade);
@@ -46,13 +48,11 @@ export function convertToGermanGrade(upperLimit: string, lowerLimit: string, gra
     nMin = letterValues.min;
     nd = letterValues.current;
   } else {
-    // Mixed or invalid format
     return null;
   }
 
-  // Validate that the grade is within the limits
-  const isInRange = validateGradeInRange(nMax, nMin, nd);
-  if (!isInRange) {
+  // Validate parsing was successful
+  if (isNaN(nMax) || isNaN(nMin) || isNaN(nd)) {
     return null;
   }
 
@@ -165,25 +165,6 @@ function generateLetterScale(upperLimit: string, lowerLimit: string): Map<string
 }
 
 /**
- * Validates that the grade is within the specified range.
- * Handles both ascending (1.0-4.0) and descending (100-40) scales.
- *
- * @param max - Upper limit value
- * @param min - Lower limit value
- * @param grade - Grade value to check
- * @returns true if grade is within range, false otherwise
- */
-function validateGradeInRange(max: number, min: number, grade: number): boolean {
-  if (max > min) {
-    // Descending scale (e.g., 100 to 40, or A+ to D where A+=1, D=5)
-    return grade >= min && grade <= max;
-  } else {
-    // Ascending scale (e.g., 1.0 to 4.0)
-    return grade >= max && grade <= min;
-  }
-}
-
-/**
  * Formats a German grade for display with one decimal place.
  *
  * @param grade - German grade (1.0 - 4.0)
@@ -211,7 +192,14 @@ export function convertAndFormatGermanGrade(
   lowerLimit: string | undefined,
   grade: string | undefined,
 ): string | null {
-  if (!upperLimit || !lowerLimit || !grade) {
+  if (
+    upperLimit === undefined ||
+    upperLimit === '' ||
+    lowerLimit === undefined ||
+    lowerLimit === '' ||
+    grade === undefined ||
+    grade === ''
+  ) {
     return null;
   }
 
@@ -232,7 +220,7 @@ export function displayGradeWithConversion(
   lowerLimit: string | undefined,
   grade: string | undefined,
 ): string {
-  if (!grade) {
+  if (grade === undefined || grade === '') {
     return '';
   }
 

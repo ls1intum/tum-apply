@@ -122,10 +122,7 @@
         "email": "Ungültige Email-Adresse.",
         "min": "Dieses Feld muss mind. {{min}} sein.",
         "max": "Dieses Feld darf max. {{max}} sein.",
-        "tooManyDecimals": "Bitte gib höchstens zwei Dezimalstellen an.",
-        "invalidGrade": "Bitte gib die Note als positive Zahl, Prozentwert oder Buchstabe an.",
-        "formatMismatch": "Bitte gib alle Werte im gleichen Forrmat ein.",
-        "boundaryMismatch": "Die höchstmögliche Note muss besser sein als die niedrigste Note zum Bestehen.",
+        "invalidLimitType": "Bitte verwende dasselbe Format wie die Note.",
         "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
       }
     },
@@ -401,9 +398,13 @@
         "masterDegreeUniversity": "Universität des Masters",
         "masterGrade": "Master-Abschlussnote"
       },
+      "helperText": {
+        "gradingScale": "Skala: {{upperLimit}} (beste) bis {{lowerLimit}} (bestanden)",
+        "changeScale": "Skala ändern"
+      },
       "tooltip": {
-        "bachelorGradeUpperLimit": "Gib die bestmögliche Note in deinem Bachelor-Notensystem an (z. B. 1,0 in Deutschland).",
-        "bachelorGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Bachelor-Notensystem an (z. B. 4,0 in Deutschland).",
+        "gradeUpperLimit": "Gib die bestmögliche Note in deinem Notensystem an (z. B. 1,0 in Deutschland).",
+        "gradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Notensystem an (z. B. 4,0 in Deutschland).",
         "bachelorGrade": "Gib deine Abschlussnote laut der Notenskala deiner Universität an.",
         "masterGradeUpperLimit": "Gib die bestmögliche Note in deinem Master-Notensystem an (z. B. 1,0 in Deutschland).",
         "masterGradeLowerLimit": "Gib die niedrigste Note zum Bestehen in deinem Master-Notensystem an (z. B. 4,0 in Deutschland).",

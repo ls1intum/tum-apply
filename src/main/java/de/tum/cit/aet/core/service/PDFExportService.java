@@ -106,11 +106,17 @@ public class PDFExportService {
             .startInfoSection(labels.get("bachelorInfo"))
             .addSectionData(labels.get("degreeName"), getValue(app.applicant().bachelorDegreeName()))
             .addSectionData(labels.get("university"), getValue(app.applicant().bachelorUniversity()))
-            // .addSectionData(labels.get("upperGradeLimit"),
-            // getValue(app.applicant().bachelorGradeUpperLimit()))
-            // .addSectionData(labels.get("lowerGradeLimit"),
-            // getValue(app.applicant().bachelorGradeLowerLimit()))
             .addSectionData(labels.get("grade"), getValue(app.applicant().bachelorGrade()));
+        if (
+            app.applicant().bachelorGradeUpperLimit() != null &&
+            !app.applicant().bachelorGradeUpperLimit().isBlank() &&
+            app.applicant().bachelorGradeLowerLimit() != null &&
+            !app.applicant().bachelorGradeLowerLimit().isBlank()
+        ) {
+            builder
+                .addSectionData(labels.get("upperGradeLimit"), getValue(app.applicant().bachelorGradeUpperLimit()))
+                .addSectionData(labels.get("lowerGradeLimit"), getValue(app.applicant().bachelorGradeLowerLimit()));
+        }
 
         // Master Section
         if (app.applicant().masterDegreeName() != null) {
@@ -118,11 +124,17 @@ public class PDFExportService {
                 .startInfoSection(labels.get("masterInfo"))
                 .addSectionData(labels.get("degreeName"), getValue(app.applicant().masterDegreeName()))
                 .addSectionData(labels.get("university"), getValue(app.applicant().masterUniversity()))
-                // .addSectionData(labels.get("upperGradeLimit"),
-                // getValue(app.applicant().masterGradeUpperLimit()))
-                // .addSectionData(labels.get("lowerGradeLimit"),
-                // getValue(app.applicant().masterGradeLowerLimit()))
                 .addSectionData(labels.get("grade"), getValue(app.applicant().masterGrade()));
+            if (
+                app.applicant().masterGradeUpperLimit() != null &&
+                !app.applicant().masterGradeUpperLimit().isBlank() &&
+                app.applicant().masterGradeLowerLimit() != null &&
+                !app.applicant().masterGradeLowerLimit().isBlank()
+            ) {
+                builder
+                    .addSectionData(labels.get("upperGradeLimit"), getValue(app.applicant().masterGradeUpperLimit()))
+                    .addSectionData(labels.get("lowerGradeLimit"), getValue(app.applicant().masterGradeLowerLimit()));
+            }
         }
 
         // Metadata

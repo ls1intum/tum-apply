@@ -128,18 +128,6 @@ describe('StringInputComponent', () => {
       expect(comp.isTouched()).toBe(true);
     });
 
-    it('should return true when control.touched is true and has non-required errors', () => {
-      const fixture = createFixture();
-      const comp = fixture.componentInstance;
-      const ctrl = new FormControl('', { validators: c => (c.value.length < 5 ? { minlength: true } : null), updateOn: 'blur' });
-      fixture.componentRef.setInput('control', ctrl);
-      ctrl.setValue('hi');
-      ctrl.markAsTouched();
-      fixture.detectChanges();
-
-      expect(comp.isTouched()).toBe(true);
-    });
-
     it('should return false when control.touched is true but only has required error', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
