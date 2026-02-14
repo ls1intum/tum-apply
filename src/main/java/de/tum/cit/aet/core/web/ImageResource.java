@@ -4,6 +4,7 @@ import de.tum.cit.aet.core.domain.Image;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrAdmin;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployeeOrAdmin;
 import de.tum.cit.aet.core.service.ImageService;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ImageResource {
     public ResponseEntity<List<ImageDTO>> getDefaultJobBanners(@RequestParam(required = false) UUID departmentId) {
         log.info("GET /api/images/defaults/job-banners?departmentId={}", departmentId);
         List<? extends Image> images = imageService.getDefaultJobBanners(departmentId);
-        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        List<ImageDTO> dtos = imageService.toImageDTOsWithUsageInfo(images);
         return ResponseEntity.ok(dtos);
     }
 
@@ -55,12 +56,12 @@ public class ImageResource {
      *
      * @return a list of default job banner images for the current user's department
      */
-    @ProfessorOrEmployeeOrAdmin
+    @ProfessorOrEmployee
     @GetMapping("/defaults/job-banners/for-me")
     public ResponseEntity<List<ImageDTO>> getMyDefaultJobBanners() {
         log.info("GET /api/images/defaults/job-banners/for-me");
         List<? extends Image> images = imageService.getMyDefaultJobBanners();
-        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        List<ImageDTO> dtos = imageService.toImageDTOsWithUsageInfo(images);
         return ResponseEntity.ok(dtos);
     }
 
@@ -76,7 +77,7 @@ public class ImageResource {
     public ResponseEntity<List<ImageDTO>> getDefaultJobBannersBySchool(@RequestParam UUID schoolId) {
         log.info("GET /api/images/defaults/job-banners/by-school?schoolId={}", schoolId);
         List<? extends Image> images = imageService.getDefaultJobBannersBySchool(schoolId);
-        List<ImageDTO> dtos = images.stream().map(ImageDTO::fromEntity).toList();
+        List<ImageDTO> dtos = imageService.toImageDTOsWithUsageInfo(images);
         return ResponseEntity.ok(dtos);
     }
 
