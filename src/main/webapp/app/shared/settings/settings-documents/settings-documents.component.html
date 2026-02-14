@@ -1,0 +1,95 @@
+<form [formGroup]="form">
+  <div class="flex justify-between items-center mb-6">
+    <div [innerHTML]="('settings.documents.description' | translate).replace(/\n/g, '<br>')"></div>
+    <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" (click)="saveAll()" />
+  </div>
+  <p-divider layout="horizontal"><span jhiTranslate="settings.documents.sections.bachelor"></span></p-divider>
+
+  <div class="flex flex-col lg:flex-row lg:gap-8">
+    <div class="lg:w-1/2 w-full">
+      <div class="w-full mb-6">
+        <label>
+          <span jhiTranslate="settings.documents.labels.bachelorCertificate"></span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
+          />
+        </label>
+        <jhi-upload-button
+          uploadKey="entity.upload.upload_instruction.BACHELOR_TRANSCRIPT"
+          documentType="BACHELOR_TRANSCRIPT"
+          [applicationId]="mockApplicationId()"
+          [(documentIds)]="bachelorDocuments"
+        />
+      </div>
+    </div>
+
+    <div class="flex-1 flex flex-col">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.bachelorDegreeName' | translate }}"
+        [required]="true"
+        [control]="form.get('bachelorDegreeName') ?? undefined"
+      />
+
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.bachelorDegreeUniversity' | translate }}"
+        [required]="true"
+        [control]="form.get('bachelorDegreeUniversity') ?? undefined"
+      />
+
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.bachelorGrade' | translate }}"
+        [required]="true"
+        [control]="form.get('bachelorGrade') ?? undefined"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.bachelorGrade' | translate"
+      />
+    </div>
+  </div>
+
+  <p-divider layout="horizontal"><span jhiTranslate="settings.documents.sections.master"></span></p-divider>
+
+  <div class="flex flex-col lg:flex-row lg:gap-8">
+    <div class="lg:w-1/2 w-full">
+      <div class="w-full mb-6">
+        <label>
+          <span jhiTranslate="settings.documents.labels.masterCertificate"></span>
+          <fa-icon
+            class="icon"
+            [icon]="['fas', 'circle-info']"
+            [pTooltip]="'entity.applicationPage2.tooltip.filenamePrivacy' | translate"
+            tooltipPosition="top"
+          />
+        </label>
+        <jhi-upload-button
+          [applicationId]="mockApplicationId()"
+          documentType="MASTER_TRANSCRIPT"
+          uploadKey="entity.upload.upload_instruction.MASTER_TRANSCRIPT"
+          [(documentIds)]="masterDocuments"
+        />
+      </div>
+    </div>
+
+    <div class="flex-1 flex flex-col">
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.masterDegreeName' | translate }}"
+        [required]="true"
+        [control]="form.get('masterDegreeName') ?? undefined"
+      />
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.masterDegreeUniversity' | translate }}"
+        [required]="true"
+        [control]="form.get('masterDegreeUniversity') ?? undefined"
+      />
+      <jhi-string-input
+        label="{{ 'entity.applicationPage2.label.masterGrade' | translate }}"
+        [required]="true"
+        [control]="form.get('masterGrade') ?? undefined"
+        icon="circle-info"
+        [tooltipText]="'entity.applicationPage2.tooltip.masterGrade' | translate"
+      />
+    </div>
+  </div>
+</form>
