@@ -248,6 +248,32 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
         Pageable pageable
     );
 
+    /**
+     * Finds all booked future interview slots for a given research group.
+     * Used for the dashboard to display upcoming interviews for all members of the
+     * group.
+     *
+     * @param researchGroupId the research group ID to find slots for
+     * @param now             the current time (to filter out past slots)
+     * @param pageable        pagination information
+     * @return page of upcoming booked slots ordered by start time ascending
+     */
+    @Query(
+        """
+        SELECT s FROM InterviewSlot s
+        WHERE s.interviewProcess.job.researchGroup.researchGroupId = :researchGroupId
+        AND s.isBooked = true
+        AND s.endDateTime > :now
+        ORDER BY s.startDateTime ASC
+        """
+    )
+    @EntityGraph(attributePaths = { "interviewProcess", "interviewProcess.job", "interviewee", "interviewee.application.applicant" })
+    Page<InterviewSlot> findUpcomingBookedSlotsForResearchGroup(
+        @Param("researchGroupId") UUID researchGroupId,
+        @Param("now") Instant now,
+        Pageable pageable
+    );
+
     void deleteByIntervieweeApplication(Application application);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
