@@ -45,6 +45,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 
 class ApplicationResourceTest extends AbstractResourceTest {
@@ -75,6 +76,9 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
     @Autowired
     MvcTestClient api;
+
+    @Value("${aet.storage.root}")
+    private String storageRootConfig;
 
     ResearchGroup researchGroup;
     User professor;
@@ -397,6 +401,85 @@ class ApplicationResourceTest extends AbstractResourceTest {
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead("/api/applications/create/" + UUID.randomUUID(), null, ApplicationForApplicantDTO.class, 404);
         }
+
+        @Test
+        void createApplicationPrefillsDocumentsFromApplicantProfile() throws Exception {
+            // Upload documents to applicant profile
+            DocumentDictionary cvDoc = DocumentTestData.savedDictionaryWithDocument(
+                storageRootConfig,
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                "/testdocs/test-doc1.pdf",
+                "cv.pdf",
+                DocumentType.CV,
+                "cv.pdf"
+            );
+            DocumentDictionary referenceDoc = DocumentTestData.savedDictionaryWithDocument(
+                storageRootConfig,
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                "/testdocs/test-doc2.pdf",
+                "reference.pdf",
+                DocumentType.REFERENCE,
+                "reference.pdf"
+            );
+            DocumentDictionary bachelorDoc = DocumentTestData.savedDictionaryWithDocument(
+                storageRootConfig,
+                documentRepository,
+                documentDictionaryRepository,
+                applicant.getUser(),
+                null,
+                applicant,
+                "/testdocs/test-doc3.pdf",
+                "bachelor_transcript.pdf",
+                DocumentType.BACHELOR_TRANSCRIPT,
+                "bachelor_transcript.pdf"
+            );
+
+            // Create new application
+            ApplicationForApplicantDTO returnedApp = api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .postAndRead("/api/applications/create/" + publishedJob.getJobId(), null, ApplicationForApplicantDTO.class, 200);
+
+            assertThat(returnedApp.applicationId()).isNotNull();
+
+            // Verify documents were prefilled to the application
+            Set<DocumentDictionary> applicationCVs = documentDictionaryRepository.findByApplicationApplicationIdAndDocumentType(
+                returnedApp.applicationId(),
+                DocumentType.CV
+            );
+            assertThat(applicationCVs).hasSize(1);
+            assertThat(applicationCVs.iterator().next().getDocument().getDocumentId()).isEqualTo(cvDoc.getDocument().getDocumentId());
+
+            Set<DocumentDictionary> applicationReferences = documentDictionaryRepository.findByApplicationApplicationIdAndDocumentType(
+                returnedApp.applicationId(),
+                DocumentType.REFERENCE
+            );
+            assertThat(applicationReferences).hasSize(1);
+            assertThat(applicationReferences.iterator().next().getDocument().getDocumentId()).isEqualTo(
+                referenceDoc.getDocument().getDocumentId()
+            );
+
+            Set<DocumentDictionary> applicationBachelorTranscripts =
+                documentDictionaryRepository.findByApplicationApplicationIdAndDocumentType(
+                    returnedApp.applicationId(),
+                    DocumentType.BACHELOR_TRANSCRIPT
+                );
+            assertThat(applicationBachelorTranscripts).hasSize(1);
+            assertThat(applicationBachelorTranscripts.iterator().next().getDocument().getDocumentId()).isEqualTo(
+                bachelorDoc.getDocument().getDocumentId()
+            );
+
+            // Verify original applicant profile documents are still intact
+            Set<DocumentDictionary> applicantCVs = documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV);
+            assertThat(applicantCVs).hasSize(1);
+        }
     }
 
     // ===== UPDATE APPLICATION =====
@@ -432,6 +515,97 @@ class ApplicationResourceTest extends AbstractResourceTest {
             assertThat(updated.getProjects()).isEqualTo("Updated projects description");
             assertThat(updated.getSpecialSkills()).isEqualTo("Java, Kotlin, Spring Boot");
             assertThat(updated.getMotivation()).isEqualTo("I want to update my motivation");
+        }
+
+        @Test
+        void sendingApplicationSyncsDocumentsToApplicantProfile() throws Exception {
+            // Create application in SAVED state
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
+
+            // Attach a CV document to the application (not to the applicant profile)
+            DocumentDictionary appCv = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                professor,
+                application,
+                null,
+                DocumentType.CV,
+                "application_cv.pdf"
+            );
+
+            // Sanity: applicant profile initially has no CVs
+            assertThat(documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV)).isEmpty();
+
+            // Send the application (update state to SENT)
+            UpdateApplicationDTO updatePayload = new UpdateApplicationDTO(
+                application.getApplicationId(),
+                ApplicantDTO.getFromEntity(applicant),
+                null,
+                ApplicationState.SENT,
+                null,
+                null,
+                null
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
+
+            // After sending, the applicant profile should contain the CV from the application
+            Set<DocumentDictionary> applicantCvs = documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV);
+            assertThat(applicantCvs).hasSize(1);
+            assertThat(applicantCvs.iterator().next().getDocument().getDocumentId()).isEqualTo(appCv.getDocument().getDocumentId());
+        }
+
+        @Test
+        void sendingApplicationReplacesOldApplicantDocuments() throws Exception {
+            // Create an applicant profile CV that should be replaced
+            DocumentDictionary existingProfileCv = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                professor,
+                null,
+                applicant,
+                DocumentType.CV,
+                "profile_cv_old.pdf"
+            );
+
+            // Create application with a different CV
+            Application application = ApplicationTestData.saved(applicationRepository, publishedJob, applicant, ApplicationState.SAVED);
+            DocumentDictionary appCv = DocumentTestData.savedDictionaryWithMockDocument(
+                documentRepository,
+                documentDictionaryRepository,
+                professor,
+                application,
+                null,
+                DocumentType.CV,
+                "application_cv_new.pdf"
+            );
+
+            // Confirm pre-conditions
+            assertThat(documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV)).hasSize(1);
+
+            // Send the application
+            UpdateApplicationDTO updatePayload = new UpdateApplicationDTO(
+                application.getApplicationId(),
+                ApplicantDTO.getFromEntity(applicant),
+                null,
+                ApplicationState.SENT,
+                null,
+                null,
+                null
+            );
+
+            api
+                .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead("/api/applications", updatePayload, ApplicationForApplicantDTO.class, 200);
+
+            // After sending, profile CVs should contain only the application's CV
+            Set<DocumentDictionary> applicantCvs = documentDictionaryRepository.findByApplicantAndDocumentType(applicant, DocumentType.CV);
+            assertThat(applicantCvs).hasSize(1);
+            assertThat(applicantCvs.iterator().next().getDocument().getDocumentId()).isEqualTo(appCv.getDocument().getDocumentId());
+            // Old profile doc should no longer exist in the profile
+            assertThat(documentDictionaryRepository.existsById(existingProfileCv.getDocumentDictionaryId())).isFalse();
         }
 
         @Test
@@ -751,12 +925,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         void uploadDocumentsUploadsSuccessfully() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
 
-            MockMultipartFile file = new MockMultipartFile(
-                "files",
-                "bachelor_transcript.pdf",
-                "application/pdf",
-                "PDF content here".getBytes()
-            );
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "bachelor_transcript.pdf", "PDF content here");
 
             Set<DocumentInformationHolderDTO> uploadedDocs = api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -776,7 +945,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
 
         @Test
         void uploadDocumentsForNonexistentApplicationThrowsNotFound() {
-            MockMultipartFile file = new MockMultipartFile("files", "transcript.pdf", "application/pdf", "PDF content".getBytes());
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
             api
                 .with(JwtPostProcessors.jwtUser(applicant.getUserId(), "ROLE_APPLICANT"))
@@ -791,7 +960,7 @@ class ApplicationResourceTest extends AbstractResourceTest {
         @Test
         void uploadDocumentsWithoutAuthReturnsForbidden() {
             Application application = ApplicationTestData.savedSent(applicationRepository, publishedJob, applicant);
-            MockMultipartFile file = new MockMultipartFile("files", "transcript.pdf", "application/pdf", "PDF content".getBytes());
+            MockMultipartFile file = DocumentTestData.createMockPdfFile("files", "transcript.pdf", "PDF content");
 
             api.multipartPostAndRead(
                 "/api/applications/upload-documents/" + application.getApplicationId() + "/" + DocumentType.MASTER_TRANSCRIPT,
