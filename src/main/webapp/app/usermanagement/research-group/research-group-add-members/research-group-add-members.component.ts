@@ -8,10 +8,10 @@ import { ButtonComponent } from 'app/shared/components/atoms/button/button.compo
 import { KeycloakUserDTO, ResearchGroupResourceApiService, UserResourceApiService } from 'app/generated';
 import { lastValueFrom } from 'rxjs';
 import { ToastService } from 'app/service/toast-service';
-import { ConfirmDialog } from 'app/shared/components/atoms/confirm-dialog/confirm-dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
+import { InfoBoxComponent } from 'app/shared/components/atoms/info-box/info-box.component';
 
 const I18N_BASE = 'researchGroup.members';
 
@@ -23,9 +23,9 @@ const I18N_BASE = 'researchGroup.members';
     ButtonComponent,
     FormsModule,
     PaginatorModule,
-    ConfirmDialog,
     ProgressSpinnerModule,
     CheckboxComponent,
+    InfoBoxComponent,
   ],
   templateUrl: './research-group-add-members.component.html',
 })
