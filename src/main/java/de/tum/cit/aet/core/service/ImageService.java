@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.domain.ResearchGroupImage;
 import de.tum.cit.aet.core.dto.ImageDTO;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
 import de.tum.cit.aet.core.exception.EntityNotFoundException;
+import de.tum.cit.aet.core.exception.InternalServerException;
 import de.tum.cit.aet.core.exception.UploadException;
 import de.tum.cit.aet.core.repository.ImageRepository;
 import de.tum.cit.aet.job.repository.JobRepository;
@@ -564,5 +565,32 @@ public class ImageService {
             case PROFILE_PICTURE -> "profiles";
             case DEFAULT_JOB_BANNER -> "defaults";
         };
+    }
+
+    /**
+     * Retrieves the raw bytes of an image file for embedding in documents (e.g.,
+     * PDF export).
+     *
+     * @param imageId the ID of the image to retrieve
+     * @return the image file contents as a byte array
+     * @throws EntityNotFoundException if the image is not found
+     * @throws InternalServerException if the image file cannot be read
+     */
+    public byte[] getImageBytes(UUID imageId) {
+        Image image = imageRepository.findById(imageId).orElseThrow(() -> EntityNotFoundException.forId("Image", imageId));
+
+        String relativePath = image.getUrl().replace("/images/", "");
+        Path imagePath = imageRoot.resolve(relativePath).normalize();
+        Path normalizedRoot = imageRoot.normalize();
+
+        if (!imagePath.startsWith(normalizedRoot)) {
+            throw new IllegalStateException("Image path lies outside storage root: " + imagePath);
+        }
+
+        try {
+            return Files.readAllBytes(imagePath);
+        } catch (IOException e) {
+            throw new InternalServerException("Failed to read image file: " + imageId, e);
+        }
     }
 }

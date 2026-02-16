@@ -836,21 +836,14 @@ paths:
               schema:
                 type: array
                 items: {type: string}
-  /api/export/application/{id}/pdf:
+  /api/export/application/pdf:
     post:
       tags: [pdf-export-resource]
       operationId: exportApplicationToPDF
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema: {type: string, format: uuid}
       requestBody:
         content:
           application/json:
-            schema:
-              type: object
-              additionalProperties: {type: string}
+            schema: {$ref: '#/components/schemas/ApplicationPDFRequest'}
         required: true
       responses:
         '200':
@@ -2293,6 +2286,13 @@ components:
         jobId: {type: string, format: uuid}
         jobTitle: {type: string}
         researchGroup: {type: string}
+    ApplicationPDFRequest:
+      type: object
+      properties:
+        application: {$ref: '#/components/schemas/ApplicationDetailDTO'}
+        labels:
+          type: object
+          additionalProperties: {type: string}
     ApplicationReview:
       type: object
       properties:
@@ -2742,6 +2742,7 @@ components:
         endDate: {type: string, format: date}
         fieldOfStudies: {type: string}
         fundingType: {type: string}
+        imageId: {type: string, format: uuid}
         jobDescriptionDE: {type: string}
         jobDescriptionEN: {type: string}
         jobId: {type: string, format: uuid}

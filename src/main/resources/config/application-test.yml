@@ -118,5 +118,6 @@ jhipster:
 
 # Application specific properties:
 aet:
+  environment: test
   email:
     enabled: true
