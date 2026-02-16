@@ -39,7 +39,7 @@ export function getGradeType(value: string): GradeType {
 }
 
 /**
- * Strips the % sign from a percentage value
+ * Strips the first % sign from a percentage value
  */
 export function stripPercentage(value: string): string {
   return value.replace('%', '').trim();
