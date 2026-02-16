@@ -227,21 +227,22 @@ export function detectGradingScale(grade: string): GradingScaleLimitsResult {
 export function normalizeLimitsForGrade(grade: string, limits: GradingScaleLimitsData): GradingScaleLimitsData {
   const gradeType = getGradeType(grade);
 
+  const result: GradingScaleLimitsData = {
+    upperLimit: '',
+    lowerLimit: '',
+  };
+
   if (gradeType !== 'percentage') {
-    return {
-      ...limits,
-      upperLimit: stripPercentage(limits.upperLimit),
-      lowerLimit: stripPercentage(limits.lowerLimit),
-      isPercentage: false,
-    };
+    result.upperLimit = stripPercentage(limits.upperLimit);
+    result.lowerLimit = stripPercentage(limits.lowerLimit);
+    result.isPercentage = false;
+  } else {
+    result.upperLimit = addPercentage(stripPercentage(limits.upperLimit));
+    result.lowerLimit = addPercentage(stripPercentage(limits.lowerLimit));
+    result.isPercentage = true;
   }
 
-  return {
-    ...limits,
-    upperLimit: addPercentage(stripPercentage(limits.upperLimit)),
-    lowerLimit: addPercentage(stripPercentage(limits.lowerLimit)),
-    isPercentage: true,
-  };
+  return result;
 }
 
 /**
@@ -251,11 +252,11 @@ export function setControlError(control: AbstractControl, errorKey: string, hasE
   const currentErrors = control.errors ?? {};
 
   if (hasError) {
-    // Add the error
-    control.setErrors({ ...currentErrors, [errorKey]: true });
+    const errors = Object.assign({}, currentErrors);
+    errors[errorKey] = true;
+    control.setErrors(errors);
   } else {
-    // Remove the error
-    const errors = { ...currentErrors };
+    const errors = Object.fromEntries(Object.entries(currentErrors).filter(([key]) => key !== errorKey));
     control.setErrors(Object.keys(errors).length > 0 ? errors : null);
   }
 }
