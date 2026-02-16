@@ -122,7 +122,7 @@
         "email": "Ungültige Email-Adresse.",
         "min": "Dieses Feld muss mind. {{min}} sein.",
         "max": "Dieses Feld darf max. {{max}} sein.",
-        "invalidLimitType": "Bitte verwende dasselbe Format wie die Note.",
+        "invalidLimitType": "Bitte verwende dasselbe Format wie die eingegebene Note.",
         "outOfRange": "Die Note muss zwischen der höchstmöglichen und der niedrigsten Note zum Bestehen liegen."
       }
     },
