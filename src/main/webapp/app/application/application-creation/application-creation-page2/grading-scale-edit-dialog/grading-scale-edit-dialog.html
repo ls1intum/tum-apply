@@ -13,14 +13,13 @@
       </div>
 
       <!-- Exchange Icon Button -->
-      <button
-        type="button"
-        class="mt-7 p-2 rounded-lg hover:bg-background-surface-alt"
+      <jhi-button
+        variant="text"
+        class="mt-6"
         (click)="onSwap()"
         [attr.aria-label]="'entity.applicationPage2.gradingScaleDialog.swap' | translate"
-      >
-        <fa-icon [icon]="['fas', 'arrow-right-arrow-left']" class="text-info-default text-xl" />
-      </button>
+        icon="arrow-right-arrow-left"
+      />
 
       <!-- Lower Limit Input -->
       <div class="flex-1">
