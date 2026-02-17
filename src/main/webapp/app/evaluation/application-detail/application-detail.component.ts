@@ -103,7 +103,7 @@ export class ApplicationDetailComponent {
       return false;
     }
     const state = currentApplication.applicationDetailDTO.applicationState;
-    return state === 'SENT' || state === 'IN_REVIEW';
+    return state !== 'ACCEPTED' && state !== 'REJECTED';
   });
 
   readonly initials = computed<string>(() => {
@@ -442,6 +442,43 @@ export class ApplicationDetailComponent {
         applicationState: newState,
       },
     });
+  }
+
+  async onRatingUpdated(): Promise<void> {
+    const current = this.currentApplication();
+    if (!current) {
+      return;
+    }
+
+    const id = current.applicationDetailDTO.applicationId;
+
+    try {
+      // Fetch the updated application with server-calculated average rating
+      const result = await firstValueFrom(
+        this.evaluationResourceService.getApplicationsDetailsWindow(
+          id,
+          1, // windowSize = 1 to get just this application
+          this.sortBy(),
+          this.sortDirection(),
+          this.selectedStatusFilters().length ? this.selectedStatusFilters() : undefined,
+          this.selectedJobFilters().length ? this.selectedJobFilters() : undefined,
+          this.searchQuery() || undefined,
+        ),
+      );
+
+      const updated = result.applications?.[0];
+      if (!updated) {
+        return;
+      }
+
+      // Update applications array with refreshed data
+      this.applications.update(apps => apps.map(app => (app.applicationDetailDTO.applicationId === id ? updated : app)));
+
+      // Update current application
+      this.currentApplication.set(updated);
+    } catch {
+      // Silent fail - rating is already saved, this is just a UI refresh
+    }
   }
 
   /**

@@ -246,7 +246,7 @@
         <div class="grid gap-16 grid-cols-1 md:grid-cols-[3fr_7fr]">
           <div>
             <jhi-section titleKey="evaluation.details.ratingTitle" icon="star">
-              <jhi-rating-section [applicationId]="currentApplicationId()" />
+              <jhi-rating-section [applicationId]="currentApplicationId()" (ratingUpdated)="onRatingUpdated()" />
             </jhi-section>
           </div>
           <div>
