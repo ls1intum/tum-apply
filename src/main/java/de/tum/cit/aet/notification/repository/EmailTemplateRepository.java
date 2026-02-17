@@ -5,6 +5,7 @@ import de.tum.cit.aet.notification.constants.EmailType;
 import de.tum.cit.aet.notification.domain.EmailTemplate;
 import de.tum.cit.aet.notification.dto.EmailTemplateOverviewDTO;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
+import de.tum.cit.aet.usermanagement.domain.User;
 import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.Set;
@@ -12,6 +13,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -48,6 +50,16 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
         String templateName,
         EmailType emailType
     );
+
+    /**
+     * Finds the first {@link EmailTemplate} by email type.
+     * No collection fetch is used to avoid pagination+fetch join issues.
+     *
+     * @param emailType the type of email
+     * @return an {@link Optional} containing the matching email template, or empty if none found
+     */
+    @Query("SELECT et FROM EmailTemplate et WHERE et.emailType = :emailType ORDER BY et.emailTemplateId ASC")
+    Optional<EmailTemplate> findFirstByEmailType(@Param("emailType") EmailType emailType);
 
     /**
      * Retrieves a paginated list of {@link EmailTemplateOverviewDTO} projections for the given research group,
@@ -94,4 +106,15 @@ public interface EmailTemplateRepository extends TumApplyJpaRepository<EmailTemp
         """
     )
     Set<EmailType> findAllEmailTypesByResearchGroup(@Param("researchGroup") ResearchGroup researchGroup);
+
+    /**
+     * Anonymizes the {@code createdBy} user reference of all {@link EmailTemplate} entities created by the given user
+     * by updating the associated creator to the provided deleted user.
+     *
+     * @param user the user whose created email templates should be anonymized
+     * @param deletedUser the deleted user to set as the new creator for those templates
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE EmailTemplate et SET et.createdBy = :deletedUser WHERE et.createdBy = :user")
+    void anonymiseByCreatedBy(@Param("user") User user, @Param("deletedUser") User deletedUser);
 }

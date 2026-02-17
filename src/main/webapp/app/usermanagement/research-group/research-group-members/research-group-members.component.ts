@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ResearchGroupShortDTO, UserShortDTO } from 'app/generated/model/models';
@@ -38,6 +39,7 @@ interface MembersRow {
 @Component({
   selector: 'jhi-research-group-members',
   imports: [
+    BackButtonComponent,
     ButtonComponent,
     TranslateDirective,
     FontAwesomeModule,
@@ -78,14 +80,11 @@ export class ResearchGroupMembersComponent {
 
   // Transform members data for display
   readonly tableData = computed<MembersRow[]>(() => {
-    const currentUserAuthorities = this.accountService.userAuthorities;
-    const isEmployee = currentUserAuthorities?.includes(UserShortDTO.RolesEnum.Employee);
-
     return this.members().map((member): MembersRow => {
       const isCurrentUser = this.isCurrentUser(member);
       let canRemove = !isCurrentUser;
 
-      if (isEmployee) {
+      if (this.isEmployee()) {
         canRemove = false;
       }
 
@@ -103,6 +102,8 @@ export class ResearchGroupMembersComponent {
       };
     });
   });
+
+  readonly isEmployee = computed(() => this.accountService.userAuthorities?.includes(UserShortDTO.RolesEnum.Employee) ?? false);
 
   private researchGroupService = inject(ResearchGroupResourceApiService);
   private toastService = inject(ToastService);
@@ -176,6 +177,7 @@ export class ResearchGroupMembersComponent {
       closable: true,
       draggable: false,
       modal: true,
+      data: { researchGroupId: this.researchGroupId() },
     });
 
     ref?.onClose.subscribe((added: boolean) => {
@@ -183,10 +185,6 @@ export class ResearchGroupMembersComponent {
         void this.loadMembers();
       }
     });
-  }
-
-  goBack(): void {
-    void this.router.navigate(['/research-group/admin-view']);
   }
 
   /** Internal methods */

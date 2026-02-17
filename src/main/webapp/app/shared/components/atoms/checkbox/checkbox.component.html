@@ -1,18 +1,5 @@
 <div class="flex flex-col gap-1">
-  @if (label(); as label) {
-    <label class="text-sm font-medium text-primary" [for]="inputId()">
-      @if (shouldTranslate()) {
-        <span [jhiTranslate]="label"></span>
-      } @else {
-        {{ label }}
-      }
-      @if (required()) {
-        <span class="text-negative-default ml-0.5">*</span>
-      }
-    </label>
-  }
-
-  <div class="flex items-center gap-2" [class.border-negative-default]="inputState() === 'invalid' && !isFocused()">
+  <div class="flex items-center gap-1" [class.border-negative-default]="inputState() === 'invalid' && !isFocused()">
     @if (control()) {
       <p-checkbox
         [formControl]="formControl()"
@@ -36,14 +23,23 @@
       />
     }
 
-    @if (icon(); as icon) {
-      <span class="inline-flex">
-        @if (icon === 'circle-info' && tooltipText()) {
-          <fa-icon class="text-sm text-secondary cursor-pointer" [icon]="['fas', icon]" [pTooltip]="tooltipValue()" tooltipPosition="top" />
+    @if (label(); as label) {
+      <label class="text-text-primary ml-1" [for]="inputId()">
+        @if (shouldTranslate()) {
+          <span [jhiTranslate]="label"></span>
         } @else {
-          <fa-icon class="text-sm text-secondary" [icon]="['fas', icon]" />
+          {{ label }}
         }
-      </span>
+        @if (required()) {
+          <span class="text-negative-default ml-0.5">*</span>
+        }
+      </label>
+    }
+
+    @if (tooltipText(); as tooltip) {
+      <fa-icon class="icon" [icon]="['fas', 'circle-info']" [pTooltip]="tooltipValue()" tooltipPosition="top" />
+    } @else if (icon(); as icon) {
+      <fa-icon class="icon" [icon]="['fas', icon]" />
     }
   </div>
 

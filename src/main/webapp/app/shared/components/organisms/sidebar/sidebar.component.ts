@@ -103,8 +103,7 @@ export class SidebarComponent {
             { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
             { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
             { icon: 'create-job', text: 'sidebar.manage.createposition', link: '/job/create' },
-            // TODO: Uncomment when interview feature is fully implemented
-            // { icon: 'calendar-check', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
+            { icon: 'calendar', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
           ],
         },
         {
@@ -128,6 +127,7 @@ export class SidebarComponent {
             { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
             { icon: 'users', text: 'sidebar.researchgroup.yourmembers', link: '/research-group/members' },
             { icon: 'research-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
+            { icon: 'image', text: 'sidebar.researchgroup.imagelibrary', link: '/research-group/images' },
           ],
         },
       ],
@@ -137,6 +137,8 @@ export class SidebarComponent {
           buttons: [
             { icon: 'home', text: 'sidebar.manage.home', link: '/professor' },
             { icon: 'my-jobs', text: 'sidebar.manage.mypositions', link: '/my-positions' },
+            { icon: 'create-job', text: 'sidebar.manage.createposition', link: '/job/create' },
+            { icon: 'calendar', text: 'sidebar.manage.interviews', link: '/interviews/overview' },
           ],
         },
         {
@@ -158,6 +160,7 @@ export class SidebarComponent {
           title: 'sidebar.researchgroup.researchgroup',
           buttons: [
             { icon: 'envelope-open-text', text: 'sidebar.researchgroup.emailtemplates', link: '/research-group/templates' },
+            { icon: 'image', text: 'sidebar.researchgroup.imagelibrary', link: '/research-group/images' },
             { icon: 'users', text: 'sidebar.researchgroup.yourmembers', link: '/research-group/members' },
             { icon: 'research-group', text: 'sidebar.researchgroup.yourgroup', link: '/research-group/info' },
           ],

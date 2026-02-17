@@ -92,11 +92,6 @@ describe('JobDetailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call location.back on onBack()', () => {
-    component.onBack();
-    expect(location.back).toHaveBeenCalled();
-  });
-
   it('should navigate to apply form on onApply()', () => {
     component.jobId.set('job123');
     component.onApply();
@@ -401,6 +396,37 @@ describe('JobDetailComponent', () => {
     const result = component.noData();
     expect(result).toBe('No data');
     expect(spy).toHaveBeenCalledWith('jobDetailPage.noData');
+  });
+
+  it('should return English job description when current language is en', () => {
+    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as JobDetails;
+    translate.use('en');
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
+    expect(result).toBe('<p>English</p>');
+  });
+
+  it('should return German job description when current language is de', () => {
+    const job = { jobDescriptionEN: '<p>English</p>', jobDescriptionDE: '<p>Deutsch</p>' } as JobDetails;
+    translate.use('de');
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
+    expect(result).toBe('<p>Deutsch</p>');
+  });
+
+  it('should fall back to the other language when job description of current language is empty', () => {
+    const job = { jobDescriptionEN: '   ', jobDescriptionDE: '<p>Deutsch Fallback</p>' } as JobDetails;
+    translate.use('en');
+    component.jobDetails.set(job);
+    const result = component.jobDescriptionForCurrentLang();
+    expect(result).toBe('<p>Deutsch Fallback</p>');
+  });
+
+  it('should returns empty string when job is null or undefined', () => {
+    component.jobDetails.set(null);
+    expect(component.jobDescriptionForCurrentLang()).toBe('');
+    (component as any).jobDetails.set(undefined);
+    expect(component.jobDescriptionForCurrentLang()).toBe('');
   });
 
   it('should return null from primaryActionButton when previewData exists', () => {

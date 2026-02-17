@@ -236,7 +236,7 @@ describe('ApplicationDetailForApplicantComponent', () => {
     expect(toast.showErrorKey).toHaveBeenCalledWith('entity.toast.applyFlow.errorWithdrawingApplication');
   });
 
-  it('downloads PDF and uses filename from header', () => {
+  it('downloads PDF and uses filename from header', async () => {
     const { component, pdfExportService } = setupTest('APP10', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP10' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
@@ -259,14 +259,20 @@ describe('ApplicationDetailForApplicantComponent', () => {
     } as { headers: { get: (name: string) => string | null }; body: Blob };
     pdfExportService.exportApplicationToPDF.mockReturnValue(of(response));
 
-    component.onDownloadPDF();
+    await component.onDownloadPDF();
 
-    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalled();
+    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalledWith(
+      expect.objectContaining({
+        application: expect.any(Object),
+        labels: expect.any(Object),
+      }),
+      'response',
+    );
     expect(clickSpy).toHaveBeenCalled();
     expect((globalThis as unknown as { URL: { createObjectURL: Function } }).URL.createObjectURL).toHaveBeenCalled();
   });
 
-  it('falls back to default filename when header missing', () => {
+  it('falls back to default filename when header missing', async () => {
     const { component, pdfExportService } = setupTest('APP11', {
       getApplicationForDetailPage: vi.fn((applicationId: string) => of(makeDetail({ applicationId: 'APP11' }))),
       getDocumentDictionaryIds: vi.fn((applicationId: string) => of({} as ApplicationDocumentIdsDTO)),
@@ -276,8 +282,22 @@ describe('ApplicationDetailForApplicantComponent', () => {
     vi.spyOn(document, 'createElement').mockImplementation((tag: string) =>
       tag === 'a' ? (anchor as unknown as HTMLElement) : document.createElement(tag),
     );
-    pdfExportService.exportApplicationToPDF.mockReturnValue(of({ headers: { get: () => null }, body: new Blob(['c']) }));
-    component.onDownloadPDF();
+
+    const response = {
+      headers: { get: () => null },
+      body: new Blob(['c']),
+    };
+    pdfExportService.exportApplicationToPDF.mockReturnValue(of(response));
+
+    await component.onDownloadPDF();
+
+    expect(pdfExportService.exportApplicationToPDF).toHaveBeenCalledWith(
+      expect.objectContaining({
+        application: expect.any(Object),
+        labels: expect.any(Object),
+      }),
+      'response',
+    );
     expect(anchor.download).toBe('application.pdf');
   });
 

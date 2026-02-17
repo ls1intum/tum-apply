@@ -36,6 +36,13 @@ import { JobFormDTO } from 'app/generated/model/jobFormDTO';
 import { JobDTO } from 'app/generated/model/jobDTO';
 import { ImageResourceApiService } from 'app/generated/api/imageResourceApi.service';
 import { ImageDTO } from 'app/generated/model/imageDTO';
+import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
+import { extractCompleteHtmlTags, unescapeJsonString } from 'app/shared/util/util';
+import {
+  ImageUploadButtonComponent,
+  ImageUploadError,
+} from 'app/shared/components/atoms/image-upload-button/image-upload-button.component';
+import { CheckboxComponent } from 'app/shared/components/atoms/checkbox/checkbox.component';
 
 import { JobDetailComponent } from '../job-detail/job-detail.component';
 import * as DropdownOptions from '.././dropdown-options';
@@ -86,6 +93,8 @@ type JobFormMode = 'create' | 'edit';
     InfoBoxComponent,
     MessageComponent,
     SegmentedToggleComponent,
+    ImageUploadButtonComponent,
+    CheckboxComponent,
   ],
   providers: [JobResourceApiService],
 })
@@ -120,9 +129,6 @@ export class JobCreationFormComponent {
 
   /** Snapshot of the last successfully saved job data (used for change detection) */
   lastSavedData = signal<JobFormDTO | undefined>(undefined);
-
-  /** Tracks if the user has attempted to publish (triggers validation display) */
-  publishAttempted = signal<boolean>(false);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // JOB DESCRIPTION SIGNALS
@@ -170,7 +176,18 @@ export class JobCreationFormComponent {
   showAiPanel = computed(() => this.aiToggleSignal());
 
   /** Computed: returns the localized template text for manual job description */
-  templateText = computed(() => this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.template'));
+  templateText = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateEN')
+      : this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.templateDE'),
+  );
+
+  /** Computed: returns the placeholder key based on the editor's language toggle (not app locale) */
+  jobDescriptionPlaceholder = computed(() =>
+    this.currentDescriptionLanguage() === 'en'
+      ? 'jobCreationForm.positionDetailsSection.jobDescription.placeholderEN'
+      : 'jobCreationForm.positionDetailsSection.jobDescription.placeholderDE',
+  );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // IMAGE UPLOAD SIGNALS
@@ -194,21 +211,6 @@ export class JobCreationFormComponent {
     return image !== undefined && image.imageType !== 'DEFAULT_JOB_BANNER';
   });
 
-  /** Computed: CSS classes for the upload container based on upload state */
-  uploadContainerClasses = computed(() => {
-    if (this.isUploadingImage()) {
-      return 'relative rounded-lg transition-all opacity-50 pointer-events-none';
-    }
-    return 'relative rounded-lg transition-all cursor-pointer hover:shadow-lg hover:-translate-y-1';
-  });
-
-  /** Computed: CSS classes for the inner upload area */
-  uploadInnerClasses = computed(() => {
-    const base = 'aspect-video border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-all';
-    const hover = !this.isUploadingImage() ? 'hover:border-primary hover:bg-background-surface-alt' : '';
-    return `${base} border-border-default ${hover}`.trim();
-  });
-
   // ═══════════════════════════════════════════════════════════════════════════
   // DEPENDENCY INJECTION
   // ═══════════════════════════════════════════════════════════════════════════
@@ -224,6 +226,7 @@ export class JobCreationFormComponent {
   private toastService = inject(ToastService);
   private aiService = inject(AiResourceApiService);
   private aiStreamingService = inject(AiStreamingService);
+  private researchGroupService = inject(ResearchGroupResourceApiService);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FORM GROUPS
@@ -237,9 +240,6 @@ export class JobCreationFormComponent {
 
   /** Step 3: Image selection for job banner */
   imageForm = this.createImageForm();
-
-  /** Step 4: Additional info including privacy consent */
-  additionalInfoForm = this.createAdditionalInfoForm();
 
   // ═══════════════════════════════════════════════════════════════════════════
   // TEMPLATE REFERENCES (ViewChild)
@@ -291,11 +291,6 @@ export class JobCreationFormComponent {
 
   /** Signal that emits when positionDetailsForm status changes */
   positionDetailsChanges = toSignal(this.positionDetailsForm.statusChanges, { initialValue: this.positionDetailsForm.status });
-
-  /** Signal tracking the privacy consent checkbox state */
-  privacyAcceptedSignal = toSignal(this.additionalInfoForm.controls['privacyAccepted'].valueChanges, {
-    initialValue: this.additionalInfoForm.controls['privacyAccepted'].value,
-  });
 
   /**
    * Effect: Updates validity signals whenever form status changes.
@@ -401,6 +396,13 @@ export class JobCreationFormComponent {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // SUPERVISING PROFESSOR OPTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Professors belonging to the current research group */
+  supervisingProfessorOptions = signal<{ value: string; name: string }[]>([]);
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // FORM VALUE SIGNALS (for change detection)
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -437,21 +439,7 @@ export class JobCreationFormComponent {
   /** Flag to prevent auto-save from triggering during initial form population */
   private autoSaveInitialized = false;
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // IMAGE UPLOAD CONSTRAINTS
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /** Allowed MIME types for image uploads */
-  private readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
-
-  /** Formatted string of allowed types for the file input accept attribute */
-  readonly acceptedImageTypes = this.ALLOWED_IMAGE_TYPES.join(',');
-
-  /** Maximum file size for uploads: 5MB */
-  private readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-
-  /** Maximum image dimension (width or height): 4096px */
-  private readonly MAX_IMAGE_DIMENSION_PX = 4096;
+  private isAutoScrolling = false;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CONSTRUCTOR
@@ -553,12 +541,7 @@ export class JobCreationFormComponent {
    */
   async publishJob(): Promise<void> {
     const jobData = this.publishableJobData();
-    this.publishAttempted.set(true);
 
-    if (!Boolean(this.privacyAcceptedSignal())) {
-      this.toastService.showErrorKey('privacy.privacyConsent.toastError');
-      return;
-    }
     if (!jobData) return;
 
     try {
@@ -596,59 +579,28 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Handles image file selection and upload.
-   * Validates file type, size, and dimensions before uploading.
-   *
-   * @param event - The file input change event
+   * Handle successful image upload from the shared component
    */
-  async onImageSelected(event: Event): Promise<void> {
-    const target = event.target;
-    if (!(target instanceof HTMLInputElement)) return;
-
-    const input = target;
-    if (!input.files || input.files.length === 0) return;
-
-    const file = input.files[0];
-
-    if (file.size > this.MAX_FILE_SIZE_BYTES) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.fileTooLarge');
-      return;
-    }
-
-    if (!this.ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidFileType');
-      return;
-    }
+  async onImageUploaded(uploadedImage: ImageDTO): Promise<void> {
+    this.selectedImage.set(uploadedImage);
+    this.imageForm.patchValue({ imageId: uploadedImage.imageId });
 
     try {
-      const dimensions = await this.getImageDimensions(file);
-      if (dimensions.width > this.MAX_IMAGE_DIMENSION_PX || dimensions.height > this.MAX_IMAGE_DIMENSION_PX) {
-        this.toastService.showErrorKey('jobCreationForm.imageSection.dimensionsTooLarge');
-        return;
-      }
-    } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.invalidImage');
-      return;
-    }
-
-    this.isUploadingImage.set(true);
-
-    try {
-      const uploadedImage = await firstValueFrom(this.imageResourceService.uploadJobBanner(file));
-
-      this.selectedImage.set(uploadedImage);
-      this.imageForm.patchValue({ imageId: uploadedImage.imageId });
-
       const researchGroupImages = await firstValueFrom(this.imageResourceService.getResearchGroupJobBanners());
       this.researchGroupImages.set(researchGroupImages);
-
-      this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
     } catch {
-      this.toastService.showErrorKey('jobCreationForm.imageSection.uploadFailed');
-    } finally {
-      this.isUploadingImage.set(false);
-      input.value = '';
+      // If refresh fails, add to local array
+      this.researchGroupImages.update(images => [...images, uploadedImage]);
     }
+
+    this.toastService.showSuccessKey('jobCreationForm.imageSection.uploadSuccess');
+  }
+
+  /**
+   * Handle upload errors from the shared component
+   */
+  onUploadError(error: ImageUploadError): void {
+    this.toastService.showErrorKey(error.errorKey);
   }
 
   /**
@@ -739,6 +691,7 @@ export class JobCreationFormComponent {
 
     this.isGeneratingDraft.set(true);
     this.rewriteButtonSignal.set(true);
+    this.isAutoScrolling = true;
 
     // Show "Generating" message in the editor while AI is working
     this.jobDescriptionEditor()?.forceUpdate(
@@ -761,17 +714,23 @@ export class JobCreationFormComponent {
 
         state: JobFormDTO.StateEnum.Draft,
       };
+      this.autoScrollStreaming();
 
+      let lastRendered = '';
       // Use the AiStreamingService with live updates during streaming
-      const accumulatedContent = await this.aiStreamingService.generateJobDescriptionStream(language, request, this.jobId(), content => {
+      const accumulatedContent = await this.aiStreamingService.generateJobApplicationDraftStream(language, request, content => {
         // Try to extract content from the partial JSON
         const extractedContent = this.extractJobDescriptionFromStream(content);
-        this.jobDescriptionEditor()?.forceUpdate(
-          extractedContent ??
-            `<p><em>${this.translate.instant('jobCreationForm.positionDetailsSection.jobDescription.aiFillerText') as string}</em></p>`,
-        );
-      });
+        if (!extractedContent?.startsWith('<')) return;
 
+        const safeHtml = extractCompleteHtmlTags(extractedContent);
+        // Only update if we have new content
+        if (safeHtml && safeHtml !== lastRendered) {
+          lastRendered = safeHtml;
+          this.jobDescriptionEditor()?.forceUpdate(safeHtml);
+        }
+      });
+      this.isAutoScrolling = false;
       // Final update after streaming completes - parse the complete JSON
       if (accumulatedContent) {
         // Extract final content from complete JSON
@@ -791,9 +750,6 @@ export class JobCreationFormComponent {
           } else {
             this.jobDescriptionDE.set(finalContent);
           }
-
-          // We need to fetch the translated version from the server
-          await this.loadTranslatedDescription(language === 'en' ? 'de' : 'en');
         } else {
           // Extraction failed - show error and restore original content
           this.jobDescriptionEditor()?.forceUpdate(originalContent);
@@ -802,6 +758,7 @@ export class JobCreationFormComponent {
       }
     } catch (error) {
       this.jobDescriptionEditor()?.forceUpdate(originalContent);
+      this.isAutoScrolling = false;
       // Show error toast with appropriate message
       if (error instanceof Error && error.message.includes('HTTP error')) {
         this.toastService.showErrorKey('jobCreationForm.toastMessages.aiGenerationFailed');
@@ -809,6 +766,7 @@ export class JobCreationFormComponent {
         this.toastService.showErrorKey('jobCreationForm.toastMessages.saveFailed');
       }
     } finally {
+      this.isAutoScrolling = false;
       this.isGeneratingDraft.set(false);
     }
   }
@@ -884,56 +842,36 @@ export class JobCreationFormComponent {
         extracted = extracted.slice(0, -2);
       }
       // Unescape
-      return this.unescapeJsonString(extracted);
+      return unescapeJsonString(extracted);
     }
 
     // Extract the value between quotes
     const rawValue = trimmed.substring(valueStart, valueEnd);
-    return this.unescapeJsonString(rawValue);
+    return unescapeJsonString(rawValue);
   }
 
   /**
-   * Unescapes a JSON string value (handles \n, \r, \t, \", \\)
+   * Automatically scrolls the editor to the bottom during AI streaming.
+   * Runs every 200ms while isAutoScrolling is true.
    */
-  private unescapeJsonString(str: string): string {
-    return str.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-  }
+  private autoScrollStreaming(): void {
+    const editorContainer = document.querySelector('.ql-editor') as HTMLElement;
+    let lastScrollTop = editorContainer.scrollTop;
 
-  /**
-   * Loads the translated job description from the server after AI generation.
-   * This is needed because the server translates asynchronously after streaming.
-   * Uses retry logic with delay to wait for the translation to complete.
-   *
-   * @param targetLang The language to load ('en' or 'de')
-   * @param maxRetries Maximum number of retry attempts (default: 5)
-   * @param delayMs Delay between retries in milliseconds (default: 2000)
-   */
-  private async loadTranslatedDescription(targetLang: 'en' | 'de', maxRetries = 5, delayMs = 2000): Promise<void> {
-    const jobId = this.jobId();
-    if (!jobId) return;
-
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        // Wait before checking (translation needs time to complete)
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-
-        const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
-        const translatedContent = targetLang === 'en' ? job.jobDescriptionEN : job.jobDescriptionDE;
-
-        if (translatedContent && translatedContent.trim().length > 0) {
-          // Translation found - update the signal
-          if (targetLang === 'en') {
-            this.jobDescriptionEN.set(translatedContent);
-          } else {
-            this.jobDescriptionDE.set(translatedContent);
-          }
-          return; // Success - exit
-        }
-        // Error translating, will retry
-      } catch {
-        // Error fetching job, will retry
+    const smoothScroll = (): void => {
+      if (!this.isAutoScrolling) return;
+      if (editorContainer.scrollTop < lastScrollTop) {
+        this.isAutoScrolling = false;
+        return;
       }
-    }
+      editorContainer.scrollTo({
+        top: editorContainer.scrollHeight,
+        behavior: 'smooth',
+      });
+      lastScrollTop = editorContainer.scrollTop;
+      setTimeout(() => requestAnimationFrame(smoothScroll), 200);
+    };
+    requestAnimationFrame(smoothScroll);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -942,7 +880,7 @@ export class JobCreationFormComponent {
 
   /**
    * Creates the Step 1 form group with validation rules.
-   * Required fields: title, research area, field of studies, location, job description
+   * Required fields: title, research area, field of studies, location, supervising professor, job description
    */
   private createBasicInfoForm(): FormGroup {
     return this.fb.group({
@@ -950,8 +888,8 @@ export class JobCreationFormComponent {
       researchArea: ['', [Validators.required]],
       fieldOfStudies: [undefined, [Validators.required]],
       location: [undefined, [Validators.required]],
-      supervisingProfessor: [{ value: this.accountService.loadedUser()?.name ?? '' }, Validators.required],
-      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(1500)]],
+      supervisingProfessor: [undefined, Validators.required],
+      jobDescription: ['', [htmlTextRequiredValidator, htmlTextMaxLengthValidator(4000)]],
     });
   }
 
@@ -967,6 +905,7 @@ export class JobCreationFormComponent {
       applicationDeadline: [''],
       workload: [undefined],
       contractDuration: [undefined],
+      suitableForDisabled: [true],
     });
   }
 
@@ -976,16 +915,6 @@ export class JobCreationFormComponent {
   private createImageForm(): FormGroup {
     return this.fb.group({
       imageId: [undefined],
-    });
-  }
-
-  /**
-   * Creates the Step 4 form group for additional information.
-   * Contains the required privacy consent checkbox.
-   */
-  private createAdditionalInfoForm(): FormGroup {
-    return this.fb.group({
-      privacyAccepted: [false, [Validators.required]],
     });
   }
 
@@ -1005,6 +934,14 @@ export class JobCreationFormComponent {
     const lang = this.currentDescriptionLanguage();
     const currentText = (basicInfoValue.jobDescription ?? '').trim();
 
+    const supervisingProfessorRaw = basicInfoValue.supervisingProfessor;
+    const supervisingProfessorId =
+      (typeof supervisingProfessorRaw === 'object' && supervisingProfessorRaw !== null
+        ? (supervisingProfessorRaw as { value?: string }).value
+        : supervisingProfessorRaw) ??
+      this.preferredSupervisingProfessorId() ??
+      this.userId();
+
     const jobDescriptionEN = lang === 'en' ? currentText : this.jobDescriptionEN();
     const jobDescriptionDE = lang === 'de' ? currentText : this.jobDescriptionDE();
 
@@ -1012,7 +949,7 @@ export class JobCreationFormComponent {
       title: this.basicInfoForm.get('title')?.value ?? '',
       researchArea: basicInfoValue.researchArea?.trim() ?? '',
       fieldOfStudies: basicInfoValue.fieldOfStudies?.value !== undefined ? String(basicInfoValue.fieldOfStudies.value) : '',
-      supervisingProfessor: this.userId(),
+      supervisingProfessor: supervisingProfessorId ?? '',
       location: basicInfoValue.location?.value as JobFormDTO.LocationEnum,
 
       jobDescriptionEN: jobDescriptionEN ?? undefined,
@@ -1024,6 +961,7 @@ export class JobCreationFormComponent {
       contractDuration: positionDetailsValue.contractDuration,
       fundingType: positionDetailsValue.fundingType?.value as JobFormDTO.FundingTypeEnum,
       imageId: imageValue.imageId ?? null,
+      suitableForDisabled: positionDetailsValue.suitableForDisabled ?? true,
       state,
     };
   }
@@ -1075,6 +1013,7 @@ export class JobCreationFormComponent {
 
       if (mode === 'create') {
         this.mode.set('create');
+        await this.loadSupervisingProfessors();
         this.populateForm();
       } else {
         this.mode.set('edit');
@@ -1087,6 +1026,7 @@ export class JobCreationFormComponent {
 
         this.jobId.set(jobId);
         const job = await firstValueFrom(this.jobResourceService.getJobById(jobId));
+        await this.loadSupervisingProfessors(job.supervisingProfessor);
         this.populateForm(job);
 
         // prevent autosave from firing immediately after patching
@@ -1103,17 +1043,18 @@ export class JobCreationFormComponent {
   /**
    * Populates all forms with initial/existing job data.
    * Sets up dual-language description signals.
+   * Also applies the preselected supervising professor when available.
    *
    * @param job - Optional existing job data (undefined for create mode)
    */
   private populateForm(job?: JobDTO): void {
-    const user = this.accountService.loadedUser();
-
     // Default tab EN
     this.currentDescriptionLanguage.set('en');
 
     const en = job?.jobDescriptionEN ?? '';
     const de = job?.jobDescriptionDE ?? '';
+
+    const supervisingProfessorId = job?.supervisingProfessor ?? this.basicInfoForm.get('supervisingProfessor')?.value;
 
     this.jobDescriptionEN.set(en);
     this.jobDescriptionDE.set(de);
@@ -1121,11 +1062,18 @@ export class JobCreationFormComponent {
     this.basicInfoForm.patchValue({
       title: job?.title ?? '',
       researchArea: job?.researchArea ?? '',
-      supervisingProfessor: user?.name,
+      // Prefill supervising professor with job value, then fallback to form value (which may be preselected), then to preferred professor
+      supervisingProfessor: (() => {
+        if (!supervisingProfessorId) return supervisingProfessorId;
+        const match = this.supervisingProfessorOptions().find(opt => opt.value === supervisingProfessorId);
+        return match ?? supervisingProfessorId;
+      })(),
       fieldOfStudies: this.findDropdownOption(DropdownOptions.fieldsOfStudies, job?.fieldOfStudies),
       location: this.findDropdownOption(DropdownOptions.locations, job?.location),
       jobDescription: en,
     });
+
+    this.setDefaultSupervisingProfessor(supervisingProfessorId);
 
     this.jobDescriptionSignal.set(en);
     this.jobDescriptionEditor()?.forceUpdate(en);
@@ -1136,6 +1084,7 @@ export class JobCreationFormComponent {
       workload: job?.workload ?? undefined,
       contractDuration: job?.contractDuration ?? undefined,
       fundingType: this.findDropdownOption(DropdownOptions.fundingTypes, job?.fundingType),
+      suitableForDisabled: job?.suitableForDisabled ?? true,
     });
 
     if (job?.imageId !== undefined && job.imageUrl !== undefined) {
@@ -1151,11 +1100,74 @@ export class JobCreationFormComponent {
       });
     }
 
-    this.additionalInfoForm.patchValue({
-      privacyAccepted: false,
-    });
-
     this.lastSavedData.set(this.createJobDTO('DRAFT'));
+  }
+
+  /**
+   * Loads professors of the current research group for the supervising professor select.
+   * Applies a preselected supervisor when provided.
+   */
+  private async loadSupervisingProfessors(preselectId?: string): Promise<void> {
+    try {
+      const response = await firstValueFrom(this.researchGroupService.getResearchGroupMembers(100, 0));
+      const options = (response.content ?? [])
+        .filter(member => (member.roles ?? []).includes('PROFESSOR') && member.userId)
+        .map(member => {
+          const displayName = `${member.firstName ?? ''} ${member.lastName ?? ''}`.trim();
+          const fallback = (member.email ?? member.userId ?? '').trim();
+          const name = displayName !== '' ? displayName : fallback !== '' ? fallback : 'Unnamed Professor';
+          return { value: member.userId as string, name };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      this.supervisingProfessorOptions.set(options);
+      this.setDefaultSupervisingProfessor(preselectId);
+    } catch {
+      this.toastService.showErrorKey('toast.loadFailed');
+    }
+  }
+
+  /**
+   * Selects a sensible default supervising professor (preselect, current user if professor, otherwise first option).
+   */
+  private setDefaultSupervisingProfessor(preselectId?: string): void {
+    const options = this.supervisingProfessorOptions();
+    const control = this.basicInfoForm.get('supervisingProfessor');
+    if (!control) return;
+
+    const rawValue = control.value as unknown;
+    const currentValue =
+      typeof rawValue === 'object' && rawValue !== null ? (rawValue as { value?: string }).value : (rawValue as string | undefined);
+    const matchedPreselect = preselectId && options.some(option => option.value === preselectId) ? preselectId : undefined;
+    const fallbackId = this.preferredSupervisingProfessorId();
+    const nextValue = matchedPreselect ?? currentValue ?? fallbackId;
+
+    if (nextValue && currentValue !== nextValue) {
+      // Prefer setting the full option object (value + name) so the select shows
+      // the label. If no matching option is found, fall back to the raw ID.
+      const match = options.find(opt => opt.value === nextValue);
+      control.setValue(match ?? nextValue);
+    }
+  }
+
+  /**
+   * Determines the preferred supervising professor ID based on the logged-in professor or first option.
+   */
+  private preferredSupervisingProfessorId(): string | undefined {
+    const options = this.supervisingProfessorOptions();
+    if (!options.length) return undefined;
+
+    const currentUserId = this.userId();
+    const isCurrentUserProfessor = this.accountService.userAuthorities?.includes('PROFESSOR');
+
+    if (isCurrentUserProfessor && currentUserId) {
+      const match = options.find(option => option.value === currentUserId);
+      if (match) {
+        return match.value;
+      }
+    }
+
+    return options[0]?.value;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1362,7 +1374,7 @@ export class JobCreationFormComponent {
 
     if (templates.panel2) {
       steps.push({
-        name: 'jobCreationForm.header.steps.positionDetails',
+        name: 'jobCreationForm.header.steps.employmentTerms',
         panelTemplate: templates.panel2,
         shouldTranslate: true,
         buttonGroupPrev: [
@@ -1465,30 +1477,6 @@ export class JobCreationFormComponent {
   // ═══════════════════════════════════════════════════════════════════════════
   // UTILITY METHODS
   // ═══════════════════════════════════════════════════════════════════════════
-
-  /**
-   * Gets the dimensions of an image file before upload.
-   * Used for validation against MAX_IMAGE_DIMENSION_PX.
-   *
-   * @param file - The image file to measure
-   * @returns Promise resolving to width and height in pixels
-   */
-  private getImageDimensions(file: File): Promise<{ width: number; height: number }> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-
-      img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        resolve({ width: img.width, height: img.height });
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        reject(new Error('Failed to load image'));
-      };
-      img.src = objectUrl;
-    });
-  }
 
   /**
    * Finds a dropdown option by its value.

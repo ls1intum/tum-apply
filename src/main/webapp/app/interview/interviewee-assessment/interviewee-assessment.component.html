@@ -22,9 +22,9 @@
   @if (!loading() && !error() && interviewee()) {
     <div class="flex flex-col gap-6">
       <!-- Header -->
-      <div class="page-header flex flex-row items-center">
-        <jhi-button [icon]="'arrow-left'" variant="text" severity="secondary" (click)="goBack()" />
-        <h1 class="h1-text" jhiTranslate="interview.assessment.title">Interview Assessment</h1>
+      <div class="page-header flex flex-row items-center gap-2">
+        <jhi-back-button />
+        <h1 jhiTranslate="interview.assessment.title">Interview Assessment</h1>
       </div>
 
       <div class="flex flex-col xl:flex-row gap-8">
