@@ -185,8 +185,8 @@ export class FilterMultiselect {
   }
 
   clearAll(): void {
-    this.selectedValues.set([]); // if using signal
-    this.emitChange(); // if needed
+    this.selectedValues.set([]);
+    this.emitChange();
   }
 
   toggleOption(option: string): void {

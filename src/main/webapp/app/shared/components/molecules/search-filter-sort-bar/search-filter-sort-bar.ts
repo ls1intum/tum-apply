@@ -76,7 +76,7 @@ export class SearchFilterSortBar {
   );
 
   onSearch(): void {
-    if (this.debounceTimeout !== null) {
+    if (this.debounceTimeout) {
       clearTimeout(this.debounceTimeout);
     }
 
@@ -123,6 +123,7 @@ export class SearchFilterSortBar {
     if (hadSearchText) {
       this.searchOutput.emit('');
     }
+
     if (activeFilterIds.length) {
       activeFilterIds.forEach(filterId =>
         this.filterOutput.emit({

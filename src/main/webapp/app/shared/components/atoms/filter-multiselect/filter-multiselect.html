@@ -9,7 +9,7 @@
     (keydown)="onTriggerKeydown($event)"
   >
     <div class="filter-trigger">
-      @if (selectedOptions().length === 0) {
+      @if (!selectedOptions().length) {
         <span class="trigger-placeholder">{{ filterLabel() | translate }}</span>
       } @else {
         @if (showSelectedChipsInTrigger() && selectedOptions().length <= maxVisibleChips) {
@@ -96,7 +96,7 @@
           }
 
           <!-- Display that no results were found-->
-          @if (filteredOptions().length === 0) {
+          @if (!filteredOptions().length) {
             <div class="no-results">
               <span>{{ 'entity.filters.noResults' | translate }}</span>
             </div>
@@ -106,7 +106,7 @@
     </div>
   }
 
-  @if (!showSelectedChipsInTrigger() && selectedOptions().length > 0) {
+  @if (!showSelectedChipsInTrigger() && selectedOptions().length) {
     <div class="selected-chips-list">
       @for (option of selectedOptions(); track option.value) {
         <p-chip
