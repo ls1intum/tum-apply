@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
+import { Component, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { InputGroupModule } from 'primeng/inputgroup';
 
@@ -27,6 +27,8 @@ export type SortDirection = 'ASC' | 'DESC';
 })
 export class Sorting {
   sortableFields = input.required<SortOption[]>();
+  selectedField = input<string | undefined>(undefined);
+  selectedDirection = input<SortDirection | undefined>(undefined);
 
   isAsc = signal<boolean>(false);
   selectedOption = signal<SortOption | undefined>(undefined);
@@ -48,6 +50,24 @@ export class Sorting {
   });
 
   private translateService = inject(TranslateService);
+
+  private readonly syncSortStateEffect = effect(
+    () => {
+      const fields = this.sortableFields();
+      const selectedField = this.selectedField();
+      const selectedDirection = this.selectedDirection();
+
+      if (selectedField !== undefined) {
+        const match = fields.find(field => field.fieldName === selectedField);
+        this.selectedOption.set(match);
+      }
+
+      if (selectedDirection) {
+        this.isAsc.set(selectedDirection === 'ASC');
+      }
+    },
+    { allowSignalWrites: true },
+  );
 
   getSortIcon(): string {
     const type = this.currentOption().type;

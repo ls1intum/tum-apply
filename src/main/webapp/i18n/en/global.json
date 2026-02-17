@@ -228,6 +228,7 @@
     },
     "filters": {
       "filter": "Filter",
+      "sortingAndFilter": "Sorting & Filter",
       "selected": "Selected",
       "clearAll": "Clear All",
       "noResults": "No results found",

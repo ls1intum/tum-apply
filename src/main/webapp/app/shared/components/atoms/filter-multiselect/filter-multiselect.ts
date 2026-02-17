@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewEncapsulation, computed, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, ViewEncapsulation, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DividerModule } from 'primeng/divider';
@@ -37,6 +37,8 @@ export class FilterMultiselect {
   filterSearchPlaceholder = input.required<string>();
   filterOptions = input<string[]>([]);
   shouldTranslateOptions = input<boolean>(false);
+  showSelectedChipsInTrigger = input<boolean>(true);
+  selectedValuesInput = input<string[] | undefined>(undefined);
   focusedIndexOptionList = signal<number>(-1);
 
   selectedValues = signal<string[]>([]);
@@ -98,6 +100,20 @@ export class FilterMultiselect {
   private readonly elementRef = inject(ElementRef);
   private readonly translateService = inject(TranslateService);
 
+  // Sync selected values between inputs and mobile filter bar
+  private readonly syncSelectedValuesEffect = effect(
+    () => {
+      const externalSelectedValues = this.selectedValuesInput();
+      if (externalSelectedValues === undefined) {
+        return;
+      }
+
+      if (!this.areArraysEqual(this.selectedValues(), externalSelectedValues)) {
+        this.selectedValues.set([...externalSelectedValues]);
+      }
+    },
+    { allowSignalWrites: true },
+  );
   toggleDropdown(): void {
     this.isOpen.update(current => !current);
     if (this.isOpen()) {
@@ -165,6 +181,12 @@ export class FilterMultiselect {
     this.toggleOption(value);
   }
 
+  getSummaryLabel(): string {
+    return this.translateService.instant('entity.filters.numberSelected', {
+      selected: this.selectedOptions().length,
+    });
+  }
+
   clearAll(): void {
     this.selectedValues.set([]); // if using signal
     this.emitChange(); // if needed
@@ -195,6 +217,13 @@ export class FilterMultiselect {
     if (!this.elementRef.nativeElement.contains(event.target as Node)) {
       this.closeDropdown();
     }
+  }
+  private areArraysEqual(left: string[], right: string[]): boolean {
+    if (left.length !== right.length) {
+      return false;
+    }
+
+    return left.every((value, index) => value === right[index]);
   }
 
   private emitChange(): void {

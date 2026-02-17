@@ -86,6 +86,17 @@
     }
   }
 
+  .selected-chips-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+    .p-chip-label {
+      // magic number is width of drawer (20rem) minus padding (2rem)
+      max-width: 18rem;
+    }
+  }
+
   .filter-dropdown {
     position: absolute;
     min-width: max-content;
@@ -100,6 +111,7 @@
     max-height: 20rem;
     display: flex;
     flex-direction: column;
+    font-size: var(--p-select-sm-font-size);
 
     .panel-header {
       padding: 0.6rem 0.75rem 0.4rem;
@@ -207,5 +219,11 @@
     width: 0.7rem;
     height: 0.7rem;
     cursor: pointer;
+  }
+  .p-chip-label {
+    max-width: 6.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

@@ -228,6 +228,7 @@
     },
     "filters": {
       "filter": "Filter",
+      "sortingAndFilter": "Sortierung & Filter",
       "selected": "Ausgewählt",
       "clearAll": "Alle entfernen",
       "noResults": "Keine Ergebnisse gefunden",

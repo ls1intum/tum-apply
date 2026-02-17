@@ -1,5 +1,5 @@
 <div class="search-filter-sort-bar">
-  <div class="functionality-bar justify-between items-center">
+  <div class="flex flex-row justify-between gap-2">
     <div class="flex flex-row items-center gap-2 flex-wrap">
       <p-iconfield iconPosition="left">
         <p-inputicon>
@@ -15,38 +15,106 @@
           pSize="small"
         />
       </p-iconfield>
-      @if (filters().length > 0 || sortableFields()?.length) {
-        <div class="filter-sort flex items-center flex-wrap sm:justify-between">
-          @if (filters().length > 0) {
-            <div class="flex gap-2">
-              @for (filter of filters(); track filter.filterLabel) {
-                <jhi-filter-multiselect
-                  [filterId]="filter.filterId"
-                  [filterLabel]="filter.filterLabel"
-                  [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
-                  [filterOptions]="filter.filterOptions"
-                  (filterChange)="onFilterChange($event)"
-                  [shouldTranslateOptions]="filter.shouldTranslateOptions ?? false"
-                />
-              }
-            </div>
+      @if (filters().length > 0) {
+        <div class="hidden flex-wrap gap-2 md:flex">
+          @for (filter of filters(); track filter.filterLabel) {
+            <jhi-filter-multiselect
+              [filterId]="filter.filterId"
+              [filterLabel]="filter.filterLabel"
+              [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
+              [filterOptions]="filter.filterOptions"
+              [selectedValuesInput]="getSelectedFilterValues(filter.filterId)"
+              (filterChange)="onFilterChange($event)"
+              [shouldTranslateOptions]="filter.shouldTranslateOptions ?? false"
+            />
           }
         </div>
       }
     </div>
-    <div class="flex flex-row items-center gap-2">
+    <div class="flex">
+      @if (hasMobileActions()) {
+        <jhi-button
+          class="md:hidden"
+          [icon]="'filter'"
+          [size]="'sm'"
+          [variant]="'text'"
+          [styleClass]="'!border !border-[var(--p-border-default)]'"
+          [tooltip]="'entity.filters.sortingAndFilter' | translate"
+          [tooltipOptions]="{ showDelay: 500 }"
+          (click)="openMobileSidebar()"
+        />
+      }
+    </div>
+    <div class="hidden md:flex">
       @if (sortableFields(); as fields) {
-        <jhi-sorting [sortableFields]="fields" (sortChange)="onSortChange($event)" />
+        <jhi-sorting
+          [sortableFields]="fields"
+          [selectedField]="selectedSortField()"
+          [selectedDirection]="selectedSortDirection()"
+          (sortChange)="onSortChange($event)"
+        />
       }
     </div>
   </div>
-  <div class="flex items-center gap-2">
-    <div
-      jhiTranslate="entity.filters.recordsFound"
-      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
-    ></div>
-    <span class="ml-auto">
-      <ng-content select="[records-extra]" />
-    </span>
-  </div>
+
+  <p-drawer
+    [(visible)]="isMobileSidebarOpen"
+    position="right"
+    [dismissible]="true"
+    [showCloseIcon]="false"
+    styleClass="w-[90vw] max-w-[20rem]"
+  >
+    <ng-template #header>
+      <div class="flex h-full flex-1 items-center justify-between font-semibold">
+        <span jhiTranslate="entity.filters.sortingAndFilter"></span>
+        <jhi-button [icon]="'times'" [size]="'sm'" [variant]="'text'" (click)="closeMobileSidebar()" />
+      </div>
+    </ng-template>
+
+    <div class="flex h-full flex-col gap-3">
+      <div class="flex flex-1 flex-col gap-4 overflow-y-auto">
+        @if (sortableFields(); as fields) {
+          <div class="flex flex-col gap-2">
+            <jhi-sorting
+              [sortableFields]="fields"
+              [selectedField]="selectedSortField()"
+              [selectedDirection]="selectedSortDirection()"
+              (sortChange)="onSortChange($event)"
+            />
+          </div>
+        }
+
+        @if (filters().length > 0) {
+          <div class="flex flex-col gap-3">
+            @for (filter of filters(); track filter.filterLabel) {
+              <jhi-filter-multiselect
+                [filterId]="filter.filterId"
+                [filterLabel]="filter.filterLabel"
+                [filterSearchPlaceholder]="filter.filterSearchPlaceholder"
+                [filterOptions]="filter.filterOptions"
+                [selectedValuesInput]="getSelectedFilterValues(filter.filterId)"
+                (filterChange)="onFilterChange($event)"
+                [shouldTranslateOptions]="filter.shouldTranslateOptions ?? false"
+                [showSelectedChipsInTrigger]="false"
+              />
+            }
+          </div>
+        }
+      </div>
+
+      <!-- <button
+        type="button"
+        class="w-full rounded-md bg-[var(--p-primary-color)] px-3 py-2 font-semibold text-[var(--p-primary-contrast-color)]"
+        (click)="closeMobileSidebar()"
+      >
+        <span jhiTranslate="entity.filters.show"></span>
+      </button> -->
+    </div>
+  </p-drawer>
+
+  <div
+    class="pt-1 text-xs"
+    jhiTranslate="entity.filters.recordsFound"
+    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+  ></div>
 </div>

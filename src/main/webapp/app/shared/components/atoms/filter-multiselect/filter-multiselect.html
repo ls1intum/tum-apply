@@ -12,7 +12,7 @@
       @if (selectedOptions().length === 0) {
         <span class="trigger-placeholder">{{ filterLabel() | translate }}</span>
       } @else {
-        @if (selectedOptions().length <= maxVisibleChips) {
+        @if (showSelectedChipsInTrigger() && selectedOptions().length <= maxVisibleChips) {
           <div class="chip-row">
             @for (option of selectedOptions(); track option.value) {
               <p-chip
@@ -25,7 +25,7 @@
             }
           </div>
         } @else {
-          <span class="trigger-summary"> {{ selectedOptions().length }} items selected </span>
+          <span class="trigger-summary">{{ getSummaryLabel() }}</span>
         }
       }
     </div>
@@ -103,6 +103,19 @@
           }
         </div>
       </div>
+    </div>
+  }
+
+  @if (!showSelectedChipsInTrigger() && selectedOptions().length > 0) {
+    <div class="selected-chips-list">
+      @for (option of selectedOptions(); track option.value) {
+        <p-chip
+          [label]="shouldTranslateOptions() ? (option.label | translate) : option.label"
+          [removable]="true"
+          (onRemove)="removeOption(option.value)"
+          [pt]="{ root: { class: 'compact-chip' } }"
+        />
+      }
     </div>
   }
 </div>

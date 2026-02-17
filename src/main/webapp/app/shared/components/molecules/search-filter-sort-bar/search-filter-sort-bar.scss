@@ -4,12 +4,6 @@
   display: flex;
   flex-direction: column;
 
-  .functionality-bar {
-    display: flex;
-    flex-flow: row wrap;
-    gap: 0.375rem;
-  }
-
   .p-iconfield {
     width: 100%;
     max-width: 18rem;
@@ -31,30 +25,3 @@
     }
   }
 }
-
-// @media (max-width: bp.$md) {
-//   .search-filter-sort-bar {
-//     .functionality-bar {
-//       .filter-sort {
-//         width: 100%;
-
-//         .group {
-//           width: 100%;
-
-//           > span {
-//             width: 100%;
-//           }
-
-//           jhi-filter-multiselect {
-//             flex: 1;
-//             min-width: 0;
-//           }
-//         }
-//       }
-//     }
-
-//     .p-iconfield {
-//       min-width: 100%;
-//     }
-//   }
-// }

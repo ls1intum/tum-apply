@@ -37,6 +37,15 @@
     }
   }
 
+  .p-select-dropdown {
+    color: var(--p-text-secondary);
+    font-size: var(--p-select-sm-font-size);
+  }
+
+  .p-select-list-container {
+    max-height: 12rem !important;
+  }
+
   // Override primeng styling of border color when clicking on select field
   .p-select:not(.p-disabled).p-focus {
     box-shadow: none;
@@ -70,6 +79,7 @@
 // Global styles for dropdown options (works even when appended to body)
 .p-select-overlay {
   margin-top: 0.25rem;
+  font-size: var(--p-select-sm-font-size);
   .p-select-list {
     padding: 0;
   }
