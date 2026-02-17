@@ -107,7 +107,7 @@ export class FilterMultiselect {
       return;
     }
 
-    if (!this.areArraysEqual(this.selectedValues(), externalSelectedValues)) {
+    if (!this.areFilterValuesEqual(this.selectedValues(), externalSelectedValues)) {
       this.selectedValues.set([...externalSelectedValues]);
     }
   });
@@ -215,12 +215,13 @@ export class FilterMultiselect {
       this.closeDropdown();
     }
   }
-  private areArraysEqual(left: string[], right: string[]): boolean {
-    if (left.length !== right.length) {
+  // check that filter of mobile view and normal view are aligned
+  private areFilterValuesEqual(first: string[], second: string[]): boolean {
+    if (first.length !== second.length) {
       return false;
     }
 
-    return left.every((value, index) => value === right[index]);
+    return first.every((value, index) => value === second[index]);
   }
 
   private emitChange(): void {
