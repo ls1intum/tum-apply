@@ -101,19 +101,16 @@ export class FilterMultiselect {
   private readonly translateService = inject(TranslateService);
 
   // Sync selected values between inputs and mobile filter bar
-  private readonly syncSelectedValuesEffect = effect(
-    () => {
-      const externalSelectedValues = this.selectedValuesInput();
-      if (externalSelectedValues === undefined) {
-        return;
-      }
+  private readonly syncSelectedValuesEffect = effect(() => {
+    const externalSelectedValues = this.selectedValuesInput();
+    if (externalSelectedValues === undefined) {
+      return;
+    }
 
-      if (!this.areArraysEqual(this.selectedValues(), externalSelectedValues)) {
-        this.selectedValues.set([...externalSelectedValues]);
-      }
-    },
-    { allowSignalWrites: true },
-  );
+    if (!this.areArraysEqual(this.selectedValues(), externalSelectedValues)) {
+      this.selectedValues.set([...externalSelectedValues]);
+    }
+  });
   toggleDropdown(): void {
     this.isOpen.update(current => !current);
     if (this.isOpen()) {

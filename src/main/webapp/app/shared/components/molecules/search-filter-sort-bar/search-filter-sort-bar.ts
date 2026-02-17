@@ -58,7 +58,8 @@ export class SearchFilterSortBar {
   selectedSortField = signal<string | undefined>(undefined);
   selectedSortDirection = signal<SortDirection>('DESC');
 
-  readonly hasMobileActions = computed(() => this.filters().length > 0 || (this.sortableFields()?.length ?? 0) > 0);
+  readonly hasMobileActions = computed(() => this.filters().length || (this.sortableFields()?.length ?? 0));
+  readonly hasActiveFilters = computed(() => Object.values(this.selectedFiltersById()).some(values => values.length));
 
   private debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -108,5 +109,27 @@ export class SearchFilterSortBar {
 
   closeMobileSidebar(): void {
     this.isMobileSidebarOpen = false;
+  }
+
+  clearAllFilter(): void {
+    const previousSelectedFilters = this.selectedFiltersById();
+    const hadSearchText = this.inputText.trim().length;
+    const activeFilterIds = Object.entries(previousSelectedFilters)
+      .filter(([, values]) => values.length)
+      .map(([filterId]) => filterId);
+    this.inputText = '';
+    this.selectedFiltersById.set({});
+
+    if (hadSearchText) {
+      this.searchOutput.emit('');
+    }
+    if (activeFilterIds.length) {
+      activeFilterIds.forEach(filterId =>
+        this.filterOutput.emit({
+          filterId,
+          selectedValues: [],
+        }),
+      );
+    }
   }
 }

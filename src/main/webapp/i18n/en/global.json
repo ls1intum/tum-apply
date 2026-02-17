@@ -234,7 +234,9 @@
       "noResults": "No results found",
       "numberSelected": "{{selected}} selected",
       "apply": "Apply",
-      "recordsFound": "{{count}} {{entity}} found"
+      "recordsFound": "{{count}} {{entity}} found",
+      "show": "Show Positions",
+      "resetFilter": "Reset Filter"
     },
     "sorting": {
       "ascending": {
