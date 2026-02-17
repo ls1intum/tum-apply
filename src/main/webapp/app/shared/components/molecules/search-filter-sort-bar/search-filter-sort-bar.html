@@ -16,7 +16,7 @@
         />
       </p-iconfield>
       @if (filters().length) {
-        <div class="hidden flex-wrap gap-2 md:flex">
+        <div class="hidden flex-wrap gap-2 lg:flex">
           @for (filter of filters(); track filter.filterLabel) {
             <jhi-filter-multiselect
               [filterId]="filter.filterId"
@@ -34,7 +34,7 @@
     <div class="flex">
       @if (hasMobileActions()) {
         <jhi-button
-          class="md:hidden"
+          class="lg:hidden"
           [icon]="'filter'"
           [size]="'sm'"
           [variant]="'text'"
@@ -45,7 +45,7 @@
         />
       }
     </div>
-    <div class="hidden md:flex">
+    <div class="hidden lg:flex">
       @if (sortableFields(); as fields) {
         <jhi-sorting
           [sortableFields]="fields"
