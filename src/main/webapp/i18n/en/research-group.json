@@ -109,18 +109,18 @@
       }
     },
     "members": {
-      "loading": "Loading members...",
-      "retry": "Retry",
-      "noMembers": "No members found in this research group.",
       "noUsers": "No available users found.",
       "emptySearch": "Please enter at least {{minLength}} characters to search.",
       "me": "Me",
+      "notice": "Members will be notified via email when they are added to the research group.",
       "manageMembers": "Manage Members",
       "addMembers": "Add Members",
       "addMembersButton": "Add members",
       "searchPlaceholder": "Search for a member using their name or email...",
       "singleEntity": "User",
       "multipleEntities": "Users",
+      "selectedCountSingle": "{{count}} member selected",
+      "selectedCountMultiple": "{{count}} members selected",
       "tableColumns": {
         "name": "Name",
         "email": "Email",
@@ -167,10 +167,6 @@
           "summary": "Remove Failed",
           "detail": "Failed to remove. Please try again or contact an admin."
         }
-      },
-      "confirmDialog": {
-        "header": "Add Members",
-        "message": "Are you sure you want to add the selected members to the research group? They will be notified via email."
       },
       "noRole": "No Role"
     },
