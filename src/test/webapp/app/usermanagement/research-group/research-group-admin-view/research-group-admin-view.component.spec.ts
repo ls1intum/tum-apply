@@ -430,6 +430,15 @@ describe('ResearchGroupAdminView', () => {
 
       expect(mockResearchGroupService.getResearchGroupsForAdmin).not.toHaveBeenCalled();
     });
+
+    it('should navigate to manage images page', () => {
+      const router = TestBed.inject(Router);
+      component.onManageImages('rg-123');
+
+      expect(router.navigate).toHaveBeenCalledWith(['/research-group/admin-view/images'], {
+        queryParams: { researchGroupId: 'rg-123' },
+      });
+    });
   });
 
   describe('Research Group Actions', () => {
@@ -582,6 +591,7 @@ describe('ResearchGroupAdminView', () => {
       fixture.detectChanges();
 
       const manageMembersSpy = vi.spyOn(component, 'onManageMembers');
+      const manageImagesSpy = vi.spyOn(component, 'onManageImages');
       const approveConfirmSpy = vi.spyOn(component.approveDialog(), 'confirm');
       const denyConfirmSpy = vi.spyOn(component.denyDialog(), 'confirm');
       const withdrawConfirmSpy = vi.spyOn(component.withdrawDialog(), 'confirm');
@@ -592,12 +602,24 @@ describe('ResearchGroupAdminView', () => {
       const activeItems = menuMap.get('rg-2') ?? [];
       const deniedItems = menuMap.get('rg-3') ?? [];
 
-      expect(draftItems.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.confirm', 'button.deny']);
-      expect(activeItems.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.withdraw']);
-      expect(deniedItems.map(item => item.label)).toEqual(['button.confirm']);
+      expect(draftItems.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.confirm',
+        'button.deny',
+      ]);
+      expect(activeItems.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.withdraw',
+      ]);
+      expect(deniedItems.map(item => item.label)).toEqual(['researchGroup.imageLibrary.manageButton', 'button.confirm']);
 
       draftItems.find(item => item.label === 'researchGroup.members.manageMembers')?.command?.();
       expect(manageMembersSpy).toHaveBeenCalledWith('rg-1');
+
+      draftItems.find(item => item.label === 'researchGroup.imageLibrary.manageButton')?.command?.();
+      expect(manageImagesSpy).toHaveBeenCalledWith('rg-1');
 
       draftItems.find(item => item.label === 'button.confirm')?.command?.();
       expect(component.currentResearchGroupId()).toBe('rg-1');
@@ -658,7 +680,11 @@ describe('ResearchGroupAdminView', () => {
     it('returns menu items when research group id is present', () => {
       component.researchGroups.set([mockResearchGroup2]);
       const items = component.getMenuItems()(mockResearchGroup2);
-      expect(items.map(item => item.label)).toEqual(['researchGroup.members.manageMembers', 'button.withdraw']);
+      expect(items.map(item => item.label)).toEqual([
+        'researchGroup.members.manageMembers',
+        'researchGroup.imageLibrary.manageButton',
+        'button.withdraw',
+      ]);
     });
 
     it('returns empty menu items when id is present but not in menu map', () => {

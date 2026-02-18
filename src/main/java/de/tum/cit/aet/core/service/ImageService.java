@@ -16,6 +16,7 @@ import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
+import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -45,6 +46,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final JobRepository jobRepository;
     private final DepartmentRepository departmentRepository;
+    private final ResearchGroupRepository researchGroupRepository;
     private final SchoolRepository schoolRepository;
     private final CurrentUserService currentUserService;
     private final Path imageRoot;
@@ -56,6 +58,7 @@ public class ImageService {
         ImageRepository imageRepository,
         JobRepository jobRepository,
         DepartmentRepository departmentRepository,
+        ResearchGroupRepository researchGroupRepository,
         SchoolRepository schoolRepository,
         CurrentUserService currentUserService,
         @Value("${aet.storage.image-root:/storage/images}") String imageRootDir,
@@ -66,6 +69,7 @@ public class ImageService {
         this.imageRepository = imageRepository;
         this.jobRepository = jobRepository;
         this.departmentRepository = departmentRepository;
+        this.researchGroupRepository = researchGroupRepository;
         this.schoolRepository = schoolRepository;
         this.currentUserService = currentUserService;
         this.imageRoot = Paths.get(imageRootDir).toAbsolutePath().normalize();
@@ -137,6 +141,33 @@ public class ImageService {
         ResearchGroup researchGroup = uploader.getResearchGroup();
         if (researchGroup == null) {
             throw new IllegalStateException("User must belong to a research group to upload job banners");
+        }
+
+        return uploadJobBanner(researchGroup, file, uploader);
+    }
+
+    /**
+     * Uploads a job banner image for a specific research group (admin use case).
+     *
+     * @param researchGroupId the ID of the target research group
+     * @param file            the multipart file to be uploaded
+     * @return the persisted ResearchGroupImage entity
+     * @throws EntityNotFoundException if the research group does not exist
+     * @throws UploadException         if the file is invalid or cannot be stored
+     */
+    @Transactional
+    public ResearchGroupImage uploadJobBannerForResearchGroup(UUID researchGroupId, MultipartFile file) {
+        User uploader = currentUserService.getUser();
+        ResearchGroup researchGroup = researchGroupRepository
+            .findById(researchGroupId)
+            .orElseThrow(() -> EntityNotFoundException.forId("ResearchGroup", researchGroupId));
+
+        return uploadJobBanner(researchGroup, file, uploader);
+    }
+
+    private ResearchGroupImage uploadJobBanner(ResearchGroup researchGroup, MultipartFile file, User uploader) {
+        if (researchGroup == null) {
+            throw new IllegalStateException("Research group is required to upload job banners");
         }
 
         String relativePath = storeImageFile(file, ImageType.JOB_BANNER);
@@ -309,6 +340,21 @@ public class ImageService {
      */
     public List<ResearchGroupImage> getResearchGroupJobBanners() {
         UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
+        return imageRepository.findResearchGroupImagesByResearchGroupId(researchGroupId);
+    }
+
+    /**
+     * Retrieves all job banner images (non-default) for a specific research group.
+     *
+     * @param researchGroupId the target research group ID
+     * @return list of job banner images belonging to the given research group
+     * @throws EntityNotFoundException if the research group does not exist
+     */
+    public List<ResearchGroupImage> getResearchGroupJobBannersByResearchGroup(UUID researchGroupId) {
+        if (!researchGroupRepository.existsById(researchGroupId)) {
+            throw EntityNotFoundException.forId("ResearchGroup", researchGroupId);
+        }
+
         return imageRepository.findResearchGroupImagesByResearchGroupId(researchGroupId);
     }
 

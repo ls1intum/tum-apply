@@ -131,6 +131,15 @@ export class ResearchGroupAdminView {
         });
       }
 
+      items.push({
+        label: 'researchGroup.imageLibrary.manageButton',
+        icon: 'image',
+        severity: 'primary',
+        command: () => {
+          this.onManageImages(groupId);
+        },
+      });
+
       if (group.status === 'ACTIVE') {
         items.push({
           label: 'button.withdraw',
@@ -250,6 +259,12 @@ export class ResearchGroupAdminView {
 
   onManageMembers(researchGroupId: string): void {
     this.router.navigate(['/research-group', researchGroupId, 'members']);
+  }
+
+  onManageImages(researchGroupId: string): void {
+    this.router.navigate(['/research-group/admin-view/images'], {
+      queryParams: { researchGroupId },
+    });
   }
 
   async onApproveResearchGroup(researchGroupId: string): Promise<void> {

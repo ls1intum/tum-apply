@@ -457,6 +457,7 @@
       }
     },
     "imageLibrary": {
+      "manageButton": "Bilder verwalten",
       "title": "Forschungsgruppen-Bildbibliothek",
       "stats": {
         "totalImages": "Bilder insgesamt",

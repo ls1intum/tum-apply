@@ -457,6 +457,7 @@
       }
     },
     "imageLibrary": {
+      "manageButton": "Manage Images",
       "title": "Research Group Image Library",
       "stats": {
         "totalImages": "Total Images",

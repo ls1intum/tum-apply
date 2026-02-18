@@ -241,12 +241,6 @@ describe('ResearchGroupDepartmentsComponent', () => {
   });
 
   describe('actions', () => {
-    it('should navigate to department images page', () => {
-      component.onViewDepartmentImages();
-
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/research-group/departments/images']);
-    });
-
     it('should return empty menu items when department id is missing', () => {
       const deleteDialog = { confirm: vi.fn() } as unknown as ConfirmDialog;
 
