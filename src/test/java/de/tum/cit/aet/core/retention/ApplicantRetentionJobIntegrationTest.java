@@ -25,6 +25,7 @@ import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
@@ -129,7 +130,7 @@ class ApplicantRetentionJobIntegrationTest {
         User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         User applicantUser = ApplicantTestData.saveApplicant("applicant-job@test.local", userRepository);
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
-        Job job = createJob(professor);
+        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job for applicant retention", JobState.PUBLISHED, null);
 
         ApplicationWithDocs oldApplication = createApplicationWithLastModified(
             professor,
@@ -153,15 +154,6 @@ class ApplicantRetentionJobIntegrationTest {
 
         assertThat(documentDictionaryRepository.findById(recentApplication.dictionary().getDocumentDictionaryId())).isPresent();
         assertThat(documentRepository.findById(recentApplication.dictionary().getDocument().getDocumentId())).isPresent();
-    }
-
-    private Job createJob(User professor) {
-        Job job = new Job();
-        job.setTitle("Job for applicant retention");
-        job.setState(JobState.PUBLISHED);
-        job.setSupervisingProfessor(professor);
-        job.setResearchGroup(researchGroup);
-        return jobRepository.saveAndFlush(job);
     }
 
     private Application createApplication(Job job, Applicant applicant) {
@@ -188,7 +180,7 @@ class ApplicantRetentionJobIntegrationTest {
         User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         User applicantUser = ApplicantTestData.saveApplicant("applicant-job@test.local", userRepository);
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
-        Job job = createJob(professor);
+        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job for applicant retention", JobState.PUBLISHED, null);
         return createApplicationWithLastModified(professor, applicant, job, lastModifiedAt, fileName);
     }
 

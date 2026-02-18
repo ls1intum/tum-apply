@@ -30,11 +30,14 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.utility.testdata.ApplicantTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.InternalCommentTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
+import de.tum.cit.aet.utility.testdata.UserTestData;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -167,19 +170,13 @@ class ApplicantRetentionServiceIntegrationTest {
     // -------------------------
 
     private TestFixtures createApplicationWithRelations(LocalDateTime forceLastModifiedAt) {
-        User professor = createAndSaveUser("prof", true);
-        User applicantUser = createAndSaveUser("app", false);
-
-        Applicant applicant = new Applicant();
-        applicant.setUser(applicantUser);
-        applicant = applicantRepository.saveAndFlush(applicant);
-
-        Job job = new Job();
-        job.setTitle("Retention Job");
-        job.setState(JobState.PUBLISHED);
-        job.setSupervisingProfessor(professor);
-        job.setResearchGroup(researchGroup);
-        job = jobRepository.saveAndFlush(job);
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+        User applicantUser = ApplicantTestData.saveApplicant(
+            "app-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local",
+            userRepository
+        );
+        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
+        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Retention Job", JobState.PUBLISHED, null);
 
         InterviewProcess interviewProcess = new InterviewProcess();
         interviewProcess.setJob(job);
@@ -222,19 +219,13 @@ class ApplicantRetentionServiceIntegrationTest {
     }
 
     private DualApplicationFixtures createTwoApplicationsForApplicant() {
-        User professor = createAndSaveUser("prof", true);
-
-        User applicantUser = createAndSaveUser("app", false);
-        Applicant applicant = new Applicant();
-        applicant.setUser(applicantUser);
-        applicant = applicantRepository.saveAndFlush(applicant);
-
-        Job job = new Job();
-        job.setTitle("Retention Job");
-        job.setState(JobState.PUBLISHED);
-        job.setSupervisingProfessor(professor);
-        job.setResearchGroup(researchGroup);
-        job = jobRepository.saveAndFlush(job);
+        User professor = UserTestData.saveProfessor(researchGroup, userRepository);
+        User applicantUser = ApplicantTestData.saveApplicant(
+            "app-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local",
+            userRepository
+        );
+        Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
+        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Retention Job", JobState.PUBLISHED, null);
 
         // Old application
         Application oldApp = new Application();
@@ -282,22 +273,6 @@ class ApplicantRetentionServiceIntegrationTest {
         );
 
         return new DualApplicationFixtures(oldApp, oldReview, oldDict, recentApp, recentDict);
-    }
-
-    private User createAndSaveUser(String prefix, boolean attachToResearchGroup) {
-        User u = new User();
-        u.setUserId(UUID.randomUUID());
-        u.setEmail(prefix + "-" + UUID.randomUUID().toString().substring(0, 8) + "@test.local");
-        u.setFirstName(prefix.equals("prof") ? "Prof" : "App");
-        u.setLastName("Tester");
-        u.setSelectedLanguage("en");
-        u.setUniversityId(UUID.randomUUID().toString().replace("-", "").substring(0, 7));
-
-        if (attachToResearchGroup) {
-            u.setResearchGroup(researchGroup);
-        }
-
-        return userRepository.saveAndFlush(u);
     }
 
     private void forceApplicationLastModified(UUID applicationId, LocalDateTime ts) {
