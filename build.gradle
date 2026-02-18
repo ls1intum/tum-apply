@@ -229,7 +229,7 @@ dependencies {
   implementation "org.springframework.security:spring-security-oauth2-resource-server"
   testImplementation "org.springframework.security:spring-security-test"
   // Database and connection pooling
-  implementation "com.mysql:mysql-connector-j:9.5.0"
+  implementation "com.mysql:mysql-connector-j:9.6.0"
   implementation "com.zaxxer:HikariCP:7.0.2"
   // JHipster framework utilities
   implementation "tech.jhipster:jhipster-framework:${jhipsterDependenciesVersion}"
