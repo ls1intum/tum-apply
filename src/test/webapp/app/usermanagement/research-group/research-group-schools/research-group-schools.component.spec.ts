@@ -135,6 +135,15 @@ describe('ResearchGroupSchoolsComponent', () => {
       expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
     });
 
+    it('should handle create dialogRef null', async () => {
+      mockDialogService.open.mockReturnValue(null);
+
+      mockSchoolService.getSchoolsForAdmin.mockClear();
+      await component.onCreateSchool();
+
+      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
+    });
+
     it('should open edit dialog and reload on success', async () => {
       await component.loadSchools();
       const mockDialogRef = { onClose: of(true) };
@@ -160,6 +169,16 @@ describe('ResearchGroupSchoolsComponent', () => {
     it('should not open edit dialog if school not found', async () => {
       await component.onEditSchool('missing');
       expect(mockDialogService.open).not.toHaveBeenCalled();
+    });
+
+    it('should handle edit dialogRef null', async () => {
+      await component.loadSchools();
+      mockDialogService.open.mockReturnValue(null);
+
+      mockSchoolService.getSchoolsForAdmin.mockClear();
+      await component.onEditSchool('s1');
+
+      expect(mockSchoolService.getSchoolsForAdmin).toHaveBeenCalledTimes(0);
     });
   });
 
