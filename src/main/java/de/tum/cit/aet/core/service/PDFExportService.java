@@ -1,7 +1,6 @@
 package de.tum.cit.aet.core.service;
 
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
-import de.tum.cit.aet.application.service.ApplicationService;
 import de.tum.cit.aet.core.dto.JobOverviewData;
 import de.tum.cit.aet.core.dto.UiTextFormatter;
 import de.tum.cit.aet.core.exception.AccessDeniedException;
@@ -32,7 +31,6 @@ public class PDFExportService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    private final ApplicationService applicationService;
     private final JobService jobService;
     private final CurrentUserService currentUserService;
     private final ImageService imageService;
@@ -44,15 +42,11 @@ public class PDFExportService {
     /**
      * Exports application details to PDF
      *
-     * @param applicationId the application ID
-     * @param labels        translation labels for PDF content
+     * @param app    the ApplicationDetailDTO containing application data
+     * @param labels translation labels for PDF content
      * @return the PDF file as Resource
      */
-    public Resource exportApplicationToPDF(UUID applicationId, Map<String, String> labels) {
-        ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
-        UUID jobId = app.jobId();
-        JobDetailDTO job = jobService.getJobDetails(jobId);
-
+    public Resource exportApplicationToPDF(ApplicationDetailDTO app, Map<String, String> labels) {
         PDFBuilder builder = new PDFBuilder(labels.get("headline") + "'" + app.jobTitle() + "'");
 
         builder
@@ -66,21 +60,24 @@ public class PDFExportService {
             )
             .addHeaderItem(labels.get("status") + UiTextFormatter.formatEnumValue(app.applicationState()));
 
-        // Overview Section
-        builder
-            .setOverviewTitle(labels.get("overview"))
-            .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
-            .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
-            .addOverviewItem(labels.get("location"), getValue(app.jobLocation()))
-            .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
-            .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
-            .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
-            .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
-            .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
-            .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
-            .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
-            .setOverviewDescriptionTitle(labels.get("jobDescription"))
-            .setOverviewDescription(job.jobDescriptionEN());
+        if (app.jobId() != null) {
+            JobDetailDTO job = jobService.getJobDetails(app.jobId());
+            // Overview Section if no in preview
+            builder
+                .setOverviewTitle(labels.get("overview"))
+                .addOverviewItem(labels.get("supervisor"), getValue(app.supervisingProfessorName()))
+                .addOverviewItem(labels.get("researchGroup"), getValue(app.researchGroup()))
+                .addOverviewItem(labels.get("location"), getValue(app.jobLocation()))
+                .addOverviewItem(labels.get("fieldsOfStudies"), getValue(job.fieldOfStudies()))
+                .addOverviewItem(labels.get("researchArea"), getValue(job.researchArea()))
+                .addOverviewItem(labels.get("workload"), formatWorkload(job.workload(), labels.get("hoursPerWeek")))
+                .addOverviewItem(labels.get("duration"), formatContractDuration(job.contractDuration(), labels.get("years")))
+                .addOverviewItem(labels.get("fundingType"), getValue(job.fundingType()))
+                .addOverviewItem(labels.get("startDate"), formatDate(job.startDate()))
+                .addOverviewItem(labels.get("endDate"), formatDate(job.endDate()))
+                .setOverviewDescriptionTitle(labels.get("jobDescription"))
+                .setOverviewDescription(job.jobDescriptionEN());
+        }
 
         // Personal Statements Group
         builder.startSectionGroup(labels.get("personalStatements"));
@@ -328,13 +325,12 @@ public class PDFExportService {
     /**
      * Generates filename for application PDF
      *
-     * @param applicationId    the application ID
+     * @param jobTitle         the title of the job of the application
      * @param applicationLabel label for application used as ending of the filename
      * @return sanitized filename for the PDF
      */
-    public String generateApplicationFilename(UUID applicationId, String applicationLabel) {
-        ApplicationDetailDTO app = applicationService.getApplicationDetail(applicationId);
-        return sanitizeFilename(app.jobTitle()) + "_" + applicationLabel + ".pdf";
+    public String generateApplicationFilename(String jobTitle, String applicationLabel) {
+        return sanitizeFilename(jobTitle) + "_" + applicationLabel + ".pdf";
     }
 
     /**

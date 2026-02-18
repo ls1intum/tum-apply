@@ -1,10 +1,14 @@
 package de.tum.cit.aet.usermanagement.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.tum.cit.aet.AbstractResourceTest;
 import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.notification.service.AsyncEmailSender;
+import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.constants.ResearchGroupState;
 import de.tum.cit.aet.usermanagement.domain.Department;
 import de.tum.cit.aet.usermanagement.domain.ResearchGroup;
@@ -15,6 +19,7 @@ import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
+import de.tum.cit.aet.usermanagement.service.ResearchGroupService;
 import de.tum.cit.aet.usermanagement.web.ResearchGroupResource;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
@@ -30,7 +35,10 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Integration tests for {@link ResearchGroupResource}.
@@ -64,6 +72,11 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
     @Autowired
     MvcTestClient api;
 
+    @Autowired
+    ResearchGroupService researchGroupService;
+
+    private AsyncEmailSender asyncEmailSenderMock;
+
     School testSchool;
     Department testDepartment;
     ResearchGroup researchGroup;
@@ -73,6 +86,8 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
 
     @BeforeEach
     void setup() {
+        asyncEmailSenderMock = Mockito.mock(AsyncEmailSender.class);
+        ReflectionTestUtils.setField(researchGroupService, "emailSender", asyncEmailSenderMock);
         databaseCleaner.clean();
         testSchool = SchoolTestData.saved(schoolRepository, "School of Computation, Information and Technology", "CIT");
         testDepartment = DepartmentTestData.saved(departmentRepository, "Computer Science", testSchool);
@@ -399,6 +414,10 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             assertThat(result.name()).isEqualTo("New Research Lab");
             assertThat(result.state()).isEqualTo(ResearchGroupState.DRAFT);
             assertThat(result.abbreviation()).isEqualTo("NRL");
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
+            assertThat(emailCaptor.getValue().getCustomSubject()).isEqualTo("[TEST] New Research Group Request - New Research Lab");
         }
 
         @Test
@@ -505,6 +524,12 @@ public class ResearchGroupResourceTest extends AbstractResourceTest {
             api
                 .with(JwtPostProcessors.jwtUser(employeeUser.getUserId(), "ROLE_APPLICANT"))
                 .postAndRead(API_BASE_PATH + "/employee-request", request, Void.class, 204);
+
+            ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+            verify(asyncEmailSenderMock, times(1)).sendAsync(emailCaptor.capture());
+            assertThat(emailCaptor.getValue().getCustomSubject()).isEqualTo(
+                "[TEST] Employee Research Group Access Request - employee@tum.de"
+            );
         }
 
         @Test
