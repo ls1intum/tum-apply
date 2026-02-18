@@ -24,6 +24,8 @@ public interface DepartmentRepository extends TumApplyJpaRepository<Department, 
 
     List<Department> findBySchoolSchoolIdOrderByNameAsc(UUID schoolId);
 
+    boolean existsBySchoolSchoolId(UUID schoolId);
+
     List<Department> findAllByOrderBySchoolSchoolIdAscNameAsc();
 
     @Query(

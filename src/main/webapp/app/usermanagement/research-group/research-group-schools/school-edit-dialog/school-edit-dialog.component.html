@@ -1,0 +1,42 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4 py-4">
+  <div>
+    <jhi-string-input
+      [control]="form.controls.name"
+      [model]="form.controls.name.value"
+      [label]="translationKey + '.nameLabel'"
+      [placeholder]="translationKey + '.namePlaceholder'"
+      [required]="true"
+      [shouldTranslate]="true"
+    />
+  </div>
+
+  <div>
+    <jhi-string-input
+      [control]="form.controls.abbreviation"
+      [model]="form.controls.abbreviation.value"
+      [label]="translationKey + '.abbreviationLabel'"
+      [placeholder]="translationKey + '.abbreviationPlaceholder'"
+      [required]="true"
+      [shouldTranslate]="true"
+    />
+  </div>
+
+  <div class="flex justify-end gap-4 mt-8 pt-4 border-t border-border-default">
+    <jhi-button
+      [label]="'button.cancel'"
+      severity="secondary"
+      variant="outlined"
+      (click)="onCancel()"
+      [disabled]="isSubmitting()"
+      [shouldTranslate]="true"
+    />
+    <jhi-button
+      [label]="isEditMode() ? 'button.save' : translationKey + '.createButton'"
+      severity="primary"
+      type="submit"
+      [loading]="isSubmitting()"
+      [disabled]="form.invalid || isSubmitting()"
+      [shouldTranslate]="true"
+    />
+  </div>
+</form>

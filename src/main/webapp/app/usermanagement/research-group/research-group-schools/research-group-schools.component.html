@@ -1,0 +1,61 @@
+<div class="page-container">
+  <div class="header-container">
+    <div class="page-header">
+      <h1 jhiTranslate="researchGroup.schools.header">Schools</h1>
+    </div>
+    <jhi-button
+      [label]="'researchGroup.schools.createButton'"
+      icon="plus"
+      severity="primary"
+      (click)="onCreateSchool()"
+      [shouldTranslate]="true"
+    />
+  </div>
+
+  <jhi-search-filter-sort-bar
+    [searchText]="'researchGroup.schools.searchPlaceholder' | translate"
+    [totalRecords]="total()"
+    [singleEntity]="'researchGroup.schools.entity' | translate"
+    [multipleEntities]="'researchGroup.schools.entities' | translate"
+    [filters]="[]"
+    (searchOutput)="onSearchEmit($event)"
+    (sortOutput)="loadOnSortEmit($event)"
+    [sortableFields]="sortableFields"
+  />
+
+  <div class="table-wrapper">
+    <jhi-dynamic-table
+      [columns]="columns()"
+      [data]="tableData()"
+      [totalRecords]="total()"
+      [page]="pageNumber()"
+      [rows]="pageSize()"
+      [selectable]="false"
+      (lazyLoad)="loadOnTableEmit($event)"
+    />
+  </div>
+
+  <ng-template #actionTemplate let-school>
+    <div class="flex gap-2 justify-end items-center">
+      <jhi-button
+        icon="pencil"
+        [ariaLabel]="'button.edit'"
+        [tooltip]="'button.edit' | translate"
+        severity="primary"
+        variant="text"
+        [shouldTranslate]="true"
+        (click)="onEditSchool(school.schoolId)"
+      />
+      <jhi-confirm-dialog
+        [iconOnly]="true"
+        [header]="'researchGroup.schools.deleteDialog.header' | translate"
+        [message]="'researchGroup.schools.deleteDialog.message' | translate"
+        confirmIcon="trash"
+        (confirmed)="onDeleteSchool(school.schoolId)"
+        severity="danger"
+        [label]="'button.delete' | translate"
+        [tooltip]="'button.delete' | translate"
+      />
+    </div>
+  </ng-template>
+</div>
