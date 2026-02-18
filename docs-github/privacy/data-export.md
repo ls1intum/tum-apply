@@ -26,7 +26,7 @@ The export is produced asynchronously and delivered via a token-based download l
 4. After successful generation, the user receives an email with a download link.
 5. The user downloads a ZIP file containing JSON summary + documents + images.
 
-**Button behavior in UI**
+#### Button behavior in UI
 
 - The export button is disabled when:
   - the user is not logged in,
@@ -56,7 +56,7 @@ The export is produced asynchronously and delivered via a token-based download l
 
 ### 1.4 Server-side architecture
 
-**Core components**
+#### Core components
 
 - `UserDataExportResource`
   - REST entry points for status, request creation, and download.
@@ -76,7 +76,7 @@ The export is produced asynchronously and delivered via a token-based download l
 - `AsyncEmailSender`
   - Sends "export ready" notifications asynchronously.
 
-**Key design principle**
+#### Key design principle
 
 Export section collection is provider-based (Open/Closed style): new export sections can be added without changing the orchestrator logic.
 
@@ -94,12 +94,12 @@ Export section collection is provider-based (Open/Closed style): new export sect
 - `DELETED`
 - `FAILED`
 
-**Downloadable states**
+#### Downloadable states
 
 - `EMAIL_SENT`
 - `DOWNLOADED`
 
-**Typical happy path**
+#### Typical happy path
 
 1. User requests export → state `REQUESTED`.
 2. Scheduled processor starts work → state `IN_CREATION`.
@@ -209,7 +209,7 @@ Security and robustness details:
 
 ## 3) Error and conflict model
 
-### Data export
+### Data export errors
 
 - `TooManyRequestsException`
   - Weekly request cooldown violated.
@@ -222,7 +222,7 @@ Security and robustness details:
 
 ## 4) Source map
 
-### Data export
+### Data export source map
 
 - `de/tum/cit/aet/core/web/UserDataExportResource.java`
 - `de/tum/cit/aet/core/service/UserDataExportService.java`

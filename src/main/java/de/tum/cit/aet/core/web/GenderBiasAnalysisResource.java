@@ -2,7 +2,7 @@ package de.tum.cit.aet.core.web;
 
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisRequest;
 import de.tum.cit.aet.core.dto.GenderBiasAnalysisResponse;
-import de.tum.cit.aet.core.security.annotations.Professor;
+import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.core.service.GenderBiasAnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class GenderBiasAnalysisResource {
      * @param request the text to analyze
      * @return the analysis result
      */
-    @Professor
+    @ProfessorOrEmployee
     @PostMapping("/analyze")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeText(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         log.info("REST request to analyze text for gender bias, language: {}", request.language());
@@ -47,7 +47,7 @@ public class GenderBiasAnalysisResource {
      * @param request the HTML to analyze
      * @return the analysis result
      */
-    @Professor
+    @ProfessorOrEmployee
     @PostMapping("/analyze-html")
     public ResponseEntity<GenderBiasAnalysisResponse> analyzeHtmlContent(@Valid @RequestBody GenderBiasAnalysisRequest request) {
         log.info("REST request to analyze HTML content for gender bias, language: {}", request.language());

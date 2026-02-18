@@ -46,7 +46,7 @@ Both flows support runtime limits and dry-run operation to make production execu
 
 ### 2.1 Server-side architecture
 
-**Core components**
+#### Core components
 
 - `UserRetentionJob`
   - Scheduled execution, runtime boundaries, pagination strategy.
@@ -130,7 +130,7 @@ For dry-run, paging advances through pages; for real deletion, paging repeatedly
 
 ### 3.1 Server-side architecture
 
-**Core components**
+#### Core components
 
 - `ApplicantRetentionJob`
   - Scheduled execution with runtime guardrails.
