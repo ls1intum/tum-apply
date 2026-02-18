@@ -58,6 +58,11 @@ public class PageUtil {
         DEPARTMENTS_ADMIN(Set.of("name", "school.name")),
 
         /**
+         * Sortable columns used in admin schools listings.
+         */
+        SCHOOLS_ADMIN(Set.of("name", "abbreviation")),
+
+        /**
          * Sortable columns used in applicant's application listings.
          */
         APPLICANT_APPLICATIONS(Set.of("createdAt"));

@@ -9,11 +9,13 @@ import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.SchoolCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolShortDTO;
+import de.tum.cit.aet.usermanagement.repository.DepartmentRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.DatabaseCleaner;
 import de.tum.cit.aet.utility.MvcTestClient;
 import de.tum.cit.aet.utility.security.JwtPostProcessors;
+import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
 import java.util.List;
@@ -37,6 +39,9 @@ public class SchoolResourceTest extends AbstractResourceTest {
 
     @Autowired
     SchoolRepository schoolRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -271,6 +276,80 @@ public class SchoolResourceTest extends AbstractResourceTest {
             assertThat(result).isNotNull();
             assertThat(result).allMatch(s -> s.departments() != null);
             assertThat(result).allMatch(s -> s.departments().isEmpty()); // Currently no departments
+        }
+    }
+
+    @Nested
+    class UpdateSchool {
+
+        @Test
+        void adminCanUpdateSchool() {
+            SchoolCreationDTO updateDTO = new SchoolCreationDTO("Updated School", "UPD");
+
+            SchoolShortDTO result = api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .putAndRead(API_BASE_PATH + "/update/" + testSchool.getSchoolId(), updateDTO, SchoolShortDTO.class, 200);
+
+            assertThat(result).isNotNull();
+            assertThat(result.schoolId()).isEqualTo(testSchool.getSchoolId());
+            assertThat(result.name()).isEqualTo("Updated School");
+            assertThat(result.abbreviation()).isEqualTo("UPD");
+        }
+
+        @Test
+        void nonAdminCannotUpdateSchool() {
+            SchoolCreationDTO updateDTO = new SchoolCreationDTO("Updated School", "UPD");
+
+            api
+                .with(JwtPostProcessors.jwtUser(regularUser.getUserId(), "ROLE_APPLICANT"))
+                .putAndRead(API_BASE_PATH + "/update/" + testSchool.getSchoolId(), updateDTO, Void.class, 403);
+        }
+
+        @Test
+        void cannotUpdateSchoolWithDuplicateName() {
+            SchoolCreationDTO updateDTO = new SchoolCreationDTO(secondSchool.getName(), "UPD");
+
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .putAndRead(API_BASE_PATH + "/update/" + testSchool.getSchoolId(), updateDTO, Void.class, 409);
+        }
+    }
+
+    @Nested
+    class DeleteSchool {
+
+        @Test
+        void adminCanDeleteSchoolWhenNoDepartmentsLinked() {
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .deleteAndRead(API_BASE_PATH + "/delete/" + secondSchool.getSchoolId(), null, Void.class, 204);
+
+            assertThat(schoolRepository.findById(secondSchool.getSchoolId())).isEmpty();
+        }
+
+        @Test
+        void cannotDeleteSchoolWhenDepartmentsLinked() {
+            DepartmentTestData.saved(departmentRepository, "Linked Department", testSchool);
+
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .deleteAndRead(API_BASE_PATH + "/delete/" + testSchool.getSchoolId(), null, Void.class, 400);
+
+            assertThat(schoolRepository.findById(testSchool.getSchoolId())).isPresent();
+        }
+
+        @Test
+        void nonAdminCannotDeleteSchool() {
+            api
+                .with(JwtPostProcessors.jwtUser(regularUser.getUserId(), "ROLE_APPLICANT"))
+                .deleteAndRead(API_BASE_PATH + "/delete/" + secondSchool.getSchoolId(), null, Void.class, 403);
+        }
+
+        @Test
+        void deleteSchoolReturns404ForUnknownSchool() {
+            api
+                .with(JwtPostProcessors.jwtUser(adminUser.getUserId(), "ROLE_ADMIN"))
+                .deleteAndRead(API_BASE_PATH + "/delete/" + UUID.randomUUID(), null, Void.class, 404);
         }
     }
 }

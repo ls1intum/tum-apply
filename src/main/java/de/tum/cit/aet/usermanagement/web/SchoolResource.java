@@ -1,16 +1,21 @@
 package de.tum.cit.aet.usermanagement.web;
 
+import de.tum.cit.aet.core.dto.PageDTO;
+import de.tum.cit.aet.core.dto.PageResponseDTO;
+import de.tum.cit.aet.core.dto.SortDTO;
 import de.tum.cit.aet.core.security.annotations.Admin;
 import de.tum.cit.aet.core.security.annotations.Public;
 import de.tum.cit.aet.usermanagement.dto.SchoolCreationDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolDTO;
 import de.tum.cit.aet.usermanagement.dto.SchoolShortDTO;
 import de.tum.cit.aet.usermanagement.service.SchoolService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +59,28 @@ public class SchoolResource {
     }
 
     /**
+     * Get paginated schools for admin view with optional search.
+     */
+    @Admin
+    @GetMapping("/admin/search")
+    public ResponseEntity<PageResponseDTO<SchoolShortDTO>> getSchoolsForAdmin(
+        @ParameterObject @Valid @ModelAttribute PageDTO pageDTO,
+        @RequestParam(required = false) String searchQuery,
+        @ParameterObject @Valid @ModelAttribute SortDTO sortDTO,
+        HttpServletRequest request
+    ) {
+        log.info(
+            "GET /api/schools/admin/search - Fetching schools for admin with page={}, searchQuery={}, sort={}, uri={}",
+            pageDTO,
+            searchQuery,
+            sortDTO,
+            request.getRequestURI()
+        );
+        PageResponseDTO<SchoolShortDTO> response = schoolService.getSchoolsForAdmin(pageDTO, searchQuery, sortDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Get all schools with their departments (includes nested department data).
      *
      * @return HTTP 200 OK with list of all schools with their departments
@@ -78,5 +105,27 @@ public class SchoolResource {
         log.info("GET /api/schools/{} - Fetching school by ID with departments", id);
         SchoolDTO school = schoolService.getSchoolByIdWithDepartments(id);
         return ResponseEntity.ok(school);
+    }
+
+    /**
+     * Update an existing school.
+     */
+    @Admin
+    @PutMapping("/update/{id}")
+    public ResponseEntity<SchoolShortDTO> updateSchool(@PathVariable UUID id, @Valid @RequestBody SchoolCreationDTO dto) {
+        log.info("PUT /api/schools/{} - Updating school: {}", id, dto.name());
+        SchoolShortDTO updated = schoolService.updateSchool(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * Delete a school.
+     */
+    @Admin
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteSchool(@PathVariable UUID id) {
+        log.info("DELETE /api/schools/{} - Deleting school", id);
+        schoolService.deleteSchool(id);
+        return ResponseEntity.noContent().build();
     }
 }
