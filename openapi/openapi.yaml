@@ -1453,10 +1453,10 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/JobFiltersDTO'}
-  /api/jobs/professor:
+  /api/jobs/research-group:
     get:
       tags: [job-resource]
-      operationId: getJobsByProfessor
+      operationId: getJobsForCurrentResearchGroup
       parameters:
       - name: pageSize
         in: query
@@ -1746,6 +1746,18 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/ResearchGroupDTO'}
+  /api/research-groups/professors:
+    get:
+      tags: [research-group-resource]
+      operationId: getResearchGroupProfessors
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/UserShortDTO'}
   /api/research-groups/{id}:
     get:
       tags: [research-group-resource]
