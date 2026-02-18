@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.retention;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.IntegrationTest;
-import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -31,9 +30,12 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
+import de.tum.cit.aet.utility.testdata.ApplicationReviewTestData;
+import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
 import de.tum.cit.aet.utility.testdata.InternalCommentTestData;
+import de.tum.cit.aet.utility.testdata.InterviewTestData;
 import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
@@ -177,31 +179,20 @@ class ApplicantRetentionServiceIntegrationTest {
         );
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Retention Job", JobState.PUBLISHED, null);
-
-        InterviewProcess interviewProcess = new InterviewProcess();
-        interviewProcess.setJob(job);
-        interviewProcess = interviewProcessRepository.save(interviewProcess);
-
-        Application application = new Application();
-        application.setJob(job);
-        application.setApplicant(applicant);
-        application.setState(ApplicationState.REJECTED);
-        application = applicationRepository.saveAndFlush(application);
-
-        Interviewee interviewee = new Interviewee();
-        interviewee.setApplication(application);
-        interviewee.setInterviewProcess(interviewProcess);
-        interviewee = intervieweeRepository.save(interviewee);
+        InterviewProcess interviewProcess = InterviewTestData.savedProcess(interviewProcessRepository, job);
+        Application application = applicationRepository.saveAndFlush(ApplicationTestData.rejected(job, applicant));
+        Interviewee interviewee = InterviewTestData.savedInterviewee(intervieweeRepository, application, interviewProcess);
 
         if (forceLastModifiedAt != null) {
             forceApplicationLastModified(application.getApplicationId(), forceLastModifiedAt);
         }
 
-        ApplicationReview review = new ApplicationReview();
-        review.setApplication(application);
-        review.setReviewedBy(professor);
-        review.setReason("Outdated application");
-        review = applicationReviewRepository.save(review);
+        ApplicationReview review = ApplicationReviewTestData.saved(
+            applicationReviewRepository,
+            application,
+            professor,
+            "Outdated application"
+        );
 
         InternalComment comment = InternalCommentTestData.saved(internalCommentRepository, application, professor);
 
@@ -228,20 +219,17 @@ class ApplicantRetentionServiceIntegrationTest {
         Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Retention Job", JobState.PUBLISHED, null);
 
         // Old application
-        Application oldApp = new Application();
-        oldApp.setJob(job);
-        oldApp.setApplicant(applicant);
-        oldApp.setState(ApplicationState.REJECTED);
-        oldApp = applicationRepository.saveAndFlush(oldApp);
+        Application oldApp = applicationRepository.saveAndFlush(ApplicationTestData.rejected(job, applicant));
 
         // Make it "old" in DB
         forceApplicationLastModified(oldApp.getApplicationId(), LocalDateTime.now(ZoneOffset.UTC).minusDays(3));
 
-        ApplicationReview oldReview = new ApplicationReview();
-        oldReview.setApplication(oldApp);
-        oldReview.setReviewedBy(professor);
-        oldReview.setReason("Outdated application");
-        oldReview = applicationReviewRepository.save(oldReview);
+        ApplicationReview oldReview = ApplicationReviewTestData.saved(
+            applicationReviewRepository,
+            oldApp,
+            professor,
+            "Outdated application"
+        );
 
         DocumentDictionary oldDict = DocumentTestData.savedDictionaryWithMockDocument(
             documentRepository,
@@ -254,11 +242,7 @@ class ApplicantRetentionServiceIntegrationTest {
         );
 
         // Recent application
-        Application recentApp = new Application();
-        recentApp.setJob(job);
-        recentApp.setApplicant(applicant);
-        recentApp.setState(ApplicationState.SENT);
-        recentApp = applicationRepository.saveAndFlush(recentApp);
+        Application recentApp = applicationRepository.saveAndFlush(ApplicationTestData.sent(job, applicant));
 
         forceApplicationLastModified(recentApp.getApplicationId(), LocalDateTime.now(ZoneOffset.UTC).minusHours(6));
 
