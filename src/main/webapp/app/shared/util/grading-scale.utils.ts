@@ -246,6 +246,44 @@ export function normalizeLimitsForGrade(grade: string, limits: GradingScaleLimit
 }
 
 /**
+ * Checks if a grade input contains invalid characters or formatting.
+ * Shows warning for:
+ * - '+' or '-' or '*' not directly following a letter or multiple occurrences of these modifiers
+ * - '%' not directly following a number or multiple occurrences of '%'
+ * - '.' or ',' not directly between numbers or multiple occurrences of these characters
+ * - Other special characters
+ */
+export function shouldShowGradeWarning(grade: string): boolean {
+  if (!grade || grade.trim() === '') {
+    return false;
+  }
+
+  const trimmed = grade.trim();
+
+  // Check for special characters other than +, -, *, %, . and ,
+  if (/[^A-Za-z0-9+\-*%.,\s]/.test(trimmed)) {
+    return true;
+  }
+
+  // Check for '+', '-' or '*' not directly following a letter or multiple occurrences of these modifiers
+  if ((trimmed.match(/[+\-*]/g)?.length ?? 0) > 1 || /(^|[^A-Za-z])[+\-*]/.test(trimmed)) {
+    return true;
+  }
+
+  // Check for '%' not directly following a number or multiple occurrences of '%'
+  if ((trimmed.match(/%/g)?.length ?? 0) > 1 || /(^|[^0-9])%/.test(trimmed)) {
+    return true;
+  }
+
+  // Check for '.' or ',' not directly between numbers or multiple occurrences of these characters
+  if ((trimmed.match(/[.,]/g)?.length ?? 0) > 1 || /(^|[^0-9])[.,]/.test(trimmed) || /[.,]($|[^0-9])/.test(trimmed)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Sets or removes a specific error on a FormControl without affecting other errors
  */
 export function setControlError(control: AbstractControl, errorKey: string, hasError: boolean): void {

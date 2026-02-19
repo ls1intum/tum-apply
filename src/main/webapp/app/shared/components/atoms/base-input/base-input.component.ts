@@ -22,6 +22,7 @@ export abstract class BaseInputDirective<T> {
   tooltipText = input<string | undefined>(undefined);
   autofocus = input<boolean>(false);
   errorEnabled = input<boolean>(true);
+  warningText = input<string | undefined>(undefined);
   customErrorKey = input<string | undefined>(undefined);
   helperTextLeft = input<string | undefined>(undefined);
   helperTextRight = input<string | undefined>(undefined);

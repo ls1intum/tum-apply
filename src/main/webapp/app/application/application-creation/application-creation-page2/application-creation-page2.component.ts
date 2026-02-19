@@ -15,7 +15,12 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { StringInputComponent } from '../../../shared/components/atoms/string-input/string-input.component';
 import { ApplicationForApplicantDTO } from '../../../generated/model/applicationForApplicantDTO';
 import { DocumentInformationHolderDTO } from '../../../generated/model/documentInformationHolderDTO';
-import { GradingScaleLimitsResult, detectGradingScale, normalizeLimitsForGrade } from '../../../shared/util/grading-scale.utils';
+import {
+  GradingScaleLimitsResult,
+  detectGradingScale,
+  normalizeLimitsForGrade,
+  shouldShowGradeWarning,
+} from '../../../shared/util/grading-scale.utils';
 
 import { GradingScaleEditDialogComponent } from './grading-scale-edit-dialog/grading-scale-edit-dialog';
 
@@ -125,6 +130,18 @@ export default class ApplicationCreationPage2Component {
       upperLimit: limits.upperLimit,
       lowerLimit: limits.lowerLimit,
     });
+  });
+
+  warningTextBachelorGrade = computed(() => {
+    this.currentLang();
+    const grade = this.bachelorGradeValue() ?? '';
+    return shouldShowGradeWarning(grade) ? this.translateService.instant('entity.applicationPage2.warnText') : '';
+  });
+
+  warningTextMasterGrade = computed(() => {
+    this.currentLang();
+    const grade = this.masterGradeValue() ?? '';
+    return shouldShowGradeWarning(grade) ? this.translateService.instant('entity.applicationPage2.warnText') : '';
   });
 
   private formValue = toSignal(this.page2Form.valueChanges.pipe(debounceTime(100), distinctUntilChanged(deepEqual)), {

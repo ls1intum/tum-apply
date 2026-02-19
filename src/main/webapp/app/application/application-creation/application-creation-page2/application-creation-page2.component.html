@@ -52,6 +52,7 @@
           [helperTextLeft]="helperTextBachelorGrade()"
           [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
           (helperTextRightClick)="onChangeGradingScale('bachelor')"
+          [warningText]="warningTextBachelorGrade()"
         />
       </div>
     </div>
@@ -106,6 +107,7 @@
           [helperTextLeft]="helperTextMasterGrade()"
           [helperTextRight]="'entity.applicationPage2.helperText.changeScale' | translate"
           (helperTextRightClick)="onChangeGradingScale('master')"
+          [warningText]="warningTextMasterGrade()"
         />
       </div>
     </div>

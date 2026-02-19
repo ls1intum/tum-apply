@@ -402,6 +402,7 @@
         "gradingScale": "Scale: {{upperLimit}} (best) to {{lowerLimit}} (pass)",
         "changeScale": "Change Scale"
       },
+      "warnText": "Unusual format, please check your entry",
       "tooltip": {
         "gradeUpperLimit": "Enter the highest achievable grade in your degree grading system (e.g. 1.0 in Germany).",
         "gradeLowerLimit": "Enter the lowest passing grade in your degree grading system (e.g. 4.0 in Germany).",
