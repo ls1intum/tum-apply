@@ -3,7 +3,6 @@ package de.tum.cit.aet.core.retention;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.IntegrationTest;
-import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
 import de.tum.cit.aet.core.constants.DocumentType;
@@ -23,8 +22,10 @@ import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import de.tum.cit.aet.usermanagement.repository.SchoolRepository;
 import de.tum.cit.aet.usermanagement.repository.UserRepository;
 import de.tum.cit.aet.utility.testdata.ApplicantTestData;
+import de.tum.cit.aet.utility.testdata.ApplicationTestData;
 import de.tum.cit.aet.utility.testdata.DepartmentTestData;
 import de.tum.cit.aet.utility.testdata.DocumentTestData;
+import de.tum.cit.aet.utility.testdata.JobTestData;
 import de.tum.cit.aet.utility.testdata.ResearchGroupTestData;
 import de.tum.cit.aet.utility.testdata.SchoolTestData;
 import de.tum.cit.aet.utility.testdata.UserTestData;
@@ -92,20 +93,7 @@ class ApplicantRetentionJobIntegrationTest {
         School school = SchoolTestData.savedDefault(schoolRepository);
         researchGroup = ResearchGroupTestData.saved(researchGroupRepository, DepartmentTestData.savedDefault(departmentRepository, school));
 
-        ensureDeletedUserExists(); // safe
-    }
-
-    private void ensureDeletedUserExists() {
-        if (userRepository.existsById(DELETED_USER_ID)) return;
-
-        User deleted = new User();
-        deleted.setUserId(DELETED_USER_ID);
-        deleted.setEmail("deleted@user");
-        deleted.setFirstName("Deleted");
-        deleted.setLastName("User");
-        deleted.setSelectedLanguage("en");
-        deleted.setUniversityId("del" + UUID.randomUUID().toString().replace("-", "").substring(0, 4)); // avoid unique clash
-        userRepository.saveAndFlush(deleted);
+        UserTestData.savedDeletedUser(userRepository, DELETED_USER_ID);
     }
 
     @Test
@@ -129,7 +117,7 @@ class ApplicantRetentionJobIntegrationTest {
         User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         User applicantUser = ApplicantTestData.saveApplicant("applicant-job@test.local", userRepository);
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
-        Job job = createJob(professor);
+        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job for applicant retention", JobState.PUBLISHED, null);
 
         ApplicationWithDocs oldApplication = createApplicationWithLastModified(
             professor,
@@ -155,40 +143,11 @@ class ApplicantRetentionJobIntegrationTest {
         assertThat(documentRepository.findById(recentApplication.dictionary().getDocument().getDocumentId())).isPresent();
     }
 
-    private Job createJob(User professor) {
-        Job job = new Job();
-        job.setTitle("Job for applicant retention");
-        job.setState(JobState.PUBLISHED);
-        job.setSupervisingProfessor(professor);
-        job.setResearchGroup(researchGroup);
-        return jobRepository.saveAndFlush(job);
-    }
-
-    private Application createApplication(Job job, Applicant applicant) {
-        Application application = new Application();
-        application.setJob(job);
-        application.setApplicant(applicant);
-        application.setState(ApplicationState.REJECTED);
-        return applicationRepository.saveAndFlush(application);
-    }
-
-    private DocumentDictionary createDocumentDictionary(User professor, Application application, Applicant applicant, String fileName) {
-        return DocumentTestData.savedDictionaryWithMockDocument(
-            documentRepository,
-            documentDictionaryRepository,
-            professor,
-            application,
-            applicant,
-            DocumentType.CV,
-            fileName
-        );
-    }
-
     private ApplicationWithDocs createApplicationWithLastModified(LocalDateTime lastModifiedAt, String fileName) {
         User professor = UserTestData.saveProfessor(researchGroup, userRepository);
         User applicantUser = ApplicantTestData.saveApplicant("applicant-job@test.local", userRepository);
         Applicant applicant = ApplicantTestData.savedWithExistingUser(applicantRepository, applicantUser);
-        Job job = createJob(professor);
+        Job job = JobTestData.saved(jobRepository, professor, researchGroup, "Job for applicant retention", JobState.PUBLISHED, null);
         return createApplicationWithLastModified(professor, applicant, job, lastModifiedAt, fileName);
     }
 
@@ -199,8 +158,16 @@ class ApplicantRetentionJobIntegrationTest {
         LocalDateTime lastModifiedAt,
         String fileName
     ) {
-        Application application = createApplication(job, applicant);
-        DocumentDictionary dictionary = createDocumentDictionary(professor, application, applicant, fileName);
+        Application application = applicationRepository.saveAndFlush(ApplicationTestData.rejected(job, applicant));
+        DocumentDictionary dictionary = DocumentTestData.savedDictionaryWithMockDocument(
+            documentRepository,
+            documentDictionaryRepository,
+            professor,
+            application,
+            applicant,
+            DocumentType.CV,
+            fileName
+        );
 
         // Update lastModifiedAt in DB to the desired old date
         entityManager
