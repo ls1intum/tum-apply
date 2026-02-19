@@ -150,7 +150,7 @@
       "description": "Select an optional banner image that will be displayed in your job card. Choose from default images or use your research group's image library.",
       "defaultImages": "Default Images",
       "orDivider": "or",
-      "researchGroupImages": "Research Group Image Library",
+      "researchGroupImages": "My Images",
       "researchGroupImagesDescription": "These images are shared across your research group. Upload new images to add them to the library, and select any image to use for this job.",
       "uploadRecommendation": "Recommended: 1200x675px (16:9 ratio) · Max 5MB",
       "uploadFormats": "JPG, JPEG, PNG formats accepted",
