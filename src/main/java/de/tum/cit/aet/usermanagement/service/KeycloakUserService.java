@@ -6,7 +6,6 @@ import de.tum.cit.aet.core.util.StringUtil;
 import de.tum.cit.aet.usermanagement.domain.User;
 import de.tum.cit.aet.usermanagement.dto.KeycloakUserDTO;
 import de.tum.cit.aet.usermanagement.dto.auth.OtpCompleteDTO;
-import de.tum.cit.aet.usermanagement.repository.ResearchGroupRepository;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 public class KeycloakUserService {
 
     private final CurrentUserService currentUserService;
-    private final ResearchGroupRepository researchGroupRepository;
     private final Keycloak keycloak;
     private final String realm;
     private static final int SAFETY_MAX = 1000;
@@ -35,8 +33,7 @@ public class KeycloakUserService {
         @Value("${keycloak.realm}") String realm,
         @Value("${keycloak.admin.client-id}") String clientId,
         @Value("${keycloak.admin.client-secret}") String clientSecret,
-        CurrentUserService currentUserService,
-        ResearchGroupRepository researchGroupRepository
+        CurrentUserService currentUserService
     ) {
         this.realm = realm;
         this.keycloak = KeycloakBuilder.builder()
@@ -47,7 +44,6 @@ public class KeycloakUserService {
             .clientSecret(clientSecret)
             .build();
         this.currentUserService = currentUserService;
-        this.researchGroupRepository = researchGroupRepository;
     }
 
     /**
