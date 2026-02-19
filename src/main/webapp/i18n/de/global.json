@@ -346,9 +346,6 @@
         "SAVING": "Änderungen werden gespeichert...",
         "SAVED": "Änderungen gespeichert",
         "FAILED": "Speichern fehlgeschlagen"
-      },
-      "gradingScale": {
-        "ONE_TO_FOUR": "Deutsche Skala (Eins bis Vier)"
       }
     },
     "applicationPage1": {

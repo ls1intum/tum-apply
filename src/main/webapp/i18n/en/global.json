@@ -346,9 +346,6 @@
         "SAVING": "Saving changes...",
         "SAVED": "Changes saved",
         "FAILED": "Failed saving changes"
-      },
-      "gradingScale": {
-        "ONE_TO_FOUR": "German Scale (One to Four)"
       }
     },
     "applicationPage1": {
