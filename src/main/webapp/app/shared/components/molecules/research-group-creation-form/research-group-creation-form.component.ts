@@ -298,7 +298,9 @@ export class ResearchGroupCreationFormComponent {
       this.setControlValueIfEmpty('tumID', universityId);
       this.setControlValueIfEmpty('researchGroupHead', fullName);
       this.setControlValueIfEmpty('researchGroupContactEmail', email);
-    } catch {}
+    } catch {
+      // If fetching user data fails, we simply don't prefill the form. No need to show an error message.
+    }
   }
 
   private normalizePrefillValue(value: unknown): string {
