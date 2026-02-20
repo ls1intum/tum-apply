@@ -29,6 +29,15 @@ import TranslateDirective from '../../../language/translate.directive';
 
 type FormMode = 'professor' | 'admin';
 
+type SelectedAdminProfessor = {
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  universityId?: string;
+  username?: string;
+};
+
 @Component({
   selector: 'jhi-professor-request-access-form',
   standalone: true,
@@ -63,7 +72,7 @@ export class ResearchGroupCreationFormComponent {
   readonly MIN_ADMIN_SEARCH_LENGTH = 3;
   adminProfessorSearchQuery = signal('');
   adminProfessorCandidates = signal<KeycloakUserDTO[]>([]);
-  selectedAdminProfessor = signal<KeycloakUserDTO | null>(null);
+  selectedAdminProfessor = signal<SelectedAdminProfessor | null>(null);
 
   // School and Department data
   schools = signal<SchoolShortDTO[]>([]);
