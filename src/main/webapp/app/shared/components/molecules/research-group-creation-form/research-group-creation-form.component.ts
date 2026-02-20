@@ -282,7 +282,7 @@ export class ResearchGroupCreationFormComponent {
   clearSelectedAdminProfessor(): void {
     this.selectedAdminProfessor.set(undefined);
     this.form.patchValue({ tumID: '' });
-    this.adminProfessorCandidates.set([]);
+    void this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
   }
 
   isAdminProfessorSelected(user: KeycloakUserDTO): boolean {

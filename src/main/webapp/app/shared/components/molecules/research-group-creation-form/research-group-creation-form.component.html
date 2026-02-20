@@ -101,6 +101,8 @@
       <div class="flex flex-col gap-3">
         <jhi-search-filter-sort-bar
           [searchText]="'researchGroup.adminView.professorSelect.searchPlaceholder' | translate"
+          [showRecords]="adminProfessorSearchQuery().trim().length >= MIN_ADMIN_SEARCH_LENGTH"
+          [totalRecords]="adminProfessorCandidates().length"
           [singleEntity]="'researchGroup.adminView.professorSelect.singleEntity' | translate"
           [multipleEntities]="'researchGroup.adminView.professorSelect.multipleEntities' | translate"
           (searchOutput)="onAdminProfessorSearch($event)"
