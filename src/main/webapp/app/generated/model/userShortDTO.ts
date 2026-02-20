@@ -16,6 +16,7 @@ export interface UserShortDTO {
     lastName?: string;
     researchGroup?: ResearchGroupShortDTO;
     roles?: Array<UserShortDTO.RolesEnum>;
+    universityId?: string;
     userId?: string;
 }
 export namespace UserShortDTO {
