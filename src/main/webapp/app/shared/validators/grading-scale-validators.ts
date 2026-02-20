@@ -1,5 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { GradeType, getGradeType, isLetterInRange, isNumericInRange, setControlError } from 'app/shared/util/grading-scale.utils';
+import { GradeType, getGradeType, isNumericInRange, setControlError } from 'app/shared/util/grading-scale.utils';
 
 /**
  * Validator for a single grading scale limit (upper or lower).
@@ -95,8 +95,9 @@ function setRangeErrors(upperCtrl: AbstractControl, lowerCtrl: AbstractControl):
 }
 
 function checkGradeInRange(type: GradeType, grade: string, upper: string, lower: string): boolean {
+  // Don't check range for letter grades in the validator to allow different metricts like S - F. Check range in conversion as it can't be correctly converted
   if (type === 'letter') {
-    return isLetterInRange(grade, upper, lower);
+    return true;
   }
   if (type === 'numeric' || type === 'percentage') {
     return isNumericInRange(grade, upper, lower);

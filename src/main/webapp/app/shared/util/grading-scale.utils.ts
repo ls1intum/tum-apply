@@ -76,21 +76,6 @@ export function getLetterValue(letter: string): number {
 }
 
 /**
- * Checks if a letter grade is within the specified range
- */
-export function isLetterInRange(grade: string, upper: string, lower: string): boolean {
-  const gradeValue = getLetterValue(grade.trim().toUpperCase());
-  const upperValue = getLetterValue(upper.trim().toUpperCase());
-  const lowerValue = getLetterValue(lower.trim().toUpperCase());
-
-  if (upperValue < lowerValue) {
-    return gradeValue >= upperValue && gradeValue <= lowerValue;
-  } else {
-    return gradeValue >= lowerValue && gradeValue <= upperValue;
-  }
-}
-
-/**
  * Checks if a numeric/percentage grade is within the specified range
  */
 export function isNumericInRange(grade: string, upper: string, lower: string): boolean {
