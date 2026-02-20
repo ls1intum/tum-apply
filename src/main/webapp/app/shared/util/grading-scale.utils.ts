@@ -245,6 +245,11 @@ export function shouldShowGradeWarning(grade: string): boolean {
 
   const trimmed = grade.trim();
 
+  // Check for numeric grades longer than 4 characters (>= 10000)
+  if (/^[0-9][0-9.,]*$/.test(trimmed) && trimmed.replace(/[.,]/g, '').length > 4) {
+    return true;
+  }
+
   // Check for special characters other than +, -, *, %, . and ,
   if (/[^A-Za-z0-9+\-*%.,\s]/.test(trimmed)) {
     return true;
