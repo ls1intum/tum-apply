@@ -462,7 +462,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       component.selectAdminProfessor(selectedProfessor);
       component.clearSelectedAdminProfessor();
 
-      expect(component.selectedAdminProfessor()).toBeUndefined();
+      expect(component.selectedAdminProfessor()).toBeNull();
       expect(component.form.get('tumID')?.value).toBe('');
       expect(component.adminProfessorCandidates()).toEqual([]);
     });

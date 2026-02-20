@@ -63,7 +63,7 @@ export class ResearchGroupCreationFormComponent {
   readonly MIN_ADMIN_SEARCH_LENGTH = 3;
   adminProfessorSearchQuery = signal('');
   adminProfessorCandidates = signal<KeycloakUserDTO[]>([]);
-  selectedAdminProfessor = signal<KeycloakUserDTO | undefined>(undefined);
+  selectedAdminProfessor = signal<KeycloakUserDTO | null>(null);
 
   // School and Department data
   schools = signal<SchoolShortDTO[]>([]);
@@ -280,7 +280,7 @@ export class ResearchGroupCreationFormComponent {
   }
 
   clearSelectedAdminProfessor(): void {
-    this.selectedAdminProfessor.set(undefined);
+    this.selectedAdminProfessor.set(null);
     this.form.patchValue({ tumID: '' });
     void this.onAdminProfessorSearch(this.adminProfessorSearchQuery());
   }
