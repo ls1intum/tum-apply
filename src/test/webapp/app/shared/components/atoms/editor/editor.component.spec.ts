@@ -93,7 +93,7 @@ describe('EditorComponent', () => {
       const comp = fixture.componentInstance;
 
       const htmlSignal = (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue;
-      htmlSignal.set('<p>' + 'x'.repeat(200) + '</p>');
+      htmlSignal.set('<p>' + 'x'.repeat(500) + '</p>');
       fixture.detectChanges();
       await fixture.whenStable();
 
@@ -143,7 +143,7 @@ describe('EditorComponent', () => {
       const fixture = createFixture();
       const comp = fixture.componentInstance;
 
-      (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue.set('<p>' + 'x'.repeat(300) + '</p>');
+      (comp as unknown as { htmlValue: { set: (v: string) => void } }).htmlValue.set('<p>' + 'x'.repeat(500) + '</p>');
       fixture.detectChanges();
 
       const msg = comp.errorMessage();
@@ -253,7 +253,7 @@ describe('EditorComponent', () => {
       const fixture = TestBed.createComponent(EditorComponent);
       const comp = fixture.componentInstance;
 
-      const event = makeEditorEvent('<p>' + 'x'.repeat(700) + '</p>');
+      const event = makeEditorEvent('<p>' + 'x'.repeat(900) + '</p>');
 
       (comp as unknown as { textChanged: (e: unknown) => void }).textChanged(event);
 

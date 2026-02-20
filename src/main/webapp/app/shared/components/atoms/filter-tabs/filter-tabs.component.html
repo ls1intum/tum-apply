@@ -1,8 +1,8 @@
-<div class="flex gap-6 mb-4 border-b border-border-default">
+<div class="flex flex-wrap gap-x-6 gap-y-2 mb-4 border-b border-border-default">
   @for (tab of tabs(); track tab.key) {
     <button
       type="button"
-      class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px cursor-pointer"
+      class="flex items-center gap-2 pb-3 text-sm transition-colors border-b-2 -mb-px cursor-pointer whitespace-nowrap"
       [class]="
         isActive(tab.key) ? 'border-primary-default text-primary-default' : 'border-transparent text-text-primary hover:text-text-primary'
       "

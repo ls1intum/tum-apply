@@ -8,7 +8,7 @@
   [contentStyle]="{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }"
 >
   <div
-    class="flex h-full flex-col gap-6 overflow-y-auto lg:grid lg:overflow-hidden lg:grid-cols-[26rem_auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4 lg:gap-y-6"
+    class="flex h-full flex-col gap-6 overflow-y-auto lg:overflow-hidden lg:grid lg:grid-cols-[26rem_auto_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-4 lg:gap-y-6"
   >
     <!-- Duration-->
     <div class="flex flex-col gap-1 lg:col-start-1 lg:row-start-1">
@@ -147,7 +147,8 @@
                 [date]="date"
                 [duration]="duration()"
                 [breakDuration]="breakDuration()"
-                [existingSlots]="slotsByDate().get(date.toISOString().split('T')[0]) || []"
+                [existingSlots]="slotsByDate().get(dateKeys().get(date.getTime()) ?? '') || []"
+                [serverConflicts]="serverConflicts()"
                 [showApplyAll]="i === 0 && sortedDates().length > 1"
                 [showValidationErrors]="showValidationErrors()"
                 (slotsChange)="updateSlotsForDate(date, $event)"
@@ -155,18 +156,18 @@
                 (remove)="removeDate(date)"
               />
             }
-          </div>
-        </div>
 
-        <div class="mt-2 flex justify-end">
-          <jhi-button
-            [label]="'interview.slots.create.saveSlots'"
-            [shouldTranslate]="true"
-            size="md"
-            (click)="submit()"
-            [loading]="isSubmitting()"
-            [disabled]="isSubmitting()"
-          />
+            <div class="mt-2 flex justify-end py-3">
+              <jhi-button
+                [label]="'interview.slots.create.saveSlots'"
+                [shouldTranslate]="true"
+                size="md"
+                (click)="submit()"
+                [loading]="isSubmitting()"
+                [disabled]="isSubmitting()"
+              />
+            </div>
+          </div>
         </div>
       }
     </div>

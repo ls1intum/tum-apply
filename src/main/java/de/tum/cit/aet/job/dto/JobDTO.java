@@ -25,5 +25,6 @@ public record JobDTO(
     String jobDescriptionDE,
     @NotNull JobState state,
     UUID imageId,
-    String imageUrl
+    String imageUrl,
+    Boolean suitableForDisabled
 ) {}

@@ -32,8 +32,13 @@
       </div>
     }
   </div>
-  <div
-    jhiTranslate="entity.filters.recordsFound"
-    [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
-  ></div>
+  <div class="flex items-center gap-2">
+    <div
+      jhiTranslate="entity.filters.recordsFound"
+      [translateValues]="{ count: totalRecords(), entity: totalRecords() === 1 ? singleEntity() : multipleEntities() }"
+    ></div>
+    <span class="ml-auto">
+      <ng-content select="[records-extra]" />
+    </span>
+  </div>
 </div>

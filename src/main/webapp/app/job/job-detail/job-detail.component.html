@@ -26,7 +26,14 @@
     <!-- Header Section -->
     <div class="header-container mb-8 border-b border-divider-default">
       <div class="flex flex-col gap-4">
-        <h1 class="page-header">{{ job.title }}</h1>
+        @if (!previewData()) {
+          <div class="flex items-center gap-2">
+            <jhi-back-button />
+            <h1 class="page-header">{{ job.title }}</h1>
+          </div>
+        } @else {
+          <h1 class="page-header">{{ job.title }}</h1>
+        }
         <div class="flex flex-row gap-8 flex-wrap md:gap-8 gap-4">
           <div class="flex items-center gap-2 text-sm">
             <fa-icon [icon]="['fas', 'user-tie']" class="icon" />
@@ -102,10 +109,11 @@
         <section>
           <!-- If applicant: show only the job description in the currently selected language (fallback to the other language if empty) -->
           @if (isProfessorOrEmployee()) {
-            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
+            <jhi-info-box class="mb-6 block" [message]="'jobDetailPage.infos.applicantLanguageInfo' | translate" />
+            <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionEN"></h2>
             <div class="wrap-anywhere description-text leading-relaxed mb-6" [innerHTML]="job.jobDescriptionEN || '-'"></div>
 
-            <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
+            <h2 class="section-title text-primary" jhiTranslate="jobDetailPage.sections.jobDescriptionDE"></h2>
             <div class="wrap-anywhere description-text leading-relaxed" [innerHTML]="job.jobDescriptionDE || '-'"></div>
           } @else {
             <h2 class="section-title" jhiTranslate="jobDetailPage.sections.jobDescription"></h2>
@@ -224,6 +232,17 @@
       </div>
     </div>
 
+    <!-- Equal Opportunities Statement -->
+    <section class="mb-8">
+      <h2 class="section-title" jhiTranslate="jobDetailPage.equalOpportunities.title"></h2>
+      <div class="leading-relaxed text-sm p-4 bg-background-surface border-l-4 border-primary rounded-sm wrap-anywhere">
+        <span jhiTranslate="jobDetailPage.equalOpportunities.baseText"></span>
+        @if (job.suitableForDisabled) {
+          <span class="block mt-2" jhiTranslate="jobDetailPage.equalOpportunities.suitableText"></span>
+        }
+      </div>
+    </section>
+
     <!-- Data Protection Information -->
     <section class="mb-8">
       <h2 class="section-title" jhiTranslate="jobDetailPage.sections.dataProtection"></h2>
@@ -232,20 +251,5 @@
         [innerHTML]="'jobDetailPage.dataPrivacy.dataProtectionText' | translate"
       ></div>
     </section>
-
-    @if (!previewData()) {
-      <section class="mt-8 pt-8 border-t border-divider-default">
-        <div class="flex justify-start">
-          <jhi-button
-            label="button.back"
-            icon="arrow-left"
-            severity="info"
-            variant="outlined"
-            (click)="onBack()"
-            [shouldTranslate]="true"
-          />
-        </div>
-      </section>
-    }
   </div>
 }

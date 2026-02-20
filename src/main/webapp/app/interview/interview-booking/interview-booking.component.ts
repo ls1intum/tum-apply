@@ -36,7 +36,6 @@ export class InterviewBookingComponent {
   // Constants
   readonly MAX_VISIBLE_SLOTS = 8;
 
-  // Signals - State
   bookingData = signal<BookingDTO | null>(null);
   loading = signal(true);
   error = signal(false);
@@ -132,6 +131,7 @@ export class InterviewBookingComponent {
 
   // Constants
   private readonly DATES_PER_PAGE = 4;
+  private readonly initialized = signal(false);
 
   // Services
   private readonly route = inject(ActivatedRoute);
@@ -157,11 +157,13 @@ export class InterviewBookingComponent {
   });
 
   private readonly loadEffect = effect(() => {
-    const year = this.currentYear();
-    const month = this.currentMonthNumber();
     const processId = this.route.snapshot.paramMap.get('processId');
     if (processId !== null && processId !== '') {
-      void this.loadData(processId, year, month);
+      if (!this.initialized()) {
+        void this.loadData(processId);
+      } else {
+        void this.loadData(processId, this.currentYear(), this.currentMonthNumber());
+      }
     }
   });
 
@@ -253,12 +255,28 @@ export class InterviewBookingComponent {
     return `${count} ${this.translateService.instant(key)}`;
   }
 
-  /** Loads booking data from the API with month filter for server-side pagination. */
-  private async loadData(processId: string, year: number, month: number): Promise<void> {
+  /** Loads booking data from server with month filter for server-side pagination. */
+  private async loadData(processId: string, year?: number, month?: number): Promise<void> {
     try {
       this.loading.set(true);
       this.error.set(false);
       const data = await firstValueFrom(this.bookingService.getBookingData(processId, year, month, 0, 100));
+
+      // Auto-select first available month on initial load using first slot's date
+      if (!this.initialized()) {
+        const slots = data.availableSlots;
+        if (slots && slots.length > 0 && slots[0].startDateTime !== undefined && slots[0].startDateTime !== '') {
+          const firstSlotDate = dayjs(slots[0].startDateTime);
+          const now = dayjs();
+          // Calculate calendar month difference for offset
+          const offset = (firstSlotDate.year() - now.year()) * 12 + (firstSlotDate.month() - now.month());
+          if (offset !== 0) {
+            this.currentMonthOffset.set(offset);
+          }
+        }
+        this.initialized.set(true);
+      }
+
       this.bookingData.set(data);
     } catch {
       this.error.set(true);

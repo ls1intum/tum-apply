@@ -38,6 +38,7 @@ import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,10 +56,15 @@ public class ApplicationEvaluationService {
         ApplicationState.SENT,
         ApplicationState.IN_REVIEW,
         ApplicationState.ACCEPTED,
-        ApplicationState.REJECTED
+        ApplicationState.REJECTED,
+        ApplicationState.INTERVIEW
     );
 
-    private static final Set<ApplicationState> REVIEW_STATES = Set.of(ApplicationState.SENT, ApplicationState.IN_REVIEW);
+    private static final Set<ApplicationState> REVIEW_STATES = Set.of(
+        ApplicationState.SENT,
+        ApplicationState.IN_REVIEW,
+        ApplicationState.INTERVIEW
+    );
 
     private static final Set<String> SORTABLE_FIELDS = Set.of("appliedAt", "name", "status", "job");
 
@@ -163,14 +169,18 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Retrieves a paginated and optionally sorted list of applications for a given research group.
+     * Retrieves a paginated and optionally sorted list of applications for a given
+     * research group.
      *
      * @param researchGroupId the {@link UUID} whose applications are to be fetched
-     * @param offsetPageDTO   the {@link OffsetPageDTO} containing pagination information (offset and limit)
+     * @param offsetPageDTO   the {@link OffsetPageDTO} containing pagination
+     *                        information (offset and limit)
      * @param sortDTO         the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic filters to apply
-     * @return an {@link ApplicationEvaluationOverviewListDTO} containing application overviews
-     * and the total number of matching records
+     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic
+     *                        filters to apply
+     * @return an {@link ApplicationEvaluationOverviewListDTO} containing
+     *         application overviews
+     *         and the total number of matching records
      */
     public ApplicationEvaluationOverviewListDTO getAllApplicationsOverviews(
         UUID researchGroupId,
@@ -187,17 +197,24 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Retrieves a window of applications centered around a specific application for the given research group,
-     * applying dynamic filters and sorting. The window size must be a positive odd integer.
+     * Retrieves a window of applications centered around a specific application for
+     * the given research group,
+     * applying dynamic filters and sorting. The window size must be a positive odd
+     * integer.
      *
      * @param applicationId   the ID of the application to center the window on
-     * @param windowSize      the desired size of the window (must be positive and odd)
+     * @param windowSize      the desired size of the window (must be positive and
+     *                        odd)
      * @param researchGroupId the {@link UUID} whose applications are to be fetched
      * @param sortDTO         the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic filters to apply
-     * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications in the window,
-     * total record count, the index of the target application, and its position in the window
-     * @throws IllegalArgumentException if the window size is not a positive odd integer
+     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic
+     *                        filters to apply
+     * @return a {@link ApplicationEvaluationDetailListDTO} containing the
+     *         applications in the window,
+     *         total record count, the index of the target application, and its
+     *         position in the window
+     * @throws IllegalArgumentException if the window size is not a positive odd
+     *                                  integer
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetailsWindow(
         UUID applicationId,
@@ -228,10 +245,12 @@ public class ApplicationEvaluationService {
         // Compute the end index (exclusive), ensuring we don't exceed the total records
         int end = Math.min((int) idx + half + 1, (int) totalRecords);
 
-        // Determine the position of the target application within the returned window list
+        // Determine the position of the target application within the returned window
+        // list
         int windowIndex = (int) idx - start;
 
-        // Create a Pageable with an offset (start index), limit (window size), and the sort criteria
+        // Create a Pageable with an offset (start index), limit (window size), and the
+        // sort criteria
         Pageable pageable = new OffsetPageRequest(start, end - start, sortDTO.toSpringSort(SORTABLE_FIELDS));
 
         List<Application> applicationsPage = getApplicationsDetails(researchGroupId, pageable, filterDTO.getFilters(), searchQuery);
@@ -239,13 +258,17 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Retrieves a paginated and filtered list of application evaluation details for the given research group.
+     * Retrieves a paginated and filtered list of application evaluation details for
+     * the given research group.
      *
      * @param researchGroupId the {@link UUID} whose applications are to be fetched
-     * @param offsetPageDTO   the {@link OffsetPageDTO} containing pagination information (offset and limit)
+     * @param offsetPageDTO   the {@link OffsetPageDTO} containing pagination
+     *                        information (offset and limit)
      * @param sortDTO         the {@link SortDTO} specifying the sorting criteria
-     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic filters to apply
-     * @return a {@link ApplicationEvaluationDetailListDTO} containing the applications and total record count
+     * @param filterDTO       the {@link EvaluationFilterDTO} specifying dynamic
+     *                        filters to apply
+     * @return a {@link ApplicationEvaluationDetailListDTO} containing the
+     *         applications and total record count
      */
     public ApplicationEvaluationDetailListDTO getApplicationsDetails(
         UUID researchGroupId,
@@ -275,12 +298,13 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Collects all documents belonging to the specified application and streams them
+     * Collects all documents belonging to the specified application and streams
+     * them
      * as a single ZIP file to the HTTP response output stream. The ZIP file name is
      * based on the applicant's first and last name.
      *
      * @param applicationId the ID of the application whose documents are downloaded
-     * @param response the HTTP response used to write the ZIP content
+     * @param response      the HTTP response used to write the ZIP content
      * @throws IOException if an I/O error occurs while writing to the response
      */
     public void downloadAllDocumentsForApplication(UUID applicationId, HttpServletResponse response) throws IOException {
@@ -335,7 +359,8 @@ public class ApplicationEvaluationService {
      * Resolves a file name prefix for the given document type.
      *
      * @param documentType the type of document
-     * @return a short, lowercase file name string corresponding to the document type
+     * @return a short, lowercase file name string corresponding to the document
+     *         type
      */
     private String fileName(DocumentType documentType) {
         return switch (documentType) {
@@ -360,11 +385,13 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Helper method to retrieve a paginated list of applications in viewable states for the specified research group,
+     * Helper method to retrieve a paginated list of applications in viewable states
+     * for the specified research group,
      * applying optional dynamic filters.
      *
      * @param researchGroupId the ID of the research group to filter applications by
-     * @param pageable        the {@link Pageable} object containing pagination and sorting information
+     * @param pageable        the {@link Pageable} object containing pagination and
+     *                        sorting information
      * @param dynamicFilters  additional dynamic filters to apply
      * @param searchQuery     optional search query to filter
      * @return a list of matching {@link Application} entities
@@ -379,7 +406,8 @@ public class ApplicationEvaluationService {
     }
 
     /**
-     * Helper method to count the total number of applications in viewable states for the specified research group,
+     * Helper method to count the total number of applications in viewable states
+     * for the specified research group,
      * applying optional dynamic filters.
      *
      * @param researchGroupId the ID of the research group to filter applications by

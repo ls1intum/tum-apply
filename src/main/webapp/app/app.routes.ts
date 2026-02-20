@@ -38,7 +38,7 @@ const routes: Routes = [
   {
     path: 'job/create',
     canActivate: [UserRouteAccessService],
-    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor] },
+    data: { authorities: [UserShortDTO.RolesEnum.Admin, UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
     loadComponent: () => import('./job/job-creation-form/job-creation-form.component').then(m => m.JobCreationFormComponent),
     title: 'global.routes.job.creation',
   },
@@ -204,6 +204,16 @@ const routes: Routes = [
     title: 'global.routes.researchGroup.templates',
   },
   {
+    path: 'research-group/images',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
+    loadComponent: () =>
+      import('./usermanagement/research-group/research-group-images/research-group-images.component').then(
+        m => m.ResearchGroupImagesComponent,
+      ),
+    title: 'global.routes.researchGroup.images',
+  },
+  {
     path: 'research-group/template/new',
     canActivate: [UserRouteAccessService],
     data: { authorities: [UserShortDTO.RolesEnum.Professor, UserShortDTO.RolesEnum.Employee] },
@@ -303,6 +313,18 @@ const routes: Routes = [
     data: { authorities: [UserShortDTO.RolesEnum.Applicant] },
     loadComponent: () => import('./interview/interview-booking/interview-booking.component').then(m => m.InterviewBookingComponent),
     title: 'interview.booking.title',
+  },
+
+  // ======================================================================================
+  // Data Export
+  // ======================================================================================
+  {
+    path: 'data-export/download/:token',
+    canActivate: [UserRouteAccessService],
+    data: { authorities: [] },
+    loadComponent: () =>
+      import('./shared/pages/download-data-export/download-data-export.component').then(m => m.DownloadDataExportComponent),
+    title: 'global.routes.dataExport.download',
   },
 
   // ======================================================================================

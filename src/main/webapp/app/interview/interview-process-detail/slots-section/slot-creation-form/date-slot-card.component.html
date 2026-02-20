@@ -114,8 +114,8 @@
                 @if (range.type !== 'scheduled') {
                   <div
                     class="flex flex-col gap-1 rounded-md pt-1 pb-2 px-2"
-                    [class.border]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
-                    [class.border-negative-default]="range.type === 'single' && conflictingSlotKeys().has(range.id + '_0')"
+                    [class.border]="range.type === 'single' && allConflicts().has(range.id + '_0')"
+                    [class.border-negative-default]="range.type === 'single' && allConflicts().has(range.id + '_0')"
                   >
                     <!-- Time Inputs-->
                     <div class="flex gap-4 mb-3">
@@ -169,9 +169,12 @@
                           [errorEnabled]="false"
                         />
                         @if (showValidationErrors() && !range.location) {
-                          <span class="text-xs text-negative-default mt-1 ml-5 block">
-                            {{ 'interview.slots.create.validation.locationRequired.detail' | translate }}
-                          </span>
+                          <jhi-message
+                            severity="error"
+                            variant="simple"
+                            message="interview.slots.create.validation.locationRequired.detail"
+                            styleClass="inline-message ml-5"
+                          />
                         }
                       </div>
                     </div>
@@ -196,33 +199,76 @@
                                 (click)="removeSlot(rangeIndex, slotIndex)"
                               />
                             </div>
-                            @if (conflictingSlotKeys().get(range.id + '_' + slotIndex)) {
-                              <span class="text-xs font-medium text-negative-default">
-                                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                                {{ 'interview.slots.create.validation.conflict' | translate }}
-                                ({{ conflictingSlotKeys().get(range.id + '_' + slotIndex) }})
-                              </span>
+                            @if (allConflicts().has(range.id + '_' + slotIndex)) {
+                              <jhi-message severity="error" variant="simple" styleClass="inline-message">
+                                <fa-icon [icon]="['fas', 'exclamation-triangle']" class="mr-1" />
+                                @switch (allConflicts().get(range.id + '_' + slotIndex)?.type) {
+                                  @case ('BATCH_INTERNAL') {
+                                    {{ 'interview.slots.create.validation.conflict' | translate }}
+                                    @if (allConflicts().get(range.id + '_' + slotIndex)?.displayTime) {
+                                      ({{ allConflicts().get(range.id + '_' + slotIndex)?.displayTime }})
+                                    }
+                                  }
+                                  @case ('SAME_PROCESS') {
+                                    {{
+                                      'interview.slots.create.validation.conflictSameProcess'
+                                        | translate: { time: allConflicts().get(range.id + '_' + slotIndex)?.displayTime }
+                                    }}
+                                  }
+                                  @case ('BOOKED_OTHER_PROCESS') {
+                                    {{
+                                      'interview.slots.create.validation.conflictBookedOther'
+                                        | translate: { time: allConflicts().get(range.id + '_' + slotIndex)?.displayTime }
+                                    }}
+                                  }
+                                }
+                              </jhi-message>
                             }
                           </div>
                         }
                       </div>
                     } @else if (range.startTime && range.endTime && range.startTime.getTime() >= range.endTime.getTime()) {
-                      <span class="mt-1 text-xs text-negative-default">
-                        {{ 'interview.slots.create.validation.endBeforeStart' | translate }}
-                      </span>
+                      <jhi-message
+                        severity="error"
+                        variant="simple"
+                        message="interview.slots.create.validation.endBeforeStart"
+                        styleClass="inline-message"
+                      />
                     } @else if (range.type === 'range' && range.startTime && range.endTime && range.slots.length === 0) {
-                      <span class="mt-1 text-xs font-medium text-negative-default">
-                        {{ 'interview.slots.create.validation.rangeTooShort' | translate: { duration: range.duration } }}
-                      </span>
+                      <jhi-message
+                        severity="error"
+                        variant="simple"
+                        message="interview.slots.create.validation.rangeTooShort"
+                        [translationParams]="{ duration: range.duration }"
+                        styleClass="inline-message"
+                      />
                     }
 
                     <!-- Conflict Error (Single Slot) -->
-                    @if (range.type === 'single' && conflictingSlotKeys().get(range.id + '_0')) {
-                      <span class="text-xs font-medium text-negative-default">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                        {{ 'interview.slots.create.validation.conflict' | translate }}
-                        ({{ conflictingSlotKeys().get(range.id + '_0') }})
-                      </span>
+                    @if (range.type === 'single' && allConflicts().has(range.id + '_0')) {
+                      <jhi-message severity="error" variant="simple" styleClass="inline-message mt-1">
+                        <fa-icon [icon]="['fas', 'exclamation-triangle']" class="mr-1" />
+                        @switch (allConflicts().get(range.id + '_0')?.type) {
+                          @case ('BATCH_INTERNAL') {
+                            {{ 'interview.slots.create.validation.conflict' | translate }}
+                            @if (allConflicts().get(range.id + '_0')?.displayTime) {
+                              ({{ allConflicts().get(range.id + '_0')?.displayTime }})
+                            }
+                          }
+                          @case ('SAME_PROCESS') {
+                            {{
+                              'interview.slots.create.validation.conflictSameProcess'
+                                | translate: { time: allConflicts().get(range.id + '_0')?.displayTime }
+                            }}
+                          }
+                          @case ('BOOKED_OTHER_PROCESS') {
+                            {{
+                              'interview.slots.create.validation.conflictBookedOther'
+                                | translate: { time: allConflicts().get(range.id + '_0')?.displayTime }
+                            }}
+                          }
+                        }
+                      </jhi-message>
                     }
                   </div>
                 }

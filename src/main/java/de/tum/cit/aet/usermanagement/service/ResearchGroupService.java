@@ -63,6 +63,9 @@ public class ResearchGroupService {
     @Value("${aet.contact-email:tum-apply.aet@xcit.tum.de}")
     private String supportEmail;
 
+    @Value("${aet.environment:}")
+    private String environmentName;
+
     /**
      * Get all members of the current user's research group.
      *
@@ -397,6 +400,8 @@ public class ResearchGroupService {
     /**
      * Creates a research group request from a professor during onboarding.
      * The research group starts in DRAFT state and needs admin approval.
+     * The professor is associated with the research group using the provided universityId and assigned the APPLICANT role.
+     * An email notification is sent to support/administrators to review the new research group request.
      *
      * @param request the professor's research group request
      * @return the created research group in DRAFT state
@@ -425,6 +430,8 @@ public class ResearchGroupService {
         userRepository.save(currentUser);
 
         ensureUserRoleInGroup(currentUser, saved, UserRole.APPLICANT);
+
+        notifySupportOfNewResearchGroupRequest(saved);
 
         return saved;
     }
@@ -528,7 +535,7 @@ public class ResearchGroupService {
 
         Email email = Email.builder()
             .to(support)
-            .customSubject("Employee Research Group Access Request - " + currentUser.getEmail())
+            .customSubject(buildSubjectWithEnvironment("Employee Research Group Access Request - " + currentUser.getEmail()))
             .customBody(emailBody)
             .sendAlways(true)
             .language(Language.ENGLISH)
@@ -632,6 +639,35 @@ public class ResearchGroupService {
         }
     }
 
+    private void notifySupportOfNewResearchGroupRequest(ResearchGroup rg) {
+        String emailBody = String.format(
+            """
+            <html>
+            <body>
+                <h2>New Research Group Request</h2>
+                <p>A new research group has been requested and is awaiting approval.</p>
+
+                <p>Please review and approve or deny this research group request in the admin panel.</p>
+            </body>
+            </html>
+            """
+        );
+
+        User support = new User();
+        support.setEmail(supportEmail);
+        support.setSelectedLanguage(Language.ENGLISH.getCode());
+
+        Email email = Email.builder()
+            .to(support)
+            .customSubject(buildSubjectWithEnvironment("New Research Group Request - " + rg.getName()))
+            .customBody(emailBody)
+            .sendAlways(true)
+            .language(Language.ENGLISH)
+            .build();
+
+        emailSender.sendAsync(email);
+    }
+
     /**
      * Sends a welcome email to a user who has been added to a new research group.
      *
@@ -677,5 +713,12 @@ public class ResearchGroupService {
      */
     private void ensureEmailTemplates(ResearchGroup researchGroup) {
         emailTemplateService.addMissingTemplates(researchGroup);
+    }
+
+    private String buildSubjectWithEnvironment(String subject) {
+        if (environmentName == null || environmentName.isBlank()) {
+            return subject;
+        }
+        return "[" + environmentName.toUpperCase() + "] " + subject;
     }
 }

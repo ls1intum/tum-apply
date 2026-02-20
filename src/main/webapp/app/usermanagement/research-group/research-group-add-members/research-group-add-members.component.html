@@ -1,5 +1,8 @@
 <div class="flex flex-col">
   <div>
+    <div class="mb-3">
+      <jhi-info-box severity="primary" message="researchGroup.members.notice" [shouldTranslate]="true" />
+    </div>
     <!-- Search Bar -->
     <div class="w-full mb-3">
       <jhi-search-filter-sort-bar
@@ -8,7 +11,15 @@
         [singleEntity]="'researchGroup.members.singleEntity' | translate"
         [multipleEntities]="'researchGroup.members.multipleEntities' | translate"
         (searchOutput)="onSearch($event)"
-      />
+      >
+        <span records-extra class="text-sm text-text-secondary">
+          @if (selectedUserCount() === 1) {
+            {{ 'researchGroup.members.selectedCountSingle' | translate: { count: selectedUserCount() } }}
+          } @else if (selectedUserCount() > 1) {
+            {{ 'researchGroup.members.selectedCountMultiple' | translate: { count: selectedUserCount() } }}
+          }
+        </span>
+      </jhi-search-filter-sort-bar>
     </div>
 
     <!-- User List -->
@@ -68,7 +79,7 @@
   </div>
 
   <!-- Pagination -->
-  @if (totalRecords() > 0) {
+  @if (totalRecords() > 0 && totalRecords() > pageSize()) {
     <div class="flex justify-center">
       <p-paginator
         [rows]="pageSize()"
@@ -83,15 +94,13 @@
   <div class="flex justify-end gap-2 mt-4">
     <jhi-button [label]="'button.cancel' | translate" severity="secondary" variant="outlined" (click)="onCancel()" />
 
-    <jhi-confirm-dialog
+    <jhi-button
       [label]="'researchGroup.members.addMembersButton' | translate"
-      [header]="'researchGroup.members.confirmDialog.header' | translate"
-      [message]="'researchGroup.members.confirmDialog.message' | translate"
-      confirmIcon="user-plus"
-      (confirmed)="onAddMembers()"
+      icon="user-plus"
       severity="primary"
       [disabled]="selectedUserCount() === 0"
       [tooltip]="'researchGroup.members.addMembersButton' | translate"
+      (click)="onAddMembers()"
     />
   </div>
 </div>

@@ -97,3 +97,9 @@ management:
   health:
     ldap:
       enabled: false
+
+user:
+  retention:
+    dry-run: ${USER_RETENTION_DRY_RUN:true}
+    batch-size: ${USER_RETENTION_BATCH_SIZE:100}
+    max-runtime-minutes: ${USER_RETENTION_MAX_RUNTIME_MINUTES:5}

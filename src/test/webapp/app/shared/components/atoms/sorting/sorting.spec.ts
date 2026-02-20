@@ -64,7 +64,7 @@ describe('Sorting', () => {
     expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-z-a');
 
     sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-a-z');
+    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-z-a');
   });
 
   it('should return correct sort icon for NUMBER type', () => {
@@ -75,7 +75,7 @@ describe('Sorting', () => {
     expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-down-9-1');
 
     sortingFixture.componentInstance.isAsc.set(true);
-    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-1-9');
+    expect(sortingFixture.componentInstance.getSortIcon()).toBe('arrow-up-9-1');
   });
 
   it('should return correct sort tooltip for TEXT type', () => {

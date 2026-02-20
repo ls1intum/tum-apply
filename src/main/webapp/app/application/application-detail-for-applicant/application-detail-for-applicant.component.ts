@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { ToastService } from 'app/service/toast-service';
 import { firstValueFrom } from 'rxjs';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ActionButton } from 'app/shared/components/atoms/button/button.types';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DocumentViewerComponent } from 'app/shared/components/atoms/document-viewer/document-viewer.component';
@@ -15,6 +16,7 @@ import { getApplicationPDFLabels } from 'app/shared/language/pdf-labels';
 import { TranslateDirective } from 'app/shared/language';
 import { JhiMenuItem, MenuComponent } from 'app/shared/components/atoms/menu/menu.component';
 import { createMenuActionSignals } from 'app/shared/util/util';
+import { ApplicationPDFRequest } from 'app/generated';
 
 import * as DropDownOptions from '../../job/dropdown-options';
 import { ApplicationResourceApiService } from '../../generated/api/applicationResourceApi.service';
@@ -27,6 +29,7 @@ import LocalizedDatePipe from '../../shared/pipes/localized-date.pipe';
   selector: 'jhi-application-detail-for-applicant',
   imports: [
     ButtonComponent,
+    BackButtonComponent,
     FontAwesomeModule,
     ApplicationStateForApplicantsComponent,
     DocumentViewerComponent,
@@ -95,14 +98,16 @@ export default class ApplicationDetailForApplicantComponent {
     if (!app) return items;
 
     // Always add PDF download option
-    items.push({
-      label: 'button.downloadPDF',
-      icon: 'file-pdf',
-      severity: 'primary',
-      command: () => {
-        this.onDownloadPDF();
-      },
-    });
+    if (!this.previewDetailData()) {
+      items.push({
+        label: 'button.downloadPDF',
+        icon: 'file-pdf',
+        severity: 'primary',
+        command: () => {
+          void this.onDownloadPDF();
+        },
+      });
+    }
 
     // Add Withdraw button for SENT/IN_REVIEW states
     if (['SENT', 'IN_REVIEW'].includes(app.applicationState)) {
@@ -139,6 +144,10 @@ export default class ApplicationDetailForApplicantComponent {
 
   readonly shouldShowKebabMenu = this.menuActionSignals.shouldShowKebabMenu;
   readonly individualActionButtons = this.menuActionSignals.individualActionButtons;
+
+  readonly showPdfButtonForPreview = computed<boolean>(() => {
+    return !!this.previewDetailData();
+  });
 
   readonly dropDownOptions = DropDownOptions;
   private applicationService = inject(ApplicationResourceApiService);
@@ -185,12 +194,27 @@ export default class ApplicationDetailForApplicantComponent {
     }
   }
 
-  onDownloadPDF(): void {
-    const applicationId = this.applicationId();
-
+  async onDownloadPDF(): Promise<void> {
+    let req: ApplicationPDFRequest;
     const labels = getApplicationPDFLabels(this.translate);
 
-    this.pdfExportService.exportApplicationToPDF(applicationId, labels, 'response').subscribe(response => {
+    const previewData = this.previewDetailData();
+
+    if (previewData) {
+      req = {
+        application: previewData,
+        labels,
+      };
+    } else {
+      const applicationId = this.applicationId();
+      const application = await firstValueFrom(this.applicationService.getApplicationForDetailPage(applicationId));
+      req = {
+        application,
+        labels,
+      };
+    }
+
+    this.pdfExportService.exportApplicationToPDF(req, 'response').subscribe(response => {
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = 'application.pdf';
 
@@ -257,9 +281,5 @@ export default class ApplicationDetailForApplicantComponent {
         },
       });
     }
-  }
-
-  onBack(): void {
-    this.location.back();
   }
 }

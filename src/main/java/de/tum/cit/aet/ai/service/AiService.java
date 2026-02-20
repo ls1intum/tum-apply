@@ -56,21 +56,22 @@ public class AiService {
      *
      * @param jobFormDTO          the job form data containing description, requirements, and tasks
      * @param descriptionLanguage the language for the generated job description ("de" or "en")
-     * @param jobId               optional job ID - if provided, auto-translates to the other language after streaming
      * @return Flux of content chunks as they are generated
      */
-    public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage, String jobId) {
+    public Flux<String> generateJobApplicationDraftStream(JobFormDTO jobFormDTO, String descriptionLanguage) {
         String input = "de".equals(descriptionLanguage) ? jobFormDTO.jobDescriptionDE() : jobFormDTO.jobDescriptionEN();
 
         Set<String> inclusive = "de".equals(descriptionLanguage) ? GERMAN_INCLUSIVE : ENGLISH_INCLUSIVE;
         Set<String> nonInclusive = "de".equals(descriptionLanguage) ? GERMAN_NON_INCLUSIVE : ENGLISH_NON_INCLUSIVE;
         final String locationText = UiTextFormatter.formatEnumValue(jobFormDTO.location());
-        Flux<String> contentFlux = chatClient
+
+        return chatClient
             .prompt()
             .options(FAST_CHAT_OPTIONS)
             .user(u ->
                 u
                     .text(jobGenerationResource)
+                    .param("descriptionLanguage", descriptionLanguage)
                     .param("jobDescription", input)
                     .param("title", jobFormDTO.title() != null ? jobFormDTO.title() : "")
                     .param("researchArea", jobFormDTO.researchArea() != null ? jobFormDTO.researchArea() : "")
@@ -82,27 +83,10 @@ public class AiService {
             .stream()
             .content()
             .delayElements(Duration.ofMillis(35));
-
-        if (jobId != null) {
-            StringBuilder contentBuilder = new StringBuilder();
-            String targetLang = "de".equals(descriptionLanguage) ? "en" : "de";
-
-            return contentFlux
-                .doOnNext(contentBuilder::append)
-                .doOnComplete(() -> {
-                    String fullContent = contentBuilder.toString();
-                    if (!fullContent.isBlank()) {
-                        translateAndPersistJobDescription(jobId, targetLang, fullContent);
-                    }
-                });
-        }
-
-        return contentFlux;
     }
 
     /**
      * Translates the provided text between German and English.
-     * Automatically detects the source language and translates to the other language.
      * The translation preserves the original text structure and formatting.
      *
      * @param text the text to translate (German or English)

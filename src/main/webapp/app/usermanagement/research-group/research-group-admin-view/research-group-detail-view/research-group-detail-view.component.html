@@ -1,7 +1,10 @@
 <div class="page-container">
   <div class="header-container">
     <div class="page-header">
-      <h1 jhiTranslate="researchGroup.detailView.title"></h1>
+      <div class="flex items-center gap-2">
+        <jhi-back-button />
+        <h1 jhiTranslate="researchGroup.detailView.title"></h1>
+      </div>
     </div>
     <jhi-button [label]="'button.save'" icon="save" [shouldTranslate]="true" [disabled]="!form.valid || isSaving()" (click)="onSave()" />
   </div>
@@ -157,7 +160,5 @@
         </form>
       }
     </div>
-
-    <jhi-button [label]="'button.back'" severity="info" variant="outlined" [shouldTranslate]="true" icon="arrow-left" (click)="goBack()" />
   </div>
 </div>

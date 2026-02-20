@@ -37,24 +37,80 @@
       (next)="onNext()"
       (prev)="onPrev()"
     />
-    <div class="review-actions">
+    <div class="action-buttons-wrapper">
       <jhi-button
-        [label]="'evaluation.accept' | translate"
+        class="w-full"
+        [styleClass]="'w-full'"
+        [label]="'evaluation.addToInterview' | translate"
         variant="outlined"
-        severity="success"
-        icon="check"
-        [disabled]="!canReview()"
-        (click)="openAcceptDialog()"
+        severity="primary"
+        icon="calendar"
+        [disabled]="!canReview() || isAlreadyInInterview()"
+        (click)="openAddToInterviewDialog()"
       />
-      <jhi-button
-        [label]="'evaluation.reject' | translate"
-        variant="outlined"
-        severity="danger"
-        icon="xmark"
-        [disabled]="!canReview()"
-        (click)="openRejectDialog()"
-      />
+      <div class="review-actions">
+        <jhi-button
+          [label]="'evaluation.accept' | translate"
+          variant="outlined"
+          severity="success"
+          icon="check"
+          [disabled]="!canReview()"
+          (click)="openAcceptDialog()"
+        />
+        <jhi-button
+          [label]="'evaluation.reject' | translate"
+          variant="outlined"
+          severity="danger"
+          icon="xmark"
+          [disabled]="!canReview()"
+          (click)="openRejectDialog()"
+        />
+      </div>
     </div>
+    <!-- TODO: Replace p-dialog with jhi-dialog -->
+    <p-dialog
+      [modal]="true"
+      [(visible)]="addToInterviewDialogVisible"
+      styleClass="review-dialog"
+      [dismissableMask]="true"
+      [closeOnEscape]="true"
+      [draggable]="false"
+      appendTo="body"
+    >
+      <!-- Header (applicant + job title) - matches review-dialog style -->
+      <ng-template #header>
+        <div class="info">
+          <span class="applicant-name">{{ currentApplication()?.applicationDetailDTO?.applicant?.user?.name }}</span>
+          <div class="job-name">
+            <fa-icon class="icon" [icon]="['fas', 'briefcase']" />
+            <span>{{ currentApplication()?.applicationDetailDTO?.jobTitle }}</span>
+          </div>
+        </div>
+      </ng-template>
+
+      <!-- Confirmation text -->
+      <p jhiTranslate="evaluation.addToInterviewDialog.confirmationText"></p>
+
+      <!-- Footer buttons -->
+      <ng-template pTemplate="footer">
+        <div class="flex justify-between w-full pt-4 gap-2">
+          <jhi-button
+            [label]="'evaluation.addToInterviewDialog.confirmAndStay' | translate"
+            variant="outlined"
+            severity="primary"
+            (click)="onAddToInterview(false)"
+          />
+          <div class="flex gap-2">
+            <jhi-button [label]="'entity.action.cancel' | translate" variant="outlined" (click)="addToInterviewDialogVisible.set(false)" />
+            <jhi-button
+              [label]="'evaluation.addToInterviewDialog.confirmAndNavigate' | translate"
+              severity="primary"
+              (click)="onAddToInterview(true)"
+            />
+          </div>
+        </div>
+      </ng-template>
+    </p-dialog>
 
     <jhi-review-dialog
       [application]="currentApplication()"

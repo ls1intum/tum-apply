@@ -467,10 +467,4 @@ describe('ResearchGroupDetailViewComponent', () => {
     const options = component.departmentOptions();
     expect(options).toEqual([{ name: '', value: '' }]);
   });
-
-  it('should navigate back to admin view', () => {
-    const router = TestBed.inject(Router);
-    component.goBack();
-    expect(router.navigate).toHaveBeenCalledWith(['/research-group/admin-view']);
-  });
 });

@@ -26,7 +26,19 @@ plugins {
 }
 
 group = "de.tum.cit.aet"
-version = "1.1.1"
+
+// Version configuration based on profile:
+// - prod: Production release version (currently deployed)
+// - dev/test: Development version (next release, one step ahead)
+def prodVersion = "1.1.2"    // Current production version
+def devVersion = "1.1.3"     // Next development version (one step ahead)
+
+// Profile detection: supports both -Pprod (Dockerfile) and -Pprofile=prod,api-docs
+def activeProfile = project.hasProperty('profile') ? project.property('profile') : 'dev'
+def profiles = activeProfile.tokenize(/[,\s]+/).collect { it.trim() }
+// Also check for -Pprod flag (used in Dockerfile)
+def isProd = profiles.contains('prod') || project.hasProperty('prod')
+version = isProd ? prodVersion : devVersion
 
 description = "Modern portal for streamlined, inclusive, and transparent doctoral applications at TUM"
 
@@ -54,7 +66,7 @@ ext {
 }
 
 wrapper {
-  gradleVersion = "9.3.0"
+  gradleVersion = "9.3.1"
 }
 
 spotless {
@@ -67,7 +79,7 @@ spotless {
 apply from: "gradle/openapi.gradle"
 apply from: "gradle/liquibase.gradle"
 
-if (project.hasProperty("prod")) {
+if (isProd) {
   apply from: "gradle/profile_prod.gradle"
 } else {
   apply from: "gradle/profile_dev.gradle"
@@ -172,7 +184,7 @@ dependencies {
   implementation "com.fasterxml.jackson.core:jackson-core:${fasterxml_version}"
   // Contains standard Jackson annotations
   // TODO: change to ${fasterxml_version} in the next standardized version
-  implementation "com.fasterxml.jackson.core:jackson-annotations:2.20"
+  implementation "com.fasterxml.jackson.core:jackson-annotations:2.21"
   // Implements data-binding (and object serialization) support
   implementation "com.fasterxml.jackson.core:jackson-databind:${fasterxml_version}"
   // Support for "Java 8 Dates"
@@ -279,7 +291,7 @@ tasks.register("cleanResources", Delete) {
 }
 
 wrapper {
-  gradleVersion = "9.3.0"
+  gradleVersion = "9.3.1"
 }
 
 node {

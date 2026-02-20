@@ -1,5 +1,6 @@
 package de.tum.cit.aet.interview.service;
 
+import de.tum.cit.aet.application.constants.ApplicationState;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationDetailDTO;
 import de.tum.cit.aet.application.repository.ApplicationRepository;
@@ -29,6 +30,7 @@ import de.tum.cit.aet.notification.service.AsyncEmailSender;
 import de.tum.cit.aet.notification.service.mail.Email;
 import de.tum.cit.aet.usermanagement.domain.User;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -78,11 +80,11 @@ public class InterviewService {
      */
 
     public List<InterviewOverviewDTO> getInterviewOverview() {
-        // 1. Get the ID of the currently logged-in professor
-        UUID professorId = currentUserService.getUserId();
+        // 1. Get the Research Group ID of the current user (Professor or Employee)
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
 
-        // 2. Load all active interview processes for this professor
-        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByProfessorId(professorId);
+        // 2. Load all active interview processes for this research group
+        List<InterviewProcess> interviewProcesses = interviewProcessRepository.findAllByResearchGroupId(researchGroupId);
 
         // 3. If no interview processes exist, return an empty list
         if (interviewProcesses.isEmpty()) {
@@ -125,7 +127,8 @@ public class InterviewService {
                 long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
 
                 // Calculate total number of all interviewees in this interview process
-                long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+                // Only count interviewees who have a decided slot (SCHEDULED or COMPLETED)
+                long totalInterviews = completedCount + scheduledCount;
 
                 // Create the DTO with all statistical data for the UI
                 return new InterviewOverviewDTO(
@@ -143,6 +146,50 @@ public class InterviewService {
     }
 
     /**
+     * Retrieves upcoming booked interviews for the currently logged-in user
+     * (Professor or Employee).
+     * Shows strictly TODAY + FUTURE booked interviews from all jobs of the
+     * user's research group.
+     *
+     * @return list of {@link UpcomingInterviewDTO} for the dashboard
+     */
+    public List<UpcomingInterviewDTO> getUpcomingInterviews() {
+        // 1. Get current Research Group ID
+        UUID researchGroupId = currentUserService.getResearchGroupIdIfMember();
+
+        // 2. Fetch upcoming slots (pagination max 5)
+        Pageable limit = PageRequest.of(0, 5);
+        Page<InterviewSlot> slots = interviewSlotRepository.findUpcomingBookedSlotsForResearchGroup(researchGroupId, Instant.now(), limit);
+
+        // 3. Map to DTO
+        return slots
+            .stream()
+            .map(slot -> {
+                Interviewee interviewee = slot.getInterviewee();
+                // safe check
+                if (interviewee == null) {
+                    return null;
+                }
+
+                User applicantUser = interviewee.getApplication().getApplicant().getUser();
+                String applicantName = applicantUser.getFirstName() + " " + applicantUser.getLastName();
+
+                return new UpcomingInterviewDTO(
+                    slot.getId(),
+                    slot.getStartDateTime(),
+                    slot.getEndDateTime(),
+                    applicantName,
+                    slot.getInterviewProcess().getJob().getTitle(),
+                    slot.getLocation(),
+                    slot.getInterviewProcess().getId(),
+                    interviewee.getId()
+                );
+            })
+            .filter(java.util.Objects::nonNull)
+            .toList();
+    }
+
+    /**
      * Get details for a single interview process.
      *
      * @param processId the ID of the interview process
@@ -155,9 +202,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewProcess.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Fetch interviewees for this process and calculate state counts
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdInWithSlots(List.of(processId));
@@ -173,7 +221,7 @@ public class InterviewService {
         long scheduledCount = stateCounts.getOrDefault(IntervieweeState.SCHEDULED, 0L);
         long invitedCount = stateCounts.getOrDefault(IntervieweeState.INVITED, 0L);
         long uncontactedCount = stateCounts.getOrDefault(IntervieweeState.UNCONTACTED, 0L);
-        long totalInterviews = completedCount + scheduledCount + invitedCount + uncontactedCount;
+        long totalInterviews = completedCount + scheduledCount;
 
         return new InterviewOverviewDTO(
             job.getJobId(),
@@ -250,9 +298,11 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess" + processId + "not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
+        User professor = job.getSupervisingProfessor();
 
         // 3. Convert DTOs to entities
         List<InterviewSlot> newSlots = dto
@@ -261,8 +311,8 @@ public class InterviewService {
             .map(slotInput -> createSlotFromInput(process, slotInput))
             .toList();
 
-        // 4. Validate no time conflicts
-        validateNoTimeConflicts(newSlots);
+        // 4. Validate no time conflicts (pass professor to avoid lazy loading)
+        validateNoTimeConflicts(newSlots, professor, processId);
 
         // 5. Save all slots
         List<InterviewSlot> savedSlots = interviewSlotRepository.saveAll(newSlots);
@@ -315,9 +365,10 @@ public class InterviewService {
             .findByIdWithJob(slotId)
             .orElseThrow(() -> new EntityNotFoundException("Slot " + slotId + " not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = slot.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3.Cannot delete booked slots
         // TODO: Implement deletion of booked slots with unassignment of applicant
@@ -332,11 +383,15 @@ public class InterviewService {
     /**
      * Validates that none of the new slots conflict with existing slots of the same
      * professor.
+     * For the same process: blocks any overlapping slot.
+     * For other processes: only blocks BOOKED overlapping slots.
      *
-     * @param newSlots the slots to validate
+     * @param newSlots  the slots to validate
+     * @param professor the supervising professor (passed to avoid lazy loading)
+     * @param processId the current interview process ID
      * @throws TimeConflictException if a time conflict is detected
      */
-    private void validateNoTimeConflicts(List<InterviewSlot> newSlots) {
+    private void validateNoTimeConflicts(List<InterviewSlot> newSlots, User professor, UUID processId) {
         // 1. Check for internal conflicts within the new batch
         for (int i = 0; i < newSlots.size(); i++) {
             for (int j = i + 1; j < newSlots.size(); j++) {
@@ -358,17 +413,17 @@ public class InterviewService {
         }
 
         // 2. Check for conflicts with existing slots in the database
+        // Same process: any overlap blocks; Other processes: only BOOKED slots block
         for (InterviewSlot newSlot : newSlots) {
-            User professor = newSlot.getInterviewProcess().getJob().getSupervisingProfessor();
-
             boolean hasConflict = interviewSlotRepository.hasConflictingSlots(
                 professor,
+                processId,
                 newSlot.getStartDateTime(),
                 newSlot.getEndDateTime()
             );
 
             if (hasConflict) {
-                // Fetch conflicting InterviewSlot entity
+                // Fetch conflicting InterviewSlot entity to provide details
                 InterviewSlot conflictingSlot = interviewSlotRepository
                     .findFirstConflictingSlot(professor, newSlot.getStartDateTime(), newSlot.getEndDateTime())
                     .orElseThrow();
@@ -409,9 +464,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> new EntityNotFoundException("InterviewProcess " + processId + " not found"));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Convert PageDTO to Pageable
         Pageable pageable = PageRequest.of(pageDTO.pageNumber(), pageDTO.pageSize());
@@ -446,6 +502,40 @@ public class InterviewService {
         return new PageResponseDTO<>(slotDTOs, slotsPage.getTotalElements());
     }
 
+    /**
+     * Retrieves conflict data for slot creation validation on a specific date.
+     * Returns all slots relevant for conflict detection in a single response:
+     * - All slots (booked + unbooked) from the current process
+     * - All BOOKED slots from other processes of the same professor
+     *
+     * @param processId the ID of the interview process
+     * @param date      the date to check for conflicts
+     * @return ConflictDataDTO containing slots for client-side conflict detection
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    public ConflictDataDTO getConflictDataForDate(UUID processId, LocalDate date) {
+        // 1. Load interview process
+        InterviewProcess process = interviewProcessRepository
+            .findById(processId)
+            .orElseThrow(() -> EntityNotFoundException.forId("InterviewProcess", processId));
+
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
+        verifyResearchGroupAccess(process.getJob());
+
+        // 3. Calculate day boundaries in CET timezone
+        UUID professorId = process.getJob().getSupervisingProfessor().getUserId();
+        Instant dayStart = date.atStartOfDay(CET_TIMEZONE).toInstant();
+        Instant dayEnd = date.plusDays(1).atStartOfDay(CET_TIMEZONE).toInstant();
+
+        // 4. Fetch all relevant slots for conflict detection
+        List<InterviewSlot> slots = interviewSlotRepository.findConflictDataByDate(processId, professorId, dayStart, dayEnd);
+
+        // 5. Return DTO for client-side filtering
+        return new ConflictDataDTO(processId, slots.stream().map(ConflictDataDTO.ExistingSlotDTO::fromEntity).toList());
+    }
+
     /*--------------------------------------------------------------
      Interviewee Management
     --------------------------------------------------------------*/
@@ -467,15 +557,17 @@ public class InterviewService {
      * @throws AccessDeniedException   if the user is not the job owner
      * @throws BadRequestException     if any application belongs to a different job
      */
+    @Transactional
     public List<IntervieweeDTO> addApplicantsToInterview(UUID processId, AddIntervieweesDTO dto) {
         // 1. Load interview process
         InterviewProcess process = interviewProcessRepository
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Load all applications
         List<Application> applications = applicationRepository.findAllById(dto.applicationIds());
@@ -484,20 +576,24 @@ public class InterviewService {
         List<Interviewee> createdInterviewees = new ArrayList<>();
         for (Application application : applications) {
             // Check if already exists
-            if (intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
-                continue;
+            if (!intervieweeRepository.existsByApplicationAndInterviewProcess(application, process)) {
+                // Create new Interviewee
+                Interviewee interviewee = new Interviewee();
+                interviewee.setInterviewProcess(process);
+                interviewee.setApplication(application);
+                interviewee.setLastInvited(null);
+
+                createdInterviewees.add(interviewee);
             }
 
-            // Create new Interviewee
-            Interviewee interviewee = new Interviewee();
-            interviewee.setInterviewProcess(process);
-            interviewee.setApplication(application);
-            interviewee.setLastInvited(null);
-
-            createdInterviewees.add(interviewee);
+            // Always update application status to INTERVIEW
+            if (application.getState() != ApplicationState.INTERVIEW) {
+                application.setState(ApplicationState.INTERVIEW);
+            }
         }
 
-        // 6. Save all
+        // 6. Save all applications and interviewees
+        applicationRepository.saveAll(applications);
         List<Interviewee> savedInterviewees = intervieweeRepository.saveAll(createdInterviewees);
 
         // 7. Return DTOs
@@ -519,9 +615,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Load and return interviewees with details
         List<Interviewee> interviewees = intervieweeRepository.findByInterviewProcessIdWithDetails(processId);
@@ -548,9 +645,10 @@ public class InterviewService {
             .findByIdWithJob(slotId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview slot", slotId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = slot.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Check if slot is already booked
         if (slot.getIsBooked()) {
@@ -575,14 +673,28 @@ public class InterviewService {
         slot.setIsBooked(true);
         interviewee.getSlots().add(slot);
 
-        // 7. Save entities
+        // 7. Auto-delete overlapping unbooked slots from other processes
+        UUID professorId = job.getSupervisingProfessor().getUserId();
+        List<InterviewSlot> overlappingSlots = interviewSlotRepository.findOverlappingUnbookedSlots(
+            professorId,
+            processId,
+            slot.getStartDateTime(),
+            slot.getEndDateTime()
+        );
+
+        boolean hadOverlappingSlots = !overlappingSlots.isEmpty();
+        if (hadOverlappingSlots) {
+            interviewSlotRepository.deleteAll(overlappingSlots);
+        }
+
+        // 8. Save entities
         interviewSlotRepository.save(slot);
         intervieweeRepository.save(interviewee);
 
-        // 8. Send interview invitation email
+        // 9. Send interview invitation email
         sendInterviewInvitationEmail(slot, interviewee, job);
 
-        // 9. Build response with interviewee details
+        // 10. Build response with interviewee details
         IntervieweeState state = calculateIntervieweeState(interviewee);
         AssignedIntervieweeDTO assignedInterviewee = AssignedIntervieweeDTO.fromEntity(interviewee, state);
         return InterviewSlotDTO.fromEntity(slot, assignedInterviewee);
@@ -638,9 +750,10 @@ public class InterviewService {
             .findById(processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interview process", processId));
 
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = process.getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Fetch interviewees based on filter
         List<Interviewee> interviewees;
@@ -664,6 +777,8 @@ public class InterviewService {
 
         for (Interviewee interviewee : interviewees) {
             try {
+                // Set job to prevent LazyInitializationException in async email sending
+                interviewee.getApplication().setJob(job);
                 sendSelfSchedulingEmail(interviewee, job);
                 interviewee.setLastInvited(Instant.now());
                 updatedInterviewees.add(interviewee);
@@ -774,9 +889,10 @@ public class InterviewService {
         Interviewee interviewee = intervieweeRepository
             .findByIdAndProcessId(intervieweeId, processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
-        // 2. Security: Verify current user has job access
+        // 2. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewee.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 3. Build and return detail DTO
         return mapIntervieweeToDetailDTO(interviewee, job);
@@ -805,9 +921,10 @@ public class InterviewService {
             .findByIdAndProcessId(intervieweeId, processId)
             .orElseThrow(() -> EntityNotFoundException.forId("Interviewee", intervieweeId));
 
-        // 3. Security: Verify current user has job access
+        // 3. Security: Verify current user has research group access (Professor or
+        // Employee)
         Job job = interviewee.getInterviewProcess().getJob();
-        currentUserService.verifyJobAccess(job);
+        verifyResearchGroupAccess(job);
 
         // 4. Update fields if provided
         if (Boolean.TRUE.equals(dto.clearRating())) {
@@ -846,5 +963,30 @@ public class InterviewService {
             ApplicationDetailDTO.getFromEntity(application, job),
             documentDictionaryService.getDocumentIdsDTO(application)
         );
+    }
+
+    /**
+     * Retrieves all interview processes for a given professor.
+     *
+     * @param user the professor user
+     * @return list of interview processes
+     */
+    public List<InterviewProcess> getInterviewProcessesByProfessor(User user) {
+        List<InterviewProcess> processes = interviewProcessRepository.findAllByProfessorId(user.getUserId());
+        return processes == null ? List.of() : processes;
+    }
+
+    /**
+     * Verifies that the current user has access to the research group of the given
+     * job.
+     * This allows both professors and employees of the research group to access the
+     * job's interview data.
+     *
+     * @param job the job to check access for
+     * @throws AccessDeniedException if the user is not a member of the research
+     *                               group
+     */
+    private void verifyResearchGroupAccess(Job job) {
+        currentUserService.isAdminOrMemberOf(job.getResearchGroup());
     }
 }

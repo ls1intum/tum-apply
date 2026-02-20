@@ -8,6 +8,7 @@ import de.tum.cit.aet.core.exception.EntityNotFoundException;
 import de.tum.cit.aet.core.security.annotations.ProfessorOrEmployee;
 import de.tum.cit.aet.interview.dto.AddIntervieweesDTO;
 import de.tum.cit.aet.interview.dto.AssignSlotRequestDTO;
+import de.tum.cit.aet.interview.dto.ConflictDataDTO;
 import de.tum.cit.aet.interview.dto.CreateSlotsDTO;
 import de.tum.cit.aet.interview.dto.InterviewOverviewDTO;
 import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
@@ -15,12 +16,15 @@ import de.tum.cit.aet.interview.dto.IntervieweeDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
+import de.tum.cit.aet.interview.dto.UpcomingInterviewDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.service.InterviewService;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +62,25 @@ public class InterviewResource {
         List<InterviewOverviewDTO> overview = interviewService.getInterviewOverview();
         log.info("Returning all interview processes");
         return ResponseEntity.ok(overview);
+    }
+
+    /**
+     * {@code GET /api/interviews/upcoming} : Get upcoming interviews for the
+     * dashboard.
+     * <p>
+     * Returns a list of strictly upcoming booked interviews for the logged-in
+     * professor.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and list of
+     *         {@link UpcomingInterviewDTO}
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<UpcomingInterviewDTO>> getUpcomingInterviews() {
+        log.info("REST request to get upcoming interviews");
+        List<UpcomingInterviewDTO> upcomingCalls = interviewService.getUpcomingInterviews();
+        log.info("Returning {} upcoming interviews", upcomingCalls.size());
+        return ResponseEntity.ok(upcomingCalls);
     }
 
     /**
@@ -129,6 +152,34 @@ public class InterviewResource {
         PageResponseDTO<InterviewSlotDTO> slots = interviewService.getSlotsByProcessId(processId, year, month, pageDTO);
         log.info("Returning {} slots for interview process: {}", slots.getTotalElements(), processId);
         return ResponseEntity.ok(slots);
+    }
+
+    /**
+     * {@code GET /api/interviews/processes/{processId}/slots/conflict-data} : Get
+     * conflict data for slot creation.
+     *
+     * Returns all slots relevant for conflict detection on a specific date:
+     * - All slots from the current process (for SAME_PROCESS conflict detection)
+     * - All booked slots from other processes (for BOOKED_OTHER_PROCESS conflict
+     * detection)
+     *
+     * @param processId the ID of the interview process
+     * @param date      the date to check for conflicts (ISO format: YYYY-MM-DD)
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and
+     *         {@link ConflictDataDTO}
+     * @throws EntityNotFoundException if the interview process is not found
+     * @throws AccessDeniedException   if the user is not authorized
+     */
+    @ProfessorOrEmployee
+    @GetMapping("/processes/{processId}/slots/conflict-data")
+    public ResponseEntity<ConflictDataDTO> getConflictDataForDate(
+        @PathVariable UUID processId,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        log.info("REST request to get conflict data for process: {} on date: {}", processId, date);
+        ConflictDataDTO conflictData = interviewService.getConflictDataForDate(processId, date);
+        log.info("Returning {} slots for conflict checking", conflictData.slots().size());
+        return ResponseEntity.ok(conflictData);
     }
 
     /**

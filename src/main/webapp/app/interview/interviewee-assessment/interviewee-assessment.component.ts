@@ -11,6 +11,7 @@ import { InterviewResourceApiService } from 'app/generated';
 import { IntervieweeDetailDTO } from 'app/generated/model/intervieweeDetailDTO';
 import { UpdateAssessmentDTO } from 'app/generated/model/updateAssessmentDTO';
 import { ToastService } from 'app/service/toast-service';
+import { BackButtonComponent } from 'app/shared/components/atoms/back-button/back-button.component';
 import { ButtonComponent } from 'app/shared/components/atoms/button/button.component';
 import { Section } from 'app/shared/components/atoms/section/section';
 import { RatingComponent } from 'app/shared/components/atoms/rating/rating.component';
@@ -33,6 +34,7 @@ import TranslateDirective from 'app/shared/language/translate.directive';
     FontAwesomeModule,
     DividerModule,
     ProgressSpinnerModule,
+    BackButtonComponent,
     ButtonComponent,
     Section,
     RatingComponent,
@@ -52,6 +54,7 @@ export class IntervieweeAssessmentComponent {
 
   protected readonly saving = signal<boolean>(false);
   protected readonly params = toSignal(inject(ActivatedRoute).paramMap);
+  protected readonly queryParamsSignal = toSignal(inject(ActivatedRoute).queryParams);
 
   // Computed
   protected readonly processId = computed(() => this.params()?.get('processId') ?? '');
@@ -149,6 +152,11 @@ export class IntervieweeAssessmentComponent {
   // Navigates to process detail or overview fallback
   goBack(): void {
     const processId = this.processId();
+    if (this.queryParamsSignal()?.from === 'overview') {
+      void this.router.navigate(['/interviews/overview']);
+      return;
+    }
+
     if (processId) {
       void this.router.navigate(['/interviews', processId]);
     } else {

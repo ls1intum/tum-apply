@@ -77,7 +77,10 @@ public class EmailService {
     protected void send(Email email) {
         email.validate();
 
-        EmailTemplateTranslation tpl = getEmailTemplateTranslation(email);
+        EmailTemplateTranslation tpl = null;
+        if (StringUtils.isEmpty(email.getCustomSubject()) && StringUtils.isEmpty(email.getCustomBody())) {
+            tpl = getEmailTemplateTranslation(email);
+        }
         String subject = renderSubject(email, tpl);
         String body = renderBody(email, tpl);
 
@@ -207,9 +210,20 @@ public class EmailService {
      * @return the corresponding {@link EmailTemplateTranslation}
      */
     private EmailTemplateTranslation getEmailTemplateTranslation(Email email) {
-        if (email.getEmailType() == null || email.getResearchGroup() == null) {
+        if (email.getEmailType() == null) {
+            log.warn("Cannot translate email template: EmailType is null for email to recipients {}", email.getRecipients());
             return null;
         }
+
+        if (email.getResearchGroup() == null && email.getEmailType().isMultipleTemplates()) {
+            log.warn(
+                "Cannot translate email template: ResearchGroup is null but EmailType '{}' requires multiple templates for email to recipients {}",
+                email.getEmailType(),
+                email.getRecipients()
+            );
+            return null;
+        }
+
         return emailTemplateService.getTemplateTranslation(
             email.getResearchGroup(),
             email.getTemplateName(),

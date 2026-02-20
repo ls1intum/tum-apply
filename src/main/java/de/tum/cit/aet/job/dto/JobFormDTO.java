@@ -26,7 +26,8 @@ public record JobFormDTO(
     String jobDescriptionEN,
     String jobDescriptionDE,
     @NotNull JobState state,
-    UUID imageId // Optional job banner image
+    UUID imageId, // Optional job banner image
+    Boolean suitableForDisabled // Position suitable for persons with severe disabilities
 ) {
     /**
      * @param job The job entity to convert
@@ -52,7 +53,8 @@ public record JobFormDTO(
             job.getJobDescriptionEN(),
             job.getJobDescriptionDE(),
             job.getState(),
-            job.getImage() != null ? job.getImage().getImageId() : null
+            job.getImage() != null ? job.getImage().getImageId() : null,
+            job.getSuitableForDisabled()
         );
     }
 }

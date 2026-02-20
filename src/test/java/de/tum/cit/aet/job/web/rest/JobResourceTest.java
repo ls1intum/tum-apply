@@ -94,7 +94,8 @@ class JobResourceTest extends AbstractResourceTest {
             job.getJobDescriptionEN(),
             job.getJobDescriptionDE(),
             JobState.DRAFT,
-            imageId
+            imageId,
+            true
         );
     }
 
@@ -188,7 +189,8 @@ class JobResourceTest extends AbstractResourceTest {
             "Build ML pipelines",
             "ML Pipeline erstellen",
             JobState.PUBLISHED,
-            null
+            null,
+            true
         );
 
         JobFormDTO returned = api
@@ -275,7 +277,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -298,7 +301,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
         api.postAndRead("/api/jobs/create", payload, JobFormDTO.class, 403);
     }
@@ -323,7 +327,8 @@ class JobResourceTest extends AbstractResourceTest {
             "Updated Description",
             "Neue Beschreibung",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
 
         JobFormDTO returnedJob = api
@@ -366,7 +371,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
 
         api.putAndRead("/api/jobs/update/" + updatedPayload.jobId(), updatedPayload, JobFormDTO.class, 404);
@@ -390,7 +396,8 @@ class JobResourceTest extends AbstractResourceTest {
             "desc",
             "desc",
             JobState.DRAFT,
-            null
+            null,
+            true
         );
         api.putAndRead("/api/jobs/update/" + job.getJobId(), updatedPayload, JobFormDTO.class, 403);
     }

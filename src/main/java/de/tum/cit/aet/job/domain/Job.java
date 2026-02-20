@@ -84,6 +84,9 @@ public class Job extends AbstractAuditingEntity {
     @Column(name = "start_date")
     private LocalDate startDate;
 
+    @Column(name = "suitable_for_disabled")
+    private Boolean suitableForDisabled;
+
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sequence ASC")
     private List<CustomField> customFields;

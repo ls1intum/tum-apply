@@ -20,6 +20,7 @@ import de.tum.cit.aet.interview.dto.InterviewSlotDTO;
 import de.tum.cit.aet.interview.dto.IntervieweeDetailDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsRequestDTO;
 import de.tum.cit.aet.interview.dto.SendInvitationsResultDTO;
+import de.tum.cit.aet.interview.dto.UpcomingInterviewDTO;
 import de.tum.cit.aet.interview.dto.UpdateAssessmentDTO;
 import de.tum.cit.aet.interview.repository.InterviewProcessRepository;
 import de.tum.cit.aet.interview.repository.InterviewSlotRepository;
@@ -178,7 +179,9 @@ class InterviewResourceTest extends AbstractResourceTest {
         assertThat(details.jobId()).isEqualTo(job.getJobId());
         assertThat(details.jobTitle()).isEqualTo(job.getTitle());
         // Stats reflects the testInterviewee created in setup
-        assertThat(details.totalInterviews()).isEqualTo(1);
+        // Total interviews only counts SCHEDULED or COMPLETED. Setup creates
+        // UNCONTACTED, so total is 0.
+        assertThat(details.totalInterviews()).isEqualTo(0);
     }
 
     @Test
@@ -266,6 +269,64 @@ class InterviewResourceTest extends AbstractResourceTest {
             .getAndRead("/api/interviews/overview", null, Void.class, 403);
 
         assertThat(result).isNull();
+    }
+
+    @Test
+    void getInterviewOverviewAsEmployeeReturnsOverview() {
+        // Arrange
+        // (Existing setup already has an employee in the same research group as the
+        // professor who created the job)
+
+        // Act
+        List<InterviewOverviewDTO> overview = api
+            .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+            .getAndRead("/api/interviews/overview", null, new TypeReference<List<InterviewOverviewDTO>>() {}, 200);
+
+        // Assert
+        assertThat(overview).isNotEmpty();
+        assertThat(overview.get(0).jobId()).isEqualTo(job.getJobId());
+        assertThat(overview.get(0).jobTitle()).isEqualTo(job.getTitle());
+    }
+
+    @Test
+    void getUpcomingInterviewsAsEmployeeReturnsSlots() {
+        // Arrange
+        // Create an upcoming booked slot for the job belonging to the same research
+        // group
+        CreateSlotsDTO.SlotInput slotInput = new CreateSlotsDTO.SlotInput(
+            LocalDate.now().plusDays(1),
+            LocalTime.of(10, 0),
+            LocalTime.of(11, 0),
+            "Room 101",
+            null
+        );
+        CreateSlotsDTO dto = new CreateSlotsDTO(List.of(slotInput));
+
+        // Create slot as professor
+        List<InterviewSlotDTO> createdSlots = api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead(
+                "/api/interviews/processes/" + interviewProcess.getId() + "/slots/create",
+                dto,
+                new TypeReference<List<InterviewSlotDTO>>() {},
+                201
+            );
+        UUID slotId = createdSlots.get(0).id();
+
+        // Assign applicant to slot to make it "booked"
+        AssignSlotRequestDTO assignDTO = new AssignSlotRequestDTO(testApplication.getApplicationId());
+        api
+            .with(JwtPostProcessors.jwtUser(professor.getUserId(), "ROLE_PROFESSOR"))
+            .postAndRead("/api/interviews/slots/" + slotId + "/assign", assignDTO, InterviewSlotDTO.class, 200);
+
+        // Act - Fetch upcoming as Employee
+        List<UpcomingInterviewDTO> upcoming = api
+            .with(JwtPostProcessors.jwtUser(employee.getUserId(), "ROLE_EMPLOYEE"))
+            .getAndRead("/api/interviews/upcoming", null, new TypeReference<List<UpcomingInterviewDTO>>() {}, 200);
+
+        // Assert
+        assertThat(upcoming).hasSize(1);
+        assertThat(upcoming.get(0).intervieweeName()).contains(testApplicant.getUser().getFirstName());
     }
 
     @Test

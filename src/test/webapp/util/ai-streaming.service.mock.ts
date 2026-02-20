@@ -3,12 +3,12 @@ import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 
 export type AiStreamingServiceMock = {
-  generateJobDescriptionStream: ReturnType<typeof vi.fn>;
+  generateJobApplicationDraftStream: ReturnType<typeof vi.fn>;
 };
 
 export function createAiStreamingServiceMock(): AiStreamingServiceMock {
   return {
-    generateJobDescriptionStream: vi.fn(),
+    generateJobApplicationDraftStream: vi.fn(),
   };
 }
 

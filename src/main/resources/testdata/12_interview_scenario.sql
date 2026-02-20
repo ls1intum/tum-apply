@@ -54,3 +54,22 @@ INSERT INTO interviewees (id, interview_process_id, application_id, last_invited
 VALUES
 ('00000000-0000-0000-0000-000000099100', '00000000-0000-0000-0000-000000030001', '00000000-0000-0000-0000-300000020002', NOW(), NOW())
 ON DUPLICATE KEY UPDATE last_invited = NOW();
+
+-- 3. Add UNCONTACTED interviewees for Bulk Send Testing (last_invited = NULL)
+-- Uses existing applications from 07_applications.sql
+INSERT INTO interviewees (id, interview_process_id, application_id, last_invited, created_at)
+VALUES
+-- Amelie Bauer (Application 300000020001 -> Job 20001)
+('00000000-0000-0000-0000-000000099101', '00000000-0000-0000-0000-000000030001', '00000000-0000-0000-0000-300000020001', NULL, NOW()),
+-- Jay Patel (Application 300000023331 -> Job 20001, REJECTED status but still usable for testing)
+('00000000-0000-0000-0000-000000099102', '00000000-0000-0000-0000-000000030001', '00000000-0000-0000-0000-300000023331', NULL, NOW())
+ON DUPLICATE KEY UPDATE last_invited = NULL;
+
+-- 4. Update application states to INTERVIEW for all interviewees
+-- This ensures the evaluation view shows these applications correctly
+UPDATE applications SET application_state = 'INTERVIEW'
+WHERE application_id IN (
+    '00000000-0000-0000-0000-300000020002',  -- Max Applicant (invited)
+    '00000000-0000-0000-0000-300000020001',  -- Amelie Bauer (uncontacted)
+    '00000000-0000-0000-0000-300000023331'   -- Jay Patel (uncontacted)
+);

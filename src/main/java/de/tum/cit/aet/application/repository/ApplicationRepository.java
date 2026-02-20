@@ -3,10 +3,13 @@ package de.tum.cit.aet.application.repository;
 import de.tum.cit.aet.application.domain.Application;
 import de.tum.cit.aet.application.domain.dto.ApplicationForApplicantDTO;
 import de.tum.cit.aet.core.repository.TumApplyJpaRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -171,7 +174,7 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             FROM Application a
             JOIN a.applicant ap
             WHERE a.job.jobId = :jobId
-            AND a.state IN ('SENT', 'IN_REVIEW')
+            AND a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW')
         """
     )
     Set<Application> findApplicantsToNotify(@Param("jobId") UUID jobId);
@@ -184,8 +187,8 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
             SET a.state =
                 CASE
                     WHEN a.state = 'SAVED' THEN 'JOB_CLOSED'
-                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
-                    WHEN a.state IN ('SENT', 'IN_REVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'CLOSED' THEN 'JOB_CLOSED'
+                    WHEN a.state IN ('SENT', 'IN_REVIEW', 'INTERVIEW') AND :targetState = 'APPLICANT_FOUND' THEN 'REJECTED'
                     ELSE a.state
                 END
             WHERE a.job.jobId = :jobId
@@ -244,8 +247,18 @@ public interface ApplicationRepository extends TumApplyJpaRepository<Application
         SELECT a FROM Application a
         LEFT JOIN FETCH a.applicant ap
         LEFT JOIN FETCH ap.user
+        LEFT JOIN FETCH a.applicationReview
         WHERE a.applicationId = :id
         """
     )
     Optional<Application> findWithDetailsById(@Param("id") UUID id);
+
+    @Query(
+        """
+            SELECT a.applicationId FROM Application a
+            WHERE a.lastModifiedAt < :cutoff
+            AND a.state IN ('WITHDRAWN', 'REJECTED', 'JOB_CLOSED', 'ACCEPTED')
+        """
+    )
+    Slice<UUID> findApplicationsToBeDeletedBeforeCutoff(LocalDateTime cutoff, Pageable pageable);
 }

@@ -30,6 +30,7 @@ export class ApplicationCardComponent {
     ACCEPTED: 'success',
     REJECTED: 'danger',
     IN_REVIEW: 'warn',
+    INTERVIEW: 'info',
   };
 
   readonly nameParts = computed<{ first: string; last: string }>(() => {

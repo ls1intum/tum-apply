@@ -32,7 +32,9 @@ public record JobDetailDTO(
     @NotNull LocalDateTime lastModifiedAt,
     JobState state,
     UUID applicationId,
-    ApplicationState applicationState
+    ApplicationState applicationState,
+    Boolean suitableForDisabled,
+    UUID imageId // Job banner image ID for PDF export
 ) {
     public JobDetailDTO(
         @NotNull UUID jobId,
@@ -53,7 +55,9 @@ public record JobDetailDTO(
         @NotNull LocalDateTime lastModifiedAt,
         JobState state,
         UUID applicationId,
-        ApplicationState applicationState
+        ApplicationState applicationState,
+        Boolean suitableForDisabled,
+        UUID imageId
     ) {
         this(
             jobId,
@@ -74,7 +78,9 @@ public record JobDetailDTO(
             lastModifiedAt,
             state,
             applicationId,
-            applicationState
+            applicationState,
+            suitableForDisabled,
+            imageId
         );
     }
 }

@@ -32,6 +32,7 @@ public final class JobTestData {
         j.setState(state != null ? state : JobState.DRAFT);
         j.setSupervisingProfessor(prof);
         j.setResearchGroup(rg);
+        j.setSuitableForDisabled(true);
         return j;
     }
 
@@ -50,6 +51,7 @@ public final class JobTestData {
         j.setState(JobState.DRAFT);
         j.setSupervisingProfessor(prof);
         j.setResearchGroup(rg);
+        j.setSuitableForDisabled(true);
         return j;
     }
 

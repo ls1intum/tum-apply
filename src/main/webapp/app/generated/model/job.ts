@@ -32,6 +32,7 @@ export interface Job {
     researchGroup?: ResearchGroup;
     startDate?: string;
     state?: Job.StateEnum;
+    suitableForDisabled?: boolean;
     supervisingProfessor?: User;
     title?: string;
     workload?: number;
