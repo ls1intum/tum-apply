@@ -265,6 +265,14 @@
         "label": "Professor TUM-ID",
         "placeholder": "e.g. ab12cde"
       },
+      "professorSelect": {
+        "searchPlaceholder": "Search professor by name or email...",
+        "singleEntity": "Professor",
+        "multipleEntities": "Professors",
+        "noResults": "No available professors found.",
+        "requiredError": "Please select a professor.",
+        "changeButton": "Change selection"
+      },
       "createButton": "Create Research Group",
       "createDialog": {
         "title": "Create Research Group",

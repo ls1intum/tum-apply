@@ -9,8 +9,10 @@ import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroup
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 import { provideTranslateMock } from 'util/translate.mock';
 import { ResearchGroupDTO } from 'app/generated/model/researchGroupDTO';
+import { KeycloakUserDTO } from 'app/generated/model/keycloakUserDTO';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { provideFontAwesomeTesting } from 'util/fontawesome.testing';
@@ -36,6 +38,8 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
   let mockProfOnboardingService: Partial<ProfOnboardingResourceApiService>;
   let mockSchoolService: Partial<SchoolResourceApiService>;
   let mockDepartmentService: Partial<DepartmentResourceApiService>;
+  let mockUserService: Partial<UserResourceApiService>;
+  let getAvailableUsersForResearchGroupMock: ReturnType<typeof vi.fn>;
   let mockToastService: ToastServiceMock;
 
   beforeEach(async () => {
@@ -79,6 +83,11 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
       ),
     } as unknown as DepartmentResourceApiService;
 
+    getAvailableUsersForResearchGroupMock = vi.fn(() => of({ content: [], totalElements: 0 }));
+    mockUserService = {
+      getAvailableUsersForResearchGroup: getAvailableUsersForResearchGroupMock,
+    } as unknown as UserResourceApiService;
+
     await TestBed.configureTestingModule({
       imports: [ResearchGroupCreationFormComponent, ReactiveFormsModule],
       providers: [
@@ -92,6 +101,7 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         { provide: ProfOnboardingResourceApiService, useValue: mockProfOnboardingService },
         { provide: SchoolResourceApiService, useValue: mockSchoolService },
         { provide: DepartmentResourceApiService, useValue: mockDepartmentService },
+        { provide: UserResourceApiService, useValue: mockUserService },
       ],
     }).compileComponents();
 
@@ -378,6 +388,101 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
         expect.objectContaining({
           abbreviation: '',
           website: '',
+        }),
+      );
+    });
+
+    it('should load admin professor candidates when search query is long enough', async () => {
+      const candidates: KeycloakUserDTO[] = [
+        {
+          id: '1d8e3025-cf70-4f7a-b510-e9fbe7f4f123',
+          firstName: 'Alice',
+          lastName: 'Professor',
+          email: 'alice.prof@tum.de',
+          universityId: 'ab12cde',
+          username: 'alice.prof',
+        },
+      ];
+      getAvailableUsersForResearchGroupMock.mockReturnValue(of({ content: candidates, totalElements: 1 }));
+
+      await component.onAdminProfessorSearch('alice');
+
+      expect(getAvailableUsersForResearchGroupMock).toHaveBeenCalledWith(10, 0, 'alice');
+      expect(component.adminProfessorCandidates()).toEqual(candidates);
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should not call user service when admin search query is too short', async () => {
+      await component.onAdminProfessorSearch('al');
+
+      expect(getAvailableUsersForResearchGroupMock).not.toHaveBeenCalled();
+      expect(component.adminProfessorCandidates()).toEqual([]);
+    });
+
+    it('should show toast when admin professor search fails', async () => {
+      getAvailableUsersForResearchGroupMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+
+      await component.onAdminProfessorSearch('alice');
+
+      expect(mockToastService.showErrorKey).toHaveBeenCalledWith('researchGroup.members.toastMessages.loadUsersFailed');
+      expect(component.isLoadingAdminUsers()).toBe(false);
+    });
+
+    it('should set selected admin professor and copy universityId into tumID', () => {
+      const selectedProfessor: KeycloakUserDTO = {
+        id: '2c4f7b39-102f-4b9a-a1ba-33f3388d7744',
+        firstName: 'Bob',
+        lastName: 'Professor',
+        email: 'bob.prof@tum.de',
+        universityId: 'xy34zab',
+        username: 'bob.prof',
+      };
+
+      component.selectAdminProfessor(selectedProfessor);
+
+      expect(component.selectedAdminProfessor()).toEqual(selectedProfessor);
+      expect(component.form.get('tumID')?.value).toBe('xy34zab');
+      expect(component.isAdminProfessorSelected(selectedProfessor)).toBe(true);
+    });
+
+    it('should clear selected admin professor and reset tumID', () => {
+      const selectedProfessor: KeycloakUserDTO = {
+        id: 'f4f809f7-9150-4602-9c43-2562ec0d0adf',
+        firstName: 'Clara',
+        lastName: 'Professor',
+        email: 'clara.prof@tum.de',
+        universityId: 'cd56efg',
+        username: 'clara.prof',
+      };
+
+      component.selectAdminProfessor(selectedProfessor);
+      component.clearSelectedAdminProfessor();
+
+      expect(component.selectedAdminProfessor()).toBeUndefined();
+      expect(component.form.get('tumID')?.value).toBe('');
+      expect(component.adminProfessorCandidates()).toEqual([]);
+    });
+
+    it('should submit selected admin professor universityId in payload', async () => {
+      const selectedProfessor: KeycloakUserDTO = {
+        id: 'a2d43009-9c94-4b61-bf00-c89f02f4f1a2',
+        firstName: 'Dana',
+        lastName: 'Professor',
+        email: 'dana.prof@tum.de',
+        universityId: 'mn78opq',
+        username: 'dana.prof',
+      };
+
+      fillValidForm({ tumID: '' });
+      component.selectAdminProfessor(selectedProfessor);
+
+      component.onConfirmSubmit();
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockResearchGroupService.createResearchGroupAsAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          universityId: 'mn78opq',
         }),
       );
     });

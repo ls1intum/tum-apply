@@ -265,6 +265,14 @@
         "label": "Professor:in TUM-ID",
         "placeholder": "z.B. ab12cde"
       },
+      "professorSelect": {
+        "searchPlaceholder": "Professor:in nach Name oder E-Mail suchen...",
+        "singleEntity": "Professor:in",
+        "multipleEntities": "Professor:innen",
+        "noResults": "Keine verfügbaren Professor:innen gefunden.",
+        "requiredError": "Bitte wähle eine Professor:in aus.",
+        "changeButton": "Auswahl ändern"
+      },
       "createButton": "Forschungsgruppe erstellen",
       "createDialog": {
         "title": "Forschungsgruppe erstellen",

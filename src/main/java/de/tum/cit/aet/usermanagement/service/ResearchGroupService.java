@@ -57,6 +57,7 @@ public class ResearchGroupService {
     private final DepartmentRepository departmentRepository;
 
     private final UserResearchGroupRoleRepository userResearchGroupRoleRepository;
+    private final KeycloakUserService keycloakUserService;
     private final AsyncEmailSender emailSender;
     private final EmailTemplateService emailTemplateService;
 
@@ -449,10 +450,8 @@ public class ResearchGroupService {
             throw new ResourceAlreadyExistsException("Research group with name '" + request.researchGroupName() + "' already exists");
         }
 
-        // Validate that the universityId belongs to a professor or eligible user
-        User professor = userRepository
-            .findByUniversityIdIgnoreCase(request.universityId())
-            .orElseThrow(() -> new EntityNotFoundException("User with universityId '%s' not found".formatted(request.universityId())));
+        // Resolve the professor by universityId, creating a local user from Keycloak data if needed
+        User professor = resolveProfessorForAdminCreate(request.universityId());
 
         // Check if user already has a research group
         if (professor.getResearchGroup() != null) {
@@ -484,6 +483,34 @@ public class ResearchGroupService {
         ensureUserRoleInGroup(professor, saved, UserRole.PROFESSOR);
 
         return saved;
+    }
+
+    private User resolveProfessorForAdminCreate(String universityId) {
+        String normalizedUniversityId = StringUtil.normalize(universityId, false);
+
+        return userRepository
+            .findByUniversityIdIgnoreCase(normalizedUniversityId)
+            .orElseGet(() -> {
+                KeycloakUserDTO keycloakUser = keycloakUserService
+                    .findUserByUniversityId(normalizedUniversityId)
+                    .orElseThrow(() ->
+                        new EntityNotFoundException("User with universityId '%s' not found".formatted(normalizedUniversityId))
+                    );
+                return createLocalUserFromKeycloak(keycloakUser);
+            });
+    }
+
+    private User createLocalUserFromKeycloak(KeycloakUserDTO keycloakUser) {
+        User user = new User();
+        user.setUserId(keycloakUser.id());
+        user.setEmail(StringUtil.normalize(keycloakUser.email(), true));
+        user.setFirstName(StringUtil.normalize(keycloakUser.firstName(), false));
+        user.setLastName(StringUtil.normalize(keycloakUser.lastName(), false));
+        user.setUniversityId(StringUtil.normalize(keycloakUser.universityId(), false));
+        if (user.getSelectedLanguage() == null) {
+            user.setSelectedLanguage("en");
+        }
+        return userRepository.save(user);
     }
 
     /**
@@ -612,9 +639,24 @@ public class ResearchGroupService {
         Optional<UserResearchGroupRole> existingRole = userResearchGroupRoleRepository.findByUserAndResearchGroup(user, researchGroup);
 
         if (existingRole.isPresent()) {
-            if (existingRole.get().getRole() != targetRole) {
-                existingRole.get().setRole(targetRole);
-                userResearchGroupRoleRepository.save(existingRole.get());
+            UserResearchGroupRole role = existingRole.get();
+            boolean changed = false;
+            if (role.getRole() != targetRole) {
+                role.setRole(targetRole);
+                changed = true;
+            }
+            if (
+                role.getResearchGroup() == null || !role.getResearchGroup().getResearchGroupId().equals(researchGroup.getResearchGroupId())
+            ) {
+                role.setResearchGroup(researchGroup);
+                changed = true;
+            }
+            if (role.getUser() == null || !role.getUser().getUserId().equals(user.getUserId())) {
+                role.setUser(user);
+                changed = true;
+            }
+            if (changed) {
+                userResearchGroupRoleRepository.save(role);
             }
         } else {
             // Check if the user has a role without a research group (e.g. Applicant) and update it
@@ -626,6 +668,7 @@ public class ResearchGroupService {
 
             if (roleWithoutGroup.isPresent()) {
                 UserResearchGroupRole role = roleWithoutGroup.get();
+                role.setUser(user);
                 role.setResearchGroup(researchGroup);
                 role.setRole(targetRole);
                 userResearchGroupRoleRepository.save(role);

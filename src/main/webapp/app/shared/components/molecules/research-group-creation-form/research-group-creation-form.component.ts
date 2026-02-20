@@ -5,14 +5,18 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ResearchGroupResourceApiService } from 'app/generated/api/researchGroupResourceApi.service';
 import { ResearchGroupRequestDTO } from 'app/generated/model/researchGroupRequestDTO';
+import { KeycloakUserDTO } from 'app/generated/model/keycloakUserDTO';
 import { ProfOnboardingResourceApiService } from 'app/generated/api/profOnboardingResourceApi.service';
 import { SchoolResourceApiService } from 'app/generated/api/schoolResourceApi.service';
 import { DepartmentResourceApiService } from 'app/generated/api/departmentResourceApi.service';
+import { UserResourceApiService } from 'app/generated/api/userResourceApi.service';
 import { SchoolShortDTO } from 'app/generated/model/schoolShortDTO';
 import { DepartmentDTO } from 'app/generated/model/departmentDTO';
 import { firstValueFrom } from 'rxjs';
 import { EditorComponent } from 'app/shared/components/atoms/editor/editor.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SearchFilterSortBar } from 'app/shared/components/molecules/search-filter-sort-bar/search-filter-sort-bar';
 
 import { StringInputComponent } from '../../atoms/string-input/string-input.component';
 import { ButtonComponent } from '../../atoms/button/button.component';
@@ -39,6 +43,8 @@ type FormMode = 'professor' | 'admin';
     EditorComponent,
     FontAwesomeModule,
     InfoBoxComponent,
+    SearchFilterSortBar,
+    ProgressSpinnerModule,
   ],
   templateUrl: './research-group-creation-form.component.html',
 })
@@ -51,6 +57,13 @@ export class ResearchGroupCreationFormComponent {
 
   // Loading state
   isSubmitting = signal(false);
+  isLoadingAdminUsers = signal(false);
+
+  // Admin professor selection
+  readonly MIN_ADMIN_SEARCH_LENGTH = 3;
+  adminProfessorSearchQuery = signal('');
+  adminProfessorCandidates = signal<KeycloakUserDTO[]>([]);
+  selectedAdminProfessor = signal<KeycloakUserDTO | undefined>(undefined);
 
   // School and Department data
   schools = signal<SchoolShortDTO[]>([]);
@@ -111,7 +124,59 @@ export class ResearchGroupCreationFormComponent {
   private readonly profOnboardingService = inject(ProfOnboardingResourceApiService);
   private readonly schoolService = inject(SchoolResourceApiService);
   private readonly departmentService = inject(DepartmentResourceApiService);
+  private readonly userService = inject(UserResourceApiService);
   private readonly toastService = inject(ToastService);
+  private readonly USE_MOCK_USERS = window.location.hostname === 'localhost';
+  private readonly MOCK_USERS: KeycloakUserDTO[] = [
+    {
+      id: '7a6b8f3a-09f4-4e9f-8d09-2e2d1a1d8a01',
+      firstName: 'Aniruddh',
+      lastName: 'Zaveri',
+      email: 'aniruddh.zaveri@tum.de',
+      universityId: 'ab12asd',
+      username: 'aniruddh.zaveri',
+    },
+    {
+      id: '2c9c3d14-1a5b-4a8f-9c21-4b1d9e2a3f02',
+      firstName: 'Aniruddh',
+      lastName: 'Pawar',
+      email: 'aniruddh.pawar@mytum.de',
+      universityId: 'ab12adv',
+      username: 'aniruddh.pawar',
+    },
+    {
+      id: 'e4b2f1c3-5d6e-4f1a-8b9c-3d4e5f6a7b03',
+      firstName: 'Alice',
+      lastName: 'Curie',
+      email: 'alice.curie@tum.de',
+      universityId: 'ab12agf',
+      username: 'alice.curie',
+    },
+    {
+      id: 'f5a6b7c8-9d0e-4f1a-8b2c-3d4e5f6a7b04',
+      firstName: 'Ben',
+      lastName: 'Schmidt',
+      email: 'ben.schmidt@mytum.de',
+      universityId: 'ab12gkl',
+      username: 'ben.schmidt',
+    },
+    {
+      id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c05',
+      firstName: 'Carla',
+      lastName: 'Nguyen',
+      email: 'carla.nguyen@tum.de',
+      universityId: 'ab12hij',
+      username: 'carla.nguyen',
+    },
+    {
+      id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d06',
+      firstName: 'David',
+      lastName: 'Ibrahim',
+      email: 'david.ibrahim@mytum.de',
+      universityId: 'ab12klm',
+      username: 'david.ibrahim',
+    },
+  ];
 
   constructor() {
     this.form = this.createForm();
@@ -173,6 +238,59 @@ export class ResearchGroupCreationFormComponent {
 
   onCancel(): void {
     this.ref?.close();
+  }
+
+  async onAdminProfessorSearch(searchQuery: string): Promise<void> {
+    if (this.mode() !== 'admin') {
+      return;
+    }
+
+    this.adminProfessorSearchQuery.set(searchQuery);
+    const trimmedQuery = searchQuery.trim();
+
+    if (trimmedQuery.length < this.MIN_ADMIN_SEARCH_LENGTH) {
+      this.adminProfessorCandidates.set([]);
+      return;
+    }
+
+    if (this.USE_MOCK_USERS) {
+      const normalizedQuery = trimmedQuery.toLowerCase();
+      const filteredUsers = this.MOCK_USERS.filter(user =>
+        `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`.toLowerCase().includes(normalizedQuery),
+      );
+      this.adminProfessorCandidates.set(filteredUsers.slice(0, 10));
+      return;
+    }
+
+    this.isLoadingAdminUsers.set(true);
+    try {
+      const response = await firstValueFrom(this.userService.getAvailableUsersForResearchGroup(10, 0, trimmedQuery));
+      this.adminProfessorCandidates.set(response.content ?? []);
+    } catch {
+      this.toastService.showErrorKey('researchGroup.members.toastMessages.loadUsersFailed');
+    } finally {
+      this.isLoadingAdminUsers.set(false);
+    }
+  }
+
+  selectAdminProfessor(user: KeycloakUserDTO): void {
+    this.selectedAdminProfessor.set(user);
+    this.form.patchValue({ tumID: user.universityId ?? '' });
+    this.form.get('tumID')?.markAsTouched();
+  }
+
+  clearSelectedAdminProfessor(): void {
+    this.selectedAdminProfessor.set(undefined);
+    this.form.patchValue({ tumID: '' });
+    this.adminProfessorCandidates.set([]);
+  }
+
+  isAdminProfessorSelected(user: KeycloakUserDTO): boolean {
+    const selected = this.selectedAdminProfessor();
+    if (!selected?.id || !user.id) {
+      return false;
+    }
+    return selected.id === user.id;
   }
 
   private createForm(): FormGroup {
