@@ -248,6 +248,11 @@ export class ApplicationDetailComponent {
       return { displayValue: '', wasConverted: false };
     }
 
+    if (!upperLimit || !lowerLimit) {
+      const tooltipText = this.translateService.instant('evaluation.details.conversionFailedTooltip');
+      return { displayValue: originalGrade, wasConverted: false, tooltipText };
+    }
+
     const convertedGrade = this.getDisplayGrade(upperLimit, lowerLimit, grade) ?? '';
 
     const numericOriginal = parseFloat(originalGrade.replace(',', '.'));
@@ -257,12 +262,13 @@ export class ApplicationDetailComponent {
     const roundedConverted = Math.floor(numericConverted * 10) / 10;
 
     if (convertedGrade === '' || roundedOriginal === roundedConverted) {
-      return { displayValue: originalGrade, wasConverted: false };
+      const tooltipText = convertedGrade === '' ? this.translateService.instant('evaluation.details.conversionFailedTooltip') : undefined;
+      return { displayValue: originalGrade, wasConverted: false, tooltipText };
     }
 
     const tooltipText = this.translateService.instant('evaluation.details.converterTooltip', {
-      upperLimit: upperLimit ?? '',
-      lowerLimit: lowerLimit ?? '',
+      upperLimit,
+      lowerLimit,
     });
 
     return {
