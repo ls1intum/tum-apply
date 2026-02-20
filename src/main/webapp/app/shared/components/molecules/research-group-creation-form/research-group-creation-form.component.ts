@@ -29,14 +29,14 @@ import TranslateDirective from '../../../language/translate.directive';
 
 type FormMode = 'professor' | 'admin';
 
-type SelectedAdminProfessor = {
+interface SelectedAdminProfessor {
   id?: string;
   firstName?: string;
   lastName?: string;
   email?: string;
   universityId?: string;
   username?: string;
-};
+}
 
 @Component({
   selector: 'jhi-professor-request-access-form',
