@@ -393,6 +393,8 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should load admin professor candidates when search query is long enough', async () => {
+      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
+
       const candidates: KeycloakUserDTO[] = [
         {
           id: '1d8e3025-cf70-4f7a-b510-e9fbe7f4f123',
@@ -420,6 +422,8 @@ describe('ResearchGroupCreationFormComponent - Admin Mode', () => {
     });
 
     it('should show toast when admin professor search fails', async () => {
+      (component as unknown as { USE_MOCK_USERS: boolean }).USE_MOCK_USERS = false;
+
       getAvailableUsersForResearchGroupMock.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
 
       await component.onAdminProfessorSearch('alice');
