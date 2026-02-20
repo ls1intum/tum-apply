@@ -9,10 +9,12 @@
     (keydown)="onTriggerKeydown($event)"
   >
     <div class="filter-trigger">
-      @if (!selectedOptions().length) {
+      @if (!hasSelectedItems()) {
         <span class="trigger-placeholder">{{ filterLabel() | translate }}</span>
       } @else {
-        @if (showSelectedChipsInTrigger() && selectedOptions().length <= maxVisibleChips) {
+        @if (showChipsCounterOnly()) {
+          <span class="trigger-summary">{{ getSummaryLabel() }}</span>
+        } @else {
           <div class="chip-row">
             @for (option of selectedOptions(); track option.value) {
               <p-chip
@@ -24,8 +26,6 @@
               />
             }
           </div>
-        } @else {
-          <span class="trigger-summary">{{ getSummaryLabel() }}</span>
         }
       }
     </div>
@@ -52,14 +52,17 @@
         <div class="options-list">
           <!-- List all selected options -->
           @if (hasSelectedItems()) {
-            <p-divider>
-              <div class="divider-content">
+            <div class="selected-header-row">
+              <p-divider align="left">
                 <span class="divider-text"> {{ 'entity.filters.selected' | translate }} ({{ selectedOptions().length }}) </span>
+              </p-divider>
+
+              <p-divider align="right">
                 <button type="button" class="divider-text clear-button" (click)="clearAll(); $event.stopPropagation()">
                   {{ 'entity.filters.clearAll' | translate }}
                 </button>
-              </div>
-            </p-divider>
+              </p-divider>
+            </div>
             @for (option of selectedOptions(); track option.value; let i = $index) {
               <div class="option-item selected" (click)="toggleOption(option.value)">
                 <p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" />
@@ -106,7 +109,7 @@
     </div>
   }
 
-  @if (!showSelectedChipsInTrigger() && selectedOptions().length) {
+  @if (!showSelectedChipsInTrigger() && hasSelectedItems()) {
     <div class="selected-chips-list">
       @for (option of selectedOptions(); track option.value) {
         <p-chip

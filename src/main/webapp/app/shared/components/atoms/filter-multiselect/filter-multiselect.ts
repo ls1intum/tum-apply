@@ -90,6 +90,7 @@ export class FilterMultiselect {
   selectedOptions = computed(() => this.sortedOptions().filter(opt => opt.selected));
 
   unselectedOptions = computed(() => this.sortedOptions().filter(opt => !opt.selected));
+  showChipsCounterOnly = computed(() => this.showSelectedChipsInTrigger() && this.selectedOptions().length > this.maxVisibleChips);
 
   hasSelectedItems = computed(() => this.selectedOptions().length > 0);
   hasUnselectedItems = computed(() => this.unselectedOptions().length > 0);

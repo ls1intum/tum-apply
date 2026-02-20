@@ -11,11 +11,9 @@
       background: var(--p-background-default);
 
       .p-divider-content {
-        background: var(--p-background-default);
-        width: 100%;
+        width: max-content;
       }
     }
-
     .divider-text {
       font-size: 0.75rem;
       color: var(--p-text-primary);
@@ -23,6 +21,7 @@
       &.clear-button {
         cursor: pointer;
         color: var(--p-primary-color);
+        white-space: nowrap;
 
         &:hover {
           text-decoration: underline;
@@ -31,12 +30,9 @@
     }
   }
 
-  .divider-content {
+  .selected-header-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0 0.25rem;
-    width: 100%;
   }
 
   .p-checkbox {
