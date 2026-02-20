@@ -63,7 +63,7 @@
         }
 
         <!-- Upload New Image Button -->
-        <jhi-image-upload-button (imageUploaded)="onImageUploaded($event)" (uploadError)="onUploadError($event)" />
+        <jhi-image-upload-button [uploadFn]="uploadImage" (imageUploaded)="onImageUploaded($event)" (uploadError)="onUploadError($event)" />
       </div>
     </div>
   }

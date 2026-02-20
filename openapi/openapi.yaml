@@ -988,6 +988,23 @@ paths:
               schema:
                 type: array
                 items: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/research-group/job-banners/by-research-group:
+    get:
+      tags: [image-resource]
+      operationId: getResearchGroupJobBannersByResearchGroup
+      parameters:
+      - name: researchGroupId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/ImageDTO'}
   /api/images/upload/default-job-banner:
     post:
       tags: [image-resource]
@@ -1015,6 +1032,29 @@ paths:
     post:
       tags: [image-resource]
       operationId: uploadJobBanner
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: {type: string, format: binary}
+              required: [file]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ImageDTO'}
+  /api/images/upload/job-banner/by-research-group:
+    post:
+      tags: [image-resource]
+      operationId: uploadJobBannerForResearchGroup
+      parameters:
+      - name: researchGroupId
+        in: query
+        required: true
+        schema: {type: string, format: uuid}
       requestBody:
         content:
           multipart/form-data:

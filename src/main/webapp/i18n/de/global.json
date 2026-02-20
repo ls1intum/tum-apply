@@ -30,6 +30,7 @@
       "settings": "TUMApply - Einstellungen",
       "researchGroup": {
         "adminView": "TUMApply - Admin Ansicht",
+        "adminImages": "TUMApply - Forschungsgruppen-Bilder",
         "templates": "TUMApply - Meine Vorlagen",
         "templateCreation": "TUMApply - Vorlagenserstellung",
         "templateEdit": "TUMApply - Vorlagenbearbeitung",
