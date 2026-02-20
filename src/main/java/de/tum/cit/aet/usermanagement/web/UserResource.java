@@ -93,8 +93,8 @@ public class UserResource {
         @RequestParam(required = false) String searchQuery
     ) {
         log.info("Fetching available users for research group with search query: {}", searchQuery);
-        List<KeycloakUserDTO> users = keycloakUserService.getAllUsers(searchQuery, pageDTO);
-        long total = keycloakUserService.countUsers(searchQuery);
+        List<KeycloakUserDTO> users = keycloakUserService.getAvailableUsersForResearchGroup(searchQuery, pageDTO);
+        long total = keycloakUserService.countAvailableUsersForResearchGroup(searchQuery);
         return ResponseEntity.ok(new PageResponseDTO<KeycloakUserDTO>(users, total));
     }
 

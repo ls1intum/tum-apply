@@ -29,6 +29,7 @@ import { Sort, SortOption, Sorting } from '../../atoms/sorting/sorting';
 export class SearchFilterSortBar {
   // total number of records found
   totalRecords = input<number>(0);
+  showRecords = input<boolean>(true);
   searchText = input<string | undefined>(undefined);
 
   // list of filters to be displayed
