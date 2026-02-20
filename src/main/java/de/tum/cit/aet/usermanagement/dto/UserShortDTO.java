@@ -14,6 +14,7 @@ import lombok.Data;
 public class UserShortDTO {
 
     private UUID userId;
+    private String universityId;
     private String email;
     private String firstName;
     private String lastName;
@@ -26,6 +27,7 @@ public class UserShortDTO {
 
     public UserShortDTO(User user) {
         this.userId = user.getUserId();
+        this.universityId = user.getUniversityId();
         this.email = user.getEmail();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
