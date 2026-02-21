@@ -243,13 +243,13 @@ export default class ApplicationDetailForApplicantComponent {
 
     // Append grade display extra as the translation needs both limits as paramenters
     const applicant = this.application()?.applicant;
-    labels['bachelorGradeDisplay'] = formatGradeDisplay(
+    labels.bachelorGradeDisplay = formatGradeDisplay(
       this.translate,
       applicant?.bachelorGrade,
       applicant?.bachelorGradeUpperLimit,
       applicant?.bachelorGradeLowerLimit,
     );
-    labels['masterGradeDisplay'] = formatGradeDisplay(
+    labels.masterGradeDisplay = formatGradeDisplay(
       this.translate,
       applicant?.masterGrade,
       applicant?.masterGradeUpperLimit,
