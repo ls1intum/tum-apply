@@ -140,7 +140,8 @@ export class AuthOrchestratorService {
     try {
       this.onSuccessCb?.();
       if (targetUrl) {
-        void this.router.navigateByUrl(targetUrl);
+        const path = targetUrl.startsWith(window.location.origin) ? targetUrl.slice(window.location.origin.length) : targetUrl;
+        void this.router.navigateByUrl(path);
       }
     } finally {
       this.onSuccessCb = undefined;
