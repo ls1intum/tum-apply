@@ -172,7 +172,7 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 10MB
+      max-file-size: 25MB
       max-request-size: 25MB
   security:
     oauth2:
@@ -333,7 +333,6 @@ user:
   retention:
     # Controls scheduled user-data cleanup; enabled runs the job, dry-run logs planned deletions without applying them
     inactive-days-before-deletion: ${USER_RETENTION_INACTIVE_DAYS_BEFORE_DELETION:365}
-    days-before-applicant-data-deletion: ${USER_RETENTION_DAYS_BEFORE_APPLICANT_DATA_DELETION:188}
     enabled: ${USER_RETENTION_ENABLED:true}
     dry-run: ${USER_RETENTION_DRY_RUN:false}
     batch-size: ${USER_RETENTION_BATCH_SIZE:300}
@@ -344,6 +343,15 @@ user:
     deleted-user-first-name: ${USER_RETENTION_DELETED_USER_FIRST_NAME:Deleted}
     deleted-user-last-name: ${USER_RETENTION_DELETED_USER_LAST_NAME:User}
     deleted-user-language: ${USER_RETENTION_DELETED_USER_LANGUAGE:en}
+
+applicant:
+  retention:
+    days-before-deletion: ${APPLICANT_RETENTION_DAYS_BEFORE_DELETION:188}
+    enabled: ${APPLICANT_RETENTION_ENABLED:false}
+    dry-run: ${APPLICANT_RETENTION_DRY_RUN:true}
+    batch-size: ${APPLICANT_RETENTION_BATCH_SIZE:300}
+    max-runtime-minutes: ${APPLICANT_RETENTION_MAX_RUNTIME_MINUTES:10}
+    cron: ${APPLICANT_RETENTION_CRON:0 37 2 * * *}
 
 # ===================================================================
 # OTP (One-Time Password) / Email Verification settings

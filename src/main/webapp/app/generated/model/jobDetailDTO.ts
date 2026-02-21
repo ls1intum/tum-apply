@@ -18,6 +18,7 @@ export interface JobDetailDTO {
     endDate?: string;
     fieldOfStudies?: string;
     fundingType?: string;
+    imageId?: string;
     jobDescriptionDE?: string;
     jobDescriptionEN?: string;
     jobId: string;
@@ -27,6 +28,7 @@ export interface JobDetailDTO {
     researchGroup: ResearchGroup;
     startDate?: string;
     state?: JobDetailDTO.StateEnum;
+    suitableForDisabled?: boolean;
     supervisingProfessorName: string;
     title: string;
     workload?: number;
